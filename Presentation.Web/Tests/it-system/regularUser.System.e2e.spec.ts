@@ -7,7 +7,7 @@ describe("Regular user tests", () => {
     var pageObject = new ItSystemEditPo();
 
     beforeAll(() => {
-        loginHelper.login("support@kitos.dk", "testpwrd"); //TODO change user info.
+        loginHelper.login("almenBruger@test.dk", "arne123"); //TODO change user info.
         browser.waitForAngular();
     });
 
@@ -16,31 +16,27 @@ describe("Regular user tests", () => {
         browser.waitForAngular();
     });
 
-    it("Use filter is disabled", () => {
+    it("Apply and delete filter buttons are disabled", () => {
         //Arrange
 
         //Act 
 
         //Assert
-        expect(pageObject.useFiltersButton.getAttribute("disabled")).toEqual("true");
+        expect(pageObject.kendoToolbarWrapper.useFiltersButton.getAttribute("disabled")).toEqual("true");
+        expect(pageObject.kendoToolbarWrapper.deleteFiltersButton.getAttribute("disabled")).toEqual("true");
     });
 
-    it("Delete filter is disabled", () => {
+    it("IT systems can be sorted by name", () => {
         //Arrange
-
+        pageObject.kendoToolbarWrapper.columnSystemName.click();
+        browser.sleep(5000);
+        var firstItemName = pageObject.kendoToolbarWrapper.dataGrid.all(by.partialLinkText("test")).first().getText();
         //Act 
-
+        pageObject.kendoToolbarWrapper.columnSystemName.click();
+        browser.sleep(5000);
         //Assert
-        expect(pageObject.useFiltersButton.getAttribute("disabled")).toEqual("true");
+        expect(pageObject.kendoToolbarWrapper.dataGrid.all(by.partialLinkText("test")).last().getText()).toEqual(firstItemName);
     });
 
-    it("Delete filter is disabled", () => {
-        //Arrange
-
-        //Act 
-
-        //Assert
-        expect(pageObject.exportButton.getText()).toEqual("Eksportér til Excel");
-    });
 
 });

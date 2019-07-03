@@ -1,5 +1,7 @@
 ﻿import IPageObject = require("../../object-wrappers/IPageObject.po");
-import Select2Wrapper = require("../../object-wrappers/Select2Wrapper");
+import kendoToolbarWrapper = require("../../object-wrappers/kendoToolbarWrapper");
+import navigationBarWrapper = require("../../object-wrappers/navigationBarWrapper");
+import subNavigationBarWrapper = require("../../object-wrappers/subNavigationBarWrapper");
 
 class ItSystemEditPo implements IPageObject {
 
@@ -7,17 +9,39 @@ class ItSystemEditPo implements IPageObject {
         return browser.get(browser.baseUrl + "/#/system/overview");
     }
 
-    public resetFiltersButton = element(by.buttonText("Nulstil"));
+    kendoToolbarWrapper = new kendoToolbarWrapper();
+    navigationBarWrapper = new navigationBarWrapper();
+    subNavigationBarWrapper = new subNavigationBarWrapper();
 
-    public saveFiltersButton = element(by.buttonText("Gem filter"));
-
-    public useFiltersButton = element(by.buttonText("Anvend filter"));
-
-    public deleteFiltersButton = element(by.buttonText("Slet filter"));
-
-    public systemRoleSelect = new Select2Wrapper("#s2id_system-type");
-
-    public exportButton = element(by.className("k-button k-grid-excel"))
+    kendoColumnHeaderFilter = this.kendoToolbarWrapper.mainGridElement.all(by.css("tr.k-filter-row"));
+    columnHeaderValidityFilter = this.kendoColumnHeaderFilter.get(0);
+    columnLocalSystemIDFilter = this.kendoColumnHeaderFilter.get(1);
+    columnSystemUUIDFilter = this.kendoColumnHeaderFilter.get(2);
+    columnParentSystemFilter = this.kendoColumnHeaderFilter.get(3);
+    columnSystemNameFilter = this.kendoColumnHeaderFilter.get(4);
+    columnSystemVersionFilter = this.kendoColumnHeaderFilter.get(5);
+    columnLocalCallNameFilter = this.kendoColumnHeaderFilter.get(6);
+    columnResponsibleOrganizationFilter = this.kendoColumnHeaderFilter.get(7);
+    columnBusinessTypeFilter = this.kendoColumnHeaderFilter.get(8);
+    columnApplicationTypeFilter = this.kendoColumnHeaderFilter.get(9);
+    columnKLEIDFilter = this.kendoColumnHeaderFilter.get(10);
+    columnKLENameFilter = this.kendoColumnHeaderFilter.get(11);
+    columnReferenceFilter = this.kendoColumnHeaderFilter.get(12);
+    columnExternalReferenceFilter = this.kendoColumnHeaderFilter.get(13);
+    columnDataTypeFilter = this.kendoColumnHeaderFilter.get(14);
+    columnContractFilter = this.kendoColumnHeaderFilter.get(15);
+    columnSupplierFilter = this.kendoColumnHeaderFilter.get(16);
+    columnProjectFilter = this.kendoColumnHeaderFilter.get(17);
+    columnUsedByFilter = this.kendoColumnHeaderFilter.get(18);
+    columnLastEditedUserFilter = this.kendoColumnHeaderFilter.get(19);
+    columnLastEditedDateFilter = this.kendoColumnHeaderFilter.get(20);
+    columnDateOfUseFilter = this.kendoColumnHeaderFilter.get(21);
+    columnArchiveDutyFilter = this.kendoColumnHeaderFilter.get(22);
+    columnHoldsDocumentFilter = this.kendoColumnHeaderFilter.get(23);
+    columnEndDateFilter = this.kendoColumnHeaderFilter.get(24);
+    columnRiskEvaluationFilter = this.kendoColumnHeaderFilter.get(25);
+    columnUrlListingFilter = this.kendoColumnHeaderFilter.get(26);
+    columnDataProcessingAgreementFilter = this.kendoColumnHeaderFilter.get(27);
 
 }
 
