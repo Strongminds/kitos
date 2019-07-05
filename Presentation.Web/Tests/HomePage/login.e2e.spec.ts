@@ -1,8 +1,8 @@
-﻿import Helper = require("../helper");
+﻿import loginHelper = require("../Helpers/LoginHelper");
 
 describe("Can login succesfully", () => {
 
-    var loginHelper = new Helper.Login();
+    var loginHelper = new loginHelper.Login();
 
     beforeAll(() => {
         loginHelper.login("support@kitos.dk", "testpwrd");

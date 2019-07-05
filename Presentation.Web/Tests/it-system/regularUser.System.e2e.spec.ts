@@ -1,13 +1,16 @@
-﻿import Helper = require("../helper");
-import ItSystemEditPo = require("../PageObjects/it-system/it-system-overview.po");
+﻿import login = require("../Helpers/LoginHelper");
+import ItSystemEditPo = require("../PageObjects/it-system/ItSystemOverview.po");
 
 describe("Regular user tests", () => {
 
-    var loginHelper = new Helper.Login();
-    var pageObject = new ItSystemEditPo();
+    var loginHelper = new login.Login();
+    var pageObject = new ItSystemEditPo(); 
+    var headerButtons = pageObject.kendoToolbarWrapper.headerButtons();
+    var columnHeaders = pageObject.kendoToolbarWrapper.columnHeaders();
+    var columnObject = pageObject.kendoToolbarWrapper.columnObjects();
 
     beforeAll(() => {
-        loginHelper.login("almenBruger@test.dk", "arne123"); //TODO change user info.
+        loginHelper.login("almenBruger@test.dk", "arne123"); 
         browser.waitForAngular();
     });
 
@@ -16,27 +19,28 @@ describe("Regular user tests", () => {
         browser.waitForAngular();
     });
 
-    it("Apply and delete filter buttons are disabled", () => {
-        //Arrange
-
-        //Act 
-
-        //Assert
-        expect(pageObject.kendoToolbarWrapper.useFiltersButton.getAttribute("disabled")).toEqual("true");
-        expect(pageObject.kendoToolbarWrapper.deleteFiltersButton.getAttribute("disabled")).toEqual("true");
+    it("Apply and delete filter buttons are disabled", () => {       
+        expect(headerButtons.useFilter.getAttribute("disabled")).toEqual("true");
+        expect(headerButtons.deleteFilter.getAttribute("disabled")).toEqual("true");
     });
 
     it("IT systems can be sorted by name", () => {
-        //Arrange
-        pageObject.kendoToolbarWrapper.columnSystemName.click();
+
+        columnHeaders.systemName.click();
         browser.sleep(5000);
-        var firstItemName = pageObject.kendoToolbarWrapper.dataGrid.all(by.partialLinkText("test")).first().getText();
-        //Act 
-        pageObject.kendoToolbarWrapper.columnSystemName.click();
+        var firstItemName = columnObject.systemName.first().getText();
+
+        columnHeaders.systemName.click();
         browser.sleep(5000);
-        //Assert
-        expect(pageObject.kendoToolbarWrapper.dataGrid.all(by.partialLinkText("test")).last().getText()).toEqual(firstItemName);
+
+        expect(columnObject.systemName.last().getText()).toEqual(firstItemName);
     });
 
+    it("IT system can be opened", () => {
+
+        columnObject.systemName.first().click();
+
+        expect(browser.getCurrentUrl()).toContain("#/system/usage/");
+    });
 
 });
