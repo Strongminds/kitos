@@ -308,6 +308,7 @@
     <Compile Include="Controllers\API\DataResponsibleController.cs" />
     <Compile Include="Controllers\API\AdviceUserRelationController.cs" />
     <Compile Include="Controllers\API\ArchiveLocationController.cs" />
+    <Compile Include="Controllers\API\HealthCheckController.cs" />
     <Compile Include="Controllers\API\UsageDataworkerController.cs" />
     <Compile Include="Controllers\API\DataworkerController.cs" />
     <Compile Include="Controllers\API\ExcelController.cs" />
