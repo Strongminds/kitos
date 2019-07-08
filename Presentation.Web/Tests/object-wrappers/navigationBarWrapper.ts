@@ -1,25 +1,15 @@
 ﻿import cssLocator = require("./cssLocatorHelper");
 
-// Typings not yet working with protractor 
-//import protractor = require("protractor");
-
-//type navigations = {
-//    logo: protractor.ElementFinder, organization: protractor.ElementFinder, project: protractor.ElementFinder, system: protractor.ElementFinder,
-//    contract: protractor.ElementFinder, reports: protractor.ElementFinder
-//}
-//type userDropdown = {
-//    dropDownElement: protractor.ElementFinder, myProfile: protractor.ElementFinder, localAdmin: protractor.ElementFinder, globalAdming: protractor.ElementFinder,
-//    changeOrg: protractor.ElementFinder, logOut: protractor.ElementFinder
-//}
-
 type navigations = {
-    logo, organization, project, system,
-    contract, reports
+    logo: protractor.ElementFinder, organization: protractor.ElementFinder, project: protractor.ElementFinder, system: protractor.ElementFinder,
+    contract: protractor.ElementFinder, reports: protractor.ElementFinder
 }
 type userDropdown = {
-    dropDownElement, myProfile, localAdmin, globalAdming,
-    changeOrg, logOut
+    dropDownElement: protractor.ElementFinder, myProfile: protractor.ElementFinder, localAdmin: protractor.ElementFinder, globalAdming: protractor.ElementFinder,
+    changeOrg: protractor.ElementFinder, logOut: protractor.ElementFinder
 }
+
+
 
 var byHook = new cssLocator().byDataHook;
 

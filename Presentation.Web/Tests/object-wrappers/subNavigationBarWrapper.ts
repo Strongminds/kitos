@@ -1,10 +1,6 @@
 ﻿
-// Typings not yet working with protractor 
-//import protractor = require("protractor");
+type iconLinks = { bell: protractor.ElementFinder, chart: protractor.ElementFinder, help: protractor.ElementFinder }
 
-//type iconLinks = { bell: protractor.ElementFinder, chart: protractor.ElementFinder, help: protractor.ElementFinder }
-
-type iconLinks = { bell, chart, help }
 
 class subNavigationBarWrapper {
 
