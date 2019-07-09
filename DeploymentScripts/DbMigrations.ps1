@@ -8,7 +8,7 @@ Function Run-DB-Migrations([bool]$newDb = $false) {
         $Env:SeedNewDb="yes"
     } else {
         Write-Host "Disabling seed for new database"
-        $Env:SeedNewDb="false"
+        $Env:SeedNewDb="no"
     }
     
     & "$MigrationsFolder\migrate.exe" "Infrastructure.DataAccess.dll" /connectionString="$Env:KitosDbConnectionStringForTeamCity" /connectionProviderName="System.Data.SqlClient" /verbose /startupDirectory="$MigrationsFolder"
