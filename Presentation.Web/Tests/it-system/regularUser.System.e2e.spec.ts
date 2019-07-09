@@ -43,12 +43,5 @@ describe("Regular user tests", () => {
         expect(browser.getCurrentUrl()).toContain("#/system/usage/");
     });
 
-    it("Delete filter is disabled", () => {
-        //Arrange
-        //Act 
-        //Assert
-        expect(pageObject.columnHeaderValidity.getText()).toEqual("Gyldig/Ikke gyldig");
-    });
-
 
 });
