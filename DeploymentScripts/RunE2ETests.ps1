@@ -11,11 +11,11 @@ Try
 
     if ($oldSeleniumServer){
         Write-Host "Found unexpected java process on port 4444. Trying to shut down"
-        kill -Id $oldSeleniumServer.Id
+        Stop-Process -Id $oldSeleniumServer.Id
 		$maxWait = 0
         while(-Not $oldSeleniumServer.HasExited){
             Write-Host "Shutting down..."
-            sleep 1
+            Start-Sleep 1
 			$maxWait += 1
 			if($maxWait -ge 10){
 				throw "Taking too long to close selenium server on port 4444. Please try again or shutdown manually."
@@ -59,7 +59,7 @@ finally{
 
     $seleniumServer = Get-Process -Id (Get-NetTCPConnection -LocalPort 4444).OwningProcess | Where-Object {$_.ProcessName.Equals("java")}
 
-    kill -Id $seleniumServer.Id
+    Stop-Process -Id $seleniumServer.Id
 }
 
 
