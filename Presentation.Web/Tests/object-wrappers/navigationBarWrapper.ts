@@ -1,4 +1,4 @@
-﻿import cssLocator = require("./cssLocatorHelper");
+import cssLocator = require("./cssLocatorHelper");
 
 type navigations = {
     logo: protractor.ElementFinder, organization: protractor.ElementFinder, project: protractor.ElementFinder, system: protractor.ElementFinder,
@@ -39,6 +39,7 @@ class navigationBarWrapper {
         };
         return drop;
     }
+
 }
 
 export = navigationBarWrapper;

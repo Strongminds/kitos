@@ -3,7 +3,8 @@ import kendoToolbarWrapper = require("../../object-wrappers/kendoToolbarWrapper"
 import navigationBarWrapper = require("../../object-wrappers/navigationBarWrapper");
 import subNavigationBarWrapper = require("../../object-wrappers/subNavigationBarWrapper");
 
-class ItSystemEditPo implements IPageObject {
+
+class ItSystemEditPo extends kendoToolbarWrapper implements IPageObject {
 
     getPage(): webdriver.promise.Promise<void> {
         return browser.get(browser.baseUrl + "/#/system/overview");
@@ -42,6 +43,7 @@ class ItSystemEditPo implements IPageObject {
     columnRiskEvaluationFilter = this.kendoColumnHeaderFilter.get(25);
     columnUrlListingFilter = this.kendoColumnHeaderFilter.get(26);
     columnDataProcessingAgreementFilter = this.kendoColumnHeaderFilter.get(27);
+
 
 }
 

@@ -1,4 +1,4 @@
-﻿import CSSLocator = require("./CSSLocatorHelper");
+import CSSLocator = require("./CSSLocatorHelper");
 import Constants = require("../../app/utility/Constants");
 
 type HeaderButtons = {
@@ -158,4 +158,3 @@ class kendoHelper {
 }
 
 export = kendoToolbarWrapper;
-
