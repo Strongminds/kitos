@@ -1247,17 +1247,7 @@
     <Content Include="Content\less\variables.less" />
     <Content Include="Content\notify\notify.less" />
     <Content Include="Content\kendo.default.min.css" />
-    <None Include="Properties\PublishProfiles\DeployToProd.pubxml" />
-    <None Include="Properties\PublishProfiles\DeployToTest.pubxml">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="app\components\local-config\local-config-option-edit.modal.view.html" />
-    <None Include="Properties\PublishProfiles\Local.pubxml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\PublishProfiles\MiracleTest.pubxml">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1276,20 +1266,9 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Prod.config">
-      <DependentUpon>Web.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Web.Test.config">
-      <DependentUpon>Web.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
     </None>
     <Content Include="Images\accent.png" />
     <Content Include="Images\bullet.png" />
@@ -1345,6 +1324,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="Views\ArchiveLocations\" />
     <Folder Include="Views\ArchivePeriod\" />
     <Folder Include="Views\AttachedOptionsRegularPersonalData\" />
