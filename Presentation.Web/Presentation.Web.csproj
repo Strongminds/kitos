@@ -1239,6 +1239,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Images\accent.png" />
     <Content Include="Images\bullet.png" />
