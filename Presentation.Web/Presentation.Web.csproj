@@ -379,36 +379,6 @@
     <Compile Include="Controllers\API\OptionExtendController.cs" />
     <Compile Include="Controllers\API\OrganizationUnitRightsController.cs" />
     <Compile Include="Controllers\API\ItProjectOrgUnitUsageController.cs" />
-    <!--<Compile Include="Controllers\OData\LocalOptionControllers\AgreementElementTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ArchiveTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\BusinessTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\DataTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\FrequencyTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\GoalTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\HandoverTrialTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\InterfaceTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItContractRolesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItContractTemplateTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItContractTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItInterfaceExhibitsController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItInterfaceTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItInterfaceUsesEntityController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItProjectRolesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItProjectTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItSystemRolesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ItSystemTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\MethodTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\OptionExtendTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\OrganizationUnitRolesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\PaymentFrequencyTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\PaymentModelTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\PriceRegulationTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ProcurementStrategyTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\PurchaseFormTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\ReportCategoriesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\SensitiveDataTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\TerminationDeadlineTypesController.cs" />
-    <Compile Include="Controllers\OData\LocalOptionControllers\TsaTypesController.cs" />-->
     <Compile Include="Controllers\API\ReferenceController.cs" />
     <Compile Include="Controllers\API\SSOConfigController.cs" />
     <Compile Include="Controllers\API\UploadFileController.cs" />
@@ -1344,24 +1314,6 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>
     </ApplicationIcon>
@@ -1375,9 +1327,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
   </PropertyGroup>
-  <!--<Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />-->
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
