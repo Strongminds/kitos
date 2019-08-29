@@ -34,6 +34,7 @@ namespace Presentation.Web.Controllers.OData.AttachedOptions
             _localOptionRepository = localOptionRepository;
         }
 
+        //TODO API-Sanity
         public virtual IHttpActionResult GetOptionsByObjectIDAndType(int id, EntityType entitytype, OptionType optiontype)
         {
             var orgId = AuthService.GetCurrentOrganizationId(UserId);
@@ -89,6 +90,7 @@ namespace Presentation.Web.Controllers.OData.AttachedOptions
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         protected IHttpActionResult CreateOptionsResponse(int id, EntityType entitytype, OptionType optiontype, List<TOption> result)
         {
             var options = GetAttachedOptions(optiontype, id, entitytype);
@@ -122,6 +124,7 @@ namespace Presentation.Web.Controllers.OData.AttachedOptions
             return Ok(result);
         }
 
+        //TODO API-Sanity
         protected List<AttachedOption> GetAttachedOptions(OptionType type, int id, EntityType objectType)
         {
             var hasOrg = typeof(IHasOrganization).IsAssignableFrom(typeof(AttachedOption));

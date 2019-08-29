@@ -62,6 +62,7 @@ namespace Presentation.Web.Controllers.OData
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         [EnableQuery]
         [ODataRoute("Organizations({orgKey})/LastChangedByUser")]
         public virtual IHttpActionResult GetLastChangedByUser(int orgKey)
@@ -76,6 +77,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result);
         }
 
+        //TODO API-Sanity
         [EnableQuery]
         [ODataRoute("Organizations({orgKey})/ObjectOwner")]
         public virtual IHttpActionResult GetObjectOwner(int orgKey)
@@ -90,6 +92,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result);
         }
 
+        //TODO API-Sanity
         [EnableQuery]
         [ODataRoute("Organizations({orgKey})/Type")]
         public virtual IHttpActionResult GetType(int orgKey)
@@ -104,6 +107,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result);
         }
 
+        //TODO API-Sanity
         [EnableQuery]
         public override IHttpActionResult Post(Organization organization)
         {
@@ -137,6 +141,7 @@ namespace Presentation.Web.Controllers.OData
             return Created(organization);
         }
 
+        //TODO API-Sanity
         [EnableQuery]
         public IHttpActionResult GetUsers([FromODataUri] int key)
         {
@@ -150,6 +155,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Patch(int key, Delta<Organization> delta)
         {
             var organization = delta.GetInstance();

@@ -26,6 +26,7 @@ namespace Presentation.Web.Controllers.OData
             _repository = repository;
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Post(User entity)
         {
             return StatusCode(HttpStatusCode.MethodNotAllowed);
@@ -84,6 +85,7 @@ namespace Presentation.Web.Controllers.OData
 
             return Created(createdUser);
         }
+
         [HttpGet]
         public IHttpActionResult IsEmailAvailable(string email)
         {
@@ -93,6 +95,7 @@ namespace Presentation.Web.Controllers.OData
                 return Ok(true);
         }
 
+        //TODO API-Sanity
         [ODataRoute("GetUserByEmail(email={email})")]
         public IHttpActionResult GetUserByEmail(string email)
         {
@@ -109,12 +112,14 @@ namespace Presentation.Web.Controllers.OData
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
+        //TODO API-Sanity
         public override IHttpActionResult Delete(int key)
         {
             return Unauthorized();
         }
 
         //GET /Organizations(1)/DefaultOrganizationForUsers
+        //TODO API-Sanity
         [EnableQuery]
         [ODataRoute("Organizations({orgKey})/DefaultOrganizationForUsers")]
         public IHttpActionResult GetDefaultOrganizationForUsers(int orgKey)

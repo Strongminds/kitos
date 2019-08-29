@@ -46,6 +46,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Delete(int key)
         {
             var entity = Repository.GetByKey(key);
@@ -73,6 +74,7 @@ namespace Presentation.Web.Controllers.OData
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Patch(int key, Delta<ItContractRight> delta)
         {
             var entity = Repository.GetByKey(key);

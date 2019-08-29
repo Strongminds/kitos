@@ -54,6 +54,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result.AsQueryable());
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Patch(int key, Delta<ItSystemRight> delta)
         {
             var entity = Repository.GetByKey(key);
@@ -93,6 +94,7 @@ namespace Presentation.Web.Controllers.OData
             return Updated(entity);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Delete(int key)
         {
             var entity = Repository.GetByKey(key);

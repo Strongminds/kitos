@@ -29,6 +29,7 @@ namespace Presentation.Web.Controllers.API
             _organizationService = organizationService;
         }
 
+        //TODO API-Sanity
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ApiReturnDTO<UserDTO>))]
         public HttpResponseMessage GetLogin()
         {
@@ -164,6 +165,7 @@ namespace Presentation.Web.Controllers.API
         }
 
         // POST api/Authorize
+        //TODO API-Sanity
         [AllowAnonymous]
         public HttpResponseMessage PostLogin(LoginDTO loginDto)
         {
@@ -217,6 +219,7 @@ namespace Presentation.Web.Controllers.API
             }
         }
 
+        //TODO API-Sanity
         [AllowAnonymous]
         public HttpResponseMessage PostLogout(bool? logout)
         {
@@ -231,6 +234,7 @@ namespace Presentation.Web.Controllers.API
             }
         }
 
+        //TODO API-Sanity
         [AllowAnonymous]
         public HttpResponseMessage PostResetpassword(bool? resetPassword, ResetPasswordDTO dto)
         {

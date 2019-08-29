@@ -88,6 +88,7 @@ namespace Presentation.Web.Controllers.OData
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
+        //TODO API-Sanity
         public override IHttpActionResult Post(OrganizationRight entity)
         {
             return StatusCode(HttpStatusCode.Forbidden);
@@ -139,6 +140,7 @@ namespace Presentation.Web.Controllers.OData
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Delete(int key)
         {
             var entity = Repository.GetByKey(key);
@@ -181,6 +183,7 @@ namespace Presentation.Web.Controllers.OData
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Patch(int key, Delta<OrganizationRight> delta)
         {
             var entity = Repository.GetByKey(key);

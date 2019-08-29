@@ -46,6 +46,7 @@ using Core.ApplicationServices;
             return Ok(result);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Delete(int key)
         {
             var entity = Repository.GetByKey(key);
@@ -71,6 +72,7 @@ using Core.ApplicationServices;
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         public override IHttpActionResult Patch(int key, Delta<ItProjectRight> delta)
         {
             var entity = Repository.GetByKey(key);

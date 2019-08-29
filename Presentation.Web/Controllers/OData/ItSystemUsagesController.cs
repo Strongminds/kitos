@@ -88,6 +88,7 @@ namespace Presentation.Web.Controllers.OData
             return Ok(result);
         }
 
+        //TODO API-Sanity
         [AcceptVerbs("POST", "PUT")]
         public IHttpActionResult CreateRef([FromODataUri] int systemUsageKey, string navigationProperty, [FromBody] Uri link)
         {
@@ -124,6 +125,7 @@ namespace Presentation.Web.Controllers.OData
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        //TODO API-Sanity
         public IHttpActionResult DeleteRef([FromODataUri] int key, [FromODataUri] string relatedKey, string navigationProperty)
         {
             var itSystemUsage = Repository.GetByKey(key);
