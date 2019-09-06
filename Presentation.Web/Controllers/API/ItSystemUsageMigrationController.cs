@@ -61,41 +61,34 @@ namespace Presentation.Web.Controllers.API
             [FromUri]int numberOfItSystems, 
             [FromUri]bool getPublicFromOtherOrganizations)
         {
-            try
+            if (GetOrganizationReadAccessLevel(organizationId) < OrganizationDataReadAccessLevel.Public)
             {
-                if (GetOrganizationReadAccessLevel(organizationId) < OrganizationDataReadAccessLevel.Public)
-                {
+                return Forbidden();
+            }
+            if (string.IsNullOrWhiteSpace(nameContent))
+            {
+                return BadRequest();
+            }
+            if (numberOfItSystems < 1)
+            {
+                return BadRequest();
+            }
+
+            var result = _itSystemUsageMigrationService.GetUnusedItSystemsByOrganization(organizationId, nameContent, numberOfItSystems, getPublicFromOtherOrganizations);
+
+            switch (result.Status)
+            {
+                case OperationResult.Ok:
+                    return Ok(MapItSystemToItSystemUsageMigrationDto(result.ResultValue));
+                case OperationResult.Forbidden:
                     return Forbidden();
-                }
-                if (string.IsNullOrWhiteSpace(nameContent))
-                {
-                    return BadRequest();
-                }
-                if (numberOfItSystems < 1)
-                {
-                    return BadRequest();
-                }
-
-                var result = _itSystemUsageMigrationService.GetUnusedItSystemsByOrganization(organizationId, nameContent, numberOfItSystems, getPublicFromOtherOrganizations);
-
-                switch (result.Status)
-                {
-                    case OperationResult.Ok:
-                        return Ok(MapItSystemToItSystemUsageMigrationDto(result.ResultValue));
-                    case OperationResult.Forbidden:
-                        return Forbidden();
-                    case OperationResult.NotFound:
-                        return NotFound();
-                    default:
-                        return CreateResponse(HttpStatusCode.InternalServerError,
-                            "An error occured when trying to get Unused It Systems");
-                }
-
+                case OperationResult.NotFound:
+                    return NotFound();
+                default:
+                    return CreateResponse(HttpStatusCode.InternalServerError,
+                        "An error occured when trying to get Unused It Systems");
             }
-            catch (Exception e)
-            {
-                return LogError(e);
-            }
+            
         }
 
         private IEnumerable<ItSystemSimpleDTO> MapItSystemToItSystemUsageMigrationDto(IReadOnlyList<ItSystem> input)
