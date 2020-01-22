@@ -26,10 +26,6 @@
   version "0.9.0"
   resolved "https://codeload.github.com/chieffancypants/angular-loading-bar/tar.gz/d734873e52ded18fa27d67f52272ae43267dfd63"
 
-"@bower_components/angular-route@angular/bower-angular-route#~1.3.15":
-  version "1.3.20"
-  resolved "https://codeload.github.com/angular/bower-angular-route/tar.gz/785879cc163aee00ca7ef262ece356b8d81fd794"
-
 "@bower_components/angular-ui-select2@angular-ui/ui-select2#^0.0.5":
   version "0.0.5"
   resolved "https://codeload.github.com/angular-ui/ui-select2/tar.gz/fb5a7c4abef68b98445e4ea1a0232905a407757d"
@@ -238,6 +234,11 @@ angular-resource@1.4.7:
   version "1.4.7"
   resolved "https://registry.yarnpkg.com/angular-resource/-/angular-resource-1.4.7.tgz#6371281f21447378ab81d40895dfad5e34a0d792"
   integrity sha1-Y3EoHyFEc3irgdQIld+tXjSg15I=
+
+angular-route@1.3.20:
+  version "1.3.20"
+  resolved "https://registry.yarnpkg.com/angular-route/-/angular-route-1.3.20.tgz#13a75cffed7a4a787ead775023608f3bde06e194"
+  integrity sha1-E6dc/+16Snh+rXdQI2CPO94G4ZQ=
 
 angular-sanitize@1.4.7:
   version "1.4.7"

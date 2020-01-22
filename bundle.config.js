@@ -43,7 +43,7 @@ module.exports = {
         npm("/angular-messages/angular-messages.min.js"),
         bower("/angular-ui-tree/dist/angular-ui-tree.min.js"),
         bower("/angular-ui-tinymce/src/tinymce.js"),
-        bower("/angular-route/angular-route.js"),
+        npm("/angular-route/angular-route.js"),
         bower("/ngstorage/ngstorage.js"),
         npm("/angular-base64/angular-base64.js"),
         bower("/oidc-angular/oidc-angular.js"),
