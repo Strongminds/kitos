@@ -45,19 +45,9 @@
     "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'bower_components', 'junction') } catch (e) { }\""
   },
   "dependencies": {
-    "@bower_components/angular": "angular/bower-angular#1.4.7",
-    "@bower_components/angular-animate": "angular/bower-angular-animate#1.4.7",
-    "@bower_components/angular-base64": "ninjatronic/angular-base64#~2.0.5",
     "@bower_components/angular-bootstrap": "angular-ui/bootstrap-bower#^1.3.3",
-    "@bower_components/angular-confirm-modal": "Schlogen/angular-confirm#^1.2.6",
-    "@bower_components/angular-i18n": "angular/bower-angular-i18n#1.4.7",
     "@bower_components/angular-loading-bar": "chieffancypants/angular-loading-bar#^0.9.0",
-    "@bower_components/angular-messages": "angular/bower-angular-messages#1.4.7",
-    "@bower_components/angular-mocks": "angular/bower-angular-mocks#1.4.7",
-    "@bower_components/angular-resource": "angular/bower-angular-resource#1.4.7",
     "@bower_components/angular-route": "angular/bower-angular-route#~1.3.15",
-    "@bower_components/angular-sanitize": "angular/bower-angular-sanitize#1.4.7",
-    "@bower_components/angular-ui-router": "angular-ui/angular-ui-router-bower#^0.3.0",
     "@bower_components/angular-ui-select2": "angular-ui/ui-select2#^0.0.5",
     "@bower_components/angular-ui-tinymce": "angular-ui/ui-tinymce#^0.0.17",
     "@bower_components/angular-ui-tree": "JimLiu/angular-ui-tree#^2.22.1",
@@ -73,7 +63,17 @@
     "@bower_components/select2": "ivaynberg/select2#~3.4",
     "@bower_components/select2-bootstrap-css": "t0m/select2-bootstrap-css#^1.4.6",
     "@bower_components/tinymce": "tinymce/tinymce-dist#~4.4.3",
-    "angular-cookies": "1.4.7"
+    "angular": "1.4.7",
+    "angular-animate": "1.4.7",
+    "angular-base64": "2.0.5",
+    "angular-confirm": "1.2.6",
+    "angular-cookies": "1.4.7",
+    "angular-i18n": "1.4.7",
+    "angular-messages": "1.4.7",
+    "angular-mocks": "1.4.7",
+    "angular-resource": "1.4.7",
+    "angular-sanitize": "1.4.7",
+    "angular-ui-router": "0.3.2"
   },
   "engines": {
     "yarn": ">= 1.0.0"
