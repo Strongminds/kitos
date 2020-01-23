@@ -1184,7 +1184,6 @@
     <TypeScriptCompile Include="app\components\org\org-subnav.controller.ts" />
     <TypeScriptCompile Include="app\components\org\overview\org-overview.controller.ts" />
     <TypeScriptCompile Include="app\components\org\user\org-user.controller.ts" />
-    <TypeScriptCompile Include="app\components\it-project\angularjs-dropdown-multiselect.directive.ts" />
     <TypeScriptCompile Include="app\shared\hrefBlank.directive.ts" />
     <TypeScriptCompile Include="app\shared\limitToDots.filter.ts" />
     <TypeScriptCompile Include="app\utility\utility.ts" />
