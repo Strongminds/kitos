@@ -44,33 +44,9 @@
   dependencies:
     angular "~1"
 
-"@bower_components/bootstrap@twbs/bootstrap#~3.3.6":
-  version "3.3.7"
-  resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/0b9c4a4007c44201dce9a6cc1a38407005c26c86"
-
-"@bower_components/font-awesome@FortAwesome/Font-Awesome#^4.7.0":
-  version "4.7.0"
-  resolved "https://codeload.github.com/FortAwesome/Font-Awesome/tar.gz/a8386aae19e200ddb0f6845b5feeee5eb7013687"
-
-"@bower_components/jquery@jquery/jquery-dist#~2.2.3":
-  version "2.2.4"
-  resolved "https://codeload.github.com/jquery/jquery-dist/tar.gz/c0185ab7c75aab88762c5aae780b9d83b80eda72"
-
 "@bower_components/jsonfn-bower@robinradic/jsonfn#~0.6.2":
   version "0.6.2"
   resolved "https://codeload.github.com/robinradic/jsonfn/tar.gz/e0342bf7b1f0a1687627c53f6dc880c04cda032a"
-
-"@bower_components/lodash@lodash/lodash#4.15.0":
-  version "4.15.0"
-  resolved "https://codeload.github.com/lodash/lodash/tar.gz/40a13d4b86a14fd0fad9dca3167c5326a578e533"
-
-"@bower_components/moment@moment/moment#~2.12.0":
-  version "2.12.0"
-  resolved "https://codeload.github.com/moment/moment/tar.gz/b135bf1a6d58ff94287f0a21455bfa6a1ddc7226"
-
-"@bower_components/ngstorage@gsklee/ngStorage#~0.3.4":
-  version "0.3.11"
-  resolved "https://codeload.github.com/gsklee/ngStorage/tar.gz/253b718a0b35b044fba25c78b1b2020d672c4017"
 
 "@bower_components/oidc-angular@michaelschnyder/oidc-angular#0.0.9":
   version "0.0.0"
@@ -83,10 +59,6 @@
 "@bower_components/select2@ivaynberg/select2#~3.4":
   version "3.4.8"
   resolved "https://codeload.github.com/ivaynberg/select2/tar.gz/b5f3b2839c48c53f9641d6bb1bccafc5260c7620"
-
-"@bower_components/tinymce@tinymce/tinymce-dist#~4.4.3":
-  version "4.4.3"
-  resolved "https://codeload.github.com/tinymce/tinymce-dist/tar.gz/5d763d8b00bf7bb0f5020b5e9a6e7a602fefa8ac"
 
 "@gulp-sourcemaps/identity-map@1.X":
   version "1.0.2"
@@ -598,6 +570,11 @@ blocking-proxy@^1.0.0:
   integrity sha512-KE8NFMZr3mN2E0HcvCgRtX7DjhiIQrwle+nSVJVC/yqFb9+xznHl2ZcoBp2L9qzkI4t4cBFJ1efXF8Dwi132RA==
   dependencies:
     minimist "^1.2.0"
+
+bootstrap@3.3.7:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.3.7.tgz#5a389394549f23330875a3b150656574f8a9eb71"
+  integrity sha1-WjiTlFSfIzMIdaOxUGVldPip63E=
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -1527,6 +1504,11 @@ flush-write-stream@^1.0.2:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
+font-awesome@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"
+  integrity sha1-j6jPBBGhoxr9B7BtKQK7n8gVoTM=
+
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -2360,6 +2342,11 @@ jasminewd2@^2.1.0:
   resolved "https://registry.yarnpkg.com/jasminewd2/-/jasminewd2-2.2.0.tgz#e37cf0b17f199cce23bea71b2039395246b4ec4e"
   integrity sha1-43zwsX8ZnM4jvqcbIDk5Uka07E4=
 
+jquery@2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.2.4.tgz#2c89d6889b5eac522a7eea32c14521559c6cbf02"
+  integrity sha1-LInWiJterFIqfuoywUUhVZxsvwI=
+
 js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -2591,6 +2578,11 @@ lodash.uniq@^4.3.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
+lodash@4.15.0:
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.15.0.tgz#3162391d8f0140aa22cf8f6b3c34d6b7f63d3aa9"
+  integrity sha1-MWI5HY8BQKoiz49rPDTWt/Y9Oqk=
+
 lodash@^4.17.14, lodash@^4.17.15:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
@@ -2756,6 +2748,11 @@ mkdirp@~0.3.5:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.3.5.tgz#de3e5f8961c88c787ee1368df849ac4413eca8d7"
   integrity sha1-3j5fiWHIjHh+4TaN+EmsRBPsqNc=
 
+moment@2.12.0:
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.12.0.tgz#dc2560d19838d6c0731b1a6afa04675264d360d6"
+  integrity sha1-3CVg0Zg41sBzGxpq+gRnUmTTYNY=
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -2807,6 +2804,11 @@ next-tick@1, next-tick@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
+
+ngstorage@0.3.11:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/ngstorage/-/ngstorage-0.3.11.tgz#1637c45b872d909d9cc7e18b374898d50b2e844f"
+  integrity sha1-FjfEW4ctkJ2cx+GLN0iY1QsuhE8=
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -3930,6 +3932,11 @@ timers-ext@^0.1.5:
   dependencies:
     es5-ext "~0.10.46"
     next-tick "1"
+
+tinymce@~4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-4.4.3.tgz#63df0fb3ff90aedab506b7c451034bb5ea192cb1"
+  integrity sha1-Y98Ps/+Qrtq1BrfEUQNLteoZLLE=
 
 tmp@0.0.30:
   version "0.0.30"

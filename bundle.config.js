@@ -4,17 +4,17 @@ module.exports = {
     // library script bundle
     // not minified!
     librarySrc: [
-        bower("/lodash/dist/lodash.min.js"),
-        bower("/jquery/dist/jquery.min.js"),
+        npm("/lodash/lodash.min.js"),
+        npm("/jquery/dist/jquery.min.js"),
         bower("/select2/select2.min.js"),
         bower("/select2/select2_locale_da.js"),
-        bower("/moment/min/moment.min.js"),
+        npm("/moment/min/moment.min.js"),
         bower("/jsonfn-bower/jsonfn.min.js"),
-        bower("/tinymce/tinymce.js"),
-        bower("/tinymce/plugins/image/plugin.min.js"),
-        bower("/tinymce/plugins/code/plugin.min.js"),
-        bower("/tinymce/plugins/link/plugin.min.js"),
-        bower("/tinymce/themes/modern/theme.min.js")
+        npm("/tinymce/tinymce.js"),
+        npm("/tinymce/plugins/image/plugin.min.js"),
+        npm("/tinymce/plugins/code/plugin.min.js"),
+        npm("/tinymce/plugins/link/plugin.min.js"),
+        npm("/tinymce/themes/modern/theme.min.js")
     ],
     libraryBundle: "library-bundle.min.js",
 
@@ -23,8 +23,8 @@ module.exports = {
         bower("/select2-bootstrap-css/select2-bootstrap.min.css"),
         bower("/angular-loading-bar/build/loading-bar.min.css"),
         bower("/angular-ui-tree/dist/angular-ui-tree.min.css"),
-        bower("/tinymce/skins/lightgray/skin.min.css"),
-        bower("/tinymce/skins/lightgray/content.min.css")
+        npm("/tinymce/skins/lightgray/skin.min.css"),
+        npm("/tinymce/skins/lightgray/content.min.css")
     ],
 
     // angular script bundle
@@ -44,7 +44,7 @@ module.exports = {
         bower("/angular-ui-tree/dist/angular-ui-tree.min.js"),
         bower("/angular-ui-tinymce/src/tinymce.js"),
         npm("/angular-route/angular-route.js"),
-        bower("/ngstorage/ngstorage.js"),
+        npm("/ngstorage/ngstorage.js"),
         npm("/angular-base64/angular-base64.js"),
         bower("/oidc-angular/oidc-angular.js"),
         npm("/angular-cookies/angular-cookies.min.js")
@@ -71,12 +71,12 @@ module.exports = {
 
     // font bundle
     fontSrc: [
-        bower("/bootstrap/dist/fonts/*.*"),
-        bower("/font-awesome/fonts/*.*")
+        npm("/bootstrap/dist/fonts/*.*"),
+        npm("/font-awesome/fonts/*.*")
     ],
 
     tinyMCEFontSrc: [
-        bower("/tinymce/skins/lightgray/fonts/*.*")
+        npm("/tinymce/skins/lightgray/fonts/*.*")
     ],
 
     // assets
