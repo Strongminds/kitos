@@ -45,10 +45,7 @@
     "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'bower_components', 'junction') } catch (e) { }\""
   },
   "dependencies": {
-    "@bower_components/jsonfn-bower": "robinradic/jsonfn#~0.6.2",
     "@bower_components/oidc-angular": "michaelschnyder/oidc-angular#0.0.9",
-    "@bower_components/select2": "ivaynberg/select2#~3.4",
-    "@bower_components/select2-bootstrap-css": "t0m/select2-bootstrap-css#^1.4.6",
     "angular": "1.4.7",
     "angular-animate": "1.4.7",
     "angular-base64": "2.0.5",
@@ -69,9 +66,12 @@
     "bootstrap": "3.3.7",
     "font-awesome": "^4.7.0",
     "jquery": "2.2.4",
+    "json-fn": "^1.1.1",
     "lodash": "4.15.0",
     "moment": "2.12.0",
     "ngstorage": "0.3.11",
+    "select2": "^3.5.1",
+    "select2-bootstrap-css": "^1.4.6",
     "tinymce": "~4.4.3"
   },
   "engines": {

@@ -6,10 +6,10 @@ module.exports = {
     librarySrc: [
         npm("/lodash/lodash.min.js"),
         npm("/jquery/dist/jquery.min.js"),
-        bower("/select2/select2.min.js"),
-        bower("/select2/select2_locale_da.js"),
+        npm("/select2/select2.js"),
+        npm("/select2/select2_locale_da.js"),
         npm("/moment/min/moment.min.js"),
-        bower("/jsonfn-bower/jsonfn.min.js"),
+        npm("/json-fn/jsonfn.min.js"),
         npm("/tinymce/tinymce.js"),
         npm("/tinymce/plugins/image/plugin.min.js"),
         npm("/tinymce/plugins/code/plugin.min.js"),
@@ -19,8 +19,8 @@ module.exports = {
     libraryBundle: "library-bundle.min.js",
 
     libraryStylesSrc: [
-        bower("/select2/select2.css"),
-        bower("/select2-bootstrap-css/select2-bootstrap.min.css"),
+        npm("/select2/select2.css"),
+        npm("/select2-bootstrap-css/select2-bootstrap.min.css"),
         npm("/angular-loading-bar/build/loading-bar.min.css"),
         npm("/angular-ui-tree/dist/angular-ui-tree.min.css"),
         npm("/tinymce/skins/lightgray/skin.min.css"),
@@ -82,8 +82,8 @@ module.exports = {
 
     // assets
     assetsSrc: [
-        bower("/select2/*.png"),
-        bower("/select2/*.gif")
+        npm("/select2/*.png"),
+        npm("/select2/*.gif")
     ],
 
     // custom style bundle
