@@ -16,8 +16,8 @@
         }
     ]);
 
-    app.controller("home.IndexCtrl", ["$rootScope", "$scope", "$http", "$state", "$stateParams", "notify", "userService", "texts", "navigationService", "$sce", "$auth", "$location",
-        ($rootScope, $scope, $http, $state, $stateParams, notify, userService, texts, navigationService, $sce, $auth, $location) => {
+    app.controller("home.IndexCtrl", ["$rootScope", "$scope", "$http", "$state", "$stateParams", "notify", "userService", "texts", "navigationService", "$sce", "$location",
+        ($rootScope, $scope, $http, $state, $stateParams, notify, userService, texts, navigationService, $sce, $location) => {
             $rootScope.page.title = "Index";
             $rootScope.page.subnav = [];
             $scope.texts = [];
@@ -51,11 +51,6 @@
             if (token) {
                 userService.loginSSO(token).then(user => $scope.loginResult(user));
             }
-
-            $scope.SSOLogin = () => {
-                notify.addInfoMessage("Should do redirect to OS2SSO...");
-                $auth.signIn();
-            };
 
             // login
             $scope.submitLogin = () => {

@@ -38,7 +38,6 @@ module.exports = {
         npm("/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"),
         npm("/angular-ui-select2/src/select2.js"),
         npm("/angular-loading-bar/build/loading-bar.min.js"),
-        //bower("/angularjs-dropdown-multiselect/dist/angularjs-dropdown-multiselect.min.js"),
         npm("/angular-confirm/angular-confirm.min.js"),
         npm("/angular-messages/angular-messages.min.js"),
         npm("/angular-ui-tree/dist/angular-ui-tree.min.js"),
@@ -46,7 +45,6 @@ module.exports = {
         npm("/angular-route/angular-route.js"),
         npm("/ngstorage/ngstorage.js"),
         npm("/angular-base64/angular-base64.js"),
-        bower("/oidc-angular/oidc-angular.js"),
         npm("/angular-cookies/angular-cookies.min.js")
     ],
     angularBundle: "angular-bundle.min.js",
@@ -100,7 +98,6 @@ module.exports = {
 
     script: script,
     content: content,
-    bower: bower,
     npm: npm
 };
 
@@ -111,10 +108,6 @@ function script(file) {
 
 function content(file) {
     return paths.source + "/Content" + file;
-}
-
-function bower(file) {
-    return paths.bowerComponents + "/" + file;
 }
 
 function npm(file) {

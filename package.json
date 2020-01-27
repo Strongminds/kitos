@@ -41,11 +41,7 @@
     "tslint": "^5.20.1",
     "typescript": "^2.0.6"
   },
-  "scripts": {
-    "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'bower_components', 'junction') } catch (e) { }\""
-  },
   "dependencies": {
-    "@bower_components/oidc-angular": "michaelschnyder/oidc-angular#0.0.9",
     "angular": "1.4.7",
     "angular-animate": "1.4.7",
     "angular-base64": "2.0.5",
