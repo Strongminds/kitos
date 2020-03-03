@@ -1,5 +1,5 @@
 ﻿using System.Web.Http;
-using System.Web.OData;
+using Microsoft.AspNet.OData;
 using Core.DomainServices;
 using System.Net;
 using System;
@@ -9,6 +9,7 @@ using Core.ApplicationServices.Authorization.Permissions;
 using Core.DomainModel.Result;
 using Core.DomainServices.Authorization;
 using Core.DomainServices.Queries;
+using Microsoft.AspNet.OData;
 using Presentation.Web.Infrastructure.Authorization.Controller.Crud;
 using Presentation.Web.Infrastructure.Authorization.Controller.General;
 

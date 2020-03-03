@@ -1,7 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using Hangfire;
-using System.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 using Presentation.Web.Infrastructure.Middleware;
 using Presentation.Web.Infrastructure.Model.Authentication;
 

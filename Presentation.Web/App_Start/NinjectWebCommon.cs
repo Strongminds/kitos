@@ -52,6 +52,7 @@ using Microsoft.Owin;
 using Presentation.Web.Infrastructure.Factories.Authentication;
 using Serilog;
 using Infrastructure.Services.DomainEvents;
+using Ninject.Web.Common.WebHost;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(NinjectWebCommon), "Start")]
 [assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(NinjectWebCommon), "Stop")]
