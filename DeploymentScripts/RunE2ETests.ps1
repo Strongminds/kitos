@@ -36,7 +36,7 @@ param(
     }
     
     try {
-        Write-Host "Starting selenium server"
+        Write-Host "Starting selenium server with chrome version 80.0.3987.106"
 
         $app = Start-Process powershell.exe -ArgumentList "webdriver-manager start --version.chrome 80.0.3987.106" -PassThru -WindowStyle Hidden
     
