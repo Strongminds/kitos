@@ -38,7 +38,7 @@ param(
     try {
         Write-Host "Starting selenium server"
 
-        $app = Start-Process powershell.exe -ArgumentList "webdriver-manager start" -PassThru -WindowStyle Hidden
+        $app = Start-Process powershell.exe -ArgumentList "webdriver-manager start --version.chrome 80.0.3987.106" -PassThru -WindowStyle Hidden
     
         Write-Host "Starting E2E test. This might take a while..."
 		switch($testType){
