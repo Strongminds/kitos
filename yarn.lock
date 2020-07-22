@@ -82,10 +82,6 @@
   version "2.22.6"
   resolved "https://codeload.github.com/JimLiu/angular-ui-tree/tar.gz/c37b032def694863e8db1936e9003e1171477921"
 
-"@bower_components/angular@angular/bower-angular#1.4.7":
-  version "1.4.7"
-  resolved "https://codeload.github.com/angular/bower-angular/tar.gz/6bdc6b4855b416bf029105324080ca7d6aca0e9f"
-
 "@bower_components/angularjs-dropdown-multiselect@dotansimha/angularjs-dropdown-multiselect#^1.5.2":
   version "1.11.8"
   resolved "https://codeload.github.com/dotansimha/angularjs-dropdown-multiselect/tar.gz/98abfaecfa8d3b23f39daf9db7f4295d04fec1fe"
@@ -245,6 +241,11 @@ angular-cookies@1.4.7:
   version "1.4.7"
   resolved "https://registry.yarnpkg.com/angular-cookies/-/angular-cookies-1.4.7.tgz#03c1ead86cc7f80c322e43ed47106a63cb94daf7"
   integrity sha1-A8Hq2GzH+AwyLkPtRxBqY8uU2vc=
+
+angular@1.5:
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
+  integrity sha1-jFunOG8VllyazzQp9ogVU6raMNY=
 
 "angular@>= 1.0.8", angular@^1.0.8, angular@~1:
   version "1.7.9"

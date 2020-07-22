@@ -30,7 +30,7 @@ module.exports = {
     // angular script bundle
     // not minified
     angularSrc: [
-        bower("/angular/angular.min.js"),
+        npm("/angular/angular.min.js"),
         bower("/angular-i18n/angular-locale_da-dk.js"),
         bower("/angular-animate/angular-animate.min.js"),
         bower("/angular-sanitize/angular-sanitize.min.js"),
