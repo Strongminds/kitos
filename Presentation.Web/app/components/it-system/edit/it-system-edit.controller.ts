@@ -66,11 +66,10 @@
 
                     var msg = notify.addInfoMessage("Deaktiverer IT System...", false);
                     $http.patch("odata/ItSystems(" + itSystem.id + ")", payload)
-                        .success(result => {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("IT System er deaktiveret!");
                             $state.reload();
-                        })
-                        .error((data, status) => {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke deaktivere IT System!");
                         });
                 }
@@ -84,11 +83,10 @@
 
                     var msg = notify.addInfoMessage("Aktiverer IT System...", false);
                     $http.patch("odata/ItSystems(" + itSystem.id + ")", payload)
-                        .success(result => {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("IT System er aktiveret!");
                             $state.reload();
-                        })
-                        .error((data, status) => {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke aktivere IT System!");
                         });
                 }
@@ -101,12 +99,11 @@
 
                     var msg = notify.addInfoMessage("Sletter IT System...", false);
                     $http.delete("api/itsystem/" + systemId + "?organizationId=" + user.currentOrganizationId)
-                        .success(result => {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("IT System  er slettet!");
                             $state.go("it-system.catalog");
-                        })
-                        .error((data, status) => {
-                            msg.toErrorMessage(systemDeletedErrorResponseTranslationService.translateResponse(status , data.response));
+                        }, function onError(response) {
+                            msg.toErrorMessage(systemDeletedErrorResponseTranslationService.translateResponse(response.status , response.data.response));
                         });
                 }
             }

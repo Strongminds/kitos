@@ -27,11 +27,10 @@
                     var projectId = $state.params.id;
                     var msg = notify.addInfoMessage("Sletter IT Projektet...", false);
                     $http.delete("api/itproject/" + projectId + "?organizationId=" + user.currentOrganizationId)
-                        .success(function(result) {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("IT Projektet er slettet!");
                             $state.go("it-project.overview");
-                        })
-                        .error(function() {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke slette IT Projektet!");
                         });
                 }

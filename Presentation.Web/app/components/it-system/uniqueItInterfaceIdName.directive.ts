@@ -17,11 +17,10 @@
                             var itInterfaceId = scope.createForm.itInterfaceId.$viewValue;
 
                             $http.get('/api/itinterface?checkitinterfaceid=' + itInterfaceId + '&checkname=' + name + '&orgId=' + user.currentOrganizationId)
-                                .success(function(data) {
+                                .then(function onSuccess(response) {
                                     scope.uniqueConstraintError = false;
                                     deffered.resolve();
-                                })
-                                .error(function(data) {
+                                }, function onError(response) {
                                     scope.uniqueConstraintError = true;
                                     deffered.reject();
                                 });

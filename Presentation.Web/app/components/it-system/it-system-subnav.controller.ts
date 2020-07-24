@@ -33,12 +33,11 @@
                     var usageId = $state.params.id;
                     var msg = notify.addInfoMessage('Sletter IT System anvendelsen...', false);
                     $http.delete('api/itSystemUsage/' + usageId + '?organizationId=' + user.currentOrganizationId)
-                        .success(function (result) {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage('IT System anvendelsen er slettet!');
                             $state.go('it-system.overview');
-                        })
-                        .error(function (error, status) {
-                            if (status === 403)
+                        }, function onError(response) {
+                                if (response.status === 403)
                                 msg.toErrorMessage('Fejl! Du har ikke tilladelse!');
                             else
                                 msg.toErrorMessage("Fejl! Kunne ikke slette IT System anvendelsen!");
@@ -52,14 +51,13 @@
                     var interfaceId = $state.params.id;
                     var msg = notify.addInfoMessage('Sletter Snitflade...', false);
                     $http.delete('api/itinterface/' + interfaceId + '?organizationId=' + user.currentOrganizationId)
-                        .success(function (result) {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage('Snitflade er slettet!');
                             $state.go('it-system.interfaceCatalog');
-                        })
-                        .error(function (data, status) {
-                            if (status == 409)
+                        }, function onError(response) {
+                                if (response.status == 409)
                                 msg.toErrorMessage('Fejl! Kan ikke slette snitflade, den er tilknyttet et IT System, som er i lokal anvendelse!');
-                            else if (status === 403)
+                                else if (response.status === 403)
                                 msg.toErrorMessage('Fejl! Du har ikke tilladelse!');
                             else
                                 msg.toErrorMessage('Fejl! Kunne ikke slette Snitfladen!');

@@ -485,11 +485,11 @@
 
                         var msg = self.notify.addInfoMessage("Opretter snitflade...", false);
                         self.$http.post("api/itinterface", payload)
-                            .success(function (result) {
+                            .then(function onSuccess(response) {
                                 msg.toSuccessMessage("En ny snitflade er oprettet!");
-                                var interfaceId = result.response.id;
+                                var interfaceId = response.data.response.id;
                                 $modalInstance.close(interfaceId);
-                            }).error(function () {
+                            }, function onError(response) {
                                 msg.toErrorMessage("Fejl! Kunne ikke oprette snitflade!");
                             });
                     };

@@ -18,22 +18,20 @@
         var usageId = $stateParams.id;
         $scope.save = function () {
             $http.post("api/itproject/" + $scope.selectedProject.id + "?usageId=" + usageId + "&organizationId=" + user.currentOrganizationId)
-                .success(function () {
+                .then(function onSuccess(response) {
                     notify.addSuccessMessage("Projektet er tilknyttet.");
                     reload();
-                })
-                .error(function () {
+                }, function onError(response) {
                     notify.addErrorMessage("Fejl! Kunne ikke tilknytte projektet!");
                 });
         };
 
         $scope.delete = function(projectId) {
             $http.delete("api/itproject/" + projectId + "?usageId=" + usageId + "&organizationId=" + user.currentOrganizationId)
-                .success(function() {
+                .then(function onSuccess(response) {
                     notify.addSuccessMessage("Projektets tilknyttning er fjernet.");
                     reload();
-                })
-                .error(function() {
+                }, function onError(response) {
                     notify.addErrorMessage("Fejl! Kunne ikke fjerne projektets tilknyttning!");
                 });
         };

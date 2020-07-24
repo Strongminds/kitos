@@ -110,6 +110,7 @@
         };
 
         private loadStatues = () => {
+            var self = this;
             var url = `api/itProjectStatus/${this.project.id}?project=true`;
 
             url += `&skip=${this.pagination.skip}`;
@@ -128,19 +129,18 @@
 
             this.milestonesActivities = [];
             this.$http.get(url)
-                .success((result, status, headers) => {
-                    var paginationHeader = JSON.parse(headers("X-Pagination"));
-                    this.totalCount = paginationHeader.TotalCount;
+                .then(function onSuccess(response) {
+                    var paginationHeader = JSON.parse(response.headers("X-Pagination"));
+                    self.totalCount = paginationHeader.TotalCount;
 
-                    _.each(result.response, (value) => {
-                        this.addStatus(value, null);
+                    _.each(response.data.response, (value) => {
+                        self.addStatus(value, null);
                     });
 
-                })
-                .error((data, status) => {
+                }, function onError(response) {
                     // only display error when an actual error
                     // 404 just says that there are no statuses
-                    if (status != 404) {
+                    if (response.status != 404) {
                         this.notify.addErrorMessage("Kunne ikke hente projekter!");
                     }
                 });
@@ -181,12 +181,13 @@
 
             activity.delete = () => {
                 var msg = this.notify.addInfoMessage("Sletter...");
-                this.$http.delete(activity.updateUrl + "?organizationId=" + this.user.currentOrganizationId).success(() => {
-                    activity.show = false;
-                    msg.toSuccessMessage("Slettet!");
-                }).error(() => {
-                    msg.toErrorMessage("Fejl! Kunne ikke slette!");
-                });
+                this.$http.delete(activity.updateUrl + "?organizationId=" + this.user.currentOrganizationId)
+                    .then(function onSuccess(response) {
+                        activity.show = false;
+                        msg.toSuccessMessage("Slettet!");
+                    }, function onError(response) {
+                        msg.toErrorMessage("Fejl! Kunne ikke slette!");
+                    });
             };
 
             if (!skipAdding)

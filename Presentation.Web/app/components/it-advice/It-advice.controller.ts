@@ -343,7 +343,7 @@
                                     url: url,
                                     data: payload,
                                     type: "application/json"
-                                }).success(function () {
+                                }).then(function onSuccess(response) {
                                     if (action === "POST") {
                                         notify.addSuccessMessage("Advisen er oprettet!");
                                         $scope.$close(true);
@@ -352,7 +352,7 @@
                                     if (action === "PATCH") {
                                         notify.addSuccessMessage("Advisen er opdateret!");
                                     }
-                                }).error(function () {
+                                }, function onError(response) {
                                     if (action === "POST") {
                                         notify.addErrorMessage("Fejl! Kunne ikke oprette modalen!");
                                     }

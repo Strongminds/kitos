@@ -31,10 +31,10 @@
 
                 stakeholder.delete = function() {
                     var msg = notify.addInfoMessage("Sletter...");
-                    $http.delete(stakeholder.updateUrl + "?organizationId=" + user.currentOrganizationId).success(function () {
+                    $http.delete(stakeholder.updateUrl + "?organizationId=" + user.currentOrganizationId).then(function onSuccess(response) {
                         stakeholder.show = false;
                         msg.toSuccessMessage("Rækken er slettet");
-                    }).error(function() {
+                    }, function onError(response) {
                         msg.toErrorMessage("Kunne ikke slette!");
                     });
                 };
@@ -68,11 +68,11 @@
                 };
 
                 var msg = notify.addInfoMessage("Gemmer... ");
-                $http.post("api/stakeholder", data).success(function(result) {
+                $http.post("api/stakeholder", data).then(function onSuccess(response) {
                     msg.toSuccessMessage("Rækken er tilføjet.");
-                    addStakeholder(result.response);
+                    addStakeholder(response.data.response);
                     resetNew();
-                }).error(function() {
+                }, function onError(response) {
                     msg.toErrorMessage("Fejl! Kunne ikke gemme!");
                 });
             };

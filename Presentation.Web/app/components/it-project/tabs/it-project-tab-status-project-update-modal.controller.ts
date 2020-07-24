@@ -89,10 +89,10 @@
                         method: "POST",
                         url: "odata/ItProjectStatusUpdates",
                         data: payload
-                    }).success(function () {
+                    }).then(function onSuccess(response) {
                         msg.toSuccessMessage("Ændringerne er gemt!");
                         $scope.$close(true);
-                    }).error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Ændringerne kunne ikke gemmes!");
                     });
                 };

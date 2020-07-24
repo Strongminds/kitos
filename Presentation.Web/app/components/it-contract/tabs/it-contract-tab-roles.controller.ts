@@ -76,24 +76,24 @@
                     "userId": uId
                 };
 
-                $http.post("api/itcontractright/" + contractId + '?organizationId=' + user.currentOrganizationId, data).success(function (result) {
-                    notify.addSuccessMessage(result.response.user.fullName + " er knyttet i rollen");
+                $http.post("api/itcontractright/" + contractId + '?organizationId=' + user.currentOrganizationId, data).then(function onSuccess(response) {
+                    notify.addSuccessMessage(response.data.response.user.fullName + " er knyttet i rollen");
 
                     $scope.rights.push({
-                        objectId: result.response.objectId,
-                        roleId: result.response.roleId,
-                        userId: result.response.userId,
-                        user: result.response.user,
-                        userForSelect: { id: result.response.userId, text: result.response.user.fullName },
-                        roleForSelect: result.response.roleId,
-                        role: _.find(localItContractRoles, { Id: result.response.roleId }),
+                        objectId: response.data.response.objectId,
+                        roleId: response.data.response.roleId,
+                        userId: response.data.response.userId,
+                        user: response.data.response.user,
+                        userForSelect: { id: response.data.response.userId, text: response.data.response.user.fullName },
+                        roleForSelect: response.data.response.roleId,
+                        role: _.find(localItContractRoles, { Id: response.data.response.roleId }),
                         show: true
                     });
 
                     $scope.newRole = 1;
                     $scope.selectedUser = "";
 
-                }).error(function (result) {
+                }, function onError(response) {
 
                     notify.addErrorMessage('Fejl!');
                 });
@@ -104,10 +104,10 @@
                 var rId = right.roleId;
                 var uId = right.userId;
 
-                $http.delete("api/itcontractright/" + contractId + "?rId=" + rId + "&uId=" + uId + '&organizationId=' + user.currentOrganizationId).success(function (deleteResult) {
+                $http.delete("api/itcontractright/" + contractId + "?rId=" + rId + "&uId=" + uId + '&organizationId=' + user.currentOrganizationId).then(function onSuccess(response) {
                     right.show = false;
                     notify.addSuccessMessage('Rollen er slettet!');
-                }).error(function (deleteResult) {
+                }, function onError(response) {
 
                     notify.addErrorMessage('Kunne ikke slette rollen!');
                 });
@@ -137,18 +137,18 @@
 
                 //otherwise, we should delete the old entry, then add a new one
 
-                $http.delete("api/itcontractright/" + contractId + "?rId=" + rIdOld + "&uId=" + uIdOld + '&organizationId=' + user.currentOrganizationId).success(function (deleteResult) {
+                $http.delete("api/itcontractright/" + contractId + "?rId=" + rIdOld + "&uId=" + uIdOld + '&organizationId=' + user.currentOrganizationId).then(function onSuccess(response) {
 
                     var data = {
                         "roleId": rIdNew,
                         "userId": uIdNew
                     };
 
-                    $http.post("api/itcontractright/" + contractId + '?organizationId=' + user.currentOrganizationId, data).success(function (result) {
+                    $http.post("api/itcontractright/" + contractId + '?organizationId=' + user.currentOrganizationId, data).then(function onSuccess(innerResponse) {
 
-                        right.roleId = result.response.roleId;
-                        right.user = result.response.user;
-                        right.userId = result.response.userId;
+                        right.roleId = innerResponse.data.response.roleId;
+                        right.user = innerResponse.data.response.user;
+                        right.userId = innerResponse.data.response.userId;
 
                         right.role = _.find(localItContractRoles, { Id: right.roleId }),
 
@@ -156,7 +156,7 @@
 
                         notify.addSuccessMessage(right.user.fullName + " er knyttet i rollen");
 
-                    }).error(function (result) {
+                    }, function onError(innerResponse) {
 
                         //we successfully deleted the old entry, but didn't add a new one
                         right.show = false;
@@ -164,7 +164,7 @@
                         notify.addErrorMessage('Fejl!');
                     });
 
-                }).error(function (deleteResult) {
+                }, function onError(response) {
 
                     //couldn't delete the old entry, just reset select options
                     right.userForSelect = { id: right.user.id, text: right.user.fullName };

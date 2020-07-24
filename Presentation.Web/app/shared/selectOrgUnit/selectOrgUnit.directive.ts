@@ -77,7 +77,7 @@
 
                     //loads the org unit roots
                     userService.getUser().then(function(user) {
-                        $http.get('api/organizationUnit?organization=' + user.currentOrganizationId).success(function(result) {
+                        $http.get('api/organizationUnit?organization=' + user.currentOrganizationId).then(function onSuccess(response) {
 
                             //recursive function for added indentation,
                             //and pushing org units to the list in the right order (depth-first)
@@ -96,7 +96,7 @@
                                 });
                             }
 
-                            visit(result.response, "");
+                            visit(response.data, "");
 
                             scope.select.isReady = true;
                         });

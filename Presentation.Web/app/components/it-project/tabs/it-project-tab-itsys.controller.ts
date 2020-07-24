@@ -26,22 +26,20 @@
 
             $scope.save = function () {
                 $http.post("api/itproject/" + projectId + "?usageId=" + $scope.selectedSystemUsage.id + "&organizationId=" + user.currentOrganizationId)
-                    .success(function () {
+                    .then(function onSuccess(response) {
                         notify.addSuccessMessage("Systemet er tilknyttet.");
                         reload();
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         notify.addErrorMessage("Fejl! Kunne ikke tilknytte systemet!");
                     });
             };
 
             $scope.delete = function(usageId) {
                 $http.delete("api/itproject/" + projectId + "?usageId=" + usageId + "&organizationId=" + user.currentOrganizationId)
-                    .success(function() {
+                    .then(function onSuccess(response) {
                         notify.addSuccessMessage("Systemets tilknyttning er fjernet.");
                         reload();
-                    })
-                    .error(function() {
+                    }, function onError(response) {
                         notify.addErrorMessage("Fejl! Kunne ikke fjerne systemets tilknyttning!");
                     });
             };

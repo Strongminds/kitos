@@ -30,8 +30,8 @@
                 $scope.globalAdmins.push(admin);
             }
 
-            $http.get("api/globaladmin").success(result => {
-                _.each(result.response, pushAdmin);
+            $http.get("api/globaladmin").then( function onSuccess(response) {
+                _.each(response.data.response, pushAdmin);
             });
 
             function newGlobalAdmin() {
@@ -48,13 +48,13 @@
 
                 var msg = notify.addInfoMessage("Arbejder ...", false);
 
-                $http.post("api/globaladmin", data, { handleBusy: true }).success(result => {
+                $http.post("api/globaladmin", data, { handleBusy: true }).then(function onSuccess(response) {
                     msg.toSuccessMessage(user.text + " er blevet global administrator");
                     $scope.newUser = null;
 
-                    pushAdmin(result.response);
+                    pushAdmin(response.data.response);
 
-                }).error(result => {
+                }, function onError(response) {
                     msg.toErrorMessage("Kunne ikke gøre " + user.text + " til global administrator");
                 });
             }
@@ -70,11 +70,11 @@
                 var uId = admin.user.id;
 
                 var msg = notify.addInfoMessage("Arbejder ...", false);
-                $http.delete("api/globaladmin?userId=" + uId).success(function(deleteResult) {
+                $http.delete("api/globaladmin?userId=" + uId).then(function onSuccess(response) {
                     admin.show = false;
                     msg.toSuccessMessage(admin.user.name + " er ikke længere global administrator");
 
-                }).error(function(deleteResult) {
+                }, function onError(response) {
                     msg.toErrorMessage("Kunne ikke fjerne " + admin.user.name + " som global administrator");
                 });
             };
@@ -102,16 +102,16 @@
                 //otherwise, we should delete the old entry, then add a new one
                 var msg = notify.addInfoMessage("Arbejder ...", false);
 
-                $http.delete("api/globaladmin?userId=" + uIdOld, { handleBusy: true }).success(function(deleteResult) {
+                $http.delete("api/globaladmin?userId=" + uIdOld, { handleBusy: true }).then(function onSuccess(response) {
                     var data = {
                         userId: uIdNew
                     };
 
-                    $http.post("api/globaladmin", data, { handleBusy: true }).success(function(result) {
+                    $http.post("api/globaladmin", data, { handleBusy: true }).then(function onSuccess(innerResponse) {
                         msg.toSuccessMessage(user.text + " er blevet global administrator");
                         $scope.newUser = null;
 
-                        var newUser = result.response;
+                        var newUser = innerResponse.data.response;
 
                         admin.user = newUser;
                         admin.userForSelect = {
@@ -122,13 +122,13 @@
 
                         admin.edit = false;
 
-                    }).error(function(result) {
+                    }, function onError(innerResponse) {
                         //we successfully deleted the old entry, but didn't add a new one
                         admin.show = false;
 
                         msg.toErrorMessage("Kunne ikke gøre " + user.text + " til global administrator");
                     });
-                }).error(function(deleteResult) {
+                }, function onError(response) {
                     //couldn't delete the old entry, just reset select options
                     admin.userForSelect = { id: admin.user.id, text: admin.user.name };
 

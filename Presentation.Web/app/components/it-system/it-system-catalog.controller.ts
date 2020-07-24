@@ -728,14 +728,14 @@
 
                         var msg = self.notify.addInfoMessage("Opretter system...", false);
                         self.$http.post("api/itsystem", payload)
-                            .success(function (result: any) {
+                            .then(function onSuccess(response: any) {
                                 msg.toSuccessMessage("Et nyt system er oprettet!");
-                                var systemId = result.response.id;
+                                var systemId = response.data.response.id;
                                 $modalInstance.close(systemId);
                                 if (systemId) {
                                     self.$state.go("it-system.edit.main", { id: systemId });
                                 }
-                            }).error(function () {
+                            }, function onError(response) {
                                 msg.toErrorMessage("Fejl! Kunne ikke oprette et nyt system!");
                             });
                     };
@@ -750,15 +750,15 @@
 
                         var msg = self.notify.addInfoMessage("Opretter system...", false);
                         self.$http.post("api/itsystem", payload)
-                            .success(function (result: any) {
+                            .then(function onSuccess(response: any) {
                                 msg.toSuccessMessage("Et nyt system er oprettet!");
-                                var systemId = result.response.id;
+                                var systemId = response.data.response.id;
                                 $modalInstance.close(systemId);
                                 if (systemId) {
                                     self.$state.reload();
                                 }
 
-                            }).error(function () {
+                            }, function onError(response) {
                                 msg.toErrorMessage("Fejl! Kunne ikke oprette et nyt system!");
                             });
                     };
@@ -892,8 +892,8 @@
             this.newItSystemObject = this.getItSystemSelection();
             if (this.newItSystemObject != null) {
                 this.getMigrationReport(this.oldItSystemUsageId, this.newItSystemObject.id)
-                    .success(dto => {
-                        this.migrationReportDTO = dto.response;
+                    .then(function onSuccess(response){
+                        this.migrationReportDTO = response.data.response;
 
                         this.modalMigrationConsequence.setOptions({
                             close: (_) => true,
@@ -902,8 +902,7 @@
                         });
                         this.modalMigration.close();
                         this.modalMigrationConsequence.center().open();
-                    })
-                    .error(() => {
+                    }, function onError(response) {
                         this.notify.addErrorMessage("Kunne ikke oprette konsekvens-rapport for flytningen");
                     });
             }
@@ -935,12 +934,11 @@
         public performMigration = () => {
             if (this.oldItSystemName != null || this.newItSystemObject != null) {
                 this.executeMigration(this.oldItSystemUsageId, this.newItSystemObject.system.id)
-                    .success(() => {
+                    .then(function onSuccess(response) {
                         this.modalMigrationConsequence.close();
                         this.mainGrid.dataSource.fetch();
                         this.notify.addSuccessMessage("Flytning af system anvendelse lykkedes");
-                    })
-                    .error(() => {
+                    }, function onError(response) {
                         this.notify.addErrorMessage("Flytning af system anvendelse fejlede");
                     });
             }
@@ -1010,21 +1008,29 @@
 
         // adds system to usage within the current context
         private addUsage(dataItem) {
+            var self = this;
             return this.$http.post("api/itSystemUsage", {
                 itSystemId: dataItem.Id,
                 organizationId: this.user.currentOrganizationId
             })
-                .success(() => this.notify.addSuccessMessage("Systemet er taget i anvendelse"))
-                .error(() => this.notify.addErrorMessage("Systemet kunne ikke tages i anvendelse!"));
+                .then(function onSuccess(response) {
+                    self.notify.addSuccessMessage("Systemet er taget i anvendelse");
+                }, function onError(response) {
+                    self.notify.addErrorMessage("Systemet kunne ikke tages i anvendelse!");
+                });
         }
 
         // removes system from usage within the current context
         private deleteUsage(systemId) {
+            var self = this;
             var url = `api/itSystemUsage?itSystemId=${systemId}&organizationId=${this.user.currentOrganizationId}`;
 
             return this.$http.delete(url)
-                .success(() => this.notify.addSuccessMessage("Anvendelse af systemet er fjernet"))
-                .error(() => this.notify.addErrorMessage("Anvendelse af systemet kunne ikke fjernes!"));
+                .then(function onSuccess(response) {
+                    self.notify.addSuccessMessage("Anvendelse af systemet er fjernet");
+                }, function onError(response) {
+                    self.notify.addErrorMessage("Anvendelse af systemet kunne ikke fjernes!");
+                });
         }
 
         private accessModFilter = (args) => {

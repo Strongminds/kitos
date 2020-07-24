@@ -62,10 +62,10 @@
                             method: "PATCH",
                             url: `odata/ItProjectStatusUpdates(${obj.Id})`,
                             data: payload
-                        }).success(() => {
+                        }).then(function onSuccess(response) {
                             msg.toSuccessMessage("Ændringerne er gemt!");
                             $scope.$close(true);
-                        }).error(() => {
+                        }, function onError(response) {
                             msg.toErrorMessage("Ændringerne kunne ikke gemmes!");
                         });
                     }

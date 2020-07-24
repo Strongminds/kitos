@@ -70,9 +70,9 @@
                             ObjectType: "ITSYSTEMUSAGE"
                         };
 
-                        $http.post("odata/AttachedOptions/", data, { handleBusy: true }).success(result => {
+                        $http.post("odata/AttachedOptions/", data, { handleBusy: true }).then(function onSuccess(response) {
                             msg.toSuccessMessage("Feltet er Opdateret.");
-                        }).error(() => {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl!");
                         });
                     } else {
@@ -85,9 +85,9 @@
                                 optType = 2;
                                 break;
                         }
-                        $http.delete(`odata/RemoveOption(id=${optionId}, objectId=${itSystemUsage.id},type=${optType}, entityType=1)`).success(() => {
+                        $http.delete(`odata/RemoveOption(id=${optionId}, objectId=${itSystemUsage.id},type=${optType}, entityType=1)`).then(function onSuccess(response) {
                             msg.toSuccessMessage("Feltet er Opdateret.");
-                        }).error(() => {
+                        }, function onSuccess(response) {
                             msg.toErrorMessage("Fejl!");
                         });
                     }
@@ -177,22 +177,20 @@
                         DataWorkerId: $scope.selectedDataWorker.id
                     }
                     $http.post("api/UsageDataworker/", data)
-                        .success(() => {
+                        .then(function onSuccess(response) {
                             notify.addSuccessMessage("Databehandleren er tilknyttet.");
                             reload();
-                        })
-                        .error(() => {
+                        }, function onError(response) {
                             notify.addErrorMessage("Fejl! Kunne ikke tilknytte databehandleren!");
                         });
                 };
 
                 $scope.deleteDataworker = dataworkerId => {
                     $http.delete(`api/UsageDataWorker/${dataworkerId}?organizationid=${$scope.usage.organizationId}`)
-                        .success(() => {
+                        .then(function onSuccess(response) {
                             notify.addSuccessMessage("Databehandlerens tilknyttning er fjernet.");
                             reload();
-                        })
-                        .error(() => {
+                        }, function onError(response) {
                             notify.addErrorMessage("Fejl! Kunne ikke fjerne databehandlerens tilknyttning!");
                         });
                 };

@@ -62,11 +62,10 @@
                         var msg = notify.addInfoMessage("Gemmer række", false);
 
                         $http.patch("api/Reference/" + $stateParams.refId + "?organizationId=" + $stateParams.orgId, data)
-                            .success(function (result) {
+                            .then(function onSuccess(response) {
                                 msg.toSuccessMessage("Referencen er gemt");
                                 $scope.$close(true);
-                            })
-                            .error(function () {
+                            }, function onError(response) {
                                 msg.toErrorMessage("Fejl! Prøv igen");
                             });
                 };

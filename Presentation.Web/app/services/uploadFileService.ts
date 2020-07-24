@@ -18,10 +18,9 @@
                 transformRequest: angular.identity,
                 headers: { 'Content-Type': undefined }
             })
-                .success(function () {
+                .then(function onSuccess(response) {
                     msg.toSuccessMessage("fil uploaded!");
-                })
-                .error(function () {
+                }, function onError(response) {
                     msg.toErrorMessage("Fejl! Fil kunne ikke uploades!");
                 });
         }

@@ -221,12 +221,11 @@
             var msg = this.notify.addInfoMessage("Gemmer...", false);
 
             this.$http.patch(this.optionsUrl + "(" + entityId + ")", payload)
-                .success(function () {
+                .then(function onSuccess(response) {
                     msg.toSuccessMessage("Feltet er opdateret.");
                     superClass.$(`#${superClass.dirId}`).data("kendoGrid").dataSource.read();
-                })
-                .error(function (result, status) {
-                    if (status === 409) {
+                }, function onError(response) {
+                    if (response.status === 409) {
                         msg.toErrorMessage("Fejl! Feltet kunne ikke ændres da værdien den allerede findes i KITOS!");
                     } else {
                         msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");

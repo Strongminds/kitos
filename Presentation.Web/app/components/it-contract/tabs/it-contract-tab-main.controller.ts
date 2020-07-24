@@ -192,10 +192,9 @@
                 function patch(payload, url) {
                     var msg = notify.addInfoMessage("Gemmer...", false);
                     $http({ method: 'PATCH', url: url, data: payload })
-                        .success(function () {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Feltet er opdateret.");
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                         });
                 }
@@ -253,11 +252,10 @@
                                 }
 
                                 $http({ method: 'PATCH', url: 'api/itcontract/' + contract.id + '?organizationId=' + user.currentOrganizationId, data: payload })
-                                    .success(function () {
+                                    .then(function onSuccess(response) {
                                         msg.toSuccessMessage("Feltet er opdateret.");
                                         $state.reload();
-                                    })
-                                    .error(function () {
+                                    }, function onError(response) {
                                         msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                                     });
                                 $uibModalInstance.close();

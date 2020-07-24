@@ -15,10 +15,10 @@
                             "name": scope.suggestion
                         };
 
-                        $http.post(scope.url, data).success(function(result) {
+                        $http.post(scope.url, data).then(function onSuccess(response) {
                             notify.addSuccessMessage('Foreslag sendt!');
                             scope.suggestion = "";
-                        }).error(function(result) {
+                        }, function onError(response) {
                             notify.addErrorMessage('Kunne ikke sende foreslag!');
                         });
                     };

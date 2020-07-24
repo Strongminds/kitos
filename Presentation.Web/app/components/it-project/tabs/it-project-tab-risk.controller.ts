@@ -74,11 +74,11 @@
             };
 
             $scope.delete = function(risk) {
-                $http.delete(risk.updateUrl + "?organizationId=" + user.currentOrganizationId).success(function (result) {
+                $http.delete(risk.updateUrl + "?organizationId=" + user.currentOrganizationId).then(function onSuccess(response) {
                     risk.show = false;
 
                     notify.addSuccessMessage("Rækken er slettet");
-                }).error(function() {
+                }, function onError(response) {
 
                     notify.addErrorMessage("Fejl! Kunne ikke slette!");
                 });
@@ -125,15 +125,14 @@
 
                 var msg = notify.addInfoMessage("Gemmer række", false);
                 $http.post("api/risk", data)
-                    .success(function (result) {
+                    .then(function onSuccess(response) {
 
-                        var responseRisk = result.response;
+                        var responseRisk = response.data.response;
                         pushRisk(responseRisk);
                         resetNewRisk();
 
                         msg.toSuccessMessage("Rækken er gemt");
-                    })
-                    .error(function() {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Prøv igen");
                     });
 

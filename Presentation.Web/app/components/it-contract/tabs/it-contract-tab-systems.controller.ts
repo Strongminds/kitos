@@ -61,11 +61,11 @@
 
                     //delete the row
                     systemUsage.delete = () => {
-                        deleteAssociatedSystem(systemUsage).success(() => {
+                        deleteAssociatedSystem(systemUsage).then(function onSuccess(response) {
                             notify.addSuccessMessage("Rækken er slettet.");
                             _.remove(contract.associatedSystemUsages, { id: systemUsage.id });
                             systemUsage.show = false;
-                        }).error(() => {
+                        }, function onError(response) {
                             notify.addErrorMessage("Kunne ikke slette rækken");
                         });
                     };
@@ -77,15 +77,15 @@
                 $scope.newAssociatedSystemUsage = {
                     save() {
                         //post new binding
-                        postAssociatedSystem($scope.newAssociatedSystemUsage).success(result => {
+                        postAssociatedSystem($scope.newAssociatedSystemUsage).then(function onSuccess(response) {
 
                             notify.addSuccessMessage("Rækken er tilføjet.");
 
                             //then reformat and redraw the rows
-                            contract.associatedSystemUsages = result.response;
-                            formatAssociatedSystems(result.response);
+                            contract.associatedSystemUsages = response.data.response;
+                            formatAssociatedSystems(response.data.response);
 
-                        }).error(result => {
+                        }, function onError(response) {
 
                             //couldn't add new binding
                             notify.addErrorMessage("Fejl! Kunne ikke tilføje rækken!");

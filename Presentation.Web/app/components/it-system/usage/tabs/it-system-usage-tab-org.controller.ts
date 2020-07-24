@@ -44,18 +44,16 @@
                 var msg = notify.addInfoMessage("Gemmer... ");
                 if ($scope.responsibleOrgUnitId) {
                     $http.post('api/itSystemUsageOrgUnitUsage/?usageId=' + usageId + '&orgUnitId=' + orgUnitId + '&responsible=true')
-                        .success(function () {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Gemt!");
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                         });
                 } else {
                     $http.delete('api/itSystemUsageOrgUnitUsage/?usageId=' + usageId + '&responsible=true')
-                        .success(function () {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Gemt!");
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                         });
                 }
@@ -65,16 +63,15 @@
                 var msg = notify.addInfoMessage("Gemmer... ");
                 if (obj.selected) {
                     $http.post('api/itSystemUsage/' + usageId + '?organizationunit=' + obj.id + '&organizationId=' + user.currentOrganizationId)
-                        .success(function() {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Gemt!");
                             $scope.selectedOrgUnits.push(obj);
-                        })
-                        .error(function() {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                         });
                 } else {
                     $http.delete('api/itSystemUsage/' + usageId + '?organizationunit=' + obj.id + '&organizationId=' + user.currentOrganizationId)
-                        .success(function() {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Gemt!");
 
                             var indexOf;
@@ -91,8 +88,7 @@
                             // if responsible is the orgunit being removed unselect it from the dropdown
                             if (obj.id == $scope.responsibleOrgUnitId)
                                 $scope.responsibleOrgUnitId = '';
-                        })
-                        .error(function() {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                         });
                 }

@@ -134,10 +134,10 @@
                     method: isNewActivity ? "POST" : "PATCH",
                     url: "api/" + activityType + "/" + activityId + "?organizationId=" + user.currentOrganizationId,
                     data: payload
-                }).success(function () {
+                }).then(function onSuccess(response) {
                     msg.toSuccessMessage("Ændringerne er gemt!");
                     $scope.$close(true);
-                }).error(function () {
+                }, function onError(response) {
                     msg.toErrorMessage("Ændringerne kunne ikke gemmes!");
                 });
             };

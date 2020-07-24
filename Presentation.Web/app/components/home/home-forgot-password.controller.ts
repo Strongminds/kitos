@@ -24,11 +24,11 @@
 
                 var msg = notify.addInfoMessage("Sender email ...", false);
 
-                $http.post("api/passwordresetrequest", data, { handleBusy: true }).success(function(result) {
+                $http.post("api/passwordresetrequest", data, { handleBusy: true }).then(function onSuccess(response) {
                     msg.toSuccessMessage("En email er blevet sent til " + email);
                     $scope.email = "";
 
-                }).error(function(result) {
+                }, function onError(response) {
                     msg.toErrorMessage("Emailen kunne ikke sendes. Prøv igen eller kontakt en lokal administrator");
                 });
             };

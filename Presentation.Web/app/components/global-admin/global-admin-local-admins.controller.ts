@@ -52,10 +52,10 @@
                 };
 
                 var msg = notify.addInfoMessage("Arbejder ...", false);
-                $http.post("api/OrganizationRight/" + oId, data, { handleBusy: true }).success(function (result) {
+                $http.post("api/OrganizationRight/" + oId, data, { handleBusy: true }).then(function onSuccess(response) {
                     msg.toSuccessMessage(user.text + " er blevet lokal administrator for " + orgName);
                     reload();
-                }).error(function() {
+                }, function onError(response) {
                     msg.toErrorMessage("Kunne ikke gøre " + user.text + " til lokal administrator for " + orgName);
                 });
             }
@@ -82,10 +82,10 @@
                 var uId = right.userId;
 
                 var msg = notify.addInfoMessage("Arbejder ...", false);
-                $http.delete("api/OrganizationRight/" + oId + "?rId=" + rId + "&uId=" + uId + '&organizationId=' + user.currentOrganizationId).success(function(deleteResult) {
+                $http.delete("api/OrganizationRight/" + oId + "?rId=" + rId + "&uId=" + uId + '&organizationId=' + user.currentOrganizationId).then(function onSuccess(response) {
                     msg.toSuccessMessage(right.userName + " er ikke længere lokal administrator");
                     reload();
-                }).error(function(deleteResult) {
+                }, function onError(response) {
 
                     msg.toErrorMessage("Kunne ikke fjerne " + right.userName + " som lokal administrator");
                 });

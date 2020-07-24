@@ -36,15 +36,15 @@
                     // setting the Content-type to 'undefined' will force the request to automatically
                     // populate the headers properly including the boundary parameter.
                     headers: { 'Content-Type': undefined },
-                }).success(function (data, status) {
+                }).then(function onSuccess(response) {
                     msg.toSuccessMessage("Excel arket er blevet læst og værdier er blevet sat ind i systemet.");
                     $scope.errorData = {};
-                }).error(function (data, status) {
+                }, function onError(response) {
                     msg.toErrorMessage("Fejl! Der er en fejl i excel arket.");
                     $scope.errorData = {};
-                    if (status == 409) {
+                    if (response.status == 409) {
                         $scope.errorData.showExcelErrors = true;
-                        $scope.errorData.errors = data;
+                        $scope.errorData.errors = response.data;
                     } else {
                         $scope.errorData.showGenericError = true;
                     }

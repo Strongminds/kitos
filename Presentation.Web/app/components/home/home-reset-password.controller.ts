@@ -16,10 +16,10 @@
             $rootScope.page.subnav = [];
 
             var requestId = $stateParams.requestId;
-            $http.get("api/passwordresetrequest?requestId=" + requestId).success(function(result) {
+            $http.get("api/passwordresetrequest?requestId=" + requestId).then(function onSuccess(response) {
                 $scope.resetStatus = "enterPassword";
-                $scope.email = result.response.userEmail;
-            }).error(function() {
+                $scope.email = response.data.response.userEmail;
+            }, function onError(response) {
                 $scope.resetStatus = "missingRequest";
             });
 
@@ -28,10 +28,10 @@
 
                 var data = { "requestId": requestId, "newPassword": $scope.password };
 
-                $http.post("api/authorize?resetPassword", data).success(function(result) {
+                $http.post("api/authorize?resetPassword", data).then(function onSuccess(response) {
                     $scope.resetStatus = "success";
                     $scope.email = "";
-                }).error(function(result) {
+                }, function onError(response) {
                     $scope.requestFailure = true;
                 });
             };

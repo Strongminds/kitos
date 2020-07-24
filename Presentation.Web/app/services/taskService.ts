@@ -8,17 +8,11 @@
 
                 var url = baseUrl + '?roots=true&take=200';
 
-                $http.get(url).success(function (result) {
-
-                    deferred.resolve(result.response);
-
-                }).error(reject("Couldn't load tasks"));
-
-                function reject(reason) {
-                    return function() {
-                        deferred.reject(reason);
-                    };
-                }
+                $http.get(url).then(function onSuccess(response) {
+                    deferred.resolve(response.data);
+                }, function onFailure(response) {
+                    deferred.reject("Couldn't load tasks");
+                });
 
                 return deferred.promise;
             }
@@ -28,11 +22,13 @@
 
                 var url = baseUrl + id + '?children=true';
 
-                $http.get(url).success(function (result) {
+                $http.get(url).then(function onSuccess(response) {
 
-                    deferred.resolve(result.response);
+                    deferred.resolve(response.data.response);
 
-                }).error(reject("Couldn't load tasks"));
+                }, function onError(response) {
+                    reject("Couldn't load tasks")
+                });
 
                 function reject(reason) {
                     return function() {

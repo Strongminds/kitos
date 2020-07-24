@@ -1,4 +1,5 @@
-﻿module Kitos.ItProject.Overview {
+﻿
+module Kitos.ItProject.Overview {
     "use strict";
 
     export interface IOverviewController {
@@ -117,17 +118,16 @@
                         var msg = self.notify.addInfoMessage('Opretter system...', false);
 
                         self.$http.post("api/itproject", payload)
-                            .success((result: any) => {
+                            .then(function onSuccess(response: any) {
                                 msg.toSuccessMessage("Et nyt projekt er oprettet!");
-                                let projectId = result.response.id;
+                                let projectId = response.data.response.id;
                                 $modalInstance.close(projectId);
                                 if (orgUnitId) {
                                      // add users default org unit to the new project
-                                    self.$http.post(`api/itproject/${projectId}?organizationunit=${orgUnitId}&organizationId=${this.user.currentOrganizationId}`, null);
+                                    self.$http.post(`api/itproject/${projectId}?organizationunit=${orgUnitId}&organizationId=${self.user.currentOrganizationId}`, null);
                                 }
                                 self.$state.go("it-project.edit.main", { id: projectId });
-                            })
-                            .error(() => {
+                            }, function onError(response: any) {
                                 msg.toErrorMessage("Fejl! Kunne ikke oprette nyt projekt!");
                             });
                     };
@@ -144,17 +144,16 @@
                         var msg = self.notify.addInfoMessage('Opretter projekt...', false);
 
                         self.$http.post("api/itproject", payload)
-                            .success((result: any) => {
+                            .then(function onSuccess(response: any) {
                                 msg.toSuccessMessage("Et nyt projekt er oprettet!");
-                                let projectId = result.response.id;
+                                let projectId = response.data.response.id;
                                 $modalInstance.close(projectId);
                                 if (orgUnitId) {
                                     // add users default org unit to the new project
-                                    self.$http.post(`api/itproject/${projectId}?organizationunit=${orgUnitId}&organizationId=${this.user.currentOrganizationId}`, null);
+                                    self.$http.post(`api/itproject/${projectId}?organizationunit=${orgUnitId}&organizationId=${self.user.currentOrganizationId}`, null);
                                 }
                                 self.$state.reload();
-                            })
-                            .error(() => {
+                            }, function onError(response: any) {
                                 msg.toErrorMessage("Fejl! Kunne ikke oprette nyt projekt!");
                             });
                     };

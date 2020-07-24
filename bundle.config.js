@@ -32,7 +32,7 @@ module.exports = {
     angularSrc: [
         npm("/angular/angular.min.js"),
         bower("/angular-i18n/angular-locale_da-dk.js"),
-        bower("/angular-animate/angular-animate.min.js"),
+        npm("/angular-animate/angular-animate.min.js"),
         bower("/angular-sanitize/angular-sanitize.min.js"),
         bower("/angular-ui-router/release/angular-ui-router.min.js"),
         bower("/angular-bootstrap/ui-bootstrap-tpls.min.js"),

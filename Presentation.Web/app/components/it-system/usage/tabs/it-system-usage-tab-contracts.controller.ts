@@ -25,20 +25,18 @@
                 var msg = notify.addInfoMessage("Gemmer... ");
                 if ($scope.mainContractId) {
                     $http.post('api/ItContractItSystemUsage/?contractId=' + $scope.mainContractId + '&usageId=' + usageId)
-                        .success(function () {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Gemt!");
                             reload();
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                         });
                 } else {
                     $http.delete('api/ItContractItSystemUsage/?usageId=' + usageId)
-                        .success(function () {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Gemt!");
                             reload();
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                         });
                 }

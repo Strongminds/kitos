@@ -25,11 +25,10 @@
             this.buttonDisabled = true;
             var payload = this.$scope.org;
             this.$http.post('api/organization', payload)
-                .success((result) => {
-                    this.notify.addSuccessMessage(`Organisationen ${result.response.name} er blevet oprettet!`);
+                .then(function onSuccess(response) {
+                    this.notify.addSuccessMessage(`Organisationen ${response.data.response.name} er blevet oprettet!`);
                     this.$scope.$close(true);
-                })
-                .error((result) => {
+                }, function onError(response) {
                     this.notify.addErrorMessage(`Organisationen ${this.org.name} kunne ikke oprettes!`);
                 });
         }

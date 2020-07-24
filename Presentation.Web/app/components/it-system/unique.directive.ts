@@ -12,13 +12,12 @@
                         });
                         var validateAsync = _.debounce(function(viewValue) {
                             $http.get(attrs.unique + '?checkname=' + viewValue + '&orgId=' + user.currentOrganizationId)
-                                .success(function() {
+                                .then(function onSuccess(response) {
                                     ctrl.$setValidity('available', true);
                                     ctrl.$setValidity('lookup', true);
-                                })
-                                .error(function(data, status) {
+                                }, function onError(response) {
                                     // conflict
-                                    if (status == 409) {
+                                    if (response.status == 409) {
                                         ctrl.$setValidity('available', false);
                                     } else {
                                         // something went wrong

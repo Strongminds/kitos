@@ -99,7 +99,7 @@
                     "DurationOngoing": $scope.durationOngoing
                 }
                 var msg = notify.addInfoMessage("Gemmer...", false);
-                $http.patch(`odata/itcontracts(${$scope.contract.id})`, payload).success(() => {
+                $http.patch(`odata/itcontracts(${$scope.contract.id})`, payload).then(function onSuccess(respnose) {
                     msg.toSuccessMessage("Varigheden blev gemt.");
                     $scope.durationYears = "";
                     $scope.durationMonths = "";
@@ -109,7 +109,7 @@
                     $scope.contract.durationYears = $scope.durationYears;
                     $scope.contract.durationMonths = $scope.durationMonths;
 
-                }).error(() => {
+                }, function onError(response) {
                     msg.toErrorMessage("Varigheden blev ikke gemt.");
                 });
 
@@ -118,12 +118,12 @@
             function saveDuration(payload) {
                 const deferred = $q.defer();
                 var msg = notify.addInfoMessage("Gemmer...", false);
-                $http.patch(`odata/itcontracts(${$scope.contract.id})`, payload).success(() => {
+                $http.patch(`odata/itcontracts(${$scope.contract.id})`, payload).then(function onSuccess(response) {
                     msg.toSuccessMessage("Varigheden blev gemt.");
 
                     deferred.resolve();
 
-                }).error(() => {
+                }, function onError(response) {
                     msg.toErrorMessage("Varigheden blev ikke gemt.");
 
                     deferred.reject();
@@ -172,14 +172,13 @@
 
                 var msg = notify.addInfoMessage("Gemmer...", false);
                 $http.post("api/paymentMilestone", paymentMilestone)
-                    .success(function (result) {
+                    .then(function onSuccess(response) {
                         msg.toSuccessMessage("Gemt");
-                        var obj = result.response;
+                        var obj = response.data.response;
                         $scope.paymentMilestones.push(obj);
                         delete $scope.paymentMilestone; // clear input fields
                         $scope.milestoneForm.$setPristine();
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                     });
             };
@@ -187,11 +186,10 @@
             $scope.deleteMilestone = function (id) {
                 var msg = notify.addInfoMessage("Sletter...", false);
                 $http.delete("api/paymentMilestone/" + id + "?organizationId=" + user.currentOrganizationId)
-                    .success(function () {
+                    .then(function onSuccess(response) {
                         msg.toSuccessMessage("Slettet");
                         reload();
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke slette!");
                     });
             };
@@ -220,14 +218,13 @@
 
                 var msg = notify.addInfoMessage("Gemmer...", false);
                 $http.post("api/handoverTrial", handoverTrial)
-                    .success(function (result) {
+                    .then(function onSuccess(response) {
                         msg.toSuccessMessage("Gemt");
-                        var obj = result.response;
+                        var obj = response.data.response;
                         $scope.handoverTrials.push(obj);
                         delete $scope.handoverTrial; // clear input fields
                         $scope.trialForm.$setPristine();
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke gemmes!");
                     });
             };
@@ -235,11 +232,10 @@
             $scope.deleteTrial = function (id) {
                 var msg = notify.addInfoMessage("Sletter...", false);
                 $http.delete("api/handoverTrial/" + id + "?organizationId=" + user.currentOrganizationId)
-                    .success(function () {
+                    .then(function onSuccess(response) {
                         msg.toSuccessMessage("Slettet");
                         reload();
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke slette!");
                     });
             };
@@ -278,10 +274,9 @@
             function patch(payload, url) {
                 var msg = notify.addInfoMessage("Gemmer...", false);
                 $http({ method: 'PATCH', url: url, data: payload })
-                    .success(function () {
+                    .then(function onSuccess(response) {
                         msg.toSuccessMessage("Feltet er opdateret.");
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                     });
             }

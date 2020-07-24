@@ -22,9 +22,9 @@
 
                 $scope.deleteReference = function (referenceId) {
                     var msg = notify.addInfoMessage("Sletter...");
-                    $http.delete('api/Reference/' + referenceId + '?organizationId=' + interface.organizationId).success(() => {
+                    $http.delete('api/Reference/' + referenceId + '?organizationId=' + interface.organizationId).then(function onSuccess(response) {
                         msg.toSuccessMessage("Slettet!");
-                    }).error(() => {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke slette!");
                         });
                     reload();
@@ -40,12 +40,11 @@
                     var msg = notify.addInfoMessage("Opdaterer felt...", false);
 
                     $http.patch("api/itContract/" + interface.id + "?organizationId=" + interface.organizationId, data)
-                        .success(function (result) {
+                        .then(function onSuccess(response) {
                             //   $scope.chosenReference = id;
                             msg.toSuccessMessage("Feltet er opdateret!");
                             reload();
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Prøv igen.");
                         });
                 };

@@ -65,10 +65,9 @@
             function patch(payload, url) {
                 var msg = notify.addInfoMessage("Gemmer...", false);
                 $http({ method: 'PATCH', url: url, data: payload })
-                    .success(function () {
+                    .then(function onSuccess(response) {
                         msg.toSuccessMessage("Feltet er opdateret.");
-                    })
-                    .error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                     });
             }
@@ -93,10 +92,10 @@
 
                 goal.delete = function() {
                     var msg = notify.addInfoMessage("Sletter... ");
-                    $http.delete(goal.updateUrl + "?organizationId=" + user.currentOrganizationId).success(function () {
+                    $http.delete(goal.updateUrl + "?organizationId=" + user.currentOrganizationId).then(function onSuccess(response) {
                         goal.show = false;
                         msg.toSuccessMessage("Slettet!");
-                    }).error(function() {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke slette!");
                     });
                 };

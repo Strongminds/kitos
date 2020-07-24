@@ -58,10 +58,10 @@
                     dataRow.updateUrl = `api/dataRow/${dataRow.id}`;
                     dataRow.delete = () => {
                         var msg = notify.addInfoMessage("Fjerner rækken...", false);
-                        $http.delete(dataRow.updateUrl + "?organizationId=" + user.currentOrganizationId).success(() => {
+                        $http.delete(dataRow.updateUrl + "?organizationId=" + user.currentOrganizationId).then(function onSuccess(response) {
                             dataRow.show = false;
                             msg.toSuccessMessage("Rækken er fjernet!");
-                        }).error(() => {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke fjerne rækken!");
                         });
                     };
@@ -74,10 +74,10 @@
                     var payload = { itInterfaceId: itInterface.id };
 
                     var msg = notify.addInfoMessage("Tilføjer række...", false);
-                    $http.post("api/dataRow", payload).success(result => {
-                        pushDataRow(result.response);
+                    $http.post("api/dataRow", payload).then(function onSuccess(response) {
+                        pushDataRow(response.data.response);
                         msg.toSuccessMessage("Rækken er tilføjet!");
-                    }).error(() => {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke tilføje rækken!");
                     });
                 };
@@ -120,11 +120,10 @@
                             };
                             var url = `api/exhibit/${itInterface.id}?organizationId=${user.currentOrganizationId}`;
                             $http({ method: "PATCH", url: url, data: patchPayload })
-                                .success(() => {
+                                .then(function onSuccess(response) {
                                     msg.toSuccessMessage("Feltet er opdateret.");
                                     reload();
-                                })
-                                .error(() => {
+                                }, function onError(response) {
                                     msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                                 });
                         } else {
@@ -133,19 +132,19 @@
                                 itInterfaceId: itInterface.id,
                                 itSystemId: $scope.exposedByObj.id
                             };
-                            $http.post("api/exhibit", postPayload).success(() => {
+                            $http.post("api/exhibit", postPayload).then(function onSuccess(response) {
                                 msg.toSuccessMessage("Feltet er opdateret.");
                                 reload();
-                            }).error(() => {
+                            }, function onError(response) {
                                 msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                             });
                         }
                     } else {
                         // DELETE
-                        $http.delete(`api/exhibit/${itInterface.id}?organizationId=${user.currentOrganizationId}`).success(() => {
+                        $http.delete(`api/exhibit/${itInterface.id}?organizationId=${user.currentOrganizationId}`).then(function onSuccess(response) {
                             msg.toSuccessMessage("Feltet er opdateret.");
                             reload();
-                        }).error(() => {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                         });
                     }

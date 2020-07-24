@@ -13,8 +13,8 @@
 
                     scope.list = [];
 
-                    $http.get(scope.optionsUrl + '?nonsuggestions').success(function(result) {
-                        _.each(result.response, function(v) {
+                    $http.get(scope.optionsUrl + '?nonsuggestions').then(function onSuccess(response) {
+                        _.each(response.data.response, function(v) {
                             scope.list.push({
                                 id: v.id,
                                 name: v.name,

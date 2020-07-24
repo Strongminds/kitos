@@ -122,11 +122,11 @@
                     stream.delete = function () {
                         var msg = notify.addInfoMessage("Sletter række...");
 
-                        $http.delete(this.updateUrl + "?organizationId=" + user.currentOrganizationId).success(function () {
+                        $http.delete(this.updateUrl + "?organizationId=" + user.currentOrganizationId).then(function onSuccess(response) {
                             stream.show = false;
 
                             msg.toSuccessMessage("Rækken er slettet!");
-                        }).error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Kunne ikke slette rækken!");
                         }).finally(reload);
                     };
@@ -152,9 +152,9 @@
                     stream[organizationId] = user.currentOrganizationId;
 
                     var msg = notify.addInfoMessage("Tilføjer ny række...");
-                    $http.post(`api/EconomyStream/?contractId=${contract.id}`, stream).success(function (result) {
+                    $http.post(`api/EconomyStream/?contractId=${contract.id}`, stream).then(function onSuccess(response) {
                         msg.toSuccessMessage("Rækken er tilføjet!");
-                    }).error(function () {
+                    }, function onError(response) {
                         msg.toErrorMessage("Fejl! Kunne ikke tilføje række");
                     }).finally(reload);
                 }
@@ -185,10 +185,9 @@
                 function patch(payload, url) {
                     var msg = notify.addInfoMessage("Gemmer...", false);
                     $http({ method: 'PATCH', url: url, data: payload })
-                        .success(function () {
+                        .then(function onSuccess(response) {
                             msg.toSuccessMessage("Feltet er opdateret.");
-                        })
-                        .error(function () {
+                        }, function onError(response) {
                             msg.toErrorMessage("Fejl! Feltet kunne ikke ændres!");
                         });
                 }
