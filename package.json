@@ -73,7 +73,8 @@
     "@bower_components/select2": "ivaynberg/select2#~3.4",
     "@bower_components/select2-bootstrap-css": "t0m/select2-bootstrap-css#^1.4.6",
     "@bower_components/tinymce": "tinymce/tinymce-dist#~4.4.3",
-    "angular-cookies": "1.4.7"
+    "angular-cookies": "1.4.7",
+    "lodash": "4.17.19"
   },
   "engines": {
     "yarn": ">= 1.0.0"
