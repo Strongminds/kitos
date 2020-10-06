@@ -9,9 +9,8 @@
             "apiUseCaseFactory",
             "select2LoadingService",
             "dataProcessingRegistrationOptions",
-            "bindingService"
-            "select2LoadingService",
-            "notify"
+            "bindingService",
+             "notify"
         ];
 
         private readonly dataProcessingRegistrationId: number;
@@ -22,8 +21,7 @@
             private readonly apiUseCaseFactory: Services.Generic.IApiUseCaseFactory,
             private readonly select2LoadingService: Services.ISelect2LoadingService,
             private readonly dataProcessingRegistrationOptions: Models.DataProcessing.IDataProcessingRegistrationOptions,
-            private readonly bindingService: Kitos.Services.Generic.IBindingService) {
-            private readonly select2LoadingService: Services.ISelect2LoadingService,
+            private readonly bindingService: Kitos.Services.Generic.IBindingService,
             private readonly notify) {
 
             this.dataProcessingRegistrationId = this.dataProcessingRegistration.id;
@@ -39,12 +37,12 @@
         headerName = this.dataProcessingRegistration.name;
         oversightInterval: Models.ViewModel.Generic.ISingleSelectionWithFixedOptionsViewModel<Models.Api.Shared.YearMonthUndecidedIntervalOption>;
         oversightIntervalRemark: Models.ViewModel.Generic.IEditTextViewModel;
-        oversigthOptions: Models.ViewModel.Generic.IMultipleSelectionWithSelect2ConfigViewModel<Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO>;
+        oversighthOptions: Models.ViewModel.Generic.IMultipleSelectionWithSelect2ConfigViewModel<Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO>;
         oversightOptionsRemark: Models.ViewModel.Generic.IEditTextViewModel;
 
         private bindOversigthOptions() {
             this.bindingService.bindMultiSelectConfiguration<Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO>(
-                config => this.oversigthOptions = config,
+                config => this.oversighthOptions = config,
                 () => this.dataProcessingRegistration.oversightOptions.value,
                 element => this.removeOversightOption(element.id),
                 newElement => this.addOversightOption(newElement),
@@ -194,8 +192,8 @@
                     });
             }
         }
-    }
-        }
+    
+        
 
         private changeIsOversightCompleted(isOversightCompleted: Models.ViewModel.Generic.Select2OptionViewModel<Models.Api.Shared.YesNoUndecidedOption>) {
             this.apiUseCaseFactory

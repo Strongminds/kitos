@@ -4,10 +4,6 @@ import LocalDataProcessing = require("../PageObjects/Local-admin/LocalDataProces
 import KendoToolbarWrapper = require("../Object-wrappers/KendoToolbarWrapper");
 import NavigationHelper = require("../Utility/NavigationHelper");
 import Select2Helper = require("./Select2Helper");
-import DataProcessingRegistrationEditMainPageObject =
-    require("../PageObjects/Data-Processing/Tabs/data-processing-registration.edit.main.po");
-import DataProcessingRegistrationEditOversightPageObject =
-    require("../PageObjects/Data-Processing/Tabs/data-processing-registration.edit.oversight.po");
 import DataProcessingRegistrationEditMainPageObject = require("../PageObjects/Data-Processing/Tabs/data-processing-registration.edit.main.po");
 import DataProcessingRegistrationEditOversightPageObject = require("../PageObjects/Data-Processing/Tabs/data-processing-registration.edit.oversight.po");
 
