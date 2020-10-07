@@ -28,8 +28,7 @@ namespace Tests.Unit.Core.DomainServices.GDPR
                 new DataProcessingRegistrationReadModelUpdate(
                     Mock.Of<IGenericRepository<DataProcessingRegistrationRoleAssignmentReadModel>>(),
                     new Mock<IOptionsService<DataProcessingRegistration, DataProcessingBasisForTransferOption>>().Object,
-                    new Mock<IOptionsService<DataProcessingRegistration, DataProcessingDataResponsibleOption>>().Object,
-                    new Mock<IOptionsService<DataProcessingRegistration, DataProcessingOversightOption>>().Object),
+                    new Mock<IOptionsService<DataProcessingRegistration, DataProcessingDataResponsibleOption>>().Object),
                 _pendingUpdatesRepository.Object);
         }
 

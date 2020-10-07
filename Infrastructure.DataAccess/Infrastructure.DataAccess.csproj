@@ -640,10 +640,6 @@
     <Compile Include="Migrations\202010020801067_Dpr_Rename_Country_References_Table.designer.cs">
       <DependentUpon>202010020801067_Dpr_Rename_Country_References_Table.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202010060905576_Added_Oversight_Options.cs" />
-    <Compile Include="Migrations\202010060905576_Added_Oversight_Options.designer.cs">
-      <DependentUpon>202010060905576_Added_Oversight_Options.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\202010021224199_Added_Agreement_Oversight_Completed_Date_And_Remark.cs" />
     <Compile Include="Migrations\202010021224199_Added_Agreement_Oversight_Completed_Date_And_Remark.designer.cs">
       <DependentUpon>202010021224199_Added_Agreement_Oversight_Completed_Date_And_Remark.cs</DependentUpon>
@@ -1049,9 +1045,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010020801067_Dpr_Rename_Country_References_Table.resx">
       <DependentUpon>202010020801067_Dpr_Rename_Country_References_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202010060905576_Added_Oversight_Options.resx">
-      <DependentUpon>202010060905576_Added_Oversight_Options.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010021224199_Added_Agreement_Oversight_Completed_Date_And_Remark.resx">
       <DependentUpon>202010021224199_Added_Agreement_Oversight_Completed_Date_And_Remark.cs</DependentUpon>

@@ -8,29 +8,19 @@
             "dataProcessingRegistration",
             "apiUseCaseFactory",
             "select2LoadingService",
-            "dataProcessingRegistrationOptions",
-            "bindingService"
-            "select2LoadingService",
             "notify"
         ];
 
-        private readonly dataProcessingRegistrationId: number;
         constructor(
             private readonly dataProcessingRegistrationService: Services.DataProcessing.IDataProcessingRegistrationService,
             public hasWriteAccess,
             private readonly dataProcessingRegistration: Models.DataProcessing.IDataProcessingRegistrationDTO,
             private readonly apiUseCaseFactory: Services.Generic.IApiUseCaseFactory,
             private readonly select2LoadingService: Services.ISelect2LoadingService,
-            private readonly dataProcessingRegistrationOptions: Models.DataProcessing.IDataProcessingRegistrationOptions,
-            private readonly bindingService: Kitos.Services.Generic.IBindingService) {
-            private readonly select2LoadingService: Services.ISelect2LoadingService,
             private readonly notify) {
 
-            this.dataProcessingRegistrationId = this.dataProcessingRegistration.id;
             this.bindOversightInterval();
             this.bindOversightIntervalRemark();
-            this.bindOversigthOptions();
-            this.bindOversigthOptionsRemark();
             this.bindOversightCompleted();
             this.bindLatestOversightCompletedDate();
             this.bindOversightCompletedRemark();
@@ -39,54 +29,11 @@
         headerName = this.dataProcessingRegistration.name;
         oversightInterval: Models.ViewModel.Generic.ISingleSelectionWithFixedOptionsViewModel<Models.Api.Shared.YearMonthUndecidedIntervalOption>;
         oversightIntervalRemark: Models.ViewModel.Generic.IEditTextViewModel;
-        oversigthOptions: Models.ViewModel.Generic.IMultipleSelectionWithSelect2ConfigViewModel<Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO>;
-        oversightOptionsRemark: Models.ViewModel.Generic.IEditTextViewModel;
-
-        private bindOversigthOptions() {
-            this.bindingService.bindMultiSelectConfiguration<Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO>(
-                config => this.oversigthOptions = config,
-                () => this.dataProcessingRegistration.oversightOptions.value,
-                element => this.removeOversightOption(element.id),
-                newElement => this.addOversightOption(newElement),
-                this.hasWriteAccess,
-                this.hasWriteAccess,
-                null,
-                () => {
-                    const selectedOversightOptions = this
-                        .dataProcessingRegistration
-                        .oversightOptions
-                        .value
-                        .reduce((acc, next, _) => {
-                            acc[next.id] = next;
-                            return acc;
-                        },
-                            {});
-                    return this.dataProcessingRegistrationOptions.oversightOptions.filter(x => !selectedOversightOptions[x.id]).map(x => {
-                        return {
-                            text: x.name,
-                            id: x.id,
-                            optionalObjectContext: {
-                                id: x.id,
-                                name: x.name,
-                                description: x.description,
-                                expired: false //We only allow selection of non-expired and this object is based on the available objects
-                            }
-                        };
-                    });
-                }
-            );
-        }
         isOversightCompleted: Models.ViewModel.Generic.ISingleSelectionWithFixedOptionsViewModel<Models.Api.Shared.YesNoUndecidedOption>;
         latestOversightCompletedDate: Models.ViewModel.Generic.IDateSelectionViewModel;
         oversightCompletedRemark: Models.ViewModel.Generic.IEditTextViewModel;
         shouldShowLatestOversightCompletedDate: boolean;
 
-
-        private bindOversigthOptionsRemark() {
-            this.oversightOptionsRemark = new Models.ViewModel.Generic.EditTextViewModel(
-                this.dataProcessingRegistration.oversightOptions.remark,
-                (newText) => this.changeOversightOptionRemark(newText));
-        }
 
         private bindOversightInterval() {
             this.oversightInterval = {
@@ -152,49 +99,6 @@
                     this.bindOversightIntervalRemark();
                     return success;
                 });
-        }
-
-        private changeOversightOptionRemark(oversightOptionRemark: string) {
-            this.apiUseCaseFactory
-                .createUpdate("Bemærkninger", () => this.dataProcessingRegistrationService.updateOversightOptionRemark(this.dataProcessingRegistration.id, oversightOptionRemark))
-                .executeAsync(success => {
-                    this.dataProcessingRegistration.oversightOptions.remark = oversightOptionRemark;
-                    this.bindOversigthOptionsRemark();
-                    return success;
-                });
-        }
-
-        private removeOversightOption(id: number) {
-            this.apiUseCaseFactory
-                .createAssignmentRemoval(() => this.dataProcessingRegistrationService.removeOversightOption(this.dataProcessingRegistrationId, id))
-                .executeAsync(success => {
-
-                    //Update the source collection
-                    this.dataProcessingRegistration.oversightOptions.value = this.dataProcessingRegistration.oversightOptions.value.filter(x => x.id !== id);
-
-                    //Propagate changes to UI binding
-                    this.bindOversigthOptions();
-                    return success;
-                });
-        }
-
-        private addOversightOption(newElement: Models.ViewModel.Generic.Select2OptionViewModel<Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO>) {
-            if (!!newElement && !!newElement.optionalObjectContext) {
-                const oversightOption = newElement.optionalObjectContext as Models.Generic.NamedEntity.NamedEntityWithDescriptionAndExpirationStatusDTO;
-                this.apiUseCaseFactory
-                    .createAssignmentCreation(() => this.dataProcessingRegistrationService.assignOversightOption(this.dataProcessingRegistrationId, oversightOption.id))
-                    .executeAsync(success => {
-                        //Update the source collection 
-                        this.dataProcessingRegistration.oversightOptions.value.push(oversightOption);
-                        
-
-                        //Trigger UI update
-                        this.bindOversigthOptions();
-                        return success;
-                    });
-            }
-        }
-    }
         }
 
         private changeIsOversightCompleted(isOversightCompleted: Models.ViewModel.Generic.Select2OptionViewModel<Models.Api.Shared.YesNoUndecidedOption>) {

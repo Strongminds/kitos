@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity.ModelConfiguration;
-using System.Security.Cryptography.X509Certificates;
 using Core.DomainModel.GDPR;
 
 namespace Infrastructure.DataAccess.Mapping
@@ -55,11 +54,6 @@ namespace Infrastructure.DataAccess.Mapping
             HasOptional(x => x.DataResponsible)
                 .WithMany(x => x.References)
                 .HasForeignKey(x => x.DataResponsible_Id);
-
-            //Oversight options
-            HasMany(x => x.OversightOptions)
-                .WithMany(x => x.References);
-
         }
     }
 }

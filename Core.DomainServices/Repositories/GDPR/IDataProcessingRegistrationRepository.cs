@@ -15,6 +15,5 @@ namespace Core.DomainServices.Repositories.GDPR
         IQueryable<DataProcessingRegistration> GetByDataProcessorId(int organizationId);
         IQueryable<DataProcessingRegistration> GetByBasisForTransferId(int basisForTransferId);
         IQueryable<DataProcessingRegistration> GetByDataResponsibleId(int dataResponsibleId);
-        IQueryable<DataProcessingRegistration> GetByOversightOptionId(int oversightOptionId);
     }
 }
