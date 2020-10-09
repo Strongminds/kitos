@@ -160,7 +160,8 @@
                             (
                                 [
                                     Models.Api.Shared.YesNoUndecidedOption.Yes,
-                                    Models.Api.Shared.YesNoUndecidedOption.No
+                                    Models.Api.Shared.YesNoUndecidedOption.No,
+                                    Models.Api.Shared.YesNoUndecidedOption.Undecided
                                 ].map(value => {
                                     return {
                                         textValue: Models.ViewModel.Shared.YesNoUndecidedOptions.getText(value),
@@ -225,7 +226,8 @@
                                 [
                                     Models.Api.Shared.YesNoIrrelevantOption.YES,
                                     Models.Api.Shared.YesNoIrrelevantOption.NO,
-                                    Models.Api.Shared.YesNoIrrelevantOption.IRRELEVANT
+                                    Models.Api.Shared.YesNoIrrelevantOption.IRRELEVANT,
+                                    Models.Api.Shared.YesNoIrrelevantOption.UNDECIDED
                                 ].map(value => {
                                     return {
                                         textValue: Models.ViewModel.Shared.YesNoIrrelevantOptions.getText(value),
@@ -258,7 +260,8 @@
                                     Models.Api.Shared.YearMonthUndecidedIntervalOption.Half_yearly,
                                     Models.Api.Shared.YearMonthUndecidedIntervalOption.Yearly,
                                     Models.Api.Shared.YearMonthUndecidedIntervalOption.Every_second_year,
-                                    Models.Api.Shared.YearMonthUndecidedIntervalOption.Other
+                                    Models.Api.Shared.YearMonthUndecidedIntervalOption.Other,
+                                    Models.Api.Shared.YearMonthUndecidedIntervalOption.Undecided
                                 ].map(value => {
                                     return {
                                         textValue: Models.ViewModel.Shared.YearMonthUndecidedIntervalOption.getText(value),
@@ -301,7 +304,8 @@
                         (
                             [
                                 Models.Api.Shared.YesNoUndecidedOption.Yes,
-                                Models.Api.Shared.YesNoUndecidedOption.No
+                                Models.Api.Shared.YesNoUndecidedOption.No,
+                                Models.Api.Shared.YesNoUndecidedOption.Undecided
                             ].map(value => {
                                 return {
                                     textValue: Models.ViewModel.Shared.YesNoUndecidedOptions.getText(value),
