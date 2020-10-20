@@ -52,7 +52,7 @@ BEGIN
 			ItContract.DataHandlerAgreementUrlName,
 			ItSystemUsage.dataProcessor,
 			CASE
-				WHEN ItSystemUsage.dataProcessorControl = 0 THEN 1
+				WHEN ItSystemUsage.dataProcessorControl = 0 THEN 1 /*TODO: Husk at validere alle cases i dine tests*/
 				WHEN ItSystemUsage.dataProcessorControl = 1 THEN 0
 				WHEN ItSystemUsage.dataProcessorControl IS NULL THEN NULL
 				ELSE 2
@@ -66,8 +66,9 @@ BEGIN
 			ItSystemUsage.ObjectOwnerId
         FROM 
 		ItContractItSystemUsages 
-			INNER JOIN ItContract ON ItContract.Id = ItContractItSystemUsages.ItContractId
-			INNER JOIN ItSystemUsage ON ItSystemUsage.Id = ItContractItSystemUsages.ItSystemUsageId
+			INNER JOIN ItContract ON /*MRJ: Rettet til direkte test i stedet for ekstra join så tester du på samme række med det samme*/
+				ItContract.Id = ItContractItSystemUsages.ItContractId AND 
+				ItSystemUsage.Id = ItContractItSystemUsages.ItSystemUsageId
 		WHERE 
 			ItContractItSystemUsages.ItContractId 
 				IN (
@@ -135,7 +136,7 @@ BEGIN
 		Create DPR Data Worker
 	*/
 
-	INSERT INTO
+	INSERT INTO 
 		DataProcessingRegistrationOrganizations (DataProcessingRegistration_Id, Organization_Id)
 	SELECT
 		DprId, DataWorkerId
@@ -192,7 +193,6 @@ BEGIN
 	WHERE
 		DatahandlerSupervisionLink IS NOT NULL
 
-END
 
 /*
 	Second migration situation
@@ -263,6 +263,8 @@ BEGIN
 	DECLARE @DprsWithContractKeys table (dprId int, ItContractId int, AgreementConcludedUrlName varchar(max), AgreementConcludedUrl varchar(max), contractOwnerId int)
 
 	/*
+	TODO: Læs din kommentar og ret den til. Der er vist ikke noget med itsystemusage her
+
 		Create temp table with dprId's and Contract and SystemUsage Id's to be used when creating relations
 	*/
 
@@ -379,6 +381,7 @@ BEGIN
 	DECLARE @DprsWithContractKeys2 table (dprId int, ItContractId int, AgreementConcludedUrlName varchar(max), AgreementConcludedUrl varchar(max), contractOwnerId int)
 
 	/*
+	TODO: Læs kommentaren
 		Create temp table with dprId's and Contract and SystemUsage Id's to be used when creating relations
 	*/
 
