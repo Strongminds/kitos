@@ -64,7 +64,7 @@
 
                     $http.get(url)
                         .then(function onSuccess(result) {
-                            $scope.tasklist = result.response;
+                            $scope.tasklist = result.data.response;
 
                             var paginationHeader = JSON.parse(result.headers("X-Pagination"));
                             $scope.totalCount = paginationHeader.TotalCount;
