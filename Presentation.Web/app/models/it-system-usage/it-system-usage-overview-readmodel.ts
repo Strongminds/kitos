@@ -19,5 +19,6 @@
         ParentItSystemName: string;
         RoleAssignments: IAssignedSystemUsageRole[];
         ResponsibleOrganizationUnitId: number | null;
+        ResponsibleOrganizationUnitName: string;
     }
 }

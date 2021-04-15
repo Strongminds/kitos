@@ -42,10 +42,21 @@
 
             //Helper functions
             const getRoleKey = (role: Models.IOptionEntity) => `role${role.Id}`;
+
             const getOrgUnitName = (id: number) => orgUnitIdToNameMap[id] || "";
+
             const replaceRoleQuery = (filterUrl, roleName, roleId) => {
                 var pattern = new RegExp(`(\\w+\\()${roleName}(,.*?\\))`, "i");
                 return filterUrl.replace(pattern, `RoleAssignments/any(c: $1c/UserFullName$2 and c/RoleId eq ${roleId})`);
+            };
+
+            const replaceOrderByProperty = (orderBy, fromProperty, toProperty) => {
+                if (orderBy) {
+                    //'(RespOrgUnit)(.*)'
+                    var pattern = new RegExp(`(${fromProperty})(.*)`, "i");
+                    return orderBy.replace(pattern, `${toProperty}$2`);
+                }
+                return orderBy;
             };
 
             //Build and launch kendo grid
@@ -69,7 +80,12 @@
                                 replaceRoleQuery(parameterMap.$filter, getRoleKey(role), role.Id);
                         });
                     }
-                    //TODO: When sorting we need the name in the model along with the indexing and so in... sigh! -> was easier just with the id but no!
+
+                    //In terms of ordering user will expect ordering by name on this column, so we shitch it around
+                    //TODO: If it still fails after update then just depend on the name and then no need for changing around in maps and so on
+                    //TODO: May also be an issue with the state of the columns so maybe it is for the best! :-) -> We need some backend for this to work
+                    parameterMap.$orderby = replaceOrderByProperty(parameterMap.$orderby, "ResponsibleOrganizationUnitId","ResponsibleOrganizationUnitName");
+                    
                     return parameterMap;
                 })
                 .withResponseParser(response => {
