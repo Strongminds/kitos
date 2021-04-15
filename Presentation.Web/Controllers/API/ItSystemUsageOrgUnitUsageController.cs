@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using AutoMapper;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainServices;
+using Infrastructure.Services.DomainEvents;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models;
 using Swashbuckle.Swagger.Annotations;
@@ -17,11 +17,13 @@ namespace Presentation.Web.Controllers.API
     {
         private readonly IGenericRepository<ItSystemUsageOrgUnitUsage> _responsibleOrgUnitRepository;
         private readonly IGenericRepository<ItSystemUsage> _systemUsageRepository;
+        private readonly IDomainEvents _domainEvents;
 
-        public ItSystemUsageOrgUnitUsageController(IGenericRepository<ItSystemUsageOrgUnitUsage> responsibleOrgUnitRepository, IGenericRepository<ItSystemUsage> systemUsageRepository)
+        public ItSystemUsageOrgUnitUsageController(IGenericRepository<ItSystemUsageOrgUnitUsage> responsibleOrgUnitRepository, IGenericRepository<ItSystemUsage> systemUsageRepository, IDomainEvents domainEvents)
         {
             _responsibleOrgUnitRepository = responsibleOrgUnitRepository;
             _systemUsageRepository = systemUsageRepository;
+            _domainEvents = domainEvents;
         }
 
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ApiReturnDTO<IEnumerable<SimpleOrgUnitDTO>>))]
@@ -96,6 +98,8 @@ namespace Presentation.Web.Controllers.API
 
                 systemUsage.ResponsibleUsage = entity;
 
+                _domainEvents.Raise(new EntityUpdatedEvent<ItSystemUsage>(systemUsage));
+
                 _responsibleOrgUnitRepository.Save();
 
                 return Ok();
@@ -125,6 +129,8 @@ namespace Presentation.Web.Controllers.API
                 // WARNING: force loading so setting it to null will be tracked
                 var forceLoad = systemUsage.ResponsibleUsage;
                 systemUsage.ResponsibleUsage = null;
+                
+                _domainEvents.Raise(new EntityUpdatedEvent<ItSystemUsage>(systemUsage));
 
                 _systemUsageRepository.Save();
 
