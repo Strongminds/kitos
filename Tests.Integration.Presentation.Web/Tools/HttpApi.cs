@@ -37,13 +37,13 @@ namespace Tests.Integration.Presentation.Web.Tools
         static HttpApi()
         {
             ServicePointManager.Expect100Continue = false;
+            StatelessHttpClient.DefaultRequestHeaders.ConnectionClose = true;
         }
 
         public static Task<HttpResponseMessage> GetWithTokenAsync(Uri url, string token)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse("bearer " + token);
-            requestMessage.Headers.Add("Connection", "close");
             return StatelessHttpClient.SendAsync(requestMessage);
         }
 
@@ -51,14 +51,12 @@ namespace Tests.Integration.Presentation.Web.Tools
         {
             var requestMessage = CreatePostMessage(url, body);
             requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse("bearer " + token);
-            requestMessage.Headers.Add("Connection", "close");
             return StatelessHttpClient.SendAsync(requestMessage);
         }
         public static Task<HttpResponseMessage> PutWithTokenAsync(Uri url, string token, object body = null)
         {
             var requestMessage = CreatePutMessage(url, body);
             requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse("bearer " + token);
-            requestMessage.Headers.Add("Connection", "close");
             return StatelessHttpClient.SendAsync(requestMessage);
         }
 
@@ -66,7 +64,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         {
             var requestMessage = CreatePatchMessage(url, body);
             requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse("bearer " + token);
-            requestMessage.Headers.Add("Connection", "close");
             requestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/merge-patch+json");
             return StatelessHttpClient.SendAsync(requestMessage);
         }
@@ -75,7 +72,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         {
             var requestMessage = CreateMessageWithContent(HttpMethod.Delete, url, body);
             requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse("bearer " + token);
-            requestMessage.Headers.Add("Connection", "close");
             return StatelessHttpClient.SendAsync(requestMessage);
         }
 
@@ -130,7 +126,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         {
             var csrfToken = await GetCSRFToken(authCookie);
             requestMessage.Headers.Add(Constants.CSRFValues.HeaderName, csrfToken.FormToken);
-            requestMessage.Headers.Add("Connection", "close");
 
             var cookieContainer = new CookieContainer();
             if (authCookie != null)
@@ -146,7 +141,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         {
             var url = TestEnvironment.CreateUrl("api/authorize/antiforgery");
             var csrfRequest = new HttpRequestMessage(HttpMethod.Get, url);
-            csrfRequest.Headers.Add("Connection", "close");
             HttpResponseMessage csrfResponse = null;
             try
             {
@@ -215,7 +209,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         public static Task<HttpResponseMessage> GetAsync(Uri url)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-            requestMessage.Headers.Add("Connection", "close");
             return StatelessHttpClient.SendAsync(requestMessage);
         }
 
@@ -242,7 +235,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         public static async Task<HttpResponseMessage> PostForKitosToken(Uri url, LoginDTO loginDto)
         {
             var requestMessage = CreatePostMessage(url, loginDto);
-            requestMessage.Headers.Add("Connection", "close");
             using var client = new HttpClient();
             return await client.SendAsync(requestMessage);
         }
