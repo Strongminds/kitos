@@ -75,5 +75,9 @@
     },
     "engines": {
         "yarn": ">= 1.0.0"
+    },
+    "resolutions": {
+        "glob-parent": "^6.0.1",
+        "yargs-parser": "^13.1.2" 
     }
 }
