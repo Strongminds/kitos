@@ -9,7 +9,9 @@ class HomePagePo implements IPageObject {
     private consts = new Constants();
 
     public getPage(): webdriver.promise.Promise<void> {
-        return browser.get(String(browser.baseUrl));
+        console.log("Browser baseUrl: ", browser.baseUrl);
+        var url = browser.baseUrl[1];
+        return browser.driver.get(url);; //https://www.protractortest.org/#/faq
     }
 
     public loginFormField = element(this.byDataElementType(this.consts.loginFormField));

@@ -31,15 +31,17 @@ describe("User is able to create and view relation",
         var expectedRelationCount = "1";
 
         beforeAll(() => {
+            console.log("Before All");
             loginHelper.loginAsGlobalAdmin()
+                .then(() => console.log("Logged in as the global admin"))
                 .then(() => ItSystemHelper.createSystem(relationSystemName1))
+                .then(() => console.log("System created"))
                 .then(() => ItSystemHelper.createLocalSystem(relationSystemName1))
                 .then(() => ItSystemHelper.createSystem(relationSystemName2))
                 .then(() => ItSystemHelper.createLocalSystem(relationSystemName2))
                 .then(() => InterfaceCatalogHelper.createInterface(interfaceName))
                 .then(() => InterfaceCatalogHelper.bindInterfaceToSystem(relationSystemName2, interfaceName))
                 .then(() => ContractHelper.createContract(contractName));
-
         }, testFixture.longRunningSetup());
 
         beforeEach(() => {
@@ -51,7 +53,18 @@ describe("User is able to create and view relation",
             testFixture.cleanupState();
         });
 
-        it("User can create relations ",
+        it("TESTING User can create relations ",
+            () => {
+                RelationHelper.createRelationTest(relationSystemName1,
+                    relationSystemName2,
+                    interfaceName,
+                    frequencyType,
+                    contractName,
+                    reference,
+                    description);
+            });
+
+        /*it("User can create relations ",
             () => {
                 RelationHelper.createRelation(relationSystemName1,
                     relationSystemName2,
@@ -101,7 +114,7 @@ describe("User is able to create and view relation",
                     .then(() => RelationHelper.deleteRelation(relationSystemName1, relationSystemName2))
                     .then(() => checkIfRelationIsDeleted(relationSystemName2));
 
-            });
+            });*/
     });
 
 function createName(prefix: string) {

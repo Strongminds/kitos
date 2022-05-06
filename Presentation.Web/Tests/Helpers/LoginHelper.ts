@@ -10,7 +10,10 @@ class Login {
     }
 
     public loginAsGlobalAdmin() {
+        console.log("Getting login credentials");
         const credentials = this.getCredentialsMap().globalAdmin;
+
+        console.log("Login with credentials");
         return this.login(credentials);
     }
 
@@ -47,9 +50,6 @@ class Login {
     }
 
     private getCredentials(credentialsIndex: number) {
-        console.log(browser);
-        console.log(typeof browser.params.login.email);
-
         return {
             username: this.parseStringAsArrayAndGetIndex(browser.params.login.email, credentialsIndex),
             password: this.parseStringAsArrayAndGetIndex(browser.params.login.pwd, credentialsIndex)
@@ -62,7 +62,10 @@ class Login {
         var waitUpTo = new WaitTimers();
         var ec = protractor.ExpectedConditions;
 
+        console.log("Getting login page");
+
         return homePage.getPage()
+            .then(() => "Got the home page")
             .then(() => browser.wait(homePage.isLoginAvailable(), waitUpTo.twentySeconds))
             .then(() => homePage.emailField.sendKeys(credentials.username))
             .then(() => homePage.pwdField.sendKeys(credentials.password))
@@ -84,8 +87,6 @@ class Login {
     }
 
     private parseStringAsArrayAndGetIndex(input: string, index: number) {
-        console.log(input);
-
         return String(input).substring(1, input.length - 1).split(", ")[index];
     }
 }

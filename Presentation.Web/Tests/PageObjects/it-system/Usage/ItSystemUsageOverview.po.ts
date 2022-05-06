@@ -10,6 +10,7 @@ class ItSystemOverview implements IPageObject {
     private kendoLoaderHelper = new KendoLoaderHelper();
 
     public getPage(): webdriver.promise.Promise<void> {
+        console.log("Getting the page")
         return this.navigationHelper.getPage("/#/system/overview");
     }
 

@@ -1,9 +1,12 @@
 ﻿class NavigationHelper {
 
     public getPage(destUrl: string): webdriver.promise.Promise<void> {
+        console.log("Almost there...");
         return browser.getCurrentUrl()
             .then(url => {
-                const navigateToUrl = browser.baseUrl + destUrl;
+                console.log("Before navigateToUrl");
+                const navigateToUrl = browser.baseUrl[1] + destUrl;
+                console.log("URL...");
                 if (navigateToUrl !== url) {
                     console.log("Not at " + navigateToUrl + " but at:" + url + ". Navigating to:" + navigateToUrl);
                     return browser.get(navigateToUrl)
@@ -11,7 +14,7 @@
                 } else {
                     console.log("Already at " + navigateToUrl + ". Ignoring command");
                 }
-            });
+            });;
     }
 
     public refreshPage(): webdriver.promise.Promise<void> {

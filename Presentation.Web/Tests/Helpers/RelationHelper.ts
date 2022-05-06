@@ -31,6 +31,18 @@ class RelationHelper {
             .then(() => relationPage.getSaveButton().click())
             .then(() => browser.waitForAngular());
     }
+    public static createRelationTest(
+        fromSystemName: string,
+        toSystemName: string,
+        interfaceName: string,
+        frequencyType: string,
+        contractName: string,
+        referenceText: string,
+        descriptionText: string) {
+
+        console.log("TESTING Creating relation");
+        return systemUsageHelper.openLocalSystem(fromSystemName);
+    }
 
     public static editRelation(
         fromSystemName: string,

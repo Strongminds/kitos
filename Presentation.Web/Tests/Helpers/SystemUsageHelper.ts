@@ -6,6 +6,7 @@ class SystemUsageHelper {
     static openLocalSystem(name: string) {
         console.log(`open details for local system: ${name}`);
         return SystemUsageHelper.pageObject.getPage()
+            .then(() => console.log("NEXT"))
             .then(() => SystemUsageHelper.waitForKendoGrid())
             .then(() => SystemUsageHelper.findCatalogColumnsFor(name).first().click());
     }
