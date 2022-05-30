@@ -65,6 +65,9 @@
     <Compile Include="Extensions\EntityQueryExtensions.cs" />
     <Compile Include="Extensions\OrganizationExtensions.cs" />
     <Compile Include="Factories\ItProjectFactory.cs" />
+    <Compile Include="FKOrganization\FkOrganisationHelper.cs" />
+    <Compile Include="FKOrganization\FKOrganizationUnitImportService.cs" />
+    <Compile Include="FKOrganization\IFKOrganizationUnitImportService.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationBasisForTransferAssignmentService.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationDataProcessorAssignmentService.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationInsecureCountriesAssignmentService.cs" />
@@ -137,6 +140,7 @@
     <Compile Include="Repositories\UICustomization\UIModuleCustomizationRepository.cs" />
     <Compile Include="Role\IRoleAssignmentService.cs" />
     <Compile Include="Role\RoleAssignmentService.cs" />
+    <Compile Include="FKOrganization\FkOrganisationEnhedHelper.cs" />
     <Compile Include="SystemUsage\AttachedOptionsAssignmentService.cs" />
     <Compile Include="SystemUsage\IAttachedOptionsAssignmentService.cs" />
     <Compile Include="SystemUsage\ItSystemUsageOverviewReadModelUpdate.cs" />
@@ -252,6 +256,10 @@
     <ProjectReference Include="..\Core.DomainModel\Core.DomainModel.csproj">
       <Project>{a76a8e41-74f7-4443-a5f3-059b5414d83b}</Project>
       <Name>Core.DomainModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure.Serviceplatformen.OrganisationEnhed\Infrastructure.Serviceplatformen.OrganisationEnhed.csproj">
+      <Project>{d6004645-73f8-486c-9957-eaa88a803ead}</Project>
+      <Name>Infrastructure.Serviceplatformen.OrganisationEnhed</Name>
     </ProjectReference>
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj">
       <Project>{0326cae6-87a1-4d66-84ae-eb8ce0340e9f}</Project>

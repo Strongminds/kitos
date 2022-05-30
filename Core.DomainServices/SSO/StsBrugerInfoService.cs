@@ -67,7 +67,7 @@ namespace Core.DomainServices.SSO
         {
             using (var clientCertificate = GetClientCertificate(_certificateThumbprint))
             {
-                var client = StsBrugerHelpers.CreateBrugerPortTypeClient(CreateHttpBinding(),
+                using var client = StsBrugerHelpers.CreateBrugerPortTypeClient(CreateHttpBinding(),
                     _urlServicePlatformBrugerService, clientCertificate);
                 var laesRequest = StsBrugerHelpers.CreateStsBrugerLaesRequest(cvrNumber, uuid);
                 var brugerPortType = client.ChannelFactory.CreateChannel();
@@ -168,7 +168,7 @@ namespace Core.DomainServices.SSO
         {
             using (var clientCertificate = GetClientCertificate(_certificateThumbprint))
             {
-                var client = StsAdresseHelpers.CreateAdressePortTypeClient(CreateHttpBinding(),
+                using var client = StsAdresseHelpers.CreateAdressePortTypeClient(CreateHttpBinding(),
                     _urlServicePlatformAdresseService, clientCertificate);
                 var laesRequest = StsAdresseHelpers.CreateStsAdresseLaesRequest(cvrNumber, emailAdresseUuid);
                 var adressePortType = client.ChannelFactory.CreateChannel();
@@ -225,7 +225,7 @@ namespace Core.DomainServices.SSO
         {
             using (var clientCertificate = GetClientCertificate(_certificateThumbprint))
             {
-                var client = StsPersonHelpers.CreatePersonPortTypeClient(CreateHttpBinding(),
+                using var client = StsPersonHelpers.CreatePersonPortTypeClient(CreateHttpBinding(),
                     _urlServicePlatformPersonService, clientCertificate);
                 var laesRequest = StsPersonHelpers.CreateStsPersonLaesRequest(cvrNumber, personUuid);
                 var virksomhedPortType = client.ChannelFactory.CreateChannel();

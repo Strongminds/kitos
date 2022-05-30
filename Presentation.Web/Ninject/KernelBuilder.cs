@@ -112,6 +112,7 @@ using Core.ApplicationServices.Organizations.Handlers;
 using Core.ApplicationServices.Tracking;
 using Core.ApplicationServices.UIConfiguration;
 using Core.ApplicationServices.UIConfiguration.Handlers;
+using Core.DomainServices.FKOrganization;
 using Core.DomainServices.Repositories.UICustomization;
 using Core.DomainServices.Tracking;
 using Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping;
@@ -274,6 +275,9 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IRightsHolderSystemService>().To<RightsHolderSystemService>().InCommandScope(Mode);
             kernel.Bind<IItInterfaceRightsHolderService>().To<ItInterfaceRightsHolderService>().InCommandScope(Mode);
             kernel.Bind<IUserRightsService>().To<UserRightsService>().InCommandScope(Mode);
+
+            //FK Organization
+            kernel.Bind<IFKOrganizationUnitImportService>().To<FKOrganizationUnitImportService>().InCommandScope(Mode);
         }
 
         private void RegisterMappers(IKernel kernel)

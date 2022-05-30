@@ -111,6 +111,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Ninject", "I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Abstractions", "Core.Abstractions\Core.Abstractions.csproj", "{BD8C90E7-52C7-4AD0-935D-98A2AA89E449}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Serviceplatformen.OrganisationEnhed", "Infrastructure.Serviceplatformen.OrganisationEnhed\Infrastructure.Serviceplatformen.OrganisationEnhed.csproj", "{D6004645-73F8-486C-9957-EAA88A803EAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +191,10 @@ Global
 		{BD8C90E7-52C7-4AD0-935D-98A2AA89E449}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD8C90E7-52C7-4AD0-935D-98A2AA89E449}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD8C90E7-52C7-4AD0-935D-98A2AA89E449}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6004645-73F8-486C-9957-EAA88A803EAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6004645-73F8-486C-9957-EAA88A803EAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6004645-73F8-486C-9957-EAA88A803EAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6004645-73F8-486C-9957-EAA88A803EAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -217,6 +223,7 @@ Global
 		{7F765808-5258-4E41-8B27-6E7D4667AA24} = {2AC4CFA8-D99E-4DF2-9E2D-202E3A7BD29E}
 		{C01C5F9E-6904-4B4C-94B1-12D7C83F8070} = {500B4C1D-B871-49A0-94E7-BD0623101EF6}
 		{BD8C90E7-52C7-4AD0-935D-98A2AA89E449} = {2AC4CFA8-D99E-4DF2-9E2D-202E3A7BD29E}
+		{D6004645-73F8-486C-9957-EAA88A803EAD} = {500B4C1D-B871-49A0-94E7-BD0623101EF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4890FA32-C82F-4C98-AC7A-2F4EE7F21687}
