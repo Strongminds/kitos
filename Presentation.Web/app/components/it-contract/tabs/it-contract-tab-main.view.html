@@ -267,21 +267,55 @@
 
                     <!-- Intern contract is Active regardless of concluded and expirationdate -->
                     <div class="col-xs-12">
-                        <input type="checkbox" id="contractIsActive"
-                               class="tags-checkbox sr-only"
-                               data-ng-model="contract.active"
-                               data-ng-disabled="!hasWriteAccess"
-                               data-autosave="{{ autoSaveUrl }}"
-                               data-field="active"
-                               data-ng-change="override()" />
-                        <label for="contractIsActive">
-                            <i ng-hide="contract.active" class='glyphicon glyphicon-unchecked'></i>
-                            <i ng-show="contract.active" class='glyphicon glyphicon-check'></i>
-                            <span class='label-content'>Gyldig: </span>
-                        </label>
-                        <i ng-show="contract.isActive" class="fa fa-check" aria-hidden="true"></i>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="contractIsActive"
+                                       data-ng-model="contract.active"
+                                       data-ng-disabled="!hasWriteAccess"
+                                       data-autosave="{{ autoSaveUrl }}"
+                                       data-field="active"
+                                       data-ng-change="override()">
+                                Gennemtving gyldighed
+                            </label>
+                        </div>
                     </div>
-
+                    <div class="col-xs-12">
+                        <label class="control-label small">Status</label>
+                        <div ng-if="contract.isActive" class="form-group object-status-active-summary">
+                            <a id="expand_collapse_contract_status" class="task-fold control-label" data-ng-click="isOpen = !isOpen">
+                                <i style="color: green" class="fa fa-check-circle" /> Kontrakten er gyldig
+                                <i style="color: green" class="fa pull-right" data-ng-class="{'fa-minus-square-o': isOpen, 'fa-plus-square-o': !isOpen}"></i>
+                            </a>
+                            <p ng-if="isOpen" style="margin-top: 5px;">
+                                <i>Gyldigheden er <strong>gennemtvunget</strong>, så kontrakten er gyldig selvom:</i>
+                            </p>
+                            <ul ng-if="isOpen">
+                                <li>
+                                    Kontrakten er opsagt
+                                </li>
+                                <li>
+                                    Gyldighedsperioden er overskredet
+                                </li>
+                            </ul>
+                        </div>
+                        <div ng-if="!contract.isActive" class="form-group object-status-inactive-summary">
+                            <a id="expand_collapse_contract_status" class="task-fold control-label" data-ng-click="isOpen = !isOpen">
+                                <i style="color: red" class="fa fa-exclamation-circle" /> Kontrakten er <strong>IKKE</strong> gyldig
+                                <i style="color: red" class="fa pull-right" data-ng-class="{'fa-minus-square-o': isOpen, 'fa-plus-square-o': !isOpen}"></i>
+                            </a>
+                            <p ng-if="isOpen" style="margin-top: 5px;">
+                                <i>Følgende årsager gør kontrakten ugyldig:</i>
+                            </p>
+                            <ul ng-if="isOpen">
+                                <li>
+                                    Gyldighedsperioden er overskredet
+                                </li>
+                                <li>
+                                    Kontrakten er opsagt
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <div class="col-xs-12">
                         <div class="form-group">
                             <label for="last-changed-by-name" class="control-label small">Sidst redigeret: Bruger</label>
