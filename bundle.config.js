@@ -6,8 +6,8 @@ module.exports = {
     librarySrc: [
         npm("/lodash/lodash.min.js"),
         npm("/jquery/dist/jquery.min.js"),
-        npm("/select2/select2.js"),
-        npm("/select2/select2_locale_da.js"),
+        npm("/select2/dist/js/select2.js"),
+        //npm("/select2/select2_locale_da.js"),
         npm("/moment/min/moment.min.js"),
         npm("/json-fn/jsonfn.min.js"),
         npm("/tinymce/tinymce.js"),
@@ -21,7 +21,7 @@ module.exports = {
     libraryBundle: "library-bundle.min.js",
 
     libraryStylesSrc: [
-        npm("/select2/select2.css"),
+        npm("/select2/dist/css/select2.css"),
         npm("/select2-bootstrap-css/select2-bootstrap.min.css"),
         npm("/angular-loading-bar/build/loading-bar.min.css"),
         npm("/angular-ui-tree/dist/angular-ui-tree.min.css"),
