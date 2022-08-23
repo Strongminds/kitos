@@ -7,7 +7,7 @@ module.exports = {
         npm("/lodash/lodash.min.js"),
         npm("/jquery/dist/jquery.min.js"),
         npm("/select2/dist/js/select2.js"),
-        //npm("/select2/select2_locale_da.js"),
+        npm("/select2/select2_locale_da.js"),
         npm("/moment/min/moment.min.js"),
         npm("/json-fn/jsonfn.min.js"),
         npm("/tinymce/tinymce.js"),
