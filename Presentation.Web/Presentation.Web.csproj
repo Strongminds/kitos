@@ -1328,9 +1328,6 @@
     <Content Include="Content\css\app.css" />
     <Content Include="Content\css\app.min.css" />
     <Content Include="Content\css\maps\app.min.css.map" />
-    <Content Include="Content\css\select2-spinner.gif" />
-    <Content Include="Content\css\select2.png" />
-    <Content Include="Content\css\select2x2.png" />
     <Content Include="Content\Default\loading-image.gif" />
     <Content Include="Content\Default\loading.gif" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
