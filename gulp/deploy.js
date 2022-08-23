@@ -93,10 +93,10 @@ const cleanStyles = function (callBack) {
 };
 
 // copy assets
-/*const assets = function (callBack) {
+const assets = function (callBack) {
     return src(config.assetsSrc)
         .pipe(dest(config.cssDest));
-};*/
+};
 
 // copy fonts
 const fonts = function (callBack) {
@@ -121,7 +121,7 @@ const tinyMCEFixCss = function (callBack) {
 };
 
 // bundle, minify and copy styles, fonts and assets
-const styles = series(cleanStyles, parallel(css, /*assets,*/ fonts), parallel(tinyMCEFixCss));
+const styles = series(cleanStyles, parallel(css, assets, fonts), parallel(tinyMCEFixCss));
 
 // run bundle tasks
 const scripts = series(cleanScriptBundles, parallel(appBundle, libraryBundle, angularBundle));
