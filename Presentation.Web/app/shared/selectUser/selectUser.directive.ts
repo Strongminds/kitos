@@ -94,7 +94,7 @@
 
                         //Function to get up to 3 inputs from user and then making the call through Odata and getting the result from either/and firstname, lastname and email.
                         function userSearchParameters(queryParams) {
-                            var userStrings = queryParams.split(' ', 3);
+                            var userStrings = queryParams.term.split(' ', 3);
                             var index: number = 0;
 
                             var urlAddition: string = "$filter=";
