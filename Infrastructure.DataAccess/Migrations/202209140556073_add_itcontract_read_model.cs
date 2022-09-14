@@ -10,66 +10,66 @@
             CreateTable(
                 "dbo.ItContractOverviewReadModels",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        OrganizationId = c.Int(nullable: false),
-                        SourceEntityId = c.Int(nullable: false),
-                        Name = c.String(maxLength: 200),
-                        IsActive = c.Boolean(nullable: false),
-                        ContractId = c.String(),
-                        ParentContractId = c.Int(),
-                        ParentContractName = c.String(maxLength: 200),
-                        CriticalityId = c.Int(),
-                        CriticalityName = c.String(maxLength: 150),
-                        ResponsibleOrgUnitId = c.Int(),
-                        ResponsibleOrgUnitName = c.String(),
-                        SupplierId = c.Int(),
-                        SupplierName = c.String(maxLength: 100),
-                        ContractSigner = c.String(),
-                        ContractTypeId = c.Int(),
-                        ContractTypeName = c.String(maxLength: 150),
-                        ContractTemplateId = c.Int(),
-                        ContractTemplateName = c.String(maxLength: 150),
-                        PurchaseFormId = c.Int(),
-                        PurchaseFormName = c.String(maxLength: 150),
-                        ProcurementStrategyId = c.Int(),
-                        ProcurementStrategyName = c.String(maxLength: 150),
-                        ProcurementPlanYear = c.Int(),
-                        ProcurementPlanQuarter = c.Int(),
-                        ProcurementInitiated = c.Int(),
-                        DataProcessingAgreementsCsv = c.String(),
-                        ItSystemUsagesCsv = c.String(),
-                        ItSystemUsagesSystemUuidCsv = c.String(),
-                        NumberOfAssociatedSystemRelations = c.Int(nullable: false),
-                        ActiveReferenceTitle = c.String(),
-                        ActiveReferenceUrl = c.String(),
-                        ActiveReferenceExternalReferenceId = c.String(),
-                        AccumulatedAcquisitionCost = c.Int(nullable: false),
-                        AccumulatedOperationCost = c.Int(nullable: false),
-                        AccumulatedOtherCost = c.Int(nullable: false),
-                        OperationRemunerationBegunDate = c.DateTime(precision: 7, storeType: "datetime2"),
-                        PaymentModelId = c.Int(),
-                        PaymentModelName = c.String(maxLength: 150),
-                        PaymentFrequencyId = c.Int(),
-                        PaymentFrequencyName = c.String(maxLength: 150),
-                        LatestAuditDate = c.DateTime(precision: 7, storeType: "datetime2"),
-                        AuditStatusWhite = c.Int(nullable: false),
-                        AuditStatusRed = c.Int(nullable: false),
-                        AuditStatusYellow = c.Int(nullable: false),
-                        AuditStatusGreen = c.Int(nullable: false),
-                        Duration = c.String(maxLength: 100),
-                        OptionExtendId = c.Int(),
-                        OptionExtendName = c.String(maxLength: 150),
-                        TerminationDeadlineId = c.Int(),
-                        TerminationDeadlineName = c.String(maxLength: 150),
-                        IrrevocableTo = c.DateTime(precision: 7, storeType: "datetime2"),
-                        TerminatedAt = c.DateTime(precision: 7, storeType: "datetime2"),
-                        LastEditedByUserId = c.Int(),
-                        LastEditedByUserName = c.String(maxLength: 100),
-                        LastEditedAtDate = c.DateTime(precision: 7, storeType: "datetime2"),
-                        Concluded = c.DateTime(precision: 7, storeType: "datetime2"),
-                        ExpirationDate = c.DateTime(precision: 7, storeType: "datetime2"),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    OrganizationId = c.Int(nullable: false),
+                    SourceEntityId = c.Int(nullable: false),
+                    Name = c.String(maxLength: 200),
+                    IsActive = c.Boolean(nullable: false),
+                    ContractId = c.String(),
+                    ParentContractId = c.Int(),
+                    ParentContractName = c.String(maxLength: 200),
+                    CriticalityId = c.Int(),
+                    CriticalityName = c.String(maxLength: 150),
+                    ResponsibleOrgUnitId = c.Int(),
+                    ResponsibleOrgUnitName = c.String(),
+                    SupplierId = c.Int(),
+                    SupplierName = c.String(maxLength: 100),
+                    ContractSigner = c.String(),
+                    ContractTypeId = c.Int(),
+                    ContractTypeName = c.String(maxLength: 150),
+                    ContractTemplateId = c.Int(),
+                    ContractTemplateName = c.String(maxLength: 150),
+                    PurchaseFormId = c.Int(),
+                    PurchaseFormName = c.String(maxLength: 150),
+                    ProcurementStrategyId = c.Int(),
+                    ProcurementStrategyName = c.String(maxLength: 150),
+                    ProcurementPlanYear = c.Int(),
+                    ProcurementPlanQuarter = c.Int(),
+                    ProcurementInitiated = c.Int(),
+                    DataProcessingAgreementsCsv = c.String(),
+                    ItSystemUsagesCsv = c.String(),
+                    ItSystemUsagesSystemUuidCsv = c.String(),
+                    NumberOfAssociatedSystemRelations = c.Int(nullable: false),
+                    ActiveReferenceTitle = c.String(),
+                    ActiveReferenceUrl = c.String(),
+                    ActiveReferenceExternalReferenceId = c.String(),
+                    AccumulatedAcquisitionCost = c.Int(nullable: false),
+                    AccumulatedOperationCost = c.Int(nullable: false),
+                    AccumulatedOtherCost = c.Int(nullable: false),
+                    OperationRemunerationBegunDate = c.DateTime(precision: 7, storeType: "datetime2"),
+                    PaymentModelId = c.Int(),
+                    PaymentModelName = c.String(maxLength: 150),
+                    PaymentFrequencyId = c.Int(),
+                    PaymentFrequencyName = c.String(maxLength: 150),
+                    LatestAuditDate = c.DateTime(precision: 7, storeType: "datetime2"),
+                    AuditStatusWhite = c.Int(nullable: false),
+                    AuditStatusRed = c.Int(nullable: false),
+                    AuditStatusYellow = c.Int(nullable: false),
+                    AuditStatusGreen = c.Int(nullable: false),
+                    Duration = c.String(maxLength: 100),
+                    OptionExtendId = c.Int(),
+                    OptionExtendName = c.String(maxLength: 150),
+                    TerminationDeadlineId = c.Int(),
+                    TerminationDeadlineName = c.String(maxLength: 150),
+                    IrrevocableTo = c.DateTime(precision: 7, storeType: "datetime2"),
+                    TerminatedAt = c.DateTime(precision: 7, storeType: "datetime2"),
+                    LastEditedByUserId = c.Int(),
+                    LastEditedByUserName = c.String(maxLength: 100),
+                    LastEditedAtDate = c.DateTime(precision: 7, storeType: "datetime2"),
+                    Concluded = c.DateTime(precision: 7, storeType: "datetime2"),
+                    ExpirationDate = c.DateTime(precision: 7, storeType: "datetime2"),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Organization", t => t.OrganizationId)
                 .ForeignKey("dbo.ItContract", t => t.SourceEntityId, cascadeDelete: true)
@@ -117,72 +117,71 @@
                 .Index(t => t.LastEditedAtDate)
                 .Index(t => t.Concluded)
                 .Index(t => t.ExpirationDate);
-            
+
             CreateTable(
                 "dbo.ItContractOverviewReadModelDataProcessingAgreements",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        DataProcessingRegistrationId = c.Int(nullable: false),
-                        DataProcessingRegistrationName = c.String(maxLength: 200),
-                        ParentId = c.Int(nullable: false),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    DataProcessingRegistrationId = c.Int(nullable: false),
+                    DataProcessingRegistrationName = c.String(maxLength: 200),
+                    ParentId = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ItContractOverviewReadModels", t => t.ParentId, cascadeDelete: true)
                 .Index(t => t.DataProcessingRegistrationName, name: "IX_ItContract_Read_Dpr_Name")
                 .Index(t => t.ParentId);
-            
+
             CreateTable(
                 "dbo.ItContractOverviewReadModelItSystemUsages",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        ItSystemUsageId = c.Int(nullable: false),
-                        ItSystemUsageSystemUuid = c.String(maxLength: 50),
-                        ItSystemUsageName = c.String(maxLength: 200),
-                        ParentId = c.Int(nullable: false),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    ItSystemUsageId = c.Int(nullable: false),
+                    ItSystemUsageSystemUuid = c.String(maxLength: 50),
+                    ItSystemUsageName = c.String(maxLength: 200),
+                    ParentId = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ItContractOverviewReadModels", t => t.ParentId, cascadeDelete: true)
                 .Index(t => t.ItSystemUsageSystemUuid, name: "IX_ItContract_Read_System_Uuid")
                 .Index(t => t.ItSystemUsageName, name: "IX_ItContract_Read_System_Name")
                 .Index(t => t.ParentId);
-            
+
             CreateTable(
                 "dbo.ItContractOverviewRoleAssignmentReadModels",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        RoleId = c.Int(nullable: false),
-                        UserId = c.Int(nullable: false),
-                        UserFullName = c.String(maxLength: 100),
-                        Email = c.String(),
-                        ParentId = c.Int(nullable: false),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    RoleId = c.Int(nullable: false),
+                    UserId = c.Int(nullable: false),
+                    UserFullName = c.String(maxLength: 100),
+                    Email = c.String(),
+                    ParentId = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ItContractOverviewReadModels", t => t.ParentId, cascadeDelete: true)
                 .Index(t => t.RoleId, name: "IX_ItContract_Read_Role_Id")
                 .Index(t => t.UserId, name: "IX_ItContract_Read_User_Id")
                 .Index(t => t.UserFullName, name: "IX_ItContract_Read_User_Name")
                 .Index(t => t.ParentId);
-            
+
             CreateTable(
                 "dbo.ItContractOverviewReadModelSystemRelations",
                 c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        RelationId = c.Int(nullable: false),
-                        FromSystemUsageId = c.Int(nullable: false),
-                        ToSystemUsageId = c.Int(nullable: false),
-                        ParentId = c.Int(nullable: false),
-                    })
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    RelationId = c.Int(nullable: false),
+                    FromSystemUsageId = c.Int(nullable: false),
+                    ToSystemUsageId = c.Int(nullable: false),
+                    ParentId = c.Int(nullable: false),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ItContractOverviewReadModels", t => t.ParentId, cascadeDelete: true)
                 .Index(t => t.RelationId)
                 .Index(t => t.FromSystemUsageId)
                 .Index(t => t.ToSystemUsageId)
                 .Index(t => t.ParentId);
-            
         }
         
         public override void Down()
