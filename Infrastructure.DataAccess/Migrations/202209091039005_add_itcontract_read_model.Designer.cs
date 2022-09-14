@@ -7,13 +7,17 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class RemovedActiveFromSystemUsage : IMigrationMetadata
+    public sealed partial class RemovedHasMainContract : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(RemovedActiveFromSystemUsage));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(RemovedHasMainContract));
         
         string IMigrationMetadata.Id
         {
-            get { return "202209130756266_RemovedActiveFromSystemUsage"; }
+<<<<<<<< HEAD:Infrastructure.DataAccess/Migrations/202209140750404_RemovedHasMainContract.Designer.cs
+            get { return "202209140750404_RemovedHasMainContract"; }
+========
+            get { return "202209091039005_add_itcontract_read_model"; }
+>>>>>>>> feature/KITOSUDV-3211-merge-fix:Infrastructure.DataAccess/Migrations/202209091039005_add_itcontract_read_model.Designer.cs
         }
         
         string IMigrationMetadata.Source
