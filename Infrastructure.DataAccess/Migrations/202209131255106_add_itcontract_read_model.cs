@@ -7,7 +7,7 @@
     {
         public override void Up()
         {
-            CreateTable(
+           /* CreateTable(
                 "dbo.ItContractOverviewReadModels",
                 c => new
                     {
@@ -181,7 +181,7 @@
                 .Index(t => t.RelationId)
                 .Index(t => t.FromSystemUsageId)
                 .Index(t => t.ToSystemUsageId)
-                .Index(t => t.ParentId);
+                .Index(t => t.ParentId);*/
             
         }
         
