@@ -1,12 +1,21 @@
-﻿using System.Data.Entity.Migrations;
-
-namespace Infrastructure.DataAccess.Migrations
+﻿namespace Infrastructure.DataAccess.Migrations
 {
-    public partial class ChangedHasMainContract : DbMigration
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class RemovedHasMainContract : DbMigration
     {
         public override void Up()
         {
             DropIndex("dbo.ItSystemUsageOverviewReadModels", "ItSystemUsageOverviewReadModel_Index_HasMainContract");
+
+            //Migrate MainContractIsActvie from null to false
+            Sql(@"UPDATE dbo.ItSystemUsageOverviewReadModels 
+                SET MainContractIsActive = CASE MainContractIsActive
+                    WHEN NULL THEN 0
+                END; "
+            );
+
             AlterColumn("dbo.ItSystemUsageOverviewReadModels", "MainContractIsActive", c => c.Boolean(nullable: false));
             DropColumn("dbo.ItSystemUsageOverviewReadModels", "HasMainContract");
         }
