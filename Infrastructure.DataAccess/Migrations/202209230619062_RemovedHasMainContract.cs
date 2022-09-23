@@ -11,10 +11,10 @@
 
             //Migrate MainContractIsActvie from null to false
             Sql(@"UPDATE dbo.ItSystemUsageOverviewReadModels 
-       SET MainContractIsActive = CASE
-									WHEN MainContractIsActive IS NULL THEN 0
-									ELSE MainContractIsActive
-								   END;"
+                  SET MainContractIsActive = CASE
+									            WHEN MainContractIsActive IS NULL THEN 0
+									            ELSE MainContractIsActive
+								               END;"
             );
 
             AlterColumn("dbo.ItSystemUsageOverviewReadModels", "MainContractIsActive", c => c.Boolean(nullable: false));
