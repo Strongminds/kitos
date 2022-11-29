@@ -10,7 +10,7 @@
             function formatResults(result: Kitos.Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<any>): string {
                 function visit(text: string, indentationLevel: number): string {
                     if (indentationLevel <= 0) {
-                        return text;
+                        return '<div>' + '<span class="org-structure-legend-color org-structure-legend-color-native-unit"></span>' + text + '</div>';
                     }
                     //indentation is four non breaking spaces
                     return visit("&nbsp&nbsp&nbsp&nbsp" + text, indentationLevel - 1);

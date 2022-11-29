@@ -96,9 +96,12 @@
             this.setupOptions();
             this.getData();
 
+            var self = this;
             this.orgUnits = [];
             this.organizationApiService.getOrganizationUnit(this.organizationId).then(result => {
-                this.orgUnits = this.orgUnits.concat(Helpers.Select2OptionsFormatHelper.addIndentationToUnitChildren(result, 0));
+                self.orgUnits = self.orgUnits.concat(Helpers.Select2OptionsFormatHelper.addIndentationToUnitChildren(result, 0));
+
+                var doesContainFkOrgs = self.orgUnits.filter(x => x);
             });
         }
 
