@@ -100,8 +100,6 @@
             this.orgUnits = [];
             this.organizationApiService.getOrganizationUnit(this.organizationId).then(result => {
                 self.orgUnits = self.orgUnits.concat(Helpers.Select2OptionsFormatHelper.addIndentationToUnitChildren(result, 0));
-
-                var doesContainFkOrgs = self.orgUnits.filter(x => x);
             });
         }
 
