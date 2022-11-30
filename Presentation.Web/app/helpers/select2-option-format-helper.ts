@@ -12,11 +12,30 @@
             return Select2OptionsFormatHelper.formatText(org.text, org.optionalObjectContext?.cvrNumber);
         }
 
-        public static addIndentationToUnitChildren(orgUnit: Models.Api.Organization.OrganizationUnit, indentationLevel: number): Kitos.Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[] {
-            const options: Kitos.Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[] = [];
-            Select2OptionsFormatHelper.visitUnit(orgUnit, indentationLevel, options);
+        public static addIndentationToUnitChildren(orgUnit: Models.Api.Organization.OrganizationUnit, indentationLevel: number, idToSkip?: number): Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[] {
+            const options: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[] = [];
+            Select2OptionsFormatHelper.visitUnit(orgUnit, indentationLevel, options, idToSkip);
 
             return options;
+        }
+
+        public static formatIndentation(result: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<any>): string {
+            const formattedResult = Select2OptionsFormatHelper.visit(result.text, result.indentationLevel);
+            return formattedResult;
+        }
+
+        public static formatIndentationWithUnitOrigin(result: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>): string {
+            const formattedResult = Select2OptionsFormatHelper.visit(result.text, result.indentationLevel);
+            return formattedResult;
+        }
+
+        private static visit(text: string, indentationLevel: number, indentationText: string = ""): string {
+            if (indentationLevel <= 0) {
+                if()
+                return indentationText + text;
+            }
+            //indentation is four non breaking spaces
+            return Select2OptionsFormatHelper.visit(text, indentationLevel - 1, indentationText + "&nbsp&nbsp&nbsp&nbsp");
         }
 
         private static formatText(text: string, subText?: string): string {
@@ -26,19 +45,24 @@
             }
             return result;
         }
+
         
-        private static visitUnit(orgUnit: Kitos.Models.Api.Organization.OrganizationUnit, indentationLevel: number, options: Kitos.Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[]) {
+        private static visitUnit(orgUnit: Models.Api.Organization.OrganizationUnit, indentationLevel: number, options: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[], unitIdToSkip?: number) {
+            if (unitIdToSkip && orgUnit.id === unitIdToSkip) {
+                return;
+            }
+
             const option = {
                 id: String(orgUnit.id),
                 text: orgUnit.name,
                 indentationLevel: indentationLevel,
-                optionalExtraObject: orgUnit
+                optionalObjectContext: orgUnit
             };
 
             options.push(option);
 
             orgUnit.children.forEach(child => {
-                return Select2OptionsFormatHelper.visitUnit(child, indentationLevel + 1, options);
+                return Select2OptionsFormatHelper.visitUnit(child, indentationLevel + 1, options, unitIdToSkip);
             });
 
         }

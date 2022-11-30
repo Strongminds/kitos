@@ -160,7 +160,7 @@
         setSelectedOrg() {
             if (!this.selectedOrg?.id)
                 return;
-            if (this.selectedOrg.optionalExtraObject.uuid === this.unitUuid) {
+            if (this.selectedOrg.optionalObjectContext.uuid === this.unitUuid) {
                 this.selectedOrg = null;
                 this.notify.addErrorMessage("Du kan ikke overføre til denne enhed");
                 return;
@@ -307,7 +307,7 @@
 
         private createTransferRequest(): Models.Api.Organization.TransferOrganizationUnitRegistrationRequestDto {
             return Helpers.OrganizationRegistrationHelper.createTransferRequest(
-                this.selectedOrg?.optionalExtraObject?.uuid,
+                this.selectedOrg?.optionalObjectContext?.uuid,
                 this.contractRegistrations.root.children,
                 this.externalPayments.root.children,
                 this.internalPayments.root.children,

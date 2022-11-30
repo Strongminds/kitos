@@ -6,5 +6,6 @@
         localId: number;
         parentId: number;
         organizationId: number;
+        externalUnitUuid: string;
     }
 }
