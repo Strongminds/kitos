@@ -6,11 +6,16 @@
         "select2LoadingService",
         ($scope: any, select2LoadingService: Kitos.Services.Select2LoadingService) => {
             if ($scope.renderUnitOriginIndication === true) {
-                $scope.select2Config = select2LoadingService.select2LocalDataFormatted(() => $scope.options, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentation, $scope.allowClear);
-            } else {
-                $scope.select2Config = select2LoadingService.select2LocalDataFormatted(() => $scope.options, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentation, $scope.allowClear);
+                const externalUnits = $scope.options.filter(x => x.optionalObjectContext?.externalOriginUuid !== null);
+                if (externalUnits.length > 0) {
+                    $scope.hasExternalUnits = true;
+                    $scope.select2Config = select2LoadingService.select2LocalDataFormatted(() => $scope.options, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentationWithUnitOrigin, $scope.allowClear);
+                    return;
+                }
             }
-    }]);
+
+            $scope.select2Config = select2LoadingService.select2LocalDataFormatted(() => $scope.options, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentation, $scope.allowClear);
+        }]);
 
     app.directive("select2OrgUnit", [
         function () {

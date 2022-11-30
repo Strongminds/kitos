@@ -25,17 +25,38 @@
         }
 
         public static formatIndentationWithUnitOrigin(result: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>): string {
-            const formattedResult = Select2OptionsFormatHelper.visit(result.text, result.indentationLevel);
+            let isKitosUnit = true;
+            if (result.optionalObjectContext.externalOriginUuid) {
+                isKitosUnit = false;
+            }
+
+            const formattedResult = Select2OptionsFormatHelper.visitUnitWithOrigin(result.text, result.indentationLevel, isKitosUnit);
             return formattedResult;
         }
 
-        private static visit(text: string, indentationLevel: number, indentationText: string = ""): string {
+        private static visit(text: string, indentationLevel: number): string {
             if (indentationLevel <= 0) {
-                if()
-                return indentationText + text;
+                return text;
             }
             //indentation is four non breaking spaces
-            return Select2OptionsFormatHelper.visit(text, indentationLevel - 1, indentationText + "&nbsp&nbsp&nbsp&nbsp");
+            return Select2OptionsFormatHelper.visit("&nbsp&nbsp&nbsp&nbsp" + text, indentationLevel - 1);
+        }
+
+        private static visitUnitWithOrigin(text: string, indentationLevel: number, isKitosUnit: boolean, indentationText: string = ""): string {
+            if (indentationLevel <= 0) {
+                return Select2OptionsFormatHelper.formatIndentationWithOriginText(text, indentationText, isKitosUnit);
+            }
+
+            //indentation is four non breaking spaces
+            return Select2OptionsFormatHelper.visitUnitWithOrigin(text, indentationLevel - 1, isKitosUnit, indentationText + "&nbsp&nbsp&nbsp&nbsp");
+        }
+
+        private static formatIndentationWithOriginText(text: string, indentationText: string, isKitosUnit: boolean) {
+            if (isKitosUnit) {
+                return `<div><span class="org-structure-legend-square org-structure-legend-color-native-unit right-margin-5px"></span>${indentationText}${text}</div>`;
+            }
+
+            return `<div><span class="org-structure-legend-square org-structure-legend-color-fk-org-unit right-margin-5px"></span>${indentationText}${text}</div>`;
         }
 
         private static formatText(text: string, subText?: string): string {
@@ -46,7 +67,6 @@
             return result;
         }
 
-        
         private static visitUnit(orgUnit: Models.Api.Organization.OrganizationUnit, indentationLevel: number, options: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>[], unitIdToSkip?: number) {
             if (unitIdToSkip && orgUnit.id === unitIdToSkip) {
                 return;
