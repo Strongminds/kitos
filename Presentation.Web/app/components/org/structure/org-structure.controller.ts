@@ -641,8 +641,10 @@
                                     selectedElement: existingChoice,
                                     select2Config: select2LoadingService.select2LocalDataFormatted(() => orgUnitsOptions, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentation),
                                     elementSelected: (newElement) => {
-                                        if (!!newElement) {
-                                            $modalScope.orgUnit.newParent = newElement.id;
+                                        if (newElement !== undefined) {
+                                            if (!!newElement) {
+                                                $modalScope.orgUnit.newParent = newElement.id;
+                                            }
                                         }
                                     }
                                 }
