@@ -627,24 +627,22 @@
                                     if (rootNodes.length < 1)
                                         return;
                                     const rootUnit = rootNodes[0];
-                                    existingChoice = rootUnit;
+                                    existingChoice = { id: rootUnit.id, text: rootUnit.text };
                                 } else {
                                     const parentNodes = orgUnitsOptions.filter(x => x.id === String(currentUnit.newParent));
                                     if (parentNodes.length < 1) {
                                         return;
                                     }
                                     const parentNode = parentNodes[0];
-                                    existingChoice = parentNode;
+                                    existingChoice = { id: parentNode.id, text: parentNode.text };
                                 }
 
                                 $modalScope.parentSelect = {
                                     selectedElement: existingChoice,
                                     select2Config: select2LoadingService.select2LocalDataFormatted(() => orgUnitsOptions, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentation),
                                     elementSelected: (newElement) => {
-                                        if (newElement !== undefined) {
-                                            if (!!newElement) {
-                                                $modalScope.orgUnit.newParent = newElement.id;
-                                            }
+                                        if (!!newElement) {
+                                            $modalScope.orgUnit.newParent = newElement.id;
                                         }
                                     }
                                 }
