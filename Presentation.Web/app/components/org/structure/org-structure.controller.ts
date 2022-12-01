@@ -637,15 +637,14 @@
                                     existingChoice = { id: parentNode.id, text: parentNode.text };
                                 }
 
-                                $modalScope.parentSelect = {
-                                    selectedElement: existingChoice,
-                                    select2Config: select2LoadingService.select2LocalDataFormatted(() => orgUnitsOptions, Kitos.Helpers.Select2OptionsFormatHelper.formatIndentation),
-                                    elementSelected: (newElement) => {
-                                        if (!!newElement) {
-                                            $modalScope.orgUnit.newParent = newElement.id;
-                                        }
+                                $modalScope.parentCurrentOrgUuid = currentOrganization.uuid;
+                                $modalScope.parentSelectedElement = existingChoice;
+                                $modalScope.parentSelect2Config = orgUnitsOptions;
+                                $modalScope.onParentSelected = (newElement) => {
+                                    if (!!newElement) {
+                                        $modalScope.orgUnit.newParent = newElement.id;
                                     }
-                                }
+                                };
                             }
 
                             function createResult(types: Kitos.Models.ViewModel.Organization.OrganizationUnitEditResultType[] = null, unit = null): Kitos.Models.ViewModel.Organization.IOrganizationUnitEditResult {

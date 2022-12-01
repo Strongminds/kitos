@@ -15,7 +15,14 @@
                             Overordnet enhed
                         </label>
                         <div class="col-xs-8">
-                            <single-select-select2 id="parent-select" ng-model="parentSelect" ng-disabled="!canChangeParent" />
+                            <select2-org-unit data-uuid="parentCurrentOrgUuid"
+                                              data-placeholder="Vælg organisationsenhed"
+                                              data-options="parentSelect2Config"
+                                              data-ng-model="parentSelectedElement"
+                                              data-on-change="parentSelect2Config()"
+                                              data-render-unit-origin-indication="!canChangeParent"
+                                              ng-disabled="!canChangeParent">
+                            </select2-org-unit>
                         </div>
                         <div class="col-xs-8 col-xs-offset-3">
                             <p class="help-block" ng-if="canChangeParent">
