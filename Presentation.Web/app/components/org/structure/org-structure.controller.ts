@@ -621,32 +621,83 @@
                                 const idToSkip = root.id === currentUnit.id ? null : currentUnit.id;
                                 const orgUnitsOptions = Kitos.Helpers.Select2OptionsFormatHelper.addIndentationToUnitChildren(root, 0, idToSkip);
 
-                                let existingChoice: { id: string; text: string };
+                                var existingChoice: Kitos.Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Kitos.Models.Api.Organization.OrganizationUnit> = orgUnitsOptions[0];
+
                                 if (currentUnit.isRoot) {
                                     const rootNodes = orgUnitsOptions.filter(x => x.id === String(currentUnit.id));
                                     if (rootNodes.length < 1)
                                         return;
                                     const rootUnit = rootNodes[0];
-                                    existingChoice = { id: rootUnit.id, text: rootUnit.text };
+                                    existingChoice = rootUnit;
                                 } else {
                                     const parentNodes = orgUnitsOptions.filter(x => x.id === String(currentUnit.newParent));
                                     if (parentNodes.length < 1) {
                                         return;
                                     }
                                     const parentNode = parentNodes[0];
-                                    existingChoice = { id: parentNode.id, text: parentNode.text };
+                                    existingChoice = parentNode;
                                 }
 
-                                $modalScope.parentCurrentOrgUuid = currentOrganization.uuid;
-                                $modalScope.parentSelectedElement = existingChoice;
-                                $modalScope.parentSelect2Config = orgUnitsOptions;
-                                $modalScope.onParentSelected = (newElement) => {
-                                    if (!!newElement) {
-                                        $modalScope.orgUnit.newParent = newElement.id;
+                                $modalScope.existingParentChoice = existingChoice;
+
+                                $modalScope.orgStructureSelectDropdownConfig = {
+                                    selectedElement: { id: existingChoice.id, text: existingChoice.text },
+                                    options: orgUnitsOptions.map(item => {
+                                        return {
+                                            id: item.id,
+                                            text: item.text,
+                                            indentationLevel: item.indentationLevel,
+                                            optionalObjectContext: {
+                                                externalOriginUuid: item.optionalObjectContext?.externalOriginUuid
+                                            }
+                                        }
+                                    }),
+                                    onSelected: () => {
+                                        var selectedElement = $modalScope.orgStructureSelectDropdownConfig?.selectedElement;
+                                        if (!selectedElement) {
+                                            return;
+                                        }
+                                        if (selectedElement.id !== $modalScope.existingParentChoice?.id) {
+                                            $modalScope.orgUnit.newParent = selectedElement.id;
+                                            $modalScope.existingParentChoice = selectedElement;
+                                        }
                                     }
-                                };
+                                }
+                                //$modalScope.parentCurrentOrgUuid = currentOrganization.uuid;
+
+                                //$modalScope.existingParentChoice = existingChoice;
+                                //$modalScope.parentSelectedElement = existingChoice;
+                                //$modalScope.parentSelectedElement={}
+                                //$modalScope.parentSelect2Config =
+                                //    [{ id: 1, text: "test" }, { id: 2, text: "test2" }]; // orgUnitsOptions;
+
+                                /*$modalScope.orgStructureSelectDropdownConfig = {
+                                    selectedElement: existingChoice,
+                                    options: orgUnitsOptions,
+                                    onSelected: () => onParentSelected()
+                                }*/
+                                /*{
+                                        if ($modalScope.parentSelectedElement) {
+
+                                        }
+                                    }*/
+                                //$modalScope.orgStructureSelectDropdownConfig = {
+                                //    selectedElement: existingChoice,
+                                //    options: Kitos.Helpers.Select2OptionsFormatHelper.addIndentationToUnitChildren(root, 0, idToSkip),
+                                //    onSelected: () => onParentSelected()
+                                //}
                             }
 
+                            function onParentSelected(){
+                                if (!$modalScope.orgStructureSelectDropdownConfig?.selectedElement) {
+                                    return;
+                                }
+                                if ($modalScope.parentSelectedElement?.id !== $modalScope.existingParentChoice?.id) {
+                                        $modalScope.orgUnit.newParent = $modalScope.parentSelectedElement.id;
+                                        $modalScope.existingParentChoice = $modalScope.parentSelectedElement;
+                                }
+                            };
+                            
                             function createResult(types: Kitos.Models.ViewModel.Organization.OrganizationUnitEditResultType[] = null, unit = null): Kitos.Models.ViewModel.Organization.IOrganizationUnitEditResult {
                                 let resultTypes = types;
                                 if (!resultTypes) {

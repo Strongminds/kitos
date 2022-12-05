@@ -95,7 +95,7 @@
             this.createTableConfigurations();
             this.setupOptions();
             this.getData();
-
+            
             this.orgUnits = [];
             this.organizationApiService.getOrganizationUnit(this.organizationId).then(result => {
                 this.orgUnits = this.orgUnits.concat(Helpers.Select2OptionsFormatHelper.addIndentationToUnitChildren(result, 0));
@@ -136,7 +136,6 @@
                 return;
             }
             this.setIsBusy(true);
-
 
             const request = this.createTransferRequest();
             this.organizationUnitService.transferSelectedRegistrations(this.organizationUuid, this.unitUuid, request)

@@ -26,36 +26,25 @@
             return options;
         }
 
-        public static formatIndentation(result: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<any>): string {
-            const formattedResult = Select2OptionsFormatHelper.visit(result.text, result.indentationLevel);
-            return formattedResult;
-        }
-
-        public static formatIndentationWithUnitOrigin(result: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<Models.Api.Organization.OrganizationUnit>): string {
+        public static formatIndentation(result: Models.ViewModel.Generic.Select2OptionViewModelWithIndentation<any>, addUnitOriginIndication: boolean = false): string {
             let isKitosUnit = true;
-            if (result.optionalObjectContext.externalOriginUuid) {
-                isKitosUnit = false;
+            if (addUnitOriginIndication) {
+                if (result.optionalObjectContext.externalOriginUuid) {
+                    isKitosUnit = false;
+                }
             }
 
-            const formattedResult = Select2OptionsFormatHelper.visitUnitWithOrigin(result.text, result.indentationLevel, isKitosUnit);
+            const formattedResult = Select2OptionsFormatHelper.visit(result.text, result.indentationLevel, addUnitOriginIndication, isKitosUnit);
             return formattedResult;
         }
 
-        private static visit(text: string, indentationLevel: number): string {
+        private static visit(text: string, indentationLevel: number, addUnitOriginIndication: boolean, isKitosUnit: boolean = false, indentationText: string = ""): string {
             if (indentationLevel <= 0) {
-                return text;
-            }
-            //indentation is four non breaking spaces
-            return Select2OptionsFormatHelper.visit("&nbsp&nbsp&nbsp&nbsp" + text, indentationLevel - 1);
-        }
-
-        private static visitUnitWithOrigin(text: string, indentationLevel: number, isKitosUnit: boolean, indentationText: string = ""): string {
-            if (indentationLevel <= 0) {
-                return Select2OptionsFormatHelper.formatIndentationWithOriginText(text, indentationText, isKitosUnit);
+                return addUnitOriginIndication === false ? text : Select2OptionsFormatHelper.formatIndentationWithOriginText(text, indentationText, isKitosUnit);
             }
 
             //indentation is four non breaking spaces
-            return Select2OptionsFormatHelper.visitUnitWithOrigin(text, indentationLevel - 1, isKitosUnit, indentationText + "&nbsp&nbsp&nbsp&nbsp");
+            return Select2OptionsFormatHelper.visit(text, indentationLevel - 1, addUnitOriginIndication, isKitosUnit, indentationText + "&nbsp&nbsp&nbsp&nbsp");
         }
 
         private static formatIndentationWithOriginText(text: string, indentationText: string, isKitosUnit: boolean) {
