@@ -54,6 +54,7 @@ namespace Core.ApplicationServices.Notification
 
         public Maybe<Advice> GetNotificationById(int id)
         {
+            //TODO: Missig auth validation--- read on root must be authorized
             return _adviceService.GetAdviceById(id);
         }
 
@@ -75,7 +76,7 @@ namespace Core.ApplicationServices.Notification
 
             //Prepare new advice
             newNotification.IsActive = true;
-            if (newNotification.AdviceType == AdviceType.Immediate)
+            if (newNotification.AdviceType == AdviceType.Immediate) //TODO This complexity will go away once you split into CreateImmediate and CreateScheduled
             {
                 newNotification.Scheduling = Scheduling.Immediate;
                 newNotification.StopDate = null;
@@ -108,10 +109,12 @@ namespace Core.ApplicationServices.Notification
             if (entityResult.IsNone)
                 return new OperationError($"Notification with Id: {notificationId} was not found", OperationFailure.NotFound);
             var entity = entityResult.Value;
-            if (!_authorizationContext.AllowModify(entity))
+            if (!_authorizationContext.AllowModify(entity))//TODO: Should valiate the root modification
             {
                 return new OperationError($"User is not allowed to modify notification with id: {notificationId}", OperationFailure.Forbidden);
             }
+
+            //TODO: If loaded advice is "immediate" then updates are BadState error
 
             BaseMapModelToEntity(notificationModel, entity);
             
@@ -137,7 +140,7 @@ namespace Core.ApplicationServices.Notification
 
             var entity = entityResult.Value;
 
-            if (!_authorizationContext.AllowDelete(entity))
+            if (!_authorizationContext.AllowDelete(entity)) //TODO: Must be an allowmodify on the root
             {
                 return new OperationError($"User is not allowed to delete notification with id: {notificationId}", OperationFailure.Forbidden);
             }
@@ -165,7 +168,7 @@ namespace Core.ApplicationServices.Notification
             }
             var entity = entityResult.Value;
 
-            if (!_authorizationContext.AllowModify(entity))
+            if (!_authorizationContext.AllowModify(entity))//TODO: Must be an allowmodify on the root
             {
                 return new OperationError($"User is not allowed to deactivate notification with id: {adviceId}", OperationFailure.Forbidden);
             }

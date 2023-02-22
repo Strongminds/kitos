@@ -19,7 +19,7 @@ using Swashbuckle.Swagger.Annotations;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 {
-    [RoutePrefix("api/v2/notifications")]
+    [RoutePrefix("api/v2/notifications")] //TODO: Use the "api/v2/internal/notifications"
     public class NotificationV2Controller : InternalApiV2Controller
     {
         private readonly INotificationWriteModelMapper _writeModelMapper;
@@ -51,7 +51,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult GetNotifications(OwnerResourceType ownerResourceType, 
             [NonEmptyGuid] Guid organizationUuid, 
-            DateTime? fromDate = null,
+            DateTime? fromDate = null, //TODO: Not needed and no filtering on date
+            //TODO: Add an optional ownerResourceUuid to support the advices tab in the ui
+            //TODO: Add query parameter for "Active Only"to support the "overview" -  translate to "QueryByActiveAdvice"
             [FromUri] BoundedPaginationQuery paginationQuery = null)
         {
             if (!ModelState.IsValid)
@@ -68,7 +70,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
                     notifications =>
                     {
                         var notificationList = notifications
-                            .OrderBy(x => x.Id)
+                            .OrderBy(x => x.Id)//TODO: Filter by FromDate
                             .Page(paginationQuery)
                             .ToList();
 
@@ -85,8 +87,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <param name="notificationUuid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{ownerResourceType}/{notificationUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<NotificationResponseDTO>))]
+        [Route("{ownerResourceType}/{notificationUuid}")] //TODO: For the routes we should inclide the ownerResourceUuid on all
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<NotificationResponseDTO>))] //TODO: Wrong instance
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
@@ -238,7 +240,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/sent/{notificationUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(SentNotificationResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(SentNotificationResponseDTO))] //TODO: Should be ienumerable
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
@@ -261,7 +263,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <param name="ownerResourceUuid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{ownerResourceType}/access-rights/{notificationUuid}/{ownerResourceUuid}")]
+        [Route("{ownerResourceType}/access-rights/{notificationUuid}/{ownerResourceUuid}")] //TODO: change route scheme to follow suggested owneruuid... {ownerResourceType}/{ownerResourceUuid}/{notificationUuid}/permissions/
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<NotificationAccessRightsResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]

@@ -1,6 +1,7 @@
 ﻿namespace Core.ApplicationServices.Model.Notification
 {
-    public class NotificationAccessRights
+    //TODO: Rename to NotificationPermissions
+    public class NotificationAccessRights //TODO: Extend from the common resourceaccessrights
     {
         public NotificationAccessRights(bool canBeDeleted, bool canBeDeactivated, bool canBeModified)
         {

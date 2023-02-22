@@ -54,12 +54,14 @@ namespace Presentation.Web.Controllers.API.V1.OData
         [EnableQuery]
         public override IHttpActionResult Get()
         {
+            //TODO: Can be killed
             return Ok(_registrationNotificationService.GetCurrentUserNotifications());
         }
 
         [EnableQuery]
         public override IHttpActionResult Post(int organizationId, Advice advice)
         {
+            //TODO: Some of this validation belongs in the service (e.g. there must be recipients)
             if (advice.RelationId == null || advice.Type == null)
             {
                 //Advice cannot be an orphan - it must belong to a root
@@ -109,6 +111,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         {
             try
             {
+                //TODO: Some of this validation belongs in the service so it can be reused
                 var existingAdvice = Repository.GetByKey(key);
                 var deltaAdvice = delta.GetInstance();
 

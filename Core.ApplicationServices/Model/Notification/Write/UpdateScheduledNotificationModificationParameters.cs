@@ -6,6 +6,7 @@ namespace Core.ApplicationServices.Model.Notification.Write
 {
     public class UpdateScheduledNotificationModificationParameters: ImmediateNotificationModificationParameters
     {
+        //TODO: consider just accepting a notificationmodificationparameters in stead of inheriting it
         public UpdateScheduledNotificationModificationParameters(string body, string subject, RelatedEntityType type, Guid ownerResourceUuid, RootRecipientModificationParameters ccs, RootRecipientModificationParameters receivers, string name, DateTime? toDate) : base(body, subject, type, ownerResourceUuid, ccs, receivers)
         {
             Name = name;

@@ -3,7 +3,7 @@ using Core.DomainModel.Shared;
 
 namespace Core.ApplicationServices.Model.Notification.Write
 {
-    public class ImmediateNotificationModificationParameters
+    public class ImmediateNotificationModificationParameters //TODO: Rename this to NotificationParameters
     {
         public ImmediateNotificationModificationParameters(string body, string subject, RelatedEntityType type, Guid ownerResourceUuid, RootRecipientModificationParameters ccs, RootRecipientModificationParameters receivers)
         {

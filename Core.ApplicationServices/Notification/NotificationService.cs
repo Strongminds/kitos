@@ -74,7 +74,7 @@ namespace Core.ApplicationServices.Notification
                     return Result<IQueryable<Advice>, OperationError>.Success(result);
                 });
         }
-
+        //TODO: General comment.. extract contents of the different !bind blocks into suitable named methods
         public Result<Advice, OperationError> GetNotificationByUuid(Guid uuid, RelatedEntityType relatedEntityType)
         {
             return _entityIdentityResolver.ResolveDbId<Advice>(uuid)
@@ -168,6 +168,7 @@ namespace Core.ApplicationServices.Notification
                     error => error);
         }
         
+        //TODO: Use this information in the "deactivate, Delete, modify etc methods"
         public Result<NotificationAccessRights, OperationError> GetAccessRights(Guid notificationUuid, Guid relatedEntityUuid, RelatedEntityType relatedEntityType)
         {
             return GetNotificationByUuid(notificationUuid, relatedEntityType)
@@ -181,8 +182,8 @@ namespace Core.ApplicationServices.Notification
 
                                 var canBeModified = notification.IsActive && notification.AdviceType == AdviceType.Repeat;
                                 var canBeDeactivated = canBeModified && !notification.AdviceSent.Any();
-                                var canBeDeleted = notification.CanBeDeleted && _authorizationContext.AllowDelete(relatedEntity);
-                                
+                                var canBeDeleted = notification.CanBeDeleted && _authorizationContext.AllowDelete(relatedEntity); //TODO: just allowModify
+
                                 return new NotificationAccessRights(canBeDeleted, canBeDeactivated, canBeModified);
                             },
                             () => new OperationError($"Related entity of type {relatedEntityType} with uuid {relatedEntityUuid} was not found", OperationFailure.NotFound));
@@ -213,7 +214,7 @@ namespace Core.ApplicationServices.Notification
                 .Match<Result<NotificationModel, OperationError>>(recipients =>
                 {
                     var recipientList = recipients.ToList();
-                    if (!recipientList.Any())
+                    if (!recipientList.Any()) //TODO: Must be a direct recipient
                         return new OperationError("Notification needs at least 1 recipient", OperationFailure.BadInput);
 
                     model.Recipients = recipientList;
@@ -340,6 +341,7 @@ namespace Core.ApplicationServices.Notification
             else
             {
                 UpdateRelatedEntity(entity, relatedEntityType);
+             //TODO: Use dbaccess.save
                 transaction.Commit();
             }
 
