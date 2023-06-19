@@ -331,7 +331,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(expectedContracts.Count, readModel.AssociatedContracts.Count);
             foreach (var expectedContract in expectedContracts)
             {
-                Assert.True(readModel.AssociatedContractsNamesCsv.Contains(expectedContract.Name));
+                Assert.Contains(expectedContract.Name, readModel.AssociatedContractsNamesCsv);
                 Assert.Contains(readModel.AssociatedContracts, c => c.ItContractId == expectedContract.Id);
             }
 

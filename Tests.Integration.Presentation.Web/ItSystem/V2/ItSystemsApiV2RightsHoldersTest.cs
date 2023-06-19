@@ -437,15 +437,14 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         }
 
         [Theory]
-        [InlineData(true, true, true, true, true, true, true)]
-        [InlineData(true, true, true, true, true, true, false)]
-        [InlineData(true, true, true, true, true, false, false)]
-        [InlineData(true, true, true, true, false, false, false)]
-        [InlineData(true, true, true, false, false, false, false)]
-        [InlineData(true, true, false, false, false, false, false)]
-        [InlineData(true, false, false, false, false, false, false)]
-        [InlineData(false, false, false, false, false, false, false)]
-        public async Task Can_PUT_As_RightsHolder(bool updateName, bool updateFormerName, bool updateDescription, bool updateUrl, bool updateBusinessType, bool updateKle, bool updateParent)
+        [InlineData(true, true, true, true, true, true)]
+        [InlineData(true, true, true, true, true, false)]
+        [InlineData(true, true, true, true, false, false)]
+        [InlineData(true, true, true, false, false, false)]
+        [InlineData(true, true, false, false, false, false)]
+        [InlineData(true, false, false, false, false, false)]
+        [InlineData(false, false, false, false, false, false)]
+        public async Task Can_PUT_As_RightsHolder(bool updateName, bool updateFormerName, bool updateDescription, bool updateUrl, bool updateBusinessType, bool updateParent)
         {
             //Arrange
             var (token, rightsHolder) = await CreateRightsHolderAccessUserInNewOrganizationAsync();
@@ -492,15 +491,14 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         }
 
         [Theory]
-        [InlineData(true, true, true, true, true, true, true)]
-        [InlineData(true, true, true, true, true, true, false)]
-        [InlineData(true, true, true, true, true, false, false)]
-        [InlineData(true, true, true, true, false, false, false)]
-        [InlineData(true, true, true, false, false, false, false)]
-        [InlineData(true, true, false, false, false, false, false)]
-        [InlineData(true, false, false, false, false, false, false)]
-        [InlineData(false, false, false, false, false, false, false)]
-        public async Task Can_PATCH_As_RightsHolder(bool updateName, bool updateFormerName, bool updateDescription, bool updateUrl, bool updateBusinessType, bool updateKle, bool updateParent)
+        [InlineData(true, true, true, true, true, true)]
+        [InlineData(true, true, true, true, true, false)]
+        [InlineData(true, true, true, true, false, false)]
+        [InlineData(true, true, true, false, false, false)]
+        [InlineData(true, true, false, false, false, false)]
+        [InlineData(true, false, false, false, false, false)]
+        [InlineData(false, false, false, false, false, false)]
+        public async Task Can_PATCH_As_RightsHolder(bool updateName, bool updateFormerName, bool updateDescription, bool updateUrl, bool updateBusinessType, bool updateParent)
         {
             //Arrange
             var (token, rightsHolder) = await CreateRightsHolderAccessUserInNewOrganizationAsync();
