@@ -24,6 +24,11 @@ switch( $targetEnvironment )
             #All good
             break;
         }
+        "new-dev" 
+        {
+            #All good
+            break;
+        }
         default { Throw "Error: Unsupported environment provided: $targetEnvironment" }
     }
 
