@@ -88,6 +88,15 @@ Function Setup-Environment([String] $environmentName) {
             $Env:Robots = ".*Robots\.Test\.Txt"
             break;
         }
+        "new-dev" 
+        {
+            $Env:TestToolsPath = Resolve-Path "$PSScriptRoot\..\TestDatabaseTools\Tools.Test.Database.exe"
+            $loadTcHangfireConnectionString = $true
+            $loadTestUsers = $true
+            $Env:UseDefaultUserPassword = "true"
+            $Env:Robots = ".*Robots\.Test\.Txt"
+            break;
+        }
          "staging"
         {
             $loadTcHangfireConnectionString = $false
