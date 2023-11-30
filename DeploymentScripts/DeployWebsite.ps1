@@ -7,9 +7,8 @@ if (!(Test-Path $msdeploy)) {
         throw "msdeploy.exe not found"
     }
     
-    if (!(Test-Path -replace:objectName=filePath,match="$robotsFileName",replace=Robots.txt)) {
+    if (!(Test-Path $robotsFileName)) {
           Write-Warning "name: $robotsFileName"
-          Write-Warning "-replace:objectName=filePath,match="$robotsFileName",replace=Robots.txt"
           Write-Warning "Robots not found"
     }
 
