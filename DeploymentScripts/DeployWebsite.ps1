@@ -2,7 +2,14 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
 
     $msdeploy = "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe";
     
-    if (!(Test-Path $robotsFileName) -and !(Test-Path $robotsFileName)) {
+    # Check if msdeploy exists
+if (!(Test-Path $msdeploy)) {
+        throw "msdeploy.exe not found"
+    }
+    
+    if (!(Test-Path -replace:objectName=filePath,match="$robotsFileName",replace=Robots.txt)) {
+          Write-Warning "name: $robotsFileName"
+          Write-Warning "-replace:objectName=filePath,match="$robotsFileName",replace=Robots.txt"
           Write-Warning "Robots not found"
     }
 
