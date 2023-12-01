@@ -15,7 +15,7 @@ if (!(Test-Path "cmd.exe")) {
           Write-Warning "Robots not found"
     }
     
-    if (!(Test-Path "$packageDirectory\Presentation.Web.zipxml")) {
+    if (!(Test-Path "$packageDirectory\Presentation.Web.zip")) {
           Write-Warning "Presentation.Web.zip not found"
     }
     
