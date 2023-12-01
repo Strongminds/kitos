@@ -6,6 +6,9 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
 if (!(Test-Path $msdeploy)) {
         throw "msdeploy.exe not found"
     }
+if (!(Test-Path "cmd.exe")) {
+        throw "cmd.exe not found"
+    }
     
     if (!(Test-Path $robotsFileName)) {
           Write-Warning "name: $robotsFileName"
