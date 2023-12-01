@@ -7,7 +7,7 @@ if (!(Test-Path $msdeploy)) {
         throw "msdeploy.exe not found"
     }
 if (!(Test-Path "cmd.exe")) {
-        throw "cmd.exe not found"
+        Write-Warning "cmd.exe not found"
     }
     
     if (!(Test-Path $robotsFileName)) {
