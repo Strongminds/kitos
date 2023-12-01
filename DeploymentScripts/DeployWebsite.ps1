@@ -14,6 +14,14 @@ if (!(Test-Path "cmd.exe")) {
           Write-Warning "name: $robotsFileName"
           Write-Warning "Robots not found"
     }
+    
+    if (!(Test-Path "$packageDirectory\Presentation.Web.zipxml")) {
+          Write-Warning "Presentation.Web.zip not found"
+    }
+    
+    if (!(Test-Path "$packageDirectory\Presentation.Web.SetParameters.xml")) {
+          Write-Warning "Presentation.Web.SetParameters not found"
+    }
 
     $fullCommand=$(("`"{0}`" " +  
                     "-verb:sync " +
