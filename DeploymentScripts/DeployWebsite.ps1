@@ -2,26 +2,14 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
 
     $msdeploy = "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe";
     
-    # Check if msdeploy exists
-if (!(Test-Path $msdeploy)) {
-        throw "msdeploy.exe not found"
-    }
-if (!(Test-Path "cmd.exe")) {
-        Write-Warning "cmd.exe not found"
-    }
-    
-    if (!(Test-Path $robotsFileName)) {
-          Write-Warning "name: $robotsFileName"
-          Write-Warning "Robots not found"
-    }
-    
-    if (!(Test-Path "$packageDirectory\Presentation.Web.zip")) {
-          Write-Warning "Presentation.Web.zip not found"
-    }
-    
-    if (!(Test-Path "$packageDirectory\Presentation.Web.SetParameters.xml")) {
-          Write-Warning "Presentation.Web.SetParameters not found"
-    }
+    $kitosSingleQuotes = $kitosDbConnectionString -replace "Password=([^,]+);", "Password='$1';"
+    $convertedKitosConnectionString = $kitosSingleQuotes -replace '"', '""'
+
+    $hangfireSingleQoutes = $hangfireConnectionString -replace "Password=([^,]+);", "Password='$1';"
+    $convertedHangfireConnectionString = $hangfireSingleQoutes -replace '"', '""'
+
+    Write-Warning "Kitos converted connection string $convertedKitosConnectionString"
+    Write-Warning "Hangfire converted connection string $convertedHangfireConnectionString"
 
     $fullCommand=$(("`"{0}`" " +  
                     "-verb:sync " +
@@ -56,8 +44,10 @@ if (!(Test-Path "cmd.exe")) {
                     "-setParam:name=`"SmtpPort`",value=`"{25}`" " +
                     "-setParam:name=`"SmtpUserName`",value=`"{26}`" " +
                     "-setParam:name=`"SmtpPassword`",value=`"{27}`"") `
-    -f $msdeploy, $packageDirectory, $msDeployUrl, $msDeployUser, $msDeployPassword, $logLevel, $esUrl, $securityKeyString, $smtpFromMail, $smtpNwHost, $resetPwTtl, $baseUrl, $mailSuffix, $kitosEnvName, $buildNumber, $kitosDbConnectionString, $hangfireConnectionString, $defaultUserPassword, $useDefaultUserPassword, $ssoServiceProviderServer, $ssoIDPEndPoints, $ssoServiceProviderId, $ssoCertificateThumbPrint, $stsOrganisationEndpointHost, $robotsFileName, $smtpNetworkPort, $smtpNetworkUsername, $smtpNetworkPassword)
+    -f $msdeploy, $packageDirectory, $msDeployUrl, $msDeployUser, $msDeployPassword, $logLevel, $esUrl, $securityKeyString, $smtpFromMail, $smtpNwHost, $resetPwTtl, $baseUrl, $mailSuffix, $kitosEnvName, $buildNumber, $convertedKitosConnectionString, $convertedHangfireConnectionString, $defaultUserPassword, $useDefaultUserPassword, $ssoServiceProviderServer, $ssoIDPEndPoints, $ssoServiceProviderId, $ssoCertificateThumbPrint, $stsOrganisationEndpointHost, $robotsFileName, $smtpNetworkPort, $smtpNetworkUsername, $smtpNetworkPassword)
     
+    if($LASTEXITCODE -ne 0)	{ throw "FAILED TO DEPLOY" } 
+
     & cmd.exe /C $fullCommand
  
     if($LASTEXITCODE -ne 0)	{ throw "FAILED TO DEPLOY" } 
