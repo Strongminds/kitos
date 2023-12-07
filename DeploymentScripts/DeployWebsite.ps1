@@ -8,9 +8,6 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
     $hangfireSingleQoutes = $hangfireConnectionString -replace "Password=([^,]+);", "Password='$1';"
     $convertedHangfireConnectionString = $hangfireSingleQoutes -replace '"', '""'
 
-    Write-Warning "Kitos converted connection string $convertedKitosConnectionString"
-    Write-Warning "Hangfire converted connection string $convertedHangfireConnectionString"
-
     $fullCommand=$(("`"{0}`" " +  
                     "-verb:sync " +
                     "-source:package=`"{1}\Presentation.Web.zip`" " +

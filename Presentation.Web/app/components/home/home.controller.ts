@@ -19,7 +19,7 @@
     app.controller("home.IndexCtrl", ["$rootScope", "$scope", "$http", "$state", "notify", "userService", "texts", "navigationService", "$sce", "$location", "$", "featureToggleService",
         ($rootScope, $scope, $http, $state, notify, userService, texts, navigationService, $sce, $location, $, featureToggleService: Kitos.Services.FeatureToggle.IFeatureToggleService) => {
 
-            const factory = new Kitos.Models.ViewModel.Sso.SsoStateViewModelFactory($);
+           /* const factory = new Kitos.Models.ViewModel.Sso.SsoStateViewModelFactory($);
             let ssoStateViewModel = factory.createFromViewState();
 
             if (ssoStateViewModel.startPreference && ssoStateViewModel.startPreference !== Kitos.Constants.ApplicationStateId.Index) {
@@ -28,7 +28,7 @@
                     $state.go(ssoStateViewModel.startPreference, null, { reload: true });
                     return;
                 }
-            }
+            }*/
 
             const ftFactory = new Kitos.Models.ViewModel.FeatureToggle.FeatureToggleViewModelFactory($);
             const ftViewModel = ftFactory.createFromViewState();
@@ -58,10 +58,10 @@
                 convert_urls: false
             };
 
-            $scope.ssoVm = ssoStateViewModel;
+            //$scope.ssoVm = ssoStateViewModel;
 
             const resetSsoError = () => {
-                $scope.ssoVm.error = null;
+                //$scope.ssoVm.error = null;
             }
 
             $scope.text = {};
