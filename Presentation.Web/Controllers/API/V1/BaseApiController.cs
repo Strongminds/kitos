@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
@@ -35,6 +36,8 @@ namespace Presentation.Web.Controllers.API.V1
         {
             _authorizationStrategy = new Lazy<IControllerAuthorizationStrategy>(() => new ContextBasedAuthorizationStrategy(AuthorizationContext));
             _crudAuthorization = new Lazy<IControllerCrudAuthorization>(GetCrudAuthorization);
+            var ts = new TraceSource("TestSource");
+            ts.TraceData(TraceEventType.Critical, 45);
         }
 
         protected virtual IControllerCrudAuthorization GetCrudAuthorization()
