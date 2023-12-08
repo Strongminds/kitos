@@ -10,8 +10,7 @@ namespace Presentation.Web
 
         public void ProcessRequest(HttpContext context)
         {
-            context.Response.ContentType = "text/plain";
-            context.Response.Write("Hello World");
+            context.Response.Redirect("Login.ashx");
         }
 
         public bool IsReusable
