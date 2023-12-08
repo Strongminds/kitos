@@ -459,6 +459,9 @@
     <Compile Include="Models\API\V2\Types\Notifications\RepetitionFrequencyOptions.cs" />
     <Compile Include="Models\API\V2\Types\Shared\CommonOrderByProperty.cs" />
     <Compile Include="Models\API\V2\Types\System\SystemDeletionConflict.cs" />
+    <Compile Include="MyHandler.ashx.cs">
+      <DependentUpon>MyHandler.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Swagger\PurgeUnusedTypesDocumentFilter.cs" />
     <Compile Include="Swagger\RemoveUnneededMutatingCallsFilter.cs" />
     <Compile Include="Swagger\SwashbuckleExtensions.cs" />
@@ -1755,6 +1758,7 @@
     <Content Include="Content\notify\notify.less" />
     <Content Include="app\components\local-config\local-config-option-edit.modal.view.html" />
     <Content Include="Metadata.ashx" />
+    <Content Include="MyHandler.ashx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
