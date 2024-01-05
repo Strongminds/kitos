@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="b25e4f42-6ab3-46f0-a6da-bb36306843da" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="b25e4f42-6ab3-46f0-a6da-bb36306843da" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -19,22 +19,19 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="C:\work\saw\kitos\Infrastructure.STS.Company\ServiceContract\wsdl\context\VirksomhedService.wsdl" Protocol="file" SourceId="1" />
+    <MetadataSource Address="C:\Users\AleksanderNaskret\source\repos\kitos_backend\ConnectedServices\wsdl\Virksomhed.wsdl" Protocol="file" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="ServiceplatformFault_1.xsd" MetadataType="Schema" ID="da961d23-9c05-4c1a-8eaf-746c7a0ce8fc" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/sp/ServiceplatformFault_1.xsd" />
-    <MetadataFile FileName="Virksomhed.xsd" MetadataType="Schema" ID="bab19cec-4c0d-4c81-8106-55f5d17b1cf1" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/SF1500_EP_FS11/xsd/1.1.STS-3/Virksomhed.xsd" />
-    <MetadataFile FileName="SagDokObjekt.xsd" MetadataType="Schema" ID="f1c76716-ee6a-43ad-90aa-5ab00eee95f2" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/SF1500_EP_FS11/xsd/common/SagDokObjekt.xsd" />
-    <MetadataFile FileName="RequestHeader.xsd" MetadataType="Schema" ID="7b87f07b-1a01-430c-84bc-f08db78eab4b" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/SF1500_EP_FS11/xsd/common/RequestHeader.xsd" />
-    <MetadataFile FileName="CallContext_1.xsd" MetadataType="Schema" ID="b8e95cd6-a04c-4677-9b1c-d8b4e3f4e310" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/sp/CallContext_1.xsd" />
-    <MetadataFile FileName="policies.wsdl" MetadataType="Wsdl" ID="ac0ef7cd-f018-4a79-8ebc-82d7097720c9" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/wsdl/context/policies.wsdl" />
-    <MetadataFile FileName="ServiceplatformFaultMessage.wsdl" MetadataType="Wsdl" ID="5a5847ef-64cf-485b-8493-92cdfe4a542c" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/sp/ServiceplatformFaultMessage_1.wsdl" />
-    <MetadataFile FileName="AuthorityContext_1.xsd" MetadataType="Schema" ID="87812607-8918-46c4-a515-b3de0dd4cde3" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/sp/AuthorityContext_1.xsd" />
-    <MetadataFile FileName="GenerelleDefinitioner.xsd" MetadataType="Schema" ID="9555b9f5-a121-48e4-b590-3348d385ca1f" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/SF1500_EP_FS11/xsd/1.1.STS-3/GenerelleDefinitioner.xsd" />
-    <MetadataFile FileName="Part.xsd" MetadataType="Schema" ID="72ff3faa-7629-45b6-8c6e-dcdba4bec848" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/SF1500_EP_FS11/xsd/1.1.STS-3/Part.xsd" />
-    <MetadataFile FileName="VirksomhedServiceMsg.xsd" MetadataType="Schema" ID="8982ad26-55d3-4c90-a02a-667d57d12d8c" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/VirksomhedServiceMsg.xsd" />
-    <MetadataFile FileName="VirksomhedService.wsdl" MetadataType="Wsdl" ID="7329a224-243a-47b7-bed3-33b3b2c598b1" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/wsdl/context/VirksomhedService.wsdl" />
-    <MetadataFile FileName="VirksomhedOperationer.xsd" MetadataType="Schema" ID="1a229d85-1c47-49d4-bd9f-8f70b09ad92f" SourceId="1" SourceUrl="file:///C:/work/saw/kitos/Infrastructure.STS.Company/ServiceContract/SF1500_EP_FS11/xsd/1.1.STS-3/VirksomhedOperationer.xsd" />
+    <MetadataFile FileName="RequestHeader1.xsd" MetadataType="Schema" ID="eee2a7e2-43bf-43d4-aac5-1179894aca86" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/common/RequestHeader.xsd" />
+    <MetadataFile FileName="GenerelleDefinitioner1.xsd" MetadataType="Schema" ID="f7f0e703-c9c8-473b-9137-f11bf3d88c7f" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/GenerelleDefinitioner.xsd" />
+    <MetadataFile FileName="VirksomhedOperationer1.xsd" MetadataType="Schema" ID="2ceaf291-e082-4dbe-9ee0-436004709f10" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/VirksomhedOperationer.xsd" />
+    <MetadataFile FileName="SagDokObjekt1.xsd" MetadataType="Schema" ID="e852a51e-f6ec-4aeb-a306-91c15232d438" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/common/SagDokObjekt.xsd" />
+    <MetadataFile FileName="VirksomhedBesked.xsd" MetadataType="Schema" ID="09762886-493b-4c83-a0c5-4f1235a21fdf" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/VirksomhedBesked.xsd" />
+    <MetadataFile FileName="OrganisationFaelles.xsd" MetadataType="Schema" ID="3276b842-6db8-4360-854a-23a652322454" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/OrganisationFaelles.xsd" />
+    <MetadataFile FileName="VirksomhedService1.wsdl" MetadataType="Wsdl" ID="22da40e5-17db-4a5d-bfbb-9dfe8b61482a" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/wsdl/Virksomhed.wsdl" />
+    <MetadataFile FileName="Virksomhed1.xsd" MetadataType="Schema" ID="19f40801-79de-41f4-9933-d433fef5594a" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/Virksomhed.xsd" />
+    <MetadataFile FileName="OIOIDWS.wsdl" MetadataType="Wsdl" ID="df4bc58e-c3e2-4242-a830-6a673b4720a8" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/wsdl/policies/OIOIDWS.wsdl" />
+    <MetadataFile FileName="Part1.xsd" MetadataType="Schema" ID="10fcd2df-9398-4fce-be9d-781a16265777" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/Part.xsd" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

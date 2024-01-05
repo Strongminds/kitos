@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="66ddcdf4-e3fe-4dc1-acab-344fd2de52e4" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="66ddcdf4-e3fe-4dc1-acab-344fd2de52e4" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -19,22 +19,19 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="C:\Projects\kitos\Infrastructure.Soap\Person\wsdl\context\PersonService.wsdl" Protocol="file" SourceId="1" />
+    <MetadataSource Address="C:\Users\AleksanderNaskret\source\repos\kitos_backend\ConnectedServices\wsdl\Person.wsdl" Protocol="file" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="Person.xsd" MetadataType="Schema" ID="713ad34b-097c-4be1-8c0c-1cb1ae4165f9" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/SF1500_EP_FS10/xsd/1.1.STS-3/Person.xsd" />
-    <MetadataFile FileName="AuthorityContext_1.xsd" MetadataType="Schema" ID="e9ca6939-bc64-4b1d-b48a-f53f34836b36" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/sp/AuthorityContext_1.xsd" />
-    <MetadataFile FileName="CallContext_1.xsd" MetadataType="Schema" ID="631740c1-d12c-4f7c-bb55-2853ca47c8ab" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/sp/CallContext_1.xsd" />
-    <MetadataFile FileName="ServiceplatformFault_1.xsd" MetadataType="Schema" ID="500aae4d-a3d2-49d5-8d5a-fe9f3e839094" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/sp/ServiceplatformFault_1.xsd" />
-    <MetadataFile FileName="RequestHeader.xsd" MetadataType="Schema" ID="5e0b7945-0c03-4742-a49c-cb8368a1791c" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/SF1500_EP_FS10/xsd/common/RequestHeader.xsd" />
-    <MetadataFile FileName="SagDokObjekt.xsd" MetadataType="Schema" ID="04e311d3-a838-40ee-831a-421f0b607366" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/SF1500_EP_FS10/xsd/common/SagDokObjekt.xsd" />
-    <MetadataFile FileName="GenerelleDefinitioner.xsd" MetadataType="Schema" ID="b966f114-69b9-41a5-aa1f-6e367b1cafd7" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/SF1500_EP_FS10/xsd/1.1.STS-3/GenerelleDefinitioner.xsd" />
-    <MetadataFile FileName="Part.xsd" MetadataType="Schema" ID="4a28a572-5e7d-4aa1-8586-251c73c872eb" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/SF1500_EP_FS10/xsd/1.1.STS-3/Part.xsd" />
-    <MetadataFile FileName="PersonServiceMsg.xsd" MetadataType="Schema" ID="372afb62-6813-41e4-af39-8e7305f0c086" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/PersonServiceMsg.xsd" />
-    <MetadataFile FileName="policies.wsdl" MetadataType="Wsdl" ID="93bdd1da-61c1-4ee3-8b36-901feb4b7652" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/wsdl/context/policies.wsdl" />
-    <MetadataFile FileName="PersonService.wsdl" MetadataType="Wsdl" ID="4db3a27e-a0b0-4bf5-801b-aca39880d77d" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/wsdl/context/PersonService.wsdl" />
-    <MetadataFile FileName="PersonOperationer.xsd" MetadataType="Schema" ID="167160ea-39b5-4d82-ac3c-98a6d5b22b82" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/SF1500_EP_FS10/xsd/1.1.STS-3/PersonOperationer.xsd" />
-    <MetadataFile FileName="ServiceplatformFaultMessage.wsdl" MetadataType="Wsdl" ID="6ad9db10-d992-4014-b7aa-0f49a0c22d7c" SourceId="1" SourceUrl="file:///C:/Projects/kitos/Infrastructure.Soap/Person/sp/ServiceplatformFaultMessage_1.wsdl" />
+    <MetadataFile FileName="PersonOperationer1.xsd" MetadataType="Schema" ID="5cfc83d7-847b-444b-8d93-9d650e6d48ea" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/PersonOperationer.xsd" />
+    <MetadataFile FileName="GenerelleDefinitioner1.xsd" MetadataType="Schema" ID="1548c0f2-08a3-4cb2-ab8e-3b69b082bb7f" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/GenerelleDefinitioner.xsd" />
+    <MetadataFile FileName="PersonBesked.xsd" MetadataType="Schema" ID="610e109d-8f30-48c6-88f2-e2b3840896ec" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/PersonBesked.xsd" />
+    <MetadataFile FileName="Part1.xsd" MetadataType="Schema" ID="caa31bf2-cb4a-4721-af01-0d8aff6b5b54" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/Part.xsd" />
+    <MetadataFile FileName="SagDokObjekt1.xsd" MetadataType="Schema" ID="ddbcebc6-9616-42b6-9e24-711ba57d886b" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/common/SagDokObjekt.xsd" />
+    <MetadataFile FileName="OrganisationFaelles.xsd" MetadataType="Schema" ID="10c9682e-dc29-4024-8a2c-279db9717348" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/OrganisationFaelles.xsd" />
+    <MetadataFile FileName="PersonService1.wsdl" MetadataType="Wsdl" ID="aa92f631-de4f-4b4c-9ed0-d99826d4f65b" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/wsdl/Person.wsdl" />
+    <MetadataFile FileName="OIOIDWS.wsdl" MetadataType="Wsdl" ID="2317dbb8-1c96-482a-87d1-71000d32a490" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/wsdl/policies/OIOIDWS.wsdl" />
+    <MetadataFile FileName="RequestHeader1.xsd" MetadataType="Schema" ID="24ded91b-a93f-4591-9af0-f3a6c3fe3e20" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/common/RequestHeader.xsd" />
+    <MetadataFile FileName="Person1.xsd" MetadataType="Schema" ID="c5887253-47c4-4059-9ef9-d8cb45f24aab" SourceId="1" SourceUrl="file:///C:/Users/AleksanderNaskret/source/repos/kitos_backend/ConnectedServices/xsd/6.0.STS-0/Person.xsd" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

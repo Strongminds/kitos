@@ -10,7 +10,15 @@ using Infrastructure.STS.Common.Factories;
 using Infrastructure.STS.Common.Model;
 using Infrastructure.STS.Common.Model.Client;
 using Infrastructure.STS.Company.ServiceReference;
+using Infrastructure.STS.OrganizationUnit.ServiceReference;
 using Serilog;
+using EgenskabType = Infrastructure.STS.Company.ServiceReference.EgenskabType;
+using RelationListeType = Infrastructure.STS.Company.ServiceReference.RelationListeType;
+using SoegInputType1 = Infrastructure.STS.Company.ServiceReference.SoegInputType1;
+using SoegRegistreringType = Infrastructure.STS.Company.ServiceReference.SoegRegistreringType;
+using soegRequest = Infrastructure.STS.Company.ServiceReference.soegRequest;
+using soegResponse = Infrastructure.STS.Company.ServiceReference.soegResponse;
+using TilstandListeType = Infrastructure.STS.Company.ServiceReference.TilstandListeType;
 
 namespace Infrastructure.STS.Company.DomainServices
 {
@@ -24,7 +32,7 @@ namespace Infrastructure.STS.Company.DomainServices
         {
             _logger = logger;
             _certificateThumbprint = configuration.CertificateThumbprint;
-            _serviceRoot = $"https://{configuration.EndpointHost}/service/Organisation/Virksomhed/5";
+            _serviceRoot = $"https://{configuration.EndpointHost}/service/Organisation/Virksomhed/6";
         }
 
         public Result<Guid, DetailedOperationError<StsError>> ResolveStsOrganizationCompanyUuid(Organization organization)
@@ -43,14 +51,14 @@ namespace Infrastructure.STS.Company.DomainServices
             {
                 var response = GetSearchResponse(channel, request);
 
-                var statusResult = response.SoegResponse1.SoegOutput.StandardRetur;
+                var statusResult = response.SoegOutput.StandardRetur;
                 var stsError = statusResult.StatusKode.ParseStsErrorFromStandardResultCode();
                 if (stsError.HasValue)
                 {
                     return new DetailedOperationError<StsError>(OperationFailure.UnknownError, stsError.Value, $"Error resolving the organization company from STS:{statusResult.StatusKode}:{statusResult.FejlbeskedTekst}");
                 }
 
-                var ids = response.SoegResponse1.SoegOutput.IdListe;
+                var ids = response.SoegOutput.IdListe;
                 if (ids.Length != 1)
                 {
                     return new DetailedOperationError<StsError>(OperationFailure.UnknownError, StsError.Unknown, $"Error resolving the organization company from STS. Expected a single UUID but got:{string.Join(",", ids)}");
@@ -86,24 +94,24 @@ namespace Infrastructure.STS.Company.DomainServices
         {
             return new soegRequest
             {
-                SoegRequest1 = new SoegRequestType
+                /*SoegRequest1 = new SoegRequestType
                 {
                     AuthorityContext = new AuthorityContextType
                     {
                         MunicipalityCVR = organization.Cvr
                     },
-                    SoegInput = new SoegInputType1
+                }*/
+                SoegInput = new SoegInputType1
+                {
+                    RelationListe = new RelationListeType(),
+                    FoersteResultatReference = "0",
+                    MaksimalAntalKvantitet = "2",
+                    SoegRegistrering = new SoegRegistreringType(),
+                    TilstandListe = new TilstandListeType(),
+                    AttributListe = new[]{new EgenskabType
                     {
-                        RelationListe = new RelationListeType(),
-                        FoersteResultatReference = "0",
-                        MaksimalAntalKvantitet = "2",
-                        SoegRegistrering = new SoegRegistreringType(),
-                        TilstandListe = new TilstandListeType(),
-                        AttributListe = new[]{new EgenskabType
-                        {
-                            CVRNummerTekst = organization.Cvr
-                        }}
-                    }
+                        CVRNummerTekst = organization.Cvr
+                    }}
                 }
             };
         }

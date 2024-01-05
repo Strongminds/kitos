@@ -12,14 +12,14 @@ namespace Core.DomainServices.SSO
             var laesInputType = new LaesInputType {UUIDIdentifikator = uuid.ToString()};
             var laesRequest = new laesRequest
             {
-                LaesRequest1 = new LaesRequestType
+                LaesInput = laesInputType,
+                /*LaesRequest1 = new LaesRequestType
                 {
-                    LaesInput = laesInputType,
                     AuthorityContext = new AuthorityContextType
                     {
                         MunicipalityCVR = municipalityCvr 
                     }
-                }
+                }*/
             };
             return laesRequest;
         }

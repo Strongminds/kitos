@@ -28,7 +28,7 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
             _organizationService = organizationService;
             _logger = logger;
             _certificateThumbprint = configuration.CertificateThumbprint;
-            _serviceRoot = $"https://{configuration.EndpointHost}/service/Organisation/OrganisationSystem/5";
+            _serviceRoot = $"https://{configuration.EndpointHost}/service/Organisation/OrganisationSystem/6";
         }
 
         public Result<ExternalOrganizationUnit, DetailedOperationError<ResolveOrganizationTreeError>> ResolveOrganizationTree(Organization organization)
@@ -39,7 +39,7 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
             const int pageSize = 1000;
             int currentPageSize;
             var totalIds = 0;
-            var totalResults = new List<(Guid, RegistreringType5)>();
+            var totalResults = new List<(Guid, RegistreringType1)>();
 
             using var client = CreateClient(BasicHttpBindingFactory.CreateHttpBinding(), _serviceRoot, clientCertificate);
             var channel = client.ChannelFactory.CreateChannel();
@@ -48,7 +48,7 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
                 var listRequest = CreateOrgHierarchyRequest(organization.Cvr, pageSize, totalIds);
                 var listResponse = LoadOrganizationHierarchy(channel, listRequest);
 
-                var listStatusResult = listResponse.FremsoegobjekthierarkiResponse1.FremsoegObjekthierarkiOutput.StandardRetur;
+                var listStatusResult = listResponse.FremsoegObjekthierarkiOutput.StandardRetur;
                 var listStsError = listStatusResult.StatusKode.ParseStsErrorFromStandardResultCode();
                 if (listStsError.HasValue)
                 {
@@ -56,7 +56,7 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
                     return new DetailedOperationError<ResolveOrganizationTreeError>(OperationFailure.UnknownError, ResolveOrganizationTreeError.FailedLoadingOrgUnits);
                 }
 
-                var listResponseUnits = listResponse.FremsoegobjekthierarkiResponse1.FremsoegObjekthierarkiOutput.OrganisationEnheder;
+                var listResponseUnits = listResponse.FremsoegObjekthierarkiOutput.OrganisationEnheder;
                 var numberOfReturnedUnits = listResponseUnits.Length;
 
                 totalIds += numberOfReturnedUnits;
@@ -151,7 +151,7 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
             return new RetriedIntegrationRequest<fremsoegobjekthierarkiResponse>(() => channel.fremsoegobjekthierarkiAsync(request).Result).Execute();
         }
 
-        private static Stack<Guid> CreateOrgUnitConversionStack((Guid, RegistreringType5) root, Dictionary<Guid, List<(Guid, RegistreringType5)>> unitsByParent)
+        private static Stack<Guid> CreateOrgUnitConversionStack((Guid, RegistreringType1) root, Dictionary<Guid, List<(Guid, RegistreringType1)>> unitsByParent)
         {
             var processingStack = new Stack<Guid>();
             processingStack.Push(root.Item1);
@@ -169,7 +169,7 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
             return processingStack;
         }
 
-        private static IEnumerable<Guid> GetSubTree((Guid, RegistreringType5) currentChild, Dictionary<Guid, List<(Guid, RegistreringType5)>> unitsByParent)
+        private static IEnumerable<Guid> GetSubTree((Guid, RegistreringType1) currentChild, Dictionary<Guid, List<(Guid, RegistreringType1)>> unitsByParent)
         {
             var id = currentChild.Item1;
 
@@ -194,18 +194,18 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
         {
             var listRequest = new fremsoegobjekthierarkiRequest
             {
+                FremsoegObjekthierarkiInput = new FremsoegObjekthierarkiInputType()
+                {
+                    MaksimalAntalKvantitet = pageSize.ToString("D"),
+                    FoersteResultatReference = skip.ToString("D")
+                }/*
                 FremsoegobjekthierarkiRequest1 = new FremsoegobjekthierarkiRequestType()
                 { 
                     AuthorityContext = new AuthorityContextType()
                     {
                         MunicipalityCVR = municipalityCvr
                     },
-                    FremsoegObjekthierarkiInput = new FremsoegObjekthierarkiInputType()
-                    {
-                        MaksimalAntalKvantitet = pageSize.ToString("D"),
-                        FoersteResultatReference = skip.ToString("D")
-                    }
-                },
+                },*/
             };
             return listRequest;
         }
