@@ -9,7 +9,7 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// If the agreement has a fixed duration, optionally define the years + months for which it is valid
         /// </summary>
-        public int? DurationYears { get; set; }
+        public int? DurationYears { get; set; }adafndsf
         /// <summary>
         /// If the agreement has a fixed duration, optionally define the years + months for which it is valid
         /// </summary>
