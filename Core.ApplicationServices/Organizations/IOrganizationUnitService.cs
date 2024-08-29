@@ -19,5 +19,6 @@ namespace Core.ApplicationServices.Organizations
         Result<OrganizationUnit, OperationError> Create(Guid organizationUuid, Guid parentUuid,
             string name, OrganizationUnitOrigin origin);
         Result<Organization, OperationError> GetOrganizationAndAuthorizeModification(Guid uuid);
+        Result<OrganizationUnit, OperationError> GetHierarchy(Guid organizationUuid);
     }
 }

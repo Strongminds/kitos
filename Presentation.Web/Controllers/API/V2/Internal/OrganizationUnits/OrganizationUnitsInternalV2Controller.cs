@@ -77,6 +77,17 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
                 .Match(MapUnitCreatedResponse, FromOperationError);
         }
 
+        [Route("hierarchy")]
+        [SwaggerResponse((HttpStatusCode.OK))]
+        [SwaggerResponse((HttpStatusCode.NotFound))]
+        [SwaggerResponse((HttpStatusCode.BadRequest))]
+        [SwaggerResponse((HttpStatusCode.Unauthorized))]
+        public IHttpActionResult GetHierarchy([NonEmptyGuid] Guid organizationUuid)
+        {
+            _organizationUnitService.GetHierarchy(organizationUuid);
+            return Ok();
+        }
+
         private CreatedNegotiatedContentResult<OrganizationUnitResponseDTO> MapUnitCreatedResponse(OrganizationUnitResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);

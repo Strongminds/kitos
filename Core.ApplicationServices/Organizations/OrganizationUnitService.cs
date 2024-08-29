@@ -268,6 +268,12 @@ namespace Core.ApplicationServices.Organizations
                 );
         }
 
+        public Result<OrganizationUnit, OperationError> GetHierarchy(Guid organizationUuid)
+        {
+            return _organizationService.GetOrganization(organizationUuid)
+                .Select(organization => organization.GetRoot());
+        }
+
         private Result<TSuccess, OperationError> Modify<TSuccess>(Guid organizationUuid, Guid unitUuid, Func<Organization, OrganizationUnit, Result<TSuccess, OperationError>> mutation)
         {
             using var transaction = _transactionManager.Begin();
