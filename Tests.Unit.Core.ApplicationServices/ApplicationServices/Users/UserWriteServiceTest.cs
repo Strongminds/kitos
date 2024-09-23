@@ -61,6 +61,29 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             transaction.Verify(x => x.Commit(), Times.Once);
         }
 
+        [Fact]
+        public void Can_Send_Notification()
+        {
+            //Arrange
+            var orgUuid = A<Guid>();
+            var orgId = A<int>();
+            var userUuid = A<Guid>();
+            var user = SetupUser();
+            user.Uuid = userUuid;
+            AssertResolveIdReturns(orgUuid, Maybe<int>.Some(orgId));
+            ExpectGetUserInOrganizationReturns(orgUuid, userUuid, user);
+            //Act
+            var result = _sut.SendNotification(orgUuid, userUuid);
+
+            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId), Times.Once);
+            Assert.True(result.IsNone);
+        }
+
+        private void ExpectGetUserInOrganizationReturns(Guid organizationUuid, Guid userUuid, Result<User, OperationError> result)
+        {
+            _userServiceMock.Setup(x => x.GetUserInOrganization(organizationUuid, userUuid)).Returns(result);
+        }
+
         private void AssertAddUserReturns(User user, bool sendMailOnCreation, int orgId)
         {
             _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId)).Returns(user);

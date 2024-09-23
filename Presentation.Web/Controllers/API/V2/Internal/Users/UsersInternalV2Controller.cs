@@ -8,6 +8,8 @@ using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
 using Presentation.Web.Models.API.V2.Request.User;
 using System.Web.Http.Results;
+using Core.ApplicationServices;
+using Core.DomainServices.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
 {
@@ -42,6 +44,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Select(_userResponseModelMapper.ToUserResponseDTO)
                 .Match(MapUserCreatedResponse, FromOperationError);
         }
+
+        [Route("{userUuid}/organization/{organizationUuid}/notifications/send")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult SendNotification([NonEmptyGuid] Guid userUuid, [NonEmptyGuid] Guid organizationUuid)
+        {
+            return _userWriteService.SendNotification(organizationUuid, userUuid)
+                    .Match(FromOperationError, Ok);
+        }
+
 
         private CreatedNegotiatedContentResult<UserResponseDTO> MapUserCreatedResponse(UserResponseDTO dto)
         {

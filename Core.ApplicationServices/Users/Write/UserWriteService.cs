@@ -32,11 +32,10 @@ namespace Core.ApplicationServices.Users.Write
         {
             using var transaction = _transactionManager.Begin();
 
-            var organizationIdResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
-            if (organizationIdResult.IsNone)
+            var organizationIdResult = ResolveOrganizationUuidToId(organizationUuid);
+            if (organizationIdResult.Failed)
             {
-                return new OperationError($"Organization with uuid {organizationUuid} was not found",
-                    OperationFailure.NotFound);
+                return organizationIdResult.Error;
             }
 
             var organizationId = organizationIdResult.Value;
@@ -54,6 +53,23 @@ namespace Core.ApplicationServices.Users.Write
             return  user;
         }
 
+        public Maybe<OperationError> SendNotification(Guid organizationUuid, Guid userUuid)
+        {
+            var orgIdResult = ResolveOrganizationUuidToId(organizationUuid);
+            if (orgIdResult.Failed)
+            {
+                return orgIdResult.Error;
+            }
+
+            var user = _userService.GetUserInOrganization(organizationUuid, userUuid);
+            if (user.Failed)
+            {
+                return user.Error;
+            }
+            _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value);
+            return Maybe<OperationError>.None;
+        }
+
         private Maybe<OperationError> AssignUserAdministrativeRoles(int organizationId, int userId,
             IEnumerable<OrganizationRole> roles)
         {
@@ -65,6 +81,19 @@ namespace Core.ApplicationServices.Users.Write
             }
 
             return Maybe<OperationError>.None;
+        }
+
+        private Result<int, OperationError> ResolveOrganizationUuidToId(Guid organizationUuid)
+        {
+            var orgIdResult
+                = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
+            if (orgIdResult.IsNone)
+            {
+                return new OperationError($"Organization with uuid {organizationUuid} was not found",
+                    OperationFailure.NotFound);
+            }
+
+            return orgIdResult.Value;
         }
     }
 }
