@@ -9,6 +9,7 @@ using Infrastructure.Services.DataAccess;
 using Moq;
 using System;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Model.Organizations;
 using Core.ApplicationServices.Organizations.Write;
 using Xunit;
 using Core.DomainModel.Events;
@@ -463,6 +464,44 @@ namespace Tests.Unit.Presentation.Web.Services
 
             Assert.False(rolesResult.Ok);
             Assert.Equal(OperationFailure.Forbidden, rolesResult.Error);
+        }
+
+        [Fact]
+        public void Can_Get_Permissions_From_Authorization_Context()
+        {
+            var org = CreateOrganization();
+            var orgUuid = org.Uuid;
+            var orgId = org.Id;
+            var roles = new OrganizationMasterDataRoles()
+            {
+                OrganizationUuid = orgUuid,
+                ContactPerson = new ContactPerson(),
+                DataResponsible = new DataResponsible(),
+                DataProtectionAdvisor = new DataProtectionAdvisor()
+            };
+            var expected = new OrganizationMasterDataPermissions
+            {
+                ModifyOrganizationMasterData = true,
+                ModifyRolesMasterData = true
+            };
+            _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(true);
+            _authorizationContext.Setup(_ => _.AllowModify(roles.ContactPerson)).Returns(true);
+            _authorizationContext.Setup(_ => _.AllowModify(roles.DataResponsible)).Returns(true);
+            _authorizationContext.Setup(_ => _.AllowModify(roles.DataProtectionAdvisor)).Returns(true);
+            _organizationService.Setup(_ => _.GetOrganization(orgUuid, null)).Returns(org);
+            _identityResolver.Setup(_ => _.ResolveDbId<Organization>(orgUuid)).Returns(orgId);
+            _organizationService.Setup(_ => _.GetContactPerson(orgId)).Returns(roles.ContactPerson);
+            _organizationService.Setup(_ => _.GetDataResponsible(orgId)).Returns(roles.DataResponsible);
+            _organizationService.Setup(_ => _.GetDataProtectionAdvisor(orgId)).Returns(roles.DataProtectionAdvisor);
+            var transaction = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+
+            var result = _sut.GetOrganizationMasterDataPermissions(orgUuid);
+
+            Assert.True(result.Ok);
+            var permissions = result.Value;
+            Assert.Equal(expected.ModifyOrganizationMasterData, permissions.ModifyOrganizationMasterData);
+            Assert.Equal(expected.ModifyRolesMasterData, permissions.ModifyRolesMasterData);
         }
 
         private OrganizationMasterDataRolesUpdateParameters SetupUpdateMasterDataRoles(int orgId,

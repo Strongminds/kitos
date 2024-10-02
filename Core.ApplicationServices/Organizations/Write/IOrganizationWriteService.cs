@@ -2,7 +2,6 @@
 using Core.ApplicationServices.Model.Organizations;
 using Core.ApplicationServices.Model.Organizations.Write;
 using Core.ApplicationServices.Model.Organizations.Write.MasterDataRoles;
-using Core.DomainModel;
 using Core.DomainModel.Organization;
 using System;
 
@@ -17,5 +16,7 @@ namespace Core.ApplicationServices.Organizations.Write
         
         public Result<OrganizationMasterDataRoles, OperationError>
             GetOrCreateOrganizationMasterDataRoles(Guid organizationUuid);
+
+        public Result<OrganizationMasterDataPermissions, OperationError> GetOrganizationMasterDataPermissions(Guid organizationUuid);
     }
 }
