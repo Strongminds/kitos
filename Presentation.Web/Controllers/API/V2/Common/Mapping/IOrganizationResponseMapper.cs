@@ -12,4 +12,6 @@ public interface IOrganizationResponseMapper
 
     OrganizationMasterDataResponseDTO ToMasterDataDTO(Organization organization);
 
+    OrganizationMasterDataPermissionsDTO ToPermissionsDto(OrganizationMasterDataPermissions permissions);
+
 }

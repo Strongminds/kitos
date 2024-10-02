@@ -442,6 +442,7 @@
     <Compile Include="Models\API\V2\Internal\Response\Organizations\DataResponsibleResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationGridConfigurationResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationGridPermissionsResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataPermissionsDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataRoleResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\OrganizationUnit\OrganizationUnitRoleAssignmentResponseDTO.cs" />

@@ -4,7 +4,6 @@ using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Moq;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
-using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -107,6 +106,23 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(organization.Cvr, dto.Cvr);
             Assert.Equal(organization.Email, dto.Email);
             Assert.Equal(organization.Adress, dto.Address);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Can_Map_To_Permissions_Dto(bool expectedBool)
+        {
+            var permissions = new OrganizationMasterDataPermissions()
+            {
+                ModifyRolesMasterData = expectedBool,
+                ModifyOrganizationMasterData = expectedBool
+            };
+
+            var dto = _sut.ToPermissionsDto(permissions);
+
+            Assert.Equal(permissions.ModifyRolesMasterData, dto.ModifyRolesMasterData);
+            Assert.Equal(permissions.ModifyOrganizationMasterData, dto.ModifyOrganizationMasterData);
         }
 
         private void AssertContactPerson(ContactPerson expected, ContactPersonResponseDTO actual)
