@@ -133,6 +133,7 @@ public class OrganizationWriteService : IOrganizationWriteService{
         var organizationMasterDataRolesResult = GetOrCreateOrganizationMasterDataRoles(organizationUuid);
         if (organizationMasterDataRolesResult.Failed) return new OperationError(OperationFailure.NotFound);
         var roles = organizationMasterDataRolesResult.Value;
+
         var modifyOrganizationMasterData = _authorizationContext.AllowModify(organizationResult.Value);
         var modifyContactPerson = _authorizationContext.AllowModify(roles.ContactPerson);
         var modifyDataResponsible = _authorizationContext.AllowModify(roles.DataResponsible);

@@ -466,8 +466,10 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.Equal(OperationFailure.Forbidden, rolesResult.Error);
         }
 
-        [Fact]
-        public void Can_Get_Permissions_From_Authorization_Context()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Can_Get_Permissions_From_Authorization_Context(bool expectedBool)
         {
             var org = CreateOrganization();
             var orgUuid = org.Uuid;
@@ -481,13 +483,13 @@ namespace Tests.Unit.Presentation.Web.Services
             };
             var expected = new OrganizationMasterDataPermissions
             {
-                ModifyOrganizationMasterData = true,
-                ModifyRolesMasterData = true
+                ModifyOrganizationMasterData = expectedBool,
+                ModifyRolesMasterData = expectedBool
             };
-            _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(true);
-            _authorizationContext.Setup(_ => _.AllowModify(roles.ContactPerson)).Returns(true);
-            _authorizationContext.Setup(_ => _.AllowModify(roles.DataResponsible)).Returns(true);
-            _authorizationContext.Setup(_ => _.AllowModify(roles.DataProtectionAdvisor)).Returns(true);
+            _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(expectedBool);
+            _authorizationContext.Setup(_ => _.AllowModify(roles.ContactPerson)).Returns(expectedBool);
+            _authorizationContext.Setup(_ => _.AllowModify(roles.DataResponsible)).Returns(expectedBool);
+            _authorizationContext.Setup(_ => _.AllowModify(roles.DataProtectionAdvisor)).Returns(expectedBool);
             _organizationService.Setup(_ => _.GetOrganization(orgUuid, null)).Returns(org);
             _identityResolver.Setup(_ => _.ResolveDbId<Organization>(orgUuid)).Returns(orgId);
             _organizationService.Setup(_ => _.GetContactPerson(orgId)).Returns(roles.ContactPerson);
