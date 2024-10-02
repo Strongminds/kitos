@@ -106,5 +106,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Select(_organizationResponseMapper.ToRolesDTO)
                 .Match(Ok, FromOperationError);
         }
+
+        [Route("masterData/permissions")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationMasterDataRolesResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetOrganizationMasterDataPermissions([FromUri][NonEmptyGuid] Guid organizationUuid)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            return _organizationWriteService.GetOrCreateOrganizationMasterDataRoles(organizationUuid)
+                .Select(_organizationResponseMapper.ToRolesDTO)
+                .Match(Ok, FromOperationError);
+        }
     }
 }

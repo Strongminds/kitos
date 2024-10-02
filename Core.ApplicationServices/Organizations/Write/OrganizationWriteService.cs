@@ -127,19 +127,22 @@ public class OrganizationWriteService : IOrganizationWriteService{
 
     public Result<OrganizationMasterDataPermissions, OperationError> GetOrganizationMasterDataPermissions(Guid organizationUuid)
     {
-        var organizationResult = _organizationService.GetOrganization(organizationUuid);
-        if (organizationResult.Failed) return new OperationError(OperationFailure.NotFound);
+        return _organizationService.GetOrganization(organizationUuid)
+            .Bind(org =>
+                GetOrCreateOrganizationMasterDataRoles(organizationUuid)
+                    .Bind(roles => FromOrganizationAndRoles(org, roles))
+                );
+    }
 
-        var organizationMasterDataRolesResult = GetOrCreateOrganizationMasterDataRoles(organizationUuid);
-        if (organizationMasterDataRolesResult.Failed) return new OperationError(OperationFailure.NotFound);
-        var roles = organizationMasterDataRolesResult.Value;
-
-        var modifyOrganizationMasterData = _authorizationContext.AllowModify(organizationResult.Value);
+    private Result<OrganizationMasterDataPermissions, OperationError> FromOrganizationAndRoles(
+        Organization organization, OrganizationMasterDataRoles roles)
+    {
+        var modifyOrganizationMasterData = _authorizationContext.AllowModify(organization);
         var modifyContactPerson = _authorizationContext.AllowModify(roles.ContactPerson);
         var modifyDataResponsible = _authorizationContext.AllowModify(roles.DataResponsible);
         var modifyDataProtectionAdvisor = _authorizationContext.AllowModify(roles.DataProtectionAdvisor);
         var modifyRolesMasterData = modifyContactPerson && modifyDataResponsible && modifyDataProtectionAdvisor; 
-        
+
         return new OrganizationMasterDataPermissions
         {
             ModifyOrganizationMasterData = modifyOrganizationMasterData,
