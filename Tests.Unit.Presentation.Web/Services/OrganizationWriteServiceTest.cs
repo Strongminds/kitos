@@ -484,7 +484,8 @@ namespace Tests.Unit.Presentation.Web.Services
             var expected = new OrganizationMasterDataPermissions
             {
                 ModifyOrganizationMasterData = expectedBool,
-                ModifyRolesMasterData = expectedBool
+                ModifyRolesMasterData = expectedBool,
+                ModifyCvr = expectedBool,
             };
             _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(expectedBool);
             _authorizationContext.Setup(_ => _.AllowModify(roles.ContactPerson)).Returns(expectedBool);
@@ -495,6 +496,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _organizationService.Setup(_ => _.GetContactPerson(orgId)).Returns(roles.ContactPerson);
             _organizationService.Setup(_ => _.GetDataResponsible(orgId)).Returns(roles.DataResponsible);
             _organizationService.Setup(_ => _.GetDataProtectionAdvisor(orgId)).Returns(roles.DataProtectionAdvisor);
+            _organizationService.Setup(_ => _.CanActiveUserModifyCvr(orgUuid)).Returns(expectedBool);
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
@@ -504,6 +506,7 @@ namespace Tests.Unit.Presentation.Web.Services
             var permissions = result.Value;
             Assert.Equal(expected.ModifyOrganizationMasterData, permissions.ModifyOrganizationMasterData);
             Assert.Equal(expected.ModifyRolesMasterData, permissions.ModifyRolesMasterData);
+            Assert.Equal(expected.ModifyCvr, permissions.ModifyCvr);
         }
 
         [Fact]

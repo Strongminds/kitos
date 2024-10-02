@@ -4,5 +4,6 @@
     {
         public bool ModifyOrganizationMasterData { get; set; }
         public bool ModifyRolesMasterData { get; set; }
+        public bool ModifyCvr { get; set; }
     }
 }

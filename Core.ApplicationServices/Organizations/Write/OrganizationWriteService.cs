@@ -141,13 +141,15 @@ public class OrganizationWriteService : IOrganizationWriteService{
         var modifyContactPerson = _authorizationContext.AllowModify(roles.ContactPerson);
         var modifyDataResponsible = _authorizationContext.AllowModify(roles.DataResponsible);
         var modifyDataProtectionAdvisor = _authorizationContext.AllowModify(roles.DataProtectionAdvisor);
-        var modifyRolesMasterData = modifyContactPerson && modifyDataResponsible && modifyDataProtectionAdvisor; 
+        var modifyRolesMasterData = modifyContactPerson && modifyDataResponsible && modifyDataProtectionAdvisor;
 
-        return new OrganizationMasterDataPermissions
-        {
-            ModifyOrganizationMasterData = modifyOrganizationMasterData,
-            ModifyRolesMasterData = modifyRolesMasterData
-        };
+        return _organizationService.CanActiveUserModifyCvr(organization.Uuid)
+            .Select(modifyCvr => new OrganizationMasterDataPermissions
+                {
+                    ModifyOrganizationMasterData = modifyOrganizationMasterData,
+                    ModifyRolesMasterData = modifyRolesMasterData,
+                    ModifyCvr = modifyCvr,
+                });
     }
 
     private Result<OrganizationMasterDataRoles, OperationError> AuthorizeAndPerformMasterDataRolesGetOrCreate(
