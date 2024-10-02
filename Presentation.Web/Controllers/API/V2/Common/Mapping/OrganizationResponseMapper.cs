@@ -95,7 +95,8 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
             return new OrganizationMasterDataPermissionsDTO()
             {
                 ModifyOrganizationMasterData = permissions.ModifyOrganizationMasterData,
-                ModifyRolesMasterData = permissions.ModifyRolesMasterData
+                ModifyRolesMasterData = permissions.ModifyRolesMasterData,
+                ModifyCvr = permissions.ModifyCvr,
             };
         }
     }

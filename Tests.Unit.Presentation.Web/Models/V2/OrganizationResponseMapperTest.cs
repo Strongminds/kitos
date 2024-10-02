@@ -116,11 +116,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var permissions = new OrganizationMasterDataPermissions()
             {
                 ModifyRolesMasterData = expectedBool,
-                ModifyOrganizationMasterData = expectedBool
+                ModifyOrganizationMasterData = expectedBool,
+                ModifyCvr = expectedBool
             };
 
             var dto = _sut.ToPermissionsDto(permissions);
 
+            Assert.Equal(permissions.ModifyCvr, dto.ModifyCvr);
             Assert.Equal(permissions.ModifyRolesMasterData, dto.ModifyRolesMasterData);
             Assert.Equal(permissions.ModifyOrganizationMasterData, dto.ModifyOrganizationMasterData);
         }

@@ -276,6 +276,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataPermissionsDTO>(content);
             Assert.True(responseDto.ModifyOrganizationMasterData);
             Assert.True(responseDto.ModifyRolesMasterData);
+            Assert.True(responseDto.ModifyCvr);
         }
 
         [Fact]
