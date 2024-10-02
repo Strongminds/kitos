@@ -40,5 +40,13 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/{MasterDataSuffix}/{RolesSuffix}"), cookie, dto);
         }
+
+        public static async Task<HttpResponseMessage> GetOrganizationMasterDataPermissions(Guid organizationUuid)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.GetWithCookieAsync(
+                TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/{MasterDataSuffix}/permissions"), cookie);
+
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
@@ -263,6 +262,28 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
             Assert.Equal(organization.Uuid, responseDto.OrganizationUuid);
             await GetMasterDataRolesAndAssertNotNull(organization.Uuid);
+        }
+
+        [Fact]
+        public async Task Can_Get_Permissions()
+        {
+            var organization = await CreateTestOrganization();
+
+            var response = await OrganizationInternalV2Helper.GetOrganizationMasterDataPermissions(organization.Uuid);
+
+            Assert.True(response.IsSuccessStatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataPermissionsDTO>(content);
+            Assert.True(responseDto.ModifyOrganizationMasterData);
+            Assert.True(responseDto.ModifyRolesMasterData);
+        }
+
+        [Fact]
+        public async Task Get_Permissions_Returns_Bad_Request_If_No_Org()
+        {
+            var response = await OrganizationInternalV2Helper.GetOrganizationMasterDataPermissions(new Guid());
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         private async Task GetMasterDataRolesAndAssertNotNull(Guid orgUuid)
