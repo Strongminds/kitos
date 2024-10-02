@@ -506,6 +506,19 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.Equal(expected.ModifyRolesMasterData, permissions.ModifyRolesMasterData);
         }
 
+        [Fact]
+        public void Get_Permissions_Returns_Not_Found_If_Invalid_Org_Uuid()
+        {
+            var org = CreateOrganization();
+            var orgUuid = org.Uuid;
+           _organizationService.Setup(_ => _.GetOrganization(orgUuid, null)).Returns(new OperationError(OperationFailure.NotFound));
+         
+            var result = _sut.GetOrganizationMasterDataPermissions(orgUuid);
+
+            Assert.False(result.Ok);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+        }
+
         private OrganizationMasterDataRolesUpdateParameters SetupUpdateMasterDataRoles(int orgId,
             ContactPerson cp = null, DataResponsible dr = null, DataProtectionAdvisor dpa = null)
         {
