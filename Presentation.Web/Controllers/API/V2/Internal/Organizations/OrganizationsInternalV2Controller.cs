@@ -108,7 +108,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
 
         [Route("masterData/permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationMasterDataRolesResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationMasterDataPermissionsDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
