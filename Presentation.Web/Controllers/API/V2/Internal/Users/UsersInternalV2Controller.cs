@@ -4,7 +4,6 @@ using System.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Web.Http;
 using Core.ApplicationServices.Users.Write;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
@@ -13,10 +12,7 @@ using Presentation.Web.Models.API.V2.Request.User;
 using System.Web.Http.Results;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Model.Users;
-using Core.ApplicationServices.Model.Users.Write;
-using Core.ApplicationServices.Rights;
 using Core.DomainModel.Organization;
-using Core.DomainServices.Generic;
 using Presentation.Web.Models.API.V2.Internal.Request.User;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
