@@ -13,6 +13,8 @@ using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
 using Infrastructure.Services.DataAccess;
+using Serilog;
+using Serilog.Events;
 
 namespace Core.ApplicationServices.Users.Write
 {
@@ -25,6 +27,7 @@ namespace Core.ApplicationServices.Users.Write
         private readonly IOrganizationService _organizationService;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly IUserRightsService _userRightsService;
+        private readonly ILogger _logger;
 
         public UserWriteService(IUserService userService,
             IOrganizationRightsService organizationRightsService,
@@ -32,7 +35,7 @@ namespace Core.ApplicationServices.Users.Write
             IAuthorizationContext authorizationContext,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver,
-            IUserRightsService userRightsService)
+            IUserRightsService userRightsService, ILogger logger)
         {
             _userService = userService;
             _organizationRightsService = organizationRightsService;
@@ -41,6 +44,7 @@ namespace Core.ApplicationServices.Users.Write
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
             _userRightsService = userRightsService;
+            _logger = logger;
         }
 
         public Result<User, OperationError> Create(Guid organizationUuid, CreateUserParameters parameters)
@@ -76,6 +80,7 @@ namespace Core.ApplicationServices.Users.Write
         {
             using var transactionManager = _transactionManager.Begin();
 
+            _logger.Warning("Before update");
             var orgResult = _organizationService.GetOrganization(organizationUuid);
             if (orgResult.Failed)
             {
@@ -83,20 +88,36 @@ namespace Core.ApplicationServices.Users.Write
             }
             var organization = orgResult.Value;
 
+            _logger.Warning("Git the organization");
             var updateUserResult =
                 _userService.GetUserByUuid(userUuid)
                     .Bind(CanModifyUser)
                     .Bind(user => PerformUpdates(user, organization, parameters));
             
+            _logger.Warning("after update");
             if (updateUserResult.Failed)
             {
+                _logger.Error($"Update failed: {updateUserResult.Error.Message}");
                 transactionManager.Rollback();
                 return updateUserResult.Error;
             }
 
+            _logger.Warning("Success");
             var user = updateUserResult.Value;
-            _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id);
+            _logger.Warning("Update user and message");
+            try
+            {
+
+                _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Update failed: "+e.Message);
+            }
+
+            _logger.Error("After update");
             transactionManager.Commit();
+            _logger.Error("After commit");
             return user;
         }
 
