@@ -174,7 +174,7 @@ namespace Core.ApplicationServices.Rights
         {
             if (fromUserId == toUserId)
             {
-                return Maybe<OperationError>.None;
+                return Maybe<OperationError>.None; //TODO think about what should be returned here
             }
             return MutateUserRights(
                 fromUserId,
