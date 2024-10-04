@@ -21,7 +21,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
                         user.DefaultUserStartPreference),
                 HasApiAccess = user.HasApiAccess,
                 HasStakeHolderAccess = user.HasStakeHolderAccess,
-                Roles = user.GetRolesInOrganization(organizationUuid).Select(x => x.ToOrganizationRoleChoice()).ToList(),
+                //Roles = user.OrganizationRights != null ? user.GetRolesInOrganization(organizationUuid).Select(x => x.ToOrganizationRoleChoice()).ToList() : null,
                 LastSentAdvis = user.LastAdvisDate
             };
         }
