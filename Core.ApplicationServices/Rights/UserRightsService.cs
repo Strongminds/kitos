@@ -174,7 +174,7 @@ namespace Core.ApplicationServices.Rights
         {
             if (fromUserId == toUserId)
             {
-                return Maybe<OperationError>.None;
+                return new OperationError("Tried to copy roles from the user to itself", OperationFailure.Conflict);
             }
             return MutateUserRights(
                 fromUserId,
@@ -549,7 +549,7 @@ namespace Core.ApplicationServices.Rights
                         typeof(TRight).Name, right.RoleId, right.Object.GetType().Name, right.Object.Id, toUserId, organization.Id, assignResult.Error.ToString()
                     );
                     {
-                        return new OperationError($"Failed to assign role of type {typeof(TRight).Name} with role {right.RoleId}:{assignResult.Error}", assignResult.Error.FailureType);
+                        return assignResult.Error;
                     }
                 }
             }
