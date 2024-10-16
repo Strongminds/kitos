@@ -21,43 +21,23 @@
     </KeyDescriptor>
     <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2/issue.idp" ResponseLocation="https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2/signoff.idp" />
     <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2/issue.idp" ResponseLocation="https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2/signoff.idp" />
-    <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://n2adgangsstyring.stoettesystemerne.dk/runtime/services/signoff/saml2/soap" ResponseLocation="https://n2adgangsstyring.stoettesystemerne.dk/runtime/services/signoff/saml2/soap" />
+    <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</NameIDFormat>
     <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2/issue.idp" />
     <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://n2adgangsstyring.stoettesystemerne.dk/runtime/saml2/issue.idp" />
-    <Attribute Name="https://data.gov.dk/model/core/specVersion" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="SpecVer" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/bootstrapToken" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="bootstrapToken" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/privilegesIntermediate" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Privileges" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/concept/core/nsis/loa" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="NsisLevelOfAssurance" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/concept/core/nsis/ial" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="IdentityAssuranceLevel" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/concept/core/nsis/aal" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="AuthenticationAssuranceLevel" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/fullName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="FullName" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/firstName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="FirstName" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/lastName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="LastName" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/alias" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Alias" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Email" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/cprNumber" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Cpr" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/age" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Age" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/cprUuid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="CprUUID" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/dateOfBirth" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="DateOfBirth" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/person/pid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Pid" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/uuid/persistent" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="ProfessionalPersistentUUID" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/rid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Rid" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/cvr" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="Cvr" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/orgName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="OrganizationName" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/productionUnit" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="ProductionUnit" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/seNumber" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="SeNumber" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
-    <Attribute Name="https://data.gov.dk/model/core/eid/professional/authorizedToRepresent" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="AuthorizedToRepresent" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
+    <Attribute Name="dk:gov:saml:attribute:KombitSpecVer" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Specification Version" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+      <AttributeValue>1.0</AttributeValue>
+    </Attribute>
+    <Attribute Name="dk:gov:saml:attribute:AssuranceLevel" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Assurance Level" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+      <AttributeValue>2</AttributeValue>
+      <AttributeValue>3</AttributeValue>
+    </Attribute>
+    <Attribute Name="dk:gov:saml:attribute:SpecVer" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Specification Version" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+      <AttributeValue>DK-SAML-2.0</AttributeValue>
+    </Attribute>
+    <Attribute Name="dk:gov:saml:attribute:CvrNumberIdentifier" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="CVR Number Identifier" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
+    <Attribute Name="dk:gov:saml:attribute:Privileges_intermediate" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Privileges" xmlns="urn:oasis:names:tc:SAML:2.0:assertion" />
   </IDPSSODescriptor>
-  <Organization>
-    <OrganizationName xml:lang="da">Safewhere</OrganizationName>
-    <OrganizationDisplayName xml:lang="da">Safewhere</OrganizationDisplayName>
-    <OrganizationURL xml:lang="da">https://safewhere.com/</OrganizationURL>
-  </Organization>
-  <ContactPerson contactType="technical">
-    <Company>Safewhere</Company>
-    <EmailAddress>support@safewhere.com</EmailAddress>
-    <TelephoneNumber>+4582131145</TelephoneNumber>
-  </ContactPerson>
   <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://n2adgangsstyring.stoettesystemerne.dk/runtime/services/attributeservice/saml2/soap" />
   </AttributeAuthorityDescriptor>
