@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel.Extensions;
@@ -165,7 +164,7 @@ namespace Core.DomainModel.Organization
                 throw new ArgumentNullException(nameof(module));
 
             var moduleCustomization = UIModuleCustomizations
-                .SingleOrDefault(config => config.Module == module);
+                .SingleOrDefault(customization => customization.Module == module);
             if (moduleCustomization != null) return moduleCustomization.FromNullable();
 
             moduleCustomization = new UIModuleCustomization() { Organization = this, Module = module };
