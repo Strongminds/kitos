@@ -160,7 +160,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/conflicts")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(object))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationRemovalConflictsResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
