@@ -169,7 +169,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUUid)
         {
             return _organizationService.ComputeOrganizationRemovalConflicts(organizationUUid)
-                    .Select(MapConflictsToDTO) //TODO do actual mapping
+                    .Select(MapConflictsToDTO)
                     .Match(Ok, FromOperationError);
         }
 
@@ -235,7 +235,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         private OrganizationRemovalConflictsResponseDTO MapConflictsToDTO(OrganizationRemovalConflicts conflicts)
         {
-            return null;
+            return null; //TODO
         }
         private CreatedNegotiatedContentResult<IdentityNamePairResponseDTO> MapOrgCreatedResponse(IdentityNamePairResponseDTO dto)
         {
