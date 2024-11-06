@@ -166,9 +166,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUUid)
+        public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUuid)
         {
-            return _organizationService.ComputeOrganizationRemovalConflicts(organizationUUid)
+            return _organizationService.ComputeOrganizationRemovalConflicts(organizationUuid)
                     .Select(MapConflictsToDTO)
                     .Match(Ok, FromOperationError);
         }
