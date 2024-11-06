@@ -269,7 +269,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         {
             return new()
             {
-                ExposedIntefaceName = itInterface.Name,
+                ExposedInterfaceName = itInterface.Name,
                 ExposingSystemName = itInterface.ExhibitedBy.ItSystem.Name,
                 OrganizationName = itInterface.Organization.Name,
             };
