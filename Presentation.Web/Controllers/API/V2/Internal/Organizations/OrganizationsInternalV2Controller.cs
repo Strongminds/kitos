@@ -134,6 +134,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
         public IHttpActionResult PatchOrganization([FromUri][NonEmptyGuid] Guid organizationUuid, OrganizationUpdateRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -143,7 +144,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Select(_organizationResponseMapper.ToOrganizationDTO)
                 .Match(Ok, FromOperationError);
         }
-            
+
+        [HttpDelete]
+        [Route("{organizationUuid}/delete")]
+        [SwaggerResponse(HttpStatusCode.NoContent)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        public IHttpActionResult DeleteOrganization([FromUri][NonEmptyGuid] Guid organizationUuid, [FromUri] bool enforceDeletion)
+        {
+            return NoContent();
+        }
+
         [HttpPatch]
         [Route("{organizationUuid}/master-data")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationMasterDataResponseDTO))]
