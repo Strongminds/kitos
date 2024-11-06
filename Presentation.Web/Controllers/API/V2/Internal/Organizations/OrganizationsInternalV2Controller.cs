@@ -168,8 +168,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUUid)
         {
             return _organizationService.ComputeOrganizationRemovalConflicts(organizationUUid)
-                    .Select(x => x)
-                    .Match(Ok, FromOperationError); //TODO do actual mapping
+                    .Select(x => x) //TODO do actual mapping
+                    .Match(Ok, FromOperationError);
         }
 
         [HttpPatch]
