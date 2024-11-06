@@ -129,11 +129,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
             {
                 Content = new StreamContent(stream),
             };
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue(Constants.KLE.MediaTypeHeaderValue);
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(Constants.KLE.DispositionType)
             {
                 FileNameStar = Constants.KLE.FileNameStar,
-                DispositionType = "attachment"
+                DispositionType = Constants.KLE.DispositionType
 
             };
             return new ResponseMessageResult(result);

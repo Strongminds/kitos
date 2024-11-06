@@ -1,10 +1,4 @@
 ﻿using Core.Abstractions.Types;
-using Core.DomainModel.ItSystem.DataTypes;
-using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Core.DomainServices.Repositories.KLE;
 using Presentation.Web.Models.API.V2.Internal.Response.KLE;
 

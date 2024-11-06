@@ -1,4 +1,6 @@
-﻿namespace Presentation.Web.Helpers
+﻿using System.CodeDom;
+
+namespace Presentation.Web.Helpers
 {
     public static class Constants
     {
@@ -31,6 +33,9 @@
         public static class KLE
         {
             public const string FileNameStar = "kle-updates.csv";
+            public const string DispositionType = "attachment";
+            public const string MediaTypeHeaderValue = "text/csv";
+
 
             public static class Type
             {
