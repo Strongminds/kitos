@@ -11,8 +11,8 @@ namespace Presentation.Web.Models.API.V2.Internal.Response.Organizations
 {
     public class OrganizationRemovalConflictsResponseDTO
     {
-        public IEnumerable<MultipleConflictsResponseDTO> SystemsWithUsagesOutsideTheOrganization { get; set; }
-        public IEnumerable<MultipleConflictsResponseDTO> InterfacesExposedOnSystemsOutsideTheOrganization { get; set; }
+        public IEnumerable<SystemWithUsageOutsideOrganizationConflictResponseDTO> SystemsWithUsagesOutsideTheOrganization { get; set; }
+        public IEnumerable<InterfacesExposedOutsideTheOrganizationResponseDTO> InterfacesExposedOnSystemsOutsideTheOrganization { get; set; }
         public IEnumerable<MultipleConflictsResponseDTO> SystemsExposingInterfacesDefinedInOtherOrganizations { get; set; }
         public IEnumerable<MultipleConflictsResponseDTO> SystemsSetAsParentSystemToSystemsInOtherOrganizations { get; set; }
         public IEnumerable<SimpleConflictResponseDTO> DprInOtherOrganizationsWhereOrgIsDataProcessor { get; set; }
