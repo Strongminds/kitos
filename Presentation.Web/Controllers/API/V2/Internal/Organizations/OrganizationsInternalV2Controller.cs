@@ -13,6 +13,7 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Elasticsearch.Net;
 using System.Web.Http.Results;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
+using Core.ApplicationServices.Model.Organizations;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
@@ -168,7 +169,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUUid)
         {
             return _organizationService.ComputeOrganizationRemovalConflicts(organizationUUid)
-                    .Select(x => x) //TODO do actual mapping
+                    .Select(MapConflictsToDTO) //TODO do actual mapping
                     .Match(Ok, FromOperationError);
         }
 
@@ -232,6 +233,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        private OrganizationRemovalConflictsResponseDTO MapConflictsToDTO(OrganizationRemovalConflicts conflicts)
+        {
+            return null;
+        }
         private CreatedNegotiatedContentResult<IdentityNamePairResponseDTO> MapOrgCreatedResponse(IdentityNamePairResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
