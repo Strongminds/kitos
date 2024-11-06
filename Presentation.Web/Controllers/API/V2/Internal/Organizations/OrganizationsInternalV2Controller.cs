@@ -154,7 +154,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         public IHttpActionResult DeleteOrganization([FromUri][NonEmptyGuid] Guid organizationUuid, [FromUri] bool enforceDeletion)
         {
-            return NoContent();
+            return _organizationService.RemoveOrganization(organizationUuid, enforceDeletion)
+                    .Match(FromOperationError, NoContent);
         }
 
         [HttpGet]
@@ -166,7 +167,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUUid)
         {
-            return Ok();
+            return _organizationService.ComputeOrganizationRemovalConflicts(organizationUUid)
+                    .Select(x => x)
+                    .Match(Ok, FromOperationError); //TODO do actual mapping
         }
 
         [HttpPatch]

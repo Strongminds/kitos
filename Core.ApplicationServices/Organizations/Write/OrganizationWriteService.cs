@@ -106,6 +106,13 @@ public class OrganizationWriteService : IOrganizationWriteService {
         return result;
     }
 
+    public Maybe<OperationError> DeleteOrganization(Guid organizationUuid, bool enforceDeletion)
+    {
+        return _organizationService.RemoveOrganization(organizationUuid, enforceDeletion);
+    }
+
+    public Maybe<OperationError> 
+
     public Result<Config, OperationError> PatchUIRootConfig(Guid organizationUuid, UIRootConfigUpdateParameters updateParameters)
     {
         return _organizationService.GetOrganization(organizationUuid)
