@@ -14,6 +14,13 @@ using Elasticsearch.Net;
 using System.Web.Http.Results;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Core.ApplicationServices.Model.Organizations;
+using System.Linq;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Conflicts;
+using Core.DomainModel.ItSystem;
+using Presentation.Web.Controllers.API.V1.Mapping;
+using Core.DomainModel;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
@@ -235,8 +242,59 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         private OrganizationRemovalConflictsResponseDTO MapConflictsToDTO(OrganizationRemovalConflicts conflicts)
         {
-            return null; //TODO
+            return new()
+            {
+                SystemsWithUsagesOutsideTheOrganization = conflicts.SystemsWithUsagesOutsideTheOrganization.Select(MapSystemToConflictDTO).ToList(),
+                InterfacesExposedOnSystemsOutsideTheOrganization = conflicts.InterfacesExposedOnSystemsOutsideTheOrganization.Select(MapExposedInterfacesToConflictDTO).ToList(),
+                SystemsExposingInterfacesDefinedInOtherOrganizations = conflicts.SystemsExposingInterfacesDefinedInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface))).ToList(),
+                SystemsSetAsParentSystemToSystemsInOtherOrganizations = conflicts.SystemsSetAsParentSystemToSystemsInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.Children)).ToList(),
+                DprInOtherOrganizationsWhereOrgIsDataProcessor = conflicts.DprInOtherOrganizationsWhereOrgIsDataProcessor.Select(MapToSimpleConflict).ToList(),
+                DprInOtherOrganizationsWhereOrgIsSubDataProcessor = conflicts.DprInOtherOrganizationsWhereOrgIsSubDataProcessor.Select(MapToSimpleConflict).ToList(),
+                ContractsInOtherOrganizationsWhereOrgIsSupplier = conflicts.ContractsInOtherOrganizationsWhereOrgIsSupplier.Select(MapToSimpleConflict).ToList(),
+                SystemsInOtherOrganizationsWhereOrgIsRightsHolder = conflicts.SystemsInOtherOrganizationsWhereOrgIsRightsHolder.Select(MapToSimpleConflict).ToList(),
+                SystemsWhereOrgIsArchiveSupplier = conflicts.SystemUsagesWhereOrgIsArchiveSupplier.Select(systemUsage => new SimpleConflictResponseDTO { EntityName = systemUsage.ItSystem.Name, OrganizationName = systemUsage.Organization.Name}).ToList()
+            };
         }
+
+        private SystemWithUsageOutsideOrganizationConflictResponseDTO MapSystemToConflictDTO(ItSystem system)
+        {
+            return new()
+            {
+                SystemName = system.Name,
+                OrganizationNames = system.Usages.Select(usage => usage.Organization.Name).ToList(),
+            };
+        }
+
+        private InterfacesExposedOutsideTheOrganizationResponseDTO MapExposedInterfacesToConflictDTO(ItInterface itInterface)
+        {
+            return new()
+            {
+                ExposedIntefaceName = itInterface.Name,
+                ExposingSystemName = itInterface.ExhibitedBy.ItSystem.Name,
+                OrganizationName = itInterface.Organization.Name,
+            };
+        }
+
+        private MultipleConflictsResponseDTO MapToMultipleConflictDTO<T>(IHasName mainEntity, IEnumerable<T> subEntities)
+            where T : IHasName, IOwnedByOrganization
+        {
+            return new()
+            {
+                MainEntityName = mainEntity.Name,
+                Conflicts = subEntities.Select(MapToSimpleConflict).ToList(),
+            };
+        }
+
+        private SimpleConflictResponseDTO MapToSimpleConflict<T>(T entity)
+            where T: IHasName, IOwnedByOrganization
+        {
+            return new()
+            {
+                EntityName = entity.Name,
+                OrganizationName = entity.Organization.Name,
+            };
+        }
+
         private CreatedNegotiatedContentResult<IdentityNamePairResponseDTO> MapOrgCreatedResponse(IdentityNamePairResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
