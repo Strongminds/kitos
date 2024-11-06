@@ -106,7 +106,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             if (updateParametersResult.Failed) return FromOperationError(updateParametersResult.Error);
 
             var updateCustomizationErrorMaybe = _uiModuleCustomizationService.UpdateModule(updateParametersResult.Value);
-            
+
             return updateCustomizationErrorMaybe.Match(
                 FromOperationError,
                 () => _uiModuleCustomizationService.GetModuleCustomizationByOrganizationUuid(organizationUuid, moduleName)
@@ -155,6 +155,18 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IHttpActionResult DeleteOrganization([FromUri][NonEmptyGuid] Guid organizationUuid, [FromUri] bool enforceDeletion)
         {
             return NoContent();
+        }
+
+        [HttpGet]
+        [Route("{organizationUuid}/conflicts")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(object))]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        public IHttpActionResult GetConflicts([FromUri][NonEmptyGuid] Guid organizationUUid)
+        {
+            return Ok();
         }
 
         [HttpPatch]
