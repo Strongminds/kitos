@@ -88,7 +88,7 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
         public static async Task<HttpResponseMessage> DeleteOrganization(Guid organizationUuid, bool enforceDeletion, OrganizationRole role = OrganizationRole.GlobalAdmin)
         {
             var cookie = await HttpApi.GetCookieAsync(role);
-            var url = TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/delete");
+            var url = TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/delete?enforceDeletion={enforceDeletion}");
             return await HttpApi.DeleteWithCookieAsync(url, cookie);
         }
     }

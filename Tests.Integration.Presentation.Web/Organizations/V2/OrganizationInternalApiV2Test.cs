@@ -397,6 +397,32 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(isGlobalAdmin, wasAllowed);
         }
 
+        [Theory]
+        [InlineData(OrganizationRole.User)]
+        [InlineData(OrganizationRole.LocalAdmin)]
+        [InlineData(OrganizationRole.GlobalAdmin)]
+        public async Task Can_Only_Delete_Organization_As_Global_Admin(OrganizationRole role)
+        {
+            var orgToDelete = await CreateTestOrganization();
+
+            using var response = await OrganizationInternalV2Helper.DeleteOrganization(orgToDelete.Uuid, true, role);
+
+            var wasAllowed = response.StatusCode == HttpStatusCode.NoContent;
+            var isGlobalAdmin = role == OrganizationRole.GlobalAdmin;
+            Assert.Equal(isGlobalAdmin, wasAllowed);
+        }
+
+        [Fact]
+        public async Task Can_Not_Delete_Organization_With_Conflicts_And_No_Enforcing()
+        {
+            var orgToDelete = await CreateTestOrganization();
+            await CreateConflictsForOrg(orgToDelete.Uuid);
+
+            using var response = await OrganizationInternalV2Helper.DeleteOrganization(orgToDelete.Uuid, false);
+
+            Assert.NotEqual(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
         [Fact]
         public async Task Update_Organization_Returns_Bad_Request_If_Invalid_Uuid()
         {
@@ -410,6 +436,11 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             using var response = await OrganizationInternalV2Helper.PatchOrganization(invalidUuid, requestDto);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        private async Task CreateConflictsForOrg(Guid organizationUuid)
+        {
+
         }
 
         private async Task GetMasterDataRolesAndAssertNotNull(Guid orgUuid)
