@@ -412,15 +412,18 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(isGlobalAdmin, wasAllowed);
         }
 
-        [Fact]
-        public async Task Can_Not_Delete_Organization_With_Conflicts_And_No_Enforcing()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task Can_Only_Delete_Organization_With_Conflicts_When_Enforcing(bool enforceDeletion)
         {
             var orgToDelete = await CreateTestOrganization();
             await CreateConflictsForOrg(orgToDelete.Uuid);
 
-            using var response = await OrganizationInternalV2Helper.DeleteOrganization(orgToDelete.Uuid, false);
+            using var response = await OrganizationInternalV2Helper.DeleteOrganization(orgToDelete.Uuid, enforceDeletion);
 
-            Assert.NotEqual(HttpStatusCode.NoContent, response.StatusCode);
+            var wasAllowed = response.StatusCode == HttpStatusCode.NoContent;
+            Assert.Equal(enforceDeletion, wasAllowed);
         }
 
         [Fact]
