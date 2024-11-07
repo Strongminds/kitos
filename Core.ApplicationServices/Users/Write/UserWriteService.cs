@@ -10,10 +10,6 @@ using Core.ApplicationServices.Model.Users.Write;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Rights;
 using Core.DomainModel;
-using Core.DomainModel.GDPR;
-using Core.DomainModel.ItContract;
-using Core.DomainModel.ItSystem;
-using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
 using Infrastructure.Services.DataAccess;
@@ -138,6 +134,23 @@ namespace Core.ApplicationServices.Users.Write
             UserRightsChangeParameters parameters)
         {
             return CollectUsersAndMutateRoles(_userRightsService.TransferRights, organizationUuid, fromUserUuid, toUserUuid, parameters);
+        }
+
+        public Maybe<OperationError> DeleteUser(Guid userUuid, Maybe<Guid> scopedToOrganizationUuid)
+        {
+            return scopedToOrganizationUuid
+                .Match(
+                orgUuid => _entityIdentityResolver.ResolveDbId<Organization>(orgUuid)
+                    .Match(
+                        id => Result<int?, OperationError>.Success(id), 
+                        () => new OperationError($"Organization with Uuid: {scopedToOrganizationUuid} was not found", OperationFailure.NotFound)
+                        ),
+                () => Result<int?, OperationError>.Success(null)
+                )
+                .Match(
+                    orgDbId => _userService.DeleteUser(userUuid, orgDbId),
+                    error => error
+                    );
         }
 
         private Maybe<OperationError> CollectUsersAndMutateRoles(Func<int, int, int, UserRightsChangeParameters, Maybe<OperationError>> mutateAction,
