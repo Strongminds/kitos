@@ -8,9 +8,13 @@ using System.Threading.Tasks;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Newtonsoft.Json;
+using Presentation.Web.Controllers.API.V1;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
+using Presentation.Web.Models.API.V2.Request.Contract;
+using Presentation.Web.Models.API.V2.Request.System.Regular;
+using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools;
@@ -427,6 +431,20 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         }
 
         [Fact]
+        public async Task Can_Get_Conflicts()
+        {
+            var org = await CreateTestOrganization();
+            await CreateConflictsForOrg(org.Uuid);
+
+            using var response = await OrganizationInternalV2Helper.GetRemovalConflicts(org.Uuid);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var body = await response.ReadResponseBodyAsAsync<OrganizationRemovalConflictsResponseDTO>();
+            Assert.NotNull(body);
+            Assert.Single(body.ContractsInOtherOrganizationsWhereOrgIsSupplier);
+        }
+
+        [Fact]
         public async Task Update_Organization_Returns_Bad_Request_If_Invalid_Uuid()
         {
             var invalidUuid = new Guid();
@@ -443,6 +461,19 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private async Task CreateConflictsForOrg(Guid organizationUuid)
         {
+            var otherOrganization = await CreateTestOrganization();
+            var token = (await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin)).Token;
+
+            //Create contract in another organization
+            var contractRequest = new CreateNewContractRequestDTO { OrganizationUuid = otherOrganization.Uuid, Name = A<string>() };
+            var contractResponse = await ItContractV2Helper.SendPostContractAsync(token, contractRequest);
+            Assert.Equal(HttpStatusCode.Created, contractResponse.StatusCode);
+            var contract = await contractResponse.ReadResponseBodyAsAsync<ItContractResponseDTO>();
+
+            //Set the original organization to be deleted as the supplier for the contract
+            var patchRequest =  new ContractSupplierDataWriteRequestDTO { OrganizationUuid = organizationUuid};
+            var patchResponse = await ItContractV2Helper.SendPatchContractSupplierAsync(token, contract.Uuid, patchRequest);
+            Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
 
         }
 
