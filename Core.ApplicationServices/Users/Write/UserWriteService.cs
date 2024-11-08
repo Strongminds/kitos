@@ -182,7 +182,7 @@ namespace Core.ApplicationServices.Users.Write
             return orgUser.WithOptionalUpdate(parameters.FirstName, (user, firstName) => user.UpdateFirstName(user, firstName))
                 .Bind(user =>
                     user.WithOptionalUpdate(parameters.LastName, (userToUpdate, lastName) => userToUpdate.UpdateLastName(user, lastName)))
-                .Bind(user => user.WithOptionalUpdate(parameters.Email, UpdateEmail))
+                .Bind(user => user.WithOptionalUpdate(parameters.Email, (userToUpdate, email) => UpdateEmail(userToUpdate, email)))
                 .Bind(user => user.WithOptionalUpdate(parameters.PhoneNumber, (userToUpdate, phoneNumber) => userToUpdate.PhoneNumber = phoneNumber))
                 .Bind(user => user.WithOptionalUpdate(parameters.HasStakeHolderAccess, UpdateStakeholderAccess))
                 .Bind(user => user.WithOptionalUpdate(parameters.HasApiAccess,

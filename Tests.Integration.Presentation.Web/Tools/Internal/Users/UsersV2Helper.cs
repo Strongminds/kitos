@@ -31,7 +31,7 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             using var response = await HttpApi.PatchWithCookieAsync(
                 TestEnvironment.CreateUrl(
-                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/patch"), requestCookie, request.AsPatchPayloadOfProperty(nameof(UpdateUserRequestDTO)));
+                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/patch"), requestCookie, request);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
