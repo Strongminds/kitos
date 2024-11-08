@@ -37,6 +37,19 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await response.ReadResponseBodyAsAsync<UserResponseDTO>();
         }
 
+        public static async Task<UserResponseDTO> UpdateUserAsObject(Guid organizationUuid, Guid userUuid,
+            object request, Cookie cookie = null)
+        {
+            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            using var response = await HttpApi.PatchWithCookieAsync(
+                TestEnvironment.CreateUrl(
+                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/patch"), requestCookie, request);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            return await response.ReadResponseBodyAsAsync<UserResponseDTO>();
+        }
+
         public static async Task<HttpResponseMessage> SendNotification(Guid organizationUuid, Guid userUuid,
             Cookie cookie = null)
         {
@@ -70,16 +83,21 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await response.ReadResponseBodyAsAsync<UserCollectionPermissionsResponseDTO>();
         }
 
-        public static async Task<UserResponseDTO> GetUserByEmail(Guid organizationUuid, string email, Cookie cookie = null)
+        public static async Task<UserIsPartOfCurrentOrgResponseDTO> GetUserByEmail(Guid organizationUuid, string email, Cookie cookie = null)
         {
-            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(
-                TestEnvironment.CreateUrl(
-                    $"{ControllerPrefix(organizationUuid)}/find-any-by-email?email={email}"), requestCookie);
+            using var response = await SendGetUserByEmail(organizationUuid, email, cookie);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            return await response.ReadResponseBodyAsAsync<UserResponseDTO>();
+            return await response.ReadResponseBodyAsAsync<UserIsPartOfCurrentOrgResponseDTO>();
+        }
+
+        public static async Task<HttpResponseMessage> SendGetUserByEmail(Guid organizationUuid, string email, Cookie cookie = null)
+        {
+            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.GetWithCookieAsync(
+                TestEnvironment.CreateUrl(
+                    $"{ControllerPrefix(organizationUuid)}/find-any-by-email?email={email}"), requestCookie);
         }
 
         public static async Task<HttpResponseMessage> CopyRoles(Guid organizationUuid, Guid fromUser, Guid toUser,

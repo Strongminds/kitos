@@ -158,10 +158,28 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [Fact]
         public async Task Can_Delete_User()
         {
+            //Arrange
             var organization = await CreateOrganizationAsync();
-            var user = await UsersV2Helper.CreateUser(organization.Uuid, CreateCreateUserRequest());
+            var organization2 = await CreateOrganizationAsync();
+            var userRequest = CreateCreateUserRequest();
+            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
+            var userUpdateRequest = new
+            {
+                Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
+            };
+            var userInOrg2 = await UsersV2Helper.UpdateUser(organization2.Uuid, user.Uuid, userUpdateRequest);
 
+            Assert.Equal(user.Uuid, userInOrg2.Uuid);
+
+            //Act
             _ = await UsersV2Helper.DeleteUserAndVerifyStatusCode(organization.Uuid, user.Uuid);
+
+            //Assert
+            var userInOrg2AfterDeletion = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email);
+            Assert.Equal(userInOrg2.Uuid, userInOrg2AfterDeletion.Uuid);
+
+            using var response = await UsersV2Helper.SendGetUserByEmail(organization.Uuid, user.Email);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -192,7 +210,16 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             AssertBaseUserRequestMatches(request, response);
         }
 
-        private void AssertBaseUserRequestMatches(BaseUserRequestDTO request, UserResponseDTO response)
+        private void AssertBaseUserRequestMatches(UpdateUserRequestDTO request, UserResponseDTO response)
+        {
+            Assert.Equal(request.PhoneNumber, response.PhoneNumber);
+            Assert.Equal(request.DefaultUserStartPreference, response.DefaultUserStartPreference);
+            Assert.Equal(request.HasApiAccess, response.HasApiAccess);
+            Assert.Equal(request.HasStakeHolderAccess, response.HasStakeHolderAccess);
+
+            AssertUserRoles(request.Roles, response.Roles);
+        }
+        private void AssertBaseUserRequestMatches(CreateUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.PhoneNumber, response.PhoneNumber);
             Assert.Equal(request.DefaultUserStartPreference, response.DefaultUserStartPreference);
@@ -248,8 +275,22 @@ namespace Tests.Integration.Presentation.Web.Users.V2
                 DefaultUserStartPreference = A<DefaultUserStartPreferenceChoice>(),
                 HasApiAccess = A<bool>(),
                 HasStakeHolderAccess = A<bool>(),
-                SendMail = A<bool>(),
-                Roles = A<IEnumerable<OrganizationRoleChoice>>()
+                Roles = A<IEnumerable<OrganizationRoleChoice>>(),
+                SendMail = A<bool>()
+            };
+        }
+        private UpdateUserRequestDTO MapCreateUserToUpdateUserRequest(CreateUserRequestDTO createUserRequest)
+        {
+            return new UpdateUserRequestDTO
+            {
+                Email = createUserRequest.Email,
+                FirstName = createUserRequest.FirstName,
+                LastName = createUserRequest.LastName,
+                PhoneNumber = createUserRequest.PhoneNumber,
+                DefaultUserStartPreference = createUserRequest.DefaultUserStartPreference,
+                HasApiAccess = createUserRequest.HasApiAccess,
+                HasStakeHolderAccess = createUserRequest.HasStakeHolderAccess,
+                Roles = createUserRequest.Roles
             };
         }
     }

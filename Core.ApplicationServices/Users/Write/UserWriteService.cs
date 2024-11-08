@@ -152,7 +152,7 @@ namespace Core.ApplicationServices.Users.Write
                     error => error
                     );
         }
-
+         
         private Maybe<OperationError> CollectUsersAndMutateRoles(Func<int, int, int, UserRightsChangeParameters, Maybe<OperationError>> mutateAction,
             Guid organizationUuid, Guid fromUserUuid,
             Guid toUserUuid,
@@ -179,17 +179,17 @@ namespace Core.ApplicationServices.Users.Write
 
         private Result<User, OperationError> PerformUpdates(User orgUser, Organization organization, UpdateUserParameters parameters)
         {
-            return orgUser.WithOptionalUpdate(parameters.FirstName, (user, firstName) => user.Name = firstName)
+            return orgUser.WithOptionalUpdate(parameters.FirstName, (user, firstName) => user.UpdateFirstName(user, firstName))
                 .Bind(user =>
-                    user.WithOptionalUpdate(parameters.LastName, (userToUpdate, lastName) => userToUpdate.LastName = lastName))
-                .Bind(user => user.WithOptionalUpdate(parameters.Email, UpdateEmail)
+                    user.WithOptionalUpdate(parameters.LastName, (userToUpdate, lastName) => userToUpdate.UpdateLastName(user, lastName)))
+                .Bind(user => user.WithOptionalUpdate(parameters.Email, UpdateEmail))
                 .Bind(user => user.WithOptionalUpdate(parameters.PhoneNumber, (userToUpdate, phoneNumber) => userToUpdate.PhoneNumber = phoneNumber))
                 .Bind(user => user.WithOptionalUpdate(parameters.HasStakeHolderAccess, UpdateStakeholderAccess))
                 .Bind(user => user.WithOptionalUpdate(parameters.HasApiAccess,
                     (userToUpdate, hasApiAccess) => userToUpdate.HasApiAccess = hasApiAccess))
                 .Bind(user => user.WithOptionalUpdate(parameters.DefaultUserStartPreference,
                     (userToUpdate, defaultStartPreference) => userToUpdate.DefaultUserStartPreference = defaultStartPreference))
-                .Bind(user => user.WithOptionalUpdate(parameters.Roles, (userToUpdate, roles) => UpdateRoles(organization, userToUpdate, roles))));
+                .Bind(user => user.WithOptionalUpdate(parameters.Roles, (userToUpdate, roles) => UpdateRoles(organization, userToUpdate, roles)));
         }
 
         private Result<User, OperationError> UpdateStakeholderAccess(User user, bool stakeholderAccess)
@@ -211,8 +211,8 @@ namespace Core.ApplicationServices.Users.Write
             {
                 return new OperationError($"Email '{email}' is already in use.", OperationFailure.Conflict);
             }
-            user.Email = email;
-            return user;
+
+            return user.UpdateEmail(user, email);
         }
 
         private Result<User, OperationError> UpdateRoles(Organization organization, User user,
