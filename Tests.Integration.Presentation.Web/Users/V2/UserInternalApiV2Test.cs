@@ -227,6 +227,22 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             _ = await UsersV2Helper.DeleteUserAndVerifyStatusCode(organization.Uuid, invalidUserUuid, null, HttpStatusCode.NotFound);
         }
 
+        [Fact]
+        public async Task Can_Get_Any_User()
+        {
+            //Arrange
+            var organization = await CreateOrganizationAsync();
+            var userRequest = CreateCreateUserRequest();
+            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
+
+            //Act
+            var users = await UsersV2Helper.GetUsers(user.Email);
+
+            //Assert
+            var responseUser = Assert.Single(users);
+            Assert.Equal(user.Uuid, responseUser.Uuid);
+        }
+
         private void AssertUserEqualsUpdateRequest(UpdateUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.Email, response.Email);

@@ -1,5 +1,6 @@
 ﻿using Core.DomainModel.Organization;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Presentation.Web.Models.API.V2.Request.User;
 using Xunit;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
 using Tests.Integration.Presentation.Web.Tools.External;
+using System.Linq;
 
 namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
 {
@@ -97,6 +99,26 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await HttpApi.GetWithCookieAsync(
                 TestEnvironment.CreateUrl(
                     $"{ControllerPrefix(organizationUuid)}/find-any-by-email?email={email}"), requestCookie);
+        }
+
+        public static async Task<IEnumerable<UserReferenceResponseDTO>> GetUsers(string email)
+        {
+            var requestCookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+
+            var queryParameters = new List<KeyValuePair<string, string>>
+            {
+                new ("emailQuery", email)
+            };
+            
+            var query = string.Join("&", queryParameters.Select(x => $"{x.Key}={x.Value}"));
+
+            using var response = await HttpApi.GetWithCookieAsync(
+                TestEnvironment.CreateUrl(
+                    $"api/v2/internal/users?{query}"), requestCookie);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            return await response.ReadResponseBodyAsAsync<IEnumerable<UserReferenceResponseDTO>>();
         }
 
         public static async Task<HttpResponseMessage> CopyRoles(Guid organizationUuid, Guid fromUser, Guid toUser,

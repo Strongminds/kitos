@@ -355,6 +355,15 @@ namespace Core.ApplicationServices
                 );
         }
 
+        public Result<IQueryable<User>, OperationError> GetUsers(params IDomainQuery<User>[] queries)
+        {
+            var query = new IntersectionQuery<User>(queries);
+
+            return _repository.GetUsers()
+                .Transform(query.Apply)
+                .Transform(Result<IQueryable<User>, OperationError>.Success);
+        }
+
         public Result<IQueryable<User>, OperationError> SearchAllKitosUsers(params IDomainQuery<User>[] queries)
         {
             if (_authorizationContext.GetCrossOrganizationReadAccess() < CrossOrganizationDataReadAccessLevel.All)
