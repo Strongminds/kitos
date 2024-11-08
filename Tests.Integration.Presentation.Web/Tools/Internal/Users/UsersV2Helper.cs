@@ -26,19 +26,6 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
         }
 
         public static async Task<UserResponseDTO> UpdateUser(Guid organizationUuid, Guid userUuid,
-            UpdateUserRequestDTO request, Cookie cookie = null)
-        {
-            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.PatchWithCookieAsync(
-                TestEnvironment.CreateUrl(
-                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/patch"), requestCookie, request);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            return await response.ReadResponseBodyAsAsync<UserResponseDTO>();
-        }
-
-        public static async Task<UserResponseDTO> UpdateUserAsObject(Guid organizationUuid, Guid userUuid,
             object request, Cookie cookie = null)
         {
             var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

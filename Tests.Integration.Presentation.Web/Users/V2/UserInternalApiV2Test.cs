@@ -167,7 +167,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             {
                 Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
             };
-            var userInOrg2 = await UsersV2Helper.UpdateUserAsObject(organization2.Uuid, user.Uuid, userUpdateRequest);
+            var userInOrg2 = await UsersV2Helper.UpdateUser(organization2.Uuid, user.Uuid, userUpdateRequest);
 
             Assert.Equal(user.Uuid, userInOrg2.Uuid);
 
@@ -194,7 +194,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             {
                 Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
             };
-            var userInOrg2 = await UsersV2Helper.UpdateUserAsObject(organization2.Uuid, user.Uuid, userUpdateRequest);
+            var userInOrg2 = await UsersV2Helper.UpdateUser(organization2.Uuid, user.Uuid, userUpdateRequest);
 
             Assert.Equal(user.Uuid, userInOrg2.Uuid);
 
