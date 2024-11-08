@@ -196,7 +196,7 @@ namespace Core.ApplicationServices.Users.Write
         {
             if (stakeholderAccess &&
                 !_authorizationContext.HasPermission(
-                    new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))
+                    new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))    
             {
                 return new OperationError("You don't have permission to issue stakeholder access.", OperationFailure.Forbidden);
             }

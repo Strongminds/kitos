@@ -163,11 +163,11 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var organization2 = await CreateOrganizationAsync();
             var userRequest = CreateCreateUserRequest();
             var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
-            var userUpdateRequest = new
+            var userUpdateRequest = new 
             {
                 Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
             };
-            var userInOrg2 = await UsersV2Helper.UpdateUser(organization2.Uuid, user.Uuid, userUpdateRequest);
+            var userInOrg2 = await UsersV2Helper.UpdateUserAsObject(organization2.Uuid, user.Uuid, userUpdateRequest);
 
             Assert.Equal(user.Uuid, userInOrg2.Uuid);
 
@@ -178,8 +178,34 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var userInOrg2AfterDeletion = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email);
             Assert.Equal(userInOrg2.Uuid, userInOrg2AfterDeletion.Uuid);
 
-            using var response = await UsersV2Helper.SendGetUserByEmail(organization.Uuid, user.Email);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var deletedUser = await UsersV2Helper.GetUserByEmail(organization.Uuid, user.Email);
+            Assert.False(deletedUser.IsPartOfCurrentOrganization);
+        }
+
+        [Fact]
+        public async Task Can_Delete_User_In_All_Orgs()
+        {
+            //Arrange
+            var organization = await CreateOrganizationAsync();
+            var organization2 = await CreateOrganizationAsync();
+            var userRequest = CreateCreateUserRequest();
+            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
+            var userUpdateRequest = new 
+            {
+                Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
+            };
+            var userInOrg2 = await UsersV2Helper.UpdateUserAsObject(organization2.Uuid, user.Uuid, userUpdateRequest);
+
+            Assert.Equal(user.Uuid, userInOrg2.Uuid);
+
+            //Act
+            await UsersV2Helper.DeleteUserGlobally(user.Uuid);
+
+            //Assert
+            var userOrg1 = await UsersV2Helper.GetUserByEmail(organization.Uuid, user.Email);
+            Assert.Null(userOrg1);
+            var userOrg2 = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email);
+            Assert.Null(userOrg2);
         }
 
         [Fact]

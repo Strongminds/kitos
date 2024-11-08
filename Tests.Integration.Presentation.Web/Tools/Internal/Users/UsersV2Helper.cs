@@ -7,6 +7,7 @@ using Presentation.Web.Models.API.V2.Internal.Request.User;
 using Presentation.Web.Models.API.V2.Request.User;
 using Xunit;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
+using Tests.Integration.Presentation.Web.Tools.External;
 
 namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
 {
@@ -30,7 +31,7 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             using var response = await HttpApi.PatchWithCookieAsync(
                 TestEnvironment.CreateUrl(
-                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/patch"), requestCookie, request);
+                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/patch"), requestCookie, request.AsPatchPayloadOfProperty(nameof(UpdateUserRequestDTO)));
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -69,6 +70,17 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             var statusCode = response.StatusCode;
             Assert.Equal(expectedStatusCode, statusCode);
             return statusCode;
+        }
+
+        public static async Task DeleteUserGlobally(Guid userUuid, Cookie cookie = null)
+        {
+            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var url = TestEnvironment.CreateUrl(
+                $"api/v2/internal/users/{userUuid}");
+            using var response = await HttpApi.DeleteWithCookieAsync(url,
+                requestCookie);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         public static async Task<UserCollectionPermissionsResponseDTO> GetUserCollectionPermissions(Guid organizationUuid, Cookie cookie = null)
