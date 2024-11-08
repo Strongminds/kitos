@@ -199,6 +199,7 @@
     <Compile Include="ApplicationServices\Handlers\RemoveUserFromKitosCommandHandler.cs" />
     <Compile Include="ApplicationServices\Handlers\ReportPendingFkOrganizationChangesToStakeHoldersHandlerTest.cs" />
     <Compile Include="ApplicationServices\Handlers\SendEmailToStakeholdersOnExternalOrganizationConnectionUpdatedHandlerTest.cs" />
+    <Compile Include="ApplicationServices\HelpTexts\HelpTextServiceTest.cs" />
     <Compile Include="ApplicationServices\Interface\ItInterfaceWriteServiceTest.cs" />
     <Compile Include="ApplicationServices\ItInterfaceServiceTest.cs" />
     <Compile Include="ApplicationServices\LocalOptions\GenericLocalOptionsServiceTest.cs" />

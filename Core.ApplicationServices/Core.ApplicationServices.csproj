@@ -83,6 +83,8 @@
     <Compile Include="GlobalOptions\GlobalRoleOptionsService.cs" />
     <Compile Include="GlobalOptions\IGlobalRegularOptionsService.cs" />
     <Compile Include="GlobalOptions\IGlobalRoleOptionsService.cs" />
+    <Compile Include="HelpTexts\HelpTextService.cs" />
+    <Compile Include="HelpTexts\IHelpTextService.cs" />
     <Compile Include="Interface\Write\IItInterfaceWriteService.cs" />
     <Compile Include="Interface\Write\ItInterfaceWriteService.cs" />
     <Compile Include="Authorization\ResourceCollectionPermissionsResult.cs" />
