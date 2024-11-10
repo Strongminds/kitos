@@ -2,8 +2,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.HelpTexts;
+using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
 using Core.DomainServices;
 using Moq;
@@ -16,12 +18,13 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
     {
         private HelpTextService _sut;
         private Mock<IGenericRepository<HelpText>> _helpTextsRepository;
-        private Mock<IAuthorizationContext> _authorizationContext;
+        private Mock<IOrganizationalUserContext> _userContext;
 
         public HelpTextServiceTest()
         {
             _helpTextsRepository = new Mock<IGenericRepository<HelpText>>();
-            _sut = new HelpTextService(_helpTextsRepository.Object);
+            _userContext = new Mock<IOrganizationalUserContext>();
+            _sut = new HelpTextService(_helpTextsRepository.Object, _userContext.Object);
         }
 
         [Fact]
@@ -42,5 +45,36 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
             Assert.NotNull(helpText);
             Assert.Equivalent(expected, helpText);
         }
+
+        [Fact]
+        public void Create_Help_Text_Returns_Forbidden_If_Not_Global_Admin()
+        {
+            _userContext.Setup(_ => _.IsGlobalAdmin()).Returns(false);
+
+            var parameters = A<HelpTextCreateParameters>();
+
+            var result = _sut.CreateHelpText(parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void Can_Create_Help_Text()
+        {
+            _userContext.Setup(_ => _.IsGlobalAdmin()).Returns(true);
+
+            var parameters = A<HelpTextCreateParameters>();
+
+            var result = _sut.CreateHelpText(parameters);
+
+            Assert.True(result.Ok);
+            var helpText = result.Value;
+            Assert.Equal(parameters.Description, helpText.Description);
+            Assert.Equal(parameters.Title, helpText.Title);
+            Assert.Equal(parameters.Key, helpText.Key);
+        }
+
+
     }
 }

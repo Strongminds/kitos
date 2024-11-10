@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
 
 namespace Core.ApplicationServices.HelpTexts
@@ -10,7 +11,7 @@ namespace Core.ApplicationServices.HelpTexts
     {
         Result<IEnumerable<HelpText>, OperationError> GetHelpTexts();
 
-        Result<HelpText, OperationError> CreateHelpText();
+        Result<HelpText, OperationError> CreateHelpText(HelpTextCreateParameters parameters);
 
         Result<HelpText, OperationError> DeleteHelpText();
 
