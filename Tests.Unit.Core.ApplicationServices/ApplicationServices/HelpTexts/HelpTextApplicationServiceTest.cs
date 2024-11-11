@@ -14,19 +14,21 @@ using Xunit;
 
 namespace Tests.Unit.Core.ApplicationServices.HelpTexts
 {
-    public class HelpTextServiceTest: WithAutoFixture
+    public class HelpTextApplicationServiceTest: WithAutoFixture
     {
-        private readonly HelpTextService _sut;
+        private readonly HelpTextApplicationService _sut;
         private readonly Mock<IGenericRepository<HelpText>> _helpTextsRepository;
         private readonly Mock<IOrganizationalUserContext> _userContext;
         private readonly Mock<IDomainEvents> _domainEvents;
+        private readonly Mock<IHelpTextService> _helpTextService;
 
-        public HelpTextServiceTest()
+        public HelpTextApplicationServiceTest()
         {
             _domainEvents = new Mock<IDomainEvents>();
             _helpTextsRepository = new Mock<IGenericRepository<HelpText>>();
             _userContext = new Mock<IOrganizationalUserContext>();
-            _sut = new HelpTextService(_helpTextsRepository.Object, _userContext.Object, _domainEvents.Object);
+            _helpTextService = new Mock<IHelpTextService>();
+            _sut = new HelpTextApplicationService(_helpTextsRepository.Object, _userContext.Object, _domainEvents.Object, _helpTextService.Object);
         }
 
         [Fact]
@@ -58,8 +60,8 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         public void Can_Create_Help_Text()
         {
             SetupIsGlobalAdmin();
-
             var parameters = A<HelpTextCreateParameters>();
+            _helpTextService.Setup(_ => _.IsAvailableKey(parameters.Key)).Returns(true);
 
             var result = _sut.CreateHelpText(parameters);
 

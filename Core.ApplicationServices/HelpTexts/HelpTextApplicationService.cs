@@ -7,22 +7,23 @@ using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainServices;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.HelpTexts
 {
-    public class HelpTextService: IHelpTextService
+    public class HelpTextApplicationService: IHelpTextApplicationService
     {
         private readonly IGenericRepository<HelpText> _helpTextsRepository;
         private readonly IOrganizationalUserContext _userContext;
         private readonly IDomainEvents _domainEvents;
+        private readonly IHelpTextService _helpTextService;
 
-        public HelpTextService(IGenericRepository<HelpText> helpTextsRepository,
-            IOrganizationalUserContext userContext, IDomainEvents domainEvents)
+        public HelpTextApplicationService(IGenericRepository<HelpText> helpTextsRepository,
+            IOrganizationalUserContext userContext, IDomainEvents domainEvents, IHelpTextService helpTextService)
         {
             _helpTextsRepository = helpTextsRepository;
             _userContext = userContext;
             _domainEvents = domainEvents;
+            _helpTextService = helpTextService;
         }
 
         public Result<IEnumerable<HelpText>, OperationError> GetHelpTexts()
@@ -34,21 +35,23 @@ namespace Core.ApplicationServices.HelpTexts
         {
             return WithGlobalAdminRights("User is not allowed to create help text")
                 .Match(error => error,
-                    () =>
-                    {
-                        var newHelpText = new HelpText()
-                        {
-                            Description = parameters.Description,
-                            Title = parameters.Title,
-                            Key = parameters.Key
-                        };
+                    () => WithAvailableKey(parameters.Key)
+                        .Match(error => error,
+                            () =>
+                            {
+                                var newHelpText = new HelpText()
+                                {
+                                    Description = parameters.Description,
+                                    Title = parameters.Title,
+                                    Key = parameters.Key
+                                };
 
-                        _helpTextsRepository.Insert(newHelpText);
-                        _helpTextsRepository.Save();
-                        _domainEvents.Raise(new EntityCreatedEvent<HelpText>(newHelpText));
+                                _helpTextsRepository.Insert(newHelpText);
+                                _helpTextsRepository.Save();
+                                _domainEvents.Raise(new EntityCreatedEvent<HelpText>(newHelpText));
 
-                        return Result<HelpText, OperationError>.Success(newHelpText);
-                    });
+                                return Result<HelpText, OperationError>.Success(newHelpText);
+                            }));
         }
 
         public Maybe<OperationError> DeleteHelpText(string key)
@@ -94,6 +97,14 @@ namespace Core.ApplicationServices.HelpTexts
             return existing != null 
                 ? existing
                 : new OperationError($"Could not find help text with key { key }", OperationFailure.NotFound);
+        }
+
+        private Maybe<OperationError> WithAvailableKey(string key)
+        {
+            return _helpTextService.IsAvailableKey(key)
+                ? Maybe<OperationError>.None 
+                : Maybe<OperationError>.Some(new OperationError($"A help text with the provided key { key } already exists", OperationFailure.Conflict));
+
         }
 
         private Maybe<OperationError> WithGlobalAdminRights(string errorMessage)

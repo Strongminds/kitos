@@ -7,7 +7,7 @@ using Core.DomainModel;
 
 namespace Core.ApplicationServices.HelpTexts
 {
-    public interface IHelpTextService
+    public interface IHelpTextApplicationService
     {
         Result<IEnumerable<HelpText>, OperationError> GetHelpTexts();
 
