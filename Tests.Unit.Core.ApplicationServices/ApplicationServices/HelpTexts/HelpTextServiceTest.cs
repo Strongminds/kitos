@@ -101,6 +101,31 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
             Assert.Equal(existing.Key, helpText.Key);
         }
 
+        [Fact]
+        public void Patch_Help_Text_Returns_Forbidden_If_Not_Global_Admin()
+        {
+            SetupIsNotGlobalAdmin();
+
+            var parameters = A<HelpTextUpdateParameters>();
+
+            var result = _sut.PatchHelpText(parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void Delete_Help_Text_Returns_Forbidden_If_Not_Global_Admin()
+        {
+            SetupIsNotGlobalAdmin();
+
+            var result = _sut.DeleteHelpText(A<string>());
+
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Forbidden, result.Value.FailureType);
+        }
+
+
         private HelpText SetupRepositoryReturnsOne()
         {
             var existing = new HelpText()
