@@ -16,13 +16,9 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
         [Fact]
         public async Task Can_Get_HelpTexts()
         {
-            var expected = new HelpText()
-            {
-                Description = A<string>(),
-                Title = A<string>(),
-                Key = A<string>()
-            };
-            DatabaseAccess.MutateEntitySet<HelpText>(repo => repo.Insert(expected));
+            var expected = A<HelpTextCreateRequestDTO>();
+            var createResponse = await HelpTextsInternalV2Helper.Create(expected);
+            Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
 
             var response = await HelpTextsInternalV2Helper.Get();
 
