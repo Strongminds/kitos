@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
 using Core.DomainServices;
@@ -31,6 +32,7 @@ namespace Core.ApplicationServices.HelpTexts
         {
             if (!_userContext.IsGlobalAdmin())
                 return new OperationError("User is not allowed to create help text", OperationFailure.Forbidden);
+            
             var newHelpText = new HelpText()
             {
                 Description = parameters.Description,
@@ -44,14 +46,39 @@ namespace Core.ApplicationServices.HelpTexts
             return newHelpText;
         }
 
-        public Result<HelpText, OperationError> DeleteHelpText()
+        public Maybe<OperationError> DeleteHelpText(string key)
         {
             throw new NotImplementedException();
         }
 
-        public Result<HelpText, OperationError> PatchHelpText()
+        public Result<HelpText, OperationError> PatchHelpText(HelpTextUpdateParameters parameters)
         {
-            throw new NotImplementedException();
+            if (!_userContext.IsGlobalAdmin())
+                return new OperationError($"User is not allowed to patch help text with key { parameters.Key }", OperationFailure.Forbidden);
+
+            return GetByKey(parameters.Key).Bind(existing => PerformUpdates(existing, parameters)
+                .Bind(updated =>
+                {
+                    _helpTextsRepository.Update(updated);
+                    _helpTextsRepository.Save();
+                    return Result<HelpText, OperationError>.Success(updated);
+                }));
+        }
+
+        private Result<HelpText, OperationError> PerformUpdates(HelpText helpText, HelpTextUpdateParameters parameters)
+        {
+            return helpText
+                .WithOptionalUpdate(parameters.Title, (ht, title) => ht.UpdateTitle(title))
+                .Bind(ht => ht.WithOptionalUpdate(parameters.Description,
+                    (ht, description) => ht.UpdateDescription(description)));
+        }
+
+        private Result<HelpText, OperationError> GetByKey(string key)
+        {
+            var existing = _helpTextsRepository.AsQueryable().Where(ht => ht.Key == key).FirstOrDefault();
+            return existing != null 
+                ? existing
+                : new OperationError($"Could not find help text with key { key }", OperationFailure.NotFound);
         }
     }
 }

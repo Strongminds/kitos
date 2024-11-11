@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.HelpTexts;
 using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
@@ -16,9 +17,9 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
 {
     public class HelpTextServiceTest: WithAutoFixture
     {
-        private HelpTextService _sut;
-        private Mock<IGenericRepository<HelpText>> _helpTextsRepository;
-        private Mock<IOrganizationalUserContext> _userContext;
+        private readonly HelpTextService _sut;
+        private readonly Mock<IGenericRepository<HelpText>> _helpTextsRepository;
+        private readonly Mock<IOrganizationalUserContext> _userContext;
 
         public HelpTextServiceTest()
         {
@@ -30,14 +31,7 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         [Fact]
         public void Can_Get_Help_Texts()
         {
-            var expected = new HelpText()
-            {
-                Description = A<string>(),
-                Key = A<string>(),
-                Title = A<string>()
-            };
-            _helpTextsRepository.Setup(_ => _.AsQueryable()).Returns(new List<HelpText>(){expected}.AsQueryable());
-
+            var expected = SetupRepositoryReturnsOne();
             var result = _sut.GetHelpTexts();
 
             Assert.True(result.Ok);
@@ -49,7 +43,7 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         [Fact]
         public void Create_Help_Text_Returns_Forbidden_If_Not_Global_Admin()
         {
-            _userContext.Setup(_ => _.IsGlobalAdmin()).Returns(false);
+            SetupIsNotGlobalAdmin();
 
             var parameters = A<HelpTextCreateParameters>();
 
@@ -62,7 +56,7 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         [Fact]
         public void Can_Create_Help_Text()
         {
-            _userContext.Setup(_ => _.IsGlobalAdmin()).Returns(true);
+            SetupIsGlobalAdmin();
 
             var parameters = A<HelpTextCreateParameters>();
 
@@ -73,6 +67,62 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
             Assert.Equal(parameters.Description, helpText.Description);
             Assert.Equal(parameters.Title, helpText.Title);
             Assert.Equal(parameters.Key, helpText.Key);
+        }
+
+        [Fact]
+        public void Can_Delete_Help_Text()
+        {
+            var existing = SetupRepositoryReturnsOne();
+            SetupIsGlobalAdmin();
+
+            var errorMaybe = _sut.DeleteHelpText(existing.Key);
+
+            //Assert.False(errorMaybe.HasValue);
+            //_helpTextsRepository.Verify(_ => _.DeleteByKey(existing.Id));
+
+        }
+
+        [Fact]
+        public void Can_Patch_Help_Text_Except_Key()
+        {
+            var existing = SetupRepositoryReturnsOne();
+            SetupIsGlobalAdmin();
+            var parameters = new HelpTextUpdateParameters()
+            {
+                Key = existing.Key,
+                Title = A<Maybe<string>>().AsChangedValue(),
+                Description = A<Maybe<string>>().AsChangedValue()
+            };
+
+            var result = _sut.PatchHelpText(parameters);
+
+            Assert.True(result.Ok);
+            var helpText = result.Value;
+            Assert.Equal(parameters.Description.NewValue.Value, helpText.Description);
+            Assert.Equal(parameters.Title.NewValue.Value, helpText.Title);
+            Assert.Equal(existing.Key, helpText.Key);
+        }
+
+        private HelpText SetupRepositoryReturnsOne()
+        {
+            var existing = new HelpText()
+            {
+                Description = A<string>(),
+                Key = A<string>(),
+                Title = A<string>()
+            };
+            _helpTextsRepository.Setup(_ => _.AsQueryable()).Returns(new List<HelpText>() { existing }.AsQueryable());
+            return existing;
+        }
+
+        private void SetupIsGlobalAdmin()
+        {
+            _userContext.Setup(_ => _.IsGlobalAdmin()).Returns(true);
+        }
+
+        private void SetupIsNotGlobalAdmin()
+        {
+            _userContext.Setup(_ => _.IsGlobalAdmin()).Returns(false);
         }
 
 

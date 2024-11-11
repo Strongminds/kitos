@@ -181,6 +181,7 @@
     <Compile Include="Model\GlobalOptions\GlobalRoleOptionCreateParameters.cs" />
     <Compile Include="Model\GlobalOptions\GlobalRoleOptionUpdateParameters.cs" />
     <Compile Include="Model\HelpTexts\HelpTextCreateParameters.cs" />
+    <Compile Include="Model\HelpTexts\HelpTextUpdateParameters.cs" />
     <Compile Include="Model\Interface\ItInterfaceDataWriteModel.cs" />
     <Compile Include="Model\Interface\ItInterfaceDeletionConflict.cs" />
     <Compile Include="Model\Interface\ItInterfacePermissions.cs" />
