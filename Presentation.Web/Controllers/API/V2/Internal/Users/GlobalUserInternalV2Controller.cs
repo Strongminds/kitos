@@ -69,12 +69,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             if (!string.IsNullOrWhiteSpace(emailQuery))
                 queries.Add(new QueryUserByEmail(emailQuery));
 
-            return _userService
-                .GetUsers(queries.ToArray())
-                .Select(x => x.OrderUserApiResults(orderByProperty))
-                .Select(x => x.Page(paginationQuery))
-                .Select(x => x.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO))
-                .Match(Ok, () => FromOperationError(new OperationError("Something went wrong while getting the user", OperationFailure.UnknownError)));
+            var result = _userService
+                .GetUsers(queries.ToArray());
+            result = result.OrderUserApiResults(orderByProperty);
+            result = result.Page(paginationQuery);
+            return Ok(result.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO));
         }
     }
 }

@@ -354,7 +354,7 @@ namespace Core.ApplicationServices
                 );
         }
 
-        public Maybe<IQueryable<User>> GetUsers(params IDomainQuery<User>[] queries)
+        public IQueryable<User> GetUsers(params IDomainQuery<User>[] queries)
         {
             var query = new IntersectionQuery<User>(queries);
 
