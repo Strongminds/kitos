@@ -381,6 +381,7 @@
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\ItSystems\ItSystemGlobalRegisterTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\ItSystems\ItSystemGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\ItSystems\ItSystemGlobalSensitivePersonalDataTypesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\HelpTextsInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ItContracts\GridLocalItContractRolesV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Common\Helpers\ItSystemV2QueryHandler.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\CommandPermissionsResponseMapper.cs" />
@@ -437,7 +438,9 @@
     <Compile Include="Controllers\API\V2\Internal\LocalOptionTypes\BaseLocalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\LocalOptionTypes\ItSystems\ItSystemSensitivePersonalDataTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Mapping\GlobalOptionTypeResponseMapper.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Mapping\HelpTextResponseMapper.cs" />
     <Compile Include="Controllers\API\V2\Internal\Mapping\IGlobalOptionTypeResponseMapper.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Mapping\IHelpTextResponseMapper.cs" />
     <Compile Include="Controllers\API\V2\Internal\Mapping\InternalDtoModelV2MappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\Common\Helpers\ItSystemUsageV2QueryHandler.cs" />
     <Compile Include="Controllers\API\V2\Internal\Organizations\OrganizationGridInternalV2Controller.cs" />
@@ -499,6 +502,7 @@
     <Compile Include="Models\API\V2\Internal\Request\User\MutateUserRightsRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\GlobalOptions\GlobalRegularOptionResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\GlobalOptions\GlobalRoleOptionResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\HelpTextResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\ItContract\LocalItContractRolesResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\ItSystemUsage\ItSystemUsageMigrationPermissionsResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\ItSystemUsage\ItSystemUsageMigrationV2ResponseDTO.cs" />
