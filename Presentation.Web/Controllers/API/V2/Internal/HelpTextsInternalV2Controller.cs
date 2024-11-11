@@ -66,5 +66,21 @@ namespace Presentation.Web.Controllers.API.V2.Internal
             return _helpTextApplicationService.DeleteHelpText(key)
                 .Match(FromOperationError, Ok);
         }
+
+        [HttpPatch]
+        [Route("{key}")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        public IHttpActionResult Patch([FromUri] string key, HelpTextUpdateRequestDTO dto)
+        {
+            var parameters = _writeModelMapper.ToUpdateParameters(dto);
+            return _helpTextApplicationService.PatchHelpText(key, parameters)
+                .Select(_responseMapper.ToResponseDTO)
+                .Match(Ok, FromOperationError);
+        }
     }
+
 }

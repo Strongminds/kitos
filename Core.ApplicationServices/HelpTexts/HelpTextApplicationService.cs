@@ -70,11 +70,11 @@ namespace Core.ApplicationServices.HelpTexts
                     });
         }
 
-        public Result<HelpText, OperationError> PatchHelpText(HelpTextUpdateParameters parameters)
+        public Result<HelpText, OperationError> PatchHelpText(string key, HelpTextUpdateParameters parameters)
         {
-            return WithGlobalAdminRights($"User is not allowed to patch help text with key { parameters.Key }")
+            return WithGlobalAdminRights($"User is not allowed to patch help text with key { key }")
                 .Match(error => error,
-                    () => GetByKey(parameters.Key).Bind(existing => PerformUpdates(existing, parameters)
+                    () => GetByKey(key).Bind(existing => PerformUpdates(existing, parameters)
                 .Bind(updated =>
                 {
                     _helpTextsRepository.Update(updated);

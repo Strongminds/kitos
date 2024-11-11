@@ -65,5 +65,26 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             var allHelpTexts = await allHelpTextsResponse.ReadResponseBodyAsAsync<IEnumerable<HelpText>>();
             Assert.False(allHelpTexts.Any(ht => ht.Key == dto.Key));
         }
+
+        [Fact]
+        public async Task Can_Patch_HelpText()
+        {
+            var createRequestDto = A<HelpTextCreateRequestDTO>();
+            var createResponse = await HelpTextsInternalV2Helper.Create(createRequestDto);
+            Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+            var updateDto = A<HelpTextUpdateRequestDTO>();
+
+            var response = await HelpTextsInternalV2Helper.Patch(createRequestDto.Key, updateDto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var allHelpTextsResponse = await HelpTextsInternalV2Helper.Get();
+            Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+            var allHelpTexts = await allHelpTextsResponse.ReadResponseBodyAsAsync<IEnumerable<HelpText>>();
+            var updated = allHelpTexts.First(ht => ht.Key == createRequestDto.Key);
+            Assert.NotNull(updated);
+            Assert.Equal(updateDto.Description, updated.Description);
+            Assert.Equal(updateDto.Title, updated.Title);
+
+        }
     }
 }

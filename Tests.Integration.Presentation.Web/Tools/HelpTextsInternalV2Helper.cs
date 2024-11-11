@@ -29,5 +29,12 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PostWithCookieAsync(
                 TestEnvironment.CreateUrl(Endpoint), cookie, dto);
         }
+
+        public static async Task<HttpResponseMessage> Patch(string key, HelpTextUpdateRequestDTO dto)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.PatchWithCookieAsync(
+                TestEnvironment.CreateUrl($"{Endpoint}/{key}"), cookie, dto);
+        }
     }
 }

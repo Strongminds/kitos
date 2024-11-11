@@ -478,6 +478,7 @@
     <Compile Include="Models\API\V2\Internal\Common\NamedEntityWithUserFullNameV2DTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\GlobalRoleOptionUpdateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\HelpTextCreateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\HelpTextUpdateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Notifications\BaseNotificationPropertiesWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Notifications\IHasBaseWriteProperties.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Notifications\NotificationSentResponseDTO.cs" />

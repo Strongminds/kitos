@@ -9,6 +9,5 @@ namespace Core.ApplicationServices.Model.HelpTexts
     {
         public OptionalValueChange<Maybe<string>> Title { get; set; }
         public OptionalValueChange<Maybe<string>> Description { get; set; }
-        public string Key { get; set; }
     }
 }

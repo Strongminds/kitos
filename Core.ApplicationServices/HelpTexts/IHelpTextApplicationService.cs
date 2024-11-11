@@ -15,7 +15,7 @@ namespace Core.ApplicationServices.HelpTexts
 
         Maybe<OperationError> DeleteHelpText(string key);
 
-        Result<HelpText, OperationError> PatchHelpText(HelpTextUpdateParameters parameters);
+        Result<HelpText, OperationError> PatchHelpText(string key, HelpTextUpdateParameters parameters);
 
     }
 }
