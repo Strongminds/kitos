@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel;
+using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Toolkit.Patterns;
@@ -32,7 +33,21 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             Assert.Equal(expected.Key, actual.Key);
             Assert.Equal(expected.Description, actual.Description);
             Assert.Equal(expected.Title, actual.Title);
+        }
 
+        [Fact]
+        public async Task Can_Create_HelpText()
+        {
+            var dto = A<HelpTextCreateRequestDTO>();
+
+            var response = await HelpTextsInternalV2Helper.Create(dto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var actual = await response.ReadResponseBodyAsAsync<HelpTextResponseDTO>();
+            Assert.NotNull(actual);
+            Assert.Equal(dto.Key, actual.Key);
+            Assert.Equal(dto.Description, actual.Description);
+            Assert.Equal(dto.Title, actual.Title);
         }
     }
 }

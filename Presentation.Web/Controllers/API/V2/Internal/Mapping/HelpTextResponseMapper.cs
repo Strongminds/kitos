@@ -12,7 +12,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Mapping
             return helpTexts.Select(ToResponseDTO);
         }
 
-        private HelpTextResponseDTO ToResponseDTO(HelpText helpText)
+        public HelpTextResponseDTO ToResponseDTO(HelpText helpText)
         {
             return new()
             {

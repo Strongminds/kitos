@@ -1,6 +1,7 @@
 ﻿using Core.DomainModel.Organization;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Presentation.Web.Models.API.V2.Internal.Request;
 
 namespace Tests.Integration.Presentation.Web.Tools
 {
@@ -13,6 +14,13 @@ namespace Tests.Integration.Presentation.Web.Tools
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.GetWithCookieAsync(
                 TestEnvironment.CreateUrl(Endpoint), cookie);
+        }
+
+        public static async Task<HttpResponseMessage> Create(HelpTextCreateRequestDTO dto)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.PostWithCookieAsync(
+                TestEnvironment.CreateUrl(Endpoint), cookie, dto);
         }
     }
 }

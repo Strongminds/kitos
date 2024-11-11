@@ -403,6 +403,8 @@ namespace Presentation.Web.Ninject
 
             //Help texts
             kernel.Bind<IHelpTextResponseMapper>().To<HelpTextResponseMapper>().InCommandScope(Mode);
+            kernel.Bind<IHelpTextWriteModelMapper>().To<HelpTextWriteModelMapper>().InCommandScope(Mode);
+
         }
 
         private void RegisterSSO(IKernel kernel)

@@ -308,6 +308,7 @@
     <Compile Include="Models\V2\Internal\GlobalOptionTypeResponseMapperTest.cs" />
     <Compile Include="Models\V2\Internal\GlobalOptionTypeWriteModelMapperTest.cs" />
     <Compile Include="Models\V2\Internal\HelpTextResponseMapperTest.cs" />
+    <Compile Include="Models\V2\Internal\HelpTextWriteModelMapperTest.cs" />
     <Compile Include="Models\V2\Internal\LocalOptionTypeWriteModelMapperTest.cs" />
     <Compile Include="Models\V2\Internal\UserResponseMapperTest.cs" />
     <Compile Include="Models\V2\Internal\UserWriteModelMapperTest.cs" />
