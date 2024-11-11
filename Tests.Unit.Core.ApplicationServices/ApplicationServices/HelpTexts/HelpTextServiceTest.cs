@@ -75,8 +75,8 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
 
             var errorMaybe = _sut.DeleteHelpText(existing.Key);
 
-            //Assert.False(errorMaybe.HasValue);
-            //_helpTextsRepository.Verify(_ => _.DeleteByKey(existing.Id));
+            Assert.False(errorMaybe.HasValue);
+            _helpTextsRepository.Verify(_ => _.Delete(existing));
 
         }
 

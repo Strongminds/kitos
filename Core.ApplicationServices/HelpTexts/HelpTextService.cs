@@ -49,12 +49,21 @@ namespace Core.ApplicationServices.HelpTexts
 
         public Maybe<OperationError> DeleteHelpText(string key)
         {
-            throw new NotImplementedException();
+            return WithGlobalAdminRights($"User is not allowed to delete help text with key {key}")
+                .Match(error => error,
+                    () =>
+                    {
+                        var helpText = GetByKey(key);
+                        if (helpText.Failed) return helpText.Error;
+
+                        _helpTextsRepository.Delete(helpText.Value);
+                        return Maybe<OperationError>.None;
+                    });
         }
 
         public Result<HelpText, OperationError> PatchHelpText(HelpTextUpdateParameters parameters)
         {
-            return WithGlobalAdminRights($"User is not allowed to patch help text with key {parameters.Key}")
+            return WithGlobalAdminRights($"User is not allowed to patch help text with key { parameters.Key }")
                 .Match(error => error,
                     () => GetByKey(parameters.Key).Bind(existing => PerformUpdates(existing, parameters)
                 .Bind(updated =>
