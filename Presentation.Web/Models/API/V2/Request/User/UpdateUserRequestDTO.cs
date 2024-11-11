@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Presentation.Web.Models.API.V2.Request.User
+﻿namespace Presentation.Web.Models.API.V2.Request.User
 {
     public class UpdateUserRequestDTO : BaseUserRequestDTO
     {
