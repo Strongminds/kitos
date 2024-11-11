@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
@@ -30,20 +29,22 @@ namespace Core.ApplicationServices.HelpTexts
 
         public Result<HelpText, OperationError> CreateHelpText(HelpTextCreateParameters parameters)
         {
-            if (!_userContext.IsGlobalAdmin())
-                return new OperationError("User is not allowed to create help text", OperationFailure.Forbidden);
-            
-            var newHelpText = new HelpText()
-            {
-                Description = parameters.Description,
-                Title = parameters.Title,
-                Key = parameters.Key
-            };
+            return WithGlobalAdminRights("User is not allowed to create help text")
+                .Match(error => error,
+                    () =>
+                    {
+                        var newHelpText = new HelpText()
+                        {
+                            Description = parameters.Description,
+                            Title = parameters.Title,
+                            Key = parameters.Key
+                        };
 
-            _helpTextsRepository.Insert(newHelpText);
-            _helpTextsRepository.Save();
+                        _helpTextsRepository.Insert(newHelpText);
+                        _helpTextsRepository.Save();
 
-            return newHelpText;
+                        return Result<HelpText, OperationError>.Success(newHelpText);
+                    });
         }
 
         public Maybe<OperationError> DeleteHelpText(string key)
@@ -53,16 +54,15 @@ namespace Core.ApplicationServices.HelpTexts
 
         public Result<HelpText, OperationError> PatchHelpText(HelpTextUpdateParameters parameters)
         {
-            if (!_userContext.IsGlobalAdmin())
-                return new OperationError($"User is not allowed to patch help text with key { parameters.Key }", OperationFailure.Forbidden);
-
-            return GetByKey(parameters.Key).Bind(existing => PerformUpdates(existing, parameters)
+            return WithGlobalAdminRights($"User is not allowed to patch help text with key {parameters.Key}")
+                .Match(error => error,
+                    () => GetByKey(parameters.Key).Bind(existing => PerformUpdates(existing, parameters)
                 .Bind(updated =>
                 {
                     _helpTextsRepository.Update(updated);
                     _helpTextsRepository.Save();
                     return Result<HelpText, OperationError>.Success(updated);
-                }));
+                })));
         }
 
         private Result<HelpText, OperationError> PerformUpdates(HelpText helpText, HelpTextUpdateParameters parameters)
@@ -79,6 +79,14 @@ namespace Core.ApplicationServices.HelpTexts
             return existing != null 
                 ? existing
                 : new OperationError($"Could not find help text with key { key }", OperationFailure.NotFound);
+        }
+
+        private Maybe<OperationError> WithGlobalAdminRights(string errorMessage)
+        {
+            var isGlobalAdmin = _userContext.IsGlobalAdmin();
+            return isGlobalAdmin
+                ? Maybe<OperationError>.None
+                : new OperationError(errorMessage, OperationFailure.Forbidden);
         }
     }
 }
