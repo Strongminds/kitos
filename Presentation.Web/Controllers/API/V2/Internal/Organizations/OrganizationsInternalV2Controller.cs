@@ -240,7 +240,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
-        private OrganizationRemovalConflictsResponseDTO MapConflictsToDTO(OrganizationRemovalConflicts conflicts)
+        private OrganizationRemovalConflictsResponseDTO MapConflictsToDTO(OrganizationRemovalConflicts conflicts, Guid organizationUuid)
         {
             return new()
             {
@@ -261,7 +261,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             return new()
             {
                 SystemName = system.Name,
-                OrganizationNames = system.Usages.Select(usage => usage.Organization.Name).ToList(),
+                OrganizationNames = system.Usages.Select(usage => usage.Organization).Where(org => org.Id != system.OrganizationId).Select(org => org.Name).ToList(),
             };
         }
 
