@@ -81,7 +81,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             return Ok(result.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO));
         }
 
-        [Route("")]
+        [Route("organizations")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
