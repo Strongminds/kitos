@@ -246,8 +246,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             {
                 SystemsWithUsagesOutsideTheOrganization = conflicts.SystemsWithUsagesOutsideTheOrganization.Select(MapSystemToConflictDTO).ToList(),
                 InterfacesExposedOnSystemsOutsideTheOrganization = conflicts.InterfacesExposedOnSystemsOutsideTheOrganization.Select(MapExposedInterfacesToConflictDTO).ToList(),
-                SystemsExposingInterfacesDefinedInOtherOrganizations = conflicts.SystemsExposingInterfacesDefinedInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface).Where(itInterface => itInterface.OrganizationId != system.OrganizationId))).ToList(),
-                SystemsSetAsParentSystemToSystemsInOtherOrganizations = conflicts.SystemsSetAsParentSystemToSystemsInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.Children.Where(child => child.OrganizationId != system.OrganizationId))).ToList(),
+                SystemsExposingInterfacesDefinedInOtherOrganizations = conflicts.SystemsExposingInterfacesDefinedInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface))).ToList(),
+                SystemsSetAsParentSystemToSystemsInOtherOrganizations = conflicts.SystemsSetAsParentSystemToSystemsInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.Children)).ToList(),
                 DprInOtherOrganizationsWhereOrgIsDataProcessor = conflicts.DprInOtherOrganizationsWhereOrgIsDataProcessor.Select(MapToSimpleConflict).ToList(),
                 DprInOtherOrganizationsWhereOrgIsSubDataProcessor = conflicts.DprInOtherOrganizationsWhereOrgIsSubDataProcessor.Select(MapToSimpleConflict).ToList(),
                 ContractsInOtherOrganizationsWhereOrgIsSupplier = conflicts.ContractsInOtherOrganizationsWhereOrgIsSupplier.Select(MapToSimpleConflict).ToList(),
@@ -280,13 +280,15 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             };
         }
 
-        private MultipleConflictsResponseDTO MapToMultipleConflictDTO<T>(IHasName mainEntity, IEnumerable<T> subEntities)
-            where T : IHasName, IOwnedByOrganization
+        private MultipleConflictsResponseDTO MapToMultipleConflictDTO<T, U>(U mainEntity, IEnumerable<T> subEntities)
+            where T: IHasName, IOwnedByOrganization
+            where U : IHasName, IOwnedByOrganization
+
         {
             return new()
             {
                 MainEntityName = mainEntity.Name,
-                Conflicts = subEntities.Select(MapToSimpleConflict).ToList(),
+                Conflicts = subEntities.Where(subEntity => subEntity.OrganizationId != mainEntity.OrganizationId).Select(MapToSimpleConflict).ToList(),
             };
         }
 
