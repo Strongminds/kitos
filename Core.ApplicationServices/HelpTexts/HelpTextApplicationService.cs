@@ -64,6 +64,7 @@ namespace Core.ApplicationServices.HelpTexts
                         if (helpText.Failed) return helpText.Error;
                         var value = helpText.Value;
                         _helpTextsRepository.Delete(value);
+                        _helpTextsRepository.Save();
                         _domainEvents.Raise(new EntityBeingDeletedEvent<HelpText>(value));
                         return Maybe<OperationError>.None;
                     });
