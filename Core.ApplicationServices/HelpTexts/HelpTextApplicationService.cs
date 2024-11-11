@@ -58,16 +58,14 @@ namespace Core.ApplicationServices.HelpTexts
         {
             return WithGlobalAdminRights($"User is not allowed to delete help text with key {key}")
                 .Match(error => error,
-                    () =>
-                    {
-                        var helpText = GetByKey(key);
-                        if (helpText.Failed) return helpText.Error;
-                        var value = helpText.Value;
-                        _helpTextsRepository.Delete(value);
-                        _helpTextsRepository.Save();
-                        _domainEvents.Raise(new EntityBeingDeletedEvent<HelpText>(value));
-                        return Maybe<OperationError>.None;
-                    });
+                    () => GetByKey(key)
+                        .Match(helpText => {
+                            _helpTextsRepository.Delete(helpText);
+                            _helpTextsRepository.Save();
+                            _domainEvents.Raise(new EntityBeingDeletedEvent<HelpText>(helpText));
+                            return Maybe<OperationError>.None; },
+                            error => error));
+                        
         }
 
         public Result<HelpText, OperationError> PatchHelpText(string key, HelpTextUpdateParameters parameters)
