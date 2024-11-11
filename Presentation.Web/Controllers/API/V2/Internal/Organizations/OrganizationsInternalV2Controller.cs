@@ -271,7 +271,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             {
                 ExposedInterfaceName = itInterface.Name,
                 ExposingSystemName = itInterface.ExhibitedBy.ItSystem.Name,
-                OrganizationName = itInterface.Organization.Name,
+                OrganizationName = itInterface.ExhibitedBy.ItSystem.Organization.Name,
             };
         }
 
