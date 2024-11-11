@@ -42,7 +42,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteUserInOrganization([NonEmptyGuid] Guid userUuid)
+        public IHttpActionResult DeleteUser([NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.DeleteUser(userUuid, Maybe<Guid>.None)
                 .Match(FromOperationError, Ok);
