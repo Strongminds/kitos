@@ -16,6 +16,8 @@ using Presentation.Web.Models.API.V2.Internal.Response.User;
 using Core.ApplicationServices;
 using Presentation.Web.Extensions;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
 {
@@ -27,12 +29,15 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
     {
         private readonly IUserWriteService _userWriteService;
         private readonly IUserService _userService;
+        private readonly IOrganizationResponseMapper _organizationResponseMapper;
 
         public GlobalUserInternalV2Controller(IUserWriteService userWriteService, 
-            IUserService userService)
+            IUserService userService, 
+            IOrganizationResponseMapper organizationResponseMapper)
         {
             _userWriteService = userWriteService;
             _userService = userService;
+            _organizationResponseMapper = organizationResponseMapper;
         }
 
         [Route("{userUuid}")]
@@ -74,6 +79,22 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             result = result.OrderUserApiResults(orderByProperty);
             result = result.Page(paginationQuery);
             return Ok(result.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO));
+        }
+
+        [Route("")]
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetUserOrganizations(Guid userUuid)
+        {
+            
+            return _userService
+                .GetUserOrganizations(userUuid)
+                .Select(x => x.Select(_organizationResponseMapper.ToOrganizationDTO))
+                .Match(Ok, FromOperationError);
         }
     }
 }

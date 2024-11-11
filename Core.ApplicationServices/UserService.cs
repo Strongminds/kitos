@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security;
@@ -360,6 +361,21 @@ namespace Core.ApplicationServices
 
             return _repository.GetUsers()
                 .Transform(query.Apply);
+        }
+
+        public Result<IEnumerable<Organization>, OperationError> GetUserOrganizations(Guid userUuid)
+        {
+            return _repository.GetByUuid(userUuid)
+                .Match(user =>
+                {
+                    if (_authorizationContext.AllowReads(user) == false)
+                    {
+                        return new OperationError($"Not allowed to read User with uuid: {userUuid}",
+                            OperationFailure.Forbidden);
+                    }
+
+                    return Result<IEnumerable<Organization>, OperationError>.Success(user.GetOrganizations());
+                }, () => new OperationError("User is not member of the organization", OperationFailure.NotFound));
         }
 
         public Result<IQueryable<User>, OperationError> SearchAllKitosUsers(params IDomainQuery<User>[] queries)
