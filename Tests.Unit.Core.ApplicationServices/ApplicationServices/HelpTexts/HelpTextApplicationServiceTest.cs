@@ -57,6 +57,20 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         }
 
         [Fact]
+        public void Create_Help_Text_Returns_Conflict_If_Existing_Key()
+        {
+            SetupIsGlobalAdmin();
+
+            var parameters = A<HelpTextCreateParameters>();
+            _helpTextService.Setup(_ => _.IsAvailableKey(parameters.Key)).Returns(false);
+
+            var result = _sut.CreateHelpText(parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
+        }
+
+        [Fact]
         public void Can_Create_Help_Text()
         {
             SetupIsGlobalAdmin();
