@@ -140,10 +140,10 @@ namespace Core.ApplicationServices.Users.Write
         {
             return scopedToOrganizationUuid
                 .Match(
-                orgUuid => _entityIdentityResolver.ResolveDbId<Organization>(orgUuid)
+                orgUuid => ResolveOrganizationUuidToId(orgUuid)
                     .Match(
                         id => Result<int?, OperationError>.Success(id), 
-                        () => new OperationError($"Organization with Uuid: {scopedToOrganizationUuid} was not found", OperationFailure.NotFound)
+                        ex => ex
                         ),
                 () => Result<int?, OperationError>.Success(null)
                 )

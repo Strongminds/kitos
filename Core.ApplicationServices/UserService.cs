@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security;
@@ -355,13 +354,12 @@ namespace Core.ApplicationServices
                 );
         }
 
-        public Result<IQueryable<User>, OperationError> GetUsers(params IDomainQuery<User>[] queries)
+        public Maybe<IQueryable<User>> GetUsers(params IDomainQuery<User>[] queries)
         {
             var query = new IntersectionQuery<User>(queries);
 
             return _repository.GetUsers()
-                .Transform(query.Apply)
-                .Transform(Result<IQueryable<User>, OperationError>.Success);
+                .Transform(query.Apply);
         }
 
         public Result<IQueryable<User>, OperationError> SearchAllKitosUsers(params IDomainQuery<User>[] queries)

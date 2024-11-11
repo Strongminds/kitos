@@ -74,7 +74,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Select(x => x.OrderUserApiResults(orderByProperty))
                 .Select(x => x.Page(paginationQuery))
                 .Select(x => x.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO))
-                .Match(Ok, FromOperationError);
+                .Match(Ok, () => FromOperationError(new OperationError("Something went wrong while getting the user", OperationFailure.UnknownError)));
         }
     }
 }

@@ -312,19 +312,5 @@ namespace Tests.Integration.Presentation.Web.Users.V2
                 SendMail = A<bool>()
             };
         }
-        private UpdateUserRequestDTO MapCreateUserToUpdateUserRequest(CreateUserRequestDTO createUserRequest)
-        {
-            return new UpdateUserRequestDTO
-            {
-                Email = createUserRequest.Email,
-                FirstName = createUserRequest.FirstName,
-                LastName = createUserRequest.LastName,
-                PhoneNumber = createUserRequest.PhoneNumber,
-                DefaultUserStartPreference = createUserRequest.DefaultUserStartPreference,
-                HasApiAccess = createUserRequest.HasApiAccess,
-                HasStakeHolderAccess = createUserRequest.HasStakeHolderAccess,
-                Roles = createUserRequest.Roles
-            };
-        }
     }
 }
