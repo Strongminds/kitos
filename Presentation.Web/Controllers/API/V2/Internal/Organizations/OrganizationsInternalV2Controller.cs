@@ -246,14 +246,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             {
                 SystemsWithUsagesOutsideTheOrganization = conflicts.SystemsWithUsagesOutsideTheOrganization.Select(MapSystemToConflictDTO).ToList(),
                 InterfacesExposedOnSystemsOutsideTheOrganization = conflicts.InterfacesExposedOnSystemsOutsideTheOrganization.Select(MapExposedInterfacesToConflictDTO).ToList(),
-                SystemsExposingInterfacesDefinedInOtherOrganizations = conflicts.SystemsExposingInterfacesDefinedInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface))).ToList(),
-                SystemsSetAsParentSystemToSystemsInOtherOrganizations = conflicts.SystemsSetAsParentSystemToSystemsInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.Children)).ToList(),
+                SystemsExposingInterfacesDefinedInOtherOrganizations = conflicts.SystemsExposingInterfacesDefinedInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface).Where(itInterface => itInterface.OrganizationId != system.OrganizationId))).ToList(),
+                SystemsSetAsParentSystemToSystemsInOtherOrganizations = conflicts.SystemsSetAsParentSystemToSystemsInOtherOrganizations.Select(system => MapToMultipleConflictDTO(system, system.Children.Where(child => child.OrganizationId != system.OrganizationId))).ToList(),
                 DprInOtherOrganizationsWhereOrgIsDataProcessor = conflicts.DprInOtherOrganizationsWhereOrgIsDataProcessor.Select(MapToSimpleConflict).ToList(),
                 DprInOtherOrganizationsWhereOrgIsSubDataProcessor = conflicts.DprInOtherOrganizationsWhereOrgIsSubDataProcessor.Select(MapToSimpleConflict).ToList(),
                 ContractsInOtherOrganizationsWhereOrgIsSupplier = conflicts.ContractsInOtherOrganizationsWhereOrgIsSupplier.Select(MapToSimpleConflict).ToList(),
                 SystemsInOtherOrganizationsWhereOrgIsRightsHolder = conflicts.SystemsInOtherOrganizationsWhereOrgIsRightsHolder.Select(MapToSimpleConflict).ToList(),
                 SystemsWhereOrgIsArchiveSupplier = conflicts.SystemUsagesWhereOrgIsArchiveSupplier.Select(systemUsage => new SimpleConflictResponseDTO { EntityName = systemUsage.ItSystem.Name, OrganizationName = systemUsage.Organization.Name}).ToList()
             };
+        }
+
+        private IEnumerable<MultipleConflictsResponseDTO> MapSystemsExposingInterfacesDefinedInOtherOrganizations(IReadOnlyList<ItSystem> systemsExposingIntefaces)
+        {
+            return systemsExposingIntefaces.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface).Where(itInterface => itInterface.OrganizationId != system.OrganizationId))).ToList()
         }
 
         private SystemWithUsageOutsideOrganizationConflictResponseDTO MapSystemToConflictDTO(ItSystem system)
