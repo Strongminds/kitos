@@ -21,6 +21,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         }
 
         [HttpGet]
+        [Route("")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<HelpTextResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
