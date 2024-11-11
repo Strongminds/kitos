@@ -92,12 +92,11 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
             SetupIsGlobalAdmin();
             var parameters = new HelpTextUpdateParameters()
             {
-                Key = existing.Key,
                 Title = A<Maybe<string>>().AsChangedValue(),
                 Description = A<Maybe<string>>().AsChangedValue()
             };
 
-            var result = _sut.PatchHelpText(parameters);
+            var result = _sut.PatchHelpText(existing.Key, parameters);
 
             Assert.True(result.Ok);
             var helpText = result.Value;
@@ -113,7 +112,7 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
 
             var parameters = A<HelpTextUpdateParameters>();
 
-            var result = _sut.PatchHelpText(parameters);
+            var result = _sut.PatchHelpText(A<string>(), parameters);
 
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
