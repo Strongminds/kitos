@@ -256,11 +256,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             };
         }
 
-        private IEnumerable<MultipleConflictsResponseDTO> MapSystemsExposingInterfacesDefinedInOtherOrganizations(IReadOnlyList<ItSystem> systemsExposingIntefaces)
-        {
-            return systemsExposingIntefaces.Select(system => MapToMultipleConflictDTO(system, system.ItInterfaceExhibits.Select(i => i.ItInterface).Where(itInterface => itInterface.OrganizationId != system.OrganizationId))).ToList();
-        }
-
         private SystemWithUsageOutsideOrganizationConflictResponseDTO MapSystemToConflictDTO(ItSystem system)
         {
             return new()
