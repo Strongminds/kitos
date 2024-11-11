@@ -5,6 +5,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
+using Core.DomainModel.Events;
 using Core.DomainServices;
 using NotImplementedException = System.NotImplementedException;
 
@@ -14,12 +15,14 @@ namespace Core.ApplicationServices.HelpTexts
     {
         private readonly IGenericRepository<HelpText> _helpTextsRepository;
         private readonly IOrganizationalUserContext _userContext;
+        private readonly IDomainEvents _domainEvents;
 
         public HelpTextService(IGenericRepository<HelpText> helpTextsRepository,
-            IOrganizationalUserContext userContext)
+            IOrganizationalUserContext userContext, IDomainEvents domainEvents)
         {
             _helpTextsRepository = helpTextsRepository;
             _userContext = userContext;
+            _domainEvents = domainEvents;
         }
 
         public Result<IEnumerable<HelpText>, OperationError> GetHelpTexts()
@@ -42,6 +45,7 @@ namespace Core.ApplicationServices.HelpTexts
 
                         _helpTextsRepository.Insert(newHelpText);
                         _helpTextsRepository.Save();
+                        _domainEvents.Raise(new EntityCreatedEvent<HelpText>(newHelpText));
 
                         return Result<HelpText, OperationError>.Success(newHelpText);
                     });
@@ -55,8 +59,9 @@ namespace Core.ApplicationServices.HelpTexts
                     {
                         var helpText = GetByKey(key);
                         if (helpText.Failed) return helpText.Error;
-
-                        _helpTextsRepository.Delete(helpText.Value);
+                        var value = helpText.Value;
+                        _helpTextsRepository.Delete(value);
+                        _domainEvents.Raise(new EntityBeingDeletedEvent<HelpText>(value));
                         return Maybe<OperationError>.None;
                     });
         }
@@ -70,6 +75,7 @@ namespace Core.ApplicationServices.HelpTexts
                 {
                     _helpTextsRepository.Update(updated);
                     _helpTextsRepository.Save();
+                    _domainEvents.Raise(new EntityUpdatedEvent<HelpText>(updated));
                     return Result<HelpText, OperationError>.Success(updated);
                 })));
         }

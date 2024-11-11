@@ -6,6 +6,7 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.HelpTexts;
 using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
+using Core.DomainModel.Events;
 using Core.DomainServices;
 using Moq;
 using Tests.Toolkit.Patterns;
@@ -18,12 +19,14 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         private readonly HelpTextService _sut;
         private readonly Mock<IGenericRepository<HelpText>> _helpTextsRepository;
         private readonly Mock<IOrganizationalUserContext> _userContext;
+        private readonly Mock<IDomainEvents> _domainEvents;
 
         public HelpTextServiceTest()
         {
+            _domainEvents = new Mock<IDomainEvents>();
             _helpTextsRepository = new Mock<IGenericRepository<HelpText>>();
             _userContext = new Mock<IOrganizationalUserContext>();
-            _sut = new HelpTextService(_helpTextsRepository.Object, _userContext.Object);
+            _sut = new HelpTextService(_helpTextsRepository.Object, _userContext.Object, _domainEvents.Object);
         }
 
         [Fact]
