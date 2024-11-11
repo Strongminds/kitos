@@ -55,7 +55,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationUsers(
+        public IHttpActionResult GetUsers(
             string nameOrEmailQuery = null,
             string emailQuery = null,
             CommonOrderByProperty? orderByProperty = null,

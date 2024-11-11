@@ -233,7 +233,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             //Arrange
             var organization = await CreateOrganizationAsync();
             var userRequest = CreateCreateUserRequest();
-            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
+            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest); 
 
             //Act
             var users = await UsersV2Helper.GetUsers(user.Email);
@@ -252,16 +252,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             AssertBaseUserRequestMatches(request, response);
         }
 
-        private void AssertBaseUserRequestMatches(UpdateUserRequestDTO request, UserResponseDTO response)
-        {
-            Assert.Equal(request.PhoneNumber, response.PhoneNumber);
-            Assert.Equal(request.DefaultUserStartPreference, response.DefaultUserStartPreference);
-            Assert.Equal(request.HasApiAccess, response.HasApiAccess);
-            Assert.Equal(request.HasStakeHolderAccess, response.HasStakeHolderAccess);
-
-            AssertUserRoles(request.Roles, response.Roles);
-        }
-        private void AssertBaseUserRequestMatches(CreateUserRequestDTO request, UserResponseDTO response)
+        private void AssertBaseUserRequestMatches(BaseUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.PhoneNumber, response.PhoneNumber);
             Assert.Equal(request.DefaultUserStartPreference, response.DefaultUserStartPreference);
