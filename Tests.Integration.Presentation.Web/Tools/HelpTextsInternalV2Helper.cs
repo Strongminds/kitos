@@ -16,6 +16,13 @@ namespace Tests.Integration.Presentation.Web.Tools
                 TestEnvironment.CreateUrl(Endpoint), cookie);
         }
 
+        public static async Task<HttpResponseMessage> Delete(string key)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.DeleteWithCookieAsync(
+                TestEnvironment.CreateUrl($"{Endpoint}/{key}"), cookie);
+        }
+
         public static async Task<HttpResponseMessage> Create(HelpTextCreateRequestDTO dto)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

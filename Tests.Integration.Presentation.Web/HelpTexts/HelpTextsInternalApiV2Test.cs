@@ -49,5 +49,21 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             Assert.Equal(dto.Description, actual.Description);
             Assert.Equal(dto.Title, actual.Title);
         }
+
+        [Fact]
+        public async Task Can_Delete_HelpText()
+        {
+            var dto = A<HelpTextCreateRequestDTO>();
+            var createResponse = await HelpTextsInternalV2Helper.Create(dto);
+            Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+
+            var response = await HelpTextsInternalV2Helper.Delete(dto.Key);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var allHelpTextsResponse = await HelpTextsInternalV2Helper.Get();
+            Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+            var allHelpTexts = await allHelpTextsResponse.ReadResponseBodyAsAsync<IEnumerable<HelpText>>();
+            Assert.False(allHelpTexts.Any(ht => ht.Key == dto.Key));
+        }
     }
 }

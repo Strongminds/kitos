@@ -53,5 +53,18 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 .Select(_responseMapper.ToResponseDTO)
                 .Match(Ok, FromOperationError);
         }
+
+        [HttpDelete]
+        [Route("{key}")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        public IHttpActionResult Delete([FromUri] string key)
+        {
+            return _helpTextApplicationService.DeleteHelpText(key)
+                .Match(FromOperationError, Ok);
+        }
     }
 }
