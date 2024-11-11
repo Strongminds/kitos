@@ -88,7 +88,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetUserOrganizations(Guid userUuid)
+        public IHttpActionResult GetOrganizationsByUserUuid(Guid userUuid)
         {
             
             return _userService
