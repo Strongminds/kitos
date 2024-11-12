@@ -32,6 +32,26 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
         }
 
         [Fact]
+        public void Can_Get_Help_Text()
+        {
+            var expected = SetupRepositoryReturnsOne();
+            var result = _sut.GetHelpText(expected.Key);
+
+            Assert.True(result.Ok);
+            Assert.Equivalent(expected, result.Value);
+        }
+
+        [Fact]
+        public void Get_Help_Text_Returns_Not_Found_If_Not_Found()
+        {
+            _helpTextsRepository.Setup(_ => _.AsQueryable()).Returns(new List<HelpText>().AsQueryable());
+            var result = _sut.GetHelpText(A<string>());
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+        }
+
+        [Fact]
         public void Can_Get_Help_Texts()
         {
             var expected = SetupRepositoryReturnsOne();

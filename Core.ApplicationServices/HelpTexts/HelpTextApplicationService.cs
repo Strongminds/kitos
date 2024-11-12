@@ -7,6 +7,7 @@ using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainServices;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.HelpTexts
 {
@@ -24,6 +25,14 @@ namespace Core.ApplicationServices.HelpTexts
             _userContext = userContext;
             _domainEvents = domainEvents;
             _helpTextService = helpTextService;
+        }
+
+        public Result<HelpText, OperationError> GetHelpText(string key)
+        {
+            var helpText = this._helpTextsRepository.AsQueryable().FirstOrDefault(ht => ht.Key == key);
+            return helpText != null
+                ? helpText
+                : new OperationError($"Could not find help text with key {key}", OperationFailure.NotFound);
         }
 
         public Result<IEnumerable<HelpText>, OperationError> GetHelpTexts()

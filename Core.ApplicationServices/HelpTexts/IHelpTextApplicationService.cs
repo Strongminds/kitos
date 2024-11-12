@@ -9,6 +9,7 @@ namespace Core.ApplicationServices.HelpTexts
 {
     public interface IHelpTextApplicationService
     {
+        Result<HelpText, OperationError> GetHelpText(string key);
         Result<IEnumerable<HelpText>, OperationError> GetHelpTexts();
 
         Result<HelpText, OperationError> CreateHelpText(HelpTextCreateParameters parameters);
