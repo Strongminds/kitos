@@ -19,6 +19,7 @@ using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using System.Web.Http.Results;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using System.IdentityModel;
 
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
@@ -90,9 +91,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetGlobalAdmins()
         {
-            return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.GlobalAdmin)
-                .Select(users => users.Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO))
-                .Match(Ok, FromOperationError);
+            var query = (new List<IDomainQuery<User>> { new QueryBoGlobalAdmin() }).ToArray();
+            var globalAdmins = _userService.GetUsers(query)
+                .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
+                .ToList();
+            return Ok(globalAdmins);
         }
 
         [Route("global-admins/{userUuid}")]

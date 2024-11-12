@@ -260,6 +260,30 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             Assert.Equal(organization.Name, responseOrg.Name);
         }
 
+        [Fact]
+        public async Task Can_Get_Global_Admins()
+        {
+            var org = await CreateOrganizationAsync();
+            var user = await CreateUserAsync(org.Uuid);
+
+            await UsersV2Helper.AddGlobalAdmin(user.Uuid);
+
+            var globalAdmins = await UsersV2Helper.GetGlobalAdmins();
+
+            Assert.NotEmpty(globalAdmins);
+        }
+
+        [Fact]
+        public async Task Can_Create_Global_Admin()
+        {
+            var org = await CreateOrganizationAsync();
+            var user = await CreateUserAsync(org.Uuid);
+
+            var response = await UsersV2Helper.AddGlobalAdmin(user.Uuid);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
         private void AssertUserEqualsUpdateRequest(UpdateUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.Email, response.Email);
