@@ -149,6 +149,7 @@
     <Compile Include="Queries\SystemUsage\QueryReadModelsWhichShouldBecomeActive.cs" />
     <Compile Include="Queries\SystemUsage\QueryReadModelsWhichShouldExpire.cs" />
     <Compile Include="Queries\User\QueryByCrossOrganizationPermissions.cs" />
+    <Compile Include="Queries\User\QueryByGlobalAdmin.cs" />
     <Compile Include="Queries\User\QueryByRoleAssignment.cs" />
     <Compile Include="Queries\ItSystem\QuerySystemByUsedInOrganizationUuid.cs" />
     <Compile Include="Queries\User\QueryUserByEmail.cs" />

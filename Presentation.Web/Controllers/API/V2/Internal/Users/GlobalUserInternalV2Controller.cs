@@ -75,5 +75,17 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             result = result.Page(paginationQuery);
             return Ok(result.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO));
         }
+
+        [Route("global-admins")]
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetGlobalAdmins()
+        {
+           var query = new List<IDomainQuery<User>> { new QueryByGlobalAdmin()};
+            var result = _userService.GetUsers(query.ToArray());
+            return Ok(result);
+        }
     }
 }
