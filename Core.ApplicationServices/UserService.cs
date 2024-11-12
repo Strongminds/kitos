@@ -360,6 +360,7 @@ namespace Core.ApplicationServices
             var query = new IntersectionQuery<User>(queries);
 
             return _repository.GetUsers()
+                .Where(x => !x.Deleted)
                 .Transform(query.Apply);
         }
 
