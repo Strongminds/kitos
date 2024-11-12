@@ -97,7 +97,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserReferenceResponseDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
@@ -105,7 +105,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult AddGlobalAdmin([FromUri][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.AddGlobalAdmin(userUuid)
-                        .Match(NoContent, FromOperationError);
+                        .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
+                        .Match(Ok, FromOperationError);
         }
 
         [Route("global-admins/{userUuid}")]
