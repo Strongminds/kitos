@@ -7,7 +7,6 @@ using Core.ApplicationServices.Model.HelpTexts;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainServices;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.HelpTexts
 {
@@ -67,7 +66,7 @@ namespace Core.ApplicationServices.HelpTexts
         {
             return WithGlobalAdminRights($"User is not allowed to delete help text with key {key}")
                 .Match(error => error,
-                    () => GetByKey(key)
+                    () => GetHelpText(key)
                         .Match(helpText => {
                             _helpTextsRepository.Delete(helpText);
                             _helpTextsRepository.Save();
@@ -81,7 +80,7 @@ namespace Core.ApplicationServices.HelpTexts
         {
             return WithGlobalAdminRights($"User is not allowed to patch help text with key { key }")
                 .Match(error => error,
-                    () => GetByKey(key).Bind(existing => PerformUpdates(existing, parameters)
+                    () => GetHelpText(key).Bind(existing => PerformUpdates(existing, parameters)
                 .Bind(updated =>
                 {
                     _helpTextsRepository.Update(updated);
@@ -97,14 +96,6 @@ namespace Core.ApplicationServices.HelpTexts
                 .WithOptionalUpdate(parameters.Title, (ht, title) => ht.UpdateTitle(title))
                 .Bind(ht => ht.WithOptionalUpdate(parameters.Description,
                     (ht, description) => ht.UpdateDescription(description)));
-        }
-
-        private Result<HelpText, OperationError> GetByKey(string key)
-        {
-            var existing = _helpTextsRepository.AsQueryable().Where(ht => ht.Key == key).FirstOrDefault();
-            return existing != null 
-                ? existing
-                : new OperationError($"Could not find help text with key { key }", OperationFailure.NotFound);
         }
 
         private Maybe<OperationError> WithAvailableKey(string key)
