@@ -42,9 +42,7 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             var content = await response.ReadResponseBodyAsAsync<IEnumerable<HelpTextResponseDTO>>();
             var actual = content.First(ht => ht.Key == expected.Key);
             Assert.NotNull(actual);
-            Assert.Equal(expected.Key, actual.Key);
-            Assert.Equal(expected.Description, actual.Description);
-            Assert.Equal(expected.Title, actual.Title);
+            Assert.Equivalent(expected, actual);
         }
 
         [Fact]
@@ -57,9 +55,7 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var actual = await response.ReadResponseBodyAsAsync<HelpTextResponseDTO>();
             Assert.NotNull(actual);
-            Assert.Equal(dto.Key, actual.Key);
-            Assert.Equal(dto.Description, actual.Description);
-            Assert.Equal(dto.Title, actual.Title);
+            Assert.Equivalent(dto, actual);
         }
 
         [Fact]
@@ -75,7 +71,7 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             var allHelpTextsResponse = await HelpTextsInternalV2Helper.GetAll();
             Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
             var allHelpTexts = await allHelpTextsResponse.ReadResponseBodyAsAsync<IEnumerable<HelpText>>();
-            Assert.False(allHelpTexts.Any(ht => ht.Key == dto.Key));
+            Assert.DoesNotContain(allHelpTexts, ht => ht.Key == dto.Key);
         }
 
         [Fact]
