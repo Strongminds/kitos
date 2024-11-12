@@ -377,6 +377,68 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             Assert.True(result.IsNone);
         }
 
+        [Fact]
+        public void Can_Add_Global_Admin()
+        {
+            var user = SetupUser();
+            user.IsGlobalAdmin = false;
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectPermissionToAdministerGlobalAdminReturns(true);
+            var transaction = ExpectTransactionBegins();
+
+            var result = _sut.AddGlobalAdmin(user.Uuid);
+
+            Assert.True(result.Ok);
+            transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
+            Assert.True(result.Value.IsGlobalAdmin);
+        }
+
+        [Fact]
+        public void Cannot_Add_Global_Admin_With_No_GlobalAdmin_Permission()
+        {
+            var user = SetupUser();
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectPermissionToAdministerGlobalAdminReturns(false);
+            ExpectTransactionBegins();
+
+            var result = _sut.AddGlobalAdmin(user.Uuid);
+
+            Assert.True(result.Failed);
+        }
+
+        [Fact] 
+        public void Can_Remove_Global_Admin()
+        {
+            var user = SetupUser();
+            user.IsGlobalAdmin = true;
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectPermissionToAdministerGlobalAdminReturns(true);
+            var transaction = ExpectTransactionBegins();
+
+            var result = _sut.RemoveGlobalAdmin(user.Uuid);
+
+            transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
+            Assert.True(result.IsNone);
+        }
+
+        [Fact]
+        public void Cannot_Remove_Global_Admin_With_No_GlobalAdmin_Permission()
+        {
+            var user = SetupUser();
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectPermissionToAdministerGlobalAdminReturns(false);
+            ExpectTransactionBegins();
+
+            var result = _sut.RemoveGlobalAdmin(user.Uuid);
+
+            Assert.True(result.HasValue);
+        }
+
+        private void ExpectPermissionToAdministerGlobalAdminReturns(bool isAllowed)
+        {
+            _authorizationContextMock.Setup(x => x.HasPermission(It.Is<AdministerGlobalPermission>(parameter => parameter.Permission == GlobalPermission.GlobalAdmin))).Returns(isAllowed);
+        }
+
         private void ExpectAssignRolesReturn(IEnumerable<OrganizationRole> roles, User user, Organization org)
         {
             foreach (var role in roles)
@@ -409,7 +471,6 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             _userServiceMock.Setup(x => x.GetUserByUuid(userUuid)).Returns(result);
         }
-
 
         private void ExpectModifyPermissionsForUserReturns(User user, bool result)
         {
