@@ -17,6 +17,9 @@ using Core.ApplicationServices;
 using Presentation.Web.Extensions;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using System.Web.Http.Results;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Models.API.V2.Response.Organization;
+
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
 {
@@ -28,12 +31,15 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
     {
         private readonly IUserWriteService _userWriteService;
         private readonly IUserService _userService;
+        private readonly IOrganizationResponseMapper _organizationResponseMapper;
 
         public GlobalUserInternalV2Controller(IUserWriteService userWriteService, 
-            IUserService userService)
+            IUserService userService, 
+            IOrganizationResponseMapper organizationResponseMapper)
         {
             _userWriteService = userWriteService;
             _userService = userService;
+            _organizationResponseMapper = organizationResponseMapper;
         }
 
         [Route("{userUuid}")]
@@ -43,13 +49,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteUserInOrganization([NonEmptyGuid] Guid userUuid)
+        public IHttpActionResult DeleteUser([NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.DeleteUser(userUuid, Maybe<Guid>.None)
                 .Match(FromOperationError, Ok);
         }
 
-        [Route("")]
+        [Route("search")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
@@ -113,6 +119,22 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         {
             return _userWriteService.RemoveGlobalAdmin(userUuid)
                         .Match(FromOperationError, NoContent);
+        }
+        [Route("{userUuid}/organizations")]
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetOrganizationsByUserUuid(Guid userUuid)
+        {
+            
+            return _userService
+                .GetUserOrganizations(userUuid)
+                .Select(x => x.Select(_organizationResponseMapper.ToOrganizationDTO).ToList())
+                .Match(Ok, FromOperationError);
+
         }
     }
 }
