@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
@@ -142,7 +143,7 @@ namespace Core.ApplicationServices.Users.Write
                 .Match(
                 orgUuid => ResolveOrganizationUuidToId(orgUuid)
                     .Match(
-                        id => Result<int?, OperationError>.Success(id), 
+                        id => Result<int?, OperationError>.Success(id),
                         ex => ex
                         ),
                 () => Result<int?, OperationError>.Success(null)
@@ -155,14 +156,44 @@ namespace Core.ApplicationServices.Users.Write
 
         public Result<User, OperationError> AddGlobalAdmin(Guid userUuid)
         {
-            return new OperationError(OperationFailure.UnknownError);
+            return SetUsersGlobalAdminStatus(userUuid, true);
         }
 
         public Maybe<OperationError> RemoveGlobalAdmin(Guid userUuid)
         {
-            return Maybe<OperationError>.None;
+            return SetUsersGlobalAdminStatus(userUuid, false)
+                .Match(_ => Maybe<OperationError>.None, Maybe<OperationError>.Some);
         }
-         
+
+        private Result<User, OperationError> SetUsersGlobalAdminStatus(Guid userUuid, bool status)
+        {
+            using var transaction = _transactionManager.Begin();
+            return _userService.GetUserByUuid(userUuid)
+                .Bind(user => UpdateGlobalAdminStatus(user, status))
+                .Match<Result<User, OperationError>>(
+                    user =>
+                    {
+                        transaction.Commit();
+                        _userService.UpdateUser(user, null, null);
+                        return user;
+                    }, 
+                    error =>
+                    {
+                        transaction.Rollback();
+                        return error;
+                    });
+        }
+
+        private Result<User, OperationError> UpdateGlobalAdminStatus(User user, bool globalAdminStatus)
+        {
+            if (!_authorizationContext.HasPermission(new AdministerGlobalPermission(GlobalPermission.GlobalAdmin)))
+            {
+                return new OperationError("You do not have permission to add/remove global admins", OperationFailure.Forbidden);
+            }
+            user.IsGlobalAdmin = globalAdminStatus;
+            return user;
+        }
+
         private Maybe<OperationError> CollectUsersAndMutateRoles(Func<int, int, int, UserRightsChangeParameters, Maybe<OperationError>> mutateAction,
             Guid organizationUuid, Guid fromUserUuid,
             Guid toUserUuid,
@@ -206,7 +237,7 @@ namespace Core.ApplicationServices.Users.Write
         {
             if (stakeholderAccess &&
                 !_authorizationContext.HasPermission(
-                    new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))    
+                    new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))
             {
                 return new OperationError("You don't have permission to issue stakeholder access.", OperationFailure.Forbidden);
             }
