@@ -53,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Match(FromOperationError, Ok);
         }
 
-        [Route("")]
+        [Route("search")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
@@ -81,7 +81,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             return Ok(result.ToList().Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO));
         }
 
-        [Route("organizations")]
+        [Route("{userUuid}/organizations")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
@@ -93,7 +93,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             
             return _userService
                 .GetUserOrganizations(userUuid)
-                .Select(x => x.Select(_organizationResponseMapper.ToOrganizationDTO))
+                .Select(x => x.Select(_organizationResponseMapper.ToOrganizationDTO).ToList())
                 .Match(Ok, FromOperationError);
         }
     }

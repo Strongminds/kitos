@@ -375,7 +375,7 @@ namespace Core.ApplicationServices
                             OperationFailure.Forbidden);
                     }
 
-                    return Result<IEnumerable<Organization>, OperationError>.Success(user.GetOrganizations());
+                    return Result<IEnumerable<Organization>, OperationError>.Success(user.GetUniqueOrganizations().ToList());
                 }, () => new OperationError("User is not member of the organization", OperationFailure.NotFound));
         }
 
