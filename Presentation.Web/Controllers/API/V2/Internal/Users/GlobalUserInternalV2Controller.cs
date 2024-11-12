@@ -78,14 +78,39 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetGlobalAdmins()
         {
            var query = new List<IDomainQuery<User>> { new QueryByGlobalAdmin()};
             var result = _userService.GetUsers(query.ToArray());
-            return Ok(result);
+            var mappedResult = result.Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO).ToList();
+            return Ok(mappedResult);
+        }
+
+        [Route("global-admins/{userUuid}")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult AddGlobalAdmin([FromUri][NonEmptyGuid] Guid userUuid)
+        {
+            return Ok();
+        }
+
+        [Route("global-admins/{userUuid}")]
+        [HttpDelete]
+        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult RemoveGlobalAdmin([FromUri][NonEmptyGuid] Guid userUuid)
+        {
+            return Ok();
         }
     }
 }
