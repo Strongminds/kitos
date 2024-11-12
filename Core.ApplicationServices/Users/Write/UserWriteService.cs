@@ -152,6 +152,16 @@ namespace Core.ApplicationServices.Users.Write
                     error => error
                     );
         }
+
+        public Result<User, OperationError> AddGlobalAdmin(Guid userUuid)
+        {
+            return new OperationError(OperationFailure.UnknownError);
+        }
+
+        public Maybe<OperationError> RemoveGlobalAdmin(Guid userUuid)
+        {
+            return Maybe<OperationError>.None;
+        }
          
         private Maybe<OperationError> CollectUsersAndMutateRoles(Func<int, int, int, UserRightsChangeParameters, Maybe<OperationError>> mutateAction,
             Guid organizationUuid, Guid fromUserUuid,
