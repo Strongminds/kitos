@@ -90,6 +90,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult Patch([FromUri] string key, HelpTextUpdateRequestDTO dto)
         {
+            if (!ModelState.IsValid) return BadRequest();
+
             var parameters = _writeModelMapper.ToUpdateParameters(dto);
             return _helpTextApplicationService.PatchHelpText(key, parameters)
                 .Select(_responseMapper.ToResponseDTO)
