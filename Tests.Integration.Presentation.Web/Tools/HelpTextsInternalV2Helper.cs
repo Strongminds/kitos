@@ -9,11 +9,18 @@ namespace Tests.Integration.Presentation.Web.Tools
     {
         private const string Endpoint = "api/v2/internal/help-texts";
 
-        public static async Task<HttpResponseMessage> Get()
+        public static async Task<HttpResponseMessage> GetAll()
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.GetWithCookieAsync(
                 TestEnvironment.CreateUrl(Endpoint), cookie);
+        }
+
+        public static async Task<HttpResponseMessage> GetSingle(string key)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.GetWithCookieAsync(
+                TestEnvironment.CreateUrl($"{Endpoint}/{key}"), cookie);
         }
 
         public static async Task<HttpResponseMessage> Delete(string key)

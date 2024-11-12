@@ -14,13 +14,29 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
     public class HelpTextsInternalApiV2Test: WithAutoFixture
     {
         [Fact]
+        public async Task Can_Get_HelpText()
+        {
+            var expected = A<HelpTextCreateRequestDTO>();
+            var createResponse = await HelpTextsInternalV2Helper.Create(expected);
+            Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+
+            var response = await HelpTextsInternalV2Helper.GetSingle(expected.Key);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var actual = await response.ReadResponseBodyAsAsync<HelpTextResponseDTO>();
+            Assert.Equal(expected.Key, actual.Key);
+            Assert.Equal(expected.Description, actual.Description);
+            Assert.Equal(expected.Title, actual.Title);
+        }
+
+        [Fact]
         public async Task Can_Get_HelpTexts()
         {
             var expected = A<HelpTextCreateRequestDTO>();
             var createResponse = await HelpTextsInternalV2Helper.Create(expected);
             Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
 
-            var response = await HelpTextsInternalV2Helper.Get();
+            var response = await HelpTextsInternalV2Helper.GetAll();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.ReadResponseBodyAsAsync<IEnumerable<HelpTextResponseDTO>>();
@@ -56,7 +72,7 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             var response = await HelpTextsInternalV2Helper.Delete(dto.Key);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var allHelpTextsResponse = await HelpTextsInternalV2Helper.Get();
+            var allHelpTextsResponse = await HelpTextsInternalV2Helper.GetAll();
             Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
             var allHelpTexts = await allHelpTextsResponse.ReadResponseBodyAsAsync<IEnumerable<HelpText>>();
             Assert.False(allHelpTexts.Any(ht => ht.Key == dto.Key));
@@ -73,7 +89,7 @@ namespace Tests.Integration.Presentation.Web.HelpTexts
             var response = await HelpTextsInternalV2Helper.Patch(createRequestDto.Key, updateDto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var allHelpTextsResponse = await HelpTextsInternalV2Helper.Get();
+            var allHelpTextsResponse = await HelpTextsInternalV2Helper.GetAll();
             Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
             var allHelpTexts = await allHelpTextsResponse.ReadResponseBodyAsAsync<IEnumerable<HelpText>>();
             var updated = allHelpTexts.First(ht => ht.Key == createRequestDto.Key);

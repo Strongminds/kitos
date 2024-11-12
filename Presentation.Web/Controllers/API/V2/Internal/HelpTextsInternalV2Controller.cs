@@ -24,13 +24,27 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         }
 
         [HttpGet]
+        [Route("{key}")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        public IHttpActionResult GetSingle([FromUri] string key)
+        {
+            return _helpTextApplicationService.GetHelpText(key)
+                .Select(_responseMapper.ToResponseDTO)
+                .Match(Ok, FromOperationError);
+        }
+
+        [HttpGet]
         [Route]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<HelpTextResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Conflict)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get()
+        public IHttpActionResult GetAll()
         {
             return _helpTextApplicationService.GetHelpTexts()
                 .Select(_responseMapper.ToResponseDTOs)
