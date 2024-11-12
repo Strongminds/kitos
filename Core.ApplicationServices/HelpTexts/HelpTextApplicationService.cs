@@ -64,30 +64,34 @@ namespace Core.ApplicationServices.HelpTexts
 
         public Maybe<OperationError> DeleteHelpText(string key)
         {
-            return WithGlobalAdminRights($"User is not allowed to delete help text with key {key}")
-                .Match(error => error,
-                    () => GetHelpText(key)
+            return GetHelpTextWithGlobalAdminRights(key, $"User is not allowed to delete help text with key {key}")
                         .Match(helpText => {
                             _helpTextsRepository.Delete(helpText);
                             _helpTextsRepository.Save();
                             _domainEvents.Raise(new EntityBeingDeletedEvent<HelpText>(helpText));
                             return Maybe<OperationError>.None; },
-                            error => error));
+                            error => error);
                         
         }
 
         public Result<HelpText, OperationError> PatchHelpText(string key, HelpTextUpdateParameters parameters)
         {
-            return WithGlobalAdminRights($"User is not allowed to patch help text with key { key }")
+            return GetHelpTextWithGlobalAdminRights(key, $"User is not allowed to patch help text with key {key}")
+                .Bind(existing => PerformUpdates(existing, parameters)
+                    .Bind(updated =>
+                    {
+                        _helpTextsRepository.Update(updated);
+                        _helpTextsRepository.Save();
+                        _domainEvents.Raise(new EntityUpdatedEvent<HelpText>(updated));
+                        return Result<HelpText, OperationError>.Success(updated);
+                    }));
+        }
+
+        private Result<HelpText, OperationError> GetHelpTextWithGlobalAdminRights(string key, string errorMessage)
+        {
+            return WithGlobalAdminRights(errorMessage)
                 .Match(error => error,
-                    () => GetHelpText(key).Bind(existing => PerformUpdates(existing, parameters)
-                .Bind(updated =>
-                {
-                    _helpTextsRepository.Update(updated);
-                    _helpTextsRepository.Save();
-                    _domainEvents.Raise(new EntityUpdatedEvent<HelpText>(updated));
-                    return Result<HelpText, OperationError>.Success(updated);
-                })));
+                    () => GetHelpText(key));
         }
 
         private Result<HelpText, OperationError> PerformUpdates(HelpText helpText, HelpTextUpdateParameters parameters)
