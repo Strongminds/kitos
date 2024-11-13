@@ -28,7 +28,7 @@ namespace Core.ApplicationServices.HelpTexts
 
         public Result<HelpText, OperationError> GetHelpText(string key)
         {
-            var helpText = this._helpTextsRepository.AsQueryable().FirstOrDefault(ht => ht.Key == key);
+            var helpText = _helpTextsRepository.AsQueryable().FirstOrDefault(ht => ht.Key == key);
             return helpText != null
                 ? helpText
                 : new OperationError($"Could not find help text with key {key}", OperationFailure.NotFound);
@@ -43,7 +43,7 @@ namespace Core.ApplicationServices.HelpTexts
         {
             return WithGlobalAdminRights("User is not allowed to create help text")
                 .Match(error => error,
-                    () => WithAvailableKey(parameters.Key)
+                    () => WithAvailableKey(parameters.Key))
                         .Match(error => error,
                             () =>
                             {
@@ -59,7 +59,7 @@ namespace Core.ApplicationServices.HelpTexts
                                 _domainEvents.Raise(new EntityCreatedEvent<HelpText>(newHelpText));
 
                                 return Result<HelpText, OperationError>.Success(newHelpText);
-                            }));
+                            });
         }
 
         public Maybe<OperationError> DeleteHelpText(string key)
@@ -77,14 +77,14 @@ namespace Core.ApplicationServices.HelpTexts
         public Result<HelpText, OperationError> PatchHelpText(string key, HelpTextUpdateParameters parameters)
         {
             return GetHelpTextWithGlobalAdminRights(key, $"User is not allowed to patch help text with key {key}")
-                .Bind(existing => PerformUpdates(existing, parameters)
+                .Bind(existing => PerformUpdates(existing, parameters))
                     .Bind(updated =>
                     {
                         _helpTextsRepository.Update(updated);
                         _helpTextsRepository.Save();
                         _domainEvents.Raise(new EntityUpdatedEvent<HelpText>(updated));
                         return Result<HelpText, OperationError>.Success(updated);
-                    }));
+                    });
         }
 
         private Result<HelpText, OperationError> GetHelpTextWithGlobalAdminRights(string key, string errorMessage)
@@ -106,16 +106,16 @@ namespace Core.ApplicationServices.HelpTexts
         {
             return _helpTextService.IsAvailableKey(key)
                 ? Maybe<OperationError>.None 
-                : Maybe<OperationError>.Some(new OperationError($"A help text with the provided key { key } already exists", OperationFailure.Conflict));
+                : new OperationError($"A help text with the provided key { key } already exists", OperationFailure.Conflict);
 
         }
 
-        private Maybe<OperationError> WithGlobalAdminRights(string errorMessage)
+        private Maybe<OperationError> WithGlobalAdminRights(string forbiddenErrorMessage)
         {
             var isGlobalAdmin = _userContext.IsGlobalAdmin();
             return isGlobalAdmin
                 ? Maybe<OperationError>.None
-                : new OperationError(errorMessage, OperationFailure.Forbidden);
+                : new OperationError(forbiddenErrorMessage, OperationFailure.Forbidden);
         }
     }
 }
