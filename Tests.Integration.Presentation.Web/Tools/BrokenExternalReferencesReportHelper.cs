@@ -16,10 +16,8 @@ namespace Tests.Integration.Presentation.Web.Tools
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
 
             var url = TestEnvironment.CreateUrl(_basePath + "/status");
-            using (var result = await HttpApi.GetWithCookieAsync(url, cookie))
-            {
-                return await result.ReadResponseBodyAsKitosApiResponseAsync<BrokenExternalReferencesReportStatusResponseDTO>();
-            }
+            using var result = await HttpApi.GetWithCookieAsync(url, cookie);
+            return await result.ReadResponseBodyAsAsync<BrokenExternalReferencesReportStatusResponseDTO>();
         }
 
         public static async Task<HttpResponseMessage> SendGetCurrentCsvAsync()

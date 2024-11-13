@@ -60,7 +60,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
                 );
         }
 
-        private BrokenExternalReferencesReportStatusResponseDTO GetEmptyStatus()
+        private static BrokenExternalReferencesReportStatusResponseDTO GetEmptyStatus()
         {
             return new BrokenExternalReferencesReportStatusResponseDTO
             {
@@ -68,7 +68,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
             };
         }
 
-        private BrokenExternalReferencesReportStatusResponseDTO MapStatus(BrokenExternalReferencesReport report)
+        private static BrokenExternalReferencesReportStatusResponseDTO MapStatus(BrokenExternalReferencesReport report)
         {
             return new BrokenExternalReferencesReportStatusResponseDTO
             {
