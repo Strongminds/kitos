@@ -140,5 +140,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Match(Ok, FromOperationError);
 
         }
+
+        [Route("local-admins")]
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetAllLocalAdmins()
+        {
+            return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.LocalAdmin)
+                    .Select(users => users.Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO))
+                    .Match(Ok, FromOperationError);
+        }
     }
 }
