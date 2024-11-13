@@ -10,16 +10,12 @@ using Tests.Toolkit.Patterns;
 using Xunit;
 using Core.DomainModel.Organization;
 using System.Collections.Generic;
-using AutoFixture;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Rights;
 using Core.DomainServices.Generic;
 using Core.ApplicationServices.Model.Users;
-using Core.DomainModel.GDPR;
-using Core.DomainModel.ItContract;
-using Core.DomainModel.ItSystem;
 
 namespace Tests.Unit.Core.ApplicationServices.Users
 {
@@ -386,7 +382,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var user = SetupUser();
             user.IsGlobalAdmin = false;
             ExpectGetUserByUuid(user.Uuid, user);
-            ExpectPermissionToAdministerGlobalAdminReturns(true);
+            ExpectIsGlobalAdminReturns(true);
             var transaction = ExpectTransactionBegins();
 
             var result = _sut.AddGlobalAdmin(user.Uuid);
@@ -401,7 +397,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             var user = SetupUser();
             ExpectGetUserByUuid(user.Uuid, user);
-            ExpectPermissionToAdministerGlobalAdminReturns(false);
+            ExpectIsGlobalAdminReturns(false);
             ExpectTransactionBegins();
 
             var result = _sut.AddGlobalAdmin(user.Uuid);
@@ -415,7 +411,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var user = SetupUser();
             user.IsGlobalAdmin = true;
             ExpectGetUserByUuid(user.Uuid, user);
-            ExpectPermissionToAdministerGlobalAdminReturns(true);
+            ExpectIsGlobalAdminReturns(true);
             var transaction = ExpectTransactionBegins();
 
             var result = _sut.RemoveGlobalAdmin(user.Uuid);
@@ -430,7 +426,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             var user = SetupUser();
             ExpectGetUserByUuid(user.Uuid, user);
-            ExpectPermissionToAdministerGlobalAdminReturns(false);
+            ExpectIsGlobalAdminReturns(false);
             ExpectTransactionBegins();
 
             var result = _sut.RemoveGlobalAdmin(user.Uuid);
@@ -443,7 +439,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             var user = SetupUser();
             ExpectGetUserByUuid(user.Uuid, user);
-            ExpectPermissionToAdministerGlobalAdminReturns(true);
+            ExpectIsGlobalAdminReturns(true);
             ExpectTransactionBegins();
             _organizationalUserContextMock.Setup(x => x.UserId).Returns(user.Id);
 
@@ -452,9 +448,9 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             Assert.True(result.HasValue);
         }
 
-        private void ExpectPermissionToAdministerGlobalAdminReturns(bool isAllowed)
+        private void ExpectIsGlobalAdminReturns(bool isAllowed)
         {
-            _authorizationContextMock.Setup(x => x.HasPermission(It.Is<AdministerGlobalPermission>(parameter => parameter.Permission == GlobalPermission.GlobalAdmin))).Returns(isAllowed);
+            _organizationalUserContextMock.Setup(x => x.IsGlobalAdmin()).Returns(isAllowed);
         }
 
         private void ExpectAssignRolesReturn(IEnumerable<OrganizationRole> roles, User user, Organization org)
