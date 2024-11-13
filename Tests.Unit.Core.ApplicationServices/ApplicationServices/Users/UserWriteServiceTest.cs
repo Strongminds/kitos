@@ -448,9 +448,9 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             Assert.True(result.HasValue);
         }
 
-        private void ExpectIsGlobalAdminReturns(bool isAllowed)
+        private void ExpectIsGlobalAdminReturns(bool expected)
         {
-            _organizationalUserContextMock.Setup(x => x.IsGlobalAdmin()).Returns(isAllowed);
+            _organizationalUserContextMock.Setup(x => x.IsGlobalAdmin()).Returns(expected);
         }
 
         private void ExpectAssignRolesReturn(IEnumerable<OrganizationRole> roles, User user, Organization org)

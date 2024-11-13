@@ -2,7 +2,7 @@
 
 namespace Core.DomainServices.Queries.User
 {
-    public class QueryBoGlobalAdmin : IDomainQuery<DomainModel.User>
+    public class QueryByGlobalAdmin : IDomainQuery<DomainModel.User>
     {
 
         public IQueryable<DomainModel.User> Apply(IQueryable<DomainModel.User> users)
