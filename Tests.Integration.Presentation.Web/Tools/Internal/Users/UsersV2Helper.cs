@@ -167,6 +167,13 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await HttpApi.PostWithCookieAsync(url, cookie, null);
         }
 
+        public static async Task<HttpResponseMessage> RemoveGlobalAdmin(Guid userUuid, Cookie cookie = null)
+        {
+            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var url = TestEnvironment.CreateUrl($"{GlobalUserControllerPrefix()}/global-admins/{userUuid}");
+            return await HttpApi.DeleteWithCookieAsync(url, requestCookie, null);
+        }
+
         private static string ControllerPrefix(Guid organizationUuid)
         {
             return $"api/v2/internal/organization/{organizationUuid}/users";

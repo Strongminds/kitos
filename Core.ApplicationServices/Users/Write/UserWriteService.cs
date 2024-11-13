@@ -189,9 +189,9 @@ namespace Core.ApplicationServices.Users.Write
 
         private Result<User, OperationError> UpdateGlobalAdminStatus(User user, bool requestedGlobalAdminStatus)
         {
-            if (!_authorizationContext.HasPermission(new AdministerGlobalPermission(GlobalPermission.GlobalAdmin)))
+            if (!_organizationalUserContext.IsGlobalAdmin())
             {
-                return new OperationError("You do not have permission to add/remove global admins", OperationFailure.Forbidden);
+                return new OperationError("Only global admins can add or remove global admins", OperationFailure.Forbidden);
             }
             if (!requestedGlobalAdminStatus && _organizationalUserContext.UserId == user.Id)
             {
