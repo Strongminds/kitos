@@ -1,37 +1,33 @@
 ﻿using System.Linq;
 using System.Net;
-using System.Net.Http;
+using Core.ApplicationServices.Qa;
 using System.Web.Http;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Qa;
 using Core.DomainModel.Qa.References;
+using Presentation.Web.Models.API.V2.Internal.Response.QA;
 
-using Presentation.Web.Infrastructure.Attributes;
-using Presentation.Web.Models.API.V1.Qa;
-
-namespace Presentation.Web.Controllers.API.V1
+namespace Presentation.Web.Controllers.API.V2.Internal.QA
 {
-    [InternalApi]
-    [RoutePrefix("api/v1/broken-external-references-report")]
-    public class BrokenExternalReferencesReportController : BaseApiController
+    [RoutePrefix("api/v2/internal/broken-external-references-report")]
+    public class BrokenExternalReferencesReportInternalV2Controller : InternalApiV2Controller
     {
         private readonly IBrokenExternalReferencesReportService _brokenExternalReferencesReportService;
 
-        public BrokenExternalReferencesReportController(IBrokenExternalReferencesReportService brokenExternalReferencesReportService)
+        public BrokenExternalReferencesReportInternalV2Controller(IBrokenExternalReferencesReportService brokenExternalReferencesReportService)
         {
             _brokenExternalReferencesReportService = brokenExternalReferencesReportService;
         }
 
         [HttpGet]
         [Route("status")]
-        public HttpResponseMessage GetStatus()
+        public IHttpActionResult GetStatus()
         {
             return _brokenExternalReferencesReportService
                 .GetLatestReport()
                 .Match
                 (
-                    onSuccess: report => Ok(MapStatus(report)),
-                    onFailure: error => error.FailureType == OperationFailure.NotFound
+                    report => Ok(MapStatus(report)),
+                    error => error.FailureType == OperationFailure.NotFound
                         ? Ok(MapStatus(Maybe<BrokenExternalReferencesReport>.None))
                         : FromOperationError(error)
                 );
@@ -39,45 +35,45 @@ namespace Presentation.Web.Controllers.API.V1
 
         [HttpPost]
         [Route("trigger")]
-        public HttpResponseMessage Trigger()
+        public IHttpActionResult Trigger()
         {
             return _brokenExternalReferencesReportService
                 .TriggerReportGeneration()
                 .Match
                 (
-                    onValue: FromOperationError,
-                    onNone: () => CreateResponse(HttpStatusCode.Accepted)
+                    FromOperationError,
+                    () => StatusCode(HttpStatusCode.Accepted)
                 );
         }
 
         [HttpGet]
         [Route("current/csv")]
-        public HttpResponseMessage GetCurrentCsvReport()
+        public IHttpActionResult GetCurrentCsvReport()
         {
             return _brokenExternalReferencesReportService
                 .GetLatestReport()
                 .Match
                 (
-                    onSuccess: BrokenExternalReferencesReportCsvMapper.CreateReportCsvResponse,
-                    onFailure: FromOperationError
+                    BrokenExternalReferencesReportCsvMapperV2.CreateReportCsvResponse,
+                    FromOperationError
                 );
         }
 
-        private static BrokenExternalReferencesReportStatusDTO MapStatus(Maybe<BrokenExternalReferencesReport> reportResult)
+        private IHttpActionResult MapStatus(Maybe<BrokenExternalReferencesReport> reportMaybe)
         {
-            return reportResult
+            return reportMaybe
                 .Match
                 (
-                    onValue: report => new BrokenExternalReferencesReportStatusDTO
+                    report => Ok(new BrokenExternalReferencesReportStatusResponseDTO
                     {
                         Available = true,
                         CreatedDate = report.Created,
                         BrokenLinksCount = report.GetBrokenLinks().Count()
-                    },
-                    onNone: () => new BrokenExternalReferencesReportStatusDTO
+                    }),
+                    onNone: () => Ok(new BrokenExternalReferencesReportStatusResponseDTO
                     {
                         Available = false
-                    }
+                    })
                 );
         }
     }
