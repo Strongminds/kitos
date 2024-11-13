@@ -26,6 +26,7 @@ namespace Core.ApplicationServices.Users.Write
         private readonly IOrganizationService _organizationService;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly IUserRightsService _userRightsService;
+        private readonly IOrganizationalUserContext _organizationalUserContext;
 
         public UserWriteService(IUserService userService,
             IOrganizationRightsService organizationRightsService,
@@ -33,7 +34,8 @@ namespace Core.ApplicationServices.Users.Write
             IAuthorizationContext authorizationContext,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver,
-            IUserRightsService userRightsService)
+            IUserRightsService userRightsService,
+            IOrganizationalUserContext organizationalUserContext)
         {
             _userService = userService;
             _organizationRightsService = organizationRightsService;
@@ -42,6 +44,7 @@ namespace Core.ApplicationServices.Users.Write
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
             _userRightsService = userRightsService;
+            _organizationalUserContext = organizationalUserContext;
         }
 
         public Result<User, OperationError> Create(Guid organizationUuid, CreateUserParameters parameters)
@@ -184,13 +187,17 @@ namespace Core.ApplicationServices.Users.Write
                     });
         }
 
-        private Result<User, OperationError> UpdateGlobalAdminStatus(User user, bool globalAdminStatus)
+        private Result<User, OperationError> UpdateGlobalAdminStatus(User user, bool requestedGlobalAdminStatus)
         {
             if (!_authorizationContext.HasPermission(new AdministerGlobalPermission(GlobalPermission.GlobalAdmin)))
             {
                 return new OperationError("You do not have permission to add/remove global admins", OperationFailure.Forbidden);
             }
-            user.IsGlobalAdmin = globalAdminStatus;
+            if (!requestedGlobalAdminStatus && _organizationalUserContext.UserId == user.Id)
+            {
+                return new OperationError("You can not remove yourself as global admin", OperationFailure.Forbidden);
+            }
+            user.IsGlobalAdmin = requestedGlobalAdminStatus;
             return user;
         }
 

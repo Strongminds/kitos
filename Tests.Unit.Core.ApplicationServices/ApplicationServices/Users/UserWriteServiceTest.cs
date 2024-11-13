@@ -34,6 +34,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolverMock;
         private readonly Mock<IUserRightsService> _userRightsServiceMock;
+        private readonly Mock<IOrganizationalUserContext> _organizationalUserContextMock;
 
         public UserWriteServiceTest()
         {
@@ -44,6 +45,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             _organizationServiceMock = new Mock<IOrganizationService>();
             _entityIdentityResolverMock = new Mock<IEntityIdentityResolver>();
             _userRightsServiceMock = new Mock<IUserRightsService>();
+            _organizationalUserContextMock = new Mock<IOrganizationalUserContext>();
 
 
             _sut = new UserWriteService(_userServiceMock.Object, 
@@ -52,7 +54,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
                 _authorizationContextMock.Object,
                 _organizationServiceMock.Object,
                 _entityIdentityResolverMock.Object,
-                _userRightsServiceMock.Object);
+                _userRightsServiceMock.Object,
+                _organizationalUserContextMock.Object);
         }
 
         [Fact]
@@ -428,6 +431,20 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             ExpectGetUserByUuid(user.Uuid, user);
             ExpectPermissionToAdministerGlobalAdminReturns(false);
             ExpectTransactionBegins();
+
+            var result = _sut.RemoveGlobalAdmin(user.Uuid);
+
+            Assert.True(result.HasValue);
+        }
+
+        [Fact]
+        public void Cannot_Remove_Yourself_As_Global_Admin()
+        {
+            var user = SetupUser();
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectPermissionToAdministerGlobalAdminReturns(true);
+            ExpectTransactionBegins();
+            _organizationalUserContextMock.Setup(x => x.UserId).Returns(user.Id);
 
             var result = _sut.RemoveGlobalAdmin(user.Uuid);
 
