@@ -307,6 +307,11 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         public async Task Cannot_Remove_Yourself_As_Global_Admin()
         {
             var (userId, _, cookie) = await HttpApi.CreateUserAndLogin(A<string>(), OrganizationRole.GlobalAdmin);
+            var userUuid = DatabaseAccess.GetEntityUuid<User>(userId);
+
+            var response = await UsersV2Helper.RemoveGlobalAdmin(userUuid, cookie);
+
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         private void AssertUserEqualsUpdateRequest(UpdateUserRequestDTO request, UserResponseDTO response)
