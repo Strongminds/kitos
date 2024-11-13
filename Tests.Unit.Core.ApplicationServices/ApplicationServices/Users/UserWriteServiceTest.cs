@@ -422,6 +422,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
             transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
             Assert.True(result.IsNone);
+            Assert.False(user.IsGlobalAdmin);
         }
 
         [Fact]

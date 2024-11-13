@@ -91,8 +91,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetGlobalAdmins()
         {
-            var query = (new List<IDomainQuery<User>> { new QueryBoGlobalAdmin() }).ToArray();
-            var globalAdmins = _userService.GetUsers(query)
+            var query = new List<IDomainQuery<User>> { new QueryBoGlobalAdmin() };
+            var globalAdmins = _userService.GetUsers(query.ToArray())
                 .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
                 .ToList();
             return Ok(globalAdmins);
