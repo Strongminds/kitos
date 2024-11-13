@@ -24,11 +24,12 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
         {
             return _brokenExternalReferencesReportService
                 .GetLatestReport()
+                .Select(MapStatus)
                 .Match
                 (
-                    report => Ok(MapStatus(report)),
+                    Ok,
                     error => error.FailureType == OperationFailure.NotFound
-                        ? Ok(MapStatus(Maybe<BrokenExternalReferencesReport>.None))
+                        ? Ok(GetEmptyStatus())
                         : FromOperationError(error)
                 );
         }
@@ -59,22 +60,22 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
                 );
         }
 
-        private IHttpActionResult MapStatus(Maybe<BrokenExternalReferencesReport> reportMaybe)
+        private BrokenExternalReferencesReportStatusResponseDTO GetEmptyStatus()
         {
-            return reportMaybe
-                .Match
-                (
-                    report => Ok(new BrokenExternalReferencesReportStatusResponseDTO
-                    {
-                        Available = true,
-                        CreatedDate = report.Created,
-                        BrokenLinksCount = report.GetBrokenLinks().Count()
-                    }),
-                    onNone: () => Ok(new BrokenExternalReferencesReportStatusResponseDTO
-                    {
-                        Available = false
-                    })
-                );
+            return new BrokenExternalReferencesReportStatusResponseDTO
+            {
+                Available = false
+            };
+        }
+
+        private BrokenExternalReferencesReportStatusResponseDTO MapStatus(BrokenExternalReferencesReport report)
+        {
+            return new BrokenExternalReferencesReportStatusResponseDTO
+            {
+                Available = true,
+                CreatedDate = report.Created,
+                BrokenLinksCount = report.GetBrokenLinks().Count()
+            };
         }
     }
 }

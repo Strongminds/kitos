@@ -12,8 +12,8 @@
         getStatus(): ng.IPromise<IBrokenLinksReportDTO> {
             return this.$http.get("api/v2/internal/broken-external-references-report/status")
                 .then(result => {
-                    var response = result.data as { msg: string, response: IBrokenLinksReportDTO };
-                    return response.response;
+                    var response = result.data as IBrokenLinksReportDTO ;
+                    return response;
                 });
         }
     }
