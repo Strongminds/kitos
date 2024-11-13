@@ -314,6 +314,13 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Can_Get_Local_Admins()
+        {
+            var localAdmins = await UsersV2Helper.GetLocalAdmins();
+            Assert.NotEmpty(localAdmins);
+        }
+
         private void AssertUserEqualsUpdateRequest(UpdateUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.Email, response.Email);

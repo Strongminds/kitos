@@ -174,6 +174,15 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await HttpApi.DeleteWithCookieAsync(url, requestCookie, null);
         }
 
+        public static async Task<IEnumerable<UserReferenceResponseDTO>> GetLocalAdmins()
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var url = TestEnvironment.CreateUrl($"{GlobalUserControllerPrefix()}/local-admins");
+            using var response = await HttpApi.GetWithCookieAsync(url, cookie);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<IEnumerable<UserReferenceResponseDTO>>();
+        }
+
         private static string ControllerPrefix(Guid organizationUuid)
         {
             return $"api/v2/internal/organization/{organizationUuid}/users";
