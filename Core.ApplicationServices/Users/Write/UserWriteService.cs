@@ -168,6 +168,16 @@ namespace Core.ApplicationServices.Users.Write
                 .Match(_ => Maybe<OperationError>.None, Maybe<OperationError>.Some);
         }
 
+        public Result<User, OperationError> AddLocalAdmin(Guid userUuid, Guid organizationUuid)
+        {
+            return new OperationError(OperationFailure.NotFound);
+        }
+
+        public Maybe<OperationError> RemoveLocalAdmin(Guid userUuid, Guid organizationUuid)
+        {
+            return new OperationError(OperationFailure.NotFound);
+        }
+
         private Result<User, OperationError> SetUsersGlobalAdminStatus(Guid userUuid, bool status)
         {
             using var transaction = _transactionManager.Begin();
