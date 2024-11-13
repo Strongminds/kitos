@@ -57,8 +57,7 @@ namespace Tests.Unit.Core.ApplicationServices.HelpTexts
             var expected = SetupRepositoryReturnsOne();
             var result = _sut.GetHelpTexts();
 
-            Assert.True(result.Ok);
-            var helpText = result.Value.FirstOrDefault();
+            var helpText = result.FirstOrDefault();
             Assert.NotNull(helpText);
             Assert.Equivalent(expected, helpText);
         }

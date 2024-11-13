@@ -46,9 +46,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult GetAll()
         {
-            return _helpTextApplicationService.GetHelpTexts()
-                .Select(_responseMapper.ToResponseDTOs)
-                .Match(Ok, FromOperationError);
+            var helpTexts = _helpTextApplicationService.GetHelpTexts();
+            return Ok(_responseMapper.ToResponseDTOs(helpTexts));
         }
 
         [HttpPost]

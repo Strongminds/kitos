@@ -34,9 +34,9 @@ namespace Core.ApplicationServices.HelpTexts
                 : new OperationError($"Could not find help text with key {key}", OperationFailure.NotFound);
         }
 
-        public Result<IEnumerable<HelpText>, OperationError> GetHelpTexts()
+        public IEnumerable<HelpText> GetHelpTexts()
         {
-            return Result<IEnumerable<HelpText>, OperationError>.Success(this._helpTextsRepository.AsQueryable().ToList());
+            return _helpTextsRepository.AsQueryable().ToList();
         }
 
         public Result<HelpText, OperationError> CreateHelpText(HelpTextCreateParameters parameters)
