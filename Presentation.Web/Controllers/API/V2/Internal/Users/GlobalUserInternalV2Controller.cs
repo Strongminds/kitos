@@ -148,6 +148,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("with-rightsholder-access")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserWithOrganizationResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetUsersWithRightsholderAccess()
         {
             return _userRightsService
@@ -160,6 +164,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("with-cross-organization-permissions")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserWithCrossOrganizationalRightsResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetUsersWithCrossAccess()
         {
             return _userService
