@@ -508,14 +508,14 @@
 
         getUsersWithRightsholderAccess() {
             return this.$http
-                .get<API.Models.IApiWrapper<Models.Api.IUserWithOrganizationName[]>>("api/v2/internal/users/with-rightsholder-access")
-                .then(result => result.data as any);
+                .get<Models.Api.IUserWithOrganizationName[]>("api/v2/internal/users/with-rightsholder-access")
+                .then(result => result.data);
         }
 
         getUsersWithCrossAccess() {
             return this.$http
-                .get<API.Models.IApiWrapper<Models.Api.IUserWithCrossAccess[]>>("api/v2/internal/users/with-cross-organization-permissions")
-                .then(result => result.data as any);
+                .get<Models.Api.IUserWithCrossAccess[]>("api/v2/internal/users/with-cross-organization-permissions")
+                .then(result => result.data);
         }
 
         deleteUser(id: number) {
