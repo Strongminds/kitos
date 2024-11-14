@@ -350,7 +350,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [InlineData(OrganizationRole.User)]
         [InlineData(OrganizationRole.LocalAdmin)]
         [InlineData(OrganizationRole.GlobalAdmin)] 
-        public async Task Only_Global_Can_Add_Any_Local_Admin(OrganizationRole role)
+        public async Task Only_Global_Admin_Can_Add_Any_Local_Admin(OrganizationRole role)
         {
             var org = await CreateOrganizationAsync();
             var user = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.User);

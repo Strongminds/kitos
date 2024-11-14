@@ -456,12 +456,15 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             ExpectGetUserByUuid(user.Uuid, user);
             ExpectResolveOrgUuidReturns(org.Uuid, org.Id);
             _organizationRightsServiceMock.Setup(x => x.AssignRole(org.Id, user.Id, OrganizationRole.LocalAdmin)).Returns(new OrganizationRight());
+            var transaction = ExpectTransactionBegins();
 
             var result = _sut.AddLocalAdmin(org.Uuid, user.Uuid);
 
             Assert.True(result.Ok);
             _organizationRightsServiceMock.Verify(x => x.AssignRole(org.Id, user.Id, OrganizationRole.LocalAdmin), Times.Once);
+            transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
         }
+
 
         [Fact]
         public void Can_Remove_Local_Admin()
@@ -471,11 +474,13 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             ExpectGetUserByUuid(user.Uuid, user);
             ExpectResolveOrgUuidReturns(org.Uuid, org.Id);
             _organizationRightsServiceMock.Setup(x => x.RemoveRole(org.Id, user.Id, OrganizationRole.LocalAdmin)).Returns(new OrganizationRight());
+            var transaction = ExpectTransactionBegins();
 
             var result = _sut.RemoveLocalAdmin(org.Uuid, user.Uuid);
 
             Assert.True(result.IsNone);
             _organizationRightsServiceMock.Verify(x => x.RemoveRole(org.Id, user.Id, OrganizationRole.LocalAdmin), Times.Once);
+            transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
         }
 
         private void ExpectIsGlobalAdminReturns(bool expected)
