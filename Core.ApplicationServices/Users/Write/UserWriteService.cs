@@ -406,10 +406,5 @@ namespace Core.ApplicationServices.Users.Write
             return user;
         }
 
-        private Maybe<int> ResolveUserUuid(Guid userUuid)
-        {
-            return _entityIdentityResolver.ResolveDbId<User>(userUuid);
-        }
-
     }
 }
