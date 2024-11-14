@@ -14,6 +14,7 @@ using Xunit;
 using System;
 using Presentation.Web.Models.API.V2.Internal.Request.User;
 using Tests.Toolkit.Extensions;
+using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Tests.Integration.Presentation.Web.Users.V2
 {
@@ -275,14 +276,12 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [InlineData(OrganizationRole.GlobalAdmin)]
         public async Task Can_Only_Create_Global_Admin_As_Global_Admin(OrganizationRole role)
         {
-            var org = await CreateOrganizationAsync();
-            var user = await CreateUserAsync(org.Uuid);
+            var (org, user) = await CreateOrgAndUser();
 
             var response = await UsersV2Helper.AddGlobalAdmin(user.Uuid, role);
 
             var isGlobalAdmin = role == OrganizationRole.GlobalAdmin;
-            var responseWasOk = response.StatusCode == HttpStatusCode.OK;
-            Assert.Equal(isGlobalAdmin, responseWasOk);
+            Assert.Equal(isGlobalAdmin, response.IsSuccessStatusCode);
         }
 
         [Theory]
@@ -291,16 +290,14 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [InlineData(OrganizationRole.GlobalAdmin)]
         public async Task Can_Only_Remove_Global_Admin_As_Global_Admin(OrganizationRole role)
         {
-            var org = await CreateOrganizationAsync();
-            var user = await CreateUserAsync(org.Uuid);
+            var (org, user) = await CreateOrgAndUser();
             await UsersV2Helper.AddGlobalAdmin(user.Uuid);
             var cookie = await HttpApi.GetCookieAsync(role);
 
             var response = await UsersV2Helper.RemoveGlobalAdmin(user.Uuid, cookie);
 
             var isGlobalAdmin = role == OrganizationRole.GlobalAdmin;
-            var wasAllowed = response.StatusCode == HttpStatusCode.NoContent;
-            Assert.Equal(isGlobalAdmin, wasAllowed);
+            Assert.Equal(isGlobalAdmin, response.IsSuccessStatusCode);
         }
 
         [Fact]
@@ -324,13 +321,33 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [Fact]
         public async Task Can_Add_Local_Admin()
         {
+            var (org, user) = await CreateOrgAndUser();
 
+            var localAdminsBefore = await UsersV2Helper.GetLocalAdmins();
+
+            var result = await UsersV2Helper.AddLocalAdmin(org.Uuid, user.Uuid);
+
+            var localAdminsAfter = await UsersV2Helper.GetLocalAdmins();
+
+            Assert.True(result.IsSuccessStatusCode);
+            Assert.Equal(localAdminsBefore.Count() + 1, localAdminsAfter.Count());
         }
 
         [Fact]
         public async Task Can_Remove_Local_Admin()
         {
+            var (org, user) = await CreateOrgAndUser();
 
+            var result = await UsersV2Helper.RemoveLocalAdmin(org.Uuid, user.Uuid);
+
+            Assert.True(result.IsSuccessStatusCode);
+        }
+
+        private async Task<(OrganizationDTO, UserResponseDTO)> CreateOrgAndUser()
+        {
+            var org = await CreateOrganizationAsync();
+            var user = await CreateUserAsync(org.Uuid);
+            return (org, user);
         }
 
         private void AssertUserEqualsUpdateRequest(UpdateUserRequestDTO request, UserResponseDTO response)
