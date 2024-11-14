@@ -174,13 +174,13 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await HttpApi.DeleteWithCookieAsync(url, requestCookie, null);
         }
 
-        public static async Task<IEnumerable<UserReferenceResponseDTO>> GetLocalAdmins()
+        public static async Task<IEnumerable<UserReferenceWithOrganizationResponseDTO>> GetLocalAdmins()
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var url = TestEnvironment.CreateUrl($"{GlobalUserControllerPrefix()}/local-admins");
             using var response = await HttpApi.GetWithCookieAsync(url, cookie);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<IEnumerable<UserReferenceResponseDTO>>();
+            return await response.ReadResponseBodyAsAsync<IEnumerable<UserReferenceWithOrganizationResponseDTO>>();
         }
 
         public static async Task<HttpResponseMessage> AddLocalAdmin(Guid organizationUuid, Guid userUuid, OrganizationRole role = OrganizationRole.GlobalAdmin)

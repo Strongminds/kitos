@@ -20,6 +20,7 @@ using System.Web.Http.Results;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using System.IdentityModel;
+using Presentation.Web.Models.API.V1.Users;
 
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
@@ -143,7 +144,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("local-admins")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceWithOrganizationResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -151,13 +152,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult GetAllLocalAdmins()
         {
             return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.LocalAdmin)
-                    .Select(users => users.Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO))
+                    .Select(users => users.SelectMany(InternalDtoModelV2MappingExtensions.MapUserToMultipleLocalAdminResponse))
                     .Match(Ok, FromOperationError);
         }
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserReferenceResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserReferenceWithOrganizationResponseDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -165,7 +166,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult AddLocalAdmin([NonEmptyGuid][FromUri] Guid organizationUuid, [NonEmptyGuid][FromUri] Guid userUuid)
         {
             return _userWriteService.AddLocalAdmin(organizationUuid, userUuid)
-                    .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
+                    .Select(user => user.MapUserToSingleLocalAdminResponse(organizationUuid))
                     .Match(Ok, FromOperationError);
         }
 
