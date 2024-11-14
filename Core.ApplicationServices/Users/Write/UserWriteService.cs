@@ -179,6 +179,7 @@ namespace Core.ApplicationServices.Users.Write
 
         private Result<User, OperationError> ChangeLocalAdminStatus<T>(Guid organizationUuid, Guid userUuid, Func<int, int, Result<T, OperationFailure>> changeLocalAdminStatus)
         {
+            var transaction = _transactionManager.Begin();
             var user = _userService.GetUserByUuid(userUuid);
             if (user.Failed)
             {
@@ -190,7 +191,16 @@ namespace Core.ApplicationServices.Users.Write
                 return orgId.Error;
             }
             return changeLocalAdminStatus(orgId.Value, user.Value.Id)
-                    .Match<Result<User, OperationError>>(_ => user.Value, failure => new OperationError(failure));
+                    .Match<Result<User, OperationError>>(
+                    _ =>
+                    {
+                        transaction.Commit();
+                        return user.Value;
+                    },
+                    failure => { 
+                        transaction.Rollback();
+                        return new OperationError(failure); 
+                    });
         }
 
         private Result<User, OperationError> SetUsersGlobalAdminStatus(Guid userUuid, bool status)

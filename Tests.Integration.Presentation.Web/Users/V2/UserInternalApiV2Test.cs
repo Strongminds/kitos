@@ -346,6 +346,36 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             Assert.Equal(localAdminsBefore.Count() - 1, localAdminsAfter.Count());
         }
 
+        [Theory]
+        [InlineData(OrganizationRole.User)]
+        [InlineData(OrganizationRole.LocalAdmin)]
+        [InlineData(OrganizationRole.GlobalAdmin)] 
+        public async Task Only_Global_Can_Add_Any_Local_Admin(OrganizationRole role)
+        {
+            var org = await CreateOrganizationAsync();
+            var user = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.User);
+
+            var result = await UsersV2Helper.AddLocalAdmin(org.Uuid, user.Uuid, role);
+
+            var shouldBeAllowed = role == OrganizationRole.GlobalAdmin;
+            Assert.Equal(shouldBeAllowed, result.IsSuccessStatusCode);
+        }
+
+        [Theory]
+        [InlineData(OrganizationRole.User)]
+        [InlineData(OrganizationRole.LocalAdmin)]
+        [InlineData(OrganizationRole.GlobalAdmin)]
+        public async Task Only_Global_Can_Remove_Any_Local_Admin(OrganizationRole role)
+        {
+            var org = await CreateOrganizationAsync();
+            var user = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.LocalAdmin);
+
+            var result = await UsersV2Helper.RemoveLocalAdmin(org.Uuid, user.Uuid, role);
+
+            var shouldBeAllowed = role == OrganizationRole.GlobalAdmin;
+            Assert.Equal(shouldBeAllowed, result.IsSuccessStatusCode);
+        }
+
         [Fact]
         public async Task Can_Add_User_As_Local_Admin_In_Organization_The_User_Is_Not_In()
         {
