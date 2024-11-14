@@ -183,6 +183,20 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await response.ReadResponseBodyAsAsync<IEnumerable<UserReferenceResponseDTO>>();
         }
 
+        public static async Task<HttpResponseMessage> AddLocalAdmin(Guid organizationUuid, Guid userUuid, OrganizationRole role)
+        {
+            var cookie = await HttpApi.GetCookieAsync(role);
+            var url = TestEnvironment.CreateUrl($"{GlobalUserControllerPrefix()}/{organizationUuid}/local-admins/{userUuid}");
+            return await HttpApi.PostWithCookieAsync(url, cookie, null);
+        }
+
+        public static async Task<HttpResponseMessage> RemoveLocalAdmin(Guid organizationUuid, Guid userUuid, OrganizationRole role)
+        {
+            var cookie = await HttpApi.GetCookieAsync(role);
+            var url = TestEnvironment.CreateUrl($"{GlobalUserControllerPrefix()}/{organizationUuid}/local-admins/{userUuid}");
+            return await HttpApi.DeleteWithCookieAsync(url, cookie, null);
+        }
+
         private static string ControllerPrefix(Guid organizationUuid)
         {
             return $"api/v2/internal/organization/{organizationUuid}/users";

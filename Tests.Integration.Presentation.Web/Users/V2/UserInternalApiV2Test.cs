@@ -321,6 +321,18 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             Assert.NotEmpty(localAdmins);
         }
 
+        [Fact]
+        public async Task Can_Add_Local_Admin()
+        {
+
+        }
+
+        [Fact]
+        public async Task Can_Remove_Local_Admin()
+        {
+
+        }
+
         private void AssertUserEqualsUpdateRequest(UpdateUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.Email, response.Email);
