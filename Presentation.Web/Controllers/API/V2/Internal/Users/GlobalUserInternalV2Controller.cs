@@ -165,7 +165,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult AddLocalAdmin([NonEmptyGuid][FromUri] Guid organizationUuid, [NonEmptyGuid][FromUri] Guid userUuid)
         {
             return _userWriteService.AddLocalAdmin(organizationUuid, userUuid)
-                    .Select(InternalDtoModelV2MappingExtensions .MapUserReferenceResponseDTO)
+                    .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
                     .Match(Ok, FromOperationError);
         }
 
