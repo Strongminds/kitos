@@ -164,18 +164,33 @@ namespace Core.ApplicationServices.Users.Write
 
         public Maybe<OperationError> RemoveGlobalAdmin(Guid userUuid)
         {
-            return SetUsersGlobalAdminStatus(userUuid, false)
-                .Match(_ => Maybe<OperationError>.None, Maybe<OperationError>.Some);
+            return SetUsersGlobalAdminStatus(userUuid, false).MatchFailure();
         }
 
-        public Result<User, OperationError> AddLocalAdmin(Guid userUuid, Guid organizationUuid)
+        public Result<User, OperationError> AddLocalAdmin(Guid organizationUuid, Guid userUuid)
         {
-            return new OperationError(OperationFailure.NotFound);
+            return ChangeLocalAdminStatus(organizationUuid, userUuid, (orgId, userId) => _organizationRightsService.AssignRole(orgId, userId, OrganizationRole.LocalAdmin));
         }
 
-        public Maybe<OperationError> RemoveLocalAdmin(Guid userUuid, Guid organizationUuid)
+        public Maybe<OperationError> RemoveLocalAdmin(Guid organizationUuid, Guid userUuid)
         {
-            return new OperationError(OperationFailure.NotFound);
+            return ChangeLocalAdminStatus(organizationUuid, userUuid, (orgId, userId) => _organizationRightsService.RemoveRole(orgId, userId, OrganizationRole.LocalAdmin)).MatchFailure();
+        }
+
+        private Result<User, OperationError> ChangeLocalAdminStatus<T>(Guid organizationUuid, Guid userUuid, Func<int, int, Result<T, OperationFailure>> changeLocalAdminStatus)
+        {
+            var user = _userService.GetUserByUuid(userUuid);
+            if (user.Failed)
+            {
+                return user.Error;
+            }
+            var orgId = ResolveOrganizationUuidToId(organizationUuid);
+            if (orgId.Failed)
+            {
+                return orgId.Error;
+            }
+            return changeLocalAdminStatus(orgId.Value, user.Value.Id)
+                    .Match<Result<User, OperationError>>(_ => user.Value, failure => new OperationError(failure));
         }
 
         private Result<User, OperationError> SetUsersGlobalAdminStatus(Guid userUuid, bool status)
@@ -189,7 +204,7 @@ namespace Core.ApplicationServices.Users.Write
                         transaction.Commit();
                         _userService.UpdateUser(user, null, null);
                         return user;
-                    }, 
+                    },
                     error =>
                     {
                         transaction.Rollback();
@@ -389,6 +404,11 @@ namespace Core.ApplicationServices.Users.Write
             }
 
             return user;
+        }
+
+        private Maybe<int> ResolveUserUuid(Guid userUuid)
+        {
+            return _entityIdentityResolver.ResolveDbId<User>(userUuid);
         }
 
     }

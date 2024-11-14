@@ -25,8 +25,8 @@ namespace Core.ApplicationServices.Users.Write
 
         Maybe<OperationError> RemoveGlobalAdmin(Guid userUuid);
 
-        Result<User, OperationError> AddLocalAdmin(Guid userUuid, Guid organizationUuid);
+        Result<User, OperationError> AddLocalAdmin(Guid organizationUuid, Guid userUuid);
 
-        Maybe<OperationError> RemoveLocalAdmin(Guid userUuid, Guid organizationUuid);
+        Maybe<OperationError> RemoveLocalAdmin(Guid organizationUuid, Guid userUuid);
     }
 }

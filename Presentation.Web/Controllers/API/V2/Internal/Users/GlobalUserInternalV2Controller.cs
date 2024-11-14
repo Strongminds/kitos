@@ -154,5 +154,32 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                     .Select(users => users.Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO))
                     .Match(Ok, FromOperationError);
         }
+
+        [Route("{organizationUuid}/local-admins/{userUuid}")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserReferenceResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult AddLocalAdmin([NonEmptyGuid][FromUri] Guid organizationUuid, [NonEmptyGuid][FromUri] Guid userUuid)
+        {
+            return _userWriteService.AddLocalAdmin(organizationUuid, userUuid)
+                    .Select(InternalDtoModelV2MappingExtensions .MapUserReferenceResponseDTO)
+                    .Match(Ok, FromOperationError);
+        }
+
+        [Route("{organizationUuid}/local-admins/{userUuid}")]
+        [HttpDelete]
+        [SwaggerResponse(HttpStatusCode.NoContent)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult RemoveLocalAdmin([NonEmptyGuid][FromUri] Guid organizationUuid, [NonEmptyGuid][FromUri] Guid userUuid)
+        {
+            return _userWriteService.RemoveLocalAdmin(organizationUuid, userUuid)
+                    .Match(FromOperationError, NoContent);
+        }
     }
 }
