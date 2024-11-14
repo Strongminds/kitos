@@ -321,14 +321,13 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [Fact]
         public async Task Can_Add_Local_Admin()
         {
-            var (org, user) = await CreateOrgAndUser();
-
+            var org = await CreateOrganizationAsync();
+            var regularUser = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.User);
             var localAdminsBefore = await UsersV2Helper.GetLocalAdmins();
 
-            var result = await UsersV2Helper.AddLocalAdmin(org.Uuid, user.Uuid);
+            var result = await UsersV2Helper.AddLocalAdmin(org.Uuid, regularUser.Uuid);
 
             var localAdminsAfter = await UsersV2Helper.GetLocalAdmins();
-
             Assert.True(result.IsSuccessStatusCode);
             Assert.Equal(localAdminsBefore.Count() + 1, localAdminsAfter.Count());
         }
@@ -336,9 +335,24 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [Fact]
         public async Task Can_Remove_Local_Admin()
         {
-            var (org, user) = await CreateOrgAndUser();
+            var org = await CreateOrganizationAsync();
+            var localAdmin = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.LocalAdmin);
+            var localAdminsBefore = await UsersV2Helper.GetLocalAdmins();
 
-            var result = await UsersV2Helper.RemoveLocalAdmin(org.Uuid, user.Uuid);
+            var result = await UsersV2Helper.RemoveLocalAdmin(org.Uuid, localAdmin.Uuid);
+
+            var localAdminsAfter = await UsersV2Helper.GetLocalAdmins();
+            Assert.True(result.IsSuccessStatusCode);
+            Assert.Equal(localAdminsBefore.Count() - 1, localAdminsAfter.Count());
+        }
+
+        [Fact]
+        public async Task Can_Add_User_As_Local_Admin_In_Organization_The_User_Is_Not_In()
+        {
+            var otherOrg = await CreateOrganizationAsync();
+            var (_, user) = await CreateOrgAndUser();
+
+            var result = await UsersV2Helper.AddLocalAdmin(otherOrg.Uuid, user.Uuid);
 
             Assert.True(result.IsSuccessStatusCode);
         }
@@ -402,6 +416,13 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         private string CreateEmail()
         {
             return $"{CreateName()}@kitos.dk";
+        }
+
+        private async Task<UserResponseDTO> CreateUserWithRoleAsync(Guid organizationUuid, OrganizationRoleChoice role)
+        {
+            var request = CreateCreateUserRequest();
+            request.Roles = new List<OrganizationRoleChoice> { role };
+            return await UsersV2Helper.CreateUser(organizationUuid, request);
         }
 
         private CreateUserRequestDTO CreateCreateUserRequest()
