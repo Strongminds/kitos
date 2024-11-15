@@ -160,7 +160,8 @@ namespace Core.DomainModel
         {
             return OrganizationRights
                     .Where(x => x.Role == role)
-                    .Select(x => x.Organization);
+                    .Select(x => x.Organization)
+                    .ToList();
         }
 
         public IEnumerable<Organization.Organization> GetOrganizations()
