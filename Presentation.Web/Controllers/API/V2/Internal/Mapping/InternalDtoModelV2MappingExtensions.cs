@@ -35,13 +35,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Mapping
         {
             return user.GetOrganizationsWhereRoleIsAssigned(OrganizationRole.LocalAdmin)
                 .Select(org => org.MapIdentityNamePairDTO())
-                .Select(orgDto => new UserReferenceWithOrganizationResponseDTO(orgDto, user.Uuid, user.Name, user.Email));
+                .Select(orgDto => new UserReferenceWithOrganizationResponseDTO(orgDto, user.Uuid, user.GetFullName(), user.Email));
         }
 
         public static UserReferenceWithOrganizationResponseDTO MapUserToSingleLocalAdminResponse(this User user, Guid organizationUuid)
         {
             var orgDto = user.GetOrganizations().First(x => x.Uuid == organizationUuid).MapIdentityNamePairDTO();
-            return new UserReferenceWithOrganizationResponseDTO(orgDto, user.Uuid, user.Name, user.Email);
+            return new UserReferenceWithOrganizationResponseDTO(orgDto, user.Uuid, user.GetFullName(), user.Email);
 
         }
     }
