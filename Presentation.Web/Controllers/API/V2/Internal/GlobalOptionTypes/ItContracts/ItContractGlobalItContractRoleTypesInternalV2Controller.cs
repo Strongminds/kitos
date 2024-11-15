@@ -7,6 +7,7 @@ using Core.DomainModel.ItContract;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Presentation.Web.Models.API.V2.Internal.Response.GlobalOptions;
 using Swashbuckle.Swagger.Annotations;
@@ -15,15 +16,15 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItContr
 {
     [RoutePrefix("api/v2/internal/it-contract/global-option-types/it-contract-role-types")]
 
-    public class ItContractGlobalItContractRoleTypesInternalV2Controller: BaseGlobalRegularOptionTypesInternalV2Controller<ItContractRight, ItContractRole>
+    public class ItContractGlobalItContractRoleTypesInternalV2Controller: BaseGlobalRoleOptionTypesInternalV2Controller<ItContractRole, ItContractRight>
     {
-        public ItContractGlobalItContractRoleTypesInternalV2Controller(IGlobalRegularOptionsService<ItContractRole, ItContractRight> globalRegularOptionsService, IGlobalOptionTypeResponseMapper responseMapper, IGlobalOptionTypeWriteModelMapper writeModelMapper) : base(globalRegularOptionsService, responseMapper, writeModelMapper)
+        public ItContractGlobalItContractRoleTypesInternalV2Controller(IGlobalRoleOptionsService<ItContractRole, ItContractRight> globalRoleOptionsService, IGlobalOptionTypeResponseMapper responseMapper, IGlobalOptionTypeWriteModelMapper writeModelMapper) : base(globalRoleOptionsService, responseMapper, writeModelMapper)
         {
         }
 
         [HttpGet]
         [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<GlobalRegularOptionResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<GlobalRoleOptionResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
@@ -35,25 +36,25 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItContr
 
         [HttpPost]
         [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(GlobalRegularOptionResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(GlobalRoleOptionResponseDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult CreateGlobalItContractRoleType(GlobalRegularOptionCreateRequestDTO dto)
+        public IHttpActionResult CreateGlobalItContractRoleType(GlobalRoleOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(GlobalRegularOptionResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(GlobalRoleOptionResponseDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult PatchGlobalItContractRoleType([NonEmptyGuid][FromUri] Guid optionUuid,
-            GlobalRegularOptionUpdateRequestDTO dto)
+            GlobalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);
         }

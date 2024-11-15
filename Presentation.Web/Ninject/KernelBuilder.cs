@@ -538,7 +538,7 @@ namespace Presentation.Web.Ninject
             RegisterGlobalRegularOptionService<ArchiveType, ItSystemUsage>(kernel);
             RegisterGlobalRegularOptionService<ArchiveTestLocation, ItSystemUsage>(kernel);
 
-            //IT Contractss
+            //IT Contracts
             RegisterGlobalRegularOptionService<OptionExtendType, ItContract>(kernel);
             RegisterGlobalRegularOptionService<TerminationDeadlineType, ItContract>(kernel);
             RegisterGlobalRegularOptionService<PurchaseFormType, ItContract>(kernel);
