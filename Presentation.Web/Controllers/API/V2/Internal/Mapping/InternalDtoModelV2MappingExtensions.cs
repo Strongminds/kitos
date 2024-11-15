@@ -1,10 +1,7 @@
 ﻿using Core.Abstractions.Extensions;
-using Core.ApplicationServices.Helpers;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
-using dk.nita.saml20.Schema.Protocol;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
-using Presentation.Web.Models.API.V1.Users;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
 using System;
@@ -36,7 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Mapping
 
         public static IEnumerable<UserReferenceWithOrganizationResponseDTO> MapUserToMultipleLocalAdminResponse(this User user)
         {
-            return user.GetOrganizationWhereRoleIsAssigned(OrganizationRole.LocalAdmin)
+            return user.GetOrganizationsWhereRoleIsAssigned(OrganizationRole.LocalAdmin)
                 .Select(org => org.MapIdentityNamePairDTO())
                 .Select(orgDto => new UserReferenceWithOrganizationResponseDTO(orgDto, user.Uuid, user.Name, user.Email));
         }

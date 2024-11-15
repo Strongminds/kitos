@@ -156,7 +156,7 @@ namespace Core.DomainModel
                 .Distinct();
         }
 
-        public IEnumerable<Organization.Organization> GetOrganizationWhereRoleIsAssigned(OrganizationRole role)
+        public IEnumerable<Organization.Organization> GetOrganizationsWhereRoleIsAssigned(OrganizationRole role)
         {
             return OrganizationRights
                     .Where(x => x.Role == role)
