@@ -1,5 +1,3 @@
-
-    
 using Core.ApplicationServices.GlobalOptions;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
@@ -13,7 +11,7 @@ using System;
 using Core.DomainModel.GDPR;
 using Presentation.Web.Models.API.V2.Internal.Response.GlobalOptions;
 
-namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSystems
+namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataProcessingRegistrations
 {
     [RoutePrefix("api/v2/internal/dpr/global-option-types/data-processing-data-responsible-options")]
 
