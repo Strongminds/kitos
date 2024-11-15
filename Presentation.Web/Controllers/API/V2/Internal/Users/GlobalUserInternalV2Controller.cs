@@ -157,7 +157,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult GetAllLocalAdmins()
         {
             return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.LocalAdmin)
-                    .Select(users => users.SelectMany(InternalDtoModelV2MappingExtensions.MapUserToMultipleLocalAdminResponse))
+                    .Select(users => users.SelectMany(InternalDtoModelV2MappingExtensions.MapUserToMultipleLocalAdminResponse).ToList())
                     .Match(Ok, FromOperationError);
         }
 
