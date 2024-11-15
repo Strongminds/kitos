@@ -16,11 +16,13 @@ using Presentation.Web.Models.API.V2.Internal.Response.User;
 using Core.ApplicationServices;
 using Presentation.Web.Extensions;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
-using System.Web.Http.Results;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using System.IdentityModel;
 using Presentation.Web.Models.API.V1.Users;
+using Core.DomainModel.Organization;
+using Core.ApplicationServices.Rights;
+using Core.ApplicationServices.Model.RightsHolder;
 
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
@@ -34,14 +36,17 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         private readonly IUserWriteService _userWriteService;
         private readonly IUserService _userService;
         private readonly IOrganizationResponseMapper _organizationResponseMapper;
+        private readonly IUserRightsService _userRightsService;
 
         public GlobalUserInternalV2Controller(IUserWriteService userWriteService, 
             IUserService userService, 
-            IOrganizationResponseMapper organizationResponseMapper)
+            IOrganizationResponseMapper organizationResponseMapper,
+            IUserRightsService userRightsService)
         {
             _userWriteService = userWriteService;
             _userService = userService;
             _organizationResponseMapper = organizationResponseMapper;
+            _userRightsService = userRightsService;
         }
 
         [Route("{userUuid}")]
@@ -181,6 +186,68 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         {
             return _userWriteService.RemoveLocalAdmin(organizationUuid, userUuid)
                     .Match(FromOperationError, NoContent);
+        }
+        
+        [HttpGet]
+        [Route("with-rightsholder-access")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserWithOrganizationResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetUsersWithRightsholderAccess()
+        {
+            return _userRightsService
+                .GetUsersWithRoleAssignment(OrganizationRole.RightsHolderAccess)
+                .Select(relations => relations.OrderBy(relation => relation.User.Id))
+                .Select(relations => relations.ToList())
+                .Select(ToUserWithOrgDTOs)
+                .Match(Ok, FromOperationError);
+        }
+
+        [HttpGet]
+        [Route("with-cross-organization-permissions")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserWithCrossOrganizationalRightsResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetUsersWithCrossAccess()
+        {
+            return _userService
+                .GetUsersWithCrossOrganizationPermissions()
+                .Select(users => users.OrderBy(user => user.Id))
+                .Select(users => users.ToList())
+                .Select(ToUserWithCrossRightsDTOs)
+                .Match(Ok, FromOperationError);
+        }
+
+        private static IEnumerable<UserWithOrganizationResponseDTO> ToUserWithOrgDTOs(List<UserRoleAssociationDTO> dtos)
+        {
+            return dtos.Select(ToUserWithOrgDTO).ToList();
+        }
+
+        private static UserWithOrganizationResponseDTO ToUserWithOrgDTO(UserRoleAssociationDTO dto)
+        {
+            return new UserWithOrganizationResponseDTO(dto.User.Uuid, dto.User.GetFullName(), dto.User.Email, dto.User.HasApiAccess.GetValueOrDefault(false), dto.Organization.Name);
+        }
+
+        private static IEnumerable<UserWithCrossOrganizationalRightsResponseDTO> ToUserWithCrossRightsDTOs(IEnumerable<User> users)
+        {
+            return users.Select(ToUserWithCrossRightsDTO).ToList();
+        }
+
+        private static UserWithCrossOrganizationalRightsResponseDTO ToUserWithCrossRightsDTO(User user)
+        {
+            return new UserWithCrossOrganizationalRightsResponseDTO(user.Uuid, user.GetFullName(), user.Email, user.HasApiAccess.GetValueOrDefault(false), user.HasStakeHolderAccess, GetOrganizationNames(user));
+        }
+
+        private static IEnumerable<string> GetOrganizationNames(User user)
+        {
+            return user.GetOrganizations()
+                .GroupBy(x => (x.Id, x.Name))
+                .Distinct()
+                .Select(x => x.Key.Name)
+                .OrderBy(x => x)
+                .ToList();
         }
     }
 }
