@@ -14,14 +14,13 @@ using Core.DomainModel.GDPR;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataProcessingRegistrations
 {
-    public class DprGlobalRoleOptionTypesInternalV2Controller
-    {
         [RoutePrefix("api/v2/internal/dpr/global-option-types/dpr-roles")]
-        public class ItSystemGlobalRoleOptionTypesInternalV2Controller : BaseGlobalRoleOptionTypesInternalV2Controller<
+        public class DprGlobalRoleOptionTypesInternalV2Controller : BaseGlobalRoleOptionTypesInternalV2Controller<
             DataProcessingRegistrationRole, DataProcessingRegistrationRight>
         {
-            public ItSystemGlobalRoleOptionTypesInternalV2Controller(
-                IGlobalRoleOptionsService<DataProcessingRegistrationRole, DataProcessingRegistrationRight>
+        public DprGlobalRoleOptionTypesInternalV2Controller
+            (
+            IGlobalRoleOptionsService<DataProcessingRegistrationRole, DataProcessingRegistrationRight>
                     globalRoleOptionsService, IGlobalOptionTypeResponseMapper responseMapper,
                 IGlobalOptionTypeWriteModelMapper writeModelMapper) : base(globalRoleOptionsService, responseMapper,
                 writeModelMapper)
@@ -66,5 +65,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
             }
 
         }
-    }
 }
