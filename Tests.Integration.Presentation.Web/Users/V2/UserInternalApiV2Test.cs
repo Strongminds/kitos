@@ -323,13 +323,12 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         {
             var org = await CreateOrganizationAsync();
             var regularUser = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.User);
-            var localAdminsBefore = await UsersV2Helper.GetLocalAdmins();
 
             var result = await UsersV2Helper.AddLocalAdmin(org.Uuid, regularUser.Uuid);
 
             var localAdminsAfter = await UsersV2Helper.GetLocalAdmins();
             Assert.True(result.IsSuccessStatusCode);
-            Assert.Equal(localAdminsBefore.Count() + 1, localAdminsAfter.Count());
+            Assert.Contains(regularUser.Uuid, localAdminsAfter.Select(x => x.Uuid));
         }
 
         [Fact]
@@ -337,13 +336,12 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         {
             var org = await CreateOrganizationAsync();
             var localAdmin = await CreateUserWithRoleAsync(org.Uuid, OrganizationRoleChoice.LocalAdmin);
-            var localAdminsBefore = await UsersV2Helper.GetLocalAdmins();
 
             var result = await UsersV2Helper.RemoveLocalAdmin(org.Uuid, localAdmin.Uuid);
 
             var localAdminsAfter = await UsersV2Helper.GetLocalAdmins();
             Assert.True(result.IsSuccessStatusCode);
-            Assert.Equal(localAdminsBefore.Count() - 1, localAdminsAfter.Count());
+            Assert.DoesNotContain(localAdmin.Uuid, localAdminsAfter.Select(x => x.Uuid));
         }
 
         [Theory]
