@@ -399,6 +399,7 @@
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingCountryOptionsInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingDataResponsibleOptionsInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingOversightOptionsInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\HelpTextsInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ItContracts\GridLocalItContractRolesV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Common\Helpers\ItSystemV2QueryHandler.cs" />
