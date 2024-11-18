@@ -167,6 +167,7 @@ namespace Infrastructure.DataAccess
         public DbSet<ItSystemUsageOverviewRelevantOrgUnitReadModel> ItSystemUsageOverviewRelevantOrgUnitReadModels { get; set; }
         public DbSet<ItSystemUsageOverviewItContractReadModel> ItSystemUsageOverviewItContractReadModels { get; set; }
         public DbSet<CountryCode> CountryCodes { get; set; }
+        public DbSet<LocalCountryCode> LocalCountryCodes { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
