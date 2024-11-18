@@ -1129,7 +1129,6 @@
     <EmbeddedResource Include="Migrations\202411180958307_Add local country codes table.resx">
       <DependentUpon>202411180958307_Add local country codes table.cs</DependentUpon>
     </EmbeddedResource>
-     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411181238103_Revert local country codes.resx">
       <DependentUpon>202411181238103_Revert local country codes.cs</DependentUpon>
     </EmbeddedResource>
