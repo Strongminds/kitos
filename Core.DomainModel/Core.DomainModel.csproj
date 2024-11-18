@@ -100,7 +100,6 @@
     <Compile Include="ItSystemUsage\Read\ItSystemUsageOverviewRelevantOrgUnitReadModel.cs" />
     <Compile Include="ItSystemUsage\TechnicalPrecaution.cs" />
     <Compile Include="KendoConfig\KendoColumnConfiguration.cs" />
-    <Compile Include="LocalOptions\LocalCountryCode.cs" />
     <Compile Include="LocalOptions\LocalCriticalityType.cs" />
     <Compile Include="Notification\IEntityWithUserNotification.cs" />
     <Compile Include="Notification\IHasToDate.cs" />
