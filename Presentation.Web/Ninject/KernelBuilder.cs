@@ -691,9 +691,6 @@ namespace Presentation.Web.Ninject
             //OrganizationUnit
             RegisterOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(kernel);
 
-            //Organization
-            RegisterOptionsService<Organization, CountryCode, LocalCountryCode>(kernel);
-
             //Attached options services
             kernel.Bind<IAttachedOptionsAssignmentService<RegisterType, ItSystemUsage>>().ToMethod(ctx =>
                 new AttachedOptionsAssignmentService<RegisterType, ItSystemUsage>(OptionType.REGISTERTYPEDATA,
