@@ -1075,6 +1075,10 @@
     <Compile Include="Migrations\202411180725295_Add country code field to organization.designer.cs">
       <DependentUpon>202411180725295_Add country code field to organization.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411180958307_Add local country codes table.cs" />
+    <Compile Include="Migrations\202411180958307_Add local country codes table.designer.cs">
+      <DependentUpon>202411180958307_Add local country codes table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202411181238103_Revert local country codes.cs" />
     <Compile Include="Migrations\202411181238103_Revert local country codes.designer.cs">
       <DependentUpon>202411181238103_Revert local country codes.cs</DependentUpon>
@@ -1122,6 +1126,10 @@
     <EmbeddedResource Include="Migrations\202411180725295_Add country code field to organization.resx">
       <DependentUpon>202411180725295_Add country code field to organization.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411180958307_Add local country codes table.resx">
+      <DependentUpon>202411180958307_Add local country codes table.cs</DependentUpon>
+    </EmbeddedResource>
+     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411181238103_Revert local country codes.resx">
       <DependentUpon>202411181238103_Revert local country codes.cs</DependentUpon>
     </EmbeddedResource>
