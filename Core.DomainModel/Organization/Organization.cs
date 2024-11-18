@@ -69,6 +69,8 @@ namespace Core.DomainModel.Organization
 
         public string GetActiveCvr() => Cvr ?? ForeignCvr;
 
+        public CountryCode CountryCode { get; set; }
+
         public AccessModifier AccessModifier { get; set; }
         public Guid Uuid { get; set; }
         public virtual ICollection<OrganizationUnit> OrgUnits { get; set; }

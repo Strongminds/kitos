@@ -1071,6 +1071,10 @@
     <Compile Include="Migrations\202411180721231_Add country code option type.designer.cs">
       <DependentUpon>202411180721231_Add country code option type.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411180725295_Add country code field to organization.cs" />
+    <Compile Include="Migrations\202411180725295_Add country code field to organization.designer.cs">
+      <DependentUpon>202411180725295_Add country code field to organization.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix staging DB\Delete_Users_Other_Than_Preserved_Users.sql" />
@@ -1110,6 +1114,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411180721231_Add country code option type.resx">
       <DependentUpon>202411180721231_Add country code option type.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411180725295_Add country code field to organization.resx">
+      <DependentUpon>202411180725295_Add country code field to organization.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
