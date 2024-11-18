@@ -558,6 +558,9 @@ namespace Presentation.Web.Ninject
             RegisterGlobalRegularOptionService<DataProcessingOversightOption, DataProcessingRegistration>(kernel);
             RegisterGlobalRegularOptionService<DataProcessingDataResponsibleOption, DataProcessingRegistration>(kernel);
             RegisterGlobalRegularOptionService<DataProcessingBasisForTransferOption, DataProcessingRegistration>(kernel);
+
+            //Organization
+            RegisterGlobalRegularOptionService<CountryCode, Organization>(kernel);
         }
 
         private void RegisterLocalItContractOptionTypes(IKernel kernel)
