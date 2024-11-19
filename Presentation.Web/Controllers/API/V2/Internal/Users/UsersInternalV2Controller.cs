@@ -149,6 +149,20 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                     Ok);
         }
 
+        [HttpGet]
+        [Route("{userUuid}")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetUserByUuid(Guid organizationUuid, Guid userUuid)
+        {
+            return _userService
+                .GetUserInOrganization(organizationUuid, userUuid)
+                .Select((user) => _userResponseModelMapper.ToUserResponseDTO(organizationUuid, user))
+                .Match(Ok, FromOperationError);
+        }
+
         private CreatedNegotiatedContentResult<UserResponseDTO> MapUserCreatedResponse(UserResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
