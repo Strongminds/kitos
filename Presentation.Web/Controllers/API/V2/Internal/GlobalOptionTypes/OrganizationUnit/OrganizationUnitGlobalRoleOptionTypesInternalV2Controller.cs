@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Web.Http;
-using Core.ApplicationServices.GlobalOptions;
-using Core.DomainModel.ItSystem;
-using Core.DomainModel.LocalOptions;
+﻿using Core.ApplicationServices.GlobalOptions;
 using Core.DomainModel.Organization;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
@@ -13,6 +7,10 @@ using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Presentation.Web.Models.API.V2.Internal.Response.GlobalOptions;
 using Swashbuckle.Swagger.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.OrganizationUnit
 {
