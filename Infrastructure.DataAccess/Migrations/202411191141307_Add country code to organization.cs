@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Addcountrycodeoptiontype : DbMigration
+    public partial class Addcountrycodetoorganization : DbMigration
     {
         public override void Up()
         {
@@ -30,21 +30,21 @@
                 .Index(t => t.ObjectOwnerId)
                 .Index(t => t.LastChangedByUserId);
             
-            AddColumn("dbo.Organization", "CountryCode_Id", c => c.Int());
-            CreateIndex("dbo.Organization", "CountryCode_Id");
-            AddForeignKey("dbo.Organization", "CountryCode_Id", "dbo.CountryCodes", "Id");
+            AddColumn("dbo.Organization", "ForeignCountryCodeId", c => c.Int());
+            CreateIndex("dbo.Organization", "ForeignCountryCodeId");
+            AddForeignKey("dbo.Organization", "ForeignCountryCodeId", "dbo.CountryCodes", "Id");
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.Organization", "CountryCode_Id", "dbo.CountryCodes");
+            DropForeignKey("dbo.Organization", "ForeignCountryCodeId", "dbo.CountryCodes");
             DropForeignKey("dbo.CountryCodes", "ObjectOwnerId", "dbo.User");
             DropForeignKey("dbo.CountryCodes", "LastChangedByUserId", "dbo.User");
             DropIndex("dbo.CountryCodes", new[] { "LastChangedByUserId" });
             DropIndex("dbo.CountryCodes", new[] { "ObjectOwnerId" });
             DropIndex("dbo.CountryCodes", "UX_Option_Uuid");
-            DropIndex("dbo.Organization", new[] { "CountryCode_Id" });
-            DropColumn("dbo.Organization", "CountryCode_Id");
+            DropIndex("dbo.Organization", new[] { "ForeignCountryCodeId" });
+            DropColumn("dbo.Organization", "ForeignCountryCodeId");
             DropTable("dbo.CountryCodes");
         }
     }
