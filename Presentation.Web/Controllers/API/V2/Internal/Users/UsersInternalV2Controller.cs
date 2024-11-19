@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult CreateUser([NonEmptyGuid] Guid organizationUuid, [FromBody] CreateUserRequestDTO parameters)
         {
             return _userWriteService.Create(organizationUuid, _writeModelMapper.FromPOST(parameters))
-                .Select(user => _userResponseModelMapper.ToUserResponseDTO(organizationUuid, user))
+                .Bind(user => _userResponseModelMapper.ToUserResponseDTO(organizationUuid, user))
                 .Match(MapUserCreatedResponse, FromOperationError);
         }
 
@@ -64,7 +64,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             [FromBody] UpdateUserRequestDTO parameters)
         {
             return _userWriteService.Update(organizationUuid, userUuid, _writeModelMapper.FromPATCH(parameters))
-                .Select(user => _userResponseModelMapper.ToUserResponseDTO(organizationUuid, user))
+                .Bind(user => _userResponseModelMapper.ToUserResponseDTO(organizationUuid, user))
                 .Match(Ok, FromOperationError);
         }
 
