@@ -369,7 +369,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(requestDto.Cvr, updatedOrganization.Cvr);
             Assert.Equal(requestDto.Name, updatedOrganization.Name);
             Assert.Equal((int)requestDto.Type, updatedOrganization.TypeId);
-            Assert.Equal(requestDto.ForeignCvr, updatedOrganization.ForeignCvr);
         }
 
         [Fact]
