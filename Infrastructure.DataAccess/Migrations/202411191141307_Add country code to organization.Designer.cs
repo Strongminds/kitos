@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class Addcountrycodeoptiontype : IMigrationMetadata
+    public sealed partial class Addcountrycodetoorganization : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Addcountrycodeoptiontype));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Addcountrycodetoorganization));
         
         string IMigrationMetadata.Id
         {
-            get { return "202411180721231_Add country code option type"; }
+            get { return "202411191141307_Add country code to organization"; }
         }
         
         string IMigrationMetadata.Source

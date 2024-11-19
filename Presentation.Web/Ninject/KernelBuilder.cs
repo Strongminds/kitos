@@ -561,6 +561,9 @@ namespace Presentation.Web.Ninject
 
             //Organization
             RegisterGlobalRegularOptionService<CountryCode, Organization>(kernel);
+            
+            //Organization unit
+            RegisterGlobalRoleOptionService<OrganizationUnitRole, OrganizationUnitRight>(kernel);
         }
 
         private void RegisterLocalItContractOptionTypes(IKernel kernel)
