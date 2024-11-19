@@ -575,6 +575,12 @@ namespace Core.DomainModel.Organization
             HandleConfigPropertyUpdate(showITSystems, config => config.ShowItSystemModule = showITSystems.Value);
         }
 
+        public void UpdateForeignCountryCode(CountryCode countryCode)
+        {
+            ForeignCountryCodeId = countryCode.Id;
+            ForeignCountryCode = countryCode;
+        }
+
         private void HandleConfigPropertyUpdate(Maybe<bool> maybeValue, Action<Config> updateAction)
         {
             this.Config ??= Config.Default(this.ObjectOwner);
