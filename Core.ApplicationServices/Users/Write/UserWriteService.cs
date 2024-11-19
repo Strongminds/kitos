@@ -273,7 +273,7 @@ namespace Core.ApplicationServices.Users.Write
                 .Bind(user => user.WithOptionalUpdate(parameters.DefaultUserStartPreference,
                     (userToUpdate, defaultStartPreference) => userToUpdate.DefaultUserStartPreference = defaultStartPreference))
                 .Bind(user => user.WithOptionalUpdate(parameters.Roles, (userToUpdate, roles) => UpdateRoles(organization, userToUpdate, roles)))
-                .Bind(user => user.WithOptionalUpdate(parameters.OrganizationUnitUuid, (userToUpdate, organizationUnitUuid) => UpdateOrganizationUnit(userToUpdate, organization.Uuid, organizationUnitUuid)));
+                .Bind(user => user.WithOptionalUpdate(parameters.DefaultOrganizationUnitUuid, (userToUpdate, organizationUnitUuid) => UpdateOrganizationUnit(userToUpdate, organization.Uuid, organizationUnitUuid)));
         }
 
         private Result<User, OperationError> UpdateStakeholderAccess(User user, bool stakeholderAccess)

@@ -236,7 +236,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var organization = new Organization {Id = A<int>(), Uuid = A<Guid>()};
             var defaultUnit = new OrganizationUnit {Id = A<int>(), Uuid = A<Guid>()};
             var updateParameters = A<UpdateUserParameters>();
-            updateParameters.OrganizationUnitUuid = defaultUnit.Uuid.AsChangedValue();
+            updateParameters.DefaultOrganizationUnitUuid = defaultUnit.Uuid.AsChangedValue();
             ExpectGetUserByUuid(user.Uuid, user);
             ExpectModifyPermissionsForUserReturns(user, true);
             ExpectGetOrganizationReturns(organization.Uuid, organization);

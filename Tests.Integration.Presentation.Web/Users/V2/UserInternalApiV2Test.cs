@@ -81,7 +81,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
 
             //Act
             var updateRequest = A<UpdateUserRequestDTO>();
-            updateRequest.OrganizationUnitUuid = unit.Uuid;
+            updateRequest.DefaultOrganizationUnitUuid = unit.Uuid;
             var response = await UsersV2Helper.UpdateUser(organization.Uuid, user.Uuid, updateRequest);
 
             //Assert

@@ -70,8 +70,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
                     ? request.Roles.Select(x => x.ToOrganizationRole()).AsChangedValue()
                     : OptionalValueChange<IEnumerable<OrganizationRole>>.None,
                 SendMailOnUpdate = request.SendMail,
-                OrganizationUnitUuid = rule.MustUpdate(x => x.OrganizationUnitUuid)
-                    ? request.OrganizationUnitUuid.AsChangedValue()
+                DefaultOrganizationUnitUuid = rule.MustUpdate(x => x.DefaultOrganizationUnitUuid)
+                    ? request.DefaultOrganizationUnitUuid.AsChangedValue()
                     : OptionalValueChange<Guid>.None
             };
             return parameters;

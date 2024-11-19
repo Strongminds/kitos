@@ -23,6 +23,6 @@ namespace Core.ApplicationServices.Model.Users.Write
         public OptionalValueChange<IEnumerable<OrganizationRole>> Roles { get; set; }
 
         public bool SendMailOnUpdate {get; set; }
-        public OptionalValueChange<Guid> OrganizationUnitUuid { get; set; }
+        public OptionalValueChange<Guid> DefaultOrganizationUnitUuid { get; set; }
     }
 }
