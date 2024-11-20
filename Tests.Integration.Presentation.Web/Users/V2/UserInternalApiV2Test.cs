@@ -15,7 +15,6 @@ using System;
 using Presentation.Web.Models.API.V2.Internal.Request.User;
 using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Tests.Integration.Presentation.Web.Tools.External;
-using Newtonsoft.Json.Linq;
 
 namespace Tests.Integration.Presentation.Web.Users.V2
 {
@@ -29,10 +28,13 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var userRequest = CreateCreateUserRequest();
 
             //Act
-            var response = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
+            var createResponse = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
 
             //Assert
-            AssertUserEqualsCreateRequest(userRequest, response);
+            AssertUserEqualsCreateRequest(userRequest, createResponse);
+
+            var getResponse = await UsersV2Helper.GetUser(organization.Uuid, createResponse.Uuid);
+            AssertUserEqualsCreateRequest(userRequest, getResponse);
         }
 
         [Fact]
@@ -86,7 +88,24 @@ namespace Tests.Integration.Presentation.Web.Users.V2
 
             //Assert
             AssertUserEqualsUpdateRequest(updateRequest, response, unit.Uuid);
+
+            var getResponse = await UsersV2Helper.GetUser(organization.Uuid, response.Uuid);
+            AssertUserEqualsUpdateRequest(updateRequest, getResponse, unit.Uuid);
         }
+
+        /*[Fact]
+        public async Task Can_Get_User()
+        {
+            //Arrange
+            var organization = await CreateOrganizationAsync();
+            var userRequest = CreateCreateUserRequest();
+            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
+
+            //Act
+
+            //Assert
+            AssertUserEqualsCreateRequest(userRequest, response);
+        }*/
 
         private void AssertUserEqualsCreateRequest(CreateUserRequestDTO request, UserResponseDTO response)
         {
