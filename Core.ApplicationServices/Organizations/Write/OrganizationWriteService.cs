@@ -147,6 +147,11 @@ public class OrganizationWriteService : IOrganizationWriteService {
     private Result<Organization, OperationError> PerformForeignCountryCodeUpdate(Organization organization,
         Guid? countryCodeUuid)
     {
+        if (countryCodeUuid == null)
+        {
+            organization.UpdateForeignCountryCode(null);
+            return organization;
+        }
         var countryCode = _countryCodeRepository.AsQueryable().FirstOrDefault(cc => cc.Uuid == countryCodeUuid);
         if (countryCode == null)
             return new OperationError($"No country code found with uuid {countryCodeUuid}", OperationFailure.NotFound);
