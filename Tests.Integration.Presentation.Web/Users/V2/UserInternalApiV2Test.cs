@@ -93,20 +93,6 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             AssertUserEqualsUpdateRequest(updateRequest, getResponse, unit.Uuid);
         }
 
-        /*[Fact]
-        public async Task Can_Get_User()
-        {
-            //Arrange
-            var organization = await CreateOrganizationAsync();
-            var userRequest = CreateCreateUserRequest();
-            var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
-
-            //Act
-
-            //Assert
-            AssertUserEqualsCreateRequest(userRequest, response);
-        }*/
-
         private void AssertUserEqualsCreateRequest(CreateUserRequestDTO request, UserResponseDTO response)
         {
             Assert.Equal(request.Email, response.Email);
