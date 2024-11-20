@@ -130,7 +130,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return organization;
         }
 
-        private BusinessType SetupCreateGlobalBusinessType(Boolean isEnabled = true)
+        private BusinessType SetupCreateGlobalBusinessType(bool isEnabled = true)
         {
             var globalOption = new BusinessType()
             {

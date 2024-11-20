@@ -64,6 +64,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseDto = await response.ReadResponseBodyAsAsync<LocalRoleOptionResponseDTO>();
+            Assert.True(responseDto.IsActive);
             AssertOrganizationUnitRoleOptionDto(globalOption, responseDto);
         }
 
@@ -137,7 +138,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.NotNull(actual);
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Uuid, actual.Uuid);
-            Assert.Equal(expected.IsLocallyAvailable, actual.IsActive);
             Assert.Equal(expected.IsObligatory, actual.IsObligatory);
             Assert.Equal(expected.HasWriteAccess, actual.WriteAccess);
             if (!skipDescription) Assert.Equal(expected.Description, actual.Description);
