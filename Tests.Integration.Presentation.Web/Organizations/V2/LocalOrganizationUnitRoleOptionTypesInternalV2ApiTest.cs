@@ -121,7 +121,8 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 Id = A<int>(),
                 Name = A<string>(),
                 IsObligatory = false,
-                HasWriteAccess = A<bool>()
+                HasWriteAccess = A<bool>(),
+                IsEnabled = true
             };
             DatabaseAccess.MutateEntitySet<OrganizationUnitRole>(repository =>
             {
