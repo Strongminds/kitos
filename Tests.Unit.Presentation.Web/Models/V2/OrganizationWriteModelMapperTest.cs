@@ -64,6 +64,17 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         }
 
         [Fact]
+        public void Can_Map_Null_Country_Code()
+        {
+            var dto = A<OrganizationUpdateRequestDTO>();
+            dto.ForeignCountryCodeUuid = null;
+
+            var result = _sut.ToOrganizationUpdateParameters(dto);
+            Assert.True(result.ForeignCountryCodeUuid.HasChange);
+            Assert.Null(result.ForeignCountryCodeUuid.NewValue);
+        }
+
+        [Fact]
         public void Can_Map_Organization_Create_Params()
         {
             ExpectHttpRequestPropertyNames<OrganizationCreateRequestDTO>();
