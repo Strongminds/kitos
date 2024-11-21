@@ -67,7 +67,17 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
 
     public OrganizationBaseParameters ToOrganizationUpdateParameters(OrganizationUpdateRequestDTO dto)
     {
-        return MapParameters(dto, false);
+        var rule = CreateChangeRule<OrganizationUpdateRequestDTO>(false);
+
+        return new()
+        {
+            Cvr = rule.MustUpdate(x => x.Cvr) ? (dto.Cvr.FromNullable()).AsChangedValue()
+                : OptionalValueChange<Maybe<string>>.None,
+            Name = rule.MustUpdate(x => x.Name) ? (dto.Name.FromNullable()).AsChangedValue()
+                : OptionalValueChange<Maybe<string>>.None,
+            TypeId = rule.MustUpdate(x => x.Type) ? ((int)dto.Type).AsChangedValue() : OptionalValueChange<int>.None,
+            ForeignCountryCodeUuid = dto.UpdateForeignCountryCode ? dto.ForeignCountryCodeUuid.AsChangedValue() : OptionalValueChange<Guid?>.None,
+        };
     }
 
     public OrganizationBaseParameters ToOrganizationCreateParameters(OrganizationCreateRequestDTO dto)
@@ -86,7 +96,7 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
             Name = rule.MustUpdate(x => x.Name) ? (dto.Name.FromNullable()).AsChangedValue()
                 : OptionalValueChange<Maybe<string>>.None,
             TypeId = rule.MustUpdate(x => x.Type) ? ((int)dto.Type).AsChangedValue() : OptionalValueChange<int>.None,
-            ForeignCountryCodeUuid =  dto.ForeignCountryCodeUuid.AsChangedValue(),
+            ForeignCountryCodeUuid = rule.MustUpdate(x => x.ForeignCountryCodeUuid) ? dto.ForeignCountryCodeUuid.AsChangedValue() : OptionalValueChange<Guid?>.None,
         };
     }
 
