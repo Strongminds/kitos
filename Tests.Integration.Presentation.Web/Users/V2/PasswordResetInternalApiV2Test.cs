@@ -19,7 +19,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         public async Task Can_Request_Password_Reset()
         {
             var user = await CreateUserAsync();
-            var request = new PasswordResetRequestV2DTO { Email = user.Email };
+            var request = new RequestPasswordResetRequestDTO { Email = user.Email };
             
             var result = await PasswordResetV2Helper.PostPasswordReset(request);
 
@@ -29,7 +29,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [Fact]
         public async Task Request_Password_Reset_With_Nonexistant_Mail_Returns_Success()
         {
-            var request = A<PasswordResetRequestV2DTO>();
+            var request = A<RequestPasswordResetRequestDTO>();
 
             var result = await PasswordResetV2Helper.PostPasswordReset(request);
             

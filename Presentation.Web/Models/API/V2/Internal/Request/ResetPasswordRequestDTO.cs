@@ -6,9 +6,13 @@ using System.Web;
 
 namespace Presentation.Web.Models.API.V2.Internal.Request
 {
-    public class PasswordResetRequestV2DTO
+    public class ResetPasswordRequestDTO
     {
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; }
+
+        [Required]
+        public string requestId { get; set; }
     }
 }

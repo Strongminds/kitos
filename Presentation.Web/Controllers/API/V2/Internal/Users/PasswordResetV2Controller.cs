@@ -19,6 +19,7 @@ using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Core.Abstractions.Extensions;
 using Presentation.Web.Controllers.API.V2.Common;
+using Presentation.Web.Models.API.V1;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
 {
@@ -39,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [Route("create")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.NoContent)]
-        public IHttpActionResult RequestPasswordReset([FromBody] PasswordResetRequestV2DTO request)
+        public IHttpActionResult RequestPasswordReset([FromBody] RequestPasswordResetRequestDTO request)
         {
             try
             {
@@ -64,6 +65,25 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 if (requestResult.IsNone) return NotFound();
                 var response = MapPasswordResetToResponseDTO(requestResult.Value);
                 return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return UnknownError();
+            }
+        }
+
+        [Route("{requestId}/reset")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.NoContent)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        public IHttpActionResult PostResetpassword(ResetPasswordDTO dto)
+        {
+            try
+            {
+                var resetRequest = _userService.GetPasswordReset(dto.RequestId);
+                _userService.ResetPassword(resetRequest, dto.NewPassword);
+                return NoContent();
             }
             catch (Exception e)
             {
