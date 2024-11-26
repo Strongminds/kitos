@@ -17,6 +17,7 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Rights;
 using Core.DomainServices.Generic;
 using Core.ApplicationServices.Model.Users;
+using Core.DomainServices;
 
 namespace Tests.Unit.Core.ApplicationServices.Users
 {
@@ -32,6 +33,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolverMock;
         private readonly Mock<IUserRightsService> _userRightsServiceMock;
         private readonly Mock<IOrganizationalUserContext> _organizationalUserContextMock;
+        private readonly Mock<IUserRepository> _userRepositoryMock;
 
         public UserWriteServiceTest()
         {
@@ -43,6 +45,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             _entityIdentityResolverMock = new Mock<IEntityIdentityResolver>();
             _userRightsServiceMock = new Mock<IUserRightsService>();
             _organizationalUserContextMock = new Mock<IOrganizationalUserContext>();
+            _userRepositoryMock = new Mock<IUserRepository>();
 
 
             _sut = new UserWriteService(_userServiceMock.Object, 
@@ -52,7 +55,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
                 _organizationServiceMock.Object,
                 _entityIdentityResolverMock.Object,
                 _userRightsServiceMock.Object,
-                _organizationalUserContextMock.Object);
+                _organizationalUserContextMock.Object,
+                _userRepositoryMock.Object);
         }
 
         [Fact]
