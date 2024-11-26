@@ -18,11 +18,11 @@ using Core.ApplicationServices.Users.Write;
 using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Core.Abstractions.Extensions;
+using Presentation.Web.Controllers.API.V2.Common;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
 {
     [AllowAnonymous]
-    [InternalApi]
     [AllowRightsHoldersAccess]
     [RoutePrefix("api/v2/internal/users/password-reset")]
     public class PasswordResetInternalV2Controller : InternalApiV2Controller
@@ -36,6 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             _userWriteService = userWriteService;
         }
 
+        [Route("create")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.NoContent)]
         public IHttpActionResult RequestPasswordReset([FromBody] PasswordResetRequestDTO request)
@@ -53,6 +54,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{requestId}")]
         [HttpGet]
+        [AllowAnonymous]
+        [AllowRightsHoldersAccess]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(PasswordResetResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult GetPasswordReset([FromUri] string requestId)

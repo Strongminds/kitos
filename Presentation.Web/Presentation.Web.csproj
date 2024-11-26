@@ -484,7 +484,7 @@
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\OrganizationRoleMappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserResponseModelMapper.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserWriteModelMapper.cs" />
-    <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\UsersInternalV2Controller.cs" />
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
