@@ -72,17 +72,17 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             }
         }
 
-        [Route("{requestId}/reset")]
+        [Route("{requestId}")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.NoContent)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
-        public IHttpActionResult PostResetpassword(ResetPasswordDTO dto)
+        public IHttpActionResult PostPasswordReset([FromUri] string requestId, [FromBody] ResetPasswordRequestDTO request)
         {
             try
             {
-                var resetRequest = _userService.GetPasswordReset(dto.RequestId);
-                _userService.ResetPassword(resetRequest, dto.NewPassword);
+                var resetRequest = _userService.GetPasswordReset(requestId);
+                _userService.ResetPassword(resetRequest, request.Password);
                 return NoContent();
             }
             catch (Exception e)

@@ -11,8 +11,5 @@ namespace Presentation.Web.Models.API.V2.Internal.Request
         [Required]
         [MinLength(6)]
         public string Password { get; set; }
-
-        [Required]
-        public string requestId { get; set; }
     }
 }
