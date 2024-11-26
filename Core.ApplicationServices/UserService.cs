@@ -165,7 +165,7 @@ namespace Core.ApplicationServices
             _userRepository.Save();
         }
 
-        public PasswordResetRequest IssuePasswordReset(User user, string subject, string content, bool newUI = false)
+        public PasswordResetRequest IssuePasswordReset(User user, string subject, string content, bool newUI)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
