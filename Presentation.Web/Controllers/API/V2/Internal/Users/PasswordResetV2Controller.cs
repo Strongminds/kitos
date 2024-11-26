@@ -54,8 +54,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{requestId}")]
         [HttpGet]
-        [AllowAnonymous]
-        [AllowRightsHoldersAccess]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(PasswordResetResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult GetPasswordReset([FromUri] string requestId)
