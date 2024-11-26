@@ -8,7 +8,7 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
     {
         private static readonly string routePrefix = "api/v2/internal/users/password-reset";
 
-        public static async Task<HttpResponseMessage> PostPasswordReset(PasswordResetRequestDTO request)
+        public static async Task<HttpResponseMessage> PostPasswordReset(PasswordResetRequestV2DTO request)
         {
             var url = TestEnvironment.CreateUrl($"{routePrefix}/create");
             return await HttpApi.PostAsync(url, request);

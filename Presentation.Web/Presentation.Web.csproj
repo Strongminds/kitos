@@ -525,7 +525,7 @@
     <Compile Include="Models\API\V2\Internal\Request\OrganizationUnit\ChangePaymentRegistrationV2RequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\OrganizationUnit\TransferOrganizationUnitRegistrationV2RequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\UIModuleCustomizationRequestDTO.cs" />
-    <Compile Include="Models\API\V2\Internal\Request\PasswordResetRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\PasswordResetRequestV2DTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\User\MutateRightRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\User\MutateUserRightsRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\PasswordResetResponseDTO.cs" />

@@ -39,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [Route("create")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.NoContent)]
-        public IHttpActionResult RequestPasswordReset([FromBody] PasswordResetRequestDTO request)
+        public IHttpActionResult RequestPasswordReset([FromBody] PasswordResetRequestV2DTO request)
         {
             try
             {
