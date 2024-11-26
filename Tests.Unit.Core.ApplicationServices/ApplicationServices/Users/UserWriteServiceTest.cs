@@ -499,7 +499,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
             _sut.RequestPasswordReset(user.Email);
 
-            _userServiceMock.Verify(x => x.IssuePasswordReset(user, null, null), Times.Once());
+            _userServiceMock.Verify(x => x.IssuePasswordReset(user, null, null, true), Times.Once());
         }
 
         [Fact]
@@ -527,7 +527,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
         private void VerifyNoPasswordResetsHasBeenIssued()
         {
-            _userServiceMock.Verify(x => x.IssuePasswordReset(It.IsAny<User>(), null, null), Times.Never());
+            _userServiceMock.Verify(x => x.IssuePasswordReset(It.IsAny<User>(), null, null, true), Times.Never());
         }
 
         private void ExpectGetUserByEmailReturns(string email, User user)

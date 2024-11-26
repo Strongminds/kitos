@@ -193,7 +193,7 @@ namespace Core.ApplicationServices.Users.Write
             {
                 return;
             }
-            _userService.IssuePasswordReset(user, null, null);
+            _userService.IssuePasswordReset(user, null, null, true);
         }
 
         private Result<User, OperationError> ChangeLocalAdminStatus<T>(Guid organizationUuid, Guid userUuid, Func<int, int, Result<T, OperationFailure>> changeLocalAdminStatus)
