@@ -4,6 +4,7 @@ using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
 using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Internal.Response;
 using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{organizationUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(object))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<GdprReportResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
@@ -42,14 +43,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                     .Match(Ok, FromOperationError);
         }
 
-        private IEnumerable<object> MapGdprDataToDTO(IEnumerable<GDPRExportReport> gdprData)
+        private IEnumerable<GdprReportResponseDTO> MapGdprDataToDTO(IEnumerable<GDPRExportReport> gdprData)
         {
             return gdprData.Select(MapGdprReportToDTO).ToList();
         }
 
-        private object MapGdprReportToDTO(GDPRExportReport gdprReport)
+        private GdprReportResponseDTO MapGdprReportToDTO(GDPRExportReport gdprReport)
         {
-            return gdprReport;
+            return new GdprReportResponseDTO { };
         }
     }
 }
