@@ -20,8 +20,8 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public bool LinkToDirectory { get; set; }
         public IEnumerable<string> SensitiveDataTypes { get; set; }
         public YesNoDontKnowChoice RiskAssessment { get; set; } 
-        public DateTime? RiskAssessmentDate { get; set; } //Do something here
-        public DateTime? PlannedRiskAssessmentDate { get; set; } //Do something here
+        public DateTime? RiskAssessmentDate { get; set; }
+        public DateTime? PlannedRiskAssessmentDate { get; set; }
         public RiskLevelChoice PreRiskAssessment { get; set; } 
         public bool PersonalDataCpr { get; set; }
         public bool PersonalDataSocialProblems { get; set; }
