@@ -1,4 +1,6 @@
 ﻿using Core.DomainModel.ItSystem.DataTypes;
+using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,18 +15,18 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public bool NoData { get; set; }
         public bool SensitiveData { get; set; }
         public bool LegalData { get; set; }
-        public DataOptions? BusinessCritical { get; set; } //Do something here
+        public YesNoDontKnowChoice BusinessCritical { get; set; }
         public bool DataProcessingAgreementConcluded { get; set; }
         public bool LinkToDirectory { get; set; }
         public IEnumerable<string> SensitiveDataTypes { get; set; }
-        public DataOptions? RiskAssessment { get; set; } //Do something here
+        public YesNoDontKnowChoice RiskAssessment { get; set; } 
         public DateTime? RiskAssessmentDate { get; set; } //Do something here
         public DateTime? PlannedRiskAssessmentDate { get; set; } //Do something here
-        public RiskLevel? PreRiskAssessment { get; set; } //Do something here
+        public RiskLevelChoice PreRiskAssessment { get; set; } 
         public bool PersonalDataCpr { get; set; }
         public bool PersonalDataSocialProblems { get; set; }
         public bool PersonalDataSocialOtherPrivateMatters { get; set; }
-        public DataOptions? DPIA { get; set; } //Do something here
-        public HostedAt? HostedAt { get; set; } //Do something here
+        public YesNoDontKnowChoice DPIA { get; set; }
+        public HostingChoice HostedAt { get; set; }
     }
 }
