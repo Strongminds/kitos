@@ -1,10 +1,12 @@
 ﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.SystemUsage.GDPR;
+using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Http;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
+
 
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
@@ -50,7 +55,28 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         private GdprReportResponseDTO MapGdprReportToDTO(GDPRExportReport gdprReport)
         {
-            return new GdprReportResponseDTO { };
+            return new GdprReportResponseDTO 
+            {
+                SystemUuid = new Guid(gdprReport.SystemUuid),
+                SystemName = gdprReport.SystemName,
+                NoData = gdprReport.NoData,
+                PersonalData = gdprReport.PersonalData,
+                SensitiveData = gdprReport.SensitiveData,
+                LegalData = gdprReport.LegalData,
+                BusinessCritical = gdprReport.BusinessCritical?.ToYesNoDontKnowChoice(),
+                DataProcessingAgreementConcluded = gdprReport.DataProcessingAgreementConcluded,
+                LinkToDirectory = gdprReport.LinkToDirectory,
+                SensitiveDataTypes = gdprReport.SensitiveDataTypes,
+                RiskAssessment = gdprReport.RiskAssessment?.ToYesNoDontKnowChoice(),
+                RiskAssessmentDate = gdprReport.RiskAssessmentDate,
+                PlannedRiskAssessmentDate = gdprReport.PlannedRiskAssessmentDate,
+                PreRiskAssessment = gdprReport.PreRiskAssessment?.ToRiskLevelChoice(),
+                PersonalDataCpr = gdprReport.PersonalDataCpr,
+                PersonalDataSocialProblems = gdprReport.PersonalDataSocialProblems,
+                PersonalDataSocialOtherPrivateMatters = gdprReport.PersonalDataSocialOtherPrivateMatters,
+                DPIA = gdprReport.DPIA?.ToYesNoDontKnowChoice(),
+                HostedAt = gdprReport.HostedAt?.ToHostingChoice(),
+            };
         }
     }
 }
