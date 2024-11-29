@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Tests.Integration.Presentation.Web.Tools.Internal
 {
-    public class GdprExtractV2Helper
+    public class GdprReportV2Helper
     {
         public static async Task<HttpResponseMessage> GetGdprReportAsync(Guid organizationUuid)
         {
