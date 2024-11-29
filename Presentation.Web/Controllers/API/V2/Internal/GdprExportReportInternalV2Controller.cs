@@ -1,8 +1,7 @@
-﻿using Core.Abstractions.Types;
-using Core.ApplicationServices.SystemUsage.GDPR;
+﻿using Core.ApplicationServices.SystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.GDPR;
-using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
+using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Swashbuckle.Swagger.Annotations;
@@ -11,21 +10,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
-using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
-     
+
     [RoutePrefix("api/v2/internal/gdpr-report")]
     public class GdprExportReportInternalV2Controller : InternalApiV2Controller
     {
         private readonly IGDPRExportService _gdprExportService;
-        private readonly IEntityIdentityResolver _entityIdentityResolver;
 
-        public GdprExportReportInternalV2Controller(IGDPRExportService gdprExportService, IEntityIdentityResolver entityIdentityResolver)
+        public GdprExportReportInternalV2Controller(IGDPRExportService gdprExportService)
         {
             _gdprExportService = gdprExportService;
-            _entityIdentityResolver = entityIdentityResolver;
         }
 
         [HttpGet]
@@ -37,8 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetGdprReport([FromUri][NonEmptyGuid] Guid organizationUuid)
         {
-            return _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid)
-                    .Match(_gdprExportService.GetGDPRData, () => new OperationError($"Cannot find organization with uuid {organizationUuid}", OperationFailure.NotFound))
+            return _gdprExportService.GetGDPRDataByUuid(organizationUuid)
                     .Select(MapGdprDataToDTO)
                     .Match(Ok, FromOperationError);
         }
@@ -50,7 +45,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         private GdprReportResponseDTO MapGdprReportToDTO(GDPRExportReport gdprReport)
         {
-            return new GdprReportResponseDTO 
+            return new GdprReportResponseDTO
             {
                 SystemUuid = new Guid(gdprReport.SystemUuid),
                 SystemName = gdprReport.SystemName,
