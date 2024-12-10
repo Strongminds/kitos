@@ -43,17 +43,17 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         public IHttpActionResult GetByOrganizationAndUser([FromUri][NonEmptyGuid] Guid organizationUuid, [FromUri][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
         {
             return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, relatedEntityType)
-                    .Select(MapUserNotificationsToDTOs)
+                    .Select(MapUserAlertsToDTO)
                     .Match(Ok, FromOperationError);
         }
 
-        private IEnumerable<object> MapUserNotificationsToDTOs(IEnumerable<UserNotification> userNotifcations)
+        private static IEnumerable<object> MapUserAlertsToDTO(IEnumerable<UserNotification> userAlerts)
         {
-            return userNotifcations.Select(MapUserNotificationToDTO).ToList();
+            return userAlerts.Select(MapUserAlertsToDTO).ToList();
         }
 
-        private object MapUserNotificationToDTO(UserNotification userNotification) {
-            return userNotification;
+        private static object MapUserAlertsToDTO(UserNotification userAlert) {
+            return userAlert;
         }
     }
 }
