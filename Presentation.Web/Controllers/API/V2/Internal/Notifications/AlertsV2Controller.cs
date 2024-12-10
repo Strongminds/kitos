@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         }
 
         [HttpGet]
-        [Route("organization/{organizationUuid}/user/{userUuid}/{relatedEntityType}/all")]
+        [Route("organization/{organizationUuid}/user/{userUuid}/{relatedEntityType}")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<AlertResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
