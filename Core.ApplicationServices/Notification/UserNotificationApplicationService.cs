@@ -65,12 +65,10 @@ namespace Core.ApplicationServices.Notification
             {
                 return new OperationError($"Could not find organization with uuid: {organizationUuid}", OperationFailure.NotFound);
             }
-            var userIdResult = _entityIdentityResolver.ResolveDbId<User>(userUuid);
-            if (userIdResult.IsNone)
-            {
-                return new OperationError($"Could not find user with uuid: {organizationUuid}", OperationFailure.NotFound);
-            }
-            return GetNotificationsForUser(orgIdResult.Value, userIdResult.Value, relatedEntityType);
+            return _entityIdentityResolver.ResolveDbId<User>(userUuid)
+                .Match(
+                    userId => GetNotificationsForUser(orgIdResult.Value, userId, relatedEntityType),
+                    () => new OperationError($"Could not find user with uuid: {organizationUuid}", OperationFailure.NotFound));
         }
 
         private bool IsActiveUser(int userId)
