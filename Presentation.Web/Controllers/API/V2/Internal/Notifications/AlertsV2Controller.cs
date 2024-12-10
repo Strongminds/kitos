@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using Presentation.Web.Models.API.V2.Internal.Response.Notifications;
+using Presentation.Web.Models.API.V2.Types.Notifications;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 {
@@ -37,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 
         [HttpGet]
         [Route("organization/{organizationUuid}/user/{userUuid}/{relatedEntityType}/all")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<object>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<AlertResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult GetByOrganizationAndUser([FromUri][NonEmptyGuid] Guid organizationUuid, [FromUri][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
@@ -47,13 +49,20 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
                     .Match(Ok, FromOperationError);
         }
 
-        private static IEnumerable<object> MapUserAlertsToDTO(IEnumerable<UserNotification> userAlerts)
+        private static IEnumerable<AlertResponseDTO> MapUserAlertsToDTO(IEnumerable<UserNotification> userAlerts)
         {
             return userAlerts.Select(MapUserAlertsToDTO).ToList();
         }
 
-        private static object MapUserAlertsToDTO(UserNotification userAlert) {
-            return userAlert;
+        private static AlertResponseDTO MapUserAlertsToDTO(UserNotification userAlert) {
+            return new AlertResponseDTO
+            {
+                AlertType = AlertType.Advis,
+                Created = userAlert.Created,
+                Message = userAlert.NotificationMessage,
+                Name = userAlert.Name,
+                Uuid = userAlert.Uuid
+            };
         }
     }
 }
