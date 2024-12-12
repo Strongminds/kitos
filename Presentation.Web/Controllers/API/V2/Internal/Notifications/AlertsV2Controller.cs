@@ -60,6 +60,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
                 Message = userAlert.NotificationMessage,
                 Name = userAlert.Name,
                 Uuid = userAlert.Uuid,
+                EntityUuid = userAlert.GetRelatedEntityUuid()
                 
             };
         }
