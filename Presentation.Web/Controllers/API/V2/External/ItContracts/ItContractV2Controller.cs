@@ -373,6 +373,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
                 .Match(_ => NoContent(), FromOperationError);
         }
 
+        [HttpGet]
+        [Route("applied-procurement-plans/{organizationUuid}")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<object>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        public IHttpActionResult GetAppliedProcurementPlans([NonEmptyGuid] [FromUri] Guid organizationUuid)
+        {
+            return 
+        }
+
+
         private CreatedNegotiatedContentResult<ItContractResponseDTO> MapCreatedResponse(ItContractResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
