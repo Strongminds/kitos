@@ -17,7 +17,7 @@ namespace Infrastructure.DataAccess.Migrations
 
         public override void Down()
         {
-            DropIndex("dbo.UserNotifications", new[] { "Uuid" });
+            DropIndex("dbo.UserNotifications",  "Uuid");
             DropColumn("dbo.UserNotifications", "Uuid");
         }
     }
