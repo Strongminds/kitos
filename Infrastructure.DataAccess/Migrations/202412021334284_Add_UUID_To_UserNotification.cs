@@ -9,7 +9,7 @@ namespace Infrastructure.DataAccess.Migrations
             Sql(@"
                 UPDATE dbo.UserNotifications 
                 SET Uuid = NEWID() 
-                WHERE f
+                WHERE Uuid IS NULL 
                    OR Uuid = '00000000-0000-0000-0000-000000000000'
             ");
             CreateIndex("dbo.UserNotifications", "Uuid", unique: true);
