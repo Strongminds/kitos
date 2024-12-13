@@ -23,6 +23,7 @@ using Presentation.Web.Models.API.V2.Response.Shared;
 using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
+using Presentation.Web.Models.API.V2.Internal.Response.ItContract;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts
 {
@@ -375,20 +376,27 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
 
         [HttpGet]
         [Route("applied-procurement-plans/{organizationUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<object>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<AppliedProcurementPlanResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         public IHttpActionResult GetAppliedProcurementPlans([NonEmptyGuid] [FromUri] Guid organizationUuid)
         {
-            return 
+            return _itContractService.GetAppliedProcurementPlansByUuid(organizationUuid)
+                .Select(plans => plans.Select(MapAppliedProcurementPlansToDTO))
+                .Match(Ok, FromOperationError);
         }
 
 
         private CreatedNegotiatedContentResult<ItContractResponseDTO> MapCreatedResponse(ItContractResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
+        }
+
+        private static AppliedProcurementPlanResponseDTO MapAppliedProcurementPlansToDTO((int, int) procurementTuple)
+        {
+            return new AppliedProcurementPlanResponseDTO(procurementTuple.Item1, procurementTuple.Item2);
         }
     }
 }
