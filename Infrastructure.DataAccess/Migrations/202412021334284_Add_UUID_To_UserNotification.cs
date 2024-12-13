@@ -5,14 +5,13 @@ namespace Infrastructure.DataAccess.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.UserNotifications", "Uuid", c => c.Guid(nullable: true));
+            AddColumn("dbo.UserNotifications", "Uuid", c => c.Guid(nullable: false));
             Sql(@"
                 UPDATE dbo.UserNotifications 
                 SET Uuid = NEWID() 
-                WHERE Uuid IS NULL 
+                WHERE f
                    OR Uuid = '00000000-0000-0000-0000-000000000000'
             ");
-            AlterColumn("dbo.UserNotifications", "Uuid", c => c.Guid(nullable: false));
             CreateIndex("dbo.UserNotifications", "Uuid", unique: true);
         }
 
