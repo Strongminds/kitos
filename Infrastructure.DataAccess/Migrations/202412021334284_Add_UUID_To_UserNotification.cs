@@ -1,4 +1,6 @@
 ﻿using System.Data.Entity.Migrations;
+using Infrastructure.DataAccess.Tools;
+
 namespace Infrastructure.DataAccess.Migrations
 {
     public partial class Add_UUID_To_UserNotification : DbMigration
@@ -6,12 +8,7 @@ namespace Infrastructure.DataAccess.Migrations
         public override void Up()
         {
             AddColumn("dbo.UserNotifications", "Uuid", c => c.Guid(nullable: false));
-            Sql(@"
-                UPDATE dbo.UserNotifications 
-                SET Uuid = NEWID() 
-                WHERE Uuid IS NULL 
-                   OR Uuid = '00000000-0000-0000-0000-000000000000'
-            ");
+            SqlResource(SqlMigrationScriptRepository.GetResourceName("Patch_Uuid_UserNotification.sql"));
             CreateIndex("dbo.UserNotifications", "Uuid", unique: true);
         }
 
