@@ -10,7 +10,6 @@ using Core.ApplicationServices.Model.Users;
 using Core.ApplicationServices.Model.Users.Write;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Rights;
-using Core.ApplicationServices.ScheduledJobs;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
@@ -30,7 +29,6 @@ namespace Core.ApplicationServices.Users.Write
         private readonly IUserRightsService _userRightsService;
         private readonly IOrganizationalUserContext _organizationalUserContext;
         private readonly IUserRepository _userRepository;
-        private readonly IHangfireApi _hangfire;
 
         public UserWriteService(IUserService userService,
             IOrganizationRightsService organizationRightsService,
@@ -40,8 +38,7 @@ namespace Core.ApplicationServices.Users.Write
             IEntityIdentityResolver entityIdentityResolver,
             IUserRightsService userRightsService,
             IOrganizationalUserContext organizationalUserContext,
-            IUserRepository userRepository,
-            IHangfireApi hangfire)
+            IUserRepository userRepository)
         {
             _userService = userService;
             _organizationRightsService = organizationRightsService;
@@ -52,9 +49,7 @@ namespace Core.ApplicationServices.Users.Write
             _userRightsService = userRightsService;
             _organizationalUserContext = organizationalUserContext;
             _userRepository = userRepository;
-            _hangfire = hangfire;
         }
-
 
         public Result<User, OperationError> Create(Guid organizationUuid, CreateUserParameters parameters)
         {
@@ -186,12 +181,7 @@ namespace Core.ApplicationServices.Users.Write
             return ChangeLocalAdminStatus(organizationUuid, userUuid, (orgId, userId) => _organizationRightsService.RemoveRole(orgId, userId, OrganizationRole.LocalAdmin)).MatchFailure();
         }
 
-        public void SchedulePasswordResetRequest(string email)
-        {
-            _hangfire.Schedule(() => RequestPasswordReset(email));
-        }
-
-        private void RequestPasswordReset(string email)
+        public void RequestPasswordReset(string email)
         {
             var userResult = _userRepository.GetByEmail(email).FromNullable();
             if (userResult.IsNone)

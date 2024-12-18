@@ -21,11 +21,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
     {
         private readonly IUserService _userService;
         private readonly IUserWriteService _userWriteService;
+        private readonly IHangfireApi _hangfire;
 
-        public PasswordResetInternalV2Controller(IUserService userService, IUserWriteService userWriteService)
+        public PasswordResetInternalV2Controller(IUserService userService, IUserWriteService userWriteService, IHangfireApi hangfire)
         {
             _userService = userService;
             _userWriteService = userWriteService;
+            _hangfire = hangfire;
         }
 
         [Route("create")]
@@ -33,7 +35,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.NoContent)]
         public IHttpActionResult RequestPasswordReset([FromBody] RequestPasswordResetRequestDTO request)
         {
-            _userWriteService.SchedulePasswordResetRequest(request.Email);
+            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(request.Email));
             return NoContent();
         }
 

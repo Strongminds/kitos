@@ -6,9 +6,6 @@ using Core.ApplicationServices;
 using Core.ApplicationServices.ScheduledJobs;
 using Core.ApplicationServices.Users.Write;
 using Core.DomainModel;
-using Core.DomainServices;
-using Infrastructure.Services.Cryptography;
-using Ninject.Activation;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V1;
 using Swashbuckle.Swagger.Annotations;
@@ -22,17 +19,19 @@ namespace Presentation.Web.Controllers.API.V1
     {
         private readonly IUserService _userService;
         private readonly IUserWriteService _userWriteService;
+        private readonly IHangfireApi _hangfire;
 
-        public PasswordResetRequestController(IUserService userService, IUserWriteService userWriteService)
+        public PasswordResetRequestController(IUserService userService, IUserWriteService userWriteService, IHangfireApi hangfire)
         {
             _userService = userService;
             _userWriteService = userWriteService;
+            _hangfire = hangfire;
         }
 
         // POST api/PasswordResetRequest
         public HttpResponseMessage Post([FromBody] UserDTO input)
         {
-            _userWriteService.SchedulePasswordResetRequest(input.Email);
+            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(input.Email));
             return NoContent();
         }
 

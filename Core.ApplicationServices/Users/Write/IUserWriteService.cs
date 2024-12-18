@@ -29,6 +29,6 @@ namespace Core.ApplicationServices.Users.Write
 
         Maybe<OperationError> RemoveLocalAdmin(Guid organizationUuid, Guid userUuid);
 
-        void SchedulePasswordResetRequest(string email);
+        void RequestPasswordReset(string email);
     }
 }
