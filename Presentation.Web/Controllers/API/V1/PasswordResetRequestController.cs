@@ -22,19 +22,17 @@ namespace Presentation.Web.Controllers.API.V1
     {
         private readonly IUserService _userService;
         private readonly IUserWriteService _userWriteService;
-        private readonly IHangfireApi _hangfire;
 
-        public PasswordResetRequestController(IUserService userService, IHangfireApi hangfire, IUserWriteService userWriteService)
+        public PasswordResetRequestController(IUserService userService, IUserWriteService userWriteService)
         {
             _userService = userService;
-            _hangfire = hangfire;
             _userWriteService = userWriteService;
         }
 
         // POST api/PasswordResetRequest
         public HttpResponseMessage Post([FromBody] UserDTO input)
         {
-            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(input.Email));
+            _userWriteService.SchedulePasswordResetRequest(input.Email);
             return NoContent();
         }
 
