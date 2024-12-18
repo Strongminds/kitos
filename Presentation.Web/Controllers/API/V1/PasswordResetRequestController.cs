@@ -31,7 +31,7 @@ namespace Presentation.Web.Controllers.API.V1
         // POST api/PasswordResetRequest
         public HttpResponseMessage Post([FromBody] UserDTO input)
         {
-            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(input.Email));
+            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(input.Email, false));
             return NoContent();
         }
 

@@ -35,7 +35,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.NoContent)]
         public IHttpActionResult RequestPasswordReset([FromBody] RequestPasswordResetRequestDTO request)
         {
-            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(request.Email));
+            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(request.Email, true));
             return NoContent();
         }
 
