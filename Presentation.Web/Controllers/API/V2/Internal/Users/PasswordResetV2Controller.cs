@@ -10,6 +10,7 @@ using Core.ApplicationServices.Users.Write;
 using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Core.Abstractions.Extensions;
+using Core.ApplicationServices.ScheduledJobs;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
 {
@@ -20,11 +21,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
     {
         private readonly IUserService _userService;
         private readonly IUserWriteService _userWriteService;
+        private readonly IHangfireApi _hangfire;
 
-        public PasswordResetInternalV2Controller(IUserService userService, IUserWriteService userWriteService)
+        public PasswordResetInternalV2Controller(IUserService userService, IUserWriteService userWriteService, IHangfireApi hangfire)
         {
             _userService = userService;
             _userWriteService = userWriteService;
+            _hangfire = hangfire;
         }
 
         [Route("create")]
@@ -32,15 +35,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.NoContent)]
         public IHttpActionResult RequestPasswordReset([FromBody] RequestPasswordResetRequestDTO request)
         {
-            try
-            {
-                _userWriteService.RequestPasswordReset(request.Email);
-                return NoContent();
-            }
-            catch (Exception e)
-            {
-                return UnknownError();
-            }
+            _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(request.Email));
+            return NoContent();
         }
 
         [Route("{requestId}")]
