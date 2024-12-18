@@ -499,7 +499,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
             _sut.RequestPasswordReset(user.Email, false);
 
-            _userServiceMock.Verify(x => x.IssuePasswordReset(user, null, null, true), Times.Once());
+            _userServiceMock.Verify(x => x.IssuePasswordReset(user, null, null, false), Times.Once());
         }
 
         [Fact]
