@@ -10,6 +10,7 @@ using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainServices;
 using Core.DomainServices.Extensions;
+using Infrastructure.Services.DataAccess;
 
 namespace Core.ApplicationServices.GlobalOptions
 {
@@ -19,12 +20,14 @@ namespace Core.ApplicationServices.GlobalOptions
         protected readonly IGenericRepository<TOptionType> _globalOptionsRepository;
         protected readonly IOrganizationalUserContext _activeUserContext;
         protected readonly IDomainEvents _domainEvents;
+        private readonly ITransactionManager _transactionManager;
 
-        protected GlobalOptionsServiceBase(IGenericRepository<TOptionType> globalOptionsRepository, IOrganizationalUserContext activeUserContext, IDomainEvents domainEvents)
+        protected GlobalOptionsServiceBase(IGenericRepository<TOptionType> globalOptionsRepository, IOrganizationalUserContext activeUserContext, IDomainEvents domainEvents, ITransactionManager transactionManager)
         {
             _globalOptionsRepository = globalOptionsRepository;
             _activeUserContext = activeUserContext;
             _domainEvents = domainEvents;
+            _transactionManager = transactionManager;
         }
 
         protected Result<IEnumerable<TOptionType>, OperationError> Get()
@@ -101,6 +104,7 @@ namespace Core.ApplicationServices.GlobalOptions
         protected Result<TOptionType, OperationError> PerformGlobalOptionPriorityUpdates(TOptionType updatedOption,
             GlobalRegularOptionUpdateParameters updateParameters)
         {
+            var transaction = _transactionManager.Begin();
             var newPriority = updateParameters.Priority.NewValue.Value;
             var existingPriority = updatedOption.Priority;
             if (ShouldNotUpdatePriority(updateParameters) || newPriority == existingPriority)
@@ -125,6 +129,7 @@ namespace Core.ApplicationServices.GlobalOptions
                 }
             }
             updatedOption.SetPriority(newPriority);
+            transaction.Commit();
             return Patch(updatedOption);
         }
 
