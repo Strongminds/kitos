@@ -101,33 +101,36 @@ namespace Core.ApplicationServices.GlobalOptions
         protected Result<TOptionType, OperationError> PerformGlobalOptionPriorityUpdates(TOptionType updatedOption,
             GlobalRegularOptionUpdateParameters updateParameters)
         {
-            if (ShouldNotUpdatePriority(updateParameters))
-                return Patch(updatedOption);
-
             var newPriority = updateParameters.Priority.NewValue.Value;
-            return GetOptionToMove(newPriority).Match(optionToMove =>
-            {
-                var existingPriority = updatedOption.Priority;
-                if (newPriority > existingPriority)
-                {
-                    updatedOption.IncreasePriority();
-                    optionToMove.DecreasePriority();
-                }
-                else
-                {
-                    updatedOption.DecreasePriority();
-                    optionToMove.IncreasePriority();
-                }
-
-                Patch(optionToMove);
+            var existingPriority = updatedOption.Priority;
+            if (ShouldNotUpdatePriority(updateParameters) || newPriority == existingPriority)
                 return Patch(updatedOption);
-            },
-                () => Patch(updatedOption));
+
+            if (newPriority > existingPriority)
+            {
+                var optionsThatNeedLowerPriority = GetOptionsWithPriorityInInterval(existingPriority + 1, newPriority);
+                foreach (var optionEntity in optionsThatNeedLowerPriority)
+                {
+                    optionEntity.DecreasePriority();
+                    Patch(optionEntity);
+                }
+            }
+            else
+            {
+                var optionsThatNeedHigherPriority = GetOptionsWithPriorityInInterval(newPriority, existingPriority - 1);
+                foreach (var optionEntity in optionsThatNeedHigherPriority)
+                {
+                    optionEntity.IncreasePriority();
+                    Patch(optionEntity);
+                }
+            }
+            updatedOption.SetPriority(newPriority);
+            return Patch(updatedOption);
         }
 
-        private Maybe<TOptionType> GetOptionToMove(int newPriority)
+        private IQueryable<TOptionType> GetOptionsWithPriorityInInterval(int from, int to)
         {
-            return _globalOptionsRepository.AsQueryable().FirstOrDefault(o => o.Priority == newPriority).FromNullable();
+            return _globalOptionsRepository.AsQueryable().Where(p => from <=  p.Priority && p.Priority <= to);
         }
 
         private bool ShouldNotUpdatePriority(GlobalRegularOptionUpdateParameters updateParameters)
