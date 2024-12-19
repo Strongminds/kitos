@@ -133,7 +133,7 @@ namespace Core.ApplicationServices.GlobalOptions
             return _globalOptionsRepository.AsQueryable().Where(p => from <=  p.Priority && p.Priority <= to);
         }
 
-        private bool ShouldNotUpdatePriority(GlobalRegularOptionUpdateParameters updateParameters)
+        private static bool ShouldNotUpdatePriority(GlobalRegularOptionUpdateParameters updateParameters)
         {
             return !updateParameters.Priority.HasChange 
                    || !updateParameters.Priority.NewValue.HasValue
