@@ -34,7 +34,7 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
-        public void Can_Add_Local_TaskRef_That_Is_Also_On_System()
+        public void Cannot_Add_Local_TaskRef_That_Is_Already_On_System()
         {
             var someKle = new TaskRef(){ Uuid = A<Guid>()};
             var kleAdditions = new List<TaskRef>() { someKle };
@@ -45,11 +45,9 @@ namespace Tests.Unit.Core.Model
 
             var result = _sut.UpdateKLEDeviations(kleAdditions, new List<TaskRef>());
 
-            Assert.False(result.HasValue);
-            Assert.Single(_sut.ItSystem.TaskRefs);
-            Assert.Single(_sut.TaskRefs);
-            Assert.Equal(someKle.Uuid, _sut.ItSystem.TaskRefs.FirstOrDefault()!.Uuid);
-            Assert.Equal(someKle.Uuid, _sut.TaskRefs.FirstOrDefault()!.Uuid);
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.BadInput, result.Value.FailureType);
+            Assert.Empty(_sut.TaskRefs);
         }
 
         [Fact]

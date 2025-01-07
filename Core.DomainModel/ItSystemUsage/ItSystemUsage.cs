@@ -761,6 +761,11 @@ namespace Core.DomainModel.ItSystemUsage
                 return new OperationError("KLE cannot be both added and removed", OperationFailure.BadInput);
 
             var systemTaskRefIds = ItSystem.TaskRefs.Select(x => x.Uuid).ToHashSet();
+            
+            var newOptInTaskRefs = optInTaskRefs.Where(taskRef => TaskRefs.All(tr => tr.Uuid != taskRef.Uuid));
+
+            if (newOptInTaskRefs.Any(taskRef => systemTaskRefIds.Contains(taskRef.Uuid)))
+                return new OperationError("Cannot Add KLE which is already present in the system context", OperationFailure.BadInput);
 
             if (optOutIds.Any(id => systemTaskRefIds.Contains(id) == false))
                 return new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput);
