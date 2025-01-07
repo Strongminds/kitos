@@ -762,12 +762,10 @@ namespace Core.DomainModel.ItSystemUsage
 
             var systemTaskRefIds = ItSystem.TaskRefs.Select(x => x.Uuid).ToHashSet();
 
-            var notIncludedGlobally = optInTaskRefs.Where(local => ItSystem.TaskRefs.All(global => global.Uuid != local.Uuid));
-
             if (optOutIds.Any(id => systemTaskRefIds.Contains(id) == false))
                 return new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput);
 
-            notIncludedGlobally.MirrorTo(TaskRefs, x => x.Uuid);
+            optInTaskRefs.MirrorTo(TaskRefs, x => x.Uuid);
             optOutTaskRefs.MirrorTo(TaskRefsOptOut, x => x.Uuid);
 
             return Maybe<OperationError>.None;

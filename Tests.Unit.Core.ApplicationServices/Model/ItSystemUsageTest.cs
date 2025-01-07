@@ -34,7 +34,7 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
-        public void Adding_KLE_That_Exists_On_System_Gets_Ignored()
+        public void Can_Add_Local_TaskRef_That_Is_Also_On_System()
         {
             var someKle = new TaskRef(){ Uuid = A<Guid>()};
             var kleAdditions = new List<TaskRef>() { someKle };
@@ -47,8 +47,9 @@ namespace Tests.Unit.Core.Model
 
             Assert.False(result.HasValue);
             Assert.Single(_sut.ItSystem.TaskRefs);
-            Assert.Empty(_sut.TaskRefs);
+            Assert.Single(_sut.TaskRefs);
             Assert.Equal(someKle.Uuid, _sut.ItSystem.TaskRefs.FirstOrDefault()!.Uuid);
+            Assert.Equal(someKle.Uuid, _sut.TaskRefs.FirstOrDefault()!.Uuid);
         }
 
         [Fact]
