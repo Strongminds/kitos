@@ -745,16 +745,16 @@ namespace Core.DomainModel.ItSystemUsage
             if (removals == null)
                 throw new ArgumentNullException(nameof(removals));
 
-            var optIn = additions.ToList();
-            var optOut = removals.ToList();
+            var optInTaskRefs = additions.ToList();
+            var optOutTaskRefs = removals.ToList();
 
-            var optInIds = optIn.Select(x => x.Uuid).Distinct().ToList();
-            var optOutIds = optOut.Select(x => x.Uuid).Distinct().ToList();
+            var optInIds = optInTaskRefs.Select(x => x.Uuid).Distinct().ToList();
+            var optOutIds = optOutTaskRefs.Select(x => x.Uuid).Distinct().ToList();
 
-            if (optInIds.Count != optIn.Count)
+            if (optInIds.Count != optInTaskRefs.Count)
                 return new OperationError("Duplicates in KLE Additions are not allowed", OperationFailure.BadInput);
 
-            if (optOutIds.Count != optOut.Count)
+            if (optOutIds.Count != optOutTaskRefs.Count)
                 return new OperationError("Duplicates in KLE Removals are not allowed", OperationFailure.BadInput);
 
             if (optOutIds.Intersect(optInIds).Any())
@@ -762,14 +762,13 @@ namespace Core.DomainModel.ItSystemUsage
 
             var systemTaskRefIds = ItSystem.TaskRefs.Select(x => x.Uuid).ToHashSet();
 
-            if (optInIds.Any(systemTaskRefIds.Contains))
-                return new OperationError("Cannot ADD KLE which is already present in the system context", OperationFailure.BadInput);
+            var notIncludedGlobally = optInTaskRefs.Where(local => ItSystem.TaskRefs.All(global => global.Uuid != local.Uuid));
 
             if (optOutIds.Any(id => systemTaskRefIds.Contains(id) == false))
                 return new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput);
 
-            optIn.MirrorTo(TaskRefs, x => x.Uuid);
-            optOut.MirrorTo(TaskRefsOptOut, x => x.Uuid);
+            notIncludedGlobally.MirrorTo(TaskRefs, x => x.Uuid);
+            optOutTaskRefs.MirrorTo(TaskRefsOptOut, x => x.Uuid);
 
             return Maybe<OperationError>.None;
         }

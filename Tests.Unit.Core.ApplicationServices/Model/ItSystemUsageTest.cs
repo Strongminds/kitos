@@ -34,6 +34,24 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
+        public void Adding_KLE_That_Exists_On_System_Gets_Ignored()
+        {
+            var someKle = new TaskRef(){ Uuid = A<Guid>()};
+            var kleAdditions = new List<TaskRef>() { someKle };
+            _sut.ItSystem = new ItSystem()
+            {
+                TaskRefs = kleAdditions
+            };
+
+            var result = _sut.UpdateKLEDeviations(kleAdditions, new List<TaskRef>());
+
+            Assert.False(result.HasValue);
+            Assert.Single(_sut.ItSystem.TaskRefs);
+            Assert.Empty(_sut.TaskRefs);
+            Assert.Equal(someKle.Uuid, _sut.ItSystem.TaskRefs.FirstOrDefault()!.Uuid);
+        }
+
+        [Fact]
         public void AddUsageRelationTo_Returns_Error_If_Destination_Equals_Self()
         {
             //Arrange
