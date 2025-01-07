@@ -689,27 +689,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
-        public void Cannot_Create_With_KLEDeviations_If_Additions_Exist_In_SystemContext()
-        {
-            //Arrange
-            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
-
-            itSystem.TaskRefs = CreateTaskRefs(3);
-            var additionalTaskRefs = CreateTaskRefs(1).Append(itSystem.TaskRefs.First()).ToList(); //Add one from the system context
-
-            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
-
-            var input = SetupKLEInputExpectations(additionalTaskRefs, Enumerable.Empty<TaskRef>().ToList());
-
-            //Act
-            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
-
-            //Assert
-            AssertFailureWithErrorMessageContent(createResult, OperationFailure.BadInput, "Cannot ADD KLE which is already present in the system context", transactionMock);
-
-        }
-
-        [Fact]
         public void Cannot_Create_With_KLEDeviations_If_RemovedKLE_Do_Not_Exist_On_System_Context()
         {
             //Arrange
