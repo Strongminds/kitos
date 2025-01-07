@@ -748,8 +748,21 @@ namespace Core.DomainModel.ItSystemUsage
             var optInTaskRefs = additions.ToList();
             var optOutTaskRefs = removals.ToList();
 
-            var optInIds = optInTaskRefs.Select(x => x.Uuid).Distinct().ToList();
-            var optOutIds = optOutTaskRefs.Select(x => x.Uuid).Distinct().ToList();
+            return WithValidKLEChanges(optInTaskRefs, optOutTaskRefs)
+                .Match(e => e,
+                    () =>
+                    {
+                        optInTaskRefs.MirrorTo(TaskRefs, x => x.Uuid);
+                        optOutTaskRefs.MirrorTo(TaskRefsOptOut, x => x.Uuid);
+
+                        return Maybe<OperationError>.None;
+                    });
+        }
+
+        private Maybe<OperationError> WithValidKLEChanges(List<TaskRef> optInTaskRefs, List<TaskRef> optOutTaskRefs)
+        {
+            var optInIds = GetUniqueTaskRefUuids(optInTaskRefs);
+            var optOutIds = GetUniqueTaskRefUuids(optOutTaskRefs);
 
             if (optInIds.Count != optInTaskRefs.Count)
                 return new OperationError("Duplicates in KLE Additions are not allowed", OperationFailure.BadInput);
@@ -760,20 +773,26 @@ namespace Core.DomainModel.ItSystemUsage
             if (optOutIds.Intersect(optInIds).Any())
                 return new OperationError("KLE cannot be both added and removed", OperationFailure.BadInput);
 
-            var systemTaskRefIds = ItSystem.TaskRefs.Select(x => x.Uuid).ToHashSet();
-            
-            var newOptInTaskRefs = optInTaskRefs.Where(taskRef => TaskRefs.All(tr => tr.Uuid != taskRef.Uuid));
+            var systemTaskRefIds = GetUniqueTaskRefUuids(ItSystem.TaskRefs);
+
+            var newOptInTaskRefs = GetNewTaskRefs(optInTaskRefs);
 
             if (newOptInTaskRefs.Any(taskRef => systemTaskRefIds.Contains(taskRef.Uuid)))
                 return new OperationError("Cannot Add KLE which is already present in the system context", OperationFailure.BadInput);
 
-            if (optOutIds.Any(id => systemTaskRefIds.Contains(id) == false))
-                return new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput);
+            return optOutIds.Any(id => systemTaskRefIds.Contains(id) == false) 
+                ? new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput) 
+                : Maybe<OperationError>.None;
+        }
 
-            optInTaskRefs.MirrorTo(TaskRefs, x => x.Uuid);
-            optOutTaskRefs.MirrorTo(TaskRefsOptOut, x => x.Uuid);
+        private HashSet<Guid> GetUniqueTaskRefUuids(IEnumerable<TaskRef> taskRefs)
+        {
+            return taskRefs.Select(x => x.Uuid).ToHashSet();
+        }
 
-            return Maybe<OperationError>.None;
+        private IEnumerable<TaskRef> GetNewTaskRefs(List<TaskRef> taskRefs)
+        {
+            return taskRefs.Where(taskRef => TaskRefs.All(tr => tr.Uuid != taskRef.Uuid));
         }
 
         public override ItSystemRight CreateNewRight(ItSystemRole role, User user)
