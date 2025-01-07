@@ -17,7 +17,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
             _gridLocalItContractRolesService = gridLocalItContractRolesService;
         }
 
-
         [HttpGet]
         [Route("{organizationUuid}")]
         public IHttpActionResult GetByOrganizationUuid(Guid organizationUuid)
