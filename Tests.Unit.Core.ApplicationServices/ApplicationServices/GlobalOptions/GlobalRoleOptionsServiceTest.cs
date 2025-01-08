@@ -10,6 +10,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Infrastructure.Services.DataAccess;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -26,13 +27,15 @@ namespace Tests.Unit.Core.ApplicationServices.GlobalOptions
         private readonly Mock<IGenericRepository<TestRoleOptionEntity>> _globalOptionsRepository;
         private readonly Mock<IOrganizationalUserContext> _activeUserContext;
         private readonly Mock<IDomainEvents> _domainEvents;
+        private readonly Mock<ITransactionManager> _transactionManager;
 
         public GlobalRoleOptionsServiceTest()
         {
             _globalOptionsRepository = new Mock<IGenericRepository<TestRoleOptionEntity>>();
             _activeUserContext = new Mock<IOrganizationalUserContext>();
             _domainEvents = new Mock<IDomainEvents>();
-            _sut = new GlobalRoleOptionsService<TestRoleOptionEntity, TestRoleRefType>(_globalOptionsRepository.Object, _activeUserContext.Object, _domainEvents.Object);
+            _transactionManager = new Mock<ITransactionManager>();
+            _sut = new GlobalRoleOptionsService<TestRoleOptionEntity, TestRoleRefType>(_globalOptionsRepository.Object, _activeUserContext.Object, _domainEvents.Object, _transactionManager.Object);
         }
 
         [Fact]
