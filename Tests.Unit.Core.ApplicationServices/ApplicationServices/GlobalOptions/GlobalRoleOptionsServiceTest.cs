@@ -91,6 +91,7 @@ namespace Tests.Unit.Core.ApplicationServices.GlobalOptions
         public void Can_Patch_Option()
         {
             SetupIsGlobalAdmin();
+            ExpectTransactionBegins();
             var optionUuid = A<Guid>();
             SetupRepositoryReturnsOneOption(optionUuid);
             var parameters = A<GlobalRoleOptionUpdateParameters>();
@@ -110,6 +111,7 @@ namespace Tests.Unit.Core.ApplicationServices.GlobalOptions
         public void Patch_Option_Does_Nothing_If_No_Value_Changes()
         {
             SetupIsGlobalAdmin();
+            ExpectTransactionBegins();
             var optionUuid = A<Guid>();
             var existing = SetupRepositoryReturnsOneOption(optionUuid).FirstOrDefault();
             Assert.NotNull(existing);
@@ -182,6 +184,13 @@ namespace Tests.Unit.Core.ApplicationServices.GlobalOptions
         private void SetupIsNotGlobalAdmin()
         {
             _activeUserContext.Setup(_ => _.IsGlobalAdmin()).Returns(false);
+        }
+
+        private Mock<IDatabaseTransaction> ExpectTransactionBegins()
+        {
+            var transactionMock = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transactionMock.Object);
+            return transactionMock;
         }
     }
 }

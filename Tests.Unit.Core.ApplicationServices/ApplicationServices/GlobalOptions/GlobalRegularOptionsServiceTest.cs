@@ -98,6 +98,7 @@ namespace Tests.Unit.Core.ApplicationServices.GlobalOptions
         public void Can_Patch_Option()
         {
             SetupIsGlobalAdmin();
+            ExpectTransactionBegins();
             var optionUuid = A<Guid>();
             var expected = new List<TestOptionEntity>
             {
@@ -227,5 +228,13 @@ namespace Tests.Unit.Core.ApplicationServices.GlobalOptions
         {
             _activeUserContext.Setup(_ => _.IsGlobalAdmin()).Returns(false);
         }
+
+        private Mock<IDatabaseTransaction> ExpectTransactionBegins()
+        {
+            var transactionMock = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transactionMock.Object);
+            return transactionMock;
+        }
+
     }
 }
