@@ -139,7 +139,6 @@ using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
-using Ninject.Activation;
 
 namespace Presentation.Web.Ninject
 {
