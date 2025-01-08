@@ -182,7 +182,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             //Act
             var result = _sut.SendNotification(orgUuid, userUuid);
 
-            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId), Times.Once);
+            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId, false), Times.Once);
             Assert.True(result.IsNone);
         }
 
@@ -584,7 +584,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
         private void ExpectAddUserReturns(User user, bool sendMailOnCreation, int orgId)
         {
-            _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId)).Returns(user);
+            _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId, false)).Returns(user);
         }
         
         private void ExpectAddRoleReturns(OrganizationRole role, int organizationId, int userId, Result<OrganizationRight, OperationFailure> result)

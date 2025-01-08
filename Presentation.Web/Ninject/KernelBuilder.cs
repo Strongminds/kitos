@@ -139,6 +139,7 @@ using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
+using Ninject.Activation;
 
 namespace Presentation.Web.Ninject
 {
@@ -377,7 +378,7 @@ namespace Presentation.Web.Ninject
 
             //Public messages
             kernel.Bind<IPublicMessagesWriteModelMapper>().To<PublicMessagesWriteModelMapper>().InCommandScope(Mode);
-            
+
             //Notifications
             kernel.Bind<INotificationWriteModelMapper>().To<NotificationWriteModelMapper>().InCommandScope(Mode);
             kernel.Bind<INotificationResponseMapper>().To<NotificationResponseMapper>().InCommandScope(Mode);
@@ -560,7 +561,7 @@ namespace Presentation.Web.Ninject
 
             //Organization
             RegisterGlobalRegularOptionService<CountryCode, Organization>(kernel);
-            
+
             //Organization unit
             RegisterGlobalRoleOptionService<OrganizationUnitRole, OrganizationUnitRight>(kernel);
         }
@@ -631,7 +632,7 @@ namespace Presentation.Web.Ninject
         {
             //IT-interface
             RegisterOptionsService<ItInterface, InterfaceType, LocalInterfaceType>(kernel);
-            
+
             RegisterOptionsService<DataRow, DataType, LocalDataType>(kernel);
 
             //Data processing registrations
