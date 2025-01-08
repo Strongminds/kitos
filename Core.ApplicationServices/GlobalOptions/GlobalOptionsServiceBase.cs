@@ -104,11 +104,12 @@ namespace Core.ApplicationServices.GlobalOptions
             GlobalRegularOptionUpdateParameters updateParameters)
         {
             var transaction = _transactionManager.Begin();
+            if (ShouldNotUpdatePriority(updateParameters))
+            {
+                return Patch(updatedOption);
+            }
             var newPriority = updateParameters.Priority.NewValue.Value;
             var existingPriority = updatedOption.Priority;
-            if (ShouldNotUpdatePriority(updateParameters) || newPriority == existingPriority)
-                return Patch(updatedOption);
-
             if (newPriority > existingPriority)
             {
                 var optionsThatNeedLowerPriority = GetOptionsWithPriorityInInterval(existingPriority + 1, newPriority);
@@ -118,8 +119,9 @@ namespace Core.ApplicationServices.GlobalOptions
                     Patch(optionEntity);
                 }
             }
-            else
+            else if (newPriority < existingPriority)
             {
+
                 var optionsThatNeedHigherPriority = GetOptionsWithPriorityInInterval(newPriority, existingPriority - 1);
                 foreach (var optionEntity in optionsThatNeedHigherPriority)
                 {
@@ -134,12 +136,12 @@ namespace Core.ApplicationServices.GlobalOptions
 
         private IQueryable<TOptionType> GetOptionsWithPriorityInInterval(int from, int to)
         {
-            return _globalOptionsRepository.AsQueryable().Where(p => from <=  p.Priority && p.Priority <= to);
+            return _globalOptionsRepository.AsQueryable().Where(p => from <= p.Priority && p.Priority <= to);
         }
 
         private static bool ShouldNotUpdatePriority(GlobalRegularOptionUpdateParameters updateParameters)
         {
-            return !updateParameters.Priority.HasChange 
+            return !updateParameters.Priority.HasChange
                    || !updateParameters.Priority.NewValue.HasValue
                    || updateParameters.Priority.NewValue.Value < 1;
         }
