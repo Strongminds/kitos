@@ -104,12 +104,12 @@ namespace Core.ApplicationServices.GlobalOptions
             GlobalRegularOptionUpdateParameters updateParameters)
         {
             var transaction = _transactionManager.Begin();
-            if (ShouldNotUpdatePriority(updateParameters))
+            var existingPriority = updatedOption.Priority;
+            if (ShouldNotUpdatePriority(updateParameters, existingPriority))
             {
                 return Patch(updatedOption);
             }
             var newPriority = updateParameters.Priority.NewValue.Value;
-            var existingPriority = updatedOption.Priority;
             if (newPriority > existingPriority)
             {
                 var optionsThatNeedLowerPriority = GetOptionsWithPriorityInInterval(existingPriority + 1, newPriority);
@@ -139,10 +139,11 @@ namespace Core.ApplicationServices.GlobalOptions
             return _globalOptionsRepository.AsQueryable().Where(p => from <= p.Priority && p.Priority <= to);
         }
 
-        private static bool ShouldNotUpdatePriority(GlobalRegularOptionUpdateParameters updateParameters)
+        private static bool ShouldNotUpdatePriority(GlobalRegularOptionUpdateParameters updateParameters, int existingPriority)
         {
             return !updateParameters.Priority.HasChange
                    || !updateParameters.Priority.NewValue.HasValue
+                   || updateParameters.Priority.NewValue.Value == existingPriority
                    || updateParameters.Priority.NewValue.Value < 1;
         }
     }
