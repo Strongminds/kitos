@@ -119,9 +119,8 @@ namespace Core.ApplicationServices.GlobalOptions
                     Patch(optionEntity);
                 }
             }
-            else if (newPriority < existingPriority)
+            else
             {
-
                 var optionsThatNeedHigherPriority = GetOptionsWithPriorityInInterval(newPriority, existingPriority - 1);
                 foreach (var optionEntity in optionsThatNeedHigherPriority)
                 {
