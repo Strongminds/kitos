@@ -516,8 +516,7 @@ namespace Core.DomainServices.SystemUsage
             destination.ParentItSystemId = source.ItSystem.Parent?.Id;
             destination.ParentItSystemUuid = source.ItSystem.Parent?.Uuid;
             destination.ParentItSystemDisabled = source.ItSystem.Parent?.Disabled;
-            var parentItSystemUsage = GetParentSystemUsageUuid(source.ItSystem, source.OrganizationId);
-            destination.ParentItSystemUsageUuid = parentItSystemUsage?.Uuid;
+            destination.ParentItSystemUsageUuid = GetParentSystemUsageUuid(source.ItSystem, source.OrganizationId);
         }
 
         private static Guid? GetParentSystemUsageUuid(ItSystem itSystem, int organizationId)
