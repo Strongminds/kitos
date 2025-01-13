@@ -516,9 +516,14 @@ namespace Core.DomainServices.SystemUsage
             destination.ParentItSystemId = source.ItSystem.Parent?.Id;
             destination.ParentItSystemUuid = source.ItSystem.Parent?.Uuid;
             destination.ParentItSystemDisabled = source.ItSystem.Parent?.Disabled;
-            var parentItSystemUsage =
-                source.ItSystem.Parent?.Usages.FirstOrDefault(u => u.OrganizationId == source.OrganizationId);
+            var parentItSystemUsage = GetParentSystemUsageUuid(source.ItSystem, source.OrganizationId);
             destination.ParentItSystemUsageUuid = parentItSystemUsage?.Uuid;
+        }
+
+        private static Guid? GetParentSystemUsageUuid(ItSystem itSystem, int organizationId)
+        {
+            var parentUsage = itSystem.Parent?.Usages.FirstOrDefault(u => u.OrganizationId == organizationId);
+            return parentUsage?.Uuid;
         }
 
         private void PatchRoleAssignments(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
