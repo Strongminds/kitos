@@ -89,7 +89,7 @@ namespace Core.DomainServices.SystemUsage
             destination.LifeCycleStatus = source.LifeCycleStatus;
             destination.SystemPreviousName = source.ItSystem.PreviousName;
 
-            PatchParentSystemName(source, destination);
+            PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
             PatchOrganizationUnits(source, destination);
             PatchItSystemBusinessType(source, destination);
@@ -510,12 +510,15 @@ namespace Core.DomainServices.SystemUsage
             destination.ResponsibleOrganizationUnitName = source.ResponsibleUsage?.OrganizationUnit?.Name;
         }
 
-        private static void PatchParentSystemName(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        private static void PatchParentSystemInformation(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
             destination.ParentItSystemName = source.ItSystem.Parent?.Name;
             destination.ParentItSystemId = source.ItSystem.Parent?.Id;
             destination.ParentItSystemUuid = source.ItSystem.Parent?.Uuid;
             destination.ParentItSystemDisabled = source.ItSystem.Parent?.Disabled;
+            var parentItSystemUsage =
+                source.ItSystem.Parent?.Usages.FirstOrDefault(u => u.OrganizationId == source.OrganizationId);
+            destination.ParentItSystemUsageUuid = parentItSystemUsage?.Uuid;
         }
 
         private void PatchRoleAssignments(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
