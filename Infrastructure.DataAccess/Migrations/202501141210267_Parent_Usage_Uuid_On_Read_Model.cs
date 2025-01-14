@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class parent_usage_uuid_on_readmodel : DbMigration
+    public partial class Parent_Usage_Uuid_On_Read_Model : DbMigration
     {
         public override void Up()
         {

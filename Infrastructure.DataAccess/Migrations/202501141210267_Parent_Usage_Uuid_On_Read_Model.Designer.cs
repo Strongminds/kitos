@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class parent_usage_uuid_on_readmodel : IMigrationMetadata
+    public sealed partial class Parent_Usage_Uuid_On_Read_Model : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(parent_usage_uuid_on_readmodel));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Parent_Usage_Uuid_On_Read_Model));
         
         string IMigrationMetadata.Id
         {
-            get { return "202501131158049_parent_usage_uuid_on_readmodel"; }
+            get { return "202501141210267_Parent_Usage_Uuid_On_Read_Model"; }
         }
         
         string IMigrationMetadata.Source

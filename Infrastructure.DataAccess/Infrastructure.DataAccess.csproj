@@ -1078,10 +1078,10 @@
     <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.cs" />
     <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.Designer.cs">
       <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
-        </Compile>
-    <Compile Include="Migrations\202501131158049_parent_usage_uuid_on_readmodel.cs" />
-    <Compile Include="Migrations\202501131158049_parent_usage_uuid_on_readmodel.designer.cs">
-      <DependentUpon>202501131158049_parent_usage_uuid_on_readmodel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501141210267_Parent_Usage_Uuid_On_Read_Model.cs" />
+    <Compile Include="Migrations\202501141210267_Parent_Usage_Uuid_On_Read_Model.designer.cs">
+      <DependentUpon>202501141210267_Parent_Usage_Uuid_On_Read_Model.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
@@ -1129,8 +1129,8 @@
     <EmbeddedResource Include="Migrations\202501091001395_UsageCategoriesAndUserCount.resx">
       <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202501131158049_parent_usage_uuid_on_readmodel.resx">
-      <DependentUpon>202501131158049_parent_usage_uuid_on_readmodel.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202501141210267_Parent_Usage_Uuid_On_Read_Model.resx">
+      <DependentUpon>202501141210267_Parent_Usage_Uuid_On_Read_Model.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
