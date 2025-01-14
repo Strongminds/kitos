@@ -1075,9 +1075,6 @@
     <Compile Include="Migrations\202412021334284_Add_UUID_To_UserNotification.Designer.cs">
       <DependentUpon>202412021334284_Add_UUID_To_UserNotification.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.cs" />
-    <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.Designer.cs">
-      <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
     <Compile Include="Migrations\202501131158049_parent_usage_uuid_on_readmodel.cs" />
     <Compile Include="Migrations\202501131158049_parent_usage_uuid_on_readmodel.designer.cs">
       <DependentUpon>202501131158049_parent_usage_uuid_on_readmodel.cs</DependentUpon>
@@ -1125,8 +1122,6 @@
     <EmbeddedResource Include="Migrations\202412021334284_Add_UUID_To_UserNotification.resx">
       <DependentUpon>202412021334284_Add_UUID_To_UserNotification.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202501091001395_UsageCategoriesAndUserCount.resx">
-      <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
     <EmbeddedResource Include="Migrations\202501131158049_parent_usage_uuid_on_readmodel.resx">
       <DependentUpon>202501131158049_parent_usage_uuid_on_readmodel.cs</DependentUpon>
     </EmbeddedResource>

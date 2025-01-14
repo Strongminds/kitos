@@ -18,8 +18,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
                 Scope = itInterface.AccessModifier.ToChoice(),
                 ItInterfaceType = itInterface.Interface?.MapIdentityNamePairDTO(),
                 Data = itInterface.DataRows.Select(ToDataResponseDTO).ToList(),
-                OrganizationContext = itInterface.Organization?.MapShallowOrganizationResponseDTO(),
-                RightsHolder = itInterface.GetRightsHolderOrganization()?.MapShallowOrganizationResponseDTO()
+                OrganizationContext = itInterface.Organization?.MapShallowOrganizationResponseDTO()
             };
             MapBaseInformation(itInterface, dto);
             return dto;

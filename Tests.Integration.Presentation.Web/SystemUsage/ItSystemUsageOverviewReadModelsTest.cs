@@ -104,7 +104,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var riskSupervisionDocumentationUrlName = A<string>();
             var generalPurpose = A<string>();
             var hostedAt = A<HostedAt>();
-            var userCount = A<UserCount>();
 
             var contract1Name = A<string>();
             var contract2Name = A<string>();
@@ -140,10 +139,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // Parent system 
             await ItSystemHelper.SendSetDisabledRequestAsync(systemParent.Id, systemParentDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
 
-            var dataClassification =
-                (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ItSystemCategories,
-                    organizationId)).RandomItem();
-
             // System Usage changes
             var body = new
             {
@@ -160,14 +155,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 riskSupervisionDocumentationUrl,
                 riskSupervisionDocumentationUrlName,
                 GeneralPurpose = generalPurpose,
-                UserCount = userCount,
-                ItSystemCategoriesId = dataClassification.Id
+                HostedAt = hostedAt
             };
             await ItSystemUsageHelper.PatchSystemUsage(systemUsage.Id, organizationId, body);
             var sensitiveDataLevel = await ItSystemUsageHelper.AddSensitiveDataLevel(systemUsage.Id, A<SensitiveDataLevel>());
             var isHoldingDocument = A<bool>();
             await ItSystemUsageHelper.SetIsHoldingDocumentRequestAsync(systemUsage.Id, isHoldingDocument);
-            
+
             // Responsible Organization Unit and relevant units
             var orgUnitName1 = A<string>();
             var orgUnitName2 = A<string>();
@@ -272,7 +266,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(linkToDirectoryUrl, readModel.LinkToDirectoryUrl);
             Assert.Equal(generalPurpose, readModel.GeneralPurpose);
             Assert.Equal(hostedAt, readModel.HostedAt);
-            Assert.Equal(userCount, readModel.UserCount);
 
             if (riskAssessment == DataOptions.YES)
             {
@@ -301,8 +294,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(businessType.Id, readModel.ItSystemBusinessTypeId);
             Assert.Equal(businessType.Uuid, readModel.ItSystemBusinessTypeUuid);
             Assert.Equal(businessType.Name, readModel.ItSystemBusinessTypeName);
-            Assert.Equal(dataClassification.Uuid, readModel.ItSystemCategoriesUuid);
-            Assert.Equal(dataClassification.Name, readModel.ItSystemCategoriesName);
             Assert.Equal(organizationId, readModel.ItSystemRightsHolderId);
             Assert.Equal(organizationName, readModel.ItSystemRightsHolderName);
             Assert.Equal(taskRef.TaskRef.TaskKey ?? string.Empty, readModel.ItSystemKLEIdsAsCsv);

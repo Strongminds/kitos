@@ -103,11 +103,6 @@ namespace Core.DomainModel.ItSystem
             return id ?? Maybe<int>.None;
         }
 
-        public Organization.Organization GetRightsHolderOrganization()
-        {
-            return ExhibitedBy?.ItSystem?.BelongsTo;
-        }
-
         public void Deactivate()
         {
             Disabled = true;
