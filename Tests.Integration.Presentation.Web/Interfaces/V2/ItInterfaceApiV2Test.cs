@@ -288,19 +288,20 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var (token, organization) = await CreateStakeHolderUserInNewOrg();
             var orgId = organization.Id;
             var otherOrganization = await CreateOrganization("99887766");
+            var otherOrgId = otherOrganization.Id;
             var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), orgId, AccessModifier.Public);
             var systemInOtherOrganization =
-                await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), otherOrganization.Id,
+                await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), otherOrgId,
                     AccessModifier.Public);
 
             var publicInterface = await
                 InterfaceHelper.CreateInterface(
                     InterfaceHelper.CreateInterfaceDto("nantest", A<string>(), orgId, AccessModifier.Public));
             var localInterfaceInThisOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), orgId, AccessModifier.Local));
-            var localInterfaceInOtherOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), otherOrganization.Id, AccessModifier.Local));
+            var localInterfaceInOtherOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), otherOrgId, AccessModifier.Local));
 
             await ItSystemHelper.TakeIntoUseAsync(system.Id, orgId);
-            await ItSystemHelper.TakeIntoUseAsync(systemInOtherOrganization.Id, otherOrganization.Id);
+            await ItSystemHelper.TakeIntoUseAsync(systemInOtherOrganization.Id, otherOrgId);
 
             await InterfaceExhibitHelper.CreateExhibit(system.Id, publicInterface.Id);
             await InterfaceExhibitHelper.CreateExhibit(system.Id, localInterfaceInThisOrg.Id);
