@@ -21,6 +21,7 @@ using Tests.Toolkit.Extensions;
 using Tests.Toolkit.TestInputs;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Types.Interface;
+using System.Security.Cryptography;
 
 namespace Tests.Integration.Presentation.Web.Interfaces.V2
 {
@@ -279,6 +280,37 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             //Assert
             var responseDto = Assert.Single(dtos);
             Assert.Equal(validInterface.Uuid, responseDto.Uuid);
+        }
+
+        [Fact]
+        public async Task Can_Get_Interfaces_As_Stakeholder_With_PublicOrOrganizationUuid_Filter()
+        {
+            var (token, organization) = await CreateStakeHolderUserInNewOrg();
+            var orgId = organization.Id;
+            //create a system
+            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), orgId, AccessModifier.Public);
+
+            var publicInterface = await
+                InterfaceHelper.CreateInterface(
+                    InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), orgId, AccessModifier.Public));
+            var localInterfaceInThisOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), orgId, AccessModifier.Local));
+            var otherOrgId = A<int>();
+            Assert.NotEqual(orgId, otherOrgId);
+            var localInterfaceInOtherOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), otherOrgId, AccessModifier.Local));
+
+            await InterfaceExhibitHelper.CreateExhibit(system.Id, publicInterface.Id);
+            await InterfaceExhibitHelper.CreateExhibit(system.Id, localInterfaceInThisOrg.Id);
+            await InterfaceExhibitHelper.CreateExhibit(system.Id, localInterfaceInOtherOrg.Id);
+
+            var dtos = (await InterfaceV2Helper.GetInterfacesAsync(token,
+                availableInOrganizationUuid: organization.Uuid, pageNumber: 0, pageSize: 10)).ToList();
+
+
+            //assert result contains the public´+ the local here and not the other one. 
+            Assert.Contains(dtos, (dto) => dto.Uuid == publicInterface.Uuid);
+            Assert.Contains(dtos, (dto) => dto.Uuid == localInterfaceInThisOrg.Uuid);
+            Assert.DoesNotContain(dtos, (dto) => dto.Uuid == localInterfaceInOtherOrg.Uuid);
+
         }
 
         [Fact]
