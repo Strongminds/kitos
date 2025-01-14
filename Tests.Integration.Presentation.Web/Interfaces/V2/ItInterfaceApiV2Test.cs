@@ -287,16 +287,20 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         {
             var (token, organization) = await CreateStakeHolderUserInNewOrg();
             var orgId = organization.Id;
-            //create a system
+            var otherOrganization = await CreateOrganization("99887766");
             var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), orgId, AccessModifier.Public);
+            var systemInOtherOrganization =
+                await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), otherOrganization.Id,
+                    AccessModifier.Public);
 
             var publicInterface = await
                 InterfaceHelper.CreateInterface(
-                    InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), orgId, AccessModifier.Public));
+                    InterfaceHelper.CreateInterfaceDto("nantest", A<string>(), orgId, AccessModifier.Public));
             var localInterfaceInThisOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), orgId, AccessModifier.Local));
-            var otherOrgId = A<int>();
-            Assert.NotEqual(orgId, otherOrgId);
-            var localInterfaceInOtherOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), otherOrgId, AccessModifier.Local));
+            var localInterfaceInOtherOrg = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), otherOrganization.Id, AccessModifier.Local));
+
+            await ItSystemHelper.TakeIntoUseAsync(system.Id, orgId);
+            await ItSystemHelper.TakeIntoUseAsync(systemInOtherOrganization.Id, otherOrganization.Id);
 
             await InterfaceExhibitHelper.CreateExhibit(system.Id, publicInterface.Id);
             await InterfaceExhibitHelper.CreateExhibit(system.Id, localInterfaceInThisOrg.Id);
@@ -305,12 +309,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var dtos = (await InterfaceV2Helper.GetInterfacesAsync(token,
                 availableInOrganizationUuid: organization.Uuid, pageNumber: 0, pageSize: 10)).ToList();
 
-
-            //assert result contains the public´+ the local here and not the other one. 
             Assert.Contains(dtos, (dto) => dto.Uuid == publicInterface.Uuid);
             Assert.Contains(dtos, (dto) => dto.Uuid == localInterfaceInThisOrg.Uuid);
             Assert.DoesNotContain(dtos, (dto) => dto.Uuid == localInterfaceInOtherOrg.Uuid);
-
         }
 
         [Fact]
