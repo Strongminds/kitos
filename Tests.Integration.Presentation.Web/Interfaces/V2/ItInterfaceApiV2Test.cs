@@ -283,9 +283,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         }
 
         [Fact]
-        public async Task Can_Get_Interfaces_As_Stakeholder_With_PublicOrOrganizationUuid_Filter()
+        public async Task Can_Get_Interfaces_As_Local_Admin_With_PublicOrOrganizationUuid_Filter()
         {
-            var (token, organization) = await CreateStakeHolderUserInNewOrg();
+            var (token, organization) = await CreateUserInNewOrg(false, OrganizationRole.LocalAdmin);
             var orgId = organization.Id;
             var otherOrganization = await CreateOrganization("99887766");
             var otherOrgId = otherOrganization.Id;
