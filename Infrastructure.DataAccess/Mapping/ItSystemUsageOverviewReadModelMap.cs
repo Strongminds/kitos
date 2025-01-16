@@ -42,6 +42,8 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.ParentItSystemUuid).IsOptional();
 
+            Property(x => x.ParentItSystemUsageUuid).IsOptional();
+
             Property(x => x.ParentItSystemName)
                 .HasMaxLength(ItSystem.MaxNameLength)
                 .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemParentName", 0);
