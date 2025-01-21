@@ -29,6 +29,7 @@ using Presentation.Web.Infrastructure.Attributes;
 using DataType = Core.DomainModel.ItSystem.DataType;
 using HelpText = Core.DomainModel.HelpText;
 using Core.DomainModel.Shared;
+using Microsoft.AspNet.OData.Query;
 
 namespace Presentation.Web
 {
@@ -63,6 +64,15 @@ namespace Presentation.Web
             config.Filters.Add(new ValidateActionParametersAttribute());
             config.Filters.Add(new DenyRightsHoldersAccessAttribute()); //By default block all actions for users with rights holders access in one or more organizations
             config.Count().Filter().OrderBy().Expand().Select().MaxTop(null);
+
+            var oDataValidationSettings = new ODataValidationSettings()
+            {
+                MaxNodeCount = 300
+            };
+            config.EnableDependencyInjection(builder =>
+            {
+                builder.AddService(ServiceLifetime.Singleton, _ => oDataValidationSettings);
+            });
         }
 
         public static IEdmModel GetModel()
