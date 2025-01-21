@@ -29,7 +29,6 @@ using Presentation.Web.Infrastructure.Attributes;
 using DataType = Core.DomainModel.ItSystem.DataType;
 using HelpText = Core.DomainModel.HelpText;
 using Core.DomainModel.Shared;
-using Microsoft.AspNet.OData.Query;
 
 namespace Presentation.Web
 {
