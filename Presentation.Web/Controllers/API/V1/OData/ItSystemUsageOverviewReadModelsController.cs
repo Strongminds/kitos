@@ -51,19 +51,12 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 return FromOperationError(new OperationError("Invalid org id", OperationFailure.NotFound));
             }
 
-            int? orgUnitId = null;
-            if (responsibleOrganizationUnitUuid.HasValue)
-            {
-                var unitDbId = _identityResolver.ResolveDbId<OrganizationUnit>(responsibleOrganizationUnitUuid.Value);
-                if (unitDbId.IsNone)
-                {
-                    return FromOperationError(new OperationError("Invalid org unit id", OperationFailure.BadInput));
-                }
+            if (!responsibleOrganizationUnitUuid.HasValue) return GetOverviewReadModels(orgDbId.Value, null);
 
-                orgUnitId = unitDbId.Value;
-            }
-
-            return GetOverviewReadModels(orgDbId.Value, orgUnitId);
+            var unitDbId = _identityResolver.ResolveDbId<OrganizationUnit>(responsibleOrganizationUnitUuid.Value);
+            return unitDbId.IsNone 
+                ? FromOperationError(new OperationError("Invalid org unit id", OperationFailure.BadInput)) 
+                : GetOverviewReadModels(orgDbId.Value, unitDbId.Value);
         }
 
         private IHttpActionResult GetOverviewReadModels(int organizationId, int? responsibleOrganizationUnitId)
