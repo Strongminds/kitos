@@ -40,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="organizationUuid"></param>
         /// <param name="responsibleOrganizationUnitUuid"></param>
         /// <returns></returns>
-        [EnableQuery(MaxAnyAllExpressionDepth = 2)]
+        [EnableQuery(MaxAnyAllExpressionDepth = 2, MaxNodeCount = 300)]
         [SwaggerResponse(HttpStatusCode.OK, type:typeof(ODataListResponse<ItSystemUsageOverviewReadModel>))]
         [ODataRoute("ItSystemUsageOverviewReadModels")]
         public IHttpActionResult GetByUuid(Guid organizationUuid, Guid? responsibleOrganizationUnitUuid = null)
