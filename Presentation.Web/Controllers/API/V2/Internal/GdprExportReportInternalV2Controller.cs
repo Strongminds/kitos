@@ -66,6 +66,12 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 PersonalDataSocialOtherPrivateMatters = gdprReport.PersonalDataSocialOtherPrivateMatters,
                 DPIA = gdprReport.DPIA?.ToYesNoDontKnowChoice(),
                 HostedAt = gdprReport.HostedAt?.ToHostingChoice(),
+                TechnicalSupervisionDocumentationUrl = gdprReport.TechnicalSupervisionDocumentationUrl,
+                TechnicalSupervisionDocumentationUrlName = gdprReport.TechnicalSupervisionDocumentationUrlName,
+                UserSupervision = gdprReport.UserSupervision?.ToYesNoDontKnowChoice(),
+                UserSupervisionDocumentationUrl = gdprReport.UserSupervisionDocumentationUrl,
+                UserSupervisionDocumentationUrlName = gdprReport.TechnicalSupervisionDocumentationUrlName,
+                NextDataRetentionEvaluationDate = gdprReport.NextDataRetentionEvaluationDate
             };
         }
     }
