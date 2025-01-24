@@ -65,6 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 PersonalDataSocialProblems = gdprReport.PersonalDataSocialProblems,
                 PersonalDataSocialOtherPrivateMatters = gdprReport.PersonalDataSocialOtherPrivateMatters,
                 DPIA = gdprReport.DPIA?.ToYesNoDontKnowChoice(),
+                DPIADate = gdprReport.DPIADate,
                 HostedAt = gdprReport.HostedAt?.ToHostingChoice(),
                 TechnicalSupervisionDocumentationUrl = gdprReport.TechnicalSupervisionDocumentationUrl,
                 TechnicalSupervisionDocumentationUrlName = gdprReport.TechnicalSupervisionDocumentationUrlName,
