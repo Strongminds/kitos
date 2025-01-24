@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.DataAccess.Migrations
+﻿using Infrastructure.DataAccess.Tools;
+
+namespace Infrastructure.DataAccess.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
@@ -11,6 +13,8 @@
             AddColumn("dbo.ItSystemUsageOverviewReadModels", "IsBusinessCritical", c => c.Int());
             CreateIndex("dbo.ItSystemUsageOverviewReadModels", "DPIAConducted", name: "ItSystemUsageOverviewReadModel_Index_DPIAConducted");
             CreateIndex("dbo.ItSystemUsageOverviewReadModels", "IsBusinessCritical", name: "ItSystemUsageOverviewReadModel_Index_IsBusinessCritical");
+            SqlResource(SqlMigrationScriptRepository.GetResourceName("UpdateDpiaConducted.sql"));
+            SqlResource(SqlMigrationScriptRepository.GetResourceName("UpdateBusinessCriticality.sql"));
         }
         
         public override void Down()
