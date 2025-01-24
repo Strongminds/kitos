@@ -85,7 +85,14 @@ namespace Core.ApplicationServices.SystemUsage.GDPR
                 RiskAssessmentDate = input.riskAssesmentDate,
                 PlannedRiskAssessmentDate = input.PlannedRiskAssessmentDate,
                 SystemName = input.MapItSystemName(),
-                SensitiveDataTypes = hasSensitiveData ? GetSensitiveDataTypes(input.Id, attachedOptions, sensitivePersonalDataTypes) : new List<string>()
+                SensitiveDataTypes = hasSensitiveData ? GetSensitiveDataTypes(input.Id, attachedOptions, sensitivePersonalDataTypes) : new List<string>(),
+                DPIADate = input.DPIADateFor,
+                TechnicalSupervisionDocumentationUrl = input.TechnicalSupervisionDocumentationUrl,
+                TechnicalSupervisionDocumentationUrlName = input.TechnicalSupervisionDocumentationUrlName,
+                UserSupervision = input.UserSupervision,
+                UserSupervisionDocumentationUrl = input.UserSupervisionDocumentationUrl,
+                UserSupervisionDocumentationUrlName = input.UserSupervisionDocumentationUrlName,
+                NextDataRetentionEvaluationDate = input.DPIAdeleteDate
             };
         }
 
