@@ -5,7 +5,7 @@ using Presentation.Web.Models.API.V2.Response.Shared;
 
 namespace Presentation.Web.Controllers.API.V2.External.Generic
 {
-    public class ExternalReferenceResponseMapper: IExternalReferenceResponseMapper
+    public class ExternalReferenceResponseMapper : IExternalReferenceResponseMapper
     {
         public IEnumerable<ExternalReferenceDataResponseDTO> MapExternalReferences(IEnumerable<ExternalReference> externalReferences)
         {
@@ -20,7 +20,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Generic
                 DocumentId = externalReference.ExternalReferenceId,
                 Title = externalReference.Title,
                 Url = externalReference.URL,
-                MasterReference = externalReference.IsMasterReference()
+                MasterReference = externalReference.IsMasterReference(),
+                LastChangedByUsername = externalReference.LastChangedByUser.GetFullName(),
+                LastChangedDate = externalReference.LastChanged
             };
         }
     }

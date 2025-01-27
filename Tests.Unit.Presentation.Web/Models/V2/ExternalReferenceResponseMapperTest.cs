@@ -54,7 +54,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         private List<ExternalReference> CreateExternalReferences(bool withMaster)
         {
             var references = Many<string>().Select((title, id) => CreateExternalReference(title, id, false)).ToList();
-            if(withMaster)
+            if (withMaster)
             {
                 SetOwnerWithMainReference(references.First());
             }
@@ -70,6 +70,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 URL = A<string>(),
                 ExternalReferenceId = A<string>(),
                 Id = id,
+                LastChanged = A<DateTime>(),
+                LastChangedByUser = new User {Name = A<string>()}
             };
 
             if (withMaster)
@@ -112,6 +114,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(reference.URL, actual.Url);
             Assert.Equal(reference.ExternalReferenceId, actual.DocumentId);
             Assert.Equal(reference.IsMasterReference(), actual.MasterReference);
+            Assert.Equal(reference.LastChangedByUser.GetFullName(), actual.LastChangedByUsername);
+            Assert.Equal(reference.LastChanged, actual.LastChangedDate);
         }
 
         private void SetOwnerWithMainReference(ExternalReference reference)
