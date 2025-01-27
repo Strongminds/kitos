@@ -28,13 +28,5 @@ namespace Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences
         /// </summary>
         [Required]
         public bool MasterReference { get; set; }
-        /// <summary>
-        /// The last user to change the reference.
-        /// </summary>
-        public string LastChangedByUserName { get; set; }
-        /// <summary>
-        /// The last date the reference was changed.
-        /// </summary>
-        public DateTime? LastChangedDate { get; set; }
     }
 }
