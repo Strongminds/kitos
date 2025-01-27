@@ -71,7 +71,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 ExternalReferenceId = A<string>(),
                 Id = id,
                 LastChanged = A<DateTime>(),
-                LastChangedByUser = new User {Name = A<string>()}
+                LastChangedByUser = new User {Name = A<string>(), LastName = A<string>()}
             };
 
             if (withMaster)
