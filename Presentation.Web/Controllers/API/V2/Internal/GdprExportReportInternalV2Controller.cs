@@ -61,6 +61,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 RiskAssessmentDate = gdprReport.RiskAssessmentDate,
                 PlannedRiskAssessmentDate = gdprReport.PlannedRiskAssessmentDate,
                 PreRiskAssessment = gdprReport.PreRiskAssessment?.ToRiskLevelChoice(),
+                RiskAssessmentNotes = gdprReport.RiskAssessmentNotes,
                 PersonalDataCpr = gdprReport.PersonalDataCpr,
                 PersonalDataSocialProblems = gdprReport.PersonalDataSocialProblems,
                 PersonalDataSocialOtherPrivateMatters = gdprReport.PersonalDataSocialOtherPrivateMatters,

@@ -24,6 +24,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
         public RiskLevelChoice? PreRiskAssessment { get; set; } 
+        public string RiskAssessmentNotes { get; set; }
         public bool PersonalDataCpr { get; set; }
         public bool PersonalDataSocialProblems { get; set; }
         public bool PersonalDataSocialOtherPrivateMatters { get; set; }
