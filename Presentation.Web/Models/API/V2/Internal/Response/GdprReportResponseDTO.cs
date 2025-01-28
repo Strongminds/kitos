@@ -34,5 +34,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public string UserSupervisionDocumentationUrl { get; set; }
         public string UserSupervisionDocumentationUrlName { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
+
+        public IEnumerable<string> InsecureCountriesSubjectToDataTransfer { get; set; }
     }
 }

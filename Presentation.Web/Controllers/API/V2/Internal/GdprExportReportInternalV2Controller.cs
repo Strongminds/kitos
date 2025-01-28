@@ -73,7 +73,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 UserSupervision = gdprReport.UserSupervision?.ToYesNoDontKnowChoice(),
                 UserSupervisionDocumentationUrl = gdprReport.UserSupervisionDocumentationUrl,
                 UserSupervisionDocumentationUrlName = gdprReport.TechnicalSupervisionDocumentationUrlName,
-                NextDataRetentionEvaluationDate = gdprReport.NextDataRetentionEvaluationDate
+                NextDataRetentionEvaluationDate = gdprReport.NextDataRetentionEvaluationDate,
+                InsecureCountriesSubjectToDataTransfer = gdprReport.InsecureCountriesSubjectToDataTransfer
             };
         }
     }

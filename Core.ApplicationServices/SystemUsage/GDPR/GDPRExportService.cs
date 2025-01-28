@@ -93,8 +93,17 @@ namespace Core.ApplicationServices.SystemUsage.GDPR
                 UserSupervision = input.UserSupervision,
                 UserSupervisionDocumentationUrl = input.UserSupervisionDocumentationUrl,
                 UserSupervisionDocumentationUrlName = input.UserSupervisionDocumentationUrlName,
-                NextDataRetentionEvaluationDate = input.DPIAdeleteDate
+                NextDataRetentionEvaluationDate = input.DPIAdeleteDate,
+                InsecureCountriesSubjectToDataTransfer = GetInsecureCountriesSubjectToDataTransfer(input).ToList()
             };
+        }
+
+        private static IEnumerable<string> GetInsecureCountriesSubjectToDataTransfer(ItSystemUsage input)
+        {
+            return input.AssociatedDataProcessingRegistrations
+                        .SelectMany(dpr => dpr.InsecureCountriesSubjectToDataTransfer)
+                        .Select(x => x.Name)
+                        .Distinct();
         }
 
         private IEnumerable<string> GetSensitiveDataTypes(

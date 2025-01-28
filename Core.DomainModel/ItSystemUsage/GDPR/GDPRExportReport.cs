@@ -33,6 +33,7 @@ namespace Core.DomainModel.ItSystemUsage.GDPR
         public string UserSupervisionDocumentationUrl { get; set; }
         public string UserSupervisionDocumentationUrlName { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
+        public IEnumerable<string> InsecureCountriesSubjectToDataTransfer { get; set; }
 
 
     }
