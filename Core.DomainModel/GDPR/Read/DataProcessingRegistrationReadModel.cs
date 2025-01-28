@@ -71,5 +71,6 @@ namespace Core.DomainModel.GDPR.Read
         public int? LastChangedById { get; set; }
         public string LastChangedByName { get; set; }
         public DateTime LastChangedAt { get; set; }
+        public string LatestOversightRemark { get; set; }
     }
 }
