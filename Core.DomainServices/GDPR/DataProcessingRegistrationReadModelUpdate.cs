@@ -215,14 +215,14 @@ namespace Core.DomainServices.GDPR
         private static void PatchLatestOversightDate(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
             var latestOversight = source.GetLatestOversight();
-            destination.LatestOversightDate = latestOversight.HasValue ? latestOversight.Value.OversightDate : null;
+            destination.LatestOversightDate = latestOversight.Select(x => x.OversightDate).GetValueOrDefault();
         }
 
         private static void PatchLatestOversightRemark(DataProcessingRegistration source,
             DataProcessingRegistrationReadModel destination)
         {
             var latestOversight = source.GetLatestOversight();
-            destination.LatestOversightRemark = latestOversight.HasValue ? latestOversight.Value.OversightRemark : null;
+            destination.LatestOversightRemark = latestOversight.Select(x => x.OversightRemark).GetValueOrDefault();
         }
 
         private static void PatchLastUpdateBy(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
