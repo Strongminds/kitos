@@ -21,7 +21,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Generic
                 Title = externalReference.Title,
                 Url = externalReference.URL,
                 MasterReference = externalReference.IsMasterReference(),
-                LastChangedByUsername = externalReference.LastChangedByUser.GetFullName(),
+                LastChangedByUsername = externalReference.LastChangedByUser?.GetFullName(),
                 LastChangedDate = externalReference.LastChanged
             };
         }
