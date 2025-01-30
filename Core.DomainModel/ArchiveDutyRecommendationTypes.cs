@@ -19,7 +19,7 @@
         /// </summary>
         NoRecommendation = 3,
         /// <summary>
-        /// Recommends data is kept, but selected or all documents are discarded
+        /// Recommends data is kept, selected or all documents are discarded
         /// </summary>
         PreserveDataDiscardOption = 4,
     }
