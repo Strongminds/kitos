@@ -11,7 +11,6 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Tests.Toolkit.Extensions;
-using Tests.Unit.Presentation.Web.Extensions;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Models.V2
@@ -59,7 +58,39 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertParamHasValidChange(result.Cvr, dto.Cvr);
             AssertParamHasValidChange(result.Name, dto.Name);
             Assert.Equal(result.TypeId.NewValue, (int)dto.Type);
-            AssertParamHasValidChange(result.ForeignCvr, dto.ForeignCvr);
+            var foreignCountryCodeUuid = dto.ForeignCountryCodeUuid;
+            Assert.NotNull(foreignCountryCodeUuid);
+            Assert.Equal(foreignCountryCodeUuid, result.ForeignCountryCodeUuid.NewValue);
+        }
+
+        [Fact]
+        public void Can_Map_Null_Country_Code_If_Requesting_Update()
+        {
+            var dto = new OrganizationUpdateRequestDTO()
+            {
+                UpdateForeignCountryCode = true,
+                ForeignCountryCodeUuid = null,
+            };
+
+            var result = _sut.ToOrganizationUpdateParameters(dto);
+            Assert.True(result.ForeignCountryCodeUuid.HasChange);
+            Assert.Null(result.ForeignCountryCodeUuid.NewValue);
+        }
+
+        [Fact]
+        public void Does_Not_Map_Null_Country_Code_If_Not_Requested()
+        {
+
+            //todo afte this check if the change in Org.cs is needed
+
+            var dto = new OrganizationUpdateRequestDTO()
+            {
+                UpdateForeignCountryCode = false,
+                ForeignCountryCodeUuid = null,
+            };
+
+            var result = _sut.ToOrganizationUpdateParameters(dto);
+            Assert.False(result.ForeignCountryCodeUuid.HasChange);
         }
 
         [Fact]
@@ -69,9 +100,11 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var dto = A<OrganizationCreateRequestDTO>();
             var result = _sut.ToOrganizationCreateParameters(dto);
             AssertParamHasValidChange(result.Cvr, dto.Cvr);
-            AssertParamHasValidChange(result.ForeignCvr, dto.ForeignCvr);
             AssertParamHasValidChange(result.Name, dto.Name);
             Assert.Equal(result.TypeId.NewValue, (int)dto.Type);
+            var foreignCountryCodeUuid = dto.ForeignCountryCodeUuid;
+            Assert.NotNull(foreignCountryCodeUuid);
+            Assert.Equal(foreignCountryCodeUuid, result.ForeignCountryCodeUuid.NewValue);
         }
 
         [Fact]

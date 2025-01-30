@@ -238,7 +238,6 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IItContractService>().To<ItContractService>().InCommandScope(Mode);
             kernel.Bind<IItContractWriteService>().To<ItContractWriteService>().InCommandScope(Mode);
             kernel.Bind<IItContractOverviewReadModelsService>().To<ItContractOverviewReadModelsService>().InCommandScope(Mode);
-            kernel.Bind<IGridLocalItContractRolesService>().To<GridLocalItContractRolesService>().InCommandScope(Mode);
             kernel.Bind<IReadModelUpdate<ItContract, ItContractOverviewReadModel>>().To<ItContractOverviewReadModelUpdate>().InCommandScope(Mode);
             kernel.Bind<IUserRepositoryFactory>().To<UserRepositoryFactory>().InSingletonScope();
             kernel.Bind<IExcelService>().To<ExcelService>().InCommandScope(Mode);
@@ -378,7 +377,7 @@ namespace Presentation.Web.Ninject
 
             //Public messages
             kernel.Bind<IPublicMessagesWriteModelMapper>().To<PublicMessagesWriteModelMapper>().InCommandScope(Mode);
-            
+
             //Notifications
             kernel.Bind<INotificationWriteModelMapper>().To<NotificationWriteModelMapper>().InCommandScope(Mode);
             kernel.Bind<INotificationResponseMapper>().To<NotificationResponseMapper>().InCommandScope(Mode);
@@ -551,6 +550,19 @@ namespace Presentation.Web.Ninject
             RegisterGlobalRoleOptionService<ItContractRole, ItContractRight>(kernel);
             RegisterGlobalRegularOptionService<CriticalityType, ItContract>(kernel);
             RegisterGlobalRegularOptionService<AgreementElementType, ItContract>(kernel);
+
+            //DPR
+            RegisterGlobalRoleOptionService<DataProcessingRegistrationRole, DataProcessingRegistrationRight>(kernel);
+            RegisterGlobalRegularOptionService<DataProcessingCountryOption, DataProcessingRegistration>(kernel);
+            RegisterGlobalRegularOptionService<DataProcessingOversightOption, DataProcessingRegistration>(kernel);
+            RegisterGlobalRegularOptionService<DataProcessingDataResponsibleOption, DataProcessingRegistration>(kernel);
+            RegisterGlobalRegularOptionService<DataProcessingBasisForTransferOption, DataProcessingRegistration>(kernel);
+
+            //Organization
+            RegisterGlobalRegularOptionService<CountryCode, Organization>(kernel);
+
+            //Organization unit
+            RegisterGlobalRoleOptionService<OrganizationUnitRole, OrganizationUnitRight>(kernel);
         }
 
         private void RegisterLocalItContractOptionTypes(IKernel kernel)
@@ -619,7 +631,7 @@ namespace Presentation.Web.Ninject
         {
             //IT-interface
             RegisterOptionsService<ItInterface, InterfaceType, LocalInterfaceType>(kernel);
-            
+
             RegisterOptionsService<DataRow, DataType, LocalDataType>(kernel);
 
             //Data processing registrations

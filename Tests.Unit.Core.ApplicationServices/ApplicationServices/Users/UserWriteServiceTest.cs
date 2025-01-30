@@ -13,9 +13,11 @@ using System.Collections.Generic;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
+using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Rights;
 using Core.DomainServices.Generic;
 using Core.ApplicationServices.Model.Users;
+using Core.DomainServices;
 
 namespace Tests.Unit.Core.ApplicationServices.Users
 {
@@ -31,6 +33,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolverMock;
         private readonly Mock<IUserRightsService> _userRightsServiceMock;
         private readonly Mock<IOrganizationalUserContext> _organizationalUserContextMock;
+        private readonly Mock<IUserRepository> _userRepositoryMock;
 
         public UserWriteServiceTest()
         {
@@ -42,6 +45,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             _entityIdentityResolverMock = new Mock<IEntityIdentityResolver>();
             _userRightsServiceMock = new Mock<IUserRightsService>();
             _organizationalUserContextMock = new Mock<IOrganizationalUserContext>();
+            _userRepositoryMock = new Mock<IUserRepository>();
 
 
             _sut = new UserWriteService(_userServiceMock.Object, 
@@ -51,7 +55,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
                 _organizationServiceMock.Object,
                 _entityIdentityResolverMock.Object,
                 _userRightsServiceMock.Object,
-                _organizationalUserContextMock.Object);
+                _organizationalUserContextMock.Object,
+                _userRepositoryMock.Object);
         }
 
         [Fact]
@@ -177,7 +182,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             //Act
             var result = _sut.SendNotification(orgUuid, userUuid);
 
-            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId), Times.Once);
+            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId, true), Times.Once);
             Assert.True(result.IsNone);
         }
 
@@ -233,16 +238,19 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             //Arrange
             var user = SetupUser();
             var organization = new Organization {Id = A<int>(), Uuid = A<Guid>()};
-            var defaultUnit = new OrganizationUnit {Id = A<int>()};
+            var defaultUnit = new OrganizationUnit {Id = A<int>(), Uuid = A<Guid>()};
             var updateParameters = A<UpdateUserParameters>();
+            updateParameters.DefaultOrganizationUnitUuid = defaultUnit.Uuid.AsChangedValue();
             ExpectGetUserByUuid(user.Uuid, user);
             ExpectModifyPermissionsForUserReturns(user, true);
             ExpectGetOrganizationReturns(organization.Uuid, organization);
             ExpectResolveOrgUuidReturns(organization.Uuid, organization.Id);
+            ExpectResolveOrgUnitUuidReturns(defaultUnit.Uuid, defaultUnit.Id);
             ExpectHasStakeHolderAccessReturns(true);
             ExpectAssignRolesReturn(updateParameters.Roles.NewValue, user, organization);
             ExpectRemoveRolesReturn(user.GetRolesInOrganization(organization.Uuid), user, organization);
-            _organizationServiceMock.Setup(x => x.GetDefaultUnit(organization, user)).Returns(defaultUnit);
+            _organizationServiceMock.Setup(x => x.SetDefaultOrgUnit(user, organization.Id, defaultUnit.Id));
+
             var transaction = ExpectTransactionBegins();
 
             //Act
@@ -483,6 +491,50 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
         }
 
+        [Fact]
+        public void Can_Issue_Password_Reset()
+        {
+            var user = SetupUser();
+            ExpectGetUserByEmailReturns(user.Email, user);
+
+            _sut.RequestPasswordReset(user.Email, true);
+
+            _userServiceMock.Verify(x => x.IssuePasswordReset(user, null, null, true), Times.Once());
+        }
+
+        [Fact]
+        public void Can_Not_Issue_Password_Reset_If_Email_Doesnt_Exist()
+        {
+            var nonExistantMail = "test@mail.dk";
+            ExpectGetUserByEmailReturns(nonExistantMail, null);
+
+            _sut.RequestPasswordReset(nonExistantMail, true);
+
+            VerifyNoPasswordResetsHasBeenIssued();
+        }
+
+        [Fact]
+        public void Can_Not_Issue_Password_Reset_If_User_Cant_Authenticate()
+        {
+            var user = SetupUser();
+            user.Deleted = true; //Make user unable to authenticate
+            ExpectGetUserByEmailReturns(user.Email, user);
+
+            _sut.RequestPasswordReset(user.Email, true);
+
+            VerifyNoPasswordResetsHasBeenIssued();
+        }
+
+        private void VerifyNoPasswordResetsHasBeenIssued()
+        {
+            _userServiceMock.Verify(x => x.IssuePasswordReset(It.IsAny<User>(), null, null, true), Times.Never());
+        }
+
+        private void ExpectGetUserByEmailReturns(string email, User user)
+        {
+            _userRepositoryMock.Setup(x => x.GetByEmail(email)).Returns(user);
+        }
+
         private void ExpectIsGlobalAdminReturns(bool expected)
         {
             _organizationalUserContextMock.Setup(x => x.IsGlobalAdmin()).Returns(expected);
@@ -510,6 +562,10 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             _entityIdentityResolverMock.Setup(x => x.ResolveDbId<Organization>(orgUuid)).Returns(result);
         }
+        private void ExpectResolveOrgUnitUuidReturns(Guid unitUuid, Maybe<int> result)
+        {
+            _entityIdentityResolverMock.Setup(x => x.ResolveDbId<OrganizationUnit>(unitUuid)).Returns(result);
+        }
 
         private void ExpectGetUserInOrganizationReturns(Guid organizationUuid, Guid userUuid, Result<User, OperationError> result)
         {
@@ -528,7 +584,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
         private void ExpectAddUserReturns(User user, bool sendMailOnCreation, int orgId)
         {
-            _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId)).Returns(user);
+            _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId, true)).Returns(user);
         }
         
         private void ExpectAddRoleReturns(OrganizationRole role, int organizationId, int userId, Result<OrganizationRight, OperationFailure> result)

@@ -368,6 +368,11 @@
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationTypeMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\OrganizationUnits\OrganizationUnitRoleTypeV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GdprExportReportInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationGlobalCountryCodesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationUnit\OrganizationUnitGlobalRoleOptionTypesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Notifications\AlertsV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\QA\BrokenExternalReferencesReportInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRegularOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRoleOptionTypesInternalV2Controller.cs" />
@@ -394,6 +399,11 @@
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\ItContracts\ItContractGlobalProcurementStrategyTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\ItContracts\ItContractGlobalPurchaseFormTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\ItContracts\ItContractGlobalTerminationDeadlineTypesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingBasisForTransferOptionsInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingCountryOptionsInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingDataResponsibleOptionsInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalDataProcessingOversightOptionsInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\HelpTextsInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ItContracts\GridLocalItContractRolesV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Common\Helpers\ItSystemV2QueryHandler.cs" />
@@ -476,6 +486,7 @@
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\OrganizationRoleMappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserResponseModelMapper.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\UsersInternalV2Controller.cs" />
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
@@ -516,8 +527,14 @@
     <Compile Include="Models\API\V2\Internal\Request\OrganizationUnit\ChangePaymentRegistrationV2RequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\OrganizationUnit\TransferOrganizationUnitRegistrationV2RequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\UIModuleCustomizationRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\RequestPasswordResetRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\ResetPasswordRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\User\MutateRightRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\User\MutateUserRightsRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\GdprReportResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\ItContract\AppliedProcurementPlanResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\Notifications\AlertResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\PasswordResetResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportColumnsV2.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportCsvMapperV2.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportStatusResponseDTO.cs" />
@@ -587,6 +604,7 @@
     <Compile Include="Models\API\V2\Request\User\DefaultUserStartPreferenceChoice.cs" />
     <Compile Include="Models\API\V2\Request\User\OrganizationRoleChoice.cs" />
     <Compile Include="Models\API\V2\Request\User\UpdateUserRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Types\Notifications\AlertType.cs" />
     <Compile Include="Models\API\V2\Types\Organization\OrganizationUnitOriginChoice.cs" />
     <Compile Include="Models\API\V2\Request\SystemUsage\ArchivingCreationRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\SystemUsage\ArchivingUpdateRequestDTO.cs" />

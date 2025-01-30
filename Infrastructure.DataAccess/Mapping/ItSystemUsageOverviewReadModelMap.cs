@@ -42,6 +42,9 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.ParentItSystemUuid).IsOptional();
 
+            Property(x => x.ParentItSystemUsageUuid).IsOptional()
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ParentItSystemUsageUuid", 0);
+
             Property(x => x.ParentItSystemName)
                 .HasMaxLength(ItSystem.MaxNameLength)
                 .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemParentName", 0);
@@ -73,6 +76,16 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.ItSystemRightsHolderName)
                 .HasMaxLength(Organization.MaxNameLength)
                 .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemBelongsToName", 0);
+
+            Property(x => x.ItSystemCategoriesUuid)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesUuid", 0);
+
+            Property(x => x.ItSystemCategoriesId)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesId", 0);
+
+            Property(x => x.ItSystemCategoriesName)
+                .HasMaxLength(Organization.MaxNameLength)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesName", 0);
 
             Property(x => x.LocalReferenceTitle)
                 .HasMaxLength(ItSystemUsageOverviewReadModel.MaxReferenceTitleLenght)
@@ -123,6 +136,15 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.HostedAt)
                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_HostedAt", 0);
+
+            Property(x => x.UserCount)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_UserCount");
+
+            Property(x => x.DPIAConducted)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_DPIAConducted");
+
+            Property(x => x.IsBusinessCritical)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_IsBusinessCritical");
 
             Property(x => x.ActiveAccordingToValidityPeriod)
                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ActiveAccordingToValidityPeriod", 0);

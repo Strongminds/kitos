@@ -11,11 +11,11 @@ namespace Core.ApplicationServices
 {
     public interface IUserService : IDisposable
     {
-        User AddUser(User user, bool sendMailOnCreation, int orgId);
+        User AddUser(User user, bool sendMailOnCreation, int orgId, bool newUI);
 
-        void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId);
-        void IssueAdvisMail(User user, bool reminder, int orgId);
-        PasswordResetRequest IssuePasswordReset(User user, string subject, string content);
+        void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId, bool newUI);
+        void IssueAdvisMail(User user, bool reminder, int orgId, bool newUI);
+        PasswordResetRequest IssuePasswordReset(User user, string subject, string content, bool newUI);
         PasswordResetRequest GetPasswordReset(string hash);
         void ResetPassword(PasswordResetRequest passwordResetRequest, string newPassword);
         Result<IQueryable<User>, OperationError> GetUsersWithCrossOrganizationPermissions();
