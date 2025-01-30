@@ -21,6 +21,6 @@
         /// <summary>
         /// Data is kept, but selected or all documents are discarded
         /// </summary>
-        PreserveDataDiscardOption = 4
+        PreserveDataCanDiscardDocuments = 4
     }
 }
