@@ -1075,6 +1075,22 @@
     <Compile Include="Migrations\202412021334284_Add_UUID_To_UserNotification.Designer.cs">
       <DependentUpon>202412021334284_Add_UUID_To_UserNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.cs" />
+    <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.Designer.cs">
+      <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501160951303_Parent_Usage_Uuid_On_Read_Model.cs" />
+    <Compile Include="Migrations\202501160951303_Parent_Usage_Uuid_On_Read_Model.designer.cs">
+      <DependentUpon>202501160951303_Parent_Usage_Uuid_On_Read_Model.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.cs" />
+    <Compile Include="Migrations\202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.Designer.cs">
+      <DependentUpon>202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs" />
+    <Compile Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.Designer.cs">
+      <DependentUpon>202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix staging DB\Delete_Users_Other_Than_Preserved_Users.sql" />
@@ -1117,6 +1133,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412021334284_Add_UUID_To_UserNotification.resx">
       <DependentUpon>202412021334284_Add_UUID_To_UserNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501091001395_UsageCategoriesAndUserCount.resx">
+      <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501160951303_Parent_Usage_Uuid_On_Read_Model.resx">
+      <DependentUpon>202501160951303_Parent_Usage_Uuid_On_Read_Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.resx">
+      <DependentUpon>202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.resx">
+      <DependentUpon>202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">

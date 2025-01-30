@@ -63,7 +63,7 @@ namespace Core.ApplicationServices.Users.Write
                             using var transaction = _transactionManager.Begin();
 
 
-                            var user = _userService.AddUser(parameters.User, parameters.SendMailOnCreation, organization.Id);
+                            var user = _userService.AddUser(parameters.User, parameters.SendMailOnCreation, organization.Id, true);
 
                             var roleAssignmentError = AssignUserAdministrativeRoles(organization.Id, user.Id, parameters.Roles);
 
@@ -103,7 +103,7 @@ namespace Core.ApplicationServices.Users.Write
             }
 
             var user = updateUserResult.Value;
-            _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id);
+            _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id, true);
             transactionManager.Commit();
             return user;
         }
@@ -121,7 +121,7 @@ namespace Core.ApplicationServices.Users.Write
             {
                 return user.Error;
             }
-            _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value);
+            _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value, true);
             return Maybe<OperationError>.None;
         }
 
@@ -181,7 +181,7 @@ namespace Core.ApplicationServices.Users.Write
             return ChangeLocalAdminStatus(organizationUuid, userUuid, (orgId, userId) => _organizationRightsService.RemoveRole(orgId, userId, OrganizationRole.LocalAdmin)).MatchFailure();
         }
 
-        public void RequestPasswordReset(string email)
+        public void RequestPasswordReset(string email, bool newUi)
         {
             var userResult = _userRepository.GetByEmail(email).FromNullable();
             if (userResult.IsNone)
@@ -193,7 +193,7 @@ namespace Core.ApplicationServices.Users.Write
             {
                 return;
             }
-            _userService.IssuePasswordReset(user, null, null, true);
+            _userService.IssuePasswordReset(user, null, null, newUi);
         }
 
         private Result<User, OperationError> ChangeLocalAdminStatus<T>(Guid organizationUuid, Guid userUuid, Func<int, int, Result<T, OperationFailure>> changeLocalAdminStatus)
@@ -231,7 +231,7 @@ namespace Core.ApplicationServices.Users.Write
                     user =>
                     {
                         transaction.Commit();
-                        _userService.UpdateUser(user, null, null);
+                        _userService.UpdateUser(user, null, null, true);
                         return user;
                     },
                     error =>
