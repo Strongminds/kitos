@@ -6,5 +6,7 @@ namespace Presentation.Web.Models.API.V2.Response.Shared
     public class ExternalReferenceDataResponseDTO : ExternalReferenceDataWriteRequestDTO
     {
         public Guid Uuid { get; set; }
+        public string LastChangedByUsername { get; set; }
+        public DateTime? LastChangedDate { get; set; }
     }
 }
