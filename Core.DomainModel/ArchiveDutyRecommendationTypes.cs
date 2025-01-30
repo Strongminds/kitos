@@ -18,7 +18,9 @@
         /// No recommendation exists from the archiving authority
         /// </summary>
         NoRecommendation = 3,
-
+        /// <summary>
+        /// Recommends data is kept, but selected or all documents are discarded
+        /// </summary>
         PreserveDataDiscardOption = 4,
     }
 }
