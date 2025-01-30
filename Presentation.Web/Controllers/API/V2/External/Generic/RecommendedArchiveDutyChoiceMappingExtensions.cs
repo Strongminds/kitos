@@ -16,7 +16,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Generic
                 (RecommendedArchiveDutyChoice.K, ArchiveDutyRecommendationTypes.K),
                 (RecommendedArchiveDutyChoice.NoRecommendation, ArchiveDutyRecommendationTypes.NoRecommendation),
                 (RecommendedArchiveDutyChoice.Undecided, ArchiveDutyRecommendationTypes.Undecided),
-                (RecommendedArchiveDutyChoice.PreserveDataDiscardOption, ArchiveDutyRecommendationTypes.PreserveDataCanDiscardDocuments)
+                (RecommendedArchiveDutyChoice.PreserveDataCanDiscardDocuments, ArchiveDutyRecommendationTypes.PreserveDataCanDiscardDocuments)
             );
         }
 
