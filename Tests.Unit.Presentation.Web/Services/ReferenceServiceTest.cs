@@ -39,6 +39,7 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IItSystemUsageRepository> _systemUsageRepository;
         private readonly Mock<IItContractRepository> _contractRepository;
         private readonly Mock<IDataProcessingRegistrationRepository> _dataProcessingRegistrationRepositoryMock;
+        private readonly Mock<IOrganizationalUserContext> _userContext;
 
         public ReferenceServiceTest()
         {
@@ -50,6 +51,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _systemUsageRepository = new Mock<IItSystemUsageRepository>();
             _contractRepository = new Mock<IItContractRepository>();
             _dataProcessingRegistrationRepositoryMock = new Mock<IDataProcessingRegistrationRepository>();
+            _userContext = new Mock<IOrganizationalUserContext>();
             _sut = new ReferenceService(
                 _referenceRepository.Object,
                 _systemRepository.Object,
@@ -59,7 +61,8 @@ namespace Tests.Unit.Presentation.Web.Services
                 _authorizationContext.Object,
                 _transactionManager.Object,
                 Mock.Of<IOperationClock>(x => x.Now == DateTime.Now),
-                Mock.Of<IDomainEvents>()
+                Mock.Of<IDomainEvents>(),
+                _userContext.Object
             );
         }
 
@@ -499,7 +502,7 @@ namespace Tests.Unit.Presentation.Web.Services
             var rootType = A<ReferenceRootType>();
             var referenceUuid = A<Guid>();
             var entity = new Mock<IEntityWithExternalReferences>();
-            var externalReference = new ExternalReference(){ Uuid = A<Guid>()};
+            var externalReference = new ExternalReference() { Uuid = A<Guid>() };
             SetOwnerWithMainReference(externalReference);
 
             var externalReferenceProperties = new ExternalReferenceProperties(A<string>(), A<string>(), A<string>(), false);
@@ -544,7 +547,7 @@ namespace Tests.Unit.Presentation.Web.Services
             var referenceUuid = A<Guid>();
             var properties = A<ExternalReferenceProperties>();
             var entity = new Mock<IEntityWithExternalReferences>();
-            var externalReference = new ExternalReference(){Uuid = referenceUuid};
+            var externalReference = new ExternalReference() { Uuid = referenceUuid };
             ExpectGetRootEntityReturns(id, rootType, Maybe<IEntityWithExternalReferences>.Some(entity.Object));
             ExpectAllowModifyReturns(entity.Object, true);
             ExpectGetByUuid(referenceUuid, externalReference);

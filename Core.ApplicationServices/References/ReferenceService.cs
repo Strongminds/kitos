@@ -35,8 +35,8 @@ namespace Core.ApplicationServices.References
         private readonly ITransactionManager _transactionManager;
         private readonly IOperationClock _operationClock;
         private readonly IDomainEvents _domainEvents;
-
-
+        private readonly IOrganizationalUserContext _userContext;
+        
         public ReferenceService(
             IReferenceRepository referenceRepository,
             IItSystemRepository itSystemRepository,
@@ -46,7 +46,8 @@ namespace Core.ApplicationServices.References
             IAuthorizationContext authorizationContext,
             ITransactionManager transactionManager,
             IOperationClock operationClock,
-            IDomainEvents domainEvents)
+            IDomainEvents domainEvents,
+            IOrganizationalUserContext userContext)
         {
             _referenceRepository = referenceRepository;
             _itSystemRepository = itSystemRepository;
@@ -57,6 +58,7 @@ namespace Core.ApplicationServices.References
             _transactionManager = transactionManager;
             _operationClock = operationClock;
             _domainEvents = domainEvents;
+            _userContext = userContext;
         }
 
         public Result<ExternalReference, OperationError> AddReference(
@@ -66,7 +68,7 @@ namespace Core.ApplicationServices.References
         {
             return GetRootEntityAndCheckWriteAccess(rootId, rootType)
                 .Bind(root => root
-                    .AddExternalReference(new ExternalReference {Created = _operationClock.Now}
+                    .AddExternalReference(new ExternalReference { Created = _operationClock.Now }
                         .Transform(x => MapPropertiesToExternalReference(x, externalReferenceProperties))
                     )
                     .Match<Result<ExternalReference, OperationError>>
@@ -111,7 +113,7 @@ namespace Core.ApplicationServices.References
                                     return new OperationError("A master reference must be defined", OperationFailure.BadInput);
                                 }
 
-                                _domainEvents.Raise(new EntityCreatedEvent<ExternalReference>(reference));
+                                _domainEvents.Raise(new EntityUpdatedEvent<ExternalReference>(reference));
                                 RaiseRootUpdated(root);
                                 _referenceRepository.SaveRootEntity(root);
 
@@ -232,7 +234,7 @@ namespace Core.ApplicationServices.References
                         }
 
                         //Order to make sure the first update occurs on the future master reference. In that way, we cannot get into a situation where we temporarily have no master ref (update will fail)
-                        var referencesWithMasterAsHead = referenceList.OrderByDescending(r=>r.MasterReference).ToList();
+                        var referencesWithMasterAsHead = referenceList.OrderByDescending(r => r.MasterReference).ToList();
                         foreach (var externalReferenceProperties in referencesWithMasterAsHead)
                         {
                             //Replace references, which are identified by the update using uuids
@@ -269,12 +271,12 @@ namespace Core.ApplicationServices.References
             return error;
         }
 
-        private static ExternalReference MapPropertiesToExternalReference(ExternalReference reference, ExternalReferenceProperties properties)
+        private ExternalReference MapPropertiesToExternalReference(ExternalReference reference, ExternalReferenceProperties properties)
         {
             reference.Title = properties.Title;
             reference.ExternalReferenceId = properties.DocumentId;
             reference.URL = properties.Url;
-
+            reference.LastChangedByUserId = _userContext.UserId;
             return reference;
         }
 
