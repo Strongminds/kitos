@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
@@ -8,7 +7,7 @@ using Core.DomainModel.Qa.References;
 
 namespace Core.DomainModel
 {
-    public class ExternalReference : Entity, ISystemModule, IContractModule, IDataProcessingModule, IHasUuid, IDomainEvent
+    public class ExternalReference : Entity, ISystemModule, IContractModule, IDataProcessingModule, IHasUuid
     {
         public ExternalReference()
         {
