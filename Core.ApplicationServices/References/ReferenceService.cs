@@ -276,7 +276,6 @@ namespace Core.ApplicationServices.References
             reference.Title = properties.Title;
             reference.ExternalReferenceId = properties.DocumentId;
             reference.URL = properties.Url;
-            reference.LastChangedByUserId = _userContext.UserId;
             return reference;
         }
 

@@ -26,6 +26,8 @@ using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
 using Core.DomainServices.Role;
 using Core.DomainServices.SystemUsage;
+using Infrastructure.DataAccess.Services;
+using Infrastructure.DataAccess.Tools;
 using Infrastructure.Services.DataAccess;
 using Serilog;
 
@@ -55,6 +57,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private readonly IAttachedOptionsAssignmentService<RegisterType, ItSystemUsage> _registerTypeAssignmentService;
         private readonly IGenericRepository<ItSystemUsageSensitiveDataLevel> _sensitiveDataLevelRepository;
         private readonly IGenericRepository<ItSystemUsagePersonalData> _personalDataOptionsRepository;
+        private readonly IGenericRepository<ItSystemUsage> _usageGenericRepository;
         
         public ItSystemUsageWriteService(
             IItSystemUsageService systemUsageService,
@@ -78,7 +81,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
             IOptionsService<ItSystemUsage, ArchiveTestLocation> archiveTestLocationOptionsService,
             IItsystemUsageRelationsService systemUsageRelationsService,
             IEntityIdentityResolver identityResolver,
-            IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository)
+            IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository,
+            IGenericRepository<ItSystemUsage> usageGenericRepository)
         {
             _systemUsageService = systemUsageService;
             _transactionManager = transactionManager;
@@ -102,6 +106,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             _systemUsageRelationsService = systemUsageRelationsService;
             _identityResolver = identityResolver;
             _personalDataOptionsRepository = personalDataOptionsRepository;
+            _usageGenericRepository = usageGenericRepository;
         }
 
         public Result<ItSystemUsage, OperationError> Create(SystemUsageCreationParameters parameters)
@@ -165,7 +170,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         public Result<ItSystemUsage, OperationError> Update(Guid systemUsageUuid, SystemUsageUpdateParameters parameters)
         {
-            return Update(() => _systemUsageService.GetReadableItSystemUsageByUuid(systemUsageUuid), parameters);
+            var updateResult = Update(() => _systemUsageService.GetReadableItSystemUsageByUuid(systemUsageUuid), parameters);
+            var a = NoTrackingQuery.AsNoTracking(_usageGenericRepository.AsQueryable());
+            return a.First(x => x.Uuid == systemUsageUuid);
         }
 
         public Result<ItSystemUsage, OperationError> AddRole(Guid systemUsageUuid, UserRolePair assignment)
