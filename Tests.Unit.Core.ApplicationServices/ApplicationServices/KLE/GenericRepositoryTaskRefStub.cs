@@ -54,6 +54,11 @@ namespace Tests.Unit.Core.ApplicationServices.KLE
             return _taskRefs.Values.AsQueryable();
         }
 
+        public IQueryable<TaskRef> NoTracking()
+        {
+            return AsQueryable();
+        }
+
         public int Count => _taskRefs.Count;
 
         public TaskRef Create() { throw new NotImplementedException(); }

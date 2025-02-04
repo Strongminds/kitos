@@ -57,6 +57,8 @@ namespace Core.DomainServices
 
         IQueryable<TModel> AsQueryable();
 
+        IQueryable<TModel> NoTracking();
+
         TModel Create();
 
         int Count { get; }

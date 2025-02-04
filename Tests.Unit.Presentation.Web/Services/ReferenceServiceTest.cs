@@ -39,7 +39,6 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IItSystemUsageRepository> _systemUsageRepository;
         private readonly Mock<IItContractRepository> _contractRepository;
         private readonly Mock<IDataProcessingRegistrationRepository> _dataProcessingRegistrationRepositoryMock;
-        private readonly Mock<IOrganizationalUserContext> _userContext;
 
         public ReferenceServiceTest()
         {
@@ -51,7 +50,6 @@ namespace Tests.Unit.Presentation.Web.Services
             _systemUsageRepository = new Mock<IItSystemUsageRepository>();
             _contractRepository = new Mock<IItContractRepository>();
             _dataProcessingRegistrationRepositoryMock = new Mock<IDataProcessingRegistrationRepository>();
-            _userContext = new Mock<IOrganizationalUserContext>();
             _sut = new ReferenceService(
                 _referenceRepository.Object,
                 _systemRepository.Object,
@@ -61,8 +59,7 @@ namespace Tests.Unit.Presentation.Web.Services
                 _authorizationContext.Object,
                 _transactionManager.Object,
                 Mock.Of<IOperationClock>(x => x.Now == DateTime.Now),
-                Mock.Of<IDomainEvents>(),
-                _userContext.Object
+                Mock.Of<IDomainEvents>()
             );
         }
 

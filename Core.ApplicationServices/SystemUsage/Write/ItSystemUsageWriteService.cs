@@ -22,12 +22,11 @@ using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainModel.References;
 using Core.DomainServices;
+using Core.DomainServices.Extensions;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
 using Core.DomainServices.Role;
 using Core.DomainServices.SystemUsage;
-using Infrastructure.DataAccess.Services;
-using Infrastructure.DataAccess.Tools;
 using Infrastructure.Services.DataAccess;
 using Serilog;
 
@@ -58,7 +57,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private readonly IGenericRepository<ItSystemUsageSensitiveDataLevel> _sensitiveDataLevelRepository;
         private readonly IGenericRepository<ItSystemUsagePersonalData> _personalDataOptionsRepository;
         private readonly IGenericRepository<ItSystemUsage> _usageGenericRepository;
-        
+
         public ItSystemUsageWriteService(
             IItSystemUsageService systemUsageService,
             ITransactionManager transactionManager,
@@ -157,7 +156,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(_ =>
                     {
                         var getIdResult = _identityResolver.ResolveDbId<ExternalReference>(externalReferenceUuid);
-                        if(getIdResult.IsNone)
+                        if (getIdResult.IsNone)
                             return new OperationError($"ExternalReference with uuid: {externalReferenceUuid} was not found", OperationFailure.NotFound);
                         var externalReferenceId = getIdResult.Value;
 
@@ -170,9 +169,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         public Result<ItSystemUsage, OperationError> Update(Guid systemUsageUuid, SystemUsageUpdateParameters parameters)
         {
-            var updateResult = Update(() => _systemUsageService.GetReadableItSystemUsageByUuid(systemUsageUuid), parameters);
-            var a = NoTrackingQuery.AsNoTracking(_usageGenericRepository.AsQueryable());
-            return a.First(x => x.Uuid == systemUsageUuid);
+            return Update(() => _systemUsageService.GetReadableItSystemUsageByUuid(systemUsageUuid), parameters)
+                .Select(_ => _usageGenericRepository.NoTracking().ByUuid(systemUsageUuid));
         }
 
         public Result<ItSystemUsage, OperationError> AddRole(Guid systemUsageUuid, UserRolePair assignment)
