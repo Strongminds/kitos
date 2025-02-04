@@ -268,7 +268,7 @@ namespace Core.ApplicationServices.References
             return error;
         }
 
-        private ExternalReference MapPropertiesToExternalReference(ExternalReference reference, ExternalReferenceProperties properties)
+        private static ExternalReference MapPropertiesToExternalReference(ExternalReference reference, ExternalReferenceProperties properties)
         {
             reference.Title = properties.Title;
             reference.ExternalReferenceId = properties.DocumentId;
