@@ -35,8 +35,7 @@ namespace Core.ApplicationServices.References
         private readonly ITransactionManager _transactionManager;
         private readonly IOperationClock _operationClock;
         private readonly IDomainEvents _domainEvents;
-        private readonly IOrganizationalUserContext _userContext;
-        
+
         public ReferenceService(
             IReferenceRepository referenceRepository,
             IItSystemRepository itSystemRepository,
@@ -46,8 +45,7 @@ namespace Core.ApplicationServices.References
             IAuthorizationContext authorizationContext,
             ITransactionManager transactionManager,
             IOperationClock operationClock,
-            IDomainEvents domainEvents,
-            IOrganizationalUserContext userContext)
+            IDomainEvents domainEvents)
         {
             _referenceRepository = referenceRepository;
             _itSystemRepository = itSystemRepository;
@@ -58,7 +56,6 @@ namespace Core.ApplicationServices.References
             _transactionManager = transactionManager;
             _operationClock = operationClock;
             _domainEvents = domainEvents;
-            _userContext = userContext;
         }
 
         public Result<ExternalReference, OperationError> AddReference(
