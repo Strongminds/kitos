@@ -138,7 +138,6 @@ using Kombit.InfrastructureSamples.Token;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
-using Infrastructure.DataAccess.Tools;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 
 namespace Presentation.Web.Ninject
