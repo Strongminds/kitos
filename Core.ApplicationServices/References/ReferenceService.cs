@@ -12,6 +12,8 @@ using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.References;
+using Core.DomainServices;
+using Core.DomainServices.Generic;
 using Core.DomainServices.Repositories.Contract;
 using Core.DomainServices.Repositories.GDPR;
 using Core.DomainServices.Repositories.Reference;
@@ -35,6 +37,7 @@ namespace Core.ApplicationServices.References
         private readonly ITransactionManager _transactionManager;
         private readonly IOperationClock _operationClock;
         private readonly IDomainEvents _domainEvents;
+        private readonly IEntityIdentityResolver _entityIdentityResolver;
 
 
         public ReferenceService(
@@ -46,7 +49,8 @@ namespace Core.ApplicationServices.References
             IAuthorizationContext authorizationContext,
             ITransactionManager transactionManager,
             IOperationClock operationClock,
-            IDomainEvents domainEvents)
+            IDomainEvents domainEvents,
+            IEntityIdentityResolver entityIdentityResolver)
         {
             _referenceRepository = referenceRepository;
             _itSystemRepository = itSystemRepository;
@@ -57,6 +61,7 @@ namespace Core.ApplicationServices.References
             _transactionManager = transactionManager;
             _operationClock = operationClock;
             _domainEvents = domainEvents;
+            _entityIdentityResolver = entityIdentityResolver;
         }
 
         public Result<ExternalReference, OperationError> AddReference(
@@ -66,7 +71,7 @@ namespace Core.ApplicationServices.References
         {
             return GetRootEntityAndCheckWriteAccess(rootId, rootType)
                 .Bind(root => root
-                    .AddExternalReference(new ExternalReference {Created = _operationClock.Now}
+                    .AddExternalReference(new ExternalReference { Created = _operationClock.Now }
                         .Transform(x => MapPropertiesToExternalReference(x, externalReferenceProperties))
                     )
                     .Match<Result<ExternalReference, OperationError>>
@@ -232,7 +237,7 @@ namespace Core.ApplicationServices.References
                         }
 
                         //Order to make sure the first update occurs on the future master reference. In that way, we cannot get into a situation where we temporarily have no master ref (update will fail)
-                        var referencesWithMasterAsHead = referenceList.OrderByDescending(r=>r.MasterReference).ToList();
+                        var referencesWithMasterAsHead = referenceList.OrderByDescending(r => r.MasterReference).ToList();
                         foreach (var externalReferenceProperties in referencesWithMasterAsHead)
                         {
                             //Replace references, which are identified by the update using uuids
@@ -267,6 +272,31 @@ namespace Core.ApplicationServices.References
                 transaction.Rollback();
 
             return error;
+        }
+
+        public Result<IEnumerable<ExternalReference>, OperationError> GetExternalReferences(ReferenceRootType rootType, Guid rootUuid)
+        {
+            return _itSystemRepository.GetSystem(rootUuid).Select(refs => refs.ExternalReferences)
+                .Match<Result<IEnumerable<ExternalReference>, OperationError>>(refs => refs.ToList(), () => new OperationError(OperationFailure.NotFound));
+        }
+
+        private Maybe<ICollection<ExternalReference>> GetReferences(ReferenceRootType rootType, Guid rootUuid)
+        {
+            _entityIdentityResolver.ResolveDbId<>()
+        }
+
+        private Maybe<int> ResolveRootId(ReferenceRootType rootType, Guid rootUuid)
+        {
+            switch (rootType)
+            {
+                case ReferenceRootType.System:
+                    return _entityIdentityResolver.ResolveDbId<ItSystem>(rootUuid);
+                case ReferenceRootType.SystemUsage:
+                    return _entityIdentityResolver.ResolveDbId<ItSystemUsage>(rootUuid);
+                case ReferenceRootType.Contract:
+                    return _entityIdentityResolver.ResolveDbId<ItContract>(rootUuid);
+                case ReferenceRootType.DataProcessingRegistration.
+            }
         }
 
         private static ExternalReference MapPropertiesToExternalReference(ExternalReference reference, ExternalReferenceProperties properties)
