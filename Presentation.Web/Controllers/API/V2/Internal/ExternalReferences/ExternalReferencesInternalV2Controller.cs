@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using Core.ApplicationServices.Contract;
 using Core.ApplicationServices.GDPR;
@@ -9,6 +10,7 @@ using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response.ExternalReferences;
+using Swashbuckle.Swagger.Annotations;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 {
@@ -29,6 +31,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
         }
 
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
         [Route("it-systems/{systemUuid}")]
         public IHttpActionResult GetItSystemReferences([NonEmptyGuid][FromUri] Guid systemUuid)
         {
@@ -38,6 +45,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
         }
 
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
         [Route("it-system-usages/{systemUsageUuid}")]
         public IHttpActionResult GetItSystemUsageReferences([NonEmptyGuid][FromUri] Guid systemUsageUuid)
         {
@@ -47,6 +59,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
         }
 
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
         [Route("it-contracts/{contractUuid}")]
         public IHttpActionResult GetItContractReferences([NonEmptyGuid][FromUri] Guid contractUuid)
         {
@@ -56,6 +73,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
         }
 
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
         [Route("data-processing/{dprUuid}")]
         public IHttpActionResult GetDataProcessingReferences([NonEmptyGuid][FromUri] Guid dprUuid)
         {
