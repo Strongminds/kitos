@@ -19,8 +19,5 @@ namespace Core.ApplicationServices.References
         Result<IEnumerable<ExternalReference>, OperationFailure> DeleteByContractId(int contractId);
         Result<IEnumerable<ExternalReference>, OperationFailure> DeleteByDataProcessingRegistrationId(int id);
         Maybe<OperationError> UpdateExternalReferences(ReferenceRootType rootType, int rootId, IEnumerable<UpdatedExternalReferenceProperties> externalReferences);
-
-        Result<IEnumerable<ExternalReference>, OperationError> GetExternalReferences(ReferenceRootType rootType,
-            Guid rootUuid);
     }
 }
