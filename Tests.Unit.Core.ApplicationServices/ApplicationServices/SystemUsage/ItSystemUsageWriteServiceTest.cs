@@ -63,6 +63,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IEntityIdentityResolver> _identityResolverMock;
         private readonly Mock<IItsystemUsageRelationsService> _systemUsageRelationServiceMock;
         private readonly Mock<IGenericRepository<ItSystemUsagePersonalData>> _personalDataOptionsRepository;
+        private readonly Mock<IGenericRepository<ItSystemUsage>> _usageRepoMock;
 
         public ItSystemUsageWriteServiceTest()
         {
@@ -86,6 +87,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
             _systemUsageRelationServiceMock = new Mock<IItsystemUsageRelationsService>();
             _personalDataOptionsRepository = new Mock<IGenericRepository<ItSystemUsagePersonalData>>();
+            _usageRepoMock = new Mock<IGenericRepository<ItSystemUsage>>();
             _sut = new ItSystemUsageWriteService(_itSystemUsageServiceMock.Object, _transactionManagerMock.Object,
                 _itSystemServiceMock.Object, _organizationServiceMock.Object, _authorizationContextMock.Object,
                 _systemCategoriesOptionsServiceMock.Object, _contractServiceMock.Object,
@@ -98,7 +100,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _archiveTestLocationOptionsServiceMock.Object,
                 _systemUsageRelationServiceMock.Object,
                 _identityResolverMock.Object,
-                _personalDataOptionsRepository.Object);
+                _personalDataOptionsRepository.Object,
+                _usageRepoMock.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
