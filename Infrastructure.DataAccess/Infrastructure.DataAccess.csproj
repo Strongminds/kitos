@@ -1166,7 +1166,6 @@
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_UserNotification.sql" />
     <Compile Include="Services\DatabaseTransaction.cs" />
     <Compile Include="Services\EntityFrameworkContextDatabaseControl.cs" />
-    <Compile Include="Tools\NoTrackingQuery.cs" />
     <Compile Include="Services\PocoTypeFromProxyResolver.cs" />
     <Compile Include="Services\WithinAmbienTransaction.cs" />
     <Compile Include="Services\TransactionManager.cs" />
