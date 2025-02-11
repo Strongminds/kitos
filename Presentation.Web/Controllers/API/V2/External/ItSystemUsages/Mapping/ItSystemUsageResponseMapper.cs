@@ -184,7 +184,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     LifeCycleStatus = MapLifeCycleStatus(systemUsage),
                     ValidFrom = systemUsage.Concluded,
                     ValidTo = systemUsage.ExpirationDate
-                }
+                },
+                ContainsAITechnology = systemUsage.ContainsAITechnology
             };
         }
 
