@@ -18,5 +18,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<DateTime>> ValidFrom { get; set; } = OptionalValueChange<Maybe<DateTime>>.None;
         public OptionalValueChange<Maybe<DateTime>> ValidTo { get; set; } = OptionalValueChange<Maybe<DateTime>>.None;
         public OptionalValueChange<Maybe<Guid>> MainContractUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
+        public OptionalValueChange<bool> ContainsAITechnology { get; set; } = OptionalValueChange<bool>.None;
     }
 }

@@ -242,6 +242,9 @@ namespace Core.DomainModel.ItSystemUsage
 
         public UserCount? UserCount { get; set; }
 
+        public bool? ContainsAITechnology { get; set; }
+
+
         #region GDPR
         public string GeneralPurpose { get; set; }
         public DataOptions? isBusinessCritical { get; set; }

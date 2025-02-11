@@ -11,5 +11,6 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// </summary>
         [NonEmptyGuid]
         public Guid? MainContractUuid { get; set; }
+        public bool? ContainsAITechnology { get; set; }
     }
 }
