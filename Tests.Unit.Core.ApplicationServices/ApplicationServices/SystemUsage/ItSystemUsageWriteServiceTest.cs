@@ -2851,6 +2851,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(generalProperties.LocalSystemId.NewValue, actual.LocalSystemId);
             Assert.Equal(generalProperties.SystemVersion.NewValue, actual.Version);
             Assert.Equal(generalProperties.Notes.NewValue, actual.Note);
+            Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             if (shouldBeEmpty)
             {
                 Assert.Null(actual.Concluded);
@@ -2926,7 +2927,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     Notes = A<string>().AsChangedValue(),
                     LifeCycleStatus = A<LifeCycleStatusType?>().AsChangedValue(),
                     ValidFrom = Maybe<DateTime>.Some(DateTime.Now).AsChangedValue(),
-                    ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue()
+                    ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
+                    ContainsAITechnology = Maybe<bool>.Some(A<bool>()).AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -2975,7 +2977,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     Notes = "".AsChangedValue(),
                     LifeCycleStatus = new ChangedValue<LifeCycleStatusType?>(null),
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
-                    ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None)
+                    ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
+                    ContainsAITechnology = new ChangedValue<Maybe<bool>>(Maybe<bool>.Some(false))
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {

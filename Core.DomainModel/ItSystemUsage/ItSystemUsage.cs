@@ -326,6 +326,11 @@ namespace Core.DomainModel.ItSystemUsage
         public bool HasDataProcessingAgreement() =>
             AssociatedDataProcessingRegistrations?.Any(x => x.IsAgreementConcluded == YesNoIrrelevantOption.YES) == true;
 
+        public void UpdateContainsAITechnology(Maybe<bool> containsAITechnology)
+        {
+            if (containsAITechnology.HasValue) ContainsAITechnology = containsAITechnology.Value;
+            else ContainsAITechnology = null;
+        }
 
         public Result<SystemRelation, OperationError> AddUsageRelationTo(
             ItSystemUsage toSystemUsage,
