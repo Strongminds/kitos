@@ -220,6 +220,8 @@ namespace Core.DomainModel.ItSystemUsage
         public bool? Registertype { get; set; }
 
         public int? ArchiveSupplierId { get; set; }
+
+        public bool? ContainsAITechnology { get; set; }
         public virtual Organization.Organization ArchiveSupplier { get; set; }
 
         /// <summary>

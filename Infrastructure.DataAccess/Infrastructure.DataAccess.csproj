@@ -1091,6 +1091,10 @@
     <Compile Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.Designer.cs">
       <DependentUpon>202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502110616308_test.cs" />
+    <Compile Include="Migrations\202502110616308_test.designer.cs">
+      <DependentUpon>202502110616308_test.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix staging DB\Delete_Users_Other_Than_Preserved_Users.sql" />
@@ -1145,6 +1149,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.resx">
       <DependentUpon>202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502110616308_test.resx">
+      <DependentUpon>202502110616308_test.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">

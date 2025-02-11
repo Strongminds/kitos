@@ -48,6 +48,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
             }
         }
 
+        public bool? ContainsAITechnology { get; set; }
         public int OrganizationId { get; set; }
         public Organization.Organization Organization { get; set; }
         public int Id { get; set; }
