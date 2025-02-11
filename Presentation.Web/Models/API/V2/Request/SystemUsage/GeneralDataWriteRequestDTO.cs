@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Core.DomainModel.ItSystemUsage;
 using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 
 namespace Presentation.Web.Models.API.V2.Request.SystemUsage
@@ -47,6 +48,9 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// </summary>
         public ItSystemUsageValidityWriteRequestDTO Validity { get; set; }
 
-        public bool? ContainsAITechnology { get; set; }
+        /// <summary>
+        /// Whether the system usage is known to include any kind of AI technology
+        /// </summary>
+        public YesNoUndecidedChoice? ContainsAITechnology { get; set; }
     }
 }

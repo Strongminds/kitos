@@ -26,6 +26,7 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainModel.References;
+using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
@@ -2851,16 +2852,18 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(generalProperties.LocalSystemId.NewValue, actual.LocalSystemId);
             Assert.Equal(generalProperties.SystemVersion.NewValue, actual.Version);
             Assert.Equal(generalProperties.Notes.NewValue, actual.Note);
-            Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
+            
             if (shouldBeEmpty)
             {
                 Assert.Null(actual.Concluded);
                 Assert.Null(actual.ExpirationDate);
+                Assert.Null(actual.ContainsAITechnology);
             }
             else
             {
                 Assert.Equal(generalProperties.ValidFrom.NewValue.Value.Date, actual.Concluded);
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
+                Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
 
             //Archiving
@@ -2928,7 +2931,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     LifeCycleStatus = A<LifeCycleStatusType?>().AsChangedValue(),
                     ValidFrom = Maybe<DateTime>.Some(DateTime.Now).AsChangedValue(),
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
-                    ContainsAITechnology = Maybe<bool>.Some(A<bool>()).AsChangedValue(),
+                    ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -2978,7 +2981,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     LifeCycleStatus = new ChangedValue<LifeCycleStatusType?>(null),
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
-                    ContainsAITechnology = new ChangedValue<Maybe<bool>>(Maybe<bool>.Some(false))
+                    ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None)
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {

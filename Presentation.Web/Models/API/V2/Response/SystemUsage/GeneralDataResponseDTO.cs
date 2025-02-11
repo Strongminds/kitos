@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
@@ -40,6 +41,6 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         public IdentityNamePairResponseDTO MainContract { get; set; }
 
-        public bool? ContainsAITechnology { get; set; }
+        public YesNoUndecidedChoice? ContainsAITechnology { get; set; }
     }
 }
