@@ -46,5 +46,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Validity of the system usage
         /// </summary>
         public ItSystemUsageValidityWriteRequestDTO Validity { get; set; }
+
+        public bool? ContainsAITechnology { get; set; }
     }
 }

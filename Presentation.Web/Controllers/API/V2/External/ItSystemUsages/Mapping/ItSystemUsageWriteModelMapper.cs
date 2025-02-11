@@ -398,6 +398,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ValidTo = rule.MustUpdate(x => x.General.Validity.ValidTo)
                     ? (source.Validity?.ValidTo?.FromNullable() ?? Maybe<DateTime>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<DateTime>>.None,
+
+                ContainsAITechnology = rule.MustUpdate(x => x.General.ContainsAITechnology)
+                    ? (source.ContainsAITechnology?.FromNullable() ?? Maybe<bool>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<bool>>.None
             };
         }
 

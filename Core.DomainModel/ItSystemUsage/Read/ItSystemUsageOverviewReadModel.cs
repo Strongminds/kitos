@@ -69,6 +69,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public bool? ParentItSystemDisabled { get; set; }
         public Guid? ParentItSystemUsageUuid { get; set; }
         public string Version { get; set; }
+        public bool? ContainsAITechnology { get; set; }
         public string LocalCallName { get; set; }
         public string LocalSystemId { get; set; }
         public virtual ICollection<ItSystemUsageOverviewRoleAssignmentReadModel> RoleAssignments { get; set; }
