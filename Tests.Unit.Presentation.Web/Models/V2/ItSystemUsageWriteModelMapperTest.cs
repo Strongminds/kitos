@@ -1309,6 +1309,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 AssertPropertyContainsDataChange(output.NumberOfExpectedUsersInterval).lower);
             Assert.Equal(input.NumberOfExpectedUsers.UpperBound,
                 AssertPropertyContainsDataChange(output.NumberOfExpectedUsersInterval).upperBound);
+            Assert.Equal(input.ContainsAITechnology, AssertPropertyContainsDataChange(output.ContainsAITechnology));
         }
 
         private static void AssertKLE(IEnumerable<Guid> expected, OptionalValueChange<Maybe<IEnumerable<Guid>>> actual)
