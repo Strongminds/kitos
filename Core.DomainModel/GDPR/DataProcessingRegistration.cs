@@ -7,6 +7,7 @@ using Core.DomainModel.Extensions;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.Notification;
+using Core.DomainModel.Organization;
 using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 
@@ -333,6 +334,10 @@ namespace Core.DomainModel.GDPR
         public YearMonthIntervalOption? OversightInterval { get; set; }
 
         public string OversightIntervalRemark { get; set; }
+
+        public int? ResponsibleOrganizationUnitId { get; set; }
+
+        public virtual OrganizationUnit ResponsibleOrganizationUnit { get; set; } 
 
         public void SetIsAgreementConcluded(YesNoIrrelevantOption concluded)
         {
