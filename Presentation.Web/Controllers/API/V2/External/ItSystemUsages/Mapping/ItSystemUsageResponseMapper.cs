@@ -14,6 +14,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -185,7 +186,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ValidFrom = systemUsage.Concluded,
                     ValidTo = systemUsage.ExpirationDate
                 },
-                ContainsAITechnology = systemUsage.ContainsAITechnology
+                ContainsAITechnology = systemUsage.ContainsAITechnology?.ToYesNoUndecidedChoice(),
             };
         }
 

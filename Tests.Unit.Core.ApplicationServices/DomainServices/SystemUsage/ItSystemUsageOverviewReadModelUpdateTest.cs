@@ -251,7 +251,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 LifeCycleStatus = A<LifeCycleStatusType>()
             };
 
-            systemUsage.ContainsAITechnology = A<bool>();
+            systemUsage.ContainsAITechnology = A<YesNoUndecidedOption>();
 
             // Add ResponsibleOrganizationUnit
             var responsibleOrgUnitUsage = CreateOrganizationUnitUsage(systemUsage);

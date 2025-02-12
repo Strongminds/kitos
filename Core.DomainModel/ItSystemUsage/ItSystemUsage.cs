@@ -242,7 +242,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public UserCount? UserCount { get; set; }
 
-        public bool? ContainsAITechnology { get; set; }
+        public YesNoUndecidedOption? ContainsAITechnology { get; set; }
 
 
         #region GDPR
@@ -326,7 +326,7 @@ namespace Core.DomainModel.ItSystemUsage
         public bool HasDataProcessingAgreement() =>
             AssociatedDataProcessingRegistrations?.Any(x => x.IsAgreementConcluded == YesNoIrrelevantOption.YES) == true;
 
-        public void UpdateContainsAITechnology(Maybe<bool> containsAITechnology)
+        public void UpdateContainsAITechnology(Maybe<YesNoUndecidedOption> containsAITechnology)
         {
             if (containsAITechnology.HasValue) ContainsAITechnology = containsAITechnology.Value;
             else ContainsAITechnology = null;

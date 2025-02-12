@@ -11,6 +11,7 @@ using Core.DomainModel;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
+using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
@@ -18,6 +19,7 @@ using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -400,8 +402,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
                 ContainsAITechnology = rule.MustUpdate(x => x.General.ContainsAITechnology)
-                    ? (source.ContainsAITechnology?.FromNullable() ?? Maybe<bool>.None).AsChangedValue()
-                    : OptionalValueChange<Maybe<bool>>.None
+                    ? (source.ContainsAITechnology?.ToYesNoUndecidedOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<YesNoUndecidedOption>>.None
             };
         }
 
