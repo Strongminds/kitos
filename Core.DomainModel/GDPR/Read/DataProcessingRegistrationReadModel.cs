@@ -72,5 +72,7 @@ namespace Core.DomainModel.GDPR.Read
         public int? LastChangedById { get; set; }
         public string LastChangedByName { get; set; }
         public DateTime LastChangedAt { get; set; }
+        public int? ResponsibleOrgUnitId { get; set; }
+        public string ResponsibleOrgUnitName { get; set; }
     }
 }
