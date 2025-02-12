@@ -2231,6 +2231,33 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
         [Fact]
+        public void Can_Reset_Responsible_Unit()
+        {
+            //Arrange
+            Guid? orgUnitUuid = null;
+            var parameters = new DataProcessingRegistrationModificationParameters
+            {
+                General = new UpdatedDataProcessingRegistrationGeneralDataParameters { ResponsibleUnitUuid = orgUnitUuid.AsChangedValue() }
+            };
+            var dataProcessingRegistration = new DataProcessingRegistration
+            {
+                ResponsibleOrganizationUnit = new OrganizationUnit {Uuid = A<Guid>()}
+            };
+            var transaction = ExpectTransaction();
+            var dprUuid = A<Guid>();
+
+            ExpectGetDataProcessingRegistrationReturns(dprUuid, dataProcessingRegistration);
+
+            //Act
+            var result = _sut.Update(dprUuid, parameters);
+
+            //Assert
+            Assert.True(result.Ok);
+            Assert.Null(result.Value.ResponsibleOrganizationUnit);
+            AssertTransactionCommitted(transaction);
+        }
+
+        [Fact]
         public void Can_Not_Update_If_Unit_Does_Not_Exist_In_Organization()
         {
             //Arrange
