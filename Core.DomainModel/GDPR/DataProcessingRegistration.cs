@@ -483,6 +483,24 @@ namespace Core.DomainModel.GDPR
             return OversightDates.FirstOrDefault(x => x.Id == oversightId).FromNullable();
         }
 
+        public Maybe<OperationError> SetResponsibleOrganizationUnit(Guid organizationUnitUuid)
+        {
+            var unit = Organization.GetOrganizationUnit(organizationUnitUuid);
+            if (unit.IsNone)
+            {
+                return new OperationError($"Could not find Organization Unit with uuid {organizationUnitUuid}", OperationFailure.BadInput);
+            }
+
+            ResponsibleOrganizationUnit = unit.Value;
+            return Maybe<OperationError>.None;
+        }
+
+        public void ResetResponsibleOrganizationUnit()
+        {
+            ResponsibleOrganizationUnit?.Track();
+            ResponsibleOrganizationUnit = null;
+        }
+
         public void MarkAsDirty()
         {
             LastChanged = DateTime.UtcNow;
