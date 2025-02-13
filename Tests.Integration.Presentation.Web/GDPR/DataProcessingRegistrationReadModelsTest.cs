@@ -176,7 +176,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(oversightRemark, readModel.LatestOversightRemark);
             Assert.True(readModel.IsActive);
             Assert.True(readModel.ActiveAccordingToMainContract);
-            Assert.Equal();
 
             Console.Out.WriteLine("Flat values asserted");
             Console.Out.WriteLine("Asserting role assignments");

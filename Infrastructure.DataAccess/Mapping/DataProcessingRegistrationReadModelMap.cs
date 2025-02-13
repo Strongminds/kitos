@@ -101,6 +101,10 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.ActiveAccordingToMainContract)
                 .HasIndexAnnotation("IX_DPR_MainContractIsActive");
 
+            Property(x => x.ResponsibleOrgUnitUuid)
+                .IsOptional()
+                .HasIndexAnnotation("IX_DPR_ResponsibleOrgUnitUuid");
+
             Property(x => x.ResponsibleOrgUnitId)
                 .IsOptional()
                 .HasIndexAnnotation("IX_DPR_ResponsibleOrgUnitId");
