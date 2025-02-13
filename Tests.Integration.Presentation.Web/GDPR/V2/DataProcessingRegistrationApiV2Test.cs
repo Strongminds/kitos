@@ -1463,6 +1463,26 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             dtos.Select(x => new { x.Uuid, x.Name }).ToExpectedObject().ShouldMatch(new[] { new { usage1.Uuid, system1.Name }, new { usage2.Uuid, system2.Name } });
         }
 
+        [Fact]
+        public async Task Can_Not_Update_DPR_If_Org_Unit_Doesnt_Exist()
+        {
+            var invalidOrgUnitGuid = A<Guid>();
+            var (token, _, org) = await CreatePrerequisitesAsync();
+            var createdDpr = await DataProcessingRegistrationV2Helper.PostAsync(token, new CreateDataProcessingRegistrationRequestDTO
+            {
+                Name = CreateName(),
+                OrganizationUuid = org.Uuid
+            });
+            var generalData = new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                { ResponsibleOrganizationUnitUuid = invalidOrgUnitGuid };
+
+            var response = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, createdDpr.Uuid, generalData);
+
+            Assert.False(response.IsSuccessStatusCode);
+
+
+        }
+
         #region Asserters
 
         private static void AssertExternalReferenceResults(List<ExternalReferenceDataWriteRequestDTO> expected, DataProcessingRegistrationResponseDTO actual)
