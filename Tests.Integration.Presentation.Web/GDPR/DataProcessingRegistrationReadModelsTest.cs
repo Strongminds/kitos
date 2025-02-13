@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel.Shared;
 using Tests.Integration.Presentation.Web.Tools;
+using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Patterns;
 using Xunit;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
@@ -175,6 +176,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(oversightRemark, readModel.LatestOversightRemark);
             Assert.True(readModel.IsActive);
             Assert.True(readModel.ActiveAccordingToMainContract);
+            Assert.Equal();
 
             Console.Out.WriteLine("Flat values asserted");
             Console.Out.WriteLine("Asserting role assignments");
