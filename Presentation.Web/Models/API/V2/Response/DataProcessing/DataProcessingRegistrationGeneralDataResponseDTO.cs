@@ -74,7 +74,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// The organization unit responsible for this data processing registration
         /// </summary>
-        public IdentityNamePairResponseDTO OrganizationUnit { get; set; }
+        public IdentityNamePairResponseDTO ResponsibleOrganizationUnit { get; set; }
 
     }
 }
