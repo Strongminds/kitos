@@ -1,8 +1,9 @@
 ﻿namespace Infrastructure.DataAccess.Migrations
 {
+    using System;
     using System.Data.Entity.Migrations;
     
-    public partial class add_responsible_unit_to_dpr : DbMigration
+    public partial class AddResponsibleUnitToDPR : DbMigration
     {
         public override void Up()
         {

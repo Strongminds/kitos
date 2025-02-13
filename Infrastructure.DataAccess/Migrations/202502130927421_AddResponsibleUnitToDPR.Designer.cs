@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class add_responsible_unit_to_dpr : IMigrationMetadata
+    public sealed partial class AddResponsibleUnitToDPR : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(add_responsible_unit_to_dpr));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddResponsibleUnitToDPR));
         
         string IMigrationMetadata.Id
         {
-            get { return "202502121329387_add_responsible_unit_to_dpr"; }
+            get { return "202502130927421_AddResponsibleUnitToDPR"; }
         }
         
         string IMigrationMetadata.Source
