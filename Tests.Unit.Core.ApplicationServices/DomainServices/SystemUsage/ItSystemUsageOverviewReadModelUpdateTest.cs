@@ -196,7 +196,9 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                         TaskKey = A<string>(),
                         Description = A<string>()
                     }
-                }
+                },
+                ArchiveDuty = A<ArchiveDutyRecommendationTypes>(),
+                ArchiveDutyComment = A<string>(),
             };
             var systemUsage = new ItSystemUsage
             {
@@ -250,6 +252,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 },
                 LifeCycleStatus = A<LifeCycleStatusType>()
             };
+
+            systemUsage.ContainsAITechnology = A<YesNoUndecidedOption>();
 
             // Add ResponsibleOrganizationUnit
             var responsibleOrgUnitUsage = CreateOrganizationUnitUsage(systemUsage);
@@ -333,6 +337,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.ItSystem.Description, readModel.SystemDescription);
             Assert.Equal(systemUsage.DPIA, readModel.DPIAConducted);
             Assert.Equal(systemUsage.isBusinessCritical, readModel.IsBusinessCritical);
+            Assert.Equal(systemUsage.ContainsAITechnology, readModel.ContainsAITechnology);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
@@ -352,6 +357,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(system.BusinessType.Id, readModel.ItSystemBusinessTypeId);
             Assert.Equal(system.BusinessType.Uuid, readModel.ItSystemBusinessTypeUuid);
             Assert.Equal(system.BusinessType.Name, readModel.ItSystemBusinessTypeName);
+            Assert.Equal(system.ArchiveDuty, readModel.CatalogArchiveDuty);
+            Assert.Equal(system.ArchiveDutyComment, readModel.CatalogArchiveDutyComment);
 
             //Parent System
             Assert.Equal(parentSystem.Name, readModel.ParentItSystemName);
