@@ -7,10 +7,12 @@ namespace PubSub.Application
     public class RabbitMQPublisher : IPublisher
     {
         private readonly IConnectionFactory _connectionFactory;
+        private readonly IMessageSerializer _messageSerializer;
 
-        public RabbitMQPublisher(IConnectionFactory connectionFactory)
+        public RabbitMQPublisher(IConnectionFactory connectionFactory, IMessageSerializer messageSerializer)
         {
             _connectionFactory = connectionFactory;
+            _messageSerializer = messageSerializer;
         }
 
         public async Task Publish(string queue, string message)
