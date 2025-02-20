@@ -1,6 +1,10 @@
-﻿namespace PubSub.Application.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace PubSub.Application.Controllers
 {
-    public class PublishController
+    [ApiController]
+    [Route("")]
+    public class PublishController: ControllerBase
     {
     }
 }
