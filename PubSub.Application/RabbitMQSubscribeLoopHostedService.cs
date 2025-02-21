@@ -7,7 +7,7 @@ namespace PubSub.Application
     public class RabbitMQSubscribeLoopHostedService : BackgroundService, ISubscribeLoopHostedService
     {
         private readonly IConnectionFactory _connectionFactory;
-        private IEnumerable<Subscription> _subscriptions = new List<Subscription>();
+        private IEnumerable<Subscription> _subscriptions = [];
         private ISet<string> _queues = new HashSet<string>();
         private readonly IMessageSerializer _messageSerializer;
 
@@ -56,8 +56,10 @@ namespace PubSub.Application
             using var channel = await connection.CreateChannelAsync();
             var consumerCallback = GetConsumerCallback(channel);
 
-
-            await channel.BasicConsumeAsync(_queue, autoAck: true, consumer: consumerCallback);
+            foreach (var queue in _queues)
+            {
+                await channel.BasicConsumeAsync(queue, autoAck: true, consumer: consumerCallback);
+            }
         }
 
         private IAsyncBasicConsumer GetConsumerCallback(IChannel channel) {
