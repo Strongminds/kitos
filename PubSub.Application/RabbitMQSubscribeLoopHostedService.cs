@@ -7,7 +7,8 @@ namespace PubSub.Application
     public class RabbitMQSubscribeLoopHostedService : BackgroundService, ISubscribeLoopHostedService
     {
         private readonly IConnectionFactory _connectionFactory;
-        private readonly IEnumerable<Subscription> _subscriptions = new List<Subscription>();
+        private IEnumerable<Subscription> _subscriptions = new List<Subscription>();
+        private ISet<string> _queues = new HashSet<string>();
         private readonly IMessageSerializer _messageSerializer;
 
         public RabbitMQSubscribeLoopHostedService(IConnectionFactory connectionFactory, IMessageSerializer messageSerializer)
@@ -16,20 +17,22 @@ namespace PubSub.Application
             _messageSerializer = messageSerializer;
         }
 
-        public async Task UpdateSubscriptions(IList<Subscription> subscriptions)
+        public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
+            _subscriptions = subscriptions;
             using var connection = await _connectionFactory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
-            var allQueues = new HashSet<string>();
+            var queuesSet = new HashSet<string>();
             foreach (var subscription in subscriptions)
             {
                 foreach (var queue in subscription.Queues)
                 {
-                    allQueues.Add(queue);
+                    queuesSet.Add(queue);
                 }
             }
+            _queues = queuesSet;
 
-            foreach (var queue in allQueues)
+            foreach (var queue in queuesSet)
             {
                 await channel.QueueDeclareAsync(queue);
             }
@@ -52,6 +55,7 @@ namespace PubSub.Application
             using var connection = await _connectionFactory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
             var consumerCallback = GetConsumerCallback(channel);
+
 
             await channel.BasicConsumeAsync(_queue, autoAck: true, consumer: consumerCallback);
         }
