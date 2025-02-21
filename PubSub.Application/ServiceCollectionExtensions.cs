@@ -1,4 +1,6 @@
-﻿namespace PubSub.Application;
+﻿using PubSub.Application.StartupTasks;
+
+namespace PubSub.Application;
 
 public static class ServiceCollectionExtensions
 {

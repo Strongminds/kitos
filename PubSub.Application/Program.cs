@@ -1,4 +1,5 @@
 using PubSub.Application;
+using PubSub.Application.StartupTasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IPublisher, RabbitMQPublisher>();
+builder.Services.AddSingleton<ISubscribeLoopHostedService, RabbitMQSubscribeLoopHostedService>();
+builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<ISubscribeLoopHostedService>());
+builder.Services.AddStartupTask<StartSubscribeLoopStartupTask>();
 
 var app = builder.Build();
 
@@ -22,4 +27,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await StartupTaskRunner.RunAsync(app.Services.GetServices<IStartupTask>());
+
+await app.RunAsync();
