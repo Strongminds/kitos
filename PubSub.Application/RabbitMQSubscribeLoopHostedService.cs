@@ -1,6 +1,7 @@
 ﻿
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Threading.Channels;
 
 namespace PubSub.Application
 {
@@ -40,6 +41,12 @@ namespace PubSub.Application
             using var channel = await connection.CreateChannelAsync();
             await channel.QueueDeclareAsync(_queue);
 
+            var consumerCallback = GetConsumerCallback(channel);
+
+            await channel.BasicConsumeAsync(_queue, autoAck: true, consumer: consumerCallback);
+        }
+
+        private IAsyncBasicConsumer GetConsumerCallback(IChannel channel) {
             var consumerCallback = new AsyncEventingBasicConsumer(channel);
             consumerCallback.ReceivedAsync += (model, eventArgs) =>
             {
@@ -48,9 +55,7 @@ namespace PubSub.Application
                 Console.WriteLine($"Received {message}");
                 return Task.CompletedTask;
             };
-
-            await channel.BasicConsumeAsync(_queue, autoAck: true, consumer: consumerCallback);
-
+            return consumerCallback;
         }
     }
 }
