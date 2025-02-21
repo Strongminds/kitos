@@ -147,6 +147,11 @@ namespace Core.ApplicationServices.System.Write
                 });
         }
 
+        public Result<ItSystem, OperationError> DBSUpdate(Guid systemUuid, DBSUpdateParameters parameters)
+        {
+            throw new NotImplementedException();
+        }
+
         public Result<ExternalReference, OperationError> AddExternalReference(Guid systemUuid, ExternalReferenceProperties externalReferenceProperties)
         {
             return GetSystemAndAuthorizeAccess(systemUuid)

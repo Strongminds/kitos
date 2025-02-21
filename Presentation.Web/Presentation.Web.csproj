@@ -368,6 +368,8 @@
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationTypeMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\ItSystems\ItSystemDBSV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\DBSWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\IDBSWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\OrganizationUnits\OrganizationUnitRoleTypeV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ExternalReferences\ExternalReferencesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GdprExportReportInternalV2Controller.cs" />
