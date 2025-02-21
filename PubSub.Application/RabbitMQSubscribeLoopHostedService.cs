@@ -1,7 +1,6 @@
 ﻿
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
 
 namespace PubSub.Application
 {
@@ -9,19 +8,19 @@ namespace PubSub.Application
     {
         private readonly IConnectionFactory _connectionFactory;
         private readonly string _queue;
+        private readonly IMessageSerializer _messageSerializer;
 
-        public RabbitMQSubscribeLoopHostedService(IConnectionFactory connectionFactory, string queue)
+        public RabbitMQSubscribeLoopHostedService(IConnectionFactory connectionFactory, string queue, IMessageSerializer messageSerializer)
         {
             _connectionFactory = connectionFactory;
             _queue = queue;
+            _messageSerializer = messageSerializer;
         }
 
         public void UpdateSubscriptions(IList<Subscription> subscriptions)
         {
             throw new NotImplementedException();
         }
-
-        
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -45,7 +44,7 @@ namespace PubSub.Application
             consumerCallback.ReceivedAsync += (model, eventArgs) =>
             {
                 var body = eventArgs.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
+                var message = _messageSerializer.Deserialize(body);
                 Console.WriteLine($"Received {message}");
                 return Task.CompletedTask;
             };

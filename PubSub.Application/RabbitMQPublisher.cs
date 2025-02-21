@@ -1,6 +1,5 @@
 ﻿
 using RabbitMQ.Client;
-using System.Text;
 
 namespace PubSub.Application
 {
@@ -21,7 +20,7 @@ namespace PubSub.Application
             using var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(queue);
-            var serializedBody = Encoding.UTF8.GetBytes(message);
+            var serializedBody = _messageSerializer.Serialize(message);
 
             await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queue, body: serializedBody);
             Console.WriteLine($"Published {message}");
