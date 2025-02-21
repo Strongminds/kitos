@@ -2,6 +2,6 @@
 {
     public interface ISubscribeLoopHostedService: IHostedService
     {
-        void UpdateSubscriptions(IList<Subscription> subscriptions);
+        Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions);
     }
 }
