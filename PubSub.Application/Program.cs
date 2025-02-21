@@ -1,14 +1,19 @@
 using PubSub.Application;
 using PubSub.Application.StartupTasks;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var connectionFactory = new ConnectionFactory { HostName = "localhost " };
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPublisher, RabbitMQPublisher>();
+builder.Services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
+builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscribeLoopHostedService, RabbitMQSubscribeLoopHostedService>();
 builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<ISubscribeLoopHostedService>());
 builder.Services.AddStartupTask<StartSubscribeLoopStartupTask>();
