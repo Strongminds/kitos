@@ -14,8 +14,10 @@ namespace PubSub.Application
             _messageSerializer = messageSerializer;
         }
 
-        public async Task Publish(string queue, string message)
+        public async Task Publish(Publication publication)
         {
+            var queue = publication.Queue;
+            var message = publication.Body;
             using var connection = await _connectionFactory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
 

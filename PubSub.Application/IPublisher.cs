@@ -2,6 +2,6 @@
 {
     public interface IPublisher
     {
-        Task Publish(string queue, string message);
+        Task Publish(Publication publication);
     }
 }
