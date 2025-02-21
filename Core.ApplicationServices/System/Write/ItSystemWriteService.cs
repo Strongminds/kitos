@@ -106,29 +106,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> Update(Guid systemUuid, SystemUpdateParameters parameters)
         {
-            using var transaction = _transactionManager.Begin();
-            try
-            {
-                var result = GetSystemAndAuthorizeAccess(systemUuid)
-                    .Bind(system => ApplyUpdates(system, parameters));
-
-                if (result.Ok)
-                {
-                    SaveAndNotify(result.Value, transaction);
-                }
-                else
-                {
-                    transaction.Rollback();
-                    _logger.Error("User {id} failed to update It-System {uuid} due to error: {errorMessage}", _userContext.UserId, systemUuid, result.Error.ToString());
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "User {id} Failed updating system with uuid {uuid}", _userContext.UserId, systemUuid);
-                return new OperationError(OperationFailure.UnknownError);
-            }
+            return PerformUpdateTransaction(systemUuid, system => ApplyUpdates(system, parameters));
         }
 
         public Result<ItSystem, OperationError> Delete(Guid systemUuid)
@@ -149,7 +127,14 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> DBSUpdate(Guid systemUuid, DBSUpdateParameters parameters)
         {
-            throw new NotImplementedException();
+            return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters));
+        }
+
+        private Result<ItSystem, OperationError> ApplyDBSUpdates(ItSystem itSystem, DBSUpdateParameters parameters)
+        {
+            return itSystem.WithOptionalUpdate(parameters.SystemName, (sys, dbsName) => sys.UpdateDBSName(dbsName))
+                .Bind(system => system.WithOptionalUpdate(parameters.DataProcessorName, (sys, dbsDataProcessorName) => sys.UpdateDBSDataProcessorName(dbsDataProcessorName)));
+
         }
 
         public Result<ExternalReference, OperationError> AddExternalReference(Guid systemUuid, ExternalReferenceProperties externalReferenceProperties)
@@ -180,6 +165,34 @@ namespace Core.ApplicationServices.System.Write
                             operationFailure =>
                                 new OperationError($"Failed to remove the ExternalReference with uuid: {externalReferenceUuid}", operationFailure));
                 });
+        }
+
+        private Result<ItSystem, OperationError> PerformUpdateTransaction(Guid systemUuid,
+            Func<ItSystem, Result<ItSystem, OperationError>> mutation)
+        {
+            using var transaction = _transactionManager.Begin();
+            try
+            {
+                var result = GetSystemAndAuthorizeAccess(systemUuid)
+                    .Bind(mutation);
+
+                if (result.Ok)
+                {
+                    SaveAndNotify(result.Value, transaction);
+                }
+                else
+                {
+                    transaction.Rollback();
+                    _logger.Error("User {id} failed to update It-System {uuid} due to error: {errorMessage}", _userContext.UserId, systemUuid, result.Error.ToString());
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "User {id} Failed updating system with uuid {uuid}", _userContext.UserId, systemUuid);
+                return new OperationError(OperationFailure.UnknownError);
+            }
         }
 
         private Result<ItSystem, OperationError> WithWriteAccess(ItSystem system)
