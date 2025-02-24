@@ -39,14 +39,14 @@ namespace PubSub.Test.Unit
         public async Task Can_Add_Subscription_To_Existing_Topic()
         {
             var setupSubscription = _fixture.Create<Subscription>();
-            var topic = new Topic() { Name = setupSubscription.Topics.First() };
+            var topic = setupSubscription.Topics.First();
             Assert.NotNull(topic);
             var setupSubs = new List<Subscription> { setupSubscription };
             await _sut.Add(setupSubs);
 
             var newSub = new Subscription()
             {
-                Topics = new List<string> { topic.Name },
+                Topics = new List<Topic> { topic },
                 Callback = _fixture.Create<string>()
             };
 

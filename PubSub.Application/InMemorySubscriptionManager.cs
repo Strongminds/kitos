@@ -11,13 +11,12 @@ namespace PubSub.Application
             {
                 foreach (var topic in subscription.Topics)
                 {
-                    var asTopic = new Topic { Name = topic };
-                    if (topics.TryGetValue(asTopic, out var callbacks)){
+                    if (topics.TryGetValue(topic, out var callbacks)){
                         callbacks.Add(subscription.Callback);
                     }
                     else
                     {
-                        topics.Add(asTopic, new HashSet<string>() { subscription.Callback });
+                        topics.Add(topic, new HashSet<string>() { subscription.Callback });
                     }
                 }
             }

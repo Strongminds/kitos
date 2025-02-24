@@ -17,7 +17,7 @@ public class SubscribeController : ControllerBase
     public async Task<IActionResult> Subscribe([FromBody] SubscriptionRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var subscriptions = new List<Subscription>() { new Subscription { Callback = request.Callback, Topics = request.Queues } };
+        var subscriptions = new List<Subscription>() { new Subscription { Callback = request.Callback, Topics = request.Queues.Select(q => new Topic { Name = q}) } };
         await _subscribeLoopHostedService.UpdateSubscriptions(subscriptions);
         return Ok();
     }
