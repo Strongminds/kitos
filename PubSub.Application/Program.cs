@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var connectionFactory = new ConnectionFactory { HostName = "localhost " };
+var connectionFactory = new ConnectionFactory { HostName = "localhost" };
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
