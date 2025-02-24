@@ -1119,6 +1119,10 @@
     <Compile Include="Migrations\202502240851021_AddDBSFieldsToItSystem.Designer.cs">
       <DependentUpon>202502240851021_AddDBSFieldsToItSystem.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502240858588_AddIndexesToDBSFields.cs" />
+    <Compile Include="Migrations\202502240858588_AddIndexesToDBSFields.Designer.cs">
+      <DependentUpon>202502240858588_AddIndexesToDBSFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix staging DB\Delete_Users_Other_Than_Preserved_Users.sql" />
@@ -1194,6 +1198,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502240851021_AddDBSFieldsToItSystem.resx">
       <DependentUpon>202502240851021_AddDBSFieldsToItSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502240858588_AddIndexesToDBSFields.resx">
+      <DependentUpon>202502240858588_AddIndexesToDBSFields.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
