@@ -3,8 +3,6 @@ using PubSub.Application.StartupTasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -13,7 +11,7 @@ await builder.Services.AddRabbitMQ();
 builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<ISubscribeLoopHostedService>());
 builder.Services.AddStartupTask<StartSubscribeLoopStartupTask>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
-builder.Services.AddSingleton<ITopicManager, InMemoryTopicManager>();
+builder.Services.AddSingleton<ISubscriptionManager, InMemorySubscriptionManager>();
 
 var app = builder.Build();
 

@@ -10,7 +10,7 @@ namespace PubSub.Test.Unit
         private Fixture _fixture;
         private Mock<IMessageSerializer> _messageSerializer;
         private Mock<IChannel> _channel;
-        private Mock<ITopicManager> _topicManager;
+        private Mock<ISubscriptionManager> _topicManager;
         private RabbitMQSubscribeLoopHostedService _sut;
 
         public RabbitMQSubscribeLoopHostedServiceTest()
@@ -18,14 +18,13 @@ namespace PubSub.Test.Unit
             _fixture = new Fixture();
             _messageSerializer = new Mock<IMessageSerializer>();
             _channel = new Mock<IChannel>();
-            _topicManager = new Mock<ITopicManager>();
+            _topicManager = new Mock<ISubscriptionManager>();
             _sut = new RabbitMQSubscribeLoopHostedService(_messageSerializer.Object, _channel.Object, _topicManager.Object);
         }
 
         [Fact]
         public async Task Can_Update_Subscriptions()
         {
-            _fixture = new Fixture();
             var subscriptions = new List<Subscription> { _fixture.Create<Subscription>() };
 
             await _sut.UpdateSubscriptions(subscriptions);

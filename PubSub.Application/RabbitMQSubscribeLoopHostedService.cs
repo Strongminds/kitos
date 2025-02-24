@@ -11,9 +11,9 @@ namespace PubSub.Application
         private ISet<string> _topics = new HashSet<string>();
         private readonly IMessageSerializer _messageSerializer;
         private readonly IChannel _channel;
-        private readonly ITopicManager _topicManager;
+        private readonly ISubscriptionManager _topicManager;
 
-        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ITopicManager topicManager)
+        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ISubscriptionManager topicManager)
         {
             _messageSerializer = messageSerializer;
             _channel = channel;

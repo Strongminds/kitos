@@ -1,8 +1,8 @@
 ﻿namespace PubSub.Application
 {
-    public interface ITopicManager
+    public interface ISubscriptionManager
     {
-        Dictionary<Topic, IEnumerable<string>> Get();
+        Dictionary<Topic, ISet<string>> Get();
         Task Add(IEnumerable<Subscription> subscriptions);
     }
 }
