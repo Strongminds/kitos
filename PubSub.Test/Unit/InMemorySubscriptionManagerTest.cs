@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Moq;
 using PubSub.Application;
 
 namespace PubSub.Test.Unit
@@ -6,12 +7,14 @@ namespace PubSub.Test.Unit
     public class InMemorySubscriptionManagerTest
     {
         private Fixture _fixture;
+        private Mock<IMessageBusTopicManager> _messageBusTopicManager;
         private InMemorySubscriptionManager _sut;
 
         public InMemorySubscriptionManagerTest()
         {
             _fixture = new Fixture();
-            _sut = new InMemorySubscriptionManager();
+            _messageBusTopicManager = new Mock<IMessageBusTopicManager>();
+            _sut = new InMemorySubscriptionManager(_messageBusTopicManager.Object);
         }
 
         [Fact]
@@ -33,6 +36,7 @@ namespace PubSub.Test.Unit
                     Assert.Contains(expected.Callback, callbacks);
                 }
             }
+            _messageBusTopicManager.Verify(_ => _.Add(It.IsAny<Topic>()));
         }
 
         [Fact]
@@ -55,7 +59,7 @@ namespace PubSub.Test.Unit
             var actual = _sut.Get();
             var actualCallbacks = actual.First(x => x.Key == topic).Value;
             Assert.Equal(2, actualCallbacks.Count);
-
+            _messageBusTopicManager.Verify(_ => _.Add(It.IsAny<Topic>()));
         }
     }
 }
