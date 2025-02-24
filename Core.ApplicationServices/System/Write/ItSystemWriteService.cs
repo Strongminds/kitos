@@ -130,13 +130,6 @@ namespace Core.ApplicationServices.System.Write
             return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters), WithDBSWriteAccess);
         }
 
-        private Result<ItSystem, OperationError> ApplyDBSUpdates(ItSystem itSystem, DBSUpdateParameters parameters)
-        {
-            return itSystem.WithOptionalUpdate(parameters.SystemName, (sys, dbsName) => sys.UpdateDBSName(dbsName))
-                .Bind(system => system.WithOptionalUpdate(parameters.DataProcessorName, (sys, dbsDataProcessorName) => sys.UpdateDBSDataProcessorName(dbsDataProcessorName)));
-
-        }
-
         public Result<ExternalReference, OperationError> AddExternalReference(Guid systemUuid, ExternalReferenceProperties externalReferenceProperties)
         {
             return GetSystemAndAuthorizeAccess(systemUuid)
@@ -216,6 +209,13 @@ namespace Core.ApplicationServices.System.Write
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.RightsHolderUuid, (itSystem, newValue) => _systemService.UpdateRightsHolder(itSystem.Id, newValue)))
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Scope, (itSystem, newValue) => _systemService.UpdateAccessModifier(itSystem.Id, newValue)))
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Deactivated, HandleDeactivatedState));
+        }
+
+        private Result<ItSystem, OperationError> ApplyDBSUpdates(ItSystem itSystem, DBSUpdateParameters parameters)
+        {
+            return itSystem.WithOptionalUpdate(parameters.SystemName, (sys, dbsName) => sys.UpdateDBSName(dbsName))
+                .Bind(system => system.WithOptionalUpdate(parameters.DataProcessorName, (sys, dbsDataProcessorName) => sys.UpdateDBSDataProcessorName(dbsDataProcessorName)));
+
         }
 
         private Result<ItSystem, OperationError> HandleDeactivatedState(ItSystem itSystem, bool deactivated)
