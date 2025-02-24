@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPublisher, RabbitMQPublisher>();
         services.AddSingleton(_ => channel);
         services.AddSingleton<ISubscribeLoopHostedService, RabbitMQSubscribeLoopHostedService>();
-        services.AddScoped<IMessageBusTopicManager, RabbitMQMessageBusTopicManager>();
+        services.AddSingleton<IMessageBusTopicManager, RabbitMQMessageBusTopicManager>();
         return services;
     }
 }
