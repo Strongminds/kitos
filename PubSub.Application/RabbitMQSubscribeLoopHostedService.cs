@@ -8,21 +8,20 @@ namespace PubSub.Application
     public class RabbitMQSubscribeLoopHostedService : BackgroundService, ISubscribeLoopHostedService
     {
         private IEnumerable<Subscription> _subscriptions = [];
-        private ISet<string> _topics = new HashSet<string>();
         private readonly IMessageSerializer _messageSerializer;
         private readonly IChannel _channel;
-        private readonly ISubscriptionManager _topicManager;
+        private readonly ISubscriptionManager _subscriptionManager;
 
         public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ISubscriptionManager topicManager)
         {
             _messageSerializer = messageSerializer;
             _channel = channel;
-            _topicManager = topicManager;
+            _subscriptionManager = topicManager;
         }
 
         public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            await _topicManager.Add(subscriptions);
+            await _subscriptionManager.Add(subscriptions);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -39,17 +38,19 @@ namespace PubSub.Application
 
         private async Task ConsumeNextMessage(IChannel channel)
         {
-            var consumerCallback = GetConsumerCallback(channel);
-            foreach (var queue in _topics)
+            var subscriptions = _subscriptionManager.Get();
+            foreach (var topic in subscriptions.Keys)
             {
-                Console.WriteLine(queue + " is queue");
-                await channel.BasicConsumeAsync(queue, autoAck: true, consumer: consumerCallback);
+                var callbackUrls = subscriptions.GetValueOrDefault(topic);
+                foreach (var url in callbackUrls!)
+                {
+                    var consumerCallback = GetConsumerCallback(channel, url);
+                    await channel.BasicConsumeAsync(topic.Name, autoAck: true, consumer: consumerCallback);
+                }
             }
         }
 
-        private IAsyncBasicConsumer GetConsumerCallback(IChannel channel) {
-            var callbackUrl = _subscriptions.FirstOrDefault()?.Callback ?? "nourl";
-
+        private IAsyncBasicConsumer GetConsumerCallback(IChannel channel, string callbackUrl) {
             var consumerCallback = new AsyncEventingBasicConsumer(channel);
             consumerCallback.ReceivedAsync += async (model, eventArgs) =>
             {
