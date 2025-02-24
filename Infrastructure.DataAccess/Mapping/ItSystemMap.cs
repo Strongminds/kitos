@@ -61,6 +61,14 @@ namespace Infrastructure.DataAccess.Mapping
                 .IsRequired()
                 .HasUniqueIndexAnnotation("UX_System_Uuuid", 0);
 
+            Property(x => x.DBSName)
+                .IsOptional()
+                .HasMaxLength(ItSystem.MaxNameLength);
+
+            Property(x => x.DBSDataProcessorName)
+                .IsOptional()
+                .HasMaxLength(ItSystem.MaxNameLength);
+
             TypeMapping.AddIndexOnAccessModifier<ItSystemMap, ItSystem>(this);
         }
     }
