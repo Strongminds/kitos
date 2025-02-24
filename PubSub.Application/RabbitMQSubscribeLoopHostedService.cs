@@ -10,19 +10,17 @@ namespace PubSub.Application
         private IEnumerable<Subscription> _subscriptions = [];
         private ISet<string> _queues = new HashSet<string>();
         private readonly IMessageSerializer _messageSerializer;
-        private readonly IConnection _connection;
-        private IChannel? _channel;
+        private IChannel _channel;
 
-        public RabbitMQSubscribeLoopHostedService(IConnection connection, IMessageSerializer messageSerializer)
+        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel)
         {
-            _connection = connection;
     
             _messageSerializer = messageSerializer;
+            _channel = channel;
         }
 
         public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            if (_channel == null) _channel = await _connection.CreateChannelAsync();
             _subscriptions = subscriptions;
 
             var queuesSet = new HashSet<string>();
@@ -48,7 +46,6 @@ namespace PubSub.Application
         }
 
         private async Task RunSubscribeLoop(CancellationToken stoppingToken) {
-            if (_channel == null) _channel = await _connection.CreateChannelAsync();
             while (!stoppingToken.IsCancellationRequested)
             {
                 await ConsumeNextMessage(_channel);
