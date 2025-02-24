@@ -100,6 +100,7 @@
     <Compile Include="Mapping\KendoOrganizationalConfigurationMap.cs" />
     <Compile Include="Mapping\LifeCycleTrackingEventMap.cs" />
     <Compile Include="Mapping\PendingReadModelUpdateMap.cs" />
+    <Compile Include="Mapping\PublicMessageMap.cs" />
     <Compile Include="Mapping\StsOrganizationChangeLogMap.cs" />
     <Compile Include="Mapping\StsOrganizationConnectionMap.cs" />
     <Compile Include="Mapping\StsOrganizationConsequenceLogMap.cs" />

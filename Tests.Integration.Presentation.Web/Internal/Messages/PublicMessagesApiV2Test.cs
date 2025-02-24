@@ -159,7 +159,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var expected = ChangePublicMessages();
             var newText = A<string>();
-            expected.StatusMessages = newText;
+            expected.StatusMessagesDetails = newText;
 
             //Act
             using var patchResponse = await HttpApi.PatchWithCookieAsync(_rootUrl, cookie, new
@@ -177,7 +177,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
             //Arrange
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var expected = ChangePublicMessages();
-            expected.StatusMessages = A<string>();
+            expected.StatusMessagesDetails = A<string>();
             expected.About = A<string>();
             expected.Guides = A<string>();
             expected.Misc = A<string>();
@@ -186,7 +186,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
             //Act
             using var patchResponse = await HttpApi.PatchWithCookieAsync(_rootUrl, cookie, new
             {
-                expected.StatusMessages,
+                StatusMessages = expected.StatusMessagesDetails,
                 expected.About,
                 expected.ContactInfo,
                 expected.Misc,
@@ -214,7 +214,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
                     ContactInfo = texts[Text.SectionIds.ContactInfo].Value,
                     Guides = texts[Text.SectionIds.Guides].Value,
                     Misc = texts[Text.SectionIds.Misc].Value,
-                    StatusMessages = texts[Text.SectionIds.StatusMessages].Value
+                    StatusMessagesDetails = texts[Text.SectionIds.StatusMessages].Value
                 };
             });
             return expectedResponse;

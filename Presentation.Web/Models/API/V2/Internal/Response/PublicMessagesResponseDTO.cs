@@ -1,18 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.DomainModel.PublicMessage;
+using Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping;
 
 namespace Presentation.Web.Models.API.V2.Internal.Response
 {
     public class PublicMessagesResponseDTO
     {
+        public PublicMessagesResponseDTO() {}
+
+        public PublicMessagesResponseDTO(PublicMessage publicMessageModel)
+        {
+            LongDescription = publicMessageModel.LongDescription;
+            ShortDescription = publicMessageModel.ShortDescription;
+            Status = publicMessageModel.Status?.ToPublicMessageStatusChoice();
+            Link = publicMessageModel.Link;
+        }
+
         [Required(AllowEmptyStrings = true)]
-        public string About { get; set; }
-        [Required(AllowEmptyStrings = true)]
-        public string Guides { get; set; }
-        [Required(AllowEmptyStrings = true)]
-        public string StatusMessages { get; set; }
-        [Required(AllowEmptyStrings = true)]
-        public string Misc { get; set; }
-        [Required(AllowEmptyStrings = true)]
-        public string ContactInfo { get; set; }
+        public string LongDescription { get; set; }
+        public string ShortDescription { get; set; }
+        public PublicMessageStatusChoice? Status { get; set; }
+        public string Link { get; set; }
     }
 }
