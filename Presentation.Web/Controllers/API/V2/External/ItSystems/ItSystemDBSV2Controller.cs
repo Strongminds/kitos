@@ -21,6 +21,7 @@ public class ItSystemDBSV2Controller : ExternalBaseController
         _writeModelMapper = writeModelMapper;
     }
 
+    [HttpPatch]
     [Route]
     [SwaggerResponse(HttpStatusCode.NoContent)]
     [SwaggerResponse(HttpStatusCode.BadRequest)]

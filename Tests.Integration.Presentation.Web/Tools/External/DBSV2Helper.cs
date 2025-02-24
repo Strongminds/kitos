@@ -15,7 +15,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var url = GetUrl(systemUuid);
-            return await HttpApi.PostWithCookieAsync(url, cookie, request);
+            return await HttpApi.PatchWithCookieAsync(url, cookie, request);
         }
 
         private static Uri GetUrl(Guid systemUuid)
