@@ -76,14 +76,8 @@ namespace PubSub.Application
                 var json = JsonContent.Create(message);
                 var content = new StringContent($"\"{message}\"", Encoding.UTF8, "application/json");
                 var http = new HttpClient();
-//                var res = await http.PostAsync(callbackUrl, content);
-             
                 var res = await http.PostAsync(callbackUrl, content);
-                  Console.WriteLine(res + "  is result");
-              
-
                 Console.WriteLine($"Received {message}");
-                //return Task.CompletedTask;
             };
             return consumerCallback;
         }
