@@ -1,4 +1,5 @@
 using Core.DomainModel.ItSystem;
+using Core.DomainModel.Organization;
 
 namespace Infrastructure.DataAccess.Mapping
 {
@@ -68,7 +69,7 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.DBSDataProcessorName)
                 .IsOptional()
-                .HasMaxLength(ItSystem.MaxNameLength)
+                .HasMaxLength(Organization.MaxNameLength)
                 .HasIndexAnnotation("ItSystem_IX_DBSDataProcessorName"); ;
 
             TypeMapping.AddIndexOnAccessModifier<ItSystemMap, ItSystem>(this);
