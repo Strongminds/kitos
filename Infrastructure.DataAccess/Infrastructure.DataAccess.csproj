@@ -1115,9 +1115,9 @@
     <Compile Include="Migrations\202502131152271_AddResponsibleUnitForDPR.Designer.cs">
       <DependentUpon>202502131152271_AddResponsibleUnitForDPR.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202502241002535_AddDBSFieldsToItSystem.cs" />
-    <Compile Include="Migrations\202502241002535_AddDBSFieldsToItSystem.Designer.cs">
-      <DependentUpon>202502241002535_AddDBSFieldsToItSystem.cs</DependentUpon>
+    <Compile Include="Migrations\202502241008469_AddDBSFieldsToItSystem.cs" />
+    <Compile Include="Migrations\202502241008469_AddDBSFieldsToItSystem.Designer.cs">
+      <DependentUpon>202502241008469_AddDBSFieldsToItSystem.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
@@ -1192,8 +1192,8 @@
     <EmbeddedResource Include="Migrations\202502131152271_AddResponsibleUnitForDPR.resx">
       <DependentUpon>202502131152271_AddResponsibleUnitForDPR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202502241002535_AddDBSFieldsToItSystem.resx">
-      <DependentUpon>202502241002535_AddDBSFieldsToItSystem.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202502241008469_AddDBSFieldsToItSystem.resx">
+      <DependentUpon>202502241008469_AddDBSFieldsToItSystem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
