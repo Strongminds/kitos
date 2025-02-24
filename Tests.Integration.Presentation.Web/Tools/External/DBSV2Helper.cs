@@ -11,11 +11,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         private const string ControllerRoutePrefix = "api/v2/it-systems";
 
         public static async Task<HttpResponseMessage> PatchSystem(Guid systemUuid,
-            UpdateDBSPropertiesRequestDTO request)
+            UpdateDBSPropertiesRequestDTO request, string token = null)
         {
+            var requestToken = token ?? (await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin)).Token;
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var url = GetUrl(systemUuid);
-            return await HttpApi.PatchWithCookieAsync(url, cookie, request);
+            return await HttpApi.PatchWithTokenAsync(url, requestToken, request);
         }
 
         private static Uri GetUrl(Guid systemUuid)

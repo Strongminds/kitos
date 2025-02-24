@@ -106,7 +106,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> Update(Guid systemUuid, SystemUpdateParameters parameters)
         {
-            return PerformUpdateTransaction(systemUuid, system => ApplyUpdates(system, parameters));
+            return PerformUpdateTransaction(systemUuid, system => ApplyUpdates(system, parameters), WithDBSWriteAccess);
         }
 
         public Result<ItSystem, OperationError> Delete(Guid systemUuid)
@@ -127,7 +127,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> DBSUpdate(Guid systemUuid, DBSUpdateParameters parameters)
         {
-            return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters));
+            return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters), WithWriteAccess);
         }
 
         private Result<ItSystem, OperationError> ApplyDBSUpdates(ItSystem itSystem, DBSUpdateParameters parameters)
@@ -168,12 +168,13 @@ namespace Core.ApplicationServices.System.Write
         }
 
         private Result<ItSystem, OperationError> PerformUpdateTransaction(Guid systemUuid,
-            Func<ItSystem, Result<ItSystem, OperationError>> mutation)
+            Func<ItSystem, Result<ItSystem, OperationError>> mutation, Func<ItSystem, Result<ItSystem, OperationError>> authorizeMethod)
         {
             using var transaction = _transactionManager.Begin();
             try
             {
-                var result = GetSystemAndAuthorizeAccess(systemUuid)
+                var result = _systemService.GetSystem(systemUuid)
+                    .Bind(authorizeMethod)
                     .Bind(mutation);
 
                 if (result.Ok)
@@ -296,6 +297,11 @@ namespace Core.ApplicationServices.System.Write
             return _systemService
                 .GetSystem(systemUuid)
                 .Bind(WithWriteAccess);
+        }
+
+        private Result<ItSystem, OperationError> WithDBSWriteAccess(ItSystem system)
+        {
+            return WithWriteAccess(system); //Placeholder for now
         }
     }
 }

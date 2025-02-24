@@ -1010,7 +1010,7 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
             var system = new ItSystem { Uuid = systemUuid };
             var parameters = A<DBSUpdateParameters>();
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
-            ExpectAllowModifyReturns(system, true);
+            ExpectDBSModifyReturns(system, true);
             var transaction = ExpectTransactionBegins();
 
             var result = _sut.DBSUpdate(systemUuid, parameters);
@@ -1019,6 +1019,27 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
             Assert.Equal(parameters.SystemName.NewValue, result.Value.DBSName);
             Assert.Equal(parameters.DataProcessorName.NewValue, result.Value.DBSDataProcessorName);
             transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Can_Only_Update_DBS_Properties_With_Permission(bool hasPermission)
+        {
+            var systemUuid = A<Guid>();
+            var system = new ItSystem { Uuid = systemUuid };
+            ExpectSystemServiceGetSystemReturns(systemUuid, system);
+            ExpectDBSModifyReturns(system, hasPermission);
+            ExpectTransactionBegins();
+
+            var result = _sut.DBSUpdate(systemUuid, A<DBSUpdateParameters>());
+
+            Assert.Equal(hasPermission, result.Ok);
+        }
+
+        private void ExpectDBSModifyReturns(ItSystem system, bool isAllowed)
+        {
+            throw new NotImplementedException();
         }
 
         private ExternalReferenceProperties CreateExternalReferenceProperties()
