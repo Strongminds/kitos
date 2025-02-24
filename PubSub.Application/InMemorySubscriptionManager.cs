@@ -9,7 +9,7 @@ namespace PubSub.Application
         {
             foreach (var subscription in subscriptions)
             {
-                foreach (var topic in subscription.Queues)
+                foreach (var topic in subscription.Topics)
                 {
                     var asTopic = new Topic { Name = topic };
                     if (topics.TryGetValue(asTopic, out var callbacks)){

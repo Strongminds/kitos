@@ -25,10 +25,9 @@ namespace PubSub.Test.Unit
 
             var actual = _sut.Get();
             var expected = subscriptions.First();
-            foreach (var queue in expected.Queues)
+            foreach (var topic in expected.Topics)
             {
-                var asTopic = new Topic() { Name = queue };
-                if (actual.TryGetValue(asTopic, out var callbacks))
+                if (actual.TryGetValue(topic, out var callbacks))
                 {
                     Assert.NotEmpty(callbacks);
                     Assert.Contains(expected.Callback, callbacks);
@@ -40,14 +39,14 @@ namespace PubSub.Test.Unit
         public async Task Can_Add_Subscription_To_Existing_Topic()
         {
             var setupSubscription = _fixture.Create<Subscription>();
-            var topic = new Topic() { Name = setupSubscription.Queues.First() };
+            var topic = new Topic() { Name = setupSubscription.Topics.First() };
             Assert.NotNull(topic);
             var setupSubs = new List<Subscription> { setupSubscription };
             await _sut.Add(setupSubs);
 
             var newSub = new Subscription()
             {
-                Queues = new List<string> { topic.Name },
+                Topics = new List<string> { topic.Name },
                 Callback = _fixture.Create<string>()
             };
 
