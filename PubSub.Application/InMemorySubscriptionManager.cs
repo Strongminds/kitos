@@ -11,7 +11,14 @@ namespace PubSub.Application
             {
                 foreach (var topic in subscription.Queues)
                 {
-                    topics.Add(new Topic { Name = topic }, new HashSet<string>() { subscription.Callback });
+                    var asTopic = new Topic { Name = topic };
+                    if (topics.TryGetValue(asTopic, out var callbacks)){
+                        callbacks.Add(subscription.Callback);
+                    }
+                    else
+                    {
+                        topics.Add(asTopic, new HashSet<string>() { subscription.Callback });
+                    }
                 }
             }
         }
