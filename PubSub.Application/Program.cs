@@ -13,6 +13,7 @@ await builder.Services.AddRabbitMQ();
 builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<ISubscribeLoopHostedService>());
 builder.Services.AddStartupTask<StartSubscribeLoopStartupTask>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
+builder.Services.AddSingleton<ITopicManager, InMemoryTopicManager>();
 
 var app = builder.Build();
 

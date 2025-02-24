@@ -8,36 +8,21 @@ namespace PubSub.Application
     public class RabbitMQSubscribeLoopHostedService : BackgroundService, ISubscribeLoopHostedService
     {
         private IEnumerable<Subscription> _subscriptions = [];
-        private ISet<string> _queues = new HashSet<string>();
+        private ISet<string> _topics = new HashSet<string>();
         private readonly IMessageSerializer _messageSerializer;
-        private IChannel _channel;
+        private readonly IChannel _channel;
+        private readonly ITopicManager _topicManager;
 
-        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel)
+        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ITopicManager topicManager)
         {
-    
             _messageSerializer = messageSerializer;
             _channel = channel;
+            _topicManager = topicManager;
         }
 
         public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            _subscriptions = subscriptions;
-
-            var queuesSet = new HashSet<string>();
-            foreach (var subscription in subscriptions)
-            {
-                foreach (var queue in subscription.Queues)
-                {
-                    queuesSet.Add(queue);
-                }
-            }
-
-            foreach (var queue in queuesSet)
-            {
-                await _channel.QueueDeclareAsync(queue);
-            }
-            _queues = queuesSet;
-            
+            await _topicManager.Add(subscriptions);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -55,7 +40,7 @@ namespace PubSub.Application
         private async Task ConsumeNextMessage(IChannel channel)
         {
             var consumerCallback = GetConsumerCallback(channel);
-            foreach (var queue in _queues)
+            foreach (var queue in _topics)
             {
                 Console.WriteLine(queue + " is queue");
                 await channel.BasicConsumeAsync(queue, autoAck: true, consumer: consumerCallback);
