@@ -106,7 +106,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> Update(Guid systemUuid, SystemUpdateParameters parameters)
         {
-            return PerformUpdateTransaction(systemUuid, system => ApplyUpdates(system, parameters), WithDBSWriteAccess);
+            return PerformUpdateTransaction(systemUuid, system => ApplyUpdates(system, parameters), WithWriteAccess);
         }
 
         public Result<ItSystem, OperationError> Delete(Guid systemUuid)
@@ -127,7 +127,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> DBSUpdate(Guid systemUuid, DBSUpdateParameters parameters)
         {
-            return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters), WithWriteAccess);
+            return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters), WithDBSWriteAccess);
         }
 
         private Result<ItSystem, OperationError> ApplyDBSUpdates(ItSystem itSystem, DBSUpdateParameters parameters)

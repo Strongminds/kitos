@@ -1010,7 +1010,7 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
             var system = new ItSystem { Uuid = systemUuid };
             var parameters = A<DBSUpdateParameters>();
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
-            ExpectDBSModifyReturns(system, true);
+            ExpectAllowModifyReturns(system, true);
             var transaction = ExpectTransactionBegins();
 
             var result = _sut.DBSUpdate(systemUuid, parameters);
@@ -1029,17 +1029,12 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
             var systemUuid = A<Guid>();
             var system = new ItSystem { Uuid = systemUuid };
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
-            ExpectDBSModifyReturns(system, hasPermission);
+            ExpectAllowModifyReturns(system, hasPermission);
             ExpectTransactionBegins();
 
             var result = _sut.DBSUpdate(systemUuid, A<DBSUpdateParameters>());
 
             Assert.Equal(hasPermission, result.Ok);
-        }
-
-        private void ExpectDBSModifyReturns(ItSystem system, bool isAllowed)
-        {
-            throw new NotImplementedException();
         }
 
         private ExternalReferenceProperties CreateExternalReferenceProperties()
