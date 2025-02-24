@@ -5,11 +5,9 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Messages;
-using Core.DomainModel;
 using Core.DomainModel.PublicMessage;
 using Core.DomainServices;
 using Core.DomainServices.Extensions;
-using Serilog;
 
 namespace Core.ApplicationServices.Messages
 {
@@ -17,16 +15,13 @@ namespace Core.ApplicationServices.Messages
     {
         private readonly IGenericRepository<PublicMessage> _repository;
         private readonly IOrganizationalUserContext _organizationalUserContext;
-        private readonly ILogger _logger;
 
         public PublicMessagesService(
             IGenericRepository<PublicMessage> repository,
-            IOrganizationalUserContext organizationalUserContext,
-            ILogger logger)
+            IOrganizationalUserContext organizationalUserContext)
         {
             _repository = repository;
             _organizationalUserContext = organizationalUserContext;
-            _logger = logger;
         }
 
         public ResourcePermissionsResult GetPermissions()
@@ -37,7 +32,7 @@ namespace Core.ApplicationServices.Messages
 
         public IEnumerable<PublicMessage> Read()
         {
-            return _repository.AsQueryable().ToList();
+            return _repository.AsQueryable().OrderBy(x => x.Id).ToList();
         }
         
         public Result<PublicMessage, OperationError> Create(WritePublicMessagesParams parameters)

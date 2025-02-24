@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainModel.PublicMessage;
-using Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping;
+using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Tests.Integration.Presentation.Web.Tools;
@@ -17,21 +17,26 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
 {
     public class PublicMessagesApiV2Test : WithAutoFixture
     {
-        private readonly Uri _rootUrl = TestEnvironment.CreateUrl("api/v2/internal/public-messages");
+        private const string BasePath = "api/v2/internal/public-messages";
+        private readonly Uri _rootUrl = TestEnvironment.CreateUrl(BasePath);
 
         [Fact]
         public async Task Can_GET()
         {
             //Arrange
-            var texts = ChangePublicMessages();
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var createdMessage = await SetupPublicMessage(cookie);
 
             //Act
-            using var response = await HttpApi.GetAsync(_rootUrl);
+            var response = await GetPublicMessages();
 
             //Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var messages = await response.ReadResponseBodyAsAsync<PublicMessagesResponseDTO>();
-            Assert.Equivalent(texts, messages);
+            Assert.Contains(response,
+                x => x.Uuid == createdMessage.Uuid &&
+                     x.LongDescription == createdMessage.LongDescription &&
+                     x.Link == createdMessage.Link &&
+                     x.ShortDescription == createdMessage.ShortDescription &&
+                     x.Status == createdMessage.Status);
         }
 
         [Theory]
@@ -61,14 +66,12 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
         {
             //Arrange
             var cookie = await HttpApi.GetCookieAsync(role);
-            var expected = ChangePublicMessages();
-            var newText = A<string>();
-            expected.LongDescription = newText;
+            var publicMessage = await SetupPublicMessage(cookie);
 
             //Act
-            using var patchResponse = await HttpApi.PatchWithCookieAsync(_rootUrl, cookie, new
+            using var patchResponse = await HttpApi.PatchWithCookieAsync(GetUrlWithUuid(publicMessage.Uuid), cookie, new
             {
-                About = newText
+                LongDescription = A<string>()
             });
 
             //Assert that only changed property was actually changed
@@ -80,46 +83,55 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
         {
             //Arrange
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var expected = ChangePublicMessages();
-            expected.Link = A<string>();
-            expected.LongDescription = A<string>();
-            expected.ShortDescription = A<string>();
-            expected.Status = A<PublicMessageStatusChoice>();
+            var publicMessage = await SetupPublicMessage(cookie);
+
+            var patchRequest = new PublicMessageRequestDTO
+            {
+                Link = A<string>(),
+                LongDescription = A<string>(),
+                ShortDescription = A<string>(),
+                Status = A<PublicMessageStatusChoice>()
+            };
 
             //Act
-            using var patchResponse = await HttpApi.PatchWithCookieAsync(_rootUrl, cookie, expected);
+            using var patchResponse = await HttpApi.PatchWithCookieAsync(GetUrlWithUuid(publicMessage.Uuid), cookie, patchRequest);
 
             //Assert that only changed property was actually changed
-            await AssertPatchSucceeded(patchResponse, expected);
+            await AssertPatchSucceeded(patchResponse, patchRequest);
         }
-
-        private PublicMessagesResponseDTO ChangePublicMessages()
+        
+        private async Task<PublicMessagesResponseDTO> SetupPublicMessage(Cookie cookie)
         {
-            var expectedResponse = new PublicMessagesResponseDTO();
-            DatabaseAccess.MutateEntitySet<PublicMessage>(textsRepo =>
+            var publicMessages = DatabaseAccess.MapFromEntitySet<PublicMessage, List<PublicMessage>>(x => x.AsQueryable().ToList());
+            if (publicMessages.Any() == false)
             {
-                var text = textsRepo.AsQueryable().First();
-                text.LongDescription = Guid.NewGuid().ToString();
-                text.ShortDescription = Guid.NewGuid().ToString();
-                text.Link = Guid.NewGuid().ToString();
-                text.Status = A<PublicMessageStatus>();
+                var request = A<PublicMessageRequestDTO>();
+                using var postResponse = await HttpApi.PostWithCookieAsync(_rootUrl, cookie, request);
+                return await postResponse.ReadResponseBodyAsAsync<PublicMessagesResponseDTO>();
+            }
 
-                expectedResponse = new PublicMessagesResponseDTO
-                {
-                    LongDescription = text.LongDescription,
-                    ShortDescription = text.ShortDescription,
-                    Link = text.Link,
-                    Status = text.Status?.ToPublicMessageStatusChoice()
-                };
-            });
-            return expectedResponse;
+            var publicMessage = publicMessages.First();
+            return new PublicMessagesResponseDTO(publicMessage);
         }
 
-        private static async Task AssertPatchSucceeded(HttpResponseMessage patchResponse, PublicMessagesResponseDTO expected)
+        private async Task<IEnumerable<PublicMessagesResponseDTO>> GetPublicMessages()
+        {
+            using var response = await HttpApi.GetAsync(_rootUrl);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<List<PublicMessagesResponseDTO>>();
+        }
+
+        private static async Task AssertPatchSucceeded(HttpResponseMessage patchResponse, PublicMessageRequestDTO expected)
         {
             Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
             var changedMessages = await patchResponse.ReadResponseBodyAsAsync<PublicMessagesResponseDTO>();
             Assert.Equivalent(expected, changedMessages);
+        }
+
+        private static Uri GetUrlWithUuid(Guid uuid)
+        {
+            return TestEnvironment.CreateUrl($"{BasePath}/{uuid}");
         }
     }
 }
