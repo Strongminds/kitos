@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.DomainModel.ItSystem;
+using Core.DomainModel.Organization;
 
 namespace Presentation.Web.Models.API.V2.Request.System.Regular;
 
 public class UpdateDBSPropertiesRequestDTO
 {
-    [MaxLength(100)]
+    [MaxLength(ItSystem.MaxNameLength)]
     public string SystemName { get; set; }
 
-    [MaxLength(100)]
+    [MaxLength(Organization.MaxNameLength)]
     public string DataProcessorName { get; set; }
 }
