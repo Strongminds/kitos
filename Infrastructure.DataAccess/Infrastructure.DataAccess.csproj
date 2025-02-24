@@ -1116,9 +1116,9 @@
     <Compile Include="Migrations\202502131152271_AddResponsibleUnitForDPR.Designer.cs">
       <DependentUpon>202502131152271_AddResponsibleUnitForDPR.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202502241201506_AddPublicMessages.cs" />
-    <Compile Include="Migrations\202502241201506_AddPublicMessages.Designer.cs">
-      <DependentUpon>202502241201506_AddPublicMessages.cs</DependentUpon>
+    <Compile Include="Migrations\202502241306493_AddPublicMessages.cs" />
+    <Compile Include="Migrations\202502241306493_AddPublicMessages.Designer.cs">
+      <DependentUpon>202502241306493_AddPublicMessages.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
@@ -1193,8 +1193,8 @@
     <EmbeddedResource Include="Migrations\202502131152271_AddResponsibleUnitForDPR.resx">
       <DependentUpon>202502131152271_AddResponsibleUnitForDPR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202502241201506_AddPublicMessages.resx">
-      <DependentUpon>202502241201506_AddPublicMessages.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202502241306493_AddPublicMessages.resx">
+      <DependentUpon>202502241306493_AddPublicMessages.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">

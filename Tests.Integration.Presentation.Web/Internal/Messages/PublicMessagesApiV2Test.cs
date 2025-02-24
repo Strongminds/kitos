@@ -66,7 +66,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
         {
             //Arrange
             var cookie = await HttpApi.GetCookieAsync(role);
-            var publicMessage = await SetupPublicMessage(cookie);
+            var publicMessage = await SetupPublicMessage();
 
             //Act
             using var patchResponse = await HttpApi.PatchWithCookieAsync(GetUrlWithUuid(publicMessage.Uuid), cookie, new
@@ -88,6 +88,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
             var patchRequest = new PublicMessageRequestDTO
             {
                 Link = A<string>(),
+                Title = A<string>(),
                 LongDescription = A<string>(),
                 ShortDescription = A<string>(),
                 Status = A<PublicMessageStatusChoice>()
@@ -100,13 +101,17 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
             await AssertPatchSucceeded(patchResponse, patchRequest);
         }
         
-        private async Task<PublicMessagesResponseDTO> SetupPublicMessage(Cookie cookie)
+        private async Task<PublicMessagesResponseDTO> SetupPublicMessage(Cookie cookie = null)
         {
+
+            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var publicMessages = DatabaseAccess.MapFromEntitySet<PublicMessage, List<PublicMessage>>(x => x.AsQueryable().ToList());
             if (publicMessages.Any() == false)
             {
                 var request = A<PublicMessageRequestDTO>();
-                using var postResponse = await HttpApi.PostWithCookieAsync(_rootUrl, cookie, request);
+                using var postResponse = await HttpApi.PostWithCookieAsync(_rootUrl, requestCookie, request);
+
+                Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
                 return await postResponse.ReadResponseBodyAsAsync<PublicMessagesResponseDTO>();
             }
 

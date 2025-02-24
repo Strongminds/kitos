@@ -13,7 +13,7 @@ namespace Infrastructure.DataAccess.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202502241201506_AddPublicMessages"; }
+            get { return "202502241306493_AddPublicMessages"; }
         }
         
         string IMigrationMetadata.Source

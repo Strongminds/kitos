@@ -28,7 +28,7 @@ namespace Tests.Unit.Core.ApplicationServices.Messages
         {
             _repositoryMock = new Mock<IGenericRepository<PublicMessage>>();
             _userContextMock = new Mock<IOrganizationalUserContext>();
-            _sut = new PublicMessagesService(_repositoryMock.Object, _userContextMock.Object, Mock.Of<ILogger>());
+            _sut = new PublicMessagesService(_repositoryMock.Object, _userContextMock.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
@@ -67,6 +67,7 @@ namespace Tests.Unit.Core.ApplicationServices.Messages
             foreach (var testMessage in testMessages)
             {
                 var resultMessage = Assert.Single(publicMessagesResult, x => x.Uuid == testMessage.Uuid);
+                Assert.Equal(testMessage.Title, resultMessage.Title);
                 Assert.Equal(testMessage.LongDescription, resultMessage.LongDescription);
                 Assert.Equal(testMessage.ShortDescription, resultMessage.ShortDescription);
                 Assert.Equal(testMessage.Link, resultMessage.Link);
@@ -191,6 +192,10 @@ namespace Tests.Unit.Core.ApplicationServices.Messages
         {
             Assert.True(result.Ok);
             var publicMessage = result.Value;
+            if (expectedChanges.Title.HasChange)
+            {
+                Assert.Equal(expectedChanges.Title.NewValue, publicMessage.Title);
+            }
             if (expectedChanges.Link.HasChange)
             {
                 Assert.Equal(expectedChanges.Link.NewValue, publicMessage.Link);

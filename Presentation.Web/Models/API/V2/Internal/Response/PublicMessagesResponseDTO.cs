@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using Core.DomainModel.PublicMessage;
 using Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping;
 
@@ -16,10 +15,11 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
             ShortDescription = publicMessageModel.ShortDescription;
             Status = publicMessageModel.Status?.ToPublicMessageStatusChoice();
             Link = publicMessageModel.Link;
+            Title = publicMessageModel.Title;
         }
 
         public Guid Uuid { get; set; }
-        [Required(AllowEmptyStrings = true)]
+        public string Title { get; set; }
         public string LongDescription { get; set; }
         public string ShortDescription { get; set; }
         public PublicMessageStatusChoice? Status { get; set; }

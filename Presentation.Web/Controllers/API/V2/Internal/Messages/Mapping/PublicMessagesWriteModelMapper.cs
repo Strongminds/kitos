@@ -30,6 +30,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping
 
             return new WritePublicMessagesParams
             {
+                Title = rule.MustUpdate(x => x.Title)
+                    ? request.Title.AsChangedValue()
+                    : OptionalValueChange<string>.None,
                 LongDescription = rule.MustUpdate(x => x.LongDescription)
                     ? request.LongDescription.AsChangedValue()
                     : OptionalValueChange<string>.None,

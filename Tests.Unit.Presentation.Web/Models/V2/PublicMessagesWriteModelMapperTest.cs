@@ -25,7 +25,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(4);
+            return CreateGetUndefinedSectionsInput(5);
         }
 
         [Fact]
@@ -47,6 +47,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [Theory]
         [MemberData(nameof(GetUndefinedGeneralSectionsInput))]
         public void FromPATCH_Ignores_Undefined_Properties(
+            bool noTitle,
             bool noLongDescription,
             bool noShortDescription,
             bool noLink,
@@ -54,7 +55,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var emptyInput = new PublicMessageRequestDTO();
-            ConfigureInput(
+            ConfigureInput(noTitle,
                 noLongDescription, noShortDescription, noLink, noStatus);
 
             //Act
@@ -68,12 +69,14 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         }
 
         private void ConfigureInput(
+            bool noTitle,
             bool noLongDescription,
             bool noShortDescription,
             bool noLink,
             bool noStatus)
         {
             var properties = GetAllInputPropertyNames<PublicMessageRequestDTO>();
+            if (noTitle) properties.Remove(nameof(PublicMessageRequestDTO.Title));
             if (noLongDescription) properties.Remove(nameof(PublicMessageRequestDTO.LongDescription));
             if (noShortDescription) properties.Remove(nameof(PublicMessageRequestDTO.ShortDescription));
             if (noLink) properties.Remove(nameof(PublicMessageRequestDTO.Link));

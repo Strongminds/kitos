@@ -8,9 +8,10 @@ namespace Infrastructure.DataAccess.Mapping
         {
             // Properties
             // Table & Column Mappings
-            ToTable("PublicMessage");
+            ToTable("PublicMessages");
 
             Property(x => x.ShortDescription).HasMaxLength(PublicMessage.DefaultShortDescriptionMaxLength);
+            Property(x => x.Title).HasMaxLength(PublicMessage.DefaultTitleMaxLength);
 
             Property(x => x.Uuid)
                 .IsRequired()

@@ -75,6 +75,7 @@ namespace Core.ApplicationServices.Messages
         private static Result<PublicMessage, OperationError> WriteChange(PublicMessage message, WritePublicMessagesParams parameters)
         {
             return message.WithOptionalUpdate(parameters.LongDescription, (updateText, value) => updateText.UpdateLongDescription(value))
+                    .Bind(updatedText => updatedText.WithOptionalUpdate(parameters.Title, (updateText, title) => updateText.UpdateTitle(title)))
                     .Bind(updatedText => updatedText.WithOptionalUpdate(parameters.ShortDescription,
                         (updateText, shortDescription) => updateText.UpdateShortDescription(shortDescription)))
                     .Bind(updatedText =>

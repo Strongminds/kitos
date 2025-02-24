@@ -13,6 +13,7 @@
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Uuid = c.Guid(nullable: false),
+                        Title = c.String(maxLength: 50),
                         LongDescription = c.String(),
                         Status = c.Int(),
                         ShortDescription = c.String(maxLength: 200),

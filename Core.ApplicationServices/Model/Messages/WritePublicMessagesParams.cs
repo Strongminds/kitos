@@ -5,6 +5,7 @@ namespace Core.ApplicationServices.Model.Messages
 {
     public class WritePublicMessagesParams
     {
+        public OptionalValueChange<string> Title { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<string> LongDescription { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<string> ShortDescription { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<PublicMessageStatus?> Status { get; set; } = OptionalValueChange<PublicMessageStatus?>.None;
