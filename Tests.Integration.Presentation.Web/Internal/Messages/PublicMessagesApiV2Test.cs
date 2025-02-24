@@ -101,7 +101,7 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
             await AssertPatchSucceeded(patchResponse, patchRequest);
         }
         
-        private async Task<PublicMessagesResponseDTO> SetupPublicMessage(Cookie cookie = null)
+        private async Task<PublicMessageResponseDTO> SetupPublicMessage(Cookie cookie = null)
         {
 
             var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -112,25 +112,25 @@ namespace Tests.Integration.Presentation.Web.Internal.Messages
                 using var postResponse = await HttpApi.PostWithCookieAsync(_rootUrl, requestCookie, request);
 
                 Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
-                return await postResponse.ReadResponseBodyAsAsync<PublicMessagesResponseDTO>();
+                return await postResponse.ReadResponseBodyAsAsync<PublicMessageResponseDTO>();
             }
 
             var publicMessage = publicMessages.First();
-            return new PublicMessagesResponseDTO(publicMessage);
+            return new PublicMessageResponseDTO(publicMessage);
         }
 
-        private async Task<IEnumerable<PublicMessagesResponseDTO>> GetPublicMessages()
+        private async Task<IEnumerable<PublicMessageResponseDTO>> GetPublicMessages()
         {
             using var response = await HttpApi.GetAsync(_rootUrl);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<List<PublicMessagesResponseDTO>>();
+            return await response.ReadResponseBodyAsAsync<List<PublicMessageResponseDTO>>();
         }
 
         private static async Task AssertPatchSucceeded(HttpResponseMessage patchResponse, PublicMessageRequestDTO expected)
         {
             Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
-            var changedMessages = await patchResponse.ReadResponseBodyAsAsync<PublicMessagesResponseDTO>();
+            var changedMessages = await patchResponse.ReadResponseBodyAsAsync<PublicMessageResponseDTO>();
             Assert.Equivalent(expected, changedMessages);
         }
 

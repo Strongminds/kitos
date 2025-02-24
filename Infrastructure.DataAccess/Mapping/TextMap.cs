@@ -10,6 +10,7 @@ namespace Infrastructure.DataAccess.Mapping
             // Table & Column Mappings
             ToTable("Text");
             Property(t => t.Value).HasColumnName("Value");
+
         }
     }
 }

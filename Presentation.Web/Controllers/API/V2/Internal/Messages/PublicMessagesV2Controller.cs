@@ -38,7 +38,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         [HttpGet]
         [Route]
         [AllowAnonymous]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<PublicMessagesResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<PublicMessageResponseDTO>))]
         public IHttpActionResult Get()
         {
             var publicMessages = _publicMessagesService.Read();
@@ -48,7 +48,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
 
         [HttpPost]
         [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(PublicMessagesResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(PublicMessageResponseDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
@@ -69,7 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         /// </summary>
         [HttpPatch]
         [Route("{messageUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(PublicMessagesResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(PublicMessageResponseDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
@@ -102,9 +102,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
                 .Transform(Ok);
         }
 
-        private static PublicMessagesResponseDTO ToDTO(PublicMessage publicMessage)
+        private static PublicMessageResponseDTO ToDTO(PublicMessage publicMessage)
         {
-            return new PublicMessagesResponseDTO(publicMessage);
+            return new PublicMessageResponseDTO(publicMessage);
         }
     }
 }

@@ -4,11 +4,11 @@ using Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping;
 
 namespace Presentation.Web.Models.API.V2.Internal.Response
 {
-    public class PublicMessagesResponseDTO
+    public class PublicMessageResponseDTO
     {
-        public PublicMessagesResponseDTO() {}
+        public PublicMessageResponseDTO() {}
 
-        public PublicMessagesResponseDTO(PublicMessage publicMessageModel)
+        public PublicMessageResponseDTO(PublicMessage publicMessageModel)
         {
             Uuid = publicMessageModel.Uuid;
             LongDescription = publicMessageModel.LongDescription;
