@@ -2,7 +2,7 @@
 {
     public class SubscriptionRequestDto
     {
-        public string Callback { get; set; }
-        public List<string> Queues { get; set; }
+        public required string Callback { get; set; }
+        public required List<string> Queues { get; set; }
     }
 }
