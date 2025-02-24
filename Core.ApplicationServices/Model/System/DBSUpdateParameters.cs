@@ -4,7 +4,7 @@ namespace Core.ApplicationServices.Model.System
 {
     public class DBSUpdateParameters
     {
-        public OptionalValueChange<string> SystemName { get; set; }
-        public OptionalValueChange<string> DataProcessorName { get; set; }
+        public OptionalValueChange<string> SystemName { get; set; } = OptionalValueChange<string>.None;
+        public OptionalValueChange<string> DataProcessorName { get; set; } = OptionalValueChange<string>.None;
     }
 }
