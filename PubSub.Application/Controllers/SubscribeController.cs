@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PubSub.Application.Controllers;
 
 [ApiController]
-[Route("subscribe")]
+[Route("api/subscribe")]
 public class SubscribeController : ControllerBase
 {
 

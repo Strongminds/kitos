@@ -3,7 +3,7 @@
 namespace PubSub.Application.Controllers
 {
     [ApiController]
-    [Route("publish")]
+    [Route("api/publish")]
     public class PublishController: ControllerBase
     {
         private readonly IPublisher _publisher;
@@ -19,7 +19,7 @@ namespace PubSub.Application.Controllers
 
             await _publisher.Publish(publication);
 
-            return Ok();
+            return Ok("Hit publish endpoint");
         }
     }
 }
