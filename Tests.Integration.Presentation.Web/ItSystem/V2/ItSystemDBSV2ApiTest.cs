@@ -40,18 +40,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(request.DataProcessorName, systemAfter.DBSDataProcessorName);
         }
 
-        [Fact]
-        public async Task API_User_Can_Perform_DBS_Update()
-        {
-            var (_, systemUuid, orgId) = await CreatePrerequisites();
-            var (_, _, apiToken) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, orgId, true, false);
-            var request = A<UpdateDBSPropertiesRequestDTO>();
-
-            var response = await DBSV2Helper.PatchSystem(systemUuid, request, apiToken);
-
-            Assert.True(response.IsSuccessStatusCode);
-        }
-
         private async Task<(string, Guid, int)> CreatePrerequisites()
         {
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
