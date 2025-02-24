@@ -5,12 +5,12 @@ namespace PubSub.Application
 {
     public class RabbitMQPublisher : IPublisher
     {
-        private readonly IConnectionFactory _connectionFactory;
+        private readonly IConnection _connection;
         private readonly IMessageSerializer _messageSerializer;
 
-        public RabbitMQPublisher(IConnectionFactory connectionFactory, IMessageSerializer messageSerializer)
+        public RabbitMQPublisher(IConnection connection, IMessageSerializer messageSerializer)
         {
-            _connectionFactory = connectionFactory;
+            _connection = connection;
             _messageSerializer = messageSerializer;
         }
 
@@ -18,10 +18,9 @@ namespace PubSub.Application
         {
             var queue = publication.Queue;
             var message = publication.Message;
-            using var connection = await _connectionFactory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            using var channel = await _connection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(queue);
+            await channel.QueueDeclareAsync(queue); //not needed?
             var serializedBody = _messageSerializer.Serialize(message);
 
             await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queue, body: serializedBody);

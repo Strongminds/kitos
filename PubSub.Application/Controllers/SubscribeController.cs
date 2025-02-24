@@ -6,12 +6,20 @@ namespace PubSub.Application.Controllers;
 [Route("api/subscribe")]
 public class SubscribeController : ControllerBase
 {
+    private readonly ISubscribeLoopHostedService _subscribeLoopHostedService;
+
+    public SubscribeController(ISubscribeLoopHostedService subscribeLoopHostedService)
+    {
+        _subscribeLoopHostedService = subscribeLoopHostedService;
+    }
 
     [HttpPost]
-    public async Task<IActionResult> Subscribe(IList<Subscription> subscriptions)
+    public async Task<IActionResult> Subscribe([FromBody] SubscriptionRequestDto request)
     {
-        if (!ModelState.IsValid) return BadRequest("Invalid request object provided.");
-
-        return Ok();
+        Console.WriteLine("Hit subscribe endpoint");
+        if (!ModelState.IsValid) return BadRequest();
+        var subscriptions = new List<Subscription>() { new Subscription { Callback = request.Callback, Queues = request.Queues } };
+        await _subscribeLoopHostedService.UpdateSubscriptions(subscriptions);
+        return Ok("Hit subscribe endpoint");
     }
 }
