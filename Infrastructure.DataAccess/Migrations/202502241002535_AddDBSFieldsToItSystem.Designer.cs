@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class AddIndexesToDBSFields : IMigrationMetadata
+    public sealed partial class AddDBSFieldsToItSystem : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddIndexesToDBSFields));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddDBSFieldsToItSystem));
         
         string IMigrationMetadata.Id
         {
-            get { return "202502240858588_AddIndexesToDBSFields"; }
+            get { return "202502241002535_AddDBSFieldsToItSystem"; }
         }
         
         string IMigrationMetadata.Source
