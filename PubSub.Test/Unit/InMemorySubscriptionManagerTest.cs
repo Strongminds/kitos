@@ -52,7 +52,7 @@ namespace PubSub.Test.Unit
 
             var newSub = new Subscription()
             {
-                Topics = new List<Topic> { topic },
+                Topics = new List<string> { topic },
                 Callback = _fixture.Create<string>()
             };
 

@@ -65,7 +65,6 @@ namespace PubSub.Application.Subscribe
                 foreach (var callbackUrl in callbackUrls)
                 {
                     var res = await http.PostAsync(callbackUrl, content);
-                    Console.WriteLine("");
                 }
                 Console.WriteLine($"Received {message}");
             };

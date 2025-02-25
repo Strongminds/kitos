@@ -6,13 +6,13 @@ namespace PubSub.Application.Subscribe
     public class InMemorySubscriptionManager : ISubscriptionManager
     {
         private readonly Dictionary<string, ISet<string>> topics = new Dictionary<string, ISet<string>>();
-        private readonly IChannel channel;
+        private readonly IMessageBusTopicManager _messageBusTopicManager;
         private readonly object _lock = new();
 
 
-        public InMemorySubscriptionManager(IChannel channel)
+        public InMemorySubscriptionManager(IMessageBusTopicManager messageBusTopicManager)
         {
-            this.channel = channel;
+            _messageBusTopicManager = messageBusTopicManager;
         }
 
         public async Task Add(IEnumerable<Subscription> subscriptions)
@@ -39,7 +39,7 @@ namespace PubSub.Application.Subscribe
 
             foreach (var topic in newQueues)
             {
-                await channel.QueueDeclareAsync(topic);
+                await _messageBusTopicManager.Add(new Topic { Name = topic });
             }
         }
 

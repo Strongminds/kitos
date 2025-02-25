@@ -21,8 +21,7 @@ namespace PubSub.Application.Publish
             var topic = publication.Queue;
             var message = publication.Message;
 
-           // await _messageBusTopicManager.Add(new Topic { Name = topic });
-            await _channel.QueueDeclareAsync(topic);
+            await _messageBusTopicManager.Add(new Topic { Name = topic });
             var serializedBody = _messageSerializer.Serialize(message);
 
             await _channel.BasicPublishAsync(exchange: string.Empty, routingKey: topic, body: serializedBody);
