@@ -12,6 +12,7 @@ using Presentation.Web.Models.API.V2.Internal.Response;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping;
+using Presentation.Web.Infrastructure.Attributes;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Messages
 {
@@ -73,7 +74,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
-        public IHttpActionResult Patch(Guid messageUuid, [FromBody] PublicMessageRequestDTO body)
+        public IHttpActionResult Patch([NonEmptyGuid] Guid messageUuid, [FromBody] PublicMessageRequestDTO body)
         {
             if (body == null)
             {
