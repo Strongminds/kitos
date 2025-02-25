@@ -9,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-await builder.Services.AddRabbitMQ();
+var rabbitMQHostName = "localhost";
+await builder.Services.AddRabbitMQ(rabbitMQHostName);
 builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequiredService<ISubscribeLoopHostedService>());
 builder.Services.AddStartupTask<StartSubscribeLoopStartupTask>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();

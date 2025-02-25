@@ -11,9 +11,9 @@ public static class ServiceCollectionExtensions
         where T : class, IStartupTask
         => services.AddTransient<IStartupTask, T>();
 
-    public async static Task<IServiceCollection> AddRabbitMQ(this IServiceCollection services)
+    public async static Task<IServiceCollection> AddRabbitMQ(this IServiceCollection services, string hostName)
     {
-        var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+        var connectionFactory = new ConnectionFactory { HostName = hostName };
         var connection = await connectionFactory.CreateConnectionAsync();
         var channel = await connection.CreateChannelAsync();
         services.AddScoped<IPublisher, RabbitMQPublisher>();
