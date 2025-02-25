@@ -2,9 +2,10 @@ using PubSub.Application;
 using PubSub.Application.StartupTasks;
 using PubSub.Application.Subscribe;
 using PubSub.Core.Managers;
-using PubSub.Core.Services;
+using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Publish;
 using PubSub.Core.Services.Serializer;
+using PubSub.Core.Services.Subscribe;
 
 var builder = WebApplication.CreateBuilder(args);
 

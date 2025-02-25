@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using PubSub.Application.Subscribe;
+using PubSub.Application.DTOs;
 using PubSub.Core.Models;
-using PubSub.Core.Services;
+using PubSub.Core.Services.Subscribe;
 
 namespace PubSub.Application.Controllers;
 
@@ -9,12 +9,10 @@ namespace PubSub.Application.Controllers;
 [Route("api/subscribe")]
 public class SubscribeController : ControllerBase
 {
-    private readonly ISubscribeLoopHostedService _subscribeLoopHostedService;
     private readonly ISubscriberService _subscriberService;
 
-    public SubscribeController(ISubscribeLoopHostedService subscribeLoopHostedService, ISubscriberService subscriberService)
+    public SubscribeController(ISubscriberService subscriberService)
     {
-        _subscribeLoopHostedService = subscribeLoopHostedService;
         _subscriberService = subscriberService;
     }
 
@@ -24,7 +22,6 @@ public class SubscribeController : ControllerBase
         if (!ModelState.IsValid) return BadRequest();
         var subscriptions = new List<Subscription>() { new() { Callback = request.Callback, Topics = request.Queues } };
         await _subscriberService.SubscribeToQueuesAsync(subscriptions);
-        //await _subscribeLoopHostedService.UpdateSubscriptions(subscriptions);
         return Ok();
     }
 }

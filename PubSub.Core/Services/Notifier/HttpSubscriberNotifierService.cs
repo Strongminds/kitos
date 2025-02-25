@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace PubSub.Core.Services
+namespace PubSub.Core.Services.Notifier
 {
     public class HttpSubscriberNotifierService : ISubscriberNotifierService
     {

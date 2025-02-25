@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PubSub.Application.Publish;
+using PubSub.Core.Models;
 using PubSub.Core.Services.Publish;
 
 namespace PubSub.Application.Controllers
@@ -8,12 +8,10 @@ namespace PubSub.Application.Controllers
     [Route("api/publish")]
     public class PublishController: ControllerBase
     {
-        private readonly IPublisher _publisher;
         private readonly IPublisherService _publisherService;
 
-        public PublishController(IPublisher publisher, IPublisherService publisherService)
+        public PublishController(IPublisherService publisherService)
         {
-            _publisher = publisher;
             _publisherService = publisherService;
         }
 

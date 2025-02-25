@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using PubSub.Core.Managers;
-using PubSub.Core.Services;
+using PubSub.Core.Services.Notifier;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 

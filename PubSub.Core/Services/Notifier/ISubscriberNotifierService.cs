@@ -1,4 +1,4 @@
-﻿namespace PubSub.Core.Services
+﻿namespace PubSub.Core.Services.Notifier
 {
     public interface ISubscriberNotifierService
     {

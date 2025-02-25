@@ -1,6 +1,6 @@
 ﻿using PubSub.Core.Models;
 
-namespace PubSub.Core.Services
+namespace PubSub.Core.Services.Subscribe
 {
     public interface ISubscriberService
     {

@@ -2,16 +2,17 @@
 using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Models;
+using PubSub.Core.Services.Notifier;
 
-namespace PubSub.Core.Services
+namespace PubSub.Core.Services.Subscribe
 {
     public class RabbitMQSubscriberService : ISubscriberService
     {
         private readonly IConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
-        private readonly ConcurrentDictionary<string, RabbitMQConsumer> _consumers = new();
+        private readonly ConcurrentDictionary<string, RabbitMQConsumer> _consumersByTopicDictionary = new();
 
-        public RabbitMQSubscriberService( IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService)
+        public RabbitMQSubscriberService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
@@ -29,19 +30,19 @@ namespace PubSub.Core.Services
         {
             foreach (var topic in subscription.Topics)
             {
-                if (!_consumers.ContainsKey(topic))
+                if (!_consumersByTopicDictionary.ContainsKey(topic))
                 {
                     await CreateNewConsumerAsync(topic);
                 }
 
-                _consumers[topic].AddCallbackUrl(subscription.Callback);
+                _consumersByTopicDictionary[topic].AddCallbackUrl(subscription.Callback);
             }
         }
 
         private async Task CreateNewConsumerAsync(string topic)
         {
             var consumer = new RabbitMQConsumer(_connectionManager, _subscriberNotifierService, topic);
-            _consumers[topic] = consumer;
+            _consumersByTopicDictionary[topic] = consumer;
             await consumer.StartListeningAsync();
         }
     }
