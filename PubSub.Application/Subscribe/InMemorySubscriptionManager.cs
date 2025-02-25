@@ -1,19 +1,21 @@
 ﻿using PubSub.Application.Common;
+using RabbitMQ.Client;
 
 namespace PubSub.Application.Subscribe
 {
     public class InMemorySubscriptionManager : ISubscriptionManager
     {
-        private readonly Dictionary<Topic, ISet<string>> topics = new Dictionary<Topic, ISet<string>>();
-        private readonly IMessageBusTopicManager _messageBusTopicManager;
+        private readonly Dictionary<string, ISet<string>> topics = new Dictionary<string, ISet<string>>();
+        private readonly IChannel channel;
 
-        public InMemorySubscriptionManager(IMessageBusTopicManager messageBusTopicManager)
+        public InMemorySubscriptionManager(IChannel channel)
         {
-            _messageBusTopicManager = messageBusTopicManager;
+            this.channel = channel;
         }
 
         public async Task Add(IEnumerable<Subscription> subscriptions)
         {
+            var newQueues = new HashSet<string>();
             foreach (var subscription in subscriptions)
             {
                 foreach (var topic in subscription.Topics)
@@ -24,13 +26,18 @@ namespace PubSub.Application.Subscribe
                     else
                     {
                         topics.Add(topic, new HashSet<string>() { subscription.Callback });
+                        newQueues.Add(topic);
                     }
-                    await _messageBusTopicManager.Add(topic);
                 }
+            }
+            foreach (var topic in newQueues)
+            {
+                await channel.QueueDeclareAsync(topic);
+
             }
         }
 
-        public Dictionary<Topic, ISet<string>> Get()
+        public Dictionary<string, ISet<string>> Get()
         {
             return topics;
         }

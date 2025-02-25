@@ -10,6 +10,8 @@ namespace PubSub.Application.Subscribe
         private readonly IMessageSerializer _messageSerializer;
         private readonly IChannel _channel;
         private readonly ISubscriptionManager _subscriptionManager;
+        private readonly Dictionary<string, ISet<string>> topics = new Dictionary<string, ISet<string>>();
+
 
         public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ISubscriptionManager topicManager)
         {
@@ -20,7 +22,30 @@ namespace PubSub.Application.Subscribe
 
         public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            await _subscriptionManager.Add(subscriptions);
+            //await _subscriptionManager.Add(subscriptions);
+            var queuesSet = new HashSet<string>();
+
+            foreach (var sub in subscriptions)
+            {
+                var callback = sub.Callback;
+                foreach (var topic in sub.Topics)
+                {
+                    if (topics.TryGetValue(topic, out var callbacks))
+                    {
+                        callbacks.Add(callback);
+                    }
+                    else
+                    {
+                        topics.Add(topic, new HashSet<string>() { callback });
+                    }
+                    queuesSet.Add(topic);
+                }
+            }
+
+            foreach (var queue in queuesSet)
+            {
+                await _channel.QueueDeclareAsync(queue);
+            }
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,7 +69,7 @@ namespace PubSub.Application.Subscribe
                 foreach (var url in callbackUrls!)
                 {
                     var consumerCallback = GetConsumerCallback(channel, url);
-                    await channel.BasicConsumeAsync(topic.Name, autoAck: true, consumer: consumerCallback);
+                    await channel.BasicConsumeAsync(topic, autoAck: true, consumer: consumerCallback);
                 }
             }
         }
