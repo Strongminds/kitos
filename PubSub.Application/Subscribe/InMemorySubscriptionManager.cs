@@ -40,16 +40,12 @@ namespace PubSub.Application.Subscribe
             foreach (var topic in newQueues)
             {
                 await channel.QueueDeclareAsync(topic);
-
             }
         }
 
         public Dictionary<string, HashSet<string>> Get()
         {
-            lock (_lock) // or use ConcurrentDictionary and return a new dictionary
-            {
-                return topics.ToDictionary(kvp => kvp.Key, kvp => new HashSet<string>(kvp.Value));
-            }
+           return topics.ToDictionary(kvp => kvp.Key, kvp => new HashSet<string>(kvp.Value));
         }
     }
 }
