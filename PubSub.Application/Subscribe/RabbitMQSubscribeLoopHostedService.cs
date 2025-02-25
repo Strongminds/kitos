@@ -22,30 +22,8 @@ namespace PubSub.Application.Subscribe
 
         public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            //await _subscriptionManager.Add(subscriptions);
-            var queuesSet = new HashSet<string>();
-
-            foreach (var sub in subscriptions)
-            {
-                var callback = sub.Callback;
-                foreach (var topic in sub.Topics)
-                {
-                    if (topics.TryGetValue(topic, out var callbacks))
-                    {
-                        callbacks.Add(callback);
-                    }
-                    else
-                    {
-                        topics.Add(topic, new HashSet<string>() { callback });
-                    }
-                    queuesSet.Add(topic);
-                }
-            }
-
-            foreach (var queue in queuesSet)
-            {
-                await _channel.QueueDeclareAsync(queue);
-            }
+            await _subscriptionManager.Add(subscriptions);
+           
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)

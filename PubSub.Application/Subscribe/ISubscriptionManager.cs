@@ -4,7 +4,7 @@ namespace PubSub.Application.Subscribe
 {
     public interface ISubscriptionManager
     {
-        Dictionary<string, ISet<string>> Get();
+        public Dictionary<string, HashSet<string>> Get();
         Task Add(IEnumerable<Subscription> subscriptions);
     }
 }

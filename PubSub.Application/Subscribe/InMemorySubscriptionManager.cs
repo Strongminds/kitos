@@ -7,6 +7,8 @@ namespace PubSub.Application.Subscribe
     {
         private readonly Dictionary<string, ISet<string>> topics = new Dictionary<string, ISet<string>>();
         private readonly IChannel channel;
+        private readonly object _lock = new();
+
 
         public InMemorySubscriptionManager(IChannel channel)
         {
@@ -16,20 +18,25 @@ namespace PubSub.Application.Subscribe
         public async Task Add(IEnumerable<Subscription> subscriptions)
         {
             var newQueues = new HashSet<string>();
-            foreach (var subscription in subscriptions)
+            lock (_lock)
             {
-                foreach (var topic in subscription.Topics)
+                foreach (var subscription in subscriptions)
                 {
-                    if (topics.TryGetValue(topic, out var callbacks)){
-                        callbacks.Add(subscription.Callback);
-                    }
-                    else
+                    foreach (var topic in subscription.Topics)
                     {
-                        topics.Add(topic, new HashSet<string>() { subscription.Callback });
-                        newQueues.Add(topic);
+                        if (topics.TryGetValue(topic, out var callbacks))
+                        {
+                            callbacks.Add(subscription.Callback);
+                        }
+                        else
+                        {
+                            topics[topic] = new HashSet<string> { subscription.Callback };
+                            newQueues.Add(topic);
+                        }
                     }
                 }
             }
+
             foreach (var topic in newQueues)
             {
                 await channel.QueueDeclareAsync(topic);
@@ -37,9 +44,12 @@ namespace PubSub.Application.Subscribe
             }
         }
 
-        public Dictionary<string, ISet<string>> Get()
+        public Dictionary<string, HashSet<string>> Get()
         {
-            return topics;
+            lock (_lock) // or use ConcurrentDictionary and return a new dictionary
+            {
+                return topics.ToDictionary(kvp => kvp.Key, kvp => new HashSet<string>(kvp.Value));
+            }
         }
     }
 }
