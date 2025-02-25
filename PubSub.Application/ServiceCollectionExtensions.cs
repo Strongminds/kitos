@@ -1,6 +1,8 @@
 ﻿using PubSub.Application.Publish;
 using PubSub.Application.StartupTasks;
 using PubSub.Application.Subscribe;
+using PubSub.Core.Managers;
+using PubSub.Core.Services;
 using RabbitMQ.Client;
 
 namespace PubSub.Application;
@@ -11,7 +13,7 @@ public static class ServiceCollectionExtensions
         where T : class, IStartupTask
         => services.AddTransient<IStartupTask, T>();
 
-    public async static Task<IServiceCollection> AddRabbitMQ(this IServiceCollection services, string hostName)
+    public static async Task<IServiceCollection> AddRabbitMQ(this IServiceCollection services, string hostName)
     {
         var connectionFactory = new ConnectionFactory { HostName = hostName };
         var connection = await connectionFactory.CreateConnectionAsync();
@@ -20,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(_ => channel);
         services.AddSingleton<ISubscribeLoopHostedService, RabbitMQSubscribeLoopHostedService>();
         services.AddSingleton<IMessageBusTopicManager, RabbitMQMessageBusTopicManager>();
+
         return services;
     }
 }

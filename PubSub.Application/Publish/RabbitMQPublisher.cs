@@ -1,4 +1,4 @@
-﻿using PubSub.Application.Common;
+﻿using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 
 namespace PubSub.Application.Publish

@@ -1,4 +1,6 @@
-﻿namespace PubSub.Application.Subscribe
+﻿using PubSub.Core.Models;
+
+namespace PubSub.Application.Subscribe
 {
     public interface ISubscribeLoopHostedService: IHostedService
     {

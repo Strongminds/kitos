@@ -3,6 +3,7 @@ using Moq;
 using PubSub.Application;
 using PubSub.Application.Common;
 using PubSub.Application.Subscribe;
+using PubSub.Core.Models;
 
 namespace PubSub.Test.Unit
 {

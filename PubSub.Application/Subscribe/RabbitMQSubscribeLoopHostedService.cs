@@ -1,7 +1,8 @@
-﻿using PubSub.Application.Common;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using PubSub.Core.Models;
+using PubSub.Core.Services.Serializer;
 
 namespace PubSub.Application.Subscribe
 {

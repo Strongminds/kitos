@@ -1,6 +1,4 @@
-﻿using PubSub.Application.Common;
-
-namespace PubSub.Application.Subscribe
+﻿namespace PubSub.Core.Models
 {
     public class Subscription
     {

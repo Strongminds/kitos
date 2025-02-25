@@ -3,6 +3,7 @@ using Moq;
 using RabbitMQ.Client;
 using PubSub.Application.Subscribe;
 using PubSub.Application.Common;
+using PubSub.Core.Models;
 
 namespace PubSub.Test.Unit
 {
@@ -12,6 +13,7 @@ namespace PubSub.Test.Unit
         private Mock<IMessageSerializer> _messageSerializer;
         private Mock<IChannel> _channel;
         private Mock<ISubscriptionManager> _topicManager;
+        private Mock<ISubscriberNotifier> _subcriberNotifier;
         private RabbitMQSubscribeLoopHostedService _sut;
 
         public RabbitMQSubscribeLoopHostedServiceTest()
@@ -20,7 +22,8 @@ namespace PubSub.Test.Unit
             _messageSerializer = new Mock<IMessageSerializer>();
             _channel = new Mock<IChannel>();
             _topicManager = new Mock<ISubscriptionManager>();
-            _sut = new RabbitMQSubscribeLoopHostedService(_messageSerializer.Object, _channel.Object, _topicManager.Object);
+            _subcriberNotifier = new Mock<ISubscriberNotifier>();
+            _sut = new RabbitMQSubscribeLoopHostedService(_messageSerializer.Object, _channel.Object, _topicManager.Object, _subcriberNotifier.Object);
         }
 
         [Fact]

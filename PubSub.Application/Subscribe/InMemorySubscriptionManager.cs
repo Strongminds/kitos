@@ -1,5 +1,4 @@
-﻿using PubSub.Application.Common;
-using RabbitMQ.Client;
+﻿using PubSub.Core.Models;
 
 namespace PubSub.Application.Subscribe
 {

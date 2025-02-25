@@ -1,7 +1,10 @@
 using PubSub.Application;
-using PubSub.Application.Common;
 using PubSub.Application.StartupTasks;
 using PubSub.Application.Subscribe;
+using PubSub.Core.Managers;
+using PubSub.Core.Services;
+using PubSub.Core.Services.Publish;
+using PubSub.Core.Services.Serializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,10 @@ builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriptionManager, InMemorySubscriptionManager>();
 builder.Services.AddHttpClient<ISubscriberNotifier, HttpSubscriberNotifier>();
 builder.Services.AddSingleton<ISubscriberNotifier, HttpSubscriberNotifier>();
+builder.Services.AddSingleton<ISubscriberService, RabbitMQSubscriberService>();
+builder.Services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
+builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
+builder.Services.AddSingleton<IPublisherService, RabbitMQPublisherService>();
 
 var app = builder.Build();
 

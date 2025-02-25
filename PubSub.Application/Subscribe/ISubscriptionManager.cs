@@ -1,4 +1,4 @@
-﻿using PubSub.Application.Common;
+﻿using PubSub.Core.Models;
 
 namespace PubSub.Application.Subscribe
 {
