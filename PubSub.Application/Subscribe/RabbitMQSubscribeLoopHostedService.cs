@@ -43,16 +43,15 @@ namespace PubSub.Application.Subscribe
             var subscriptions = _subscriptionManager.Get();
             foreach (var topic in subscriptions.Keys)
             {
-                var callbackUrls = subscriptions.GetValueOrDefault(topic);
-                foreach (var url in callbackUrls!)
+                if (subscriptions.TryGetValue(topic, out var callbackUrls))
                 {
-                    var consumerCallback = GetConsumerCallback(channel, url);
+                    var consumerCallback = GetConsumerCallback(channel, callbackUrls ?? new HashSet<string>());
                     await channel.BasicConsumeAsync(topic, autoAck: true, consumer: consumerCallback);
                 }
             }
         }
 
-        private IAsyncBasicConsumer GetConsumerCallback(IChannel channel, string callbackUrl) {
+        private IAsyncBasicConsumer GetConsumerCallback(IChannel channel, HashSet<string> callbackUrls) {
             var consumerCallback = new AsyncEventingBasicConsumer(channel);
             consumerCallback.ReceivedAsync += async (model, eventArgs) =>
             {
@@ -61,7 +60,13 @@ namespace PubSub.Application.Subscribe
                 var json = JsonContent.Create(message);
                 var content = new StringContent($"\"{message}\"", Encoding.UTF8, "application/json");
                 var http = new HttpClient();
-                var res = await http.PostAsync(callbackUrl, content);
+                var subscriptions = _subscriptionManager.Get();
+
+                foreach (var callbackUrl in callbackUrls)
+                {
+                    var res = await http.PostAsync(callbackUrl, content);
+                    Console.WriteLine("");
+                }
                 Console.WriteLine($"Received {message}");
             };
             return consumerCallback;
