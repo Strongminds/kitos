@@ -1,4 +1,6 @@
-﻿namespace PubSub.Application
+﻿using PubSub.Application.Common;
+
+namespace PubSub.Application
 {
     public interface IMessageBusTopicManager
     {

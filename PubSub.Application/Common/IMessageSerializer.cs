@@ -1,4 +1,4 @@
-﻿namespace PubSub.Application
+﻿namespace PubSub.Application.Common
 {
     public interface IMessageSerializer
     {

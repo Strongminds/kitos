@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace PubSub.Application
+namespace PubSub.Application.Common
 {
     public class UTF8MessageSerializer : IMessageSerializer
     {

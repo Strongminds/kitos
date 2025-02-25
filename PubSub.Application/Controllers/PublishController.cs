@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PubSub.Application.Publish;
 
 namespace PubSub.Application.Controllers
 {

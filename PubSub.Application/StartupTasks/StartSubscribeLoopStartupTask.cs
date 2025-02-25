@@ -1,4 +1,6 @@
-﻿namespace PubSub.Application.StartupTasks
+﻿using PubSub.Application.Subscribe;
+
+namespace PubSub.Application.StartupTasks
 {
     public class StartSubscribeLoopStartupTask : IStartupTask
     {

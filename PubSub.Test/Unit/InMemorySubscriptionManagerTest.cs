@@ -1,6 +1,8 @@
 ﻿using AutoFixture;
 using Moq;
 using PubSub.Application;
+using PubSub.Application.Common;
+using PubSub.Application.Subscribe;
 
 namespace PubSub.Test.Unit
 {

@@ -1,5 +1,7 @@
 using PubSub.Application;
+using PubSub.Application.Common;
 using PubSub.Application.StartupTasks;
+using PubSub.Application.Subscribe;
 
 var builder = WebApplication.CreateBuilder(args);
 

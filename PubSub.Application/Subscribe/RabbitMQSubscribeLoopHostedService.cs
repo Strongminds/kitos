@@ -1,13 +1,12 @@
-﻿
+﻿using PubSub.Application.Common;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 
-namespace PubSub.Application
+namespace PubSub.Application.Subscribe
 {
     public class RabbitMQSubscribeLoopHostedService : BackgroundService, ISubscribeLoopHostedService
     {
-        private IEnumerable<Subscription> _subscriptions = [];
         private readonly IMessageSerializer _messageSerializer;
         private readonly IChannel _channel;
         private readonly ISubscriptionManager _subscriptionManager;

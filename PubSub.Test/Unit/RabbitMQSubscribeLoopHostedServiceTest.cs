@@ -1,7 +1,8 @@
 ﻿using AutoFixture;
-using PubSub.Application;
 using Moq;
 using RabbitMQ.Client;
+using PubSub.Application.Subscribe;
+using PubSub.Application.Common;
 
 namespace PubSub.Test.Unit
 {

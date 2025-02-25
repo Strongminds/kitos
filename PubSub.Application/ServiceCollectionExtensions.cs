@@ -1,4 +1,6 @@
-﻿using PubSub.Application.StartupTasks;
+﻿using PubSub.Application.Publish;
+using PubSub.Application.StartupTasks;
+using PubSub.Application.Subscribe;
 using RabbitMQ.Client;
 
 namespace PubSub.Application;

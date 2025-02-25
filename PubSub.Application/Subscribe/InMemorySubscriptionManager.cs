@@ -1,5 +1,6 @@
-﻿
-namespace PubSub.Application
+﻿using PubSub.Application.Common;
+
+namespace PubSub.Application.Subscribe
 {
     public class InMemorySubscriptionManager : ISubscriptionManager
     {
