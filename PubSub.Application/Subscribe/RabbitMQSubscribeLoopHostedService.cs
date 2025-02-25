@@ -10,20 +10,19 @@ namespace PubSub.Application.Subscribe
         private readonly IMessageSerializer _messageSerializer;
         private readonly IChannel _channel;
         private readonly ISubscriptionManager _subscriptionManager;
-        private readonly Dictionary<string, ISet<string>> topics = new Dictionary<string, ISet<string>>();
+        private readonly ISubscriberNotifier _subscriberNotifier;
 
-
-        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ISubscriptionManager topicManager)
+        public RabbitMQSubscribeLoopHostedService(IMessageSerializer messageSerializer, IChannel channel, ISubscriptionManager topicManager, ISubscriberNotifier subscriberNotifier)
         {
             _messageSerializer = messageSerializer;
             _channel = channel;
             _subscriptionManager = topicManager;
+            _subscriberNotifier = subscriberNotifier;
         }
 
         public async Task UpdateSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             await _subscriptionManager.Add(subscriptions);
-           
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -57,14 +56,11 @@ namespace PubSub.Application.Subscribe
             {
                 var body = eventArgs.Body.ToArray();
                 var message = _messageSerializer.Deserialize(body);
-                var json = JsonContent.Create(message);
                 var content = new StringContent($"\"{message}\"", Encoding.UTF8, "application/json");
                 var http = new HttpClient();
-                var subscriptions = _subscriptionManager.Get();
-
                 foreach (var callbackUrl in callbackUrls)
                 {
-                    var res = await http.PostAsync(callbackUrl, content);
+                    await _subscriberNotifier.Notify(message, callbackUrl);
                 }
                 Console.WriteLine($"Received {message}");
             };

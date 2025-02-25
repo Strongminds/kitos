@@ -15,6 +15,8 @@ builder.Services.AddHostedService(serviceProvider => serviceProvider.GetRequired
 builder.Services.AddStartupTask<StartSubscribeLoopStartupTask>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriptionManager, InMemorySubscriptionManager>();
+builder.Services.AddHttpClient<ISubscriberNotifier, HttpSubscriberNotifier>();
+builder.Services.AddSingleton<ISubscriberNotifier, HttpSubscriberNotifier>();
 
 var app = builder.Build();
 
