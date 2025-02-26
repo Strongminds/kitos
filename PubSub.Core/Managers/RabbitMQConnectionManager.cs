@@ -4,12 +4,12 @@ namespace PubSub.Core.Managers
 {
     public class RabbitMQConnectionManager : IConnectionManager
     {
-        private readonly ConnectionFactory _connectionFactory;
+        private readonly IConnectionFactory _connectionFactory;
         private IConnection? _connection;
 
-        public RabbitMQConnectionManager()
+        public RabbitMQConnectionManager(IConnectionFactory connectionFactory)
         {
-            _connectionFactory = new ConnectionFactory{HostName = "localhost"};
+            _connectionFactory = connectionFactory;
         }
 
         public async Task<IConnection> GetConnectionAsync()

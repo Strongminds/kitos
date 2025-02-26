@@ -10,9 +10,10 @@ public static class ServiceCollectionExtensions
     public static async Task<IServiceCollection> AddRabbitMQ(this IServiceCollection services, string hostName)
     {
         var connectionFactory = new ConnectionFactory { HostName = hostName };
-        var connection = await connectionFactory.CreateConnectionAsync();
-        var channel = await connection.CreateChannelAsync();
+        var connection = await connectionFactory.CreateConnectionAsync(); //same as below
+        var channel = await connection.CreateChannelAsync(); //todo not required here anymore?
         services.AddSingleton(_ => channel);
+        services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
         services.AddSingleton<IMessageBusTopicManager, RabbitMQMessageBusTopicManager>();
         services.AddSingleton<ISubscriberService, RabbitMQSubscriberService>();
         services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
