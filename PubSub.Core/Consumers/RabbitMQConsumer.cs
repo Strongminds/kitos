@@ -11,7 +11,7 @@ namespace PubSub.Core.Consumers
         private readonly IConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly string _queueName;
-        private readonly List<string> _callbackUrls = new();
+        private readonly HashSet<string> _callbackUrls = new();
         private IConnection _connection;
         private IChannel _channel;
         private AsyncEventingBasicConsumer _consumer;
