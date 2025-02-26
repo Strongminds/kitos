@@ -1,4 +1,5 @@
 ﻿using PubSub.Core.Consumers;
+using PubSub.Core.Models;
 using System.Collections.Concurrent;
 
 namespace PubSub.Core.Services.Subscribe
@@ -7,9 +8,9 @@ namespace PubSub.Core.Services.Subscribe
     {
         private readonly ConcurrentDictionary<string, IConsumer> _consumersByTopicDictionary = new();
 
-        public void AddSubscriberToTopic(string topic, string subscriber)
+        public void AddCallbackToTopic(string topic, string callback)
         {
-            throw new NotImplementedException();
+            _consumersByTopicDictionary[topic].AddCallbackUrl(callback);
         }
 
         public void SetConsumerForTopic(string topic, IConsumer consumer)
@@ -19,7 +20,7 @@ namespace PubSub.Core.Services.Subscribe
 
         public IDictionary<string, IConsumer> GetSubscriptions()
         {
-            return (IDictionary<string, IConsumer>) _consumersByTopicDictionary;
+            return _consumersByTopicDictionary;
         }
     }
 }

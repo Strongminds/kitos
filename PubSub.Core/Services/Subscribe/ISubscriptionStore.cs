@@ -4,7 +4,7 @@ namespace PubSub.Core.Services.Subscribe
 {
     public interface ISubscriptionStore
     {
-        void AddSubscriberToTopic(string topic, string subscriber);
+        void AddCallbackToTopic(string topic, string callback);
 
         void SetConsumerForTopic(string topic, IConsumer consumer);
 
