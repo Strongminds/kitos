@@ -21,7 +21,7 @@ public class SubscribeController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest();
         var subscriptions = new List<Subscription>() { new() { Callback = request.Callback, Topics = request.Queues } };
-        await _subscriberService.SubscribeToQueuesAsync(subscriptions);
+        await _subscriberService.SubscribeToTopicsAsync(subscriptions);
         return Ok();
     }
 }

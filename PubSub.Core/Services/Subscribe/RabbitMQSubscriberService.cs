@@ -18,7 +18,7 @@ namespace PubSub.Core.Services.Subscribe
             _subscriberNotifierService = subscriberNotifierService;
         }
 
-        public async Task SubscribeToQueuesAsync(IEnumerable<Subscription> subscriptions)
+        public async Task SubscribeToTopicsAsync(IEnumerable<Subscription> subscriptions)
         {
             foreach (var subscription in subscriptions)
             {
@@ -32,14 +32,14 @@ namespace PubSub.Core.Services.Subscribe
             {
                 if (!_consumersByTopicDictionary.ContainsKey(topic))
                 {
-                    await CreateNewConsumerAsync(topic);
+                    await CreateAndStartNewConsumerAsync(topic);
                 }
 
                 _consumersByTopicDictionary[topic].AddCallbackUrl(subscription.Callback);
             }
         }
 
-        private async Task CreateNewConsumerAsync(string topic)
+        private async Task CreateAndStartNewConsumerAsync(string topic)
         {
             var consumer = new RabbitMQConsumer(_connectionManager, _subscriberNotifierService, topic);
             _consumersByTopicDictionary[topic] = consumer;

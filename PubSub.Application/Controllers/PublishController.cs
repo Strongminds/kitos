@@ -19,7 +19,6 @@ namespace PubSub.Application.Controllers
         public async Task<IActionResult> Publish(Publication publication) {
             if (!ModelState.IsValid) return BadRequest("Invalid request object provided.");
 
-            //await _publisher.Publish(publication);
             await _publisherService.Publish(publication.Queue, publication.Message);
 
             return Ok("Hit publish endpoint");

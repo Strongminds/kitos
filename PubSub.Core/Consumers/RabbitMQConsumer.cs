@@ -6,7 +6,7 @@ using RabbitMQ.Client.Events;
 
 namespace PubSub.Core.Consumers
 {
-    public class RabbitMQConsumer : IDisposable
+    public class RabbitMQConsumer : IConsumer
     {
         private readonly IConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
@@ -54,7 +54,7 @@ namespace PubSub.Core.Consumers
         public void Dispose()
         {
             _channel?.Dispose();
-            _connection?.Dispose();
+            _connection?.Dispose(); //TODO does this break the caching of connectionManager if done often?
         }
     }
 }
