@@ -56,7 +56,51 @@ namespace PubSub.Test.Unit.Core
             _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<string>()));
             consumer.Verify(_ => _.StartListeningAsync());
             _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, subscription.Callback));
+        }
 
+        [Fact]
+        public async Task Can_Update_Subscription_Callbacks_If_Consumer_Exists()
+        {
+            var topic = await SetupExistingConsumerWithCallback();
+            var newSubscription = new Subscription()
+            {
+                Callback = _fixture.Create<string>(),
+                Topics = new List<string> { topic }
+            };
+
+            var newSubs = new List<Subscription> { newSubscription };
+            await _sut.AddSubscriptionsAsync(newSubs);
+
+            _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, newSubscription.Callback));
+        }
+        
+        private async Task<string> SetupExistingConsumerWithCallback()
+        {
+            var subscription = _fixture.Create<Subscription>();
+            var subs = new List<Subscription> { subscription };
+            var mockConnectionManager = new Mock<IConnectionManager>();
+            var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
+            string topic = subscription.Topics.First();
+
+            var consumer = new Mock<TestRabbitMQConsumer>(
+                mockConnectionManager.Object,
+                mockSubscriberNotifierService.Object,
+                topic
+            );
+
+            _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<string, IConsumer>());
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<string>())).Returns(consumer.Object);
+
+            await _sut.AddSubscriptionsAsync(subs);
+
+            var existingSubscriptions = new Dictionary<string, IConsumer>
+            {
+                { topic, consumer.Object }
+            };
+            _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(existingSubscriptions);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<string>())).Returns(consumer.Object);
+
+            return topic;
         }
     }
 }
