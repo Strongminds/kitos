@@ -1,5 +1,7 @@
 ﻿using PubSub.Core.Managers;
 using PubSub.Core.Services.Serializer;
+using PubSub.Core.Models;
+
 using RabbitMQ.Client;
 
 namespace PubSub.Core.Services.Publish
@@ -15,14 +17,15 @@ namespace PubSub.Core.Services.Publish
             _messageSerializer = messageSerializer;
         }
 
-        public async Task Publish(string topic, string message)
+        public async Task Publish(Publication publication)
         {
+            var topic = publication.Topic;
             var connection = await _connectionManager.GetConnectionAsync();
             await using var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(queue: topic, durable: true, exclusive: false, autoDelete: false, arguments: null);
 
-            var serializedBody = _messageSerializer.Serialize(message);
+            var serializedBody = _messageSerializer.Serialize(publication.Message);
             await channel.BasicPublishAsync(exchange: string.Empty, routingKey: topic, body: serializedBody);
         }
     }

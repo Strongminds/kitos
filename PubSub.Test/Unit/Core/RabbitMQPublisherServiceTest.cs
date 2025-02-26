@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Moq;
 using PubSub.Core.Managers;
+using PubSub.Core.Models;
 using PubSub.Core.Services.Publish;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
@@ -140,10 +141,9 @@ namespace PubSub.Test.Unit.Core
             var messageSerializer = new Mock<IMessageSerializer>();
 
             var sut = new RabbitMQPublisherService(connectionManager.Object, messageSerializer.Object);
-            var topic = fixture.Create<string>();
-            var message = fixture.Create<string>();
+            var publication = fixture.Create<Publication>();
 
-            await sut.Publish(topic, message);
+            await sut.Publish(publication);
             channel.Verify(ch => ch.QueueDeclareAsync(
             It.IsAny<string>(),
             It.IsAny<bool>(),

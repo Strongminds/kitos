@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PubSub.Application.DTOs;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Publish;
 
@@ -16,10 +17,11 @@ namespace PubSub.Application.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Publish(Publication publication) {
+        public async Task<IActionResult> Publish(PublishRequestDto request) {
             if (!ModelState.IsValid) return BadRequest("Invalid request object provided.");
 
-            await _publisherService.Publish(publication.Queue, publication.Message);
+            var publication = new Publication(request.Topic, request.Message);
+            await _publisherService.Publish(publication);
 
             return Ok("Hit publish endpoint");
         }

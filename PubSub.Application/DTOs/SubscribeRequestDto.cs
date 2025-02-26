@@ -1,8 +1,8 @@
 ﻿namespace PubSub.Application.DTOs
 {
-    public record SubscriptionRequestDto
+    public record SubscribeRequestDto
     {
         public required string Callback { get; set; }
-        public required List<string> Queues { get; set; }
+        public required List<string> Topics { get; set; }
     }
 }
