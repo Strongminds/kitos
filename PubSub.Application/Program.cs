@@ -1,4 +1,5 @@
 using PubSub.Application;
+using PubSub.Core.Consumers;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using PubSub.Core.Services.Subscribe;
@@ -15,6 +16,7 @@ builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifie
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
+builder.Services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
 
 var app = builder.Build();
 

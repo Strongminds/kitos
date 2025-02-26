@@ -24,7 +24,7 @@ namespace PubSub.Core.Consumers
             _queueName = queueName;
         }
 
-        public async Task StartListeningAsync()
+        public virtual async Task StartListeningAsync()
         {
             _connection = await _connectionManager.GetConnectionAsync();
             _channel = await _connection.CreateChannelAsync();
