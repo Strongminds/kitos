@@ -55,6 +55,8 @@ namespace PubSub.Test.Unit.Core
             await _sut.AddSubscriptionsAsync(subs);
             _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<string>()));
             consumer.Verify(_ => _.StartListeningAsync());
+            _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, subscription.Callback));
+
         }
     }
 }
