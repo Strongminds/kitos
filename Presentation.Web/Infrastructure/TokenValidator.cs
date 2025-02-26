@@ -48,7 +48,7 @@ namespace Presentation.Web.Infrastructure
             }
         }
 
-        public Result<TokenVerificationResponse, OperationError> VerifyToken(string token)
+        public Result<TokenIntrospectionResponse, OperationError> VerifyToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -67,7 +67,7 @@ namespace Presentation.Web.Infrastructure
                 var principal = tokenHandler.ValidateToken(token, validationParams, out var validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
-                return new TokenVerificationResponse
+                return new TokenIntrospectionResponse
                 {
                     Active = true,
                     Expiration = jwtToken.ValidTo,

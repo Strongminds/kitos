@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Presentation.Web.Infrastructure.Model.Authentication
 {
-    public class TokenVerificationResponse
+    public class TokenIntrospectionResponse
     {
         public bool Active { get; set; }
         public DateTime Expiration { get; set; }

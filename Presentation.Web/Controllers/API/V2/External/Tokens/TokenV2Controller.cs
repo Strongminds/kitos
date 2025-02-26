@@ -12,8 +12,8 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
     public class TokenV2Controller : ExternalBaseController
     {
         [HttpPost]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(TokenVerificationResponse))]
+        [Route("validate")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(TokenIntrospectionResponse))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [AllowAnonymous]
