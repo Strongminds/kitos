@@ -60,7 +60,6 @@ namespace Presentation.Web.Infrastructure
                 ValidIssuer = BearerTokenConfig.Issuer,
                 ValidateLifetime = true,
                 ValidateAudience = false
-
             };
 
             try
@@ -77,6 +76,7 @@ namespace Presentation.Web.Infrastructure
             }
             catch (Exception ex)
             {
+                Logger.Error(ex, "TokenValidator: Exception verifying token.");
                 return new OperationError("Invalid token", OperationFailure.Forbidden);
             }
         }
