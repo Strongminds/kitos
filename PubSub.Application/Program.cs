@@ -1,6 +1,7 @@
 using PubSub.Application;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
+using PubSub.Core.Services.Subscribe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ var rabbitMQHostName = "localhost";
 await builder.Services.AddRabbitMQ(rabbitMQHostName);
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
+builder.Services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
 
 var app = builder.Build();
 

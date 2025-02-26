@@ -10,12 +10,14 @@ namespace PubSub.Core.Services.Subscribe
     {
         private readonly IConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
+        private readonly ISubscriptionStore _subscriptionStore;
         private readonly ConcurrentDictionary<string, RabbitMQConsumer> _consumersByTopicDictionary = new();
 
-        public RabbitMQSubscriberService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService)
+        public RabbitMQSubscriberService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ISubscriptionStore subscriptionStore)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
+            _subscriptionStore = subscriptionStore;
         }
 
         public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
@@ -30,19 +32,22 @@ namespace PubSub.Core.Services.Subscribe
         {
             foreach (var topic in subscription.Topics)
             {
-                if (!_consumersByTopicDictionary.ContainsKey(topic))
-                {
-                    await CreateAndStartNewConsumerAsync(topic);
-                }
+                //if (!_consumersByTopicDictionary.ContainsKey(topic))
+                if (!_subscriptionStore.GetSubscriptions().ContainsKey(topic))
+                    {
+                        await CreateAndStartNewConsumerAsync(topic);
+                    }
 
-                _consumersByTopicDictionary[topic].AddCallbackUrl(subscription.Callback);
+              //  _consumersByTopicDictionary[topic].AddCallbackUrl(subscription.Callback);
+                _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
             }
         }
 
         private async Task CreateAndStartNewConsumerAsync(string topic)
         {
             var consumer = new RabbitMQConsumer(_connectionManager, _subscriberNotifierService, topic);
-            _consumersByTopicDictionary[topic] = consumer;
+            _subscriptionStore.SetConsumerForTopic(topic, consumer);
+           // _consumersByTopicDictionary[topic] = consumer;
             await consumer.StartListeningAsync();
         }
     }
