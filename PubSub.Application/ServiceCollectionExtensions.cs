@@ -14,7 +14,6 @@ public static class ServiceCollectionExtensions
         var channel = await connection.CreateChannelAsync(); //todo not required here anymore?
         services.AddSingleton(_ => channel);
         services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
-        services.AddSingleton<IMessageBusTopicManager, RabbitMQMessageBusTopicManager>();
         services.AddSingleton<ISubscriberService, RabbitMQSubscriberService>();
         services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
         services.AddSingleton<IPublisherService, RabbitMQPublisherService>();
