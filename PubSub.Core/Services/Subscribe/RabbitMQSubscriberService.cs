@@ -32,13 +32,11 @@ namespace PubSub.Core.Services.Subscribe
         {
             foreach (var topic in subscription.Topics)
             {
-                //if (!_consumersByTopicDictionary.ContainsKey(topic))
                 if (!_subscriptionStore.GetSubscriptions().ContainsKey(topic))
                     {
                         await CreateAndStartNewConsumerAsync(topic);
                     }
 
-              //  _consumersByTopicDictionary[topic].AddCallbackUrl(subscription.Callback);
                 _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
             }
         }
@@ -47,7 +45,6 @@ namespace PubSub.Core.Services.Subscribe
         {
             var consumer = new RabbitMQConsumer(_connectionManager, _subscriberNotifierService, topic);
             _subscriptionStore.SetConsumerForTopic(topic, consumer);
-           // _consumersByTopicDictionary[topic] = consumer;
             await consumer.StartListeningAsync();
         }
     }

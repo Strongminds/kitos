@@ -45,16 +45,20 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public void Can_Add_Callback_To_Consumer_By_Topic()
         {
+            var (topic, callback, consumer) = SetupCreateConsumer();
+
+            _sut.AddCallbackToTopic(topic,callback);
+
+            consumer.Verify(_ => _.AddCallbackUrl(callback));
+        }
+
+        private (string topic, string callback, Mock<IConsumer> consumer) SetupCreateConsumer()
+        {
             var topic = _fixture.Create<string>();
             var consumer = new Mock<IConsumer>();
             var callback = _fixture.Create<string>();
             _sut.SetConsumerForTopic(topic, consumer.Object);
-
-            _sut.AddCallbackToTopic(topic,callback);
-
-            var subscriptions = _sut.GetSubscriptions();
-
-            consumer.Verify(_ => _.AddCallbackUrl(callback));
+            return (topic, callback, consumer);
         }
     }
 }
