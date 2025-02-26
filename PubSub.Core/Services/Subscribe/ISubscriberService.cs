@@ -4,6 +4,6 @@ namespace PubSub.Core.Services.Subscribe
 {
     public interface ISubscriberService
     {
-        Task SubscribeToTopicsAsync(IEnumerable<Subscription> subscriptions);
+        Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions);
     }
 }

@@ -18,7 +18,7 @@ namespace PubSub.Core.Services.Subscribe
             _subscriberNotifierService = subscriberNotifierService;
         }
 
-        public async Task SubscribeToTopicsAsync(IEnumerable<Subscription> subscriptions)
+        public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
         {
             foreach (var subscription in subscriptions)
             {

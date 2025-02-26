@@ -1,6 +1,6 @@
 ﻿namespace PubSub.Core.Consumers
 {
-    interface IConsumer: IDisposable
+    public interface IConsumer: IDisposable
     {
         Task StartListeningAsync();
     }
