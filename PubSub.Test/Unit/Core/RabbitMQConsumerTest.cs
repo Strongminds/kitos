@@ -4,7 +4,6 @@ using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Services.Notifier;
 using RabbitMQ.Client;
-using System.Threading.Tasks;
 
 namespace PubSub.Test.Unit.Core
 {
@@ -30,6 +29,16 @@ namespace PubSub.Test.Unit.Core
             );
 
             await sut.StartListeningAsync();
+            channel.Verify(ch => ch.QueueDeclareAsync(
+            It.IsAny<string>(),
+            It.IsAny<bool>(),
+            It.IsAny<bool>(),
+            It.IsAny<bool>(),
+            It.IsAny<IDictionary<string, object?>>(),
+            It.IsAny<bool>(),
+            It.IsAny<bool>(),
+            It.IsAny<CancellationToken>()
+            ), Times.Once);
 
             channel.Verify(ch => ch.BasicConsumeAsync(
                 It.IsAny<string>(),             
