@@ -2,7 +2,7 @@
 
 namespace PubSub.Core.Managers
 {
-    public interface IConnectionManager
+    public interface IConnectionManager: IDisposable
     {
         Task<IConnection> GetConnectionAsync();
     }

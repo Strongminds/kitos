@@ -12,6 +12,11 @@ namespace PubSub.Core.Managers
             _connectionFactory = connectionFactory;
         }
 
+        public void Dispose()
+        {
+            _connection?.CloseAsync();
+        }
+
         public async Task<IConnection> GetConnectionAsync()
         {
             if (_connection == null || !_connection.IsOpen)

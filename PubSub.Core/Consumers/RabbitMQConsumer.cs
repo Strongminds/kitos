@@ -54,7 +54,6 @@ namespace PubSub.Core.Consumers
         public void Dispose()
         {
             _channel?.Dispose();
-            _connection?.Dispose(); //TODO does this break the caching of connectionManager if done often?
         }
     }
 }
