@@ -1,5 +1,4 @@
 ﻿using PubSub.Core.Consumers;
-using PubSub.Core.Models;
 using System.Collections.Concurrent;
 
 namespace PubSub.Core.Services.Subscribe
