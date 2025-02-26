@@ -33,10 +33,24 @@ namespace PubSub.Test.Unit.Core
             var topic = _fixture.Create<string>();
             var consumer = new TestConsumer();
 
-            _sut.AddTopicWithConsumer(topic, consumer);
+            _sut.SetConsumerForTopic(topic, consumer);
 
             var subscriptions = _sut.GetSubscriptions();
             Assert.Equal(subscriptions[topic],  consumer);
+        }
+
+        [Fact]
+        public void Updates_Consumer_If_Topic_Exists()
+        {
+            var topic = _fixture.Create<string>();
+            var consumer = new TestConsumer();
+            _sut.SetConsumerForTopic(topic, consumer);
+            var secondConsumer = new TestConsumer();
+
+            _sut.SetConsumerForTopic(topic, secondConsumer);
+
+            var subscriptions = _sut.GetSubscriptions();
+            Assert.Equal(subscriptions[topic], secondConsumer);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PubSub.Core.Services.Subscribe
             throw new NotImplementedException();
         }
 
-        public void AddTopicWithConsumer(string topic, IConsumer consumer)
+        public void SetConsumerForTopic(string topic, IConsumer consumer)
         {
             _consumersByTopicDictionary[topic] = consumer;
         }

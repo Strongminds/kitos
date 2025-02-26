@@ -6,7 +6,7 @@ namespace PubSub.Core.Services.Subscribe
     {
         void AddSubscriberToTopic(string topic, string subscriber);
 
-        void AddTopicWithConsumer(string topic, IConsumer consumer);
+        void SetConsumerForTopic(string topic, IConsumer consumer);
 
         IDictionary<string, IConsumer> GetSubscriptions();
     }
