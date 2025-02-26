@@ -154,16 +154,7 @@ namespace PubSub.Test.Unit.Core
             It.IsAny<bool>(),
             It.IsAny<CancellationToken>()
             ), Times.Once);
-            //    channel.Verify(ch => ch.BasicPublishAsync(
-            //    It.IsAny<string>(),
-            //    It.IsAny<string>(),
-            //    It.IsAny<bool>(),
-            //    It.IsAny<MockBasicProperties>,
-            //    //It.IsAny<IReadOnlyBasicProperties>(),
-            //    It.IsAny<ReadOnlyMemory<byte>>(),
-            //    It.IsAny<CancellationToken>()
-            //), Times.Once);
-
+            //TODO 26/2/25 need to also verify BasicPublishAsync() which is difficult due to the double interface requirements on its TProperties
         }
     }
 }
