@@ -367,12 +367,17 @@
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationResponseMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationTypeMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\ItSystemDBSV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\DBSWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\IDBSWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\OrganizationUnits\OrganizationUnitRoleTypeV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\External\Tokens\TokenV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ExternalReferences\ExternalReferencesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GdprExportReportInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationGlobalCountryCodesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationUnit\OrganizationUnitGlobalRoleOptionTypesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Messages\Mapping\PublicMessageStatusChoiceExtension.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\AlertsV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\QA\BrokenExternalReferencesReportInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRegularOptionTypesInternalV2Controller.cs" />
@@ -492,6 +497,8 @@
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\Mapping\NotificationTypeMappingExtensions.cs" />
+    <Compile Include="Infrastructure\Model\Authentication\ClaimResponse.cs" />
+    <Compile Include="Infrastructure\Model\Authentication\TokenIntrospectionResponse.cs" />
     <Compile Include="LoginHandler.ashx.cs">
       <DependentUpon>LoginHandler.ashx</DependentUpon>
     </Compile>
@@ -537,6 +544,7 @@
     <Compile Include="Models\API\V2\Internal\Response\ItContract\AppliedProcurementPlanResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Notifications\AlertResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\PasswordResetResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\PublicMessageStatusChoice.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportColumnsV2.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportCsvMapperV2.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportStatusResponseDTO.cs" />
@@ -601,6 +609,8 @@
     <Compile Include="Models\API\V2\Request\OrganizationUnit\UpdateOrganizationUnitRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationMasterDataRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataRolesResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Request\System\Regular\UpdateDBSPropertiesRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Request\Token\TokenIntrospectionRequest.cs" />
     <Compile Include="Models\API\V2\Request\User\BaseUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\CreateUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\DefaultUserStartPreferenceChoice.cs" />
@@ -777,8 +787,8 @@
     <Compile Include="Models\API\V1\ItContract\ContractProcurementPlanDTO.cs" />
     <Compile Include="Models\API\V1\ItContract\ContractValidationDetailsResponseDTO.cs" />
     <Compile Include="Models\API\V1\Users\UserAdministrationPermissionsDTO.cs" />
-    <Compile Include="Models\API\V2\Internal\Request\PublicMessagesRequestDTO.cs" />
-    <Compile Include="Models\API\V2\Internal\Response\PublicMessagesResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\PublicMessageRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\PublicMessageResponseDTO.cs" />
     <Compile Include="Models\API\V2\Request\DataProcessing\DataProcessorRegistrationSubDataProcessorWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Generic\ExternalReferences\ExternalReferenceDataWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Generic\ExternalReferences\UpdateExternalReferenceDataWriteRequestDTO.cs" />
