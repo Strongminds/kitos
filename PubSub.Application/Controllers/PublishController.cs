@@ -20,7 +20,7 @@ namespace PubSub.Application.Controllers
         public async Task<IActionResult> Publish(PublishRequestDto request) {
             if (!ModelState.IsValid) return BadRequest("Invalid request object provided.");
 
-            var publication = new Publication(request.Topic, request.Message);
+            var publication = new Publication(new Topic { Name = request.Topic }, request.Message);
             await _publisherService.Publish(publication);
 
             return Ok();

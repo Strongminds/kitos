@@ -42,7 +42,7 @@ namespace PubSub.Core.Services.Subscribe
             }
         }
 
-        private async Task CreateAndStartNewConsumerAsync(string topic)
+        private async Task CreateAndStartNewConsumerAsync(Topic topic)
         {
             var consumer = _consumerFactory.Create(_connectionManager, _subscriberNotifierService, topic);
             _subscriptionStore.SetConsumerForTopic(topic, consumer);

@@ -20,7 +20,7 @@ public class SubscribeController : ControllerBase
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var subscriptions = new List<Subscription>() { new() { Callback = request.Callback, Topics = request.Topics } };
+        var subscriptions = new List<Subscription>() { new() { Callback = request.Callback, Topics = request.Topics.Select(t => new Topic() { Name = t}) } };
         await _subscriberService.AddSubscriptionsAsync(subscriptions);
         return Ok();
     }

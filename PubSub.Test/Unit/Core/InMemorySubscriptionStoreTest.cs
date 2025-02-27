@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Moq;
 using PubSub.Core.Consumers;
+using PubSub.Core.Models;
 using PubSub.Core.Services.Subscribe;
 
 namespace PubSub.Test.Unit.Core
@@ -19,7 +20,7 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public void Can_Add_New_Topic()
         {
-            var topic = _fixture.Create<string>();
+            var topic = _fixture.Create<Topic>();
             var consumer = new Mock<IConsumer>();
 
             _sut.SetConsumerForTopic(topic, consumer.Object);
@@ -31,7 +32,7 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public void Updates_Consumer_If_Topic_Exists()
         {
-            var topic = _fixture.Create<string>();
+            var topic = _fixture.Create<Topic>();
             var consumer = new Mock<IConsumer>();
             _sut.SetConsumerForTopic(topic, consumer.Object);
             var secondConsumer = new Mock<IConsumer>();
@@ -52,9 +53,9 @@ namespace PubSub.Test.Unit.Core
             consumer.Verify(_ => _.AddCallbackUrl(callback));
         }
 
-        private (string topic, string callback, Mock<IConsumer> consumer) SetupCreateConsumer()
+        private (Topic topic, string callback, Mock<IConsumer> consumer) SetupCreateConsumer()
         {
-            var topic = _fixture.Create<string>();
+            var topic = _fixture.Create<Topic>();
             var consumer = new Mock<IConsumer>();
             var callback = _fixture.Create<string>();
             _sut.SetConsumerForTopic(topic, consumer.Object);
