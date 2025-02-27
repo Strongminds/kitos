@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Publish;
 
 namespace PubSub.Application.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/publish")]
     public class PublishController: ControllerBase
     {

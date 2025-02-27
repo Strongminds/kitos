@@ -34,9 +34,9 @@ namespace PubSub.Core.Services.Subscribe
             foreach (var topic in subscription.Topics)
             {
                 if (!_subscriptionStore.GetSubscriptions().ContainsKey(topic))
-                    {
-                        await CreateAndStartNewConsumerAsync(topic);
-                    }
+                {
+                    await CreateAndStartNewConsumerAsync(topic);
+                }
 
                 _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
             }
