@@ -22,5 +22,10 @@ namespace PubSub.Core.Services.Subscribe
         {
             return _consumersByTopicDictionary;
         }
+
+        public bool HasTopic(Topic topic)
+        {
+            return _consumersByTopicDictionary.ContainsKey(topic);
+        }
     }
 }

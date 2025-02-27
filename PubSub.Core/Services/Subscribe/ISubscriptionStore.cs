@@ -10,5 +10,7 @@ namespace PubSub.Core.Services.Subscribe
         void SetConsumerForTopic(Topic topic, IConsumer consumer);
 
         IDictionary<Topic, IConsumer> GetSubscriptions();
+
+        bool HasTopic(Topic topic);
     }
 }

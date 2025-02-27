@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using PubSub.Core.Consumers;
+﻿using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
@@ -36,7 +35,7 @@ namespace PubSub.Core.Services.Subscribe
         {
             foreach (var topic in subscription.Topics)
             {
-                if (!_subscriptionStore.GetSubscriptions().ContainsKey(topic))
+                if (!_subscriptionStore.HasTopic(topic))
                 {
                     await CreateAndStartNewConsumerAsync(topic);
                 }

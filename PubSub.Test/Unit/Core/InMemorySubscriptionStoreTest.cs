@@ -53,6 +53,22 @@ namespace PubSub.Test.Unit.Core
             consumer.Verify(_ => _.AddCallbackUrl(callback));
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Can_Check_If_Has_Topic(bool expected) {
+            var topic = _fixture.Create<Topic>();
+            var consumer = new Mock<IConsumer>();
+            if (expected)
+            {
+                _sut.SetConsumerForTopic(topic, consumer.Object);
+            }
+
+            var actual = _sut.HasTopic(topic);
+
+            Assert.Equal(expected, actual);
+        }
+
         private (Topic topic, string callback, Mock<IConsumer> consumer) SetupCreateConsumer()
         {
             var topic = _fixture.Create<Topic>();
