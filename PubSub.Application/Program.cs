@@ -10,7 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var rabbitMQHostName = "localhost";
+var rabbitMQHostName = "10.212.74.11";
+//var rabbitMQHostName = "localhost";
 await builder.Services.AddRabbitMQ(rabbitMQHostName);
 builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
