@@ -33,6 +33,12 @@ namespace PubSub.Test.Unit.Core
             );
 
             await sut.StartListeningAsync();
+            AssertChannelDeclaresQueue(channel);
+            AssertChannelConsumes(channel);
+        }
+
+        private void AssertChannelDeclaresQueue(Mock<IChannel> channel)
+        {
             channel.Verify(ch => ch.QueueDeclareAsync(
             It.IsAny<string>(),
             It.IsAny<bool>(),
@@ -43,14 +49,17 @@ namespace PubSub.Test.Unit.Core
             It.IsAny<bool>(),
             It.IsAny<CancellationToken>()
             ), Times.Once);
+        }
 
+        private void AssertChannelConsumes(Mock<IChannel> channel)
+        {
             channel.Verify(ch => ch.BasicConsumeAsync(
-                It.IsAny<string>(),             
-                It.IsAny<bool>(),               
-                It.IsAny<string>(),             
-                It.IsAny<bool>(),               
-                It.IsAny<bool>(),            
-                It.IsAny<IDictionary<string, object?>>(), 
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<bool>(),
+                It.IsAny<IDictionary<string, object?>>(),
                 It.IsAny<IAsyncBasicConsumer>(),
                 It.IsAny<CancellationToken>()
             ), Times.Once);

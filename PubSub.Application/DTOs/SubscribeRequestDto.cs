@@ -3,6 +3,6 @@
     public record SubscribeRequestDto
     {
         public required string Callback { get; set; }
-        public required List<string> Topics { get; set; }
+        public required IEnumerable<string> Topics { get; set; }
     }
 }
