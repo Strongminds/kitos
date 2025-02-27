@@ -28,7 +28,7 @@ namespace PubSub.Core.Consumers
             _messageSerializer = messageSerializer;
         }
 
-        public virtual async Task StartListeningAsync()
+        public async Task StartListeningAsync()
         {
             var topicName = _topic.Name;
             _connection = await _connectionManager.GetConnectionAsync();
@@ -49,7 +49,6 @@ namespace PubSub.Core.Consumers
                 {
                     await _subscriberNotifierService.Notify(message, callbackUrl);
                 }
-                Console.WriteLine($"Received {message}");
             };
             return consumer;
         }

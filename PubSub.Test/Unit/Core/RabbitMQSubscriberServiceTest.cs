@@ -9,13 +9,6 @@ using PubSub.Core.Services.Serializer;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class TestRabbitMQConsumer : RabbitMQConsumer
-    {
-        public TestRabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IMessageSerializer messageSerializer, Topic topic)
-            : base(connectionManager, subscriberNotifierService, messageSerializer, topic) { }
-
-        public override Task StartListeningAsync() => Task.CompletedTask;
-    }
     public class RabbitMQSubscriberServiceTest
     {
         private RabbitMQSubscriberService _sut;
@@ -45,12 +38,7 @@ namespace PubSub.Test.Unit.Core
             var mockConnectionManager = new Mock<IConnectionManager>();
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
             var topic = subscription.Topics.First();
-
-            var consumer = new Mock<TestRabbitMQConsumer>(
-                mockConnectionManager.Object,
-                mockSubscriberNotifierService.Object,
-                topic.Name
-            );
+            var consumer = new Mock<IConsumer>();
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
             _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IMessageSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
@@ -84,12 +72,8 @@ namespace PubSub.Test.Unit.Core
             var mockConnectionManager = new Mock<IConnectionManager>();
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
             var topic = subscription.Topics.First();
+            var consumer = new Mock<IConsumer>();
 
-            var consumer = new Mock<TestRabbitMQConsumer>(
-                mockConnectionManager.Object,
-                mockSubscriberNotifierService.Object,
-                topic.Name
-            );
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
             _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IMessageSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);

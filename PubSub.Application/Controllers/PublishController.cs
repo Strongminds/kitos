@@ -2,7 +2,7 @@
 using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
 using PubSub.Core.Models;
-using PubSub.Core.Services.Publish;
+using PubSub.Core.Services.Publisher;
 
 namespace PubSub.Application.Controllers
 {

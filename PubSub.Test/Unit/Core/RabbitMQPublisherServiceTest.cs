@@ -2,7 +2,7 @@
 using Moq;
 using PubSub.Core.Managers;
 using PubSub.Core.Models;
-using PubSub.Core.Services.Publish;
+using PubSub.Core.Services.Publisher;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 
@@ -36,7 +36,6 @@ namespace PubSub.Test.Unit.Core
             It.IsAny<bool>(),
             It.IsAny<CancellationToken>()
             ), Times.Once);
-            //TODO 26/2/25 need to also verify BasicPublishAsync() which is difficult due to the double interface requirements on its TProperties
         }
     }
 }
