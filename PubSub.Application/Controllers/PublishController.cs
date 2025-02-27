@@ -23,7 +23,7 @@ namespace PubSub.Application.Controllers
             var publication = new Publication(request.Topic, request.Message);
             await _publisherService.Publish(publication);
 
-            return Ok("Hit publish endpoint");
+            return Ok();
         }
     }
 }
