@@ -1,4 +1,5 @@
-﻿using PubSub.Core.Managers;
+﻿using PubSub.Application.Mapping;
+using PubSub.Core.Managers;
 using PubSub.Core.Services.Publish;
 using PubSub.Core.Services.Subscribe;
 using RabbitMQ.Client;
@@ -18,6 +19,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
         services.AddSingleton<IPublisherService, RabbitMQPublisherService>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddRequestMapping(this IServiceCollection services)
+    {
+        services.AddScoped<IPublishRequestMapper, PublishRequestMapper>();
+        services.AddScoped<ISubscribeRequestMapper, SubscribeRequestMapper>();
         return services;
     }
 }

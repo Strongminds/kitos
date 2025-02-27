@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
+using PubSub.Application.Mapping;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Publish;
 
@@ -10,17 +11,19 @@ namespace PubSub.Application.Controllers
     public class PublishController: ControllerBase
     {
         private readonly IPublisherService _publisherService;
+        private readonly IPublishRequestMapper _publishRequestMapper;
 
-        public PublishController(IPublisherService publisherService)
+        public PublishController(IPublisherService publisherService, IPublishRequestMapper publishRequestMapper)
         {
             _publisherService = publisherService;
+            _publishRequestMapper = publishRequestMapper;
         }
 
         [HttpPost]
         public async Task<IActionResult> Publish(PublishRequestDto request) {
             if (!ModelState.IsValid) return BadRequest("Invalid request object provided.");
 
-            var publication = new Publication(new Topic { Name = request.Topic }, request.Message);
+            var publication = _publishRequestMapper.FromDto(request);
             await _publisherService.Publish(publication);
 
             return Ok();

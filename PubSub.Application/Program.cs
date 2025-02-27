@@ -17,6 +17,8 @@ builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
 builder.Services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
+builder.Services.AddRequestMapping();
+
 
 var app = builder.Build();
 

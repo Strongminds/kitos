@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
+using PubSub.Application.Mapping;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Subscribe;
 
@@ -10,17 +11,20 @@ namespace PubSub.Application.Controllers;
 public class SubscribeController : ControllerBase
 {
     private readonly ISubscriberService _subscriberService;
+    private readonly ISubscribeRequestMapper _subscribeRequestMapper;
 
-    public SubscribeController(ISubscriberService subscriberService)
+    public SubscribeController(ISubscriberService subscriberService, ISubscribeRequestMapper subscribeRequestMapper)
     {
         _subscriberService = subscriberService;
+        _subscribeRequestMapper = subscribeRequestMapper;
     }
 
     [HttpPost]
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var subscriptions = new List<Subscription>() { new() { Callback = request.Callback, Topics = request.Topics.Select(t => new Topic() { Name = t}) } };
+        var subscription = _subscribeRequestMapper.FromDto(request);
+        var subscriptions = new List<Subscription>() { subscription };
         await _subscriberService.AddSubscriptionsAsync(subscriptions);
         return Ok();
     }
