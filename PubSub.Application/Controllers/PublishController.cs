@@ -26,7 +26,7 @@ namespace PubSub.Application.Controllers
             var publication = _publishRequestMapper.FromDto(request);
             await _publisherService.Publish(publication);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

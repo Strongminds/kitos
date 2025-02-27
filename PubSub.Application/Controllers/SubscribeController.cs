@@ -26,6 +26,6 @@ public class SubscribeController : ControllerBase
         var subscription = _subscribeRequestMapper.FromDto(request);
         var subscriptions = new List<Subscription>() { subscription };
         await _subscriberService.AddSubscriptionsAsync(subscriptions);
-        return Ok();
+        return NoContent();
     }
 }
