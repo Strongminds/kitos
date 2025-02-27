@@ -3,14 +3,16 @@ using Moq;
 using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Services.Notifier;
+using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
+using PubSub.Core.Models;
 
 namespace PubSub.Test.Unit.Core
 {
     public class RabbitMQConsumerTest
     {
         [Fact]
-        public async Task Can_Consume_On_Channeæ()
+        public async Task Can_Consume_On_Channel()
         {
             var fixture = new Fixture();
             var mockConnectionManager = new Mock<IConnectionManager>();
@@ -18,13 +20,15 @@ namespace PubSub.Test.Unit.Core
             var channel = new Mock<IChannel>();
             mockConnectionManager.Setup(_ => _.GetConnectionAsync()).ReturnsAsync(connection.Object);
             connection.Setup(_ => _.CreateChannelAsync(null, default)).ReturnsAsync(channel.Object);
+            var messageSerializer = new Mock<IMessageSerializer>();
 
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            var topic = fixture.Create<string>();
+            var topic = fixture.Create<Topic>();
 
             var sut = new RabbitMQConsumer(
                 mockConnectionManager.Object,
                 mockSubscriberNotifierService.Object,
+                messageSerializer.Object,
                 topic
             );
 

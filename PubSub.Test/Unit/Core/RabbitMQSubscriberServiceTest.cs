@@ -5,13 +5,14 @@ using PubSub.Core.Managers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Subscribe;
+using PubSub.Core.Services.Serializer;
 
 namespace PubSub.Test.Unit.Core
 {
     public class TestRabbitMQConsumer : RabbitMQConsumer
     {
-        public TestRabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, string topic)
-            : base(connectionManager, subscriberNotifierService, topic) { }
+        public TestRabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IMessageSerializer messageSerializer, Topic topic)
+            : base(connectionManager, subscriberNotifierService, messageSerializer, topic) { }
 
         public override Task StartListeningAsync() => Task.CompletedTask;
     }
@@ -23,6 +24,7 @@ namespace PubSub.Test.Unit.Core
         private readonly Mock<IRabbitMQConsumerFactory> _consumerFactory;
         private readonly Mock<IConnectionManager> _mockConnectionManager;
         private readonly Mock<ISubscriberNotifierService> _mockSubscriberNotifierService;
+        private readonly Mock<IMessageSerializer> _messageSerializer;
 
         public RabbitMQSubscriberServiceTest()
         {
@@ -31,7 +33,8 @@ namespace PubSub.Test.Unit.Core
             _subscriptionStore = new Mock<ISubscriptionStore>();
             _consumerFactory = new Mock<IRabbitMQConsumerFactory>();
             _mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            _sut = new RabbitMQSubscriberService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object);
+            _messageSerializer = new Mock<IMessageSerializer>();
+            _sut = new RabbitMQSubscriberService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object, _messageSerializer.Object);
         }
 
         [Fact]
@@ -50,10 +53,10 @@ namespace PubSub.Test.Unit.Core
             );
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<Topic>())).Returns(consumer.Object);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IMessageSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
 
             await _sut.AddSubscriptionsAsync(subs);
-            _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<Topic>()));
+            _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IMessageSerializer>(), It.IsAny<Topic>()));
             consumer.Verify(_ => _.StartListeningAsync());
             _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, subscription.Callback));
         }
@@ -89,7 +92,7 @@ namespace PubSub.Test.Unit.Core
             );
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<Topic>())).Returns(consumer.Object);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IMessageSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
 
             await _sut.AddSubscriptionsAsync(subs);
 
@@ -98,7 +101,7 @@ namespace PubSub.Test.Unit.Core
                 { topic, consumer.Object }
             };
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(existingSubscriptions);
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<Topic>())).Returns(consumer.Object);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IMessageSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
 
             return topic;
         }
