@@ -1,6 +1,6 @@
 ﻿namespace PubSub.Core.Models;
 
-public class Topic
+public struct Topic
 {
     public required string Name { get; set; }
 }
