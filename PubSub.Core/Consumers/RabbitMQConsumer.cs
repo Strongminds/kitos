@@ -14,7 +14,7 @@ namespace PubSub.Core.Consumers
         private readonly HashSet<string> _callbackUrls = new();
         private IConnection _connection;
         private IChannel _channel;
-        private AsyncEventingBasicConsumer _consumer;
+        private IAsyncBasicConsumer _consumerCallback;
 
 
         public RabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, string queueName)
@@ -28,11 +28,15 @@ namespace PubSub.Core.Consumers
         {
             _connection = await _connectionManager.GetConnectionAsync();
             _channel = await _connection.CreateChannelAsync();
-
             await _channel.QueueDeclareAsync(_queueName, true, false, false);
+            _consumerCallback = GetConsumerCallback();
 
-            _consumer = new AsyncEventingBasicConsumer(_channel);
-            _consumer.ReceivedAsync += async (model, eventArgs) =>
+            await _channel.BasicConsumeAsync(_queueName, autoAck: true, consumer: _consumerCallback);
+        }
+
+        private IAsyncBasicConsumer GetConsumerCallback() {
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += async (_, eventArgs) =>
             {
                 var body = eventArgs.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
@@ -42,8 +46,7 @@ namespace PubSub.Core.Consumers
                 }
                 Console.WriteLine($"Received {message}");
             };
-
-            await _channel.BasicConsumeAsync(_queueName, autoAck: true, consumer: _consumer);
+            return consumer;
         }
 
         public void AddCallbackUrl(string callbackUrl)
