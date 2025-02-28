@@ -37,7 +37,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             Assert.True(response.IsSuccessStatusCode);
             var systemAfter = await ItSystemV2Helper.GetSingleAsync(token, systemUuid);
-            Assert.Equal(request.DataProcessorName, systemAfter.LegalDbsDataProcessorName);
+            Assert.Equal(request.DataProcessorName, systemAfter.LegalDataProcessorName);
         }
 
         private async Task<(string, Guid, int)> CreatePrerequisites()

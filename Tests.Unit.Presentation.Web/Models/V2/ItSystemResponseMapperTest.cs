@@ -75,7 +75,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Assert
             AssertBaseResponseProperties(itSystem, expectedReferences, dto);
             Assert.Equal(itSystem.LegalName, dto.LegalName);
-            Assert.Equal(itSystem.LegalDataProcessorName, dto.LegalDbsDataProcessorName);
+            Assert.Equal(itSystem.LegalDataProcessorName, dto.LegalDataProcessorName);
         }
 
         [Fact]

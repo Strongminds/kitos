@@ -39,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 Scope = itSystem.AccessModifier.ToChoice(),
                 OrganizationContext = itSystem.Organization?.MapShallowOrganizationResponseDTO(),
                 LegalName = itSystem.LegalName,
-                LegalDbsDataProcessorName = itSystem.LegalDataProcessorName
+                LegalDataProcessorName = itSystem.LegalDataProcessorName
             };
 
             MapBaseInformation(itSystem, dto);

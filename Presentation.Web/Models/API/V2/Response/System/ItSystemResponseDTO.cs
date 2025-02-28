@@ -41,7 +41,7 @@ namespace Presentation.Web.Models.API.V2.Response.System
         public ShallowOrganizationResponseDTO OrganizationContext { get; set; }
 
         public string LegalName { get; set; }
-        public string LegalDbsDataProcessorName { get; set; }
+        public string LegalDataProcessorName { get; set; }
 
     }
 }
