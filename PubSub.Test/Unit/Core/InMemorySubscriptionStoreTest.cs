@@ -3,24 +3,23 @@ using Moq;
 using PubSub.Core.Consumers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Subscribe;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class InMemorySubscriptionStoreTest
+    public class InMemorySubscriptionStoreTest: WithAutoFixture
     {
         private InMemorySubscriptionStore _sut;
-        private IFixture _fixture;
 
         public InMemorySubscriptionStoreTest()
         {
-            _fixture = new Fixture();
             _sut = new InMemorySubscriptionStore();
         }
 
         [Fact]
         public void Can_Add_New_Topic()
         {
-            var topic = _fixture.Create<Topic>();
+            var topic = A<Topic>();
             var consumer = new Mock<IConsumer>();
 
             _sut.SetConsumerForTopic(topic, consumer.Object);
@@ -32,7 +31,7 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public void Updates_Consumer_If_Topic_Exists()
         {
-            var topic = _fixture.Create<Topic>();
+            var topic = A<Topic>();
             var consumer = new Mock<IConsumer>();
             _sut.SetConsumerForTopic(topic, consumer.Object);
             var secondConsumer = new Mock<IConsumer>();
@@ -57,7 +56,7 @@ namespace PubSub.Test.Unit.Core
         [InlineData(true)]
         [InlineData(false)]
         public void Can_Check_If_Has_Topic(bool expected) {
-            var topic = _fixture.Create<Topic>();
+            var topic = A<Topic>();
             var consumer = new Mock<IConsumer>();
             if (expected)
             {
@@ -71,9 +70,9 @@ namespace PubSub.Test.Unit.Core
 
         private (Topic topic, string callback, Mock<IConsumer> consumer) SetupCreateConsumer()
         {
-            var topic = _fixture.Create<Topic>();
+            var topic = A<Topic>();
             var consumer = new Mock<IConsumer>();
-            var callback = _fixture.Create<string>();
+            var callback = A<string>();
             _sut.SetConsumerForTopic(topic, consumer.Object);
             return (topic, callback, consumer);
         }

@@ -1,20 +1,19 @@
-﻿using AutoFixture;
-using Moq;
+﻿using Moq;
 using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 using PubSub.Core.Models;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQConsumerTest
+    public class RabbitMQConsumerTest: WithAutoFixture
     {
         [Fact]
         public async Task Can_Consume_On_Channel()
         {
-            var fixture = new Fixture();
             var mockConnectionManager = new Mock<IConnectionManager>();
             var connection = new Mock<IConnection>();
             var channel = new Mock<IChannel>();
@@ -23,7 +22,7 @@ namespace PubSub.Test.Unit.Core
             var messageSerializer = new Mock<IMessageSerializer>();
 
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            var topic = fixture.Create<Topic>();
+            var topic = A<Topic>();
 
             var sut = new RabbitMQConsumer(
                 mockConnectionManager.Object,

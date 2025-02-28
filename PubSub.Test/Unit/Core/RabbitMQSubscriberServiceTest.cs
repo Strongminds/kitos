@@ -6,13 +6,13 @@ using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Subscribe;
 using PubSub.Core.Services.Serializer;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQSubscriberServiceTest
+    public class RabbitMQSubscriberServiceTest: WithAutoFixture
     {
         private RabbitMQSubscriberService _sut;
-        private readonly Fixture _fixture;
         private readonly Mock<ISubscriptionStore> _subscriptionStore;
         private readonly Mock<IRabbitMQConsumerFactory> _consumerFactory;
         private readonly Mock<IConnectionManager> _mockConnectionManager;
@@ -21,7 +21,6 @@ namespace PubSub.Test.Unit.Core
 
         public RabbitMQSubscriberServiceTest()
         {
-            _fixture = new Fixture();
             _mockConnectionManager = new Mock<IConnectionManager>();
             _subscriptionStore = new Mock<ISubscriptionStore>();
             _consumerFactory = new Mock<IRabbitMQConsumerFactory>();
@@ -33,7 +32,7 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public async Task Can_Add_And_Start_New_Consumer_If_None_Found_For_Topic()
         {
-            var subscription = _fixture.Create<Subscription>();
+            var subscription = A<Subscription>();
             var subs = new List<Subscription> { subscription };
             var mockConnectionManager = new Mock<IConnectionManager>();
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
@@ -55,7 +54,7 @@ namespace PubSub.Test.Unit.Core
             var topic = await SetupExistingConsumerWithCallback();
             var newSubscription = new Subscription()
             {
-                Callback = _fixture.Create<string>(),
+                Callback = A<string>(),
                 Topics = new List<Topic> { topic }
             };
 
@@ -67,7 +66,7 @@ namespace PubSub.Test.Unit.Core
         
         private async Task<Topic> SetupExistingConsumerWithCallback()
         {
-            var subscription = _fixture.Create<Subscription>();
+            var subscription = A<Subscription>();
             var subs = new List<Subscription> { subscription };
             var mockConnectionManager = new Mock<IConnectionManager>();
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();

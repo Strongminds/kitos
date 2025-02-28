@@ -1,16 +1,15 @@
 ﻿using AutoFixture;
 using PubSub.Core.Services.Serializer;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Text;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class UTF8MessageSerializerTest
+    public class UTF8MessageSerializerTest: WithAutoFixture
     {
-        private Fixture _fixture;
         private UTF8MessageSerializer _sut;
 
         public UTF8MessageSerializerTest() {
-            _fixture = new Fixture();
             _sut = new UTF8MessageSerializer();
         }
 
@@ -18,7 +17,7 @@ namespace PubSub.Test.Unit.Core
         public void Can_Serialize()
         {
 
-            var message = _fixture.Create<string>();
+            var message = A<string>();
 
             var result = _sut.Serialize(message);
 
@@ -30,7 +29,7 @@ namespace PubSub.Test.Unit.Core
         public void Can_Deserialize()
         {
 
-            var bytes = _fixture.Create<byte[]>();
+            var bytes = A<byte[]>();
             var expected = Encoding.UTF8.GetString(bytes);
 
             var result = _sut.Deserialize(bytes);

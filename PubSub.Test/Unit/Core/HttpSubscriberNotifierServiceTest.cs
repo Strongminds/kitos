@@ -3,15 +3,15 @@ using Moq;
 using AutoFixture;
 using Moq.Protected;
 using System.Net;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class HttpSubscriberNotifierServiceTest
+    public class HttpSubscriberNotifierServiceTest: WithAutoFixture
     {
         [Fact]
         public async Task Can_Post_With_Client_From_Factory()
         {  
-            var fixture = new Fixture();
             HttpRequestMessage? capturedRequest = null;
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock.Protected()
@@ -27,14 +27,14 @@ namespace PubSub.Test.Unit.Core
                 {
                     StatusCode = HttpStatusCode.OK,
                 });
-            var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = fixture.Create<Uri>()};
+            var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = A<Uri>()};
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             httpClientFactoryMock
                 .Setup(factory => factory.CreateClient(It.IsAny<string>()))
                 .Returns(httpClient);
             var sut = new HttpSubscriberNotifierService(httpClientFactoryMock.Object);
-            var message = fixture.Create<string>();
-            var callback = fixture.Create<string>();
+            var message = A<string>();
+            var callback = A<string>();
 
             await sut.Notify(message, callback);
 

@@ -4,16 +4,16 @@ using PubSub.Core.Managers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Publisher;
 using PubSub.Core.Services.Serializer;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using RabbitMQ.Client;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQPublisherServiceTest
+    public class RabbitMQPublisherServiceTest: WithAutoFixture
     {
         [Fact]
         public async Task Can_Publish_On_Queue()
         {
-            var fixture = new Fixture();
             var connectionManager = new Mock<IConnectionManager>();
             var connection = new Mock<IConnection>();
             var channel = new Mock<IChannel>();
@@ -23,7 +23,7 @@ namespace PubSub.Test.Unit.Core
             var messageSerializer = new Mock<IMessageSerializer>();
 
             var sut = new RabbitMQPublisherService(connectionManager.Object, messageSerializer.Object);
-            var publication = fixture.Create<Publication>();
+            var publication = A<Publication>();
 
             await sut.Publish(publication);
             channel.Verify(ch => ch.QueueDeclareAsync(
