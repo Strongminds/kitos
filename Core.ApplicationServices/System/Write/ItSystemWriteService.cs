@@ -128,7 +128,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> LegalPropertiesUpdate(Guid systemUuid, LegalUpdateParameters parameters)
         {
-            return PerformUpdateTransaction(systemUuid, system => ApplyLegalPropertyUpdates(system, parameters), WithDBSWriteAccess);
+            return PerformUpdateTransaction(systemUuid, system => ApplyLegalPropertyUpdates(system, parameters), WithLegalPropertyWriteAccess);
         }
 
         public Result<ExternalReference, OperationError> AddExternalReference(Guid systemUuid, ExternalReferenceProperties externalReferenceProperties)
@@ -300,7 +300,7 @@ namespace Core.ApplicationServices.System.Write
                 .Bind(WithWriteAccess);
         }
 
-        private Result<ItSystem, OperationError> WithDBSWriteAccess(ItSystem system)
+        private Result<ItSystem, OperationError> WithLegalPropertyWriteAccess(ItSystem system)
         {
             var hasPermission = _authorizationContext.HasPermission(new ChangeLegalSystemPropertiesPermission());
             return hasPermission ? system : new OperationError(OperationFailure.Forbidden);
