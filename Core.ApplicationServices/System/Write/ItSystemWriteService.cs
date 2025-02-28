@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.Shared;
@@ -301,7 +302,8 @@ namespace Core.ApplicationServices.System.Write
 
         private Result<ItSystem, OperationError> WithDBSWriteAccess(ItSystem system)
         {
-            return WithWriteAccess(system); //Placeholder for now
+            var hasPermission = _authorizationContext.HasPermission(new ChangeLegalSystemPropertiesPermission());
+            return hasPermission ? system : new OperationError(OperationFailure.Forbidden);
         }
     }
 }

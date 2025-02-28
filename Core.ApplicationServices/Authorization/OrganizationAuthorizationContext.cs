@@ -478,6 +478,11 @@ namespace Core.ApplicationServices.Authorization
             return IsGlobalAdmin() || organization.Select(IsLocalAdmin).GetValueOrFallback(false);
         }
 
+        public bool Visit(ChangeLegalSystemPropertiesPermission permission)
+        {
+            return IsGlobalAdmin();
+        }
+
         #endregion PERMISSIONS
     }
 }
