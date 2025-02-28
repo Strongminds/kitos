@@ -1128,6 +1128,10 @@
     <Compile Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.Designer.cs">
       <DependentUpon>202502281150544_ChangeDbsFieldsToLegalName.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502281217598_AddSystemIntegratorFlagToUserModel.cs" />
+    <Compile Include="Migrations\202502281217598_AddSystemIntegratorFlagToUserModel.Designer.cs">
+      <DependentUpon>202502281217598_AddSystemIntegratorFlagToUserModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix staging DB\Delete_Users_Other_Than_Preserved_Users.sql" />
@@ -1209,6 +1213,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.resx">
       <DependentUpon>202502281150544_ChangeDbsFieldsToLegalName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502281217598_AddSystemIntegratorFlagToUserModel.resx">
+      <DependentUpon>202502281217598_AddSystemIntegratorFlagToUserModel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
