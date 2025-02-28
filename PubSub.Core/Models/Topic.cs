@@ -2,7 +2,7 @@
 
 public struct Topic
 {
-    public required string Name { get; set; }
+    public string Name { get; set; }
     public Topic(string name)
     {
         Name = name;
