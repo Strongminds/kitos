@@ -17,13 +17,13 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         public async Task Can_Update_DBS_Name()
         {
             var (token, systemUuid, _) = await CreatePrerequisites();
-            var request = new UpdateDBSPropertiesRequestDTO { SystemName = A<string>() };
+            var request = new DbsUpdateRequestDTO { SystemName = A<string>() };
 
             var response = await DBSV2Helper.PatchSystem(systemUuid, request);
 
             Assert.True(response.IsSuccessStatusCode);
             var systemAfter = await ItSystemV2Helper.GetSingleAsync(token, systemUuid);
-            Assert.Equal(request.SystemName, systemAfter.DBSName);
+            Assert.Equal(request.SystemName, systemAfter.LegalName);
         }
 
         [Fact]
@@ -31,13 +31,13 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
 
             var (token, systemUuid, _) = await CreatePrerequisites();
-            var request = new UpdateDBSPropertiesRequestDTO { DataProcessorName = A<string>() };
+            var request = new DbsUpdateRequestDTO { DataProcessorName = A<string>() };
 
             var response = await DBSV2Helper.PatchSystem(systemUuid, request);
 
             Assert.True(response.IsSuccessStatusCode);
             var systemAfter = await ItSystemV2Helper.GetSingleAsync(token, systemUuid);
-            Assert.Equal(request.DataProcessorName, systemAfter.DBSDataProcessorName);
+            Assert.Equal(request.DataProcessorName, systemAfter.LegalDbsDataProcessorName);
         }
 
         private async Task<(string, Guid, int)> CreatePrerequisites()

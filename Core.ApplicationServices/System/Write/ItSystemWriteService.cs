@@ -125,9 +125,9 @@ namespace Core.ApplicationServices.System.Write
                 });
         }
 
-        public Result<ItSystem, OperationError> DBSUpdate(Guid systemUuid, DBSUpdateParameters parameters)
+        public Result<ItSystem, OperationError> LegalPropertiesUpdate(Guid systemUuid, LegalUpdateParameters parameters)
         {
-            return PerformUpdateTransaction(systemUuid, system => ApplyDBSUpdates(system, parameters), WithDBSWriteAccess);
+            return PerformUpdateTransaction(systemUuid, system => ApplyLegalPropertyUpdates(system, parameters), WithDBSWriteAccess);
         }
 
         public Result<ExternalReference, OperationError> AddExternalReference(Guid systemUuid, ExternalReferenceProperties externalReferenceProperties)
@@ -211,10 +211,10 @@ namespace Core.ApplicationServices.System.Write
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Deactivated, HandleDeactivatedState));
         }
 
-        private Result<ItSystem, OperationError> ApplyDBSUpdates(ItSystem itSystem, DBSUpdateParameters parameters)
+        private static Result<ItSystem, OperationError> ApplyLegalPropertyUpdates(ItSystem itSystem, LegalUpdateParameters parameters)
         {
-            return itSystem.WithOptionalUpdate(parameters.SystemName, (sys, dbsName) => sys.UpdateDBSName(dbsName))
-                .Bind(system => system.WithOptionalUpdate(parameters.DataProcessorName, (sys, dbsDataProcessorName) => sys.UpdateDBSDataProcessorName(dbsDataProcessorName)));
+            return itSystem.WithOptionalUpdate(parameters.SystemName, (sys, legalName) => sys.UpdateLegalName(legalName))
+                .Bind(system => system.WithOptionalUpdate(parameters.DataProcessorName, (sys, legalDataProcessorName) => sys.UpdateLegalDataProcessorName(legalDataProcessorName)));
 
         }
 

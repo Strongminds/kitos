@@ -1008,16 +1008,16 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
         {
             var systemUuid = A<Guid>();
             var system = new ItSystem { Uuid = systemUuid };
-            var parameters = A<DBSUpdateParameters>();
+            var parameters = A<LegalUpdateParameters>();
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
             ExpectAllowModifyReturns(system, true);
             var transaction = ExpectTransactionBegins();
 
-            var result = _sut.DBSUpdate(systemUuid, parameters);
+            var result = _sut.LegalPropertiesUpdate(systemUuid, parameters);
 
             Assert.True(result.Ok);
-            Assert.Equal(parameters.SystemName.NewValue, result.Value.DBSName);
-            Assert.Equal(parameters.DataProcessorName.NewValue, result.Value.DBSDataProcessorName);
+            Assert.Equal(parameters.SystemName.NewValue, result.Value.LegalName);
+            Assert.Equal(parameters.DataProcessorName.NewValue, result.Value.LegalDataProcessorName);
             transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
         }
 
@@ -1032,7 +1032,7 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
             ExpectAllowModifyReturns(system, hasPermission);
             ExpectTransactionBegins();
 
-            var result = _sut.DBSUpdate(systemUuid, A<DBSUpdateParameters>());
+            var result = _sut.LegalPropertiesUpdate(systemUuid, A<LegalUpdateParameters>());
 
             Assert.Equal(hasPermission, result.Ok);
         }
