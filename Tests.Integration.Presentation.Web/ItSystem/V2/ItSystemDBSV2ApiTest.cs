@@ -17,7 +17,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         public async Task Can_Update_DBS_Name()
         {
             var (token, systemUuid, _) = await CreatePrerequisites();
-            var request = new DbsUpdateRequestDTO { SystemName = A<string>() };
+            var request = new LegalPropertyUpdateRequestDTO { SystemName = A<string>() };
 
             var response = await DBSV2Helper.PatchSystem(systemUuid, request);
 
@@ -31,7 +31,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
 
             var (token, systemUuid, _) = await CreatePrerequisites();
-            var request = new DbsUpdateRequestDTO { DataProcessorName = A<string>() };
+            var request = new LegalPropertyUpdateRequestDTO { DataProcessorName = A<string>() };
 
             var response = await DBSV2Helper.PatchSystem(systemUuid, request);
 

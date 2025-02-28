@@ -11,9 +11,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
     {
         public LegalPropertyWriteModelMapper(ICurrentHttpRequest currentHttpRequest) : base(currentHttpRequest) {}
 
-        public LegalUpdateParameters FromPATCH(DbsUpdateRequestDTO request)
+        public LegalUpdateParameters FromPATCH(LegalPropertyUpdateRequestDTO request)
         {
-            var rule = CreateChangeRule<DbsUpdateRequestDTO>(false);
+            var rule = CreateChangeRule<LegalPropertyUpdateRequestDTO>(false);
             return new LegalUpdateParameters
             {
                 SystemName = rule.MustUpdate(x => x.SystemName) ? request.SystemName.AsChangedValue() : OptionalValueChange<string>.None,

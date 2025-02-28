@@ -28,7 +28,7 @@ public class ItSystemDBSV2Controller : ExternalBaseController
     [SwaggerResponse(HttpStatusCode.Forbidden)]
     [SwaggerResponse(HttpStatusCode.NotFound)]
     [SwaggerResponse(HttpStatusCode.Unauthorized)]
-    public IHttpActionResult PatchDbsProperties([NonEmptyGuid][FromUri] Guid systemUuid, [FromBody] DbsUpdateRequestDTO request)
+    public IHttpActionResult PatchDbsProperties([NonEmptyGuid][FromUri] Guid systemUuid, [FromBody] LegalPropertyUpdateRequestDTO request)
     {
         var parameters = _writeModelMapper.FromPATCH(request);
         return _writeService.LegalPropertiesUpdate(systemUuid, parameters)

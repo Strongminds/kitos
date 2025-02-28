@@ -609,7 +609,7 @@
     <Compile Include="Models\API\V2\Request\OrganizationUnit\UpdateOrganizationUnitRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationMasterDataRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataRolesResponseDTO.cs" />
-    <Compile Include="Models\API\V2\Request\System\Regular\DbsUpdateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Request\System\Regular\LegalPropertyUpdateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Token\TokenIntrospectionRequest.cs" />
     <Compile Include="Models\API\V2\Request\User\BaseUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\CreateUserRequestDTO.cs" />

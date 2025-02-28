@@ -19,14 +19,14 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             _currentHttpRequestMock = new Mock<ICurrentHttpRequest>();
             _currentHttpRequestMock.Setup(x =>
                     x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch()))
-                .Returns(GetAllInputPropertyNames<DbsUpdateRequestDTO>());
+                .Returns(GetAllInputPropertyNames<LegalPropertyUpdateRequestDTO>());
             _sut = new LegalPropertyWriteModelMapper(_currentHttpRequestMock.Object);
         }
 
         [Fact]
         public void Can_Map_From_PATCH()
         {
-            var input = A<DbsUpdateRequestDTO>();
+            var input = A<LegalPropertyUpdateRequestDTO>();
 
             var output = _sut.FromPATCH(input);
 

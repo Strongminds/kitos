@@ -5,6 +5,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {
     public interface ILegalPropertyWriteModelMapper
     {
-        public LegalUpdateParameters FromPATCH(DbsUpdateRequestDTO request);
+        public LegalUpdateParameters FromPATCH(LegalPropertyUpdateRequestDTO request);
     }
 }
