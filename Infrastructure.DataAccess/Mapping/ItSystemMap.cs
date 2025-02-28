@@ -65,12 +65,12 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.LegalName)
                 .IsOptional()
                 .HasMaxLength(ItSystem.MaxNameLength)
-                .HasIndexAnnotation("ItSystem_IX_DBSName");
+                .HasIndexAnnotation("ItSystem_IX_LegalName");
 
             Property(x => x.LegalDataProcessorName)
                 .IsOptional()
                 .HasMaxLength(Organization.MaxNameLength)
-                .HasIndexAnnotation("ItSystem_IX_DBSDataProcessorName"); ;
+                .HasIndexAnnotation("ItSystem_IX_LegalDataProcessorName"); ;
 
             TypeMapping.AddIndexOnAccessModifier<ItSystemMap, ItSystem>(this);
         }

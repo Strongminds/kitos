@@ -1124,9 +1124,9 @@
     <Compile Include="Migrations\202502250641506_AddPublicMessagesTable.Designer.cs">
       <DependentUpon>202502250641506_AddPublicMessagesTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202502281038523_RenameDBSProperties.cs" />
-    <Compile Include="Migrations\202502281038523_RenameDBSProperties.Designer.cs">
-      <DependentUpon>202502281038523_RenameDBSProperties.cs</DependentUpon>
+    <Compile Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.cs" />
+    <Compile Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.Designer.cs">
+      <DependentUpon>202502281150544_ChangeDbsFieldsToLegalName.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
@@ -1207,8 +1207,8 @@
     <EmbeddedResource Include="Migrations\202502250641506_AddPublicMessagesTable.resx">
       <DependentUpon>202502250641506_AddPublicMessagesTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202502281038523_RenameDBSProperties.resx">
-      <DependentUpon>202502281038523_RenameDBSProperties.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.resx">
+      <DependentUpon>202502281150544_ChangeDbsFieldsToLegalName.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">

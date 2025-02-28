@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class RenameDBSProperties : IMigrationMetadata
+    public sealed partial class ChangeDbsFieldsToLegalName : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(RenameDBSProperties));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangeDbsFieldsToLegalName));
         
         string IMigrationMetadata.Id
         {
-            get { return "202502281038523_RenameDBSProperties"; }
+            get { return "202502281150544_ChangeDbsFieldsToLegalName"; }
         }
         
         string IMigrationMetadata.Source

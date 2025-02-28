@@ -1,8 +1,8 @@
 ﻿namespace Infrastructure.DataAccess.Migrations
 {
     using System.Data.Entity.Migrations;
-    
-    public partial class RenameDBSProperties : DbMigration
+
+    public partial class ChangeDbsFieldsToLegalName : DbMigration
     {
         public override void Up()
         {
@@ -21,6 +21,5 @@
             RenameColumn("dbo.ItSystem", "LegalName", "DBSName");
             RenameColumn("dbo.ItSystem", "LegalDataProcessorName", "DBSDataProcessorName");
         }
-
     }
 }
