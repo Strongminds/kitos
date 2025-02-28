@@ -285,7 +285,7 @@ namespace Core.DomainModel.ItSystem
             return Maybe<OperationError>.None;
         }
 
-        public void UpdateDBSName(string legalName)
+        public void UpdateLegalName(string legalName)
         {
             LegalName = legalName;
         }
