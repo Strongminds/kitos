@@ -532,11 +532,15 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             var user = SetupUser();
             ExpectGetUserByUuid(user.Uuid, user);
+            ExpectIsGlobalAdminReturns(isGlobalAdmin);
             ExpectTransactionBegins();
 
             var result = _sut.UpdateSystemIntegrator(user.Uuid, true);
 
-            _userServiceMock.Verify(x => x.UpdateUser(user, null, null, true), Times.Once);
+            if (isGlobalAdmin)
+            {
+                _userServiceMock.Verify(x => x.UpdateUser(user, null, null, true), Times.Once);
+            }
             Assert.Equal(result.Ok, isGlobalAdmin);
         }
 
