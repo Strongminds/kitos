@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using PubSub.Core.Services.Serializer;
+﻿using PubSub.Core.Services.Serializer;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Text;
 

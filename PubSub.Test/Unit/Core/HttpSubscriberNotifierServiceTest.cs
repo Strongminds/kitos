@@ -1,6 +1,5 @@
 ﻿using PubSub.Core.Services.Notifier;
 using Moq;
-using AutoFixture;
 using Moq.Protected;
 using System.Net;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;

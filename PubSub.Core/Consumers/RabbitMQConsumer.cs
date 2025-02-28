@@ -14,7 +14,7 @@ namespace PubSub.Core.Consumers
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly Topic _topic;
         private readonly IMessageSerializer _messageSerializer;
-        private readonly HashSet<string> _callbackUrls = new();
+        private readonly HashSet<Uri> _callbackUrls = new();
         private IConnection _connection;
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
@@ -47,13 +47,13 @@ namespace PubSub.Core.Consumers
                 var message = _messageSerializer.Deserialize(body);
                 foreach (var callbackUrl in _callbackUrls)
                 {
-                    await _subscriberNotifierService.Notify(message, callbackUrl);
+                    await _subscriberNotifierService.Notify(message, callbackUrl.AbsoluteUri);
                 }
             };
             return consumer;
         }
 
-        public void AddCallbackUrl(string callbackUrl)
+        public void AddCallbackUrl(Uri callbackUrl)
         {
             _callbackUrls.Add(callbackUrl);
         }

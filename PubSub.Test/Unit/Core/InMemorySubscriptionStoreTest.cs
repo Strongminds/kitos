@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using Moq;
+﻿using Moq;
 using PubSub.Core.Consumers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Subscribe;
@@ -68,11 +67,11 @@ namespace PubSub.Test.Unit.Core
             Assert.Equal(expected, actual);
         }
 
-        private (Topic topic, string callback, Mock<IConsumer> consumer) SetupCreateConsumer()
+        private (Topic topic, Uri callback, Mock<IConsumer> consumer) SetupCreateConsumer()
         {
             var topic = A<Topic>();
             var consumer = new Mock<IConsumer>();
-            var callback = A<string>();
+            var callback = A<Uri>();
             _sut.SetConsumerForTopic(topic, consumer.Object);
             return (topic, callback, consumer);
         }

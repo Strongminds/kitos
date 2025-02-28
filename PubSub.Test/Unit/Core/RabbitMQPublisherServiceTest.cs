@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using Moq;
+﻿using Moq;
 using PubSub.Core.Managers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Publisher;

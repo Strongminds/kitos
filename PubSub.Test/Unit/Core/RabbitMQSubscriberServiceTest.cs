@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using Moq;
+﻿using Moq;
 using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Models;
@@ -54,7 +53,7 @@ namespace PubSub.Test.Unit.Core
             var topic = await SetupExistingConsumerWithCallback();
             var newSubscription = new Subscription()
             {
-                Callback = A<string>(),
+                Callback = A<Uri>(),
                 Topics = new List<Topic> { topic }
             };
 
