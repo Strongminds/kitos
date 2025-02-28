@@ -5,11 +5,11 @@ using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 using PubSub.Core.Models;
-using PubSub.Test.Base.Tests.Toolkit.Patterns;
+using PubSub.Test.Base;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQConsumerTest: WithAutoFixture
+    public class RabbitMQConsumerTest: TestClassWithIChannelBase
     {
         [Fact]
         public async Task Can_Consume_On_Channel()
@@ -34,34 +34,6 @@ namespace PubSub.Test.Unit.Core
             await sut.StartListeningAsync();
             AssertChannelDeclaresQueue(channel);
             AssertChannelConsumes(channel);
-        }
-
-        private void AssertChannelDeclaresQueue(Mock<IChannel> channel)
-        {
-            channel.Verify(ch => ch.QueueDeclareAsync(
-            It.IsAny<string>(),
-            It.IsAny<bool>(),
-            It.IsAny<bool>(),
-            It.IsAny<bool>(),
-            It.IsAny<IDictionary<string, object?>>(),
-            It.IsAny<bool>(),
-            It.IsAny<bool>(),
-            It.IsAny<CancellationToken>()
-            ), Times.Once);
-        }
-
-        private void AssertChannelConsumes(Mock<IChannel> channel)
-        {
-            channel.Verify(ch => ch.BasicConsumeAsync(
-                It.IsAny<string>(),
-                It.IsAny<bool>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>(),
-                It.IsAny<bool>(),
-                It.IsAny<IDictionary<string, object?>>(),
-                It.IsAny<IAsyncBasicConsumer>(),
-                It.IsAny<CancellationToken>()
-            ), Times.Once);
         }
     }
 }

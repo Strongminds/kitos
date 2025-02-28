@@ -3,12 +3,12 @@ using PubSub.Core.Managers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Publisher;
 using PubSub.Core.Services.Serializer;
-using PubSub.Test.Base.Tests.Toolkit.Patterns;
+using PubSub.Test.Base;
 using RabbitMQ.Client;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQPublisherServiceTest: WithAutoFixture
+    public class RabbitMQPublisherServiceTest : TestClassWithIChannelBase
     {
         [Fact]
         public async Task Can_Publish_On_Queue()
@@ -25,16 +25,7 @@ namespace PubSub.Test.Unit.Core
             var publication = A<Publication>();
 
             await sut.Publish(publication);
-            channel.Verify(ch => ch.QueueDeclareAsync(
-            It.IsAny<string>(),
-            It.IsAny<bool>(),
-            It.IsAny<bool>(),
-            It.IsAny<bool>(),
-            It.IsAny<IDictionary<string, object?>>(),
-            It.IsAny<bool>(),
-            It.IsAny<bool>(),
-            It.IsAny<CancellationToken>()
-            ), Times.Once);
+            AssertChannelDeclaresQueue(channel);
         }
     }
 }
