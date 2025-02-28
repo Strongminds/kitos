@@ -540,6 +540,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             if (isGlobalAdmin)
             {
                 _userServiceMock.Verify(x => x.UpdateUser(user, null, null, true), Times.Once);
+                Assert.True(result.Value.IsSystemIntegrator);
             }
             Assert.Equal(result.Ok, isGlobalAdmin);
         }
