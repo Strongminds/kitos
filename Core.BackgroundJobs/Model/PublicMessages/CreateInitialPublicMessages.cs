@@ -2,35 +2,46 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Messages;
-using Core.ApplicationServices.Model.Messages;
+using Core.DomainModel.PublicMessage;
+using Core.DomainServices;
 using Infrastructure.Services.DataAccess;
 
 namespace Core.BackgroundJobs.Model.PublicMessages;
 
 public class CreateInitialPublicMessages : IAsyncBackgroundJob
 {
-    private readonly IPublicMessagesService _publicMessageService;
     private readonly ITransactionManager _transactionManager;
-    public CreateInitialPublicMessages(IPublicMessagesService publicMessageService, ITransactionManager transactionManager)
+    private readonly IGenericRepository<PublicMessage> _repository;
+    public CreateInitialPublicMessages(ITransactionManager transactionManager, IGenericRepository<PublicMessage> repository)
     {
-        _publicMessageService = publicMessageService;
         _transactionManager = transactionManager;
+        _repository = repository;
     }
-    public string Id { get; }
+
+    public string Id => StandardJobIds.CreateInitialPublicMessages;
     public Task<Result<string, OperationError>> ExecuteAsync(CancellationToken token = default)
     {
         var transaction = _transactionManager.Begin();
-        for (int i = 0; i < 6; i++)
+        try
         {
-            var result = _publicMessageService.Create(new WritePublicMessagesParams());
-            if (result.Failed)
+            for (int i = 0; i < 6; i++)
             {
-                transaction.Rollback();
-                return Task.FromResult(
-                    Result<string, OperationError>.Failure(new OperationError(OperationFailure.UnknownError)));
+                var msg = new PublicMessage
+                {
+                    Title = $"Title {i + 1}",
+                    ShortDescription = $"Short description {i + 1}"
+
+                };
+                _repository.Insert(msg);
             }
+            _repository.Save();
+            transaction.Commit();
+            return Task.FromResult(Result<string, OperationError>.Success("Successfully created public messages"));
         }
-        return Task.FromResult(Result<string, OperationError>.Success("Successfully created initial public messages"));
+        catch (Exception e)
+        {
+            transaction.Rollback();
+            return Task.FromResult(Result<string, OperationError>.Failure(new OperationError($"Error message: {e.ToString()}", OperationFailure.UnknownError)));
+        }
     }
 }
