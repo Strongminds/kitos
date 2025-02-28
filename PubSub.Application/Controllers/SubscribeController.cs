@@ -4,9 +4,11 @@ using PubSub.Application.Mapping;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Subscribe;
 
+
 namespace PubSub.Application.Controllers;
 
 [ApiController]
+
 [Route("api/subscribe")]
 public class SubscribeController : ControllerBase
 {
@@ -20,6 +22,8 @@ public class SubscribeController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
