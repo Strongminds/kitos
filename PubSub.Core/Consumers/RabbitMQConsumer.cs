@@ -30,6 +30,7 @@ namespace PubSub.Core.Consumers
 
         public async Task StartListeningAsync()
         {
+            Console.WriteLine("consumer startListeningAsync");
             var topicName = _topic.Name;
             _connection = await _connectionManager.GetConnectionAsync();
             _channel = await _connection.CreateChannelAsync();
@@ -40,16 +41,29 @@ namespace PubSub.Core.Consumers
         }
 
         private IAsyncBasicConsumer GetConsumerCallback() {
+            Console.WriteLine($"callback urls in consumer count is: {_callbackUrls.ToList().Count}");
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (_, eventArgs) =>
             {
-                var body = eventArgs.Body.ToArray();
-                var message = _messageSerializer.Deserialize(body);
-                foreach (var callbackUrl in _callbackUrls)
+                try
                 {
-                    await _subscriberNotifierService.Notify(message, callbackUrl.AbsoluteUri);
+                    Console.WriteLine("Inside callback");
+                    var body = eventArgs.Body.ToArray();
+                    var message = _messageSerializer.Deserialize(body);
+                    Console.WriteLine("Inside callback after Deserialize");
+
+                    foreach (var callbackUrl in _callbackUrls)
+                    {
+                        Console.WriteLine($"Inside callback for loop with URL: {callbackUrl}");
+                        await _subscriberNotifierService.Notify(message, callbackUrl.AbsoluteUri);
+                    }
                 }
-            };
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception in consumer: {ex.Message}\n{ex.StackTrace}");
+                }
+            
+        };
             return consumer;
         }
 
