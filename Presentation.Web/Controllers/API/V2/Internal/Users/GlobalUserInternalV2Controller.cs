@@ -239,9 +239,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromUri] Guid userUuid, [FromUri] bool isSystemIntegrator)
+        public IHttpActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromUri] Guid userUuid, [FromUri] bool requestedValue)
         {
-            return _userWriteService.UpdateSystemIntegrator(userUuid, isSystemIntegrator)
+            return _userWriteService.UpdateSystemIntegrator(userUuid, requestedValue)
                     .Match(Ok, FromOperationError);
         }
 
