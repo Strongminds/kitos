@@ -235,12 +235,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [HttpPatch]
         [Route("system-integrators/{userUuid}")]
         [SwaggerResponse(HttpStatusCode.NoContent)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromUri] Guid userUuid, [FromUri] bool isSystemIntegrator)
         {
-            throw new NotImplementedException();
+            return _userWriteService.UpdateSystemIntegrator(userUuid, isSystemIntegrator)
+                    .Match(Ok, FromOperationError);
         }
 
         private static IEnumerable<UserWithOrganizationResponseDTO> ToUserWithOrgDTOs(List<UserRoleAssociationDTO> dtos)
