@@ -14,7 +14,6 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             LegalPropertyUpdateRequestDTO request, string token = null)
         {
             var requestToken = token ?? (await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin)).Token;
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var url = GetUrl(systemUuid);
             return await HttpApi.PatchWithTokenAsync(url, requestToken, request);
         }
