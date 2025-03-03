@@ -480,7 +480,7 @@ namespace Core.ApplicationServices.Authorization
 
         public bool Visit(ChangeLegalSystemPropertiesPermission permission)
         {
-            return IsGlobalAdmin();
+            return _activeUserContext.IsSystemIntegrator();
         }
 
         #endregion PERMISSIONS

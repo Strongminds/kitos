@@ -5,6 +5,7 @@ using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.System;
@@ -1004,13 +1005,13 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
         }
 
         [Fact]
-        public void Can_Update_DBS_Properties()
+        public void Can_Update_Legal_Properties()
         {
             var systemUuid = A<Guid>();
             var system = new ItSystem { Uuid = systemUuid };
             var parameters = A<LegalUpdateParameters>();
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
-            ExpectAllowModifyReturns(system, true);
+            ExpectHasLegalChangePermissionReturns(true);
             var transaction = ExpectTransactionBegins();
 
             var result = _sut.LegalPropertiesUpdate(systemUuid, parameters);
@@ -1024,17 +1025,23 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void Can_Only_Update_DBS_Properties_With_Permission(bool hasPermission)
+        public void Can_Only_Update_Legal_Properties_As_System_Integrator(bool isSystemIntegrator)
         {
             var systemUuid = A<Guid>();
             var system = new ItSystem { Uuid = systemUuid };
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
-            ExpectAllowModifyReturns(system, hasPermission);
+            ExpectHasLegalChangePermissionReturns(isSystemIntegrator);
             ExpectTransactionBegins();
 
             var result = _sut.LegalPropertiesUpdate(systemUuid, A<LegalUpdateParameters>());
 
-            Assert.Equal(hasPermission, result.Ok);
+            Assert.Equal(isSystemIntegrator, result.Ok);
+        }
+
+        private void ExpectHasLegalChangePermissionReturns(bool hasPermission)
+        {
+            _authorizationContextMock.Setup(x => x.HasPermission(It.IsAny<ChangeLegalSystemPropertiesPermission>()))
+                .Returns(hasPermission);
         }
 
         private ExternalReferenceProperties CreateExternalReferenceProperties()
