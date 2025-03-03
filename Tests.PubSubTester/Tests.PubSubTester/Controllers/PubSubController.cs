@@ -14,7 +14,6 @@ namespace Tests.PubSubTester.Controllers
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestWithTokenDTO request)
         {
             var client = CreateClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request.Subscription), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/subscribe", content);
 
@@ -41,10 +40,8 @@ namespace Tests.PubSubTester.Controllers
         public async Task<IActionResult> Publish(PublishRequestDTO request)
         {
             var client = CreateClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/publish", content);
-
             return Ok(response);
         }
     }
