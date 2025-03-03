@@ -242,7 +242,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromUri] Guid userUuid, [FromUri] bool requestedValue)
         {
             return _userWriteService.UpdateSystemIntegrator(userUuid, requestedValue)
-                    .Match(Ok, FromOperationError);
+                    .Match(NoContent, FromOperationError);
         }
 
         private static IEnumerable<UserWithOrganizationResponseDTO> ToUserWithOrgDTOs(List<UserRoleAssociationDTO> dtos)
