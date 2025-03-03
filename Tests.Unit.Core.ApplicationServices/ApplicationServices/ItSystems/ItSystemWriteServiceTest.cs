@@ -1025,17 +1025,17 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void Can_Only_Update_Legal_Properties_As_System_Integrator(bool isSystemIntegrator)
+        public void Can_Only_Update_Legal_Properties_With_Permission(bool hasPermission)
         {
             var systemUuid = A<Guid>();
             var system = new ItSystem { Uuid = systemUuid };
             ExpectSystemServiceGetSystemReturns(systemUuid, system);
-            ExpectHasLegalChangePermissionReturns(isSystemIntegrator);
+            ExpectHasLegalChangePermissionReturns(hasPermission);
             ExpectTransactionBegins();
 
             var result = _sut.LegalPropertiesUpdate(systemUuid, A<LegalUpdateParameters>());
 
-            Assert.Equal(isSystemIntegrator, result.Ok);
+            Assert.Equal(hasPermission, result.Ok);
         }
 
         private void ExpectHasLegalChangePermissionReturns(bool hasPermission)
