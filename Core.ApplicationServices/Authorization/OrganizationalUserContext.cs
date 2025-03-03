@@ -3,7 +3,6 @@ using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization
 {
