@@ -20,7 +20,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (_, systemUuid, orgId) = await CreatePrerequisites();
             var (userId, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, orgId, true);
             var userUuid = DatabaseAccess.GetEntityUuid<User>(userId);
-            var request = A<LegalPropertyUpdateRequestDTO>();
+            var request = A<LegalPropertiesUpdateRequestDTO>();
             await UsersV2Helper.UpdateSystemIntegrator(userUuid, isSystemIntegrator);
 
             var response =
