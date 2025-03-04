@@ -27,5 +27,6 @@ namespace PubSub.Core.Services.Publisher
             var serializedBody = _messageSerializer.Serialize(publication.Message);
             Console.WriteLine($"ready to publish {publication.Message}");
             await channel.BasicPublishAsync(exchange: string.Empty, routingKey: topic.Name, body: serializedBody);
+        }
     }
 }
