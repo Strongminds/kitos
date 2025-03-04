@@ -31,7 +31,7 @@ namespace Tests.PubSubTester.Controllers
         private static HttpClient CreateClient()
         {
             var client = new HttpClient();
-            client.BaseAddress = new Uri("https://localhost:7226");
+            client.BaseAddress = new Uri("http://10.212.74.11:8080");
             return client;
         }
 
