@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PubSub.Core.Models;
-using PubSub.Core.Services.Publish;
+using PubSub.Application.DTOs;
+using PubSub.Application.Mapping;
+using PubSub.Core.Services.Publisher;
 
 namespace PubSub.Application.Controllers
 {
@@ -11,19 +12,24 @@ namespace PubSub.Application.Controllers
     public class PublishController: ControllerBase
     {
         private readonly IPublisherService _publisherService;
+        private readonly IPublishRequestMapper _publishRequestMapper;
 
-        public PublishController(IPublisherService publisherService)
+        public PublishController(IPublisherService publisherService, IPublishRequestMapper publishRequestMapper)
         {
             _publisherService = publisherService;
+            _publishRequestMapper = publishRequestMapper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Publish(Publication publication) {
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Publish(PublishRequestDto request) {
             if (!ModelState.IsValid) return BadRequest("Invalid request object provided.");
 
-            await _publisherService.Publish(publication.Queue, publication.Message);
+            var publication = _publishRequestMapper.FromDto(request);
+            await _publisherService.Publish(publication);
 
-            return Ok("Hit publish endpoint");
+            return NoContent();
         }
     }
 }

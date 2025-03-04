@@ -3,6 +3,6 @@
     public interface IConsumer: IDisposable
     {
         Task StartListeningAsync();
-        public void AddCallbackUrl(string callbackUrl);
+        void AddCallbackUrl(Uri callbackUrl);
     }
 }

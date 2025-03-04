@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using PubSub.Core.Managers;
+using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
+using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -10,43 +12,49 @@ namespace PubSub.Core.Consumers
     {
         private readonly IConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
-        private readonly string _queueName;
-        private readonly HashSet<string> _callbackUrls = new();
+        private readonly Topic _topic;
+        private readonly IMessageSerializer _messageSerializer;
+        private readonly HashSet<Uri> _callbackUrls = new();
         private IConnection _connection;
         private IChannel _channel;
-        private AsyncEventingBasicConsumer _consumer;
+        private IAsyncBasicConsumer _consumerCallback;
 
 
-        public RabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, string queueName)
+        public RabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IMessageSerializer messageSerializer, Topic topic)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
-            _queueName = queueName;
+            _topic = topic;
+            _messageSerializer = messageSerializer;
         }
 
-        public virtual async Task StartListeningAsync()
+        public async Task StartListeningAsync()
         {
+            var topicName = _topic.Name;
             _connection = await _connectionManager.GetConnectionAsync();
             _channel = await _connection.CreateChannelAsync();
+            await _channel.QueueDeclareAsync(topicName, true, false, false);
+            _consumerCallback = GetConsumerCallback();
 
-            await _channel.QueueDeclareAsync(_queueName, true, false, false);
+            await _channel.BasicConsumeAsync(topicName, autoAck: true, consumer: _consumerCallback);
+        }
 
-            _consumer = new AsyncEventingBasicConsumer(_channel);
-            _consumer.ReceivedAsync += async (model, eventArgs) =>
+        private IAsyncBasicConsumer GetConsumerCallback() {
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += async (_, eventArgs) =>
             {
                 var body = eventArgs.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
+                var message = _messageSerializer.Deserialize(body);
                 foreach (var callbackUrl in _callbackUrls)
                 {
-                    await _subscriberNotifierService.Notify(message, callbackUrl);
+                    await _subscriberNotifierService.Notify(message, callbackUrl.AbsoluteUri);
                 }
                 Console.WriteLine($"Received {message}");
             };
-
-            await _channel.BasicConsumeAsync(_queueName, autoAck: true, consumer: _consumer);
+            return consumer;
         }
 
-        public void AddCallbackUrl(string callbackUrl)
+        public void AddCallbackUrl(Uri callbackUrl)
         {
             _callbackUrls.Add(callbackUrl);
         }

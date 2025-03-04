@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using PubSub.Core.Models;
+using RabbitMQ.Client;
 
 namespace PubSub.Core.Managers
 {
@@ -24,6 +25,10 @@ namespace PubSub.Core.Managers
                 _connection = await _connectionFactory.CreateConnectionAsync();
             }
             return _connection;
+        }
+        public void Dispose()
+        {
+            _connection?.CloseAsync();
         }
     }
 }

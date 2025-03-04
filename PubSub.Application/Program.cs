@@ -12,6 +12,13 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile($"appsettings.{environment}.json");
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -35,15 +42,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
         options.IncludeErrorDetails = true;
-    });
-
-var rabbitMQHostName = "localhost";
-await builder.Services.AddRabbitMQ(rabbitMQHostName);
+    }); builder.Services.AddRabbitMQ(builder.Configuration);
 builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
 builder.Services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
+builder.Services.AddRequestMapping();
+
 
 var app = builder.Build();
 

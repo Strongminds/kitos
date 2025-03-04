@@ -2,6 +2,6 @@
 {
     public interface ISubscriberNotifierService
     {
-        public Task Notify(string message, string recipient);
+        Task Notify(string message, string recipient);
     }
 }

@@ -2,7 +2,7 @@
 {
     public class Subscription
     {
-        public string Callback { get; set; }
-        public IEnumerable<string> Topics { get; set; }
+        public Uri Callback { get; set; }
+        public IEnumerable<Topic> Topics { get; set; }
     }
 }

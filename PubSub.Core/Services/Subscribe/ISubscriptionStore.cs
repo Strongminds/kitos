@@ -1,13 +1,16 @@
 ﻿using PubSub.Core.Consumers;
+using PubSub.Core.Models;
 
 namespace PubSub.Core.Services.Subscribe
 {
     public interface ISubscriptionStore
     {
-        void AddCallbackToTopic(string topic, string callback);
+        void AddCallbackToTopic(Topic topic, Uri callback);
 
-        void SetConsumerForTopic(string topic, IConsumer consumer);
+        void SetConsumerForTopic(Topic topic, IConsumer consumer);
 
-        IDictionary<string, IConsumer> GetSubscriptions();
+        IDictionary<Topic, IConsumer> GetSubscriptions();
+
+        bool HasTopic(Topic topic);
     }
 }
