@@ -1,5 +1,4 @@
-﻿using PubSub.Core.Models;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 
 namespace PubSub.Core.Managers
 {
@@ -12,7 +11,6 @@ namespace PubSub.Core.Managers
         {
             _connectionFactory = connectionFactory;
         }
-
 
         public async Task<IConnection> GetConnectionAsync()
         {

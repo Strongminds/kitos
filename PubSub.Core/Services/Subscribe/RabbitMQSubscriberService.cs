@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using PubSub.Core.Consumers;
+﻿using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;

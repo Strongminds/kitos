@@ -23,9 +23,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var jwtValidationApiUrl = builder.Configuration["JwtValidation:ApiUrl"];
-if(jwtValidationApiUrl == null)
-    throw new ArgumentNullException("JwtValidation:ApiUrl");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -68,10 +65,19 @@ app.MapControllers();
 
 await app.RunAsync();
 
-static async Task<SecurityToken> ValidateTokenAsync(string token, string apiUrl)
+static async Task<SecurityToken> ValidateTokenAsync(string token, IConfiguration configuration)
 {
     var httpClient = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Post, $"{apiUrl}/api/v2/token/validate");
+
+    var jwtValidationApiUrl = configuration["JwtValidation:ApiUrl"];
+    if (jwtValidationApiUrl == null)
+        throw new ArgumentNullException("JwtValidation:ApiUrl");
+
+    var validationEndpoint = configuration["JwtValidation:ValidationEndpoint"];
+    if (validationEndpoint == null)
+        throw new ArgumentNullException("JwtValidation:ValidationEndpoint");
+
+    var request = new HttpRequestMessage(HttpMethod.Post, $"{jwtValidationApiUrl}{validationEndpoint}");
     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     request.Content = new FormUrlEncodedContent(new[]
     {
