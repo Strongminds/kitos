@@ -49,7 +49,6 @@ namespace PubSub.Core.Consumers
                 {
                     await _subscriberNotifierService.Notify(message, callbackUrl.AbsoluteUri);
                 }
-                Console.WriteLine($"Received {message}");
             };
             return consumer;
         }
