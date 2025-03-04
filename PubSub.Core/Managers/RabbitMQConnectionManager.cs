@@ -1,4 +1,4 @@
-﻿using RabbitMQ.Client;
+using RabbitMQ.Client;
 
 namespace PubSub.Core.Managers
 {
@@ -20,6 +20,7 @@ namespace PubSub.Core.Managers
             }
             return _connection;
         }
+
         public void Dispose()
         {
             _connection?.CloseAsync();
