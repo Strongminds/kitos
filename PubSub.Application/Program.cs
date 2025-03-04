@@ -31,7 +31,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             SignatureValidator = (token, _) => 
             {
-                var validatedToken = ValidateTokenAsync(token, jwtValidationApiUrl).GetAwaiter().GetResult();
+                var validatedToken = ValidateTokenAsync(token, builder.Configuration).GetAwaiter().GetResult();
                 return validatedToken;
             },
             ValidateIssuerSigningKey = false,
@@ -39,7 +39,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
         options.IncludeErrorDetails = true;
-    }); builder.Services.AddRabbitMQ(builder.Configuration);
+    }); 
+
+await builder.Services.AddRabbitMQ(builder.Configuration);
 builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
@@ -85,7 +87,6 @@ static async Task<SecurityToken> ValidateTokenAsync(string token, IConfiguration
     });
 
     var response = await httpClient.SendAsync(request);
-    response.EnsureSuccessStatusCode();
 
     var content = await response.Content.ReadAsStringAsync();
     var tokenResponse = JsonSerializer.Deserialize<TokenIntrospectiveResponseDTO>(content);
