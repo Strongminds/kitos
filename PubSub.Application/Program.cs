@@ -1,17 +1,13 @@
 using Microsoft.IdentityModel.Tokens;
 using PubSub.Application;
-using PubSub.Application.DTOs;
 using PubSub.Core.Consumers;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using PubSub.Core.Services.Subscribe;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using PubSub.Application;
 using PubSub.Application.Config;
+using PubSub.Core.Services.CallbackAuthentication;
+using PubSub.Core.Services.CallbackAuthenticator;
 
 var builder = WebApplication.CreateBuilder(args);
 
