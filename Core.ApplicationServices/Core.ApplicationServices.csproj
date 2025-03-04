@@ -84,9 +84,13 @@
     <Compile Include="GlobalOptions\IGlobalRoleOptionsService.cs" />
     <Compile Include="HelpTexts\HelpTextApplicationService.cs" />
     <Compile Include="HelpTexts\IHelpTextApplicationService.cs" />
+    <Compile Include="IEvent.cs" />
+    <Compile Include="IKitosEventPublisherService.cs" />
     <Compile Include="Interface\Write\IItInterfaceWriteService.cs" />
     <Compile Include="Interface\Write\ItInterfaceWriteService.cs" />
     <Compile Include="Authorization\ResourceCollectionPermissionsResult.cs" />
+    <Compile Include="KitosEvent.cs" />
+    <Compile Include="KitosEventPublisherService.cs" />
     <Compile Include="LocalOptions\GenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />
@@ -165,6 +169,7 @@
     <Compile Include="Model\Contracts\Write\ItContractProcurementModificationParameters.cs" />
     <Compile Include="Model\Contracts\Write\ItContractSupplierModificationParameters.cs" />
     <Compile Include="Model\Contracts\Write\ItContractTerminationParameters.cs" />
+    <Compile Include="Model\EventHandler\PublishSystemChangesEventHandler.cs" />
     <Compile Include="Model\EventHandler\ValidateUserCredentialsCommandHandler.cs" />
     <Compile Include="Model\GDPR\DataProcessingRegistrationPermissions.cs" />
     <Compile Include="Model\GDPR\Write\SubDataProcessorParameter.cs" />
@@ -236,6 +241,7 @@
     <Compile Include="Model\Shared\NamedEntityWithUuid.cs" />
     <Compile Include="Model\Shared\OptionalValueChange.cs" />
     <Compile Include="Model\Shared\Write\ExternalReferenceProperties.cs" />
+    <Compile Include="Model\SystemChangeEvent.cs" />
     <Compile Include="Model\SystemUsage\Write\NamedLink.cs" />
     <Compile Include="Model\SystemUsage\Write\SystemRelationParameters.cs" />
     <Compile Include="Model\SystemUsage\Write\SystemUsageCreationParameters.cs" />
