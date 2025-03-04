@@ -4,11 +4,12 @@ using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using PubSub.Core.Services.Subscribe;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using PubSub.Application;
 using PubSub.Application.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+var environment = Environment.GetEnvironmentVariable(Constants.Config.Environment.CurrentName) ?? Constants.Config.Environment.Production;
 builder.Configuration
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("appsettings.json")

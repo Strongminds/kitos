@@ -10,6 +10,11 @@
                 public const string Endpoint = "JwtValidation:ValidationEndpoint";
             }
 
+            public class Environment
+            {
+                public const string CurrentName = "ASPNETCORE_ENVIRONMENT";
+                public const string Production = "Production";
+            }
         }
     }
 }
