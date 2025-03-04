@@ -9,12 +9,12 @@ namespace Tests.PubSubTester.Controllers
     [ApiController]
     public class PubSubController(ILogger<PubSubController> logger) : ControllerBase
     {
+        private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
         [HttpPost]
         [Route("subscribe")]
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestWithTokenDTO request)
         {
             var client = CreateClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request.Subscription), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/subscribe", content);
 
@@ -32,7 +32,7 @@ namespace Tests.PubSubTester.Controllers
         private static HttpClient CreateClient()
         {
             var client = new HttpClient();
-            client.BaseAddress = new Uri("https://localhost:7226");
+            client.BaseAddress = new Uri(PubSubApiUrl);
             return client;
         }
 
@@ -41,10 +41,8 @@ namespace Tests.PubSubTester.Controllers
         public async Task<IActionResult> Publish(PublishRequestDTO request)
         {
             var client = CreateClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/publish", content);
-
             return Ok(response);
         }
     }

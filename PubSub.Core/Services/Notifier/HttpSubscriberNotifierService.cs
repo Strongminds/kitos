@@ -14,7 +14,16 @@ namespace PubSub.Core.Services.Notifier
         {
             using var httpClient = _httpClientFactory.CreateClient();
             var content = new StringContent($"\"{message}\"", Encoding.UTF8, "application/json");
-            await httpClient.PostAsync(recipient, content);
+
+            try
+            {
+                await httpClient.PostAsync(recipient, content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending POST request to {recipient}: {ex.Message}");
+            }
         }
+
     }
 }
