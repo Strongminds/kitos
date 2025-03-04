@@ -252,26 +252,36 @@ namespace Core.ApplicationServices.Users.Write
 
         private Result<User, OperationError> UpdateSystemIntegrator(User user, bool systemIntegratorStatus)
         {
-            if (!_organizationalUserContext.IsGlobalAdmin())
+            var globalAdminWriteAccess = WithGlobalAdminWriteAccess(user);
+            if (globalAdminWriteAccess.Failed)
             {
-                return new OperationError("You do not have the permission to change this role", OperationFailure.Forbidden);
+                return globalAdminWriteAccess.Error;
             }
-
             user.SetSystemIntegratorStatus(systemIntegratorStatus);
             return user;
         }
 
         private Result<User, OperationError> UpdateGlobalAdminStatus(User user, bool requestedGlobalAdminStatus)
         {
-            if (!_organizationalUserContext.IsGlobalAdmin())
+            var globalAdminWriteAccess = WithGlobalAdminWriteAccess(user);
+            if (globalAdminWriteAccess.Failed)
             {
-                return new OperationError("Only global admins can add or remove global admins", OperationFailure.Forbidden);
+                return globalAdminWriteAccess.Error;
             }
             if (!requestedGlobalAdminStatus && _organizationalUserContext.UserId == user.Id)
             {
                 return new OperationError("You can not remove yourself as global admin", OperationFailure.Forbidden);
             }
             user.SetGlobalAdminStatus(requestedGlobalAdminStatus);
+            return user;
+        }
+
+        private Result<User, OperationError> WithGlobalAdminWriteAccess(User user)
+        {
+            if (!_organizationalUserContext.IsGlobalAdmin())
+            {
+                return new OperationError("Only global admins can perform this operation", OperationFailure.Forbidden);
+            }
             return user;
         }
 
