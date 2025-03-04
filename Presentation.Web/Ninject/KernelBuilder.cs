@@ -138,6 +138,7 @@ using Kombit.InfrastructureSamples.Token;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
+using Core.BackgroundJobs.Model.PublicMessages;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 
 namespace Presentation.Web.Ninject
@@ -405,7 +406,7 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IHelpTextWriteModelMapper>().To<HelpTextWriteModelMapper>().InCommandScope(Mode);
 
             //DBS
-            kernel.Bind<IDBSWriteModelMapper>().To<DBSWriteModelMapper>().InCommandScope(Mode);
+            kernel.Bind<ILegalPropertyWriteModelMapper>().To<LegalPropertyWriteModelMapper>().InCommandScope(Mode);
 
         }
 
@@ -865,6 +866,8 @@ namespace Presentation.Web.Ninject
 
             //FK Org sync
             kernel.Bind<ScheduleFkOrgUpdatesBackgroundJob>().ToSelf().InCommandScope(Mode);
+
+            kernel.Bind<CreateInitialPublicMessages>().ToSelf().InCommandScope(Mode);
         }
     }
 }
