@@ -3,7 +3,6 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace PubSub.Test.Unit.Core
 {
