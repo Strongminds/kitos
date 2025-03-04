@@ -257,7 +257,7 @@ namespace Core.ApplicationServices.Users.Write
                 return new OperationError("You do not have the permission to change this role", OperationFailure.Forbidden);
             }
 
-            user.IsSystemIntegrator = systemIntegratorStatus;
+            user.SetSystemIntegratorStatus(systemIntegratorStatus);
             return user;
         }
 
@@ -271,7 +271,7 @@ namespace Core.ApplicationServices.Users.Write
             {
                 return new OperationError("You can not remove yourself as global admin", OperationFailure.Forbidden);
             }
-            user.IsGlobalAdmin = requestedGlobalAdminStatus;
+            user.SetGlobalAdminStatus(requestedGlobalAdminStatus);
             return user;
         }
 

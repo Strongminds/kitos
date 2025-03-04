@@ -238,6 +238,15 @@ namespace Core.DomainModel
             return Id == user.Id;
         }
 
+        public void SetSystemIntegratorStatus(bool systemIntegratorStatus)
+        {
+            IsSystemIntegrator = systemIntegratorStatus;
+        }
+        public void SetGlobalAdminStatus(bool globalAdminStatus)
+        {
+            IsGlobalAdmin = globalAdminStatus;
+        }
+
         #endregion
     }
 }
