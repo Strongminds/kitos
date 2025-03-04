@@ -8,13 +8,10 @@ namespace PubSub.Application.Config;
 
 public static class ServiceCollectionExtensions
 {
-    private static readonly string RabbitMQConfigSection = "RabbitMQ";
-    private static readonly string RabbitMQHostNameKey = "HostName";
-
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var rabbitMQSettings = configuration.GetSection(RabbitMQConfigSection);
-        var hostName = rabbitMQSettings.GetValue<string>(RabbitMQHostNameKey);
+        var rabbitMQSettings = configuration.GetSection(Constants.Config.MessageBus.ConfigSection);
+        var hostName = rabbitMQSettings.GetValue<string>(Constants.Config.MessageBus.HostName);
         if (hostName == null) throw new ArgumentNullException("No RabbitMQ host name found in appsettings.");
         var connectionFactory = new ConnectionFactory { HostName = hostName };
 

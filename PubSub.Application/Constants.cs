@@ -15,6 +15,12 @@
                 public const string CurrentName = "ASPNETCORE_ENVIRONMENT";
                 public const string Production = "Production";
             }
+
+            public class MessageBus
+            {
+                public const string ConfigSection = "RabbitMQ";
+                public const string HostName = "HostName";
+            }
         }
     }
 }
