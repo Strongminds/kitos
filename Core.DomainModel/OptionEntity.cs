@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.Abstractions.Types;
 
 namespace Core.DomainModel
@@ -118,6 +119,5 @@ namespace Core.DomainModel
         {
             Priority = newPriority;
         }
-
     }
 }
