@@ -14,7 +14,6 @@ using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
-using dk.nita.saml20.Schema.Protocol;
 using Infrastructure.Services.DataAccess;
 
 namespace Core.ApplicationServices.Users.Write
