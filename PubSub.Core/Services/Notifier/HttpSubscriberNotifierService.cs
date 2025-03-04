@@ -12,14 +12,12 @@ namespace PubSub.Core.Services.Notifier
         }
         public async Task Notify(string message, string recipient)
         {
-            Console.WriteLine("at start of Notify()");
             using var httpClient = _httpClientFactory.CreateClient();
             var content = new StringContent($"\"{message}\"", Encoding.UTF8, "application/json");
 
             try
             {
-                var debug = await httpClient.PostAsync(recipient, content);
-                Console.WriteLine($"response for callback to {recipient} is {debug.StatusCode}");
+                await httpClient.PostAsync(recipient, content);
             }
             catch (Exception ex)
             {
