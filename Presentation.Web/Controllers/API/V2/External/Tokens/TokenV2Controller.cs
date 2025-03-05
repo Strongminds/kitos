@@ -1,5 +1,4 @@
-﻿using Presentation.Web.Infrastructure;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Presentation.Web.Models.API.V2.Request.Token;
 using Presentation.Web.Infrastructure.Attributes;
 using Swashbuckle.Swagger.Annotations;
