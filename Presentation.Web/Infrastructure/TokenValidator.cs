@@ -4,7 +4,6 @@ using Serilog;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Principal;
-using Presentation.Web.Infrastructure.Model.Authentication;
 using Core.Abstractions.Types;
 using System.Linq;
 using Core.ApplicationServices.Model.Authentication;

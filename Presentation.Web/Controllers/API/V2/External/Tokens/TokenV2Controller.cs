@@ -5,7 +5,6 @@ using Presentation.Web.Infrastructure.Attributes;
 using Swashbuckle.Swagger.Annotations;
 using System.Net;
 using Core.ApplicationServices.Model.Authentication;
-using Presentation.Web.Infrastructure.Model.Authentication;
 
 namespace Presentation.Web.Controllers.API.V2.External.Tokens
 {

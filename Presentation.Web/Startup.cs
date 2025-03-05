@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Core.ApplicationServices.Model.Authentication;
 using Microsoft.Owin;
 using Owin;
 using Hangfire;
@@ -10,7 +11,6 @@ using Infrastructure.Services.Http;
 using Microsoft.IdentityModel.Tokens;
 using Presentation.Web.Hangfire;
 using Presentation.Web.Infrastructure.Middleware;
-using Presentation.Web.Infrastructure.Model.Authentication;
 using Presentation.Web.Ninject;
 using Presentation.Web.Infrastructure.Filters;
 using Presentation.Web.Infrastructure;

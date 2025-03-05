@@ -1440,7 +1440,6 @@
     <Compile Include="Infrastructure\Attributes\PublicApiAttribute.cs" />
     <Compile Include="Infrastructure\ExceptionLogFilterAttribute.cs" />
     <Compile Include="Infrastructure\LogInterceptor.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\BearerTokenConfig.cs" />
     <Compile Include="Infrastructure\Middleware\OwinNinjectMiddleware.cs" />
     <Compile Include="Infrastructure\TokenValidator.cs" />
     <Compile Include="Models\API\V1\ArchivePeriodDTO.cs" />
@@ -2016,6 +2015,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Infrastructure\Model\Authentication\" />
     <Folder Include="Models\API\V2\Request\Organization\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
