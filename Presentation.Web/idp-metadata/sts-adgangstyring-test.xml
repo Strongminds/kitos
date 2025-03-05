@@ -20,16 +20,11 @@
     <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</NameIDFormat>
     <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/issue.idp" />
     <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/saml2/issue.idp" />
-    <Attribute
-      Name="https://data.gov.dk/concept/core/nsis/loa"
-      NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <AttributeValue type="xs:string">Substantial</AttributeValue>
-    </Attribute>
     <Attribute Name="dk:gov:saml:attribute:KombitSpecVer" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Specification Version" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
       <AttributeValue>1.0</AttributeValue>
     </Attribute>
-    <Attribute Name="dk:gov:saml:attribute:AssuranceLevel" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" IsRequired="true" FriendlyName="Assurance Level" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
-      <AttributeValue>2</AttributeValue>
+    <Attribute Name="dk:gov:saml:attribute:AssuranceLevel" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Assurance Level" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+      <AttributeValue>3</AttributeValue>
     </Attribute>
     <Attribute Name="dk:gov:saml:attribute:SpecVer" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" FriendlyName="Specification Version" xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
       <AttributeValue>DK-SAML-2.0</AttributeValue>
