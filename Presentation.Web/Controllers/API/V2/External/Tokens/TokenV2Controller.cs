@@ -1,10 +1,11 @@
-﻿using Presentation.Web.Infrastructure;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Presentation.Web.Models.API.V2.Request.Token;
 using Presentation.Web.Infrastructure.Attributes;
 using Swashbuckle.Swagger.Annotations;
 using System.Net;
-using Presentation.Web.Infrastructure.Model.Authentication;
+using Core.ApplicationServices.Authentication;
+using Core.ApplicationServices.Model.Authentication;
+using Presentation.Web.Properties;
 
 namespace Presentation.Web.Controllers.API.V2.External.Tokens
 {
@@ -20,7 +21,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
         [IgnoreCSRFProtection]
         public IHttpActionResult Introspect([FromBody] TokenIntrospectionRequest request)
         {
-            return new TokenValidator().VerifyToken(request.Token)
+            return new TokenValidator(Settings.Default.BaseUrl).VerifyToken(request.Token)
                 .Match(Ok, FromOperationError);
         }
     }
