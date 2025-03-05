@@ -1,20 +1,27 @@
 ﻿using System;
-using System.Security.Claims;
-using Serilog;
-using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using Core.Abstractions.Types;
-using System.Linq;
 using Core.ApplicationServices.Model.Authentication;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
-namespace Presentation.Web.Infrastructure
+namespace Core.ApplicationServices.Authentication
 {
-    public class TokenValidator
+    public class TokenValidator : ITokenValidator
     {
         public ILogger Logger = Log.Logger;
+        private readonly string _baseUrl;
 
-        public KitosApiToken CreateToken(Core.DomainModel.User user)
+        public TokenValidator(string baseUrl)
+        {
+            _baseUrl = baseUrl;
+        }
+
+        public KitosApiToken CreateToken(DomainModel.User user)
         {
             if (user == null)
             {
@@ -22,7 +29,6 @@ namespace Presentation.Web.Infrastructure
             }
 
             var handler = new JwtSecurityTokenHandler();
-
             var identity = new ClaimsIdentity(new GenericIdentity(user.Id.ToString(), "TokenAuth"));
 
             // securityKey length should be >256b
