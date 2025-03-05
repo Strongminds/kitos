@@ -7,6 +7,7 @@ using System.Security.Principal;
 using Presentation.Web.Infrastructure.Model.Authentication;
 using Core.Abstractions.Types;
 using System.Linq;
+using Core.ApplicationServices.Model.Authentication;
 
 namespace Presentation.Web.Infrastructure
 {

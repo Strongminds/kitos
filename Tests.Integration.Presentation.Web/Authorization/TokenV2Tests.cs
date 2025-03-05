@@ -2,6 +2,7 @@
 using System.Net.Http;
 using Core.DomainModel.Organization;
 using System.Threading.Tasks;
+using Core.ApplicationServices.Model.Authentication;
 using Presentation.Web.Infrastructure.Model.Authentication;
 using Presentation.Web.Models.API.V2.Request.Token;
 using Tests.Integration.Presentation.Web.Tools;

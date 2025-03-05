@@ -89,6 +89,7 @@
     <Compile Include="Authorization\ResourceCollectionPermissionsResult.cs" />
     <Compile Include="LocalOptions\GenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
+    <Compile Include="Model\Authentication\ClaimResponse.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />
     <Compile Include="Authentication\IAuthenticationContext.cs" />
     <Compile Include="Authentication\IAuthenticationContextFactory.cs" />
@@ -153,6 +154,8 @@
     <Compile Include="IUserService.cs" />
     <Compile Include="Messages\IPublicMessagesService.cs" />
     <Compile Include="Messages\PublicMessagesService.cs" />
+    <Compile Include="Model\Authentication\KitosApiToken.cs" />
+    <Compile Include="Model\Authentication\TokenIntrospectionResponse.cs" />
     <Compile Include="Model\Contracts\ContractOptions.cs" />
     <Compile Include="Model\Contracts\ContractPermissions.cs" />
     <Compile Include="Model\Contracts\Write\ItContractAgreementPeriodModificationParameters.cs" />
@@ -420,6 +423,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Authentication\Model\" />
     <Folder Include="Model\TaskRefs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
