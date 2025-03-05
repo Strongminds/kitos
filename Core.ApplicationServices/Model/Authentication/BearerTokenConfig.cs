@@ -6,7 +6,8 @@ namespace Core.ApplicationServices.Model.Authentication
 {
     public class BearerTokenConfig
     {
-        public static string Issuer => "TODO";
+        public static string Issuer =>
+            global::System.Web.Configuration.WebConfigurationManager.AppSettings["BaseUrl"];
 
         public static SecurityKey SecurityKey =>
             new SymmetricSecurityKey(
