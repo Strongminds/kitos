@@ -132,6 +132,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.STS.SvcUtilC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.SAMLResponseDecryptor", "Tools.SAMLResponseDecryptor\Tools.SAMLResponseDecryptor.csproj", "{F300C204-7DD8-40A7-9465-CF1EA6A9DCB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Authentication", "ClassLibrary1\Infrastructure.Authentication.csproj", "{DB737E4B-BDE3-4CBE-B510-CBD1EBC29961}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -238,6 +240,10 @@ Global
 		{F300C204-7DD8-40A7-9465-CF1EA6A9DCB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F300C204-7DD8-40A7-9465-CF1EA6A9DCB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F300C204-7DD8-40A7-9465-CF1EA6A9DCB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB737E4B-BDE3-4CBE-B510-CBD1EBC29961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB737E4B-BDE3-4CBE-B510-CBD1EBC29961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB737E4B-BDE3-4CBE-B510-CBD1EBC29961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB737E4B-BDE3-4CBE-B510-CBD1EBC29961}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,6 +281,7 @@ Global
 		{2BF23085-9552-4354-B070-7F1715ED5976} = {3F0ABEAA-2F6E-4385-8BB1-71695E633E0A}
 		{2DC50C99-0A51-4FAC-B53B-54401B72D699} = {EF9D5FB5-3C0D-45C0-88D4-6619D2905EFB}
 		{F300C204-7DD8-40A7-9465-CF1EA6A9DCB2} = {1755BABD-3C1F-497A-AB69-9D643B576506}
+		{DB737E4B-BDE3-4CBE-B510-CBD1EBC29961} = {500B4C1D-B871-49A0-94E7-BD0623101EF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4890FA32-C82F-4C98-AC7A-2F4EE7F21687}
