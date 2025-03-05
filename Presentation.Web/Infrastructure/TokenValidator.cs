@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Serilog;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Principal;
 using Presentation.Web.Infrastructure.Model.Authentication;
 using Core.Abstractions.Types;
