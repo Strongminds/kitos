@@ -1,10 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tests.PubSubTester.DTOs;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Tests.PubSubTester.Controllers
 {
