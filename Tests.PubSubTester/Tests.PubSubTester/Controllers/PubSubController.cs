@@ -10,8 +10,9 @@ namespace Tests.PubSubTester.Controllers
     [ApiController]
     public class PubSubController(ILogger<PubSubController> logger) : ControllerBase
     {
-        //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
-        private static readonly string PubSubApiUrl = "https://localhost:7226";
+        //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
+        private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
+        //private static readonly string PubSubApiUrl = "https://localhost:7226";
 
         [HttpPost]
         [Route("subscribe")]
