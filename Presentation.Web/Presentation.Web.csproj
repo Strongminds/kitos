@@ -2014,7 +2014,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Infrastructure\Model\Authentication\" />
     <Folder Include="Models\API\V2\Request\Organization\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
