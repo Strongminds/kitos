@@ -2,7 +2,7 @@
 
 namespace Core.ApplicationServices.Model;
 
-public class SystemChangeEvent : IEvent
+public class SystemChangeEventModel : IEvent
 {
     public Guid SystemUuid { get; set; }
     public string SystemName { get; set; }

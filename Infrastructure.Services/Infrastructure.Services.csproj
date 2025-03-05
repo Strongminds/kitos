@@ -66,6 +66,7 @@
     <Compile Include="Http\EndpointValidation.cs" />
     <Compile Include="Http\EndpointValidationService.cs" />
     <Compile Include="Http\EndpointValidationErrorType.cs" />
+    <Compile Include="Http\HttpKitosEventPublisher.cs" />
     <Compile Include="Http\IEndpointValidationService.cs" />
     <Compile Include="Http\EndpointValidationError.cs" />
     <Compile Include="Http\ServiceEndpointConfiguration.cs" />
