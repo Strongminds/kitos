@@ -42,7 +42,6 @@
     <Reference Include="Hangfire.Core, Version=1.7.31.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hangfire.Core.1.7.31\lib\net46\Hangfire.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
@@ -57,11 +56,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -84,9 +82,13 @@
     <Compile Include="GlobalOptions\IGlobalRoleOptionsService.cs" />
     <Compile Include="HelpTexts\HelpTextApplicationService.cs" />
     <Compile Include="HelpTexts\IHelpTextApplicationService.cs" />
+    <Compile Include="IEvent.cs" />
+    <Compile Include="IKitosEventPublisherService.cs" />
     <Compile Include="Interface\Write\IItInterfaceWriteService.cs" />
     <Compile Include="Interface\Write\ItInterfaceWriteService.cs" />
     <Compile Include="Authorization\ResourceCollectionPermissionsResult.cs" />
+    <Compile Include="KitosEvent.cs" />
+    <Compile Include="KitosEventPublisherService.cs" />
     <Compile Include="LocalOptions\GenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />
@@ -165,6 +167,7 @@
     <Compile Include="Model\Contracts\Write\ItContractProcurementModificationParameters.cs" />
     <Compile Include="Model\Contracts\Write\ItContractSupplierModificationParameters.cs" />
     <Compile Include="Model\Contracts\Write\ItContractTerminationParameters.cs" />
+    <Compile Include="Model\EventHandler\PublishSystemChangesEventHandler.cs" />
     <Compile Include="Model\EventHandler\ValidateUserCredentialsCommandHandler.cs" />
     <Compile Include="Model\GDPR\DataProcessingRegistrationPermissions.cs" />
     <Compile Include="Model\GDPR\Write\SubDataProcessorParameter.cs" />
@@ -186,6 +189,7 @@
     <Compile Include="Model\Interface\ItInterfacePermissions.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModel.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModelParametersBase.cs" />
+    <Compile Include="Model\KitosEvents\KitosEventDTO.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />
@@ -236,6 +240,7 @@
     <Compile Include="Model\Shared\NamedEntityWithUuid.cs" />
     <Compile Include="Model\Shared\OptionalValueChange.cs" />
     <Compile Include="Model\Shared\Write\ExternalReferenceProperties.cs" />
+    <Compile Include="Model\KitosEvents\SystemChangeEventModel.cs" />
     <Compile Include="Model\SystemUsage\Write\NamedLink.cs" />
     <Compile Include="Model\SystemUsage\Write\SystemRelationParameters.cs" />
     <Compile Include="Model\SystemUsage\Write\SystemUsageCreationParameters.cs" />
