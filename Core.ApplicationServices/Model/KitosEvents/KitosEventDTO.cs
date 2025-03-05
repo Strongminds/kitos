@@ -8,7 +8,7 @@
             Topic = eventSomething.Topic;
         }
         public object Message { get; }
-        private string Topic { get; }
+        public string Topic { get; }
         
     }
 }
