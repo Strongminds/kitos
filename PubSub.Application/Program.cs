@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PubSub.Application.Config;
 using PubSub.Core.Services.CallbackAuthentication;
 using PubSub.Core.Services.CallbackAuthenticator;
+using PubSub.Core.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
         options.IncludeErrorDetails = true;
-    }); 
+    });
+
+var apiKey = builder.Configuration[Constants.Config.CallbackAuthentication.ApiKey] ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
+var callbackAuthenticatorConfig = new CallbackAuthenticatorConfig() { ApiKey = apiKey };
 
 builder.Services.AddRabbitMQ(builder.Configuration);
 builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
@@ -40,6 +44,7 @@ builder.Services.AddSingleton<IMessageSerializer, UTF8MessageSerializer>();
 builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
 builder.Services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
 builder.Services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
+builder.Services.AddSingleton<ICallbackAuthenticatorConfig>(callbackAuthenticatorConfig);
 builder.Services.AddSingleton<ICallbackAuthenticator, HmacCallbackAuthenticator>();
 builder.Services.AddRequestMapping();
 
