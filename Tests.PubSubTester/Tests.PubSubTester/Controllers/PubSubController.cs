@@ -12,7 +12,9 @@ namespace Tests.PubSubTester.Controllers
     [ApiController]
     public class PubSubController(ILogger<PubSubController> logger) : ControllerBase
     {
-        private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
+        //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
+        private static readonly string PubSubApiUrl = "https://localhost:7226";
+
         [HttpPost]
         [Route("subscribe")]
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestWithTokenDTO request)
