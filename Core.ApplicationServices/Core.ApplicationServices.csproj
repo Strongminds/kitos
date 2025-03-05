@@ -192,6 +192,7 @@
     <Compile Include="Model\Interface\ItInterfacePermissions.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModel.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModelParametersBase.cs" />
+    <Compile Include="Model\KitosEvents\KitosEventDTO.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />
@@ -242,7 +243,7 @@
     <Compile Include="Model\Shared\NamedEntityWithUuid.cs" />
     <Compile Include="Model\Shared\OptionalValueChange.cs" />
     <Compile Include="Model\Shared\Write\ExternalReferenceProperties.cs" />
-    <Compile Include="Model\SystemChangeEventModel.cs" />
+    <Compile Include="Model\KitosEvents\SystemChangeEventModel.cs" />
     <Compile Include="Model\SystemUsage\Write\NamedLink.cs" />
     <Compile Include="Model\SystemUsage\Write\SystemRelationParameters.cs" />
     <Compile Include="Model\SystemUsage\Write\SystemUsageCreationParameters.cs" />
