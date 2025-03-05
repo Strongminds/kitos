@@ -10,14 +10,23 @@ namespace PubSub.Application.Config
     {
         public static async Task<SecurityToken> ValidateTokenAsync(string token, IConfiguration configuration, IServiceCollection services)
         {
+            Console.WriteLine($"At start of validation, token is {token}");
+            try
+            {
             var httpClientFactory = services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
-            var httpClient = httpClientFactory.CreateClient();
+                        var httpClient = httpClientFactory.CreateClient();
 
-            var request = SetupRequest(token, configuration);
-            using var response = await httpClient.SendAsync(request);
-            await ValidateTokenResponse(response);
+                        var request = SetupRequest(token, configuration);
+                        using var response = await httpClient.SendAsync(request);
+                        await ValidateTokenResponse(response);
 
-            return new JsonWebToken(token);
+                        return new JsonWebToken(token);
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw e;
+            }
+            
         }
 
         private static HttpRequestMessage GetHttpRequestMessage(IConfiguration configuration)
@@ -29,6 +38,7 @@ namespace PubSub.Application.Config
             var validationEndpoint = configuration[Constants.Config.Validation.Endpoint];
             if (validationEndpoint == null)
                 throw new ArgumentNullException(Constants.Config.Validation.Endpoint);
+            Console.WriteLine($"retrieved valdiation endpoint from config, url is {jwtValidationApiUrl} and endpoint is {validationEndpoint}");
 
             return new HttpRequestMessage(HttpMethod.Post, $"{jwtValidationApiUrl}{validationEndpoint}");
         }
@@ -48,6 +58,8 @@ namespace PubSub.Application.Config
 
         private static async Task ValidateTokenResponse(HttpResponseMessage response)
         {
+            Console.WriteLine($"received response from kitos, response content is {response.Content} and status code {response.StatusCode}");
+
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
