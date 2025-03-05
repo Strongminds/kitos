@@ -11,8 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, ConfigurationManager configuration)
     {
         var rabbitMQSettings = configuration.GetSection(Constants.Config.MessageBus.ConfigSection);
-        var hostName = rabbitMQSettings.GetValue<string>(Constants.Config.MessageBus.HostName);
-        if (hostName == null) throw new ArgumentNullException("No RabbitMQ host name found in appsettings.");
+        var hostName = rabbitMQSettings.GetValue<string>(Constants.Config.MessageBus.HostName) ?? throw new ArgumentNullException("No RabbitMQ host name found in appsettings.");
         var connectionFactory = new ConnectionFactory { HostName = hostName };
 
         services.AddSingleton<IConnectionFactory>(_ => connectionFactory);

@@ -21,6 +21,11 @@
                 public const string ConfigSection = "RabbitMQ";
                 public const string HostName = "HostName";
             }
+
+            public class CallbackAuthentication
+            {
+                public const string ApiKey = "ApiKey";
+            }
         }
     }
 }
