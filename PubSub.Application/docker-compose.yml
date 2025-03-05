@@ -11,7 +11,7 @@ services:
       - app_network
 
   api:
-    network_mode: host
+    # network_mode: host
     image: kitos-pubsub
     container_name: kitos-pubsub
     depends_on:
@@ -26,4 +26,4 @@ services:
 
 networks:
   app_network:
-    driver: bridge
+    driver: host
