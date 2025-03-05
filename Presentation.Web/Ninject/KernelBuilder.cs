@@ -340,7 +340,7 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IHelpTextService>().To<HelpTextService>().InCommandScope(Mode);
             kernel.Bind<IHelpTextApplicationService>().To<HelpTextApplicationService>().InCommandScope(Mode);
 
-            kernel.Bind<ITokenValidator>().To<TokenValidator>().InCommandScope(Mode).WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
+            kernel.Bind<ITokenValidator>().To<TokenValidator>().InCommandScope(Mode);
         }
 
         private void RegisterMappers(IKernel kernel)

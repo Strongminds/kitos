@@ -15,6 +15,7 @@ using Presentation.Web.Ninject;
 using Presentation.Web.Infrastructure.Filters;
 using Presentation.Web.Infrastructure;
 using Infrastructure.DataAccess.Tools;
+using Presentation.Web.Properties;
 
 [assembly: OwinStartup(typeof(Presentation.Web.Startup))]
 namespace Presentation.Web
@@ -32,7 +33,7 @@ namespace Presentation.Web
                 TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false,
-                    ValidIssuer = BearerTokenConfig.Issuer,
+                    ValidIssuer = Settings.Default.BaseUrl,
                     ValidateIssuer = true,
                     IssuerSigningKey = BearerTokenConfig.SecurityKey,
                     ValidateIssuerSigningKey = true,

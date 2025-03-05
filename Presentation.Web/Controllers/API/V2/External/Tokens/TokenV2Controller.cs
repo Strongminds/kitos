@@ -6,6 +6,7 @@ using Swashbuckle.Swagger.Annotations;
 using System.Net;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Model.Authentication;
+using Presentation.Web.Properties;
 
 namespace Presentation.Web.Controllers.API.V2.External.Tokens
 {
@@ -21,7 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
         [IgnoreCSRFProtection]
         public IHttpActionResult Introspect([FromBody] TokenIntrospectionRequest request)
         {
-            return new TokenValidator().VerifyToken(request.Token)
+            return new TokenValidator(Settings.Default.BaseUrl).VerifyToken(request.Token)
                 .Match(Ok, FromOperationError);
         }
     }

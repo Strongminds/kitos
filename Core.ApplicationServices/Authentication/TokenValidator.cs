@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -39,7 +38,7 @@ namespace Core.ApplicationServices.Authentication
                 var securityToken = handler.CreateToken(new SecurityTokenDescriptor
                 {
                     Subject = identity,
-                    Issuer = BearerTokenConfig.Issuer,
+                    Issuer = _baseUrl,
                     IssuedAt = validFrom,
                     Expires = expires,
                     SigningCredentials = new SigningCredentials(BearerTokenConfig.SecurityKey, SecurityAlgorithms.HmacSha256Signature, SecurityAlgorithms.Sha256Digest)
@@ -63,7 +62,7 @@ namespace Core.ApplicationServices.Authentication
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = BearerTokenConfig.SecurityKey,
                 ValidateIssuer = true,
-                ValidIssuer = BearerTokenConfig.Issuer,
+                ValidIssuer = _baseUrl,
                 ValidateLifetime = true,
                 ValidateAudience = false
             };
