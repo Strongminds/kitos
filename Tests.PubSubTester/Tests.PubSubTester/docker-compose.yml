@@ -1,0 +1,9 @@
+﻿version: '3.8'
+
+services:
+  tester:
+    image: pubsub-tester
+    container_name: pubsub-tester
+    ports:
+      - "8080:8080"
+      - "8081:8081"
