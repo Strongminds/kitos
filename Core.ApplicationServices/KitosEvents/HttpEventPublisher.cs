@@ -18,12 +18,14 @@ public class HttpEventPublisher : IHttpEventPublisher
         _httpClient = httpClient;
         _baseUrl = baseUrl;
         _tokenIssuer = tokenIssuer;
+
+        _baseUrl = "https://localhost:5238/"; //Temporary
     }
 
-    public Task<HttpResponseMessage> PostEventAsync(KitosEventDTO eventDTO)
+    public async Task<HttpResponseMessage> PostEventAsync(KitosEventDTO eventDTO)
     {
         var token = _tokenIssuer.GetToken();
         var url = new Uri(new Uri(_baseUrl), PublishEndpoint);
-        return _httpClient.PostAsync(eventDTO, url, token.Value);
+        return await _httpClient.PostAsync(eventDTO, url, token.Value);
     }
 }

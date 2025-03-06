@@ -17,7 +17,7 @@ public class KitosHttpClient : IKitosHttpClient
 
     public async Task<HttpResponseMessage> PostAsync(object content, Uri uri, string token)
     {
-        
+
         var serializedObject = JsonConvert.SerializeObject(content);
         var payload = new StringContent(serializedObject, Encoding.UTF8, "application/json");
 
