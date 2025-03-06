@@ -1,4 +1,5 @@
 using System.Data.Entity.Infrastructure.Interception;
+using System.Net.Http;
 using Core.Abstractions.Types;
 using Core.DomainServices.Context;
 using Core.DomainServices.Time;
@@ -6,7 +7,7 @@ using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using Ninject.Web.Common;
 using Presentation.Web;
 using Infrastructure.DataAccess.Interceptors;
-
+using Microsoft.Extensions.DependencyInjection;
 using Ninject;
 using Ninject.Web.Common.WebHost;
 using Presentation.Web.Ninject;
@@ -33,6 +34,12 @@ namespace Presentation.Web
             bootstrapper.Initialize(() =>
             {
                 var kernel = new KernelBuilder().ForWebApplication().Build();
+
+                var services = new ServiceCollection();
+                services.AddHttpClient();
+                var serviceProvider = services.BuildServiceProvider();
+
+                kernel.Bind<IHttpClientFactory>().ToMethod(_ => serviceProvider.GetService<IHttpClientFactory>());
 
                 //Only register the interceptor once per application (Hangfire job is the same application scope)
                 DbInterception.Add(new EFEntityInterceptor(() => kernel.Get<IOperationClock>(), () => kernel.Get<Maybe<ActiveUserIdContext>>(), () => kernel.Get<IFallbackUserResolver>()));
