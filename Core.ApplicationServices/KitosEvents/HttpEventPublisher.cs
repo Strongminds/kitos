@@ -19,7 +19,7 @@ public class HttpEventPublisher : IHttpEventPublisher
         _baseUrl = baseUrl;
         _tokenIssuer = tokenIssuer;
 
-        _baseUrl = "https://localhost:5238/"; //Temporary
+        _baseUrl = "https://localhost:7226/"; //Temporary
     }
 
     public async Task<HttpResponseMessage> PostEventAsync(KitosEventDTO eventDTO)
