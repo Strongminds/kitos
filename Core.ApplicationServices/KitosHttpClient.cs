@@ -11,7 +11,7 @@ public class KitosHttpClient : IKitosHttpClient
 
     private readonly HttpClient _httpClient;
 
-    public KitosHttpClient(HttpClient httpClient, IInternalKitosTokenIssuer internalKitosTokenIssuer)
+    public KitosHttpClient(HttpClient httpClient, IKitosInternalTokenIssuer internalKitosTokenIssuer)
     {
         _httpClient = httpClient;
     }

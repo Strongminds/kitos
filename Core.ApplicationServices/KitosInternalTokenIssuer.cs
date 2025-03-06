@@ -17,7 +17,6 @@ public class KitosInternalTokenIssuer : IKitosInternalTokenIssuer
 
     public object GetToken()
     {
-        var 
        //return _tokenValidator.CreateToken(
        throw new NotImplementedException();
     }
