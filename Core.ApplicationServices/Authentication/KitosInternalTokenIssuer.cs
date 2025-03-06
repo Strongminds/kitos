@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Model.Authentication;
 using Core.DomainModel;
 using Core.DomainServices.Queries.User;
 
-namespace Core.ApplicationServices;
+namespace Core.ApplicationServices.Authentication;
 
 public class KitosInternalTokenIssuer : IKitosInternalTokenIssuer
 {
