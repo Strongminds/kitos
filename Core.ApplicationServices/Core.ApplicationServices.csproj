@@ -209,6 +209,7 @@
     <Compile Include="Model\Interface\ItInterfaceWriteModelParametersBase.cs" />
     <Compile Include="Model\KitosEvents\KitosEvent.cs" />
     <Compile Include="Model\KitosEvents\KitosEventDTO.cs" />
+    <Compile Include="Model\KitosEvents\SystemChangeEventModel.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />
