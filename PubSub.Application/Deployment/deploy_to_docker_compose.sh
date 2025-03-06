@@ -14,4 +14,8 @@ export IDP_HOST_MAPPING
 
 cd ..
 
-sudo docker compose up --detach
+if [[ "$(uname)" == "Linux" ]]; then
+	sudo docker compose up --detach
+else
+	docker compose up --detach
+fi
