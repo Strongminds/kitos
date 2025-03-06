@@ -1,7 +1,8 @@
-﻿namespace Core.ApplicationServices;
+﻿using Core.ApplicationServices.Model.Authentication;
+
+namespace Core.ApplicationServices;
 
 public interface IKitosInternalTokenIssuer
 {
-    //TODO: Give correct type after merge
-    object GetToken();
+    KitosApiToken GetToken();
 }

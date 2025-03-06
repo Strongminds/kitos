@@ -1,24 +1,26 @@
 ﻿using System.Linq;
-using Core.Abstractions.Extensions;
+using Core.ApplicationServices.Authentication;
+using Core.ApplicationServices.Model.Authentication;
 using Core.DomainModel;
 using Core.DomainServices.Queries.User;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices;
 
 public class KitosInternalTokenIssuer : IKitosInternalTokenIssuer
 {
     private readonly IUserService _userService;
-    
-    public KitosInternalTokenIssuer(IUserService userService)
+    private readonly ITokenValidator _tokenValidator;
+
+    public KitosInternalTokenIssuer(IUserService userService, ITokenValidator tokenValidator)
     {
         _userService = userService;
+        _tokenValidator = tokenValidator;
     }
 
-    public object GetToken()
+    public KitosApiToken GetToken()
     {
-       //return _tokenValidator.CreateToken(
-       throw new NotImplementedException();
+        var globalAdminUser = GetGlobalAdminUser();
+        return _tokenValidator.CreateToken(globalAdminUser);
     }
 
     private User GetGlobalAdminUser()
