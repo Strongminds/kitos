@@ -341,11 +341,10 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IHelpTextApplicationService>().To<HelpTextApplicationService>().InCommandScope(Mode);
 
             kernel.Bind<ITokenValidator>().To<TokenValidator>().InCommandScope(Mode).WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
+            kernel.Bind<IKitosHttpClient>().To<KitosHttpClient>();
 
-            kernel.Bind<IKitosHttpClient>().To<KitosHttpClient>()
-                .WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
-
-            kernel.Bind<IKitosEventPublisherService>().To<KitosEventPublisherService>().WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
+            kernel.Bind<IKitosEventPublisherService>().To<KitosEventPublisherService>();
+            kernel.Bind<IHttpEventPublisher>().To<HttpEventPublisher>().WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
         }
         private void RegisterMappers(IKernel kernel)
         {
