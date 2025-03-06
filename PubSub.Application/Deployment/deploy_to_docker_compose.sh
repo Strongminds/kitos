@@ -13,4 +13,5 @@ echo "Idp host mapping is: $IDP_HOST_MAPPING"
 export IDP_HOST_MAPPING
 
 cd ..
-sudo docker compose up
+
+sudo docker compose up --detach
