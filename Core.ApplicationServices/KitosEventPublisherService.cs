@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.KitosEvents;
-using Infrastructure.Services.Http;
 
 namespace Core.ApplicationServices
 {
     public class KitosEventPublisherService : IKitosEventPublisherService
     {
         private readonly IKitosHttpClient _httpClient;
-        private const string PublishUrl = "api/something";
+        private const string PublishUrl = "api/publish";
 
         public KitosEventPublisherService(IKitosHttpClient httpClient)
         {
