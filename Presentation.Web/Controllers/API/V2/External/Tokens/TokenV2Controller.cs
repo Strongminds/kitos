@@ -13,6 +13,12 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
     [RoutePrefix("api/v2/token")]
     public class TokenV2Controller : ExternalBaseController
     {
+        private readonly ITokenValidator _tokenValidator;
+        public TokenV2Controller(ITokenValidator tokenValidator)
+        {
+            _tokenValidator = tokenValidator;
+        }
+
         [HttpPost]
         [Route("validate")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(TokenIntrospectionResponseDTO))]
@@ -22,7 +28,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
         [IgnoreCSRFProtection]
         public IHttpActionResult Introspect([FromBody] TokenIntrospectionRequest request)
         {
-            return new TokenValidator(Settings.Default.BaseUrl).VerifyToken(request.Token)
+            return _tokenValidator.VerifyToken(request.Token)
                 .Select(MapTokenIntrospectionRequestToDTO)
                 .Match(Ok, FromOperationError);
         }

@@ -20,10 +20,12 @@ namespace Presentation.Web.Controllers.API.V1.Auth
     {
 
         private readonly ICommandBus _commandBus;
+        private readonly ITokenValidator _tokenValidator;
 
-        public TokenAuthenticationController(ICommandBus commandBus)
+        public TokenAuthenticationController(ICommandBus commandBus, ITokenValidator tokenValidator)
         {
             _commandBus = commandBus;
+            _tokenValidator = tokenValidator;
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
                 var user = validationResult.Value;
 
-                var token = new TokenValidator(Settings.Default.BaseUrl).CreateToken(user);
+                var token = _tokenValidator.CreateToken(user);
 
                 var response = new GetTokenResponseDTO
                 {
