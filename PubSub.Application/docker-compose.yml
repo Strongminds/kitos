@@ -22,6 +22,8 @@ services:
       - "8081:8081"
     networks:
       - app_network
+    extra_hosts:
+      - "auth.kitos.dk:10.212.74.12"
 
 networks:
   app_network:
