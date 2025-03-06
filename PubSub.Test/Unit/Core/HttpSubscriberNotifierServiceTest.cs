@@ -2,6 +2,7 @@
 using Moq;
 using Moq.Protected;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Core.Services.CallbackAuthentication;
 

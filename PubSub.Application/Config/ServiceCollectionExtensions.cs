@@ -1,4 +1,4 @@
-using PubSub.Application.Mapping;
+﻿using PubSub.Application.Mapping;
 using PubSub.Core.Managers;
 using PubSub.Core.Services.Publisher;
 using PubSub.Core.Services.Subscribe;
