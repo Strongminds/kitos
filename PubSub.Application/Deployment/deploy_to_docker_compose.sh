@@ -9,7 +9,7 @@ if [ ! -f "$JSON_FILE" ]; then
 fi
 
 IDP_HOST_MAPPING=$(jq -r '.IdpHostMapping' "$JSON_FILE")
-echo $IDP_HOST_MAPPING
+echo "Idp host mapping is: $IDP_HOST_MAPPING"
 export IDP_HOST_MAPPING
 
 cd ..
