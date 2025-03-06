@@ -344,8 +344,9 @@ namespace Presentation.Web.Ninject
 
             kernel.Bind<IKitosHttpClient>().To<KitosHttpClient>()
                 .WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
-        }
 
+            kernel.Bind<IKitosEventPublisherService>().To<KitosEventPublisherService>().WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
+        }
         private void RegisterMappers(IKernel kernel)
         {
             //Generic
