@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
 using Presentation.Web.Models.API.V2.Request.Token;
 using Presentation.Web.Infrastructure.Attributes;
 using Swashbuckle.Swagger.Annotations;
@@ -14,7 +15,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
     {
         [HttpPost]
         [Route("validate")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(TokenIntrospectionResponse))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(TokenIntrospectionResponseDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [AllowAnonymous]
@@ -22,7 +23,23 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
         public IHttpActionResult Introspect([FromBody] TokenIntrospectionRequest request)
         {
             return new TokenValidator(Settings.Default.BaseUrl).VerifyToken(request.Token)
+                .Select(MapTokenIntrospectionRequestToDTO)
                 .Match(Ok, FromOperationError);
+        }
+
+        private static TokenIntrospectionResponseDTO MapTokenIntrospectionRequestToDTO(TokenIntrospectionResponse request)
+        {
+            return new TokenIntrospectionResponseDTO
+            {
+                Active = request.Active,
+                Claims = request.Claims.Select(MapClaimResponseToDTO).ToList(),
+                Expiration = request.Expiration
+            };
+        }
+
+        private static ClaimResponseDTO MapClaimResponseToDTO(ClaimResponse claimResponse)
+        {
+            return new ClaimResponseDTO(claimResponse);
         }
     }
 }
