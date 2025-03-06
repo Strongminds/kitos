@@ -11,18 +11,19 @@ namespace Core.ApplicationServices;
 public class KitosHttpClient : IKitosHttpClient
 {
 
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IKitosInternalTokenIssuer _tokenIssuer;
 
-    public KitosHttpClient(HttpClient httpClient, IKitosInternalTokenIssuer tokenIssuer)
+    public KitosHttpClient(IHttpClientFactory httpClientFactory, IKitosInternalTokenIssuer tokenIssuer)
     {
-        _httpClient = httpClient;
+        _httpClientFactory = httpClientFactory;
         _tokenIssuer = tokenIssuer;
     }
 
     public async Task<HttpResponseMessage> PostAsync(object content, Uri uri)
     {
         var token = _tokenIssuer.GetToken();
+        var httpClient = _httpClientFactory.CreateClient();
 
         var serializedObject = JsonConvert.SerializeObject(content);
         var payload = new StringContent(serializedObject, Encoding.UTF8, "application/json");
@@ -34,6 +35,6 @@ public class KitosHttpClient : IKitosHttpClient
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 
-        return await _httpClient.SendAsync(request);
+        return await httpClient.SendAsync(request);
     }
 }
