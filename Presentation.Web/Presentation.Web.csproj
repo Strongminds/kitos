@@ -1106,7 +1106,6 @@
     <Content Include="Content\img\loading-spinner.gif" />
     <Content Include="idp-metadata\sts-adgangstyring-prod.xml" />
     <Content Include="idp-metadata\sts-adgangstyring-test.xml" />
-    <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
     <Content Include="Logout.ashx" />
     <Content Include="Login.ashx" />
     <Compile Include="Controllers\API\V1\SystemRelationController.cs" />
