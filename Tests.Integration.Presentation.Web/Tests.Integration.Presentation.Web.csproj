@@ -148,6 +148,7 @@
     <Compile Include="ItSystem\V2\ItSystemLocalOptionTypesInternalV2ApiTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemsInternalApiV2Test.cs" />
     <Compile Include="ItSystem\V2\ItSystemsApiV2RightsHoldersTest.cs" />
+    <Compile Include="KitosEvents\SystemChangeEventsApiTest.cs" />
     <Compile Include="LocalAdminArea\ExcelImportTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemUsageMigrationApiV2Test.cs" />
     <Compile Include="Notifications\AlertsApiV2Test.cs" />
