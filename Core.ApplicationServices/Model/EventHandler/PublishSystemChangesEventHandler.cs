@@ -6,7 +6,7 @@ namespace Core.ApplicationServices.Model.EventHandler;
 public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdatedEvent<ItSystem>>
 {
     private readonly IKitosEventPublisherService _eventPublisher;
-    private const string SystemQueueTopic = "some-topic";
+    private const string SystemQueueTopic = "KitosITSystemChangedEvent";
 
     public PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher)
     {
