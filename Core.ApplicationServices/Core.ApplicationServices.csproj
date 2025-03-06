@@ -108,6 +108,7 @@
     <Compile Include="KitosEvents\HttpEventPublisher.cs" />
     <Compile Include="KitosEvents\IHttpEventPublisher.cs" />
     <Compile Include="KitosEvents\IKitosEventPublisherService.cs" />
+    <Compile Include="KitosEvents\KitosEventPublisherService.cs" />
     <Compile Include="LocalOptions\GenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
     <Compile Include="Model\Authentication\BearerTokenConfig.cs" />
