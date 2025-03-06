@@ -84,11 +84,15 @@
     <Compile Include="HelpTexts\IHelpTextApplicationService.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="IKitosEventPublisherService.cs" />
+    <Compile Include="IKitosHttpClient.cs" />
+    <Compile Include="IKitosInternalTokenIssuer.cs" />
     <Compile Include="Interface\Write\IItInterfaceWriteService.cs" />
     <Compile Include="Interface\Write\ItInterfaceWriteService.cs" />
     <Compile Include="Authorization\ResourceCollectionPermissionsResult.cs" />
     <Compile Include="KitosEvent.cs" />
     <Compile Include="KitosEventPublisherService.cs" />
+    <Compile Include="KitosHttpClient.cs" />
+    <Compile Include="KitosInternalTokenIssuer.cs" />
     <Compile Include="LocalOptions\GenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />

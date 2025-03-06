@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Services.Http;
+namespace Core.ApplicationServices;
 
 public interface IKitosHttpClient
 {

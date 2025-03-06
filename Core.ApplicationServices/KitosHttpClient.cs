@@ -4,14 +4,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Services.Http;
+namespace Core.ApplicationServices;
 
 public class KitosHttpClient : IKitosHttpClient
 {
 
     private readonly HttpClient _httpClient;
 
-    public KitosHttpClient(HttpClient httpClient)
+    public KitosHttpClient(HttpClient httpClient, IInternalKitosTokenIssuer internalKitosTokenIssuer)
     {
         _httpClient = httpClient;
     }
