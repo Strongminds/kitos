@@ -131,6 +131,7 @@ using Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping;
 using Core.ApplicationServices.Generic;
 using Core.ApplicationServices.GlobalOptions;
 using Core.ApplicationServices.HelpTexts;
+using Core.ApplicationServices.KitosEvents;
 using Core.ApplicationServices.Organizations.Write;
 using Core.ApplicationServices.Users.Write;
 using Infrastructure.STS.OrganizationSystem.DomainServices;
@@ -341,6 +342,10 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IHelpTextApplicationService>().To<HelpTextApplicationService>().InCommandScope(Mode);
 
             kernel.Bind<ITokenValidator>().To<TokenValidator>().InCommandScope(Mode).WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
+
+            kernel.Bind<IKitosEventPublisherService>().To<KitosEventPublisherService>().InCommandScope(Mode);
+            kernel.Bind<IHttpEventPublisher>().To<HttpEventPublisher>().InCommandScope(Mode).WithConstructorArgument("baseUrl", Settings.Default.BaseUrl);
+
         }
 
         private void RegisterMappers(IKernel kernel)
