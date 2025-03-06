@@ -489,6 +489,9 @@ namespace Presentation.Web.Ninject
             //Organization
             RegisterDomainEvents<HandleOrganizationBeingDeleted>(kernel);
             RegisterDomainEvents<SendEmailToStakeholdersOnExternalOrganizationConnectionUpdatedHandler>(kernel);
+
+            //Kitos Events
+            RegisterDomainEvents<PublishSystemChangesEventHandler>(kernel);
         }
 
         private void RegisterDomainEvents<THandler>(IKernel kernel)
