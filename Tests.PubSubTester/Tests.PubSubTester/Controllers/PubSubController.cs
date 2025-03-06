@@ -12,6 +12,10 @@ namespace Tests.PubSubTester.Controllers
     [ApiController]
     public class PubSubController(ILogger<PubSubController> logger) : ControllerBase
     {
+        //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
+        //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
+        private static readonly string PubSubApiUrl = "http://localhost:8080";
+
         [HttpPost]
         [Route("subscribe")]
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestWithTokenDTO request)
@@ -54,7 +58,7 @@ namespace Tests.PubSubTester.Controllers
         private static HttpClient CreateClient()
         {
             var client = new HttpClient();
-            client.BaseAddress = new Uri("https://localhost:7226");
+            client.BaseAddress = new Uri(PubSubApiUrl);
             return client;
         }
 
@@ -66,7 +70,6 @@ namespace Tests.PubSubTester.Controllers
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await client.PostAsync("api/publish", content);
-
             return Ok(response);
         }
     }
