@@ -346,7 +346,7 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IKitosHttpClient>().To<KitosHttpClient>().InCommandScope(Mode);
 
             kernel.Bind<IKitosEventPublisherService>().To<KitosEventPublisherService>().InCommandScope(Mode);
-            kernel.Bind<IHttpEventPublisher>().To<HttpEventPublisher>().InCommandScope(Mode).WithConstructorArgument("baseUrl", Settings.Default.PubSubBaseUrl);
+            kernel.Bind<IHttpEventPublisher>().To<HttpEventPublisher>().InCommandScope(Mode).WithConstructorArgument("pubSubBaseUrl", Settings.Default.PubSubBaseUrl);
 
         }
 
