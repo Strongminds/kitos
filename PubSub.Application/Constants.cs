@@ -12,7 +12,7 @@
 
             public class Environment
             {
-                public const string CurrentName = "ASPNETCORE_ENVIRONMENT";
+                public const string CurrentEnvironment = "ASPNETCORE_ENVIRONMENT";
                 public const string Production = "Production";
             }
 
