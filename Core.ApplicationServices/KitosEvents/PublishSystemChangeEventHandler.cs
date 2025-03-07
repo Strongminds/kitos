@@ -35,7 +35,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             return Maybe<SystemChangeEventModel>.None;
         }
 
-        var changeModel = new SystemChangeEventModel {SystemUuid = systemAfter.Uuid};
+        var changeModel = new SystemChangeEventModel { SystemUuid = systemAfter.Uuid };
         var hasChanges = false;
 
         if (snapshot.Name != systemAfter.Name)
@@ -52,7 +52,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             changeModel.RightsHolderName = rightsHolder?.Name.AsChangedValue();
             hasChanges = true;
         }
-        
+
         return hasChanges
             ? Maybe<SystemChangeEventModel>.Some(changeModel)
             : Maybe<SystemChangeEventModel>.None;
