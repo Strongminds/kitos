@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
