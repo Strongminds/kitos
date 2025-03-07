@@ -168,11 +168,16 @@ namespace Core.ApplicationServices.System.Write
             using var transaction = _transactionManager.Begin();
             try
             {
-                var system = _systemService.GetSystem(systemUuid).Bind(authorizeMethod);
-                var snapshot = GenerateSnapshot(system.Value);
-                var result = _systemService.GetSystem(systemUuid)
-                    .Bind(authorizeMethod)
-                    .Bind(mutation);
+                var systemWithWriteAccess = _systemService.GetSystem(systemUuid)
+                    .Bind(authorizeMethod);
+                if (systemWithWriteAccess.Failed)
+                {
+                    return systemWithWriteAccess.Error;
+                }
+
+                var system = systemWithWriteAccess.Value;
+                var snapshot = GenerateSnapshot(system);
+                var result = mutation(system);
 
                 if (result.Ok)
                 {
