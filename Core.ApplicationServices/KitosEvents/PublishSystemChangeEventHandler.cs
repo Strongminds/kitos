@@ -36,7 +36,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         }
 
         var changeModel = new SystemChangeEventModel {SystemUuid = systemAfter.Uuid};
-        bool hasChanges = false;
+        var hasChanges = false;
 
         if (snapshot.Name != systemAfter.Name)
         {
