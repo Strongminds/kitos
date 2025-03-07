@@ -26,7 +26,7 @@
 
             public class CallbackAuthentication
             {
-                public const string ApiKey = "ApiKey";
+                public const string PubSubApiKey = "PUBSUB_API_KEY";
             }
         }
     }

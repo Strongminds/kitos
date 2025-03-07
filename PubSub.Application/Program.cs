@@ -36,8 +36,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.IncludeErrorDetails = true;
     });
 
-var apiKey = builder.Configuration[Constants.Config.CallbackAuthentication.ApiKey] ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
-var callbackAuthenticatorConfig = new CallbackAuthenticatorConfig() { ApiKey = apiKey };
+var pubSubApiKey = builder.Configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey) ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
+var callbackAuthenticatorConfig = new CallbackAuthenticatorConfig() { ApiKey = pubSubApiKey };
 
 builder.Services.AddRabbitMQ(builder.Configuration);
 builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
