@@ -13,6 +13,7 @@ using Core.ApplicationServices.References;
 using Core.DomainModel.Events;
 using Core.DomainModel;
 using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystem.DomainEvents;
 using Core.DomainModel.References;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Repositories.Organization;
@@ -88,7 +89,7 @@ namespace Core.ApplicationServices.System.Write
 
                 if (result.Ok)
                 {
-                    SaveAndNotify(result.Value, transaction);
+                    SaveAndNotify(result.Value, transaction, new SystemSnapshot());
                 }
                 else
                 {
@@ -167,13 +168,15 @@ namespace Core.ApplicationServices.System.Write
             using var transaction = _transactionManager.Begin();
             try
             {
+                var system = _systemService.GetSystem(systemUuid).Bind(authorizeMethod);
+                var snapshot = GenerateSnapshot(system.Value);
                 var result = _systemService.GetSystem(systemUuid)
                     .Bind(authorizeMethod)
                     .Bind(mutation);
 
                 if (result.Ok)
                 {
-                    SaveAndNotify(result.Value, transaction);
+                    SaveAndNotify(result.Value, transaction, snapshot);
                 }
                 else
                 {
@@ -188,6 +191,14 @@ namespace Core.ApplicationServices.System.Write
                 _logger.Error(e, "User {id} Failed updating system with uuid {uuid}", _userContext.UserId, systemUuid);
                 return new OperationError(OperationFailure.UnknownError);
             }
+        }
+
+        private SystemSnapshot GenerateSnapshot(ItSystem systemValue)
+        {
+            return new SystemSnapshot
+            {
+                Name = systemValue.Name
+            };
         }
 
         private Result<ItSystem, OperationError> WithWriteAccess(ItSystem system)
@@ -286,9 +297,9 @@ namespace Core.ApplicationServices.System.Write
 
         }
 
-        private void SaveAndNotify(ItSystem system, IDatabaseTransaction transaction)
+        private void SaveAndNotify(ItSystem system, IDatabaseTransaction transaction, SystemSnapshot snapshot)
         {
-            _domainEvents.Raise(new EntityUpdatedEvent<ItSystem>(system));
+            _domainEvents.Raise(new ItSystemChangedEvent(system, snapshot));
             _databaseControl.SaveChanges();
             transaction.Commit();
         }

@@ -99,6 +99,8 @@
     <Compile Include="ItSystemUsage\Read\ItSystemUsageOverviewItContractReadModel.cs" />
     <Compile Include="ItSystemUsage\Read\ItSystemUsageOverviewRelevantOrgUnitReadModel.cs" />
     <Compile Include="ItSystemUsage\TechnicalPrecaution.cs" />
+    <Compile Include="ItSystem\DomainEvents\ItSystemChangedEvent.cs" />
+    <Compile Include="ItSystem\SystemSnapshot.cs" />
     <Compile Include="KendoConfig\KendoColumnConfiguration.cs" />
     <Compile Include="LocalOptions\LocalCriticalityType.cs" />
     <Compile Include="Notification\IEntityWithUserNotification.cs" />
