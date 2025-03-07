@@ -203,7 +203,7 @@ namespace Core.ApplicationServices.System.Write
             return new SystemSnapshot
             {
                 Name = systemValue.Name,
-                RightsHolderUuid = systemValue.GetRightsHolderUuid()
+                RightsHolderUuid = systemValue.GetRightsHolder()?.Uuid
             };
         }
 

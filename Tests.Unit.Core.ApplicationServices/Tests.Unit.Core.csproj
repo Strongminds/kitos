@@ -273,6 +273,7 @@
     <Compile Include="Infrastructure\StsTokenFetcherTest.cs" />
     <Compile Include="Model\DataProcessingRegistrationTest.cs" />
     <Compile Include="Model\EventHandlers\ContractDeletedHandlerTest.cs" />
+    <Compile Include="Model\EventHandlers\PublishSystemEventsHandlerTest.cs" />
     <Compile Include="Model\EventHandlers\RelationSpecificInterfaceEventsHandlerTest.cs" />
     <Compile Include="Model\HasRightsEntityTest.cs" />
     <Compile Include="Model\ItAdvice\ItAdviceTests.cs" />
