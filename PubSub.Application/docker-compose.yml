@@ -16,7 +16,7 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      ASPNETCORE_ENVIRONMENT: Staging #todo make ths dynamic
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       RABBIT_MQ_USER: ${RABBIT_MQ_USER}
       RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
     ports:
