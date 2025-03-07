@@ -198,7 +198,7 @@ namespace Core.ApplicationServices.System.Write
             }
         }
 
-        private SystemSnapshot GenerateSnapshot(ItSystem systemValue)
+        private static SystemSnapshot GenerateSnapshot(ItSystem systemValue)
         {
             return new SystemSnapshot
             {
