@@ -23,7 +23,7 @@ services:
     networks:
       - app_network
     extra_hosts:
-       - "staging.kitos.dk:10.212.74.12"
+       - ${IDP_HOST_MAPPING}
 
 networks:
   app_network:
