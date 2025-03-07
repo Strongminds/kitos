@@ -163,6 +163,11 @@ namespace Core.DomainModel.ItSystem
             return Maybe<int>.None;
         }
 
+        public Guid? GetRightsHolderUuid()
+        {
+            return BelongsTo?.Uuid;
+        }
+
         public void AddTaskRef(TaskRef taskRef)
         {
             var existing = GetTaskRef(taskRef.Id);
