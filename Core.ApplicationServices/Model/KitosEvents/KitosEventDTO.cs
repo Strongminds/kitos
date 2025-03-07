@@ -7,7 +7,7 @@ public class KitosEventDTO
     public KitosEventDTO(KitosEvent kitosEvent)
     {
 
-        Message = JsonConvert.SerializeObject(kitosEvent.EventBody);
+        Message = JsonConvert.SerializeObject(kitosEvent.EventBody.ToKeyValuePairs());
         Topic = kitosEvent.Topic;
     }
     public string Message { get; }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
 using Core.DomainModel.ItSystem.DomainEvents;
@@ -30,7 +32,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
     {
         var snapshot = changeEvent.Snapshot;
         var systemAfter = changeEvent.Entity;
-
         if (snapshot == null)
         {
             return Maybe<SystemChangeEventModel>.None;
@@ -41,14 +42,14 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
 
         if (snapshot.Name != systemAfter.Name)
         {
-            changeModel.SystemName = systemAfter.Name;
+            changeModel.SystemName = systemAfter.Name.AsChangedValue();
             hasChanges = true;
         }
 
         if (snapshot.RightsHolderUuid != systemAfter.GetRightsHolderUuid())
         {
-            changeModel.RightsHolderUuid = systemAfter.GetRightsHolderUuid();
-            changeModel.RightsHolderName = systemAfter.BelongsTo?.Name;
+            changeModel.RightsHolderUuid = systemAfter.GetRightsHolderUuid().AsChangedValue();
+            changeModel.RightsHolderName = systemAfter.BelongsTo?.Name.AsChangedValue();
             hasChanges = true;
         }
 
