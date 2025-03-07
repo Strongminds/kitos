@@ -5,8 +5,8 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: $(RABBIT_MQ_USER)
+      RABBITMQ_DEFAULT_PASS: $(RABBIT_MQ_PASSWORD)
     networks:
       - app_network
 
@@ -16,7 +16,9 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      ASPNETCORE_ENVIRONMENT: Staging
+      ASPNETCORE_ENVIRONMENT: Staging #todo make ths dynamic
+      RABBIT_MQ_USER: ${RABBIT_MQ_USER}
+      RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
     ports:
       - "8080:8080"
       - "8081:8081"

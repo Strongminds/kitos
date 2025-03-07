@@ -16,7 +16,8 @@ var environment = Environment.GetEnvironmentVariable(Constants.Config.Environmen
 builder.Configuration
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("appsettings.json")
-    .AddJsonFile($"appsettings.{environment}.json");
+    .AddJsonFile($"appsettings.{environment}.json")
+    .AddEnvironmentVariables();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

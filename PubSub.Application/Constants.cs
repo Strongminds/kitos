@@ -20,6 +20,8 @@
             {
                 public const string ConfigSection = "RabbitMQ";
                 public const string HostName = "HostName";
+                public const string User = "RABBIT_MQ_USER";
+                public const string Password = "RABBIT_MQ_PASSWORD";
             }
 
             public class CallbackAuthentication
