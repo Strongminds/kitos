@@ -1,4 +1,5 @@
-﻿using Core.Abstractions.Types;
+﻿using System;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
 using Core.DomainModel.ItSystem.DomainEvents;
@@ -43,6 +44,15 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             changeModel.SystemName = systemAfter.Name;
             hasChanges = true;
         }
+
+        if (snapshot.RightsHolderUuid != systemAfter.GetRightsHolderUuid())
+        {
+            changeModel.RightsHolderUuid = systemAfter.GetRightsHolderUuid();
+            changeModel.RightsHolderName = systemAfter.BelongsTo?.Name;
+            hasChanges = true;
+        }
+
+        changeModel.SystemUuid = systemAfter.Uuid;
         
         return hasChanges
             ? Maybe<SystemChangeEventModel>.Some(changeModel)

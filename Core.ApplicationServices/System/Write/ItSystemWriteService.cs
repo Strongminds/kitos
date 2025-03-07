@@ -197,7 +197,8 @@ namespace Core.ApplicationServices.System.Write
         {
             return new SystemSnapshot
             {
-                Name = systemValue.Name
+                Name = systemValue.Name,
+                RightsHolderUuid = systemValue.GetRightsHolderUuid()
             };
         }
 
