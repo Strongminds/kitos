@@ -163,9 +163,9 @@ namespace Core.DomainModel.ItSystem
             return Maybe<int>.None;
         }
 
-        public Guid? GetRightsHolderUuid()
+        public Organization.Organization GetRightsHolder()
         {
-            return BelongsTo?.Uuid;
+            return BelongsTo;
         }
 
         public void AddTaskRef(TaskRef taskRef)

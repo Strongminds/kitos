@@ -44,10 +44,12 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             hasChanges = true;
         }
 
-        if (snapshot.RightsHolderUuid != systemAfter.GetRightsHolderUuid())
+        var rightsHolder = systemAfter.GetRightsHolder();
+        var rightsHolderUuid = rightsHolder?.Uuid;
+        if (snapshot.RightsHolderUuid != rightsHolderUuid)
         {
-            changeModel.RightsHolderUuid = systemAfter.GetRightsHolderUuid().AsChangedValue();
-            changeModel.RightsHolderName = systemAfter.BelongsTo?.Name.AsChangedValue();
+            changeModel.RightsHolderUuid = rightsHolderUuid.AsChangedValue();
+            changeModel.RightsHolderName = rightsHolder?.Name.AsChangedValue();
             hasChanges = true;
         }
 
