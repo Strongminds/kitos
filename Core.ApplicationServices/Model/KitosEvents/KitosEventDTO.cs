@@ -4,11 +4,11 @@ namespace Core.ApplicationServices.Model.KitosEvents;
 
 public class KitosEventDTO
 {
-    public KitosEventDTO(KitosEvent eventSomething)
+    public KitosEventDTO(KitosEvent kitosEvent)
     {
 
-        Message = JsonConvert.SerializeObject(eventSomething.EventBody);
-        Topic = eventSomething.Topic;
+        Message = JsonConvert.SerializeObject(kitosEvent.EventBody);
+        Topic = kitosEvent.Topic;
     }
     public string Message { get; }
     public string Topic { get; }

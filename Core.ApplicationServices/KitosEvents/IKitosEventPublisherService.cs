@@ -6,5 +6,5 @@ namespace Core.ApplicationServices.KitosEvents;
 
 public interface IKitosEventPublisherService
 {
-    Task<Maybe<OperationError>> PublishEvent(KitosEvent eventSomething);
+    Task<Maybe<OperationError>> PublishEvent(KitosEvent kitosEvent);
 }

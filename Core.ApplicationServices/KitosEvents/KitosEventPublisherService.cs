@@ -12,9 +12,9 @@ public class KitosEventPublisherService : IKitosEventPublisherService
     {
         _httpClient = httpClient;
     }
-    public async Task<Maybe<OperationError>> PublishEvent(KitosEvent eventSomething)
+    public async Task<Maybe<OperationError>> PublishEvent(KitosEvent kitosEvent)
     {
-        var dto = new KitosEventDTO(eventSomething);
+        var dto = new KitosEventDTO(kitosEvent);
         await _httpClient.PostEventAsync(dto);
         return Maybe<OperationError>.None;
     }
