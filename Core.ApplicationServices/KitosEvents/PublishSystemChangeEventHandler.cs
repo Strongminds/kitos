@@ -1,6 +1,6 @@
-﻿using Core.ApplicationServices.Model.KitosEvents;
+﻿using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
-using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DomainEvents;
 
 namespace Core.ApplicationServices.KitosEvents;
@@ -16,10 +16,37 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
     }
     public void Handle(ItSystemChangedEvent domainEvent)
     {
-        var system = domainEvent.Entity;
-        var snapshot = domainEvent.Snapshot;
-        var eventBody = new SystemChangeEventModel() { SystemName = system.Name, SystemUuid = system.Uuid };
-        var newEvent = new KitosEvent(eventBody, SystemQueueTopic);
+        var changeEvent = CalculateChangeEventModel(domainEvent);
+        if (changeEvent.IsNone)
+        {
+            return;
+        }
+        var newEvent = new KitosEvent(changeEvent.Value, SystemQueueTopic);
         _eventPublisher.PublishEvent(newEvent);
     }
+
+    private static Maybe<SystemChangeEventModel> CalculateChangeEventModel(ItSystemChangedEvent changeEvent)
+    {
+        var snapshot = changeEvent.Snapshot;
+        var systemAfter = changeEvent.Entity;
+
+        if (snapshot == null)
+        {
+            return Maybe<SystemChangeEventModel>.None;
+        }
+
+        var changeModel = new SystemChangeEventModel();
+        bool hasChanges = false;
+
+        if (snapshot.Name != systemAfter.Name)
+        {
+            changeModel.SystemName = systemAfter.Name;
+            hasChanges = true;
+        }
+        
+        return hasChanges
+            ? Maybe<SystemChangeEventModel>.Some(changeModel)
+            : Maybe<SystemChangeEventModel>.None;
+    }
+
 }
