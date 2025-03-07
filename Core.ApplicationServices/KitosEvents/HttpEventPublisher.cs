@@ -4,6 +4,7 @@ using Infrastructure.Services.Http;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System;
+using Newtonsoft.Json;
 
 namespace Core.ApplicationServices.KitosEvents;
 

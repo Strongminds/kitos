@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace Core.ApplicationServices.Model.KitosEvents;
 
@@ -6,7 +6,8 @@ public class KitosEventDTO
 {
     public KitosEventDTO(KitosEvent eventSomething)
     {
-        Message = eventSomething.EventBody.ToString();
+
+        Message = JsonConvert.SerializeObject(eventSomething.EventBody);
         Topic = eventSomething.Topic;
     }
     public string Message { get; }
