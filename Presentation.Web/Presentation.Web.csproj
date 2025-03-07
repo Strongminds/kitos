@@ -371,8 +371,8 @@
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationTypeMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\ItSystems\ItSystemDBSV2Controller.cs" />
-    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\DBSWriteModelMapper.cs" />
-    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\IDBSWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\LegalPropertyWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\ILegalPropertyWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\OrganizationUnits\OrganizationUnitRoleTypeV2Controller.cs" />
     <Compile Include="Controllers\API\V2\External\Tokens\TokenV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ExternalReferences\ExternalReferencesInternalV2Controller.cs" />
@@ -500,8 +500,6 @@
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\Mapping\NotificationTypeMappingExtensions.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\ClaimResponse.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\TokenIntrospectionResponse.cs" />
     <Compile Include="LoginHandler.ashx.cs">
       <DependentUpon>LoginHandler.ashx</DependentUpon>
     </Compile>
@@ -612,8 +610,10 @@
     <Compile Include="Models\API\V2\Request\OrganizationUnit\UpdateOrganizationUnitRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationMasterDataRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataRolesResponseDTO.cs" />
-    <Compile Include="Models\API\V2\Request\System\Regular\UpdateDBSPropertiesRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Request\System\Regular\LegalPropertiesUpdateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Request\Token\ClaimResponseDTO.cs" />
     <Compile Include="Models\API\V2\Request\Token\TokenIntrospectionRequest.cs" />
+    <Compile Include="Models\API\V2\Request\Token\TokenIntrospectionResponseDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\BaseUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\CreateUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\DefaultUserStartPreferenceChoice.cs" />
@@ -1445,10 +1445,7 @@
     <Compile Include="Infrastructure\Attributes\PublicApiAttribute.cs" />
     <Compile Include="Infrastructure\ExceptionLogFilterAttribute.cs" />
     <Compile Include="Infrastructure\LogInterceptor.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\BearerTokenConfig.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\KitosApiToken.cs" />
     <Compile Include="Infrastructure\Middleware\OwinNinjectMiddleware.cs" />
-    <Compile Include="Infrastructure\TokenValidator.cs" />
     <Compile Include="Models\API\V1\ArchivePeriodDTO.cs" />
     <Compile Include="Models\API\V1\ContactPersonDTO.cs" />
     <Compile Include="Models\API\V1\DataResponsibleDTO.cs" />
@@ -2035,10 +2032,6 @@
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj">
       <Project>{bd8c90e7-52c7-4ad0-935d-98a2aa89e449}</Project>
       <Name>Core.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj">
-      <Project>{f0986888-8f35-4559-8fba-428bc9ec9add}</Project>
-      <Name>Core.ApplicationServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.BackgroundJobs\Core.BackgroundJobs.csproj">
       <Project>{7f765808-5258-4e41-8b27-6e7d4667aa24}</Project>

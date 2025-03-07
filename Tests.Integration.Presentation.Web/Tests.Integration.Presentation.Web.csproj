@@ -144,7 +144,7 @@
     <Compile Include="Internal\GdprReport\GdprReportApiV2Test.cs" />
     <Compile Include="Internal\Messages\PublicMessagesApiV2Test.cs" />
     <Compile Include="ItSystem\V2\BaseItSystemsApiV2Test.cs" />
-    <Compile Include="ItSystem\V2\ItSystemDBSV2ApiTest.cs" />
+    <Compile Include="ItSystem\V2\LegalPropertiesV2ApiTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemLocalOptionTypesInternalV2ApiTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemsInternalApiV2Test.cs" />
     <Compile Include="ItSystem\V2\ItSystemsApiV2RightsHoldersTest.cs" />
@@ -165,7 +165,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Tools\Extensions\StringExtensions.cs" />
-    <Compile Include="Tools\External\DBSV2Helper.cs" />
+    <Compile Include="Tools\External\LegalItSystemPropertiesV2Helper.cs" />
     <Compile Include="Tools\HelpTextsInternalV2Helper.cs" />
     <Compile Include="Tools\Internal\DPR\DataProcessingRegistrationInternalV2Helper.cs" />
     <Compile Include="Tools\Internal\GdprReportV2Helper.cs" />
@@ -287,10 +287,6 @@
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj">
       <Project>{bd8c90e7-52c7-4ad0-935d-98a2aa89e449}</Project>
       <Name>Core.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj">
-      <Project>{f0986888-8f35-4559-8fba-428bc9ec9add}</Project>
-      <Name>Core.ApplicationServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.DomainModel\Core.DomainModel.csproj">
       <Project>{A76A8E41-74F7-4443-A5F3-059B5414D83B}</Project>
