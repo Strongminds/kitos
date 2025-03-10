@@ -76,14 +76,14 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         )), Times.Once);
     }
 
-    private bool EventsMatch(KitosEvent event1, KitosEvent event2)
+    private static bool EventsMatch(KitosEvent event1, KitosEvent event2)
     {
         var kvp1 = event1.EventBody.ToKeyValuePairs();
         var kvp2 = event2.EventBody.ToKeyValuePairs();
         return event1.Topic == event2.Topic && DictionariesAreEqual(kvp1, kvp2);
     }
 
-    private bool DictionariesAreEqual(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
+    private static bool DictionariesAreEqual(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
     {
         if (dict1.Count != dict2.Count)
             return false;
