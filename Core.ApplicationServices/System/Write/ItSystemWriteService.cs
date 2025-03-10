@@ -202,8 +202,7 @@ namespace Core.ApplicationServices.System.Write
         {
             return new SystemSnapshot
             {
-                Name = systemValue.Name,
-                RightsHolderUuid = systemValue.GetRightsHolder()?.Uuid
+                Name = systemValue.Name
             };
         }
 

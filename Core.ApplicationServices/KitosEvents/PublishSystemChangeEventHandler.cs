@@ -44,15 +44,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             hasChanges = true;
         }
 
-        var rightsHolder = systemAfter.GetRightsHolder();
-        var rightsHolderUuid = rightsHolder?.Uuid;
-        if (snapshot.RightsHolderUuid != rightsHolderUuid)
-        {
-            changeModel.RightsHolderUuid = rightsHolderUuid.AsChangedValue();
-            changeModel.RightsHolderName = rightsHolder?.Name.AsChangedValue();
-            hasChanges = true;
-        }
-
         return hasChanges
             ? Maybe<SystemChangeEventModel>.Some(changeModel)
             : Maybe<SystemChangeEventModel>.None;

@@ -8,15 +8,15 @@ public class SystemChangeEventModel : IEvent
 {
     public Guid SystemUuid { get; set; }
     public OptionalValueChange<string> SystemName { get; set; } = OptionalValueChange<string>.None;
-    public OptionalValueChange<Guid?> RightsHolderUuid { get; set; } = OptionalValueChange<Guid?>.None;
-    public OptionalValueChange<string> RightsHolderName { get; set; } = OptionalValueChange<string>.None;
+    public OptionalValueChange<Guid?> DataProcessorUuid { get; set; } = OptionalValueChange<Guid?>.None;
+    public OptionalValueChange<string> DataProcessorName { get; set; } = OptionalValueChange<string>.None;
     public Dictionary<string, object> ToKeyValuePairs()
     {
         var keyValuePairs = new Dictionary<string, object> { { nameof(SystemUuid), SystemUuid } };
 
         if (SystemName.HasChange) keyValuePairs.Add(nameof(SystemName), SystemName.NewValue);
-        if (RightsHolderUuid.HasChange) keyValuePairs.Add(nameof(RightsHolderUuid), RightsHolderUuid.NewValue);
-        if (RightsHolderName.HasChange) keyValuePairs.Add(nameof(RightsHolderName), RightsHolderName.NewValue);
+        if (DataProcessorUuid.HasChange) keyValuePairs.Add(nameof(DataProcessorUuid), DataProcessorUuid.NewValue);
+        if (DataProcessorName.HasChange) keyValuePairs.Add(nameof(DataProcessorName), DataProcessorName.NewValue);
         
         return keyValuePairs;
     }

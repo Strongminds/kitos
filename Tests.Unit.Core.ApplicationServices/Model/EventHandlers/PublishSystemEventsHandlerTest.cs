@@ -26,53 +26,10 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
     }
 
     [Fact]
-    public void Can_Publish_Event()
+    public void Can_Publish_Name_Change()
     {
         var snapshot = A<SystemSnapshot>();
         var itSystem = CreateItSystem();
-        var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
-        var expectedBody = new SystemChangeEventModel
-        {
-            RightsHolderName = itSystem.GetRightsHolder()?.Name.AsChangedValue(),
-            SystemUuid = itSystem.Uuid,
-            SystemName = itSystem.Name.AsChangedValue(),
-            RightsHolderUuid =
-            (itSystem.GetRightsHolder()?.Uuid).AsChangedValue()
-        };
-        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
-
-        _sut.Handle(newEvent);
-
-        VerifyEventIsPublished(expectedEvent);
-    }
-
-    [Fact]
-    public void Can_Publish_Event_With_Partial_Update_To_Rightsholder()
-    {
-        var snapshot = A<SystemSnapshot>();
-        var itSystem = CreateItSystem();
-        itSystem.Name = snapshot.Name;
-        var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
-        var expectedBody = new SystemChangeEventModel
-        {
-            RightsHolderName = itSystem.GetRightsHolder()?.Name.AsChangedValue(),
-            SystemUuid = itSystem.Uuid,
-            RightsHolderUuid =
-                (itSystem.GetRightsHolder()?.Uuid).AsChangedValue()
-        };
-        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
-
-        _sut.Handle(newEvent);
-
-        VerifyEventIsPublished(expectedEvent);
-    }
-
-    [Fact]
-    public void Can_Publish_Event_With_Partial_Update_To_Name()
-    {
-        var snapshot = A<SystemSnapshot>();
-        var itSystem = CreateItSystem();
-        itSystem.BelongsTo = new Organization { Uuid = (Guid)snapshot.RightsHolderUuid };
         var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
         var expectedBody = new SystemChangeEventModel
         {
