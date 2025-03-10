@@ -353,6 +353,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\API\V2\DemoPubSubV2Controller.cs" />
     <Compile Include="Controllers\API\V1\Auth\AuthorizeController.cs" />
     <Compile Include="Controllers\API\V1\ExtendedApiController.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\GlobalOptionTypeWriteModelMapper.cs" />
@@ -494,6 +495,9 @@
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\UsersInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\PublishRequestDTO.cs" />
+    <Compile Include="Controllers\API\V2\SubscribeRequestWithTokenDTO.cs" />
+    <Compile Include="Controllers\API\V2\SubscriptionDTO.cs" />
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\Mapping\NotificationTypeMappingExtensions.cs" />
