@@ -7,6 +7,8 @@ using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR.Events;
 using Core.DomainModel.ItSystem.DomainEvents;
+using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.Organization;
 
 namespace Core.ApplicationServices.KitosEvents;
 
@@ -49,7 +51,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
     {
         var snapshot = domainEvent.Snapshot;
         var dprAfter = domainEvent.Entity;
-        var events = new List<SystemChangeEventModel>();
         if (snapshot == null)
         {
             return Maybe<IEnumerable<SystemChangeEventModel>>.None;
@@ -63,19 +64,17 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         }
 
         var dataProcessor = dprAfter.DataProcessors.Last().FromNullable();
+        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dataProcessor)).FromNullable();
+    }
 
-        foreach (var usage in dprAfter.SystemUsages)
+    private static SystemChangeEventModel GetEventFromUsage(ItSystemUsage usage, Maybe<Organization> dataProcessor)
+    {
+        return new SystemChangeEventModel
         {
-            var newEvent = new SystemChangeEventModel
-            {
-                SystemUuid = usage.ItSystem.Uuid,
-                DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
-                DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
-            };
-            events.Add(newEvent);
-        }
-
-        return events;
+            SystemUuid = usage.ItSystem.Uuid,
+            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
+            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+        };
     }
 
     private static Maybe<SystemChangeEventModel> CalculateChangeEventFromSystemModel(ItSystemChangedEvent changeEvent)
@@ -87,17 +86,15 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             return Maybe<SystemChangeEventModel>.None;
         }
 
-        var changeModel = new SystemChangeEventModel { SystemUuid = systemAfter.Uuid };
-        var hasChanges = false;
-
-        if (snapshot.Name != systemAfter.Name)
+        if (snapshot.Name.Equals(systemAfter.Name))
         {
-            changeModel.SystemName = systemAfter.Name.AsChangedValue();
-            hasChanges = true;
+            return Maybe<SystemChangeEventModel>.None;
         }
 
-        return hasChanges
-            ? Maybe<SystemChangeEventModel>.Some(changeModel)
-            : Maybe<SystemChangeEventModel>.None;
+        return new SystemChangeEventModel
+        {
+            SystemUuid = systemAfter.Uuid,
+            SystemName = systemAfter.Name.AsChangedValue()
+        };
     }
 }
