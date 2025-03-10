@@ -8,6 +8,7 @@ using Presentation.Web.Infrastructure.Attributes;
 namespace Presentation.Web.Controllers.API.V2.Common
 {
     [Authorize]
+    [V2StyleJsonResponseSerialization]
     public abstract class ApiV2Controller : ApiController
     {
         protected IHttpActionResult FromOperationFailure(OperationFailure failure)
