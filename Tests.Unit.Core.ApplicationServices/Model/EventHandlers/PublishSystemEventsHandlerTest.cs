@@ -17,7 +17,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
     private readonly PublishSystemChangesEventHandler _sut;
     private readonly Mock<IKitosEventPublisherService> _eventPublisher;
 
-    private const string expectedQueueTopic = "KitosITSystemChangedEvent";
+    private const string ExpectedQueueTopic = "KitosITSystemChangedEvent";
 
     public PublishSystemEventsHandlerTest()
     {
@@ -39,7 +39,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
             RightsHolderUuid =
             (itSystem.GetRightsHolder()?.Uuid).AsChangedValue()
         };
-        var expectedEvent = new KitosEvent(expectedBody, expectedQueueTopic);
+        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
         _sut.Handle(newEvent);
 
