@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Core.Abstractions.Extensions;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.KitosEvents;
 using Core.ApplicationServices.Model.KitosEvents;
+using Core.DomainModel.GDPR;
+using Core.DomainModel.GDPR.Events;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DomainEvents;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Moq;
 using Tests.Toolkit.Patterns;
@@ -26,7 +31,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
     }
 
     [Fact]
-    public void Can_Publish_Name_Change()
+    public void Can_Publish_System_Name_Change()
     {
         var snapshot = A<SystemSnapshot>();
         var itSystem = CreateItSystem();
@@ -35,6 +40,28 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         {
             SystemUuid = itSystem.Uuid,
             SystemName = itSystem.Name.AsChangedValue(),
+        };
+        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
+
+        _sut.Handle(newEvent);
+
+        VerifyEventIsPublished(expectedEvent);
+    }
+
+    [Fact]
+    public void Can_Publish_Data_Processor_Change()
+    {
+        var snapshot = A<DprSnapshot>();
+        var dpr = CreateDpr(snapshot.DataProcessorUuids);
+        var newestProcessor = new Organization { Uuid = A<Guid>(), Name = A<string>() };
+        dpr.DataProcessors.Add(newestProcessor);
+
+        var newEvent = new DprChangedEvent(dpr, snapshot);
+        var expectedBody = new SystemChangeEventModel
+        {
+            SystemUuid = dpr.SystemUsages.First().ItSystem.Uuid,
+            DataProcessorName = newestProcessor.Name.AsChangedValue(),
+            DataProcessorUuid = newestProcessor.Uuid.FromNullable().AsChangedValue()
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
@@ -78,6 +105,11 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
             Name = A<string>(),
             BelongsTo = new Organization { Uuid = A<Guid>(), Name = A<string>() }
         };
+    }
+
+    private DataProcessingRegistration CreateDpr(IEnumerable<Guid> uuids)
+    {
+        return new DataProcessingRegistration { SystemUsages = new List<ItSystemUsage>{new ItSystemUsage {ItSystem = CreateItSystem()}}, DataProcessors = uuids.Select(x => new Organization { Uuid = x }).ToList() };
     }
 
 }

@@ -2243,7 +2243,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var dataProcessingRegistration = new DataProcessingRegistration
             {
-                ResponsibleOrganizationUnit = new OrganizationUnit {Uuid = A<Guid>()}
+                ResponsibleOrganizationUnit = new OrganizationUnit { Uuid = A<Guid>() }
             };
             var transaction = ExpectTransaction();
             var dprUuid = A<Guid>();
