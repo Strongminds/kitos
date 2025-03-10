@@ -22,7 +22,7 @@ namespace Presentation.Web.Controllers.API.V2
 {
     [RoutePrefix("api/v2/pubsub")]
     [AllowAnonymous]
-    public class DemoPubSubV2Controller() : InternalApiV2Controller
+    public class DemoPubSubV2Controller : InternalApiV2Controller
     {
         //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
         private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
