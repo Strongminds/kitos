@@ -28,8 +28,8 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
     [Fact]
     public void Can_Publish_Event()
     {
-        var snapshot = new SystemSnapshot { Name = A<string>(), RightsHolderUuid = A<Guid>() };
-        var itSystem = new ItSystem { Uuid = A<Guid>(), Name = A<string>(), BelongsTo = new Organization { Uuid = A<Guid>(), Name = A<string>() } };
+        var snapshot = A<SystemSnapshot>();
+        var itSystem = CreateItSystem();
         var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
         var expectedBody = new SystemChangeEventModel
         {
@@ -43,6 +43,51 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 
         _sut.Handle(newEvent);
 
+        VerifyEventIsPublished(expectedEvent);
+    }
+
+    [Fact]
+    public void Can_Publish_Event_With_Partial_Update_To_Rightsholder()
+    {
+        var snapshot = A<SystemSnapshot>();
+        var itSystem = CreateItSystem();
+        itSystem.Name = snapshot.Name;
+        var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
+        var expectedBody = new SystemChangeEventModel
+        {
+            RightsHolderName = itSystem.GetRightsHolder()?.Name.AsChangedValue(),
+            SystemUuid = itSystem.Uuid,
+            RightsHolderUuid =
+                (itSystem.GetRightsHolder()?.Uuid).AsChangedValue()
+        };
+        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
+
+        _sut.Handle(newEvent);
+
+        VerifyEventIsPublished(expectedEvent);
+    }
+
+    [Fact]
+    public void Can_Publish_Event_With_Partial_Update_To_Name()
+    {
+        var snapshot = A<SystemSnapshot>();
+        var itSystem = CreateItSystem();
+        itSystem.BelongsTo = new Organization { Uuid = (Guid)snapshot.RightsHolderUuid };
+        var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
+        var expectedBody = new SystemChangeEventModel
+        {
+            SystemUuid = itSystem.Uuid,
+            SystemName = itSystem.Name.AsChangedValue(),
+        };
+        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
+
+        _sut.Handle(newEvent);
+
+        VerifyEventIsPublished(expectedEvent);
+    }
+
+    private void VerifyEventIsPublished(KitosEvent expectedEvent)
+    {
         _eventPublisher.Verify(x => x.PublishEvent(It.Is<KitosEvent>(e => EventsMatch(e, expectedEvent)
         )), Times.Once);
     }
@@ -66,6 +111,16 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
                 return false;
         }
         return true;
+    }
+
+    private ItSystem CreateItSystem()
+    {
+        return new ItSystem
+        {
+            Uuid = A<Guid>(),
+            Name = A<string>(),
+            BelongsTo = new Organization { Uuid = A<Guid>(), Name = A<string>() }
+        };
     }
 
 }
