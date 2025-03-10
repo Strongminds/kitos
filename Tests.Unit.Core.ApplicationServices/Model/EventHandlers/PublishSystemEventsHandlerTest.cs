@@ -109,7 +109,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 
     private DataProcessingRegistration CreateDpr(IEnumerable<Guid> uuids)
     {
-        return new DataProcessingRegistration { SystemUsages = new List<ItSystemUsage>{new ItSystemUsage {ItSystem = CreateItSystem()}}, DataProcessors = uuids.Select(x => new Organization { Uuid = x }).ToList() };
+        return new DataProcessingRegistration { SystemUsages = new List<ItSystemUsage> { new ItSystemUsage { ItSystem = CreateItSystem() } }, DataProcessors = uuids.Select(x => new Organization { Uuid = x }).ToList() };
     }
 
 }
