@@ -1,5 +1,4 @@
 ﻿using Core.DomainModel.Events;
-using Core.DomainModel.ItSystem;
 
 namespace Core.DomainModel.GDPR.Events
 {
