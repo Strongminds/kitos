@@ -148,6 +148,7 @@
     <Compile Include="ItSystem\V2\ItSystemLocalOptionTypesInternalV2ApiTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemsInternalApiV2Test.cs" />
     <Compile Include="ItSystem\V2\ItSystemsApiV2RightsHoldersTest.cs" />
+    <Compile Include="KitosEvents\ItSystemChangedEventsApiV2Test.cs" />
     <Compile Include="LocalAdminArea\ExcelImportTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemUsageMigrationApiV2Test.cs" />
     <Compile Include="Notifications\AlertsApiV2Test.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Tools\Internal\GdprReportV2Helper.cs" />
     <Compile Include="Tools\Internal\GlobalOptionTypeV2Helper.cs" />
     <Compile Include="Tools\Internal\ItSystemUsage\ItSystemUsageMigrationV2Helper.cs" />
+    <Compile Include="Tools\Internal\KitosEventsHelper.cs" />
     <Compile Include="Tools\Internal\LocalOptionTypeV2Helper.cs" />
     <Compile Include="Tools\Internal\Notifications\AlertsV2Helper.cs" />
     <Compile Include="Tools\Internal\Notifications\NotificationV2Helper.cs" />
