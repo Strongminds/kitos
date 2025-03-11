@@ -16,6 +16,7 @@ using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Controllers.API.V2.Common;
 using Presentation.Web.Controllers.API.V2.External;
 using Presentation.Web.Controllers.API.V2.Internal;
+using Serilog;
 
 
 namespace Presentation.Web.Controllers.API.V2
@@ -26,6 +27,12 @@ namespace Presentation.Web.Controllers.API.V2
         //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
         private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
         //private static readonly string PubSubApiUrl = "http://localhost:8080";
+        private readonly ILogger _logger;
+
+        public DemoPubSubV2Controller(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         [HttpPost]
         [Route("subscribe")]
@@ -49,7 +56,7 @@ namespace Presentation.Web.Controllers.API.V2
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<RegularOptionResponseDTO>))]
         public IHttpActionResult Callback(string id, [FromBody] string message)
         {
-            Console.WriteLine($"callbackId: {id}, message: {message}");
+            _logger.Information($"callbackId: {id}, message: {message}");
 
             using var hmacsha256 = new HMACSHA256(Encoding.UTF8.GetBytes("local-no-secret"));
             var hash = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(message));
@@ -57,16 +64,16 @@ namespace Presentation.Web.Controllers.API.V2
 
             if (Request.Headers.TryGetValues("Signature-Header", out var signatureHeaders))
             {
-                Console.WriteLine($"Signature-Header: {signatureHeaders.First()}");
+                _logger.Information($"Signature-Header: {signatureHeaders.First()}");
             }
             else
             {
-                Console.WriteLine("Signature-Header not found in the request.");
+                _logger.Warning("Signature-Header not found in the request.");
             }
 
             if (signatureHeaders.First() == result)
             {
-                Console.WriteLine("Signature-Header matches the hash result.");
+                _logger.Information("Signature-Header matches the hash result.");
             }
 
             return Ok(signatureHeaders.First());
