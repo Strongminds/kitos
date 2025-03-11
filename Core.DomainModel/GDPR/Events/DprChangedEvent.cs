@@ -1,14 +1,15 @@
-﻿using Core.DomainModel.Events;
+﻿using Core.Abstractions.Types;
+using Core.DomainModel.Events;
 
 namespace Core.DomainModel.GDPR.Events
 {
     public class DprChangedEvent : EntityUpdatedEvent<DataProcessingRegistration>
     {
-        public DprChangedEvent(DataProcessingRegistration entity, DprSnapshot snapshot) : base(entity)
+        public DprChangedEvent(DataProcessingRegistration entity, Maybe<DprSnapshot> snapshot) : base(entity)
         {
             Snapshot = snapshot;
         }
 
-        public  DprSnapshot Snapshot { get; }
+        public  Maybe<DprSnapshot> Snapshot { get; }
     }
 }

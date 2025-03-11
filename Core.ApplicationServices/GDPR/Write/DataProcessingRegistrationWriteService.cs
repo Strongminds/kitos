@@ -149,7 +149,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
             if (result.Ok)
             {
-                _domainEvents.Raise(new DprChangedEvent(dpr, snapshot));
+                _domainEvents.Raise(new DprChangedEvent(dpr, snapshot.FromNullable()));
                 _databaseControl.SaveChanges();
                 transaction.Commit();
             }
