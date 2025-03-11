@@ -18,12 +18,12 @@ public class KitosEventPublisherService : IKitosEventPublisherService
     public void PublishEvent(KitosEvent kitosEvent)
     {
         var dto = new KitosEventDTO(kitosEvent);
-        TestMethod(dto);
+        PostEventDTO(dto);
     }
 
-    private void TestMethod(KitosEventDTO dto)
+    private void PostEventDTO(KitosEventDTO dto)
     {
-        var method = Task.Run(() =>
+        var postMethod = Task.Run(() =>
         {
             try
             {
@@ -35,7 +35,6 @@ public class KitosEventPublisherService : IKitosEventPublisherService
                 throw;
             }
         });
-        method.Wait();
+        postMethod.Wait();
     }
-
 }
