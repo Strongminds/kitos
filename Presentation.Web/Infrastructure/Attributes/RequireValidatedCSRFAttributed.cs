@@ -20,25 +20,26 @@ namespace Presentation.Web.Infrastructure.Attributes
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
 
-            var error = Maybe<string>.None;
+            //var error = Maybe<string>.None;
 
-            if (RequiresAntiforgeryCheck(actionContext))
-            {
-                error = ValidateCSRF(actionContext);
-            }
+            //if (RequiresAntiforgeryCheck(actionContext))
+            //{
+            //    error = ValidateCSRF(actionContext);
+            //}
 
-            if (error.HasValue)
-            {
-                FailWith(actionContext, error.Value);
-            }
-            else
-            {
-                base.OnActionExecuting(actionContext);
-            }
+            //if (error.HasValue)
+            //{
+            //    FailWith(actionContext, error.Value);
+            //}
+            //else
+            //{
+            //    base.OnActionExecuting(actionContext);
+            //}
         }
 
         private static Maybe<string> ValidateCSRF(HttpActionContext actionContext)
         {
+            return Maybe<string>.None;
             var request = actionContext.Request;
             var logger = GetService<ILogger>(actionContext);
             var headers = request.Headers;
