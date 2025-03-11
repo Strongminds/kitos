@@ -19,6 +19,7 @@ namespace Presentation.Web.Infrastructure.Attributes
     {
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
+            base.OnActionExecuting(actionContext);
 
             //var error = Maybe<string>.None;
 
