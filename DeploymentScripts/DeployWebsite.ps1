@@ -54,7 +54,7 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
                     "-setParam:name=`"StsOrganisationPort`",value=`"{38}`" " +
                     "-setParam:name=`"StsOrganisationSystemPort`",value=`"{39}`" " +
                     "-setParam:name=`"StsOrganisationCertificateThumbprint`",value=`"{40}`" " +
-                    "-setParam:name=`"PubSubBaseUrl`",value=`"{41}`" ")`
+                    "-setParam:name=`"PubSubBaseUrl`",value=`"{41}`" ") `
     -f $msdeploy, $packageDirectory, $msDeployUrl, $msDeployUser, $msDeployPassword, $logLevel, $esUrl, $securityKeyString, $smtpFromMail, $smtpNwHost, $resetPwTtl, $baseUrl, $mailSuffix, $kitosEnvName, $buildNumber, $kitosContext, $hangfireContext, $defaultUserPassword, $useDefaultUserPassword, $ssoServiceProviderServer, $ssoIDPEndPoints, $ssoServiceProviderId, $ssoCertificateThumbPrint, $stsOrganisationEndpointHost, $robotsFileName, $smtpNetworkPort, $smtpNetworkUsername, $smtpNetworkPassword, $stsIssuer, $stsCertificateEndpoint, $serviceCertificateAliasOrg, $stsCertificateAlias, $stsCertificateThumbprint, $orgService6EntityId, $stsAdressePort, $stsBrugerPort, $stsPersonPort, $stsVirksomhedPort, $stsOrganisationPort, $stsOrganisationSystemPort, $stsOrganisationCertificateThumbprint, $pubSubBaseUrl)
     
     & cmd.exe /C $fullCommand
