@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel.Extensions;
 using Core.DomainModel.Organization;
@@ -163,9 +164,9 @@ namespace Core.DomainModel.ItSystem
             return Maybe<int>.None;
         }
 
-        public Organization.Organization GetRightsHolder()
+        public Maybe<Organization.Organization> GetRightsHolder()
         {
-            return BelongsTo;
+            return BelongsTo.FromNullable();
         }
 
         public void AddTaskRef(TaskRef taskRef)

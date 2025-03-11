@@ -70,6 +70,26 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         VerifyEventIsPublished(expectedEvent);
     }
 
+    [Fact]
+    public void Publishes_RightsHolder_If_No_Data_Processors()
+    {
+        var snapshot = A<DprSnapshot>();
+        var dpr = CreateDpr(new List<Guid>());
+        var system = dpr.SystemUsages.First().ItSystem;
+        var newEvent = new DprChangedEvent(dpr, snapshot);
+        var expectedBody = new SystemChangeEventModel
+        {
+            SystemUuid = system.Uuid,
+            DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue(),
+            DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+        };
+        var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
+
+        _sut.Handle(newEvent);
+
+        VerifyEventIsPublished(expectedEvent);
+    }
+
     private void VerifyEventIsPublished(KitosEvent expectedEvent)
     {
         _eventPublisher.Verify(x => x.PublishEvent(It.Is<KitosEvent>(e => EventsMatch(e, expectedEvent)

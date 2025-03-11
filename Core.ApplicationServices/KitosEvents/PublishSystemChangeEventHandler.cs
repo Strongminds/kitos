@@ -5,7 +5,9 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.GDPR.Events;
+using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DomainEvents;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
@@ -63,12 +65,18 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             return Maybe<IEnumerable<SystemChangeEventModel>>.None;
         }
 
-        var dataProcessor = dprAfter.DataProcessors.Last().FromNullable();
-        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dataProcessor)).FromNullable();
+        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable();
     }
 
-    private static SystemChangeEventModel GetEventFromUsage(ItSystemUsage usage, Maybe<Organization> dataProcessor)
+    private static Maybe<Organization> GetDataProcessor(DataProcessingRegistration dpr, ItSystem system)
     {
+        var dataProcessor = dpr.DataProcessors.LastOrDefault().FromNullable();
+        return dataProcessor.IsNone ? system.GetRightsHolder() : dataProcessor;
+    }
+
+    private static SystemChangeEventModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
+    {
+        var dataProcessor = GetDataProcessor(dpr, usage.ItSystem);
         return new SystemChangeEventModel
         {
             SystemUuid = usage.ItSystem.Uuid,
