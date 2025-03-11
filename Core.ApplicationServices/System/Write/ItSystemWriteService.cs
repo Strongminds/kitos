@@ -89,7 +89,7 @@ namespace Core.ApplicationServices.System.Write
 
                 if (result.Ok)
                 {
-                    SaveAndNotify(result.Value, transaction, new SystemSnapshot());
+                    SaveAndNotify(result.Value, transaction, null);
                 }
                 else
                 {
