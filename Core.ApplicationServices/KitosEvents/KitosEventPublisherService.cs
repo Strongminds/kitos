@@ -1,4 +1,5 @@
-﻿using Core.ApplicationServices.Model.KitosEvents;
+﻿using System;
+using Core.ApplicationServices.Model.KitosEvents;
 using System.Threading.Tasks;
 
 namespace Core.ApplicationServices.KitosEvents;
@@ -11,9 +12,20 @@ public class KitosEventPublisherService : IKitosEventPublisherService
     {
         _httpClient = httpClient;
     }
-    public async Task PublishEvent(KitosEvent kitosEvent)
+    public void PublishEvent(KitosEvent kitosEvent)
     {
         var dto = new KitosEventDTO(kitosEvent);
-        await _httpClient.PostEventAsync(dto);
+        Task.Run(async () =>
+        {
+            try
+            {
+                await _httpClient.PostEventAsync(dto);
+            }
+            catch (Exception ex)
+            {
+                // ignored
+            }
+        });
     }
+
 }
