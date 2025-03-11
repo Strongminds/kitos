@@ -1,14 +1,15 @@
-﻿using Core.DomainModel.Events;
+﻿using Core.Abstractions.Types;
+using Core.DomainModel.Events;
 
 namespace Core.DomainModel.ItSystem.DomainEvents
 {
     public class ItSystemChangedEvent : EntityUpdatedEvent<ItSystem>
     {
-        public ItSystemChangedEvent(ItSystem entity, SystemSnapshot snapshot) : base(entity)
+        public ItSystemChangedEvent(ItSystem entity, Maybe<SystemSnapshot> snapshot) : base(entity)
         {
             Snapshot = snapshot;
         }
 
-        public SystemSnapshot Snapshot { get; }
+        public Maybe<SystemSnapshot> Snapshot { get; }
     }
 }

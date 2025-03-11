@@ -87,12 +87,14 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
 
     private static Maybe<SystemChangeEventModel> CalculateChangeEventFromSystemModel(ItSystemChangedEvent changeEvent)
     {
-        var snapshot = changeEvent.Snapshot;
+        var snapshotMaybe = changeEvent.Snapshot;
         var systemAfter = changeEvent.Entity;
-        if (snapshot == null)
+        if (snapshotMaybe.IsNone)
         {
             return Maybe<SystemChangeEventModel>.None;
         }
+
+        var snapshot = snapshotMaybe.Value;
 
         if (snapshot.Name.Equals(systemAfter.Name))
         {
