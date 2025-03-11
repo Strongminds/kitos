@@ -51,14 +51,16 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
 
     private static Maybe<IEnumerable<SystemChangeEventModel>> CalculateChangeEventsFromDprModel(DprChangedEvent domainEvent)
     {
-        var snapshot = domainEvent.Snapshot;
+        var snapshotMaybe = domainEvent.Snapshot;
         var dprAfter = domainEvent.Entity;
-        if (snapshot == null)
+        if (snapshotMaybe.IsNone)
         {
             return Maybe<IEnumerable<SystemChangeEventModel>>.None;
         }
 
+        var snapshot = snapshotMaybe.Value;
         var dataProcessorUuidsAfter = dprAfter.DataProcessors.Select(x => x.Uuid).ToHashSet();
+
 
         if (snapshot.DataProcessorUuids.SetEquals(dataProcessorUuidsAfter))
         {
