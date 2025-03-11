@@ -15,17 +15,24 @@ public class KitosEventPublisherService : IKitosEventPublisherService
     public void PublishEvent(KitosEvent kitosEvent)
     {
         var dto = new KitosEventDTO(kitosEvent);
-        Task.Run(async () =>
+        TestMethod(dto);
+
+    }
+
+    private void TestMethod(KitosEventDTO dto)
+    {
+        var method = Task.Run(() =>
         {
             try
             {
-                await _httpClient.PostEventAsync(dto);
+                _httpClient.PostEventAsync(dto);
             }
             catch (Exception ex)
             {
                 // ignored
             }
         });
+        method.Wait();
     }
 
 }
