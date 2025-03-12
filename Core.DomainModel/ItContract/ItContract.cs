@@ -340,6 +340,8 @@ namespace Core.DomainModel.ItContract
         /// </value>
         public virtual ItContract Parent { get; set; }
 
+        public bool RequireValidParent { get; set; }
+
         /// <summary>
         ///     Gets or sets the contract children.
         /// </summary>
