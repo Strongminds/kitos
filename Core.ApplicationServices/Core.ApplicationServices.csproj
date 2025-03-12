@@ -104,7 +104,7 @@
     <Compile Include="GlobalOptions\IGlobalRoleOptionsService.cs" />
     <Compile Include="HelpTexts\HelpTextApplicationService.cs" />
     <Compile Include="HelpTexts\IHelpTextApplicationService.cs" />
-    <Compile Include="IEvent.cs" />
+    <Compile Include="IEventBody.cs" />
     <Compile Include="Interface\Write\IItInterfaceWriteService.cs" />
     <Compile Include="Interface\Write\ItInterfaceWriteService.cs" />
     <Compile Include="Authorization\ResourceCollectionPermissionsResult.cs" />
@@ -219,7 +219,7 @@
     <Compile Include="Model\Interface\ItInterfaceWriteModelParametersBase.cs" />
     <Compile Include="Model\KitosEvents\KitosEvent.cs" />
     <Compile Include="Model\KitosEvents\KitosEventDTO.cs" />
-    <Compile Include="Model\KitosEvents\SystemChangeEventModel.cs" />
+    <Compile Include="Model\KitosEvents\SystemChangeEventBodyModel.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />

@@ -36,7 +36,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var snapshot = A<SystemSnapshot>();
         var itSystem = CreateItSystem();
         var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
-        var expectedBody = new SystemChangeEventModel
+        var expectedBody = new SystemChangeEventBodyModel
         {
             SystemUuid = itSystem.Uuid,
             SystemName = itSystem.Name.AsChangedValue(),
@@ -57,7 +57,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         dpr.DataProcessors.Add(newestProcessor);
 
         var newEvent = new DprChangedEvent(dpr, snapshot);
-        var expectedBody = new SystemChangeEventModel
+        var expectedBody = new SystemChangeEventBodyModel
         {
             SystemUuid = dpr.SystemUsages.First().ItSystem.Uuid,
             DataProcessorName = newestProcessor.Name.AsChangedValue(),
@@ -77,7 +77,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var dpr = CreateDpr(new List<Guid>());
         var system = dpr.SystemUsages.First().ItSystem;
         var newEvent = new DprChangedEvent(dpr, snapshot);
-        var expectedBody = new SystemChangeEventModel
+        var expectedBody = new SystemChangeEventBodyModel
         {
             SystemUuid = system.Uuid,
             DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue(),
@@ -98,8 +98,8 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 
     private static bool EventsMatch(KitosEvent event1, KitosEvent event2)
     {
-        var kvp1 = event1.EventBody.ToKeyValuePairs();
-        var kvp2 = event2.EventBody.ToKeyValuePairs();
+        var kvp1 = event1.EventBodyBody.ToKeyValuePairs();
+        var kvp2 = event2.EventBodyBody.ToKeyValuePairs();
         return event1.Topic == event2.Topic && DictionariesAreEqual(kvp1, kvp2);
     }
 

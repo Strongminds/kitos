@@ -5,7 +5,7 @@ using Core.ApplicationServices.Model.Shared;
 
 namespace Core.ApplicationServices.Model.KitosEvents;
 
-public class SystemChangeEventModel : IEvent
+public class SystemChangeEventBodyModel : IEventBody
 {
     public Guid SystemUuid { get; set; }
     public OptionalValueChange<string> SystemName { get; set; } = OptionalValueChange<string>.None;

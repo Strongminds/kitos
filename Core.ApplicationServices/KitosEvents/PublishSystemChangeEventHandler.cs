@@ -49,13 +49,13 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         }
     }
 
-    private static Maybe<IEnumerable<SystemChangeEventModel>> CalculateChangeEventsFromDprModel(DprChangedEvent domainEvent)
+    private static Maybe<IEnumerable<SystemChangeEventBodyModel>> CalculateChangeEventsFromDprModel(DprChangedEvent domainEvent)
     {
         var snapshotMaybe = domainEvent.Snapshot;
         var dprAfter = domainEvent.Entity;
         if (snapshotMaybe.IsNone)
         {
-            return Maybe<IEnumerable<SystemChangeEventModel>>.None;
+            return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
         }
 
         var snapshot = snapshotMaybe.Value;
@@ -64,16 +64,16 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
 
         if (snapshot.DataProcessorUuids.SetEquals(dataProcessorUuidsAfter))
         {
-            return Maybe<IEnumerable<SystemChangeEventModel>>.None;
+            return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
         }
 
         return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable();
     }
 
-    private static SystemChangeEventModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
+    private static SystemChangeEventBodyModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
     {
         var dataProcessor = GetDataProcessor(dpr, usage.ItSystem);
-        return new SystemChangeEventModel
+        return new SystemChangeEventBodyModel
         {
             SystemUuid = usage.ItSystem.Uuid,
             DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
@@ -87,23 +87,23 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         return dataProcessor.IsNone ? system.GetRightsHolder() : dataProcessor;
     }
 
-    private static Maybe<SystemChangeEventModel> CalculateChangeEventFromSystemModel(ItSystemChangedEvent changeEvent)
+    private static Maybe<SystemChangeEventBodyModel> CalculateChangeEventFromSystemModel(ItSystemChangedEvent changeEvent)
     {
         var snapshotMaybe = changeEvent.Snapshot;
         var systemAfter = changeEvent.Entity;
         if (snapshotMaybe.IsNone)
         {
-            return Maybe<SystemChangeEventModel>.None;
+            return Maybe<SystemChangeEventBodyModel>.None;
         }
 
         var snapshot = snapshotMaybe.Value;
 
         if (snapshot.Name.Equals(systemAfter.Name))
         {
-            return Maybe<SystemChangeEventModel>.None;
+            return Maybe<SystemChangeEventBodyModel>.None;
         }
 
-        return new SystemChangeEventModel
+        return new SystemChangeEventBodyModel
         {
             SystemUuid = systemAfter.Uuid,
             SystemName = systemAfter.Name.AsChangedValue()

@@ -2,7 +2,7 @@
 
 public class KitosEvent
 {
-    public KitosEvent(IEvent eventBody, string topic)
+    public KitosEvent(IEventBody eventBody, string topic)
     {
         Topic = topic;
         EventBody = eventBody;
@@ -10,6 +10,6 @@ public class KitosEvent
     }
     public string Topic { get; }
 
-    public IEvent EventBody { get; }
+    public IEventBody EventBody { get; }
 
 }

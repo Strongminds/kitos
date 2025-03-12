@@ -2,7 +2,7 @@
 
 namespace Core.ApplicationServices;
 
-public interface IEvent
+public interface IEventBody
 {
     Dictionary<string, object> ToKeyValuePairs();
 }
