@@ -206,6 +206,7 @@
     <Compile Include="ApplicationServices\Interface\ItInterfaceWriteServiceTest.cs" />
     <Compile Include="ApplicationServices\ItInterfaceServiceTest.cs" />
     <Compile Include="ApplicationServices\KitosEvents\HttpEventPublisherTest.cs" />
+    <Compile Include="ApplicationServices\KitosEvents\KitosEventMapperTest.cs" />
     <Compile Include="ApplicationServices\KitosEvents\KitosEventPublisherTest.cs" />
     <Compile Include="ApplicationServices\KitosEvents\KitosInternalTokenIssuerTest.cs" />
     <Compile Include="ApplicationServices\LocalOptions\GenericLocalOptionsServiceTest.cs" />
