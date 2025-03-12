@@ -938,5 +938,10 @@ namespace Core.DomainModel.ItContract
         {
             LastChanged = DateTime.UtcNow;
         }
+
+        public void SetRequireValidParent(bool requireValidParent)
+        {
+            RequireValidParent = requireValidParent;
+        }
     }
 }

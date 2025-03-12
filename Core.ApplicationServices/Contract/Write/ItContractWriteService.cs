@@ -226,6 +226,7 @@ namespace Core.ApplicationServices.Contract.Write
             return contract
                 .WithOptionalUpdate(parameters.Name, UpdateName)
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.ParentContractUuid, UpdateParentContract))
+                .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.RequireValidParent, UpdateRequireValidParent))
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.General, UpdateGeneralData))
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.Procurement, UpdateProcurement))
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.Responsible, UpdateResponsibleData))
@@ -636,6 +637,11 @@ namespace Core.ApplicationServices.Contract.Write
                     error => new OperationError($"Failed to set parent with Uuid: {newParentUuid.Value} on contract with Uuid: {contract.Uuid} with error message: {error.Message.GetValueOrEmptyString()}",
                         error.FailureType), () => Maybe<OperationError>.None
                 );
+        }
+
+        private void UpdateRequireValidParent(ItContract itContract, bool requireValidParent)
+        {
+            itContract.SetRequireValidParent(requireValidParent);
         }
 
         private Maybe<OperationError> UpdateName(ItContract contract, string newName)

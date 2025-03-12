@@ -1398,6 +1398,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             var contract = result.Value;
 
             Assert.Equal(parent, contract.Parent);
+            Assert.Equal(parameters.RequireValidParent.NewValue, contract.RequireValidParent);
 
             AssertGeneralSection(contractId, validFrom, validTo, enforceValid, agreementElementTypes, agreementElementUuids, contract);
 
@@ -1692,7 +1693,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
                 DataProcessingRegistrationUuids = dataProcessingRegistrationUuids.FromNullable(),
                 PaymentModel = paymentModel.FromNullable(),
                 AgreementPeriod = agreementPeriod.FromNullable(),
-                Payments = payments.FromNullable()
+                Payments = payments.FromNullable(),
+                RequireValidParent = true.AsChangedValue()
             };
             var createdContract = new ItContract
             {
