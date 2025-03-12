@@ -61,7 +61,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         var snapshot = snapshotMaybe.Value;
         var dataProcessorUuidsAfter = dprAfter.DataProcessors.Select(x => x.Uuid).ToHashSet();
 
-
         if (snapshot.DataProcessorUuids.SetEquals(dataProcessorUuidsAfter))
         {
             return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
