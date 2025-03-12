@@ -17,7 +17,7 @@ namespace Core.ApplicationServices.KitosEvents;
 public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChangedEvent>, IDomainEventHandler<DprChangedEvent>
 {
     private readonly IKitosEventPublisherService _eventPublisher;
-    private const string SystemQueueTopic = "KitosITSystemChangedEvent";
+    private const string QueueTopic = KitosQueueTopics.SystemChangedEventTopic;
 
     public PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher)
     {
@@ -30,7 +30,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         {
             return;
         }
-        var newEvent = new KitosEvent(changeEvent.Value, SystemQueueTopic);
+        var newEvent = new KitosEvent(changeEvent.Value, QueueTopic);
         _eventPublisher.PublishEvent(newEvent);
     }
 
@@ -44,7 +44,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
 
         foreach (var changeEvent in changeEvents.Value)
         {
-            var newEvent = new KitosEvent(changeEvent, SystemQueueTopic);
+            var newEvent = new KitosEvent(changeEvent, QueueTopic);
             _eventPublisher.PublishEvent(newEvent);
         }
     }

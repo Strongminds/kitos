@@ -300,5 +300,14 @@ namespace Core.DomainModel.ItSystem
         {
             LegalDataProcessorName = legalDataProcessorName;
         }
+
+        public SystemSnapshot Snapshot()
+        {
+
+            return new SystemSnapshot
+            {
+                Name = Name
+            };
+        }
     }
 }

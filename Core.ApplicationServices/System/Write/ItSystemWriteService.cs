@@ -176,7 +176,7 @@ namespace Core.ApplicationServices.System.Write
                 }
 
                 var system = systemWithWriteAccess.Value;
-                var snapshot = GenerateSnapshot(system);
+                var snapshot = system.Snapshot();
                 var result = mutation(system);
 
                 if (result.Ok)
@@ -196,14 +196,6 @@ namespace Core.ApplicationServices.System.Write
                 _logger.Error(e, "User {id} Failed updating system with uuid {uuid}", _userContext.UserId, systemUuid);
                 return new OperationError(OperationFailure.UnknownError);
             }
-        }
-
-        private static SystemSnapshot GenerateSnapshot(ItSystem systemValue)
-        {
-            return new SystemSnapshot
-            {
-                Name = systemValue.Name
-            };
         }
 
         private Result<ItSystem, OperationError> WithWriteAccess(ItSystem system)

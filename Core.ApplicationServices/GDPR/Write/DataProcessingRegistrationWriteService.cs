@@ -143,7 +143,7 @@ namespace Core.ApplicationServices.GDPR.Write
             }
 
             var dpr = dprResult.Value;
-            var snapshot = GenerateDprSnapshot(dpr);
+            var snapshot = dpr.Snapshot();
 
             var result = PerformUpdates(dpr, parameters);
 
@@ -155,14 +155,6 @@ namespace Core.ApplicationServices.GDPR.Write
             }
 
             return result;
-        }
-
-        private DprSnapshot GenerateDprSnapshot(DataProcessingRegistration dpr)
-        {
-            return new DprSnapshot
-            {
-                DataProcessorUuids = dpr.DataProcessors.Select(x => x.Uuid).ToHashSet()
-            };
         }
 
         private Result<DataProcessingRegistration, OperationError> PerformUpdates(DataProcessingRegistration dpr, DataProcessingRegistrationModificationParameters parameters)
