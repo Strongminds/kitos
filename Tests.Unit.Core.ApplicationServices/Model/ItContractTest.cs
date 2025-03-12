@@ -859,9 +859,9 @@ namespace Tests.Unit.Core.Model
         [InlineData(false)]
         public void Should_Invalidate_Contract_When_Valid_Parent_Is_Required_But_Parent_Is_Invalid(bool enforceValid)
         {
-            var now = CreateValidDate();
-            var invalidContract = new ItContract { ExpirationDate = now.AddDays(-1), };
-            var sut = new ItContract { Parent = invalidContract, RequireValidParent = true };
+            var now = DateTime.Now;
+            var invalidParent = new ItContract { ExpirationDate = now.AddDays(-1)};
+            var sut = new ItContract { Parent = invalidParent, RequireValidParent = true, Active = enforceValid};
 
             var result = sut.Validate(now);
 

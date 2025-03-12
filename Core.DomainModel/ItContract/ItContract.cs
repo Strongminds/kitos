@@ -44,7 +44,7 @@ namespace Core.DomainModel.ItContract
         {
             var enforcedActive = Active;
             var errors = new List<ItContractValidationError>();
-            
+
             var today = todayReference.Date;
             var startDate = (Concluded ?? today).Date;
             var endDate = DateTime.MaxValue;
@@ -77,6 +77,11 @@ namespace Core.DomainModel.ItContract
                 {
                     errors.Add(ItContractValidationError.TerminationPeriodExceeded);
                 }
+            }
+
+            if (RequireValidParent && Parent != null && !Parent.IsActive)
+            {
+                errors.Add(ItContractValidationError.InvalidParentContract);
             }
 
             return new ItContractValidationResult(enforcedActive, errors);
@@ -852,8 +857,8 @@ namespace Core.DomainModel.ItContract
 
         public Maybe<OperationError> ResetEconomyStreamOrganizationUnit(int id, bool isInternal)
         {
-            return isInternal 
-                ? ResetEconomyStreamOrganizationUnit(id, InternEconomyStreams) 
+            return isInternal
+                ? ResetEconomyStreamOrganizationUnit(id, InternEconomyStreams)
                 : ResetEconomyStreamOrganizationUnit(id, ExternEconomyStreams);
         }
 
