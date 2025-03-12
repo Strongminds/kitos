@@ -89,7 +89,7 @@ namespace Core.ApplicationServices.System.Write
 
                 if (result.Ok)
                 {
-                    SaveAndNotify(result.Value, transaction, Maybe<SystemSnapshot>.None);
+                    SaveAndNotify(result.Value, transaction, Maybe<ItSystemSnapshot>.None);
                 }
                 else
                 {
@@ -294,7 +294,7 @@ namespace Core.ApplicationServices.System.Write
 
         }
 
-        private void SaveAndNotify(ItSystem system, IDatabaseTransaction transaction, Maybe<SystemSnapshot> snapshot)
+        private void SaveAndNotify(ItSystem system, IDatabaseTransaction transaction, Maybe<ItSystemSnapshot> snapshot)
         {
             _domainEvents.Raise(new ItSystemChangedEvent(system, snapshot));
             _databaseControl.SaveChanges();

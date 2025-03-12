@@ -5,11 +5,11 @@ namespace Core.DomainModel.ItSystem.DomainEvents
 {
     public class ItSystemChangedEvent : EntityUpdatedEvent<ItSystem>
     {
-        public ItSystemChangedEvent(ItSystem entity, Maybe<SystemSnapshot> snapshot) : base(entity)
+        public ItSystemChangedEvent(ItSystem entity, Maybe<ItSystemSnapshot> snapshot) : base(entity)
         {
             Snapshot = snapshot;
         }
 
-        public Maybe<SystemSnapshot> Snapshot { get; }
+        public Maybe<ItSystemSnapshot> Snapshot { get; }
     }
 }

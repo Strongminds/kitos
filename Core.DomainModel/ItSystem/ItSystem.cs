@@ -301,10 +301,10 @@ namespace Core.DomainModel.ItSystem
             LegalDataProcessorName = legalDataProcessorName;
         }
 
-        public SystemSnapshot Snapshot()
+        public ItSystemSnapshot Snapshot()
         {
 
-            return new SystemSnapshot
+            return new ItSystemSnapshot
             {
                 Name = Name
             };

@@ -33,7 +33,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
     [Fact]
     public void Can_Publish_System_Name_Change()
     {
-        var snapshot = A<SystemSnapshot>();
+        var snapshot = A<ItSystemSnapshot>();
         var itSystem = CreateItSystem();
         var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
         var expectedBody = new SystemChangeEventBodyModel
@@ -98,8 +98,8 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 
     private static bool EventsMatch(KitosEvent event1, KitosEvent event2)
     {
-        var kvp1 = event1.EventBodyBody.ToKeyValuePairs();
-        var kvp2 = event2.EventBodyBody.ToKeyValuePairs();
+        var kvp1 = event1.EventBody.ToKeyValuePairs();
+        var kvp2 = event2.EventBody.ToKeyValuePairs();
         return event1.Topic == event2.Topic && DictionariesAreEqual(kvp1, kvp2);
     }
 
