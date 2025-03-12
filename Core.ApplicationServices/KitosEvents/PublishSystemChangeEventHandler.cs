@@ -70,12 +70,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable();
     }
 
-    private static Maybe<Organization> GetDataProcessor(DataProcessingRegistration dpr, ItSystem system)
-    {
-        var dataProcessor = dpr.DataProcessors.LastOrDefault().FromNullable();
-        return dataProcessor.IsNone ? system.GetRightsHolder() : dataProcessor;
-    }
-
     private static SystemChangeEventModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
     {
         var dataProcessor = GetDataProcessor(dpr, usage.ItSystem);
@@ -85,6 +79,12 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
             DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
             DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
         };
+    }
+
+    private static Maybe<Organization> GetDataProcessor(DataProcessingRegistration dpr, ItSystem system)
+    {
+        var dataProcessor = dpr.DataProcessors.LastOrDefault().FromNullable();
+        return dataProcessor.IsNone ? system.GetRightsHolder() : dataProcessor;
     }
 
     private static Maybe<SystemChangeEventModel> CalculateChangeEventFromSystemModel(ItSystemChangedEvent changeEvent)
