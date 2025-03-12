@@ -100,10 +100,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 
             return new ItContractModificationParameters
             {
-                Name = rule.MustUpdate(x=>x.Name) ? dto.Name.AsChangedValue() : OptionalValueChange<string>.None,
+                Name = rule.MustUpdate(x => x.Name) ? dto.Name.AsChangedValue() : OptionalValueChange<string>.None,
                 ParentContractUuid = rule.MustUpdate(x => x.ParentContractUuid)
                     ? dto.ParentContractUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
+                RequireValidParent = rule.MustUpdate(x => x.RequireValidParent) ? dto.RequireValidParent.AsChangedValue() : OptionalValueChange<bool>.None,
                 General = dto.General.FromNullable().Select(generalData => MapGeneralData(generalData, rule)),
                 Procurement = dto.Procurement.FromNullable().Select(procurement => MapProcurement(procurement, rule)),
                 SystemUsageUuids = dto.SystemUsageUuids.FromNullable(),
@@ -269,7 +270,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             };
         }
 
-        private static ItContractGeneralDataModificationParameters MapGeneralData<TRootDto>(ContractGeneralDataWriteRequestDTO dto, IPropertyUpdateRule<TRootDto> rule) where  TRootDto : ContractWriteRequestDTO
+        private static ItContractGeneralDataModificationParameters MapGeneralData<TRootDto>(ContractGeneralDataWriteRequestDTO dto, IPropertyUpdateRule<TRootDto> rule) where TRootDto : ContractWriteRequestDTO
         {
             return new ItContractGeneralDataModificationParameters
             {
