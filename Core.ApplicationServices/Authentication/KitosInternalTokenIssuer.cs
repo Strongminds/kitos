@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Authentication;
-using Core.DomainModel;
-using Core.DomainServices.Queries.User;
 
 namespace Core.ApplicationServices.Authentication;
 
