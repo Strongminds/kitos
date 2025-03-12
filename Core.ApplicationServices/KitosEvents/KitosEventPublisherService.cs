@@ -7,12 +7,12 @@ namespace Core.ApplicationServices.KitosEvents;
 
 public class KitosEventPublisherService : IKitosEventPublisherService
 {
-    private readonly IHttpEventPublisher _httpClient;
+    private readonly IHttpEventPublisher _httpEventPublisher;
     private readonly ILogger _logger;
 
-    public KitosEventPublisherService(IHttpEventPublisher httpClient, ILogger logger)
+    public KitosEventPublisherService(IHttpEventPublisher httpEventPublisher, ILogger logger)
     {
-        _httpClient = httpClient;
+        _httpEventPublisher = httpEventPublisher;
         _logger = logger;
     }
     public void PublishEvent(KitosEvent kitosEvent)
@@ -27,7 +27,7 @@ public class KitosEventPublisherService : IKitosEventPublisherService
         {
             try
             {
-                _httpClient.PostEventAsync(dto);
+                _httpEventPublisher.PostEventAsync(dto);
             }
             catch (Exception ex)
             {
