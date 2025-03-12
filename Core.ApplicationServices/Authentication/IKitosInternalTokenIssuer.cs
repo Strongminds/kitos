@@ -1,8 +1,9 @@
-﻿using Core.ApplicationServices.Model.Authentication;
+﻿using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Authentication;
 
 namespace Core.ApplicationServices.Authentication;
 
 public interface IKitosInternalTokenIssuer
 {
-    KitosApiToken GetToken();
+    Result<KitosApiToken, OperationError> GetToken();
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Authentication;
 using Core.DomainModel;
 using Core.DomainServices.Queries.User;
@@ -16,14 +17,9 @@ public class KitosInternalTokenIssuer : IKitosInternalTokenIssuer
         _tokenValidator = tokenValidator;
     }
 
-    public KitosApiToken GetToken()
+    public Result<KitosApiToken, OperationError> GetToken()
     {
-        var globalAdminUser = GetGlobalAdminUser();
-        return _tokenValidator.CreateToken(globalAdminUser);
-    }
-
-    private User GetGlobalAdminUser()
-    {
-        return _userService.GetUsers(new QueryByGlobalAdmin()).FirstOrDefault();
+        return _userService.GetGlobalAdmin()
+            .Select(_tokenValidator.CreateToken);
     }
 }

@@ -4,6 +4,7 @@ using Infrastructure.Services.Http;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System;
+using Core.Abstractions.Types;
 
 namespace Core.ApplicationServices.KitosEvents;
 
@@ -20,10 +21,14 @@ public class HttpEventPublisher : IHttpEventPublisher
         _tokenIssuer = tokenIssuer;
     }
 
-    public async Task<HttpResponseMessage> PostEventAsync(KitosEventDTO eventDTO)
+    public async Task<Result<HttpResponseMessage, OperationError>> PostEventAsync(KitosEventDTO eventDTO)
     {
         var token = _tokenIssuer.GetToken();
+        if (token.Failed)
+        {
+            return token.Error;
+        }
         var url = new Uri(new Uri(_pubSubBaseUrl), PublishEndpoint);
-        return await _httpClient.PostAsync(eventDTO, url, token.Value);
+        return await _httpClient.PostAsync(eventDTO, url, token.Value.Value);
     }
 }
