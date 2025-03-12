@@ -7,7 +7,6 @@ using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
-using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
