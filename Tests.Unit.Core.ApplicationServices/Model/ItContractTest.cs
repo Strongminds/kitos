@@ -854,8 +854,10 @@ namespace Tests.Unit.Core.Model
             Assert.Empty(result.ValidationErrors);
         }
 
-        [Fact]
-        public void Should_Invalidate_Contract_When_Valid_Parent_Is_Required_And_Parent_Is_Invalid()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Should_Invalidate_Contract_When_Valid_Parent_Is_Required_But_Parent_Is_Invalid(bool enforceValid)
         {
             var now = CreateValidDate();
             var invalidContract = new ItContract { ExpirationDate = now.AddDays(-1), };
@@ -863,7 +865,9 @@ namespace Tests.Unit.Core.Model
 
             var result = sut.Validate(now);
 
-            Assert.False(result.Result);
+            Assert.Equal(enforceValid, result.Result);
+            var error = Assert.Single(result.ValidationErrors);
+            Assert.Equal(ItContractValidationError.InvalidParentContract, error);
         }
 
         [Fact]
