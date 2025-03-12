@@ -8,16 +8,18 @@ namespace Core.ApplicationServices.KitosEvents;
 public class KitosEventPublisherService : IKitosEventPublisherService
 {
     private readonly IHttpEventPublisher _httpEventPublisher;
+    private readonly IKitosEventMapper _kitosEventMapper;
     private readonly ILogger _logger;
 
-    public KitosEventPublisherService(IHttpEventPublisher httpEventPublisher, ILogger logger)
+    public KitosEventPublisherService(IHttpEventPublisher httpEventPublisher, ILogger logger, IKitosEventMapper kitosEventMapper)
     {
         _httpEventPublisher = httpEventPublisher;
         _logger = logger;
+        _kitosEventMapper = kitosEventMapper;
     }
     public void PublishEvent(KitosEvent kitosEvent)
     {
-        var dto = new KitosEventDTO(kitosEvent);
+        var dto = _kitosEventMapper.MapKitosEventToDTO(kitosEvent);
         PostEventDTO(dto);
     }
 
