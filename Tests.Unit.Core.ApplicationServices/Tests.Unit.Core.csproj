@@ -205,6 +205,9 @@
     <Compile Include="ApplicationServices\HelpTexts\HelpTextApplicationServiceTest.cs" />
     <Compile Include="ApplicationServices\Interface\ItInterfaceWriteServiceTest.cs" />
     <Compile Include="ApplicationServices\ItInterfaceServiceTest.cs" />
+    <Compile Include="ApplicationServices\KitosEvents\HttpEventPublisherTest.cs" />
+    <Compile Include="ApplicationServices\KitosEvents\KitosEventPublisherTest.cs" />
+    <Compile Include="ApplicationServices\KitosEvents\KitosInternalTokenIssuerTest.cs" />
     <Compile Include="ApplicationServices\LocalOptions\GenericLocalOptionsServiceTest.cs" />
     <Compile Include="ApplicationServices\Messages\PublicMessagesServiceTest.cs" />
     <Compile Include="ApplicationServices\Notification\NotificationServiceTest.cs" />
