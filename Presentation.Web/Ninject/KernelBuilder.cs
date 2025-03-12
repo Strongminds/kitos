@@ -139,6 +139,7 @@ using Kombit.InfrastructureSamples.Token;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
+using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 
@@ -347,6 +348,7 @@ namespace Presentation.Web.Ninject
 
             kernel.Bind<IKitosEventPublisherService>().To<KitosEventPublisherService>().InCommandScope(Mode);
             kernel.Bind<IHttpEventPublisher>().To<HttpEventPublisher>().InCommandScope(Mode).WithConstructorArgument("pubSubBaseUrl", Settings.Default.PubSubBaseUrl);
+            kernel.Bind<IKitosEventMapper>().To<KitosEventMapper>().InCommandScope(Mode);
 
         }
 
