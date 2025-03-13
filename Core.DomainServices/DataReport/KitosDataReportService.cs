@@ -5,12 +5,13 @@ using Core.DomainModel.DataReport;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.Organization;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.Repositories.Organization;
 
 namespace Core.DomainServices.DataReport;
 
-public class KitosDataReportService
+public class KitosDataReportService : IKitosDataReportService
 {
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IGenericRepository<ItSystemUsage> _systemUsageRepository;
@@ -22,6 +23,22 @@ public class KitosDataReportService
         _systemUsageRepository = usageRepository;
         _itContractRepository = contractRepository;
         _dataProcessingRegistrationRepository = dprRepository;
+    }
+
+    public KitosDataReport GenerateDataReport()
+    {
+        var organizations = _organizationRepository.GetAll();
+        var organizationReports = organizations.AsEnumerable().Select(GenerateOrganizationReport);
+        return new KitosDataReport(organizationReports);
+    }
+
+    private OrganizationDataReport GenerateOrganizationReport(Organization organization)
+    {
+        var uuid = organization.Uuid;
+        var usageReport = GenerateUsageReport(uuid);
+        var contractReport = GenerateContractDataReport(uuid);
+        var dprReport = GenerateDataProcessingRegistrationDataReport(uuid);
+        return new OrganizationDataReport(organization, usageReport, contractReport, dprReport);
     }
 
     private ItSystemUsageDataReport GenerateUsageReport(Guid organizationUuid)
