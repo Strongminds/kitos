@@ -45,6 +45,11 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// Optional parent contract
         /// </summary>
         public IdentityNamePairResponseDTO ParentContract { get; set; }
+        /// <summary>
+        /// Determines if the parent contract should be part of the contracts validation
+        /// </summary>
+        [Required]
+        public bool RequireValidParent { get; set; }
         [Required]
         public ContractGeneralDataResponseDTO General { get; set; }
         [Required]
