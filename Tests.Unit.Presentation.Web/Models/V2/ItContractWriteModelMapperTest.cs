@@ -98,7 +98,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralDataPropertiesInput()
         {
-            return CreateGetUndefinedSectionsInput(9);
+            return CreateGetUndefinedSectionsInput(10);
         }
 
         public static IEnumerable<object[]> GetUndefinedProcurementPropertiesInput()
@@ -223,11 +223,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noEnforceValid,
             bool noValidFrom,
             bool noValidTo,
-            bool noCriticalityTypeUuid)
+            bool noCriticalityTypeUuid,
+            bool noRequireValidParent)
         {
             //Arrange
             var input = new CreateNewContractRequestDTO();
-            ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid);
+            ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid, noRequireValidParent);
 
             //Act
             var output = _sut.FromPOST(input).General.Value;
@@ -241,6 +242,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noEnforceValid, output.EnforceValid.IsUnchanged);
             Assert.Equal(noValidFrom, output.ValidFrom.IsUnchanged);
             Assert.Equal(noValidTo, output.ValidTo.IsUnchanged);
+            Assert.Equal(noRequireValidParent, output.RequireValidParent.IsUnchanged);
             Assert.Equal(noCriticalityTypeUuid, output.CriticalityUuid.IsUnchanged);
         }
 
@@ -255,11 +257,11 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noEnforceValid,
             bool noValidFrom,
             bool noValidTo,
-            bool noCriticalityTypeUuid)
+            bool noCriticalityTypeUuid, bool noRequireValidParent)
         {
             //Arrange
             var input = new UpdateContractRequestDTO();
-            ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid);
+            ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid, noRequireValidParent);
 
             //Act
             var output = _sut.FromPATCH(input).General.Value;
@@ -287,11 +289,11 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noEnforceValid,
             bool noValidFrom,
             bool noValidTo,
-            bool noCriticalityTypeUuid)
+            bool noCriticalityTypeUuid, bool noRequireValidParent)
         {
             //Arrange
             var input = new UpdateContractRequestDTO();
-            ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid);
+            ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid, noRequireValidParent);
 
             //Act
             var output = _sut.FromPUT(input).General.Value;
@@ -1512,7 +1514,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noEnforceValid,
             bool noValidFrom,
             bool noValidTo,
-            bool noCriticalityTypeUuid)
+            bool noCriticalityTypeUuid,
+            bool noRequireValidParent)
         {
             var sectionProperties = GetAllInputPropertyNames<ContractGeneralDataWriteRequestDTO>();
             var validitySectionProperties = GetAllInputPropertyNames<ContractValidityWriteRequestDTO>();
@@ -1527,6 +1530,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noEnforceValid) validitySectionProperties.Remove(nameof(ContractValidityWriteRequestDTO.EnforcedValid));
             if (noValidFrom) validitySectionProperties.Remove(nameof(ContractValidityWriteRequestDTO.ValidFrom));
             if (noValidTo) validitySectionProperties.Remove(nameof(ContractValidityWriteRequestDTO.ValidTo));
+            if (noRequireValidParent) validitySectionProperties.Remove(nameof(ContractValidityWriteRequestDTO.RequireValidParent));
 
             _currentHttpRequestMock
                 .Setup(x => x.GetDefinedJsonProperties(nameof(UpdateContractRequestDTO.General).WrapAsEnumerable().AsParameterMatch()))

@@ -639,9 +639,10 @@ namespace Core.ApplicationServices.Contract.Write
                 );
         }
 
-        private void UpdateRequireValidParent(ItContract itContract, bool requireValidParent)
+        private void UpdateRequireValidParent(ItContract itContract, Maybe<bool> requireValidParent)
         {
-            itContract.SetRequireValidParent(requireValidParent);
+            if (requireValidParent.IsNone) return;
+            itContract.SetRequireValidParent(requireValidParent.Value);
         }
 
         private Maybe<OperationError> UpdateName(ItContract contract, string newName)

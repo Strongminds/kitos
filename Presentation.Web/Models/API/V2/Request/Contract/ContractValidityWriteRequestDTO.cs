@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Web.Models.API.V2.Request.Contract
 {

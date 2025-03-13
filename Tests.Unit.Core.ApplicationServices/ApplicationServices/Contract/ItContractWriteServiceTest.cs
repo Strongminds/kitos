@@ -1736,7 +1736,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
                 EnforceValid = enforceValid.FromNullable().AsChangedValue(),
                 ValidFrom = validFrom?.FromNullable().AsChangedValue() ?? Maybe<DateTime>.None.AsChangedValue(),
                 ValidTo = validTo?.FromNullable().AsChangedValue() ?? Maybe<DateTime>.None.AsChangedValue(),
-                RequireValidParent = requireValidParent.AsChangedValue(),
+                RequireValidParent = requireValidParent.FromNullable().AsChangedValue(),
                 CriticalityUuid = criticalityTypeUuid.AsChangedValue(),
                 AgreementElementUuids = agreementElementUuids.AsChangedValue<IEnumerable<Guid>>()
             };

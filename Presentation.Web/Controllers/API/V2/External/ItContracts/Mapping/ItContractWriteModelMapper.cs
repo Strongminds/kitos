@@ -306,8 +306,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                     : OptionalValueChange<Maybe<bool>>.None,
 
                 RequireValidParent = rule.MustUpdate(x => x.General.Validity.RequireValidParent)
-                    ? dto.Validity?.RequireValidParent.AsChangedValue()
-                    : OptionalValueChange<bool>.None,
+                    ? (dto.Validity?.RequireValidParent ?? Maybe<bool>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<bool>>.None,
 
                 CriticalityUuid = rule.MustUpdate(x => x.General.CriticalityUuid)
                     ? dto.CriticalityUuid.AsChangedValue()
