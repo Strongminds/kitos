@@ -169,7 +169,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noAgreementPeriod, output.AgreementPeriod.IsNone);
             Assert.Equal(noPayments, output.Payments.IsNone);
             Assert.Equal(noTermination, output.Termination.IsNone);
-            Assert.Equal(noRequireValidParent, output.RequireValidParent.IsUnchanged);
         }
 
         [Theory]
@@ -771,14 +770,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var parentUuid = hasParentUuid ? A<Guid?>() : null;
-            var requestDto = new CreateNewContractRequestDTO { ParentContractUuid = parentUuid, RequireValidParent = A<bool>()};
+            var requestDto = new CreateNewContractRequestDTO { ParentContractUuid = parentUuid };
 
             //Act
             var modificationParameters = _sut.FromPOST(requestDto);
 
             //Assert
             Assert.Equal(requestDto.ParentContractUuid, AssertPropertyContainsDataChange(modificationParameters.ParentContractUuid));
-            Assert.Equal(requestDto.RequireValidParent, AssertPropertyContainsDataChange(modificationParameters.RequireValidParent));
         }
 
         [Theory]
@@ -788,14 +786,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var parentUuid = hasParentUuid ? A<Guid?>() : null;
-            var requestDto = new UpdateContractRequestDTO { ParentContractUuid = parentUuid, RequireValidParent = A<bool>()};
+            var requestDto = new UpdateContractRequestDTO { ParentContractUuid = parentUuid };
 
             //Act
             var modificationParameters = _sut.FromPUT(requestDto);
 
             //Assert
             Assert.Equal(requestDto.ParentContractUuid, AssertPropertyContainsDataChange(modificationParameters.ParentContractUuid));
-            Assert.Equal(requestDto.RequireValidParent, AssertPropertyContainsDataChange(modificationParameters.RequireValidParent));
         }
 
         [Theory]
@@ -805,14 +802,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var parentUuid = hasParentUuid ? A<Guid?>() : null;
-            var requestDto = new UpdateContractRequestDTO { ParentContractUuid = parentUuid, RequireValidParent = A<bool>() };
+            var requestDto = new UpdateContractRequestDTO { ParentContractUuid = parentUuid };
 
             //Act
             var modificationParameters = _sut.FromPATCH(requestDto);
 
             //Assert
             Assert.Equal(requestDto.ParentContractUuid, AssertPropertyContainsDataChange(modificationParameters.ParentContractUuid));
-            Assert.Equal(requestDto.RequireValidParent, AssertPropertyContainsDataChange(modificationParameters.RequireValidParent));
         }
 
         [Fact]
@@ -915,8 +911,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noAgreementPeriod) rootProperties.Remove(nameof(UpdateContractRequestDTO.AgreementPeriod));
             if (noPayments) rootProperties.Remove(nameof(UpdateContractRequestDTO.Payments));
             if (noTermination) rootProperties.Remove(nameof(UpdateContractRequestDTO.Termination));
-            if (noRequireValidParent) rootProperties.Remove(nameof(UpdateContractRequestDTO.RequireValidParent));
-                _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(rootProperties);
+            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(rootProperties);
             var emptyInput = new UpdateContractRequestDTO();
             return emptyInput;
         }
@@ -1439,6 +1434,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.Validity.ValidFrom, AssertPropertyContainsDataChange(output.ValidFrom));
             Assert.Equal(input.Validity.ValidTo, AssertPropertyContainsDataChange(output.ValidTo));
             Assert.Equal(input.Validity.EnforcedValid, AssertPropertyContainsDataChange(output.EnforceValid));
+            Assert.Equal(input.Validity.RequireValidParent, AssertPropertyContainsDataChange(output.RequireValidParent));
             Assert.Equal(input.CriticalityUuid, AssertPropertyContainsDataChange(output.CriticalityUuid));
         }
 
@@ -1537,7 +1533,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 .Setup(x => x.GetDefinedJsonProperties(nameof(UpdateContractRequestDTO.General).WrapAsEnumerable().AsParameterMatch()))
                 .Returns(sectionProperties);
             _currentHttpRequestMock
-                .Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateContractRequestDTO.General), nameof(ContractWriteRequestDTO.General.Validity)}.AsParameterMatch()))
+                .Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateContractRequestDTO.General), nameof(ContractWriteRequestDTO.General.Validity) }.AsParameterMatch()))
                 .Returns(validitySectionProperties);
         }
 
@@ -1654,7 +1650,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 .Setup(x => x.GetDefinedJsonProperties(nameof(UpdateContractRequestDTO.Termination).WrapAsEnumerable().AsParameterMatch()))
                 .Returns(sectionProperties);
             _currentHttpRequestMock
-                .Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateContractRequestDTO.Termination), nameof(UpdateContractRequestDTO.Termination.Terms)}.AsParameterMatch()))
+                .Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateContractRequestDTO.Termination), nameof(UpdateContractRequestDTO.Termination.Terms) }.AsParameterMatch()))
                 .Returns(termsSectionProperties);
         }
     }

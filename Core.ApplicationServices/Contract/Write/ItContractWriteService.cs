@@ -226,7 +226,6 @@ namespace Core.ApplicationServices.Contract.Write
             return contract
                 .WithOptionalUpdate(parameters.Name, UpdateName)
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.ParentContractUuid, UpdateParentContract))
-                .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.RequireValidParent, UpdateRequireValidParent))
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.General, UpdateGeneralData))
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.Procurement, UpdateProcurement))
                 .Bind(updateContract => updateContract.WithOptionalUpdate(parameters.Responsible, UpdateResponsibleData))
@@ -496,7 +495,8 @@ namespace Core.ApplicationServices.Contract.Write
                 .Bind(itContract => itContract.WithOptionalUpdate(generalData.EnforceValid, (c, newValue) => c.Active = newValue.GetValueOrFallback(false)))
                 .Bind(itContract => UpdateValidityPeriod(itContract, generalData).Match<Result<ItContract, OperationError>>(error => error, () => itContract))
                 .Bind(itContract => itContract.WithOptionalUpdate(generalData.AgreementElementUuids, UpdateAgreementElements))
-                .Bind(itContract => itContract.WithOptionalUpdate(generalData.CriticalityUuid, UpdateContractCriticality));
+                .Bind(itContract => itContract.WithOptionalUpdate(generalData.CriticalityUuid, UpdateContractCriticality))
+                .Bind(itContract => itContract.WithOptionalUpdate(generalData.RequireValidParent, UpdateRequireValidParent));
         }
 
         private Maybe<OperationError> UpdateAgreementElements(ItContract contract, IEnumerable<Guid> agreementElements)

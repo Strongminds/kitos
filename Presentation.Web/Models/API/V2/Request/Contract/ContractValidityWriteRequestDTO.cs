@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Web.Models.API.V2.Request.Contract
 {
@@ -18,5 +19,10 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         /// Must be greater than or equal to ValidFrom
         /// </summary>
         public DateTime? ValidTo { get; set; }
+        /// <summary>
+        /// Determines if the parent contract should be part of the contracts validation
+        /// </summary>
+        public bool RequireValidParent { get; set; }
+
     }
 }

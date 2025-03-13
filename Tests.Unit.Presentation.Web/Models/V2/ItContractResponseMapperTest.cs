@@ -45,7 +45,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(contract.Uuid, dto.Uuid);
             Assert.Equal(contract.LastChanged, dto.LastModified);
             AssertIdentity(contract.Parent, dto.ParentContract);
-            Assert.Equal(contract.RequireValidParent, dto.RequireValidParent);
             AssertUser(contract.ObjectOwner, dto.CreatedBy);
             AssertUser(contract.LastChangedByUser, dto.LastModifiedBy);
             AssertOrganization(contract.Organization, dto.OrganizationContext);
@@ -85,6 +84,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.False(validity.EnforcedValid);
             Assert.Null(validity.ValidFrom);
             Assert.Null(validity.ValidTo);
+            Assert.Equal(contract.RequireValidParent, validity.RequireValidParent);
 
             var procurement = dto.Procurement;
             Assert.Null(procurement.ProcurementStrategy);

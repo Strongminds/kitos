@@ -14,12 +14,6 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         /// </summary>
         [NonEmptyGuid]
         public Guid? ParentContractUuid { get; set; }
-
-        /// <summary>
-        /// If set to true, an invalid parent contract will invalidate the contract
-        /// </summary>
-        public bool RequireValidParent { get; set; }
-
         public ContractGeneralDataWriteRequestDTO General { get; set; }
         public ContractProcurementDataWriteRequestDTO Procurement { get; set; }
         public ContractSupplierDataWriteRequestDTO Supplier { get; set; }

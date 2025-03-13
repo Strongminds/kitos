@@ -30,6 +30,8 @@ using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Extensions;
 using Tests.Toolkit.Patterns;
 using Xunit;
+using System.Diagnostics.Contracts;
+using Core.ApplicationServices.Extensions;
 
 namespace Tests.Integration.Presentation.Web.Contract.V2
 {
@@ -1688,7 +1690,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             {
                 Name = CreateName(),
                 ParentContractUuid = parent1.Uuid,
-                RequireValidParent = true,
                 Procurement = procurementRequest1,
                 General = generalDataWriteRequest1,
                 Responsible = contractResponsibleDataWriteRequest1,
@@ -1712,7 +1713,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
             Assert.Equal(requestDto1.Name, contractDTO1.Name);
             AssertCrossReference(parent1, contractDTO1.ParentContract);
-            Assert.Equal(requestDto1.RequireValidParent, contractDTO1.RequireValidParent);
             AssertProcurement(procurementRequest1, procurementStrategy1, purchaseType1, contractDTO1.Procurement);
             AssertGeneralDataSection(generalDataWriteRequest1, contractType1, contractTemplateType1, agreementElements1, criticalityType1, contractDTO1);
             AssertResponsible(contractResponsibleDataWriteRequest1, contractDTO1);
@@ -2037,7 +2037,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             };
             var invalidContract = await ItContractV2Helper.PostContractAsync(token, request);
 
-            var response = await ItContractV2Helper.PostContractAsync(token, new CreateNewContractRequestDTO { Name = A<string>(), OrganizationUuid = organization.Uuid, ParentContractUuid = invalidContract.Uuid, RequireValidParent = true });
+            var response = await ItContractV2Helper.PostContractAsync(token, new CreateNewContractRequestDTO { Name = A<string>(), OrganizationUuid = organization.Uuid, ParentContractUuid = invalidContract.Uuid, General = new ContractGeneralDataWriteRequestDTO { Validity = new ContractValidityWriteRequestDTO { RequireValidParent = true } } });
 
             Assert.False(response.General.Validity.Valid);
             var error = Assert.Single(response.General.Validity.ValidationErrors);
@@ -2239,7 +2239,8 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
                 {
                     ValidFrom = DateTime.Now,
                     EnforcedValid = A<bool>(),
-                    ValidTo = DateTime.Now.AddDays(2)
+                    ValidTo = DateTime.Now.AddDays(2),
+                    RequireValidParent = A<bool>()
                 }
             };
 
@@ -2261,6 +2262,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             Assert.Equal(request?.Validity?.ValidTo?.Date, freshDTO.General.Validity?.ValidTo);
             Assert.Equal(request?.Validity?.ValidFrom?.Date, freshDTO.General.Validity?.ValidFrom);
             Assert.Equal(request?.Validity?.EnforcedValid == true, freshDTO.General.Validity?.EnforcedValid == true);
+            Assert.Equal(request?.Validity?.RequireValidParent == true, freshDTO.General.Validity?.RequireValidParent == true);
             AssertCrossReference(criticalityType, freshDTO.General.Criticality);
 
             if (expectedAgreementElements == null)
