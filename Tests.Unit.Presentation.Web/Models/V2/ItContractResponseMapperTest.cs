@@ -45,6 +45,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(contract.Uuid, dto.Uuid);
             Assert.Equal(contract.LastChanged, dto.LastModified);
             AssertIdentity(contract.Parent, dto.ParentContract);
+            Assert.Equal(contract.RequireValidParent, dto.RequireValidParent);
             AssertUser(contract.ObjectOwner, dto.CreatedBy);
             AssertUser(contract.LastChangedByUser, dto.LastModifiedBy);
             AssertOrganization(contract.Organization, dto.OrganizationContext);
@@ -512,7 +513,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             {
                 Id = A<int>(),
                 Name = A<string>(),
-                Uuid = A<Guid>()
+                Uuid = A<Guid>(),
+                RequireValidParent = A<bool>()
             };
         }
 

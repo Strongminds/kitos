@@ -30,6 +30,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 Uuid = contract.Uuid,
                 Name = contract.Name,
                 ParentContract = contract.Parent?.MapIdentityNamePairDTO(),
+                RequireValidParent = contract.RequireValidParent,
                 OrganizationContext = contract.Organization?.MapShallowOrganizationResponseDTO(),
                 CreatedBy = contract.ObjectOwner?.MapIdentityNamePairDTO(),
                 LastModified = contract.LastChanged,
