@@ -30,8 +30,6 @@ using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Extensions;
 using Tests.Toolkit.Patterns;
 using Xunit;
-using System.Diagnostics.Contracts;
-using Core.ApplicationServices.Extensions;
 
 namespace Tests.Integration.Presentation.Web.Contract.V2
 {
