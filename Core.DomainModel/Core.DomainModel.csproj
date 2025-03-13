@@ -60,6 +60,12 @@
     <Compile Include="Constants\ExternalConnectionConstants.cs" />
     <Compile Include="Constants\UIModuleConfigurationConstants.cs" />
     <Compile Include="Commands\RemoveUserFromOrganizationCommand.cs" />
+    <Compile Include="DataReport\IDataReport.cs" />
+    <Compile Include="DataReport\DataProcessingRegistrationDataReport.cs" />
+    <Compile Include="DataReport\ItContractDataReport.cs" />
+    <Compile Include="DataReport\KitosDataReport.cs" />
+    <Compile Include="DataReport\OrganizationDataReport.cs" />
+    <Compile Include="DataReport\ItSystemUsageDataReport.cs" />
     <Compile Include="Extensions\CommandBusExtensions.cs" />
     <Compile Include="Extensions\ExternalOrganizationUnitExtensions.cs" />
     <Compile Include="Extensions\HierarchyExtensions.cs" />

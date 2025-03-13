@@ -65,6 +65,8 @@
     <Compile Include="Contract\ContractDataProcessingRegistrationAssignmentService.cs" />
     <Compile Include="Contract\IContractDataProcessingRegistrationAssignmentService.cs" />
     <Compile Include="Contract\ItContractOverviewReadModelUpdate.cs" />
+    <Compile Include="DataReport\IKitosDataReportService.cs" />
+    <Compile Include="DataReport\KitosDataReportService.cs" />
     <Compile Include="Extensions\EntityQueryExtensions.cs" />
     <Compile Include="Extensions\OrganizationExtensions.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationBasisForTransferAssignmentService.cs" />
