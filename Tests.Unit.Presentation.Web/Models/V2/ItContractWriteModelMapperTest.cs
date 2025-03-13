@@ -93,7 +93,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(15);
+            return CreateGetUndefinedSectionsInput(14);
         }
 
         public static IEnumerable<object[]> GetUndefinedGeneralDataPropertiesInput()
@@ -147,10 +147,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noPaymentModel,
             bool noAgreementPeriod,
             bool noPayments,
-            bool noTermination, bool noRequireValidParent)
+            bool noTermination)
         {
             //Arrange
-            var emptyInput = ConfigureRequestInput(noName, noGeneralData, noParent, noResponsible, noProcurement, noSupplier, noSystemUsages, noExternalReferences, noDataProcessingRegistrations, noRoles, noPaymentModel, noAgreementPeriod, noPayments, noTermination, noRequireValidParent);
+            var emptyInput = ConfigureRequestInput(noName, noGeneralData, noParent, noResponsible, noProcurement, noSupplier, noSystemUsages, noExternalReferences, noDataProcessingRegistrations, noRoles, noPaymentModel, noAgreementPeriod, noPayments, noTermination);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
@@ -187,11 +187,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noPaymentModel,
             bool noAgreementPeriod,
             bool noPayments,
-            bool noTermination,
-            bool noRequireValidParent)
+            bool noTermination)
         {
             //Arrange
-            var emptyInput = ConfigureRequestInput(noName, noGeneralData, noParent, noResponsible, noProcurement, noSupplier, noSystemUsages, noExternalReferences, noDataProcessingRegistrations, noRoles, noPaymentModel, noAgreementPeriod, noPayments, noTermination, noRequireValidParent);
+            var emptyInput = ConfigureRequestInput(noName, noGeneralData, noParent, noResponsible, noProcurement, noSupplier, noSystemUsages, noExternalReferences, noDataProcessingRegistrations, noRoles, noPaymentModel, noAgreementPeriod, noPayments, noTermination);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
@@ -892,7 +891,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         private UpdateContractRequestDTO ConfigureRequestInput(bool noName, bool noGeneralData, bool noParent,
            bool noResponsible, bool noProcurement, bool noSupplier, bool noSystemUsages,
            bool noExternalReferences, bool noDataProcessingRegistrations, bool noRoles, bool noPaymentModel,
-           bool noAgreementPeriod, bool noPayments, bool noTermination, bool noRequireValidParent)
+           bool noAgreementPeriod, bool noPayments, bool noTermination)
         {
             var rootProperties = GetRootProperties();
 
