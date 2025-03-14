@@ -134,7 +134,7 @@ namespace Core.DomainModel.Advice
                 {
                     return false;
                 }
-                return IsActive == (AdviceType == AdviceType.Immediate);
+                return IsActive == IsType(AdviceType.Immediate);
             }
         }
 
@@ -146,6 +146,11 @@ namespace Core.DomainModel.Advice
         public static string CreatePartitionJobId(int adviceId, int partition)
         {
             return $"{CreateJobId(adviceId)}_part_{partition}";
+        }
+
+        public bool IsType(AdviceType type)
+        {
+            return AdviceType == type;
         }
     }
 }
