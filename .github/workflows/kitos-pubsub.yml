@@ -1,6 +1,9 @@
 name: Deploy Kitos PubSub Application
 
 on:
+  push: #TODO remove before merging, required for testing in branch
+    branches:
+      - feature/KITOSUDV-5793-pubsub-github-workflow 
   workflow_dispatch:
 
 jobs:
