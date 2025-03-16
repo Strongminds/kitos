@@ -11,15 +11,16 @@ jobs:
     runs-on: self-hosted
 
     steps:
-        - name: Create root folder if not found
-          run: mkdir -p /home/kitosadmintest/kitos_code/
+      - name: Create root folder if not found (under workspace)
+        run: mkdir -p $GITHUB_WORKSPACE/
 
-        - name: Checkout code if not found
-          uses: actions/checkout@v3
-          with:
-            path: /home/kitosadmintest/kitos_code/kitos
+      - name: Checkout code into the workspace
+        uses: actions/checkout@v3
+        with:
+          path: $GITHUB_WORKSPACE/kitos
 
-        - name: Build PubSub API
-          run: |
-            cd /home/kitosadmintest/kitos_code/kitos/PubSub.Application/Deployment
-            sh build.sh
+      - name: Build PubSub API
+        run: |
+          cd $GITHUB_WORKSPACE/kitos/PubSub.Application/Deployment
+          sh build.sh
+
