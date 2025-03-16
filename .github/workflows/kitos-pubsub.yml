@@ -1,4 +1,4 @@
-name: Deploy Kitos PubSub Application
+name: Deploy Kitos PubSub
 
 on:
   push: #TODO remove before merging, required for testing in branch
