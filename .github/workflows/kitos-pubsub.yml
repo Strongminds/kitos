@@ -1,0 +1,22 @@
+name: Deploy Kitos PubSub Application
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+
+    - name: Navigate to source folder
+      run: cd /home/kitosadmintest/kitos_code/kitos
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Navigate to PubSub.Application/Deployment
+      run: cd /kitos/PubSub.Application/Deployment
+
+    - name: Run build script
+      run: sudo sh build.sh
