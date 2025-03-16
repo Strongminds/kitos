@@ -2,7 +2,7 @@
 
 cd ../..
 if [[ "$(uname)" == "Linux" ]]; then
-	sudo docker build -t kitos-pubsub -f PubSub.Application/Dockerfile .
+	sudo docker build --tag kitos-pubsub --file PubSub.Application/Dockerfile .
 else
-	docker build -t kitos-pubsub -f PubSub.Application/Dockerfile .
+	docker build --tag kitos-pubsub --file PubSub.Application/Dockerfile .
 fi
