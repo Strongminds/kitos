@@ -1,9 +1,6 @@
 name: Deploy Kitos PubSub
 
 on:
-  push: #TODO remove before merging, required for testing in branch
-    branches:
-      - feature/KITOSUDV-5793-pubsub-github-workflow 
   workflow_dispatch:
 
 jobs:
@@ -11,13 +8,16 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code into the workspace
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Build PubSub API
         run: |
-          echo "next is pwd"
-          pwd
           cd PubSub.Application/Deployment
           sh build.sh
+          
+          
+       # cd $GITHUB_WORKSPACE/kitos/PubSub.Application/Deployment
+
+      # docker build -t kitos-pubsub -f PubSub.Application/Dockerfile .
 
