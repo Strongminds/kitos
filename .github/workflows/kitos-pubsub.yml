@@ -11,15 +11,15 @@ jobs:
     runs-on: [self-hosted, staging-pubsub-server]
 
     steps:
+        - name: Create root folder if not found
+          run: mkdir -p /home/kitosadmintest/kitos_code/
 
-    - name: Navigate to source folder
-      run: cd /home/kitosadmintest/kitos_code/kitos
+        - name: Checkout code if not found
+          uses: actions/checkout@v3
+          with:
+            path: /home/kitosadmintest/kitos_code/kitos
 
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Navigate to PubSub.Application/Deployment
-      run: cd /kitos/PubSub.Application/Deployment
-
-    - name: Run build script
-      run: sudo sh build.sh
+        - name: Build PubSub API
+          run: |
+            cd /home/kitosadmintest/kitos_code/kitos/PubSub.Application/Deployment
+            sh build.sh
