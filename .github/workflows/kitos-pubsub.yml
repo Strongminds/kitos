@@ -11,16 +11,13 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Create root folder if not found (under workspace)
-        run: mkdir -p $GITHUB_WORKSPACE/
-
       - name: Checkout code into the workspace
         uses: actions/checkout@v3
-        with:
-          path: $GITHUB_WORKSPACE/kitos
 
       - name: Build PubSub API
         run: |
-          cd $GITHUB_WORKSPACE/kitos/PubSub.Application/Deployment
+          echo "next is pwd"
+          pwd
+          cd PubSub.Application/Deployment
           sh build.sh
 
