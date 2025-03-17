@@ -302,7 +302,7 @@ namespace Core.DomainModel.ItSystemUsage
         public HostedAt? HostedAt { get; set; }
         #endregion
 
-        public YesNoPartially? WebAccessibilityCompliance { get; set; }
+        public YesNoPartiallyOption? WebAccessibilityCompliance { get; set; }
         public DateTime? LastWebAccessibilityCheck { get; set; }
         public string WebAccessibilityNotes { get; set; }
 

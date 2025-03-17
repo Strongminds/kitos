@@ -2805,6 +2805,22 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(expectedFailure, result.Error.FailureType);
         }
 
+        [Fact]
+        public void Can_Update_Web_Accessibility_Properties()
+        {
+            var usage = new ItSystemUsage {Uuid = A<Guid>()};
+            var org = new Organization {Uuid = A<Guid>()};
+            ExpectGetOrganizationReturns(org.Uuid, org);
+            ExpectGetSystemUsageReturns(usage.Uuid, usage);
+            ExpectAllowModifyReturns(usage, true);
+            ExpectTransaction();
+            var parameters = new SystemUsageUpdateParameters { };
+
+            var result = _sut.Update(usage.Uuid, parameters);
+
+            Assert.True(result.Ok);
+        }
+
         private void ExpectAddExternalReferenceReturns(int usageId, ExternalReferenceProperties properties, Result<ExternalReference, OperationError> result)
         {
             _referenceServiceMock.Setup(x => x.AddReference(usageId, ReferenceRootType.SystemUsage, properties)).Returns(result);
@@ -3210,17 +3226,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Name = A<string>(),
                 OrganizationId = organization.Id,
                 Organization = organization
-            };
-        }
-
-        private static SystemUsageUpdateParameters CreateSystemUsageUpdateParametersWithoutData()
-        {
-            return new SystemUsageUpdateParameters
-            {
-                Roles = new UpdatedSystemUsageRoles()
-                {
-                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.None.AsChangedValue()
-                }.FromNullable()
             };
         }
 
