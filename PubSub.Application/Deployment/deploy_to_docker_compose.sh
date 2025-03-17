@@ -4,7 +4,7 @@
 ASPNETCORE_ENVIRONMENT=$1
 export ASPNETCORE_ENVIRONMENT
 
-JSON_FILE="../appsettings.${ASPNETCORE_ENVIRONMENT}.json"
+JSON_FILE="appsettings.${ASPNETCORE_ENVIRONMENT}.json"
 if [ ! -f "$JSON_FILE" ]; then
   echo "File $JSON_FILE not found!"
   exit 1
@@ -21,7 +21,6 @@ PUBSUB_API_KEY=$4
 export PUBSUB_API_KEY
 
 #RUN DOCKER COMPOSE
-cd ..
 
 if [[ "$(uname)" == "Linux" ]]; then
 	sudo docker compose up --detach
