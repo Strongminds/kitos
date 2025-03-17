@@ -302,6 +302,9 @@ namespace Core.DomainModel.ItSystemUsage
         public HostedAt? HostedAt { get; set; }
         #endregion
 
+        public YesNoPartially? WebAccessibilityCompliance { get; set; }
+        public DateTime? LastWebAccessibilityCheck { get; set; }
+        public string WebAccessibilityNotes { get; set; }
 
         public virtual ICollection<ArchivePeriod> ArchivePeriods { get; set; }
 
@@ -788,8 +791,8 @@ namespace Core.DomainModel.ItSystemUsage
             if (newOptInTaskRefs.Any(taskRef => systemTaskRefIds.Contains(taskRef.Uuid)))
                 return new OperationError("Cannot Add KLE which is already present in the system context", OperationFailure.BadInput);
 
-            return optOutIds.Any(id => systemTaskRefIds.Contains(id) == false) 
-                ? new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput) 
+            return optOutIds.Any(id => systemTaskRefIds.Contains(id) == false)
+                ? new OperationError("Cannot Remove KLE which is not present in the system context", OperationFailure.BadInput)
                 : Maybe<OperationError>.None;
         }
 
@@ -899,7 +902,7 @@ namespace Core.DomainModel.ItSystemUsage
         public Result<ArchivePeriod, OperationError> RemoveArchivePeriod(Guid archivePeriodUuid)
         {
             var archivePeriodResult = GetArchivePeriod(archivePeriodUuid);
-            if(archivePeriodResult.IsNone)
+            if (archivePeriodResult.IsNone)
                 return new OperationError($"Could not find existing period with uuid {archivePeriodUuid}", OperationFailure.NotFound);
 
             var archivePeriod = archivePeriodResult.Value;
