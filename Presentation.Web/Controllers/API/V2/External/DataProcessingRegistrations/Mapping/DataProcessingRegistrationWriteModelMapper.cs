@@ -122,7 +122,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     : OptionalValueChange<Guid?>.None,
 
                 TransferToInsecureThirdCountries = rule.MustUpdate(x => x.General.TransferToInsecureThirdCountries)
-                    ? (dto.TransferToInsecureThirdCountries?.ToYesNoUndecidedOption()).AsChangedValue()
+                    ? (dto.TransferToInsecureThirdCountries?.ToYesNoPartiallyOption()).AsChangedValue()
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
                 InsecureCountriesSubjectToDataTransferUuids =
@@ -135,7 +135,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
 
                 HasSubDataProcessors = rule.MustUpdate(x => x.General.HasSubDataProcessors)
-                    ? (dto.HasSubDataProcessors?.ToYesNoUndecidedOption()).AsChangedValue()
+                    ? (dto.HasSubDataProcessors?.ToYesNoPartiallyOption()).AsChangedValue()
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
                 SubDataProcessors = rule.MustUpdate(x => x.General.SubDataProcessors)
@@ -154,7 +154,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             return new SubDataProcessorParameter(
                 sdp.DataProcessorOrganizationUuid,
                 sdp.BasisForTransferUuid,
-                sdp.TransferToInsecureThirdCountry?.ToYesNoUndecidedOption(),
+                sdp.TransferToInsecureThirdCountry?.ToYesNoPartiallyOption(),
                 sdp.InsecureThirdCountrySubjectToDataProcessingUuid);
         }
 
@@ -181,7 +181,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     : OptionalValueChange<string>.None,
 
                 IsOversightCompleted = rule.MustUpdate(x => x.Oversight.IsOversightCompleted)
-                    ? (dto.IsOversightCompleted?.ToYesNoUndecidedOption()).AsChangedValue()
+                    ? (dto.IsOversightCompleted?.ToYesNoPartiallyOption()).AsChangedValue()
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
                 OversightCompletedRemark = rule.MustUpdate(x => x.Oversight.OversightCompletedRemark)

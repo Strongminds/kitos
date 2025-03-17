@@ -666,6 +666,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(request.General.Validity.ValidTo.GetValueOrDefault().Date, freshReadDTO.General.Validity.ValidTo.GetValueOrDefault().Date);
             Assert.Equal(dataClassification.Uuid, freshReadDTO.General.DataClassification.Uuid);
             Assert.Equal(dataClassification.Name, freshReadDTO.General.DataClassification.Name);
+            Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
+            Assert.Equal(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
+            Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
         }
 
         [Fact]

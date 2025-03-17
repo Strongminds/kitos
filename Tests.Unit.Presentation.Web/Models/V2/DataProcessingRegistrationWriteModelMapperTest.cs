@@ -537,10 +537,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.IsAgreementConcludedRemark, AssertPropertyContainsDataChange(output.IsAgreementConcludedRemark));
             Assert.Equal(input.AgreementConcludedAt, AssertPropertyContainsDataChange(output.AgreementConcludedAt));
             Assert.Equal(input.BasisForTransferUuid, AssertPropertyContainsDataChange(output.BasisForTransferUuid));
-            Assert.Equal(input.TransferToInsecureThirdCountries?.ToYesNoUndecidedOption(), AssertPropertyContainsDataChange(output.TransferToInsecureThirdCountries));
+            Assert.Equal(input.TransferToInsecureThirdCountries?.ToYesNoPartiallyOption(), AssertPropertyContainsDataChange(output.TransferToInsecureThirdCountries));
             AssertNullableCollection(input.InsecureCountriesSubjectToDataTransferUuids, output.InsecureCountriesSubjectToDataTransferUuids);
             AssertNullableCollection(input.DataProcessorUuids, output.DataProcessorUuids);
-            Assert.Equal(input.HasSubDataProcessors?.ToYesNoUndecidedOption(), AssertPropertyContainsDataChange(output.HasSubDataProcessors));
+            Assert.Equal(input.HasSubDataProcessors?.ToYesNoPartiallyOption(), AssertPropertyContainsDataChange(output.HasSubDataProcessors));
             AssertNullableSubDataProcessorCollection(input.SubDataProcessors, output.SubDataProcessors);
             Assert.Equal(input.MainContractUuid, AssertPropertyContainsDataChange(output.MainContractUuid));
             Assert.Equal(input.ResponsibleOrganizationUnitUuid, AssertPropertyContainsDataChange(output.ResponsibleUnitUuid));
@@ -562,7 +562,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 {
                     var expected = inputSdp.Value;
                     var actual = outputByUuid[inputSdp.Key];
-                    Assert.Equal(expected.TransferToInsecureThirdCountry?.ToYesNoUndecidedOption(), actual.TransferToInsecureThirdCountry);
+                    Assert.Equal(expected.TransferToInsecureThirdCountry?.ToYesNoPartiallyOption(), actual.TransferToInsecureThirdCountry);
                     Assert.Equal(expected.BasisForTransferUuid, actual.BasisForTransferOptionUuid);
                     Assert.Equal(expected.InsecureThirdCountrySubjectToDataProcessingUuid, actual.InsecureCountrySubjectToDataTransferUuid);
                 }
@@ -599,7 +599,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.OversightInterval?.ToIntervalOption(),
                 AssertPropertyContainsDataChange(output.OversightInterval));
             Assert.Equal(input.OversightIntervalRemark, AssertPropertyContainsDataChange(output.OversightIntervalRemark));
-            Assert.Equal(input.IsOversightCompleted?.ToYesNoUndecidedOption(),
+            Assert.Equal(input.IsOversightCompleted?.ToYesNoPartiallyOption(),
                 AssertPropertyContainsDataChange(output.IsOversightCompleted));
             Assert.Equal(input.OversightCompletedRemark, AssertPropertyContainsDataChange(output.OversightCompletedRemark));
             Assert.Equal(input.OversightScheduledInspectionDate, AssertPropertyContainsDataChange(output.OversightScheduledInspectionDate));

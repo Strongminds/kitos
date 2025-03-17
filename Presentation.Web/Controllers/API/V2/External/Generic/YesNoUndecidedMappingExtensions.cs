@@ -18,12 +18,12 @@ namespace Presentation.Web.Controllers.API.V2.External.Generic
             );
         }
 
-        public static YesNoUndecidedOption ToYesNoUndecidedOption(this YesNoUndecidedChoice value)
+        public static YesNoUndecidedOption ToYesNoPartiallyOption(this YesNoUndecidedChoice value)
         {
             return Mapping.FromLeftToRight(value);
         }
 
-        public static YesNoUndecidedChoice ToYesNoUndecidedChoice(this YesNoUndecidedOption value)
+        public static YesNoUndecidedChoice ToYesNoPartiallyChoice(this YesNoUndecidedOption value)
         {
             return Mapping.FromRightToLeft(value);
 

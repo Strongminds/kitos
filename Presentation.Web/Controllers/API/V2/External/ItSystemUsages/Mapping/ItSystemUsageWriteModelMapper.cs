@@ -402,8 +402,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
                 ContainsAITechnology = rule.MustUpdate(x => x.General.ContainsAITechnology)
-                    ? (source.ContainsAITechnology?.ToYesNoUndecidedOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
-                    : OptionalValueChange<Maybe<YesNoUndecidedOption>>.None
+                    ? (source.ContainsAITechnology?.ToYesNoPartiallyOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<YesNoUndecidedOption>>.None,
+                WebAccessibilityCompliance = rule.MustUpdate(x => x.General.WebAccessibilityCompliance) ? source.WebAccessibilityCompliance?.ToYesNoUndecidedOption().FromNullable().AsChangedValue() : null,
+                LastWebAccessibilityCheck = rule.MustUpdate(x => x.General.LastWebAccessibilityCheck) ? source.LastWebAccessibilityCheck?.FromNullable().AsChangedValue() : null,
+                WebAccessibilityNotes = rule.MustUpdate(x => x.General.WebAccessibilityNotes) ? source.WebAccessibilityNotes.AsChangedValue() : null,
             };
         }
 
