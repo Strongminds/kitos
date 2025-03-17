@@ -15,7 +15,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, staging-pubsub-server]
 
     steps:
       - name: Checkout code
