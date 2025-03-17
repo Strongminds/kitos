@@ -26,13 +26,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build PubSub API
-        run: |
-          cd PubSub.Application/Deployment
-          sh build.sh
+        working-directory: PubSub.Application/Deployment
+        run: sh build.sh
       
       - name: Deploy PubSub API
-        run: |
-          cd PubSub.Application
-          sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
+        working-directory: PubSub.Application
+        run: sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
         
 
