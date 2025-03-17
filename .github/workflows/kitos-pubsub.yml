@@ -15,7 +15,11 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, staging-pubsub-server]
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner:
+          - ${{ github.event.inputs.environment }}-pubsub-server
 
     steps:
       - name: Checkout code
