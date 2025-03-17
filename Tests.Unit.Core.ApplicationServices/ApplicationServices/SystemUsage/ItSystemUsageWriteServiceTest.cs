@@ -2826,6 +2826,35 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(generalProperties.WebAccessibilityNotes.NewValue, updatedSystem.WebAccessibilityNotes);
         }
 
+        [Fact]
+        public void Can_Reset_Web_Accessibility_Properties()
+        {
+            var usage = new ItSystemUsage { Uuid = A<Guid>(), WebAccessibilityCompliance = A<YesNoPartiallyOption>(), LastWebAccessibilityCheck = A<DateTime>(), WebAccessibilityNotes = A<string>() };
+            var org = new Organization { Uuid = A<Guid>() };
+            ExpectGetOrganizationReturns(org.Uuid, org);
+            ExpectGetSystemUsageReturns(usage.Uuid, usage);
+            ExpectAllowModifyReturns(usage, true);
+            ExpectTransaction();
+            var parameters = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    WebAccessibilityCompliance = Maybe<YesNoPartiallyOption>.None.AsChangedValue(),
+                    LastWebAccessibilityCheck = Maybe<DateTime>.None.AsChangedValue(),
+                    WebAccessibilityNotes =
+                ((string)null).AsChangedValue()
+                }
+            };
+
+            var result = _sut.Update(usage.Uuid, parameters);
+
+            Assert.True(result.Ok);
+            var updatedSystem = result.Value;
+            Assert.Null(updatedSystem.WebAccessibilityCompliance);
+            Assert.Null(updatedSystem.LastWebAccessibilityCheck);
+            Assert.Null(updatedSystem.WebAccessibilityNotes);
+        }
+
         private void ExpectAddExternalReferenceReturns(int usageId, ExternalReferenceProperties properties, Result<ExternalReference, OperationError> result)
         {
             _referenceServiceMock.Setup(x => x.AddReference(usageId, ReferenceRootType.SystemUsage, properties)).Returns(result);

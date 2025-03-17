@@ -1097,12 +1097,12 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateWebAccessibilityCompliance(Maybe<YesNoPartiallyOption> webAccessibilityCompliance)
         {
-            WebAccessibilityCompliance = webAccessibilityCompliance.HasValue ? webAccessibilityCompliance.Value : null;
+            WebAccessibilityCompliance = webAccessibilityCompliance.GetValueOrNull();
         }
 
         public void UpdateLastWebAccessibilityCheck(Maybe<DateTime> lastCheck)
         {
-            LastWebAccessibilityCheck = lastCheck.HasValue ? lastCheck.Value : null;
+            LastWebAccessibilityCheck = lastCheck.GetValueOrNull();
         }
 
         public void UpdateWebAccessibilityNotes(string notes)
