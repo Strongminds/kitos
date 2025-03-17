@@ -183,6 +183,17 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.LastChangedAt)
                 .HasIndexAnnotation("IX_LastChangedAt");
 
+            Property(x => x.WebAccessibilityCompliance)
+                .IsOptional()
+                .HasIndexAnnotation("IX_WebAccessibilityCompliance");
+
+            Property(x => x.LastWebAccessibilityCheck)
+                .IsOptional()
+                .HasIndexAnnotation("IX_LastWebAccessibilityCheck");
+
+            Property(x => x.WebAccessibilityNotes)
+                .HasIndexAnnotation("IX_WebAccessibilityNotes");
+
             //No index bc we don't know how long it might be
             Property(x => x.ItSystemKLEIdsAsCsv).IsOptional();
             Property(x => x.ItSystemKLENamesAsCsv).IsOptional();
