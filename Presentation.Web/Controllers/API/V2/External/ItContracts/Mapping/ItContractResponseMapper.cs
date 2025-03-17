@@ -161,7 +161,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 ProcurementStrategy = contract.ProcurementStrategy?.MapIdentityNamePairDTO(),
                 PurchaseType = contract.PurchaseForm?.MapIdentityNamePairDTO(),
                 ProcurementPlan = MapProcurementPlan(contract),
-                ProcurementInitiated = contract.ProcurementInitiated?.ToYesNoPartiallyChoice(),
+                ProcurementInitiated = contract.ProcurementInitiated?.ToYesNoUndecidedChoice(),
             };
         }
 

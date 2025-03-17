@@ -186,7 +186,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ValidFrom = systemUsage.Concluded,
                     ValidTo = systemUsage.ExpirationDate
                 },
-                ContainsAITechnology = systemUsage.ContainsAITechnology?.ToYesNoPartiallyChoice(),
+                ContainsAITechnology = systemUsage.ContainsAITechnology?.ToYesNoUndecidedChoice(),
                 WebAccessibilityCompliance = systemUsage.WebAccessibilityCompliance?.ToYesNoPartiallyChoice(),
                 LastWebAccessibilityCheck = systemUsage.LastWebAccessibilityCheck,
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes

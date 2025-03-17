@@ -72,7 +72,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
 
         private static YesNoUndecidedChoice? MapYesNoUndecided(YesNoUndecidedOption? yesNoUndecidedOption)
         {
-            return yesNoUndecidedOption?.ToYesNoPartiallyChoice();
+            return yesNoUndecidedOption?.ToYesNoUndecidedChoice();
         }
 
         private IEnumerable<OversightDateDTO> MapOversightDates(ICollection<DataProcessingRegistrationOversightDate> oversightDates)
@@ -123,7 +123,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             {
                 DataProcessorOrganization = organization.Organization.MapShallowOrganizationResponseDTO(),
                 BasisForTransfer = organization.SubDataProcessorBasisForTransfer?.MapIdentityNamePairDTO(),
-                TransferToInsecureThirdCountry = organization.TransferToInsecureCountry?.ToYesNoPartiallyChoice(),
+                TransferToInsecureThirdCountry = organization.TransferToInsecureCountry?.ToYesNoUndecidedChoice(),
                 InsecureThirdCountrySubjectToDataProcessing = organization.InsecureCountry?.MapIdentityNamePairDTO()
             };
         }

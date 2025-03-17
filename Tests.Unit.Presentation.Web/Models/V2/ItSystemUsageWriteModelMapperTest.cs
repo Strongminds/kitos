@@ -1325,7 +1325,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             {
                 var maybe = actual.NewValue;
                 Assert.True(maybe.HasValue);
-                var mappedActual = maybe.Value.ToYesNoPartiallyChoice();
+                var mappedActual = maybe.Value.ToYesNoUndecidedChoice();
                 Assert.Equal(expected, mappedActual);
             }
         }

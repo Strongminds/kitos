@@ -402,7 +402,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
                 ContainsAITechnology = rule.MustUpdate(x => x.General.ContainsAITechnology)
-                    ? (source.ContainsAITechnology?.ToYesNoPartiallyOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
+                    ? (source.ContainsAITechnology?.ToYesNoUndecidedOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<YesNoUndecidedOption>>.None,
                 WebAccessibilityCompliance = rule.MustUpdate(x => x.General.WebAccessibilityCompliance) ? source.WebAccessibilityCompliance?.ToYesNoPartiallyOption().FromNullable().AsChangedValue() : null,
                 LastWebAccessibilityCheck = rule.MustUpdate(x => x.General.LastWebAccessibilityCheck) ? source.LastWebAccessibilityCheck?.FromNullable().AsChangedValue() : null,

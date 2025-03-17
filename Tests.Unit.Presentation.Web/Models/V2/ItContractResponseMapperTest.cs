@@ -185,7 +185,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             {
                 Assert.Equal(Convert.ToByte(contract.ProcurementPlanQuarter.Value), dto.Procurement.ProcurementPlan.QuarterOfYear);
                 Assert.Equal(contract.ProcurementPlanYear.Value, dto.Procurement.ProcurementPlan.Year);
-                Assert.Equal(contract.ProcurementInitiated.Value.ToYesNoPartiallyChoice(), dto.Procurement.ProcurementInitiated);
+                Assert.Equal(contract.ProcurementInitiated.Value.ToYesNoUndecidedChoice(), dto.Procurement.ProcurementInitiated);
             }
             else
             {

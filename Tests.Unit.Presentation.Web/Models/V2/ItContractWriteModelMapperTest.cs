@@ -1449,7 +1449,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 var (half, year) = AssertPropertyContainsDataChange(actual.ProcurementPlan);
                 Assert.Equal(expected.ProcurementPlan.QuarterOfYear, half);
                 Assert.Equal(expected.ProcurementPlan.Year, year);
-                Assert.Equal(expected.ProcurementInitiated, AssertPropertyContainsDataChange(actual.ProcurementInitiated).ToYesNoPartiallyChoice());
+                Assert.Equal(expected.ProcurementInitiated, AssertPropertyContainsDataChange(actual.ProcurementInitiated).ToYesNoUndecidedChoice());
             }
             else
             {

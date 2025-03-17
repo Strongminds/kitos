@@ -332,7 +332,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                     : OptionalValueChange<Maybe<(byte half, int year)>>.None,
 
                 ProcurementInitiated = rule.MustUpdate(x => x.Procurement.ProcurementInitiated)
-                    ? (dto.ProcurementInitiated?.ToYesNoPartiallyOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
+                    ? (dto.ProcurementInitiated?.ToYesNoUndecidedOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<YesNoUndecidedOption>>.None
             };
         }
