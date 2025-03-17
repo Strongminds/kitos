@@ -23,16 +23,12 @@ jobs:
 
       - name: Build PubSub API
         run: |
-          echo ${{ github.event.inputs.environment }}
           cd PubSub.Application/Deployment
           sh build.sh
       
       - name: Deploy PubSub API
         run: |
-          cd ..
+          cd PubSub.Application/
           sh deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
-          
-       # cd $GITHUB_WORKSPACE/kitos/PubSub.Application/Deployment
-
-      # docker build -t kitos-pubsub -f PubSub.Application/Dockerfile .
+        
 
