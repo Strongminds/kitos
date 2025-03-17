@@ -1,5 +1,10 @@
 name: Deploy Kitos PubSub
 
+env:
+    RABBIT_MQ_USERNAME: ${{ secrets.RABBIT_MQ_USERNAME }}
+    RABBIT_MQ_PASSWORD: ${{ secrets.RABBIT_MQ_PASSWORD }}
+    PUBSUB_API_KEY: ${{ secrets.PUBSUB_API_KEY }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -12,7 +17,7 @@ on:
           - 'Development'
           - 'Staging'
           - 'Production'
-
+  
 jobs:
   deploy:
     runs-on: ${{ matrix.runner }}
@@ -31,6 +36,6 @@ jobs:
       
       - name: Deploy PubSub API
         working-directory: PubSub.Application
-        run: sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
+        run: sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ env.RABBIT_MQ_USERNAME }} ${{ env.RABBIT_MQ_PASSWORD }} ${{ env.PUBSUB_API_KEY }}
         
 
