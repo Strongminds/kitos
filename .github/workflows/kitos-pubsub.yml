@@ -29,6 +29,6 @@ jobs:
       - name: Deploy PubSub API
         run: |
           cd PubSub.Application/
-          sh deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
+          sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
         
 
