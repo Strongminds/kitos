@@ -21,7 +21,6 @@ PUBSUB_API_KEY=$4
 export PUBSUB_API_KEY
 
 #RUN DOCKER COMPOSE
-
 if [[ "$(uname)" == "Linux" ]]; then
 	sudo docker compose up --detach
 else
