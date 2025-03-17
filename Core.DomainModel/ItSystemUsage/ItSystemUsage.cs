@@ -1095,6 +1095,21 @@ namespace Core.DomainModel.ItSystemUsage
             return personalDataOption;
         }
 
+        public void UpdateWebAccessibilityCompliance(Maybe<YesNoPartiallyOption> webAccessibilityCompliance)
+        {
+            WebAccessibilityCompliance = webAccessibilityCompliance.HasValue ? webAccessibilityCompliance.Value : null;
+        }
+
+        public void UpdateLastWebAccessibilityCheck(Maybe<DateTime> lastCheck)
+        {
+            LastWebAccessibilityCheck = lastCheck.HasValue ? lastCheck.Value : null;
+        }
+
+        public void UpdateWebAccessibilityNotes(string notes)
+        {
+            WebAccessibilityNotes = notes;
+        }
+
         private IEnumerable<ItSystemUsagePersonalData> ResetPersonalData()
         {
             var dataBeforeRemoval = PersonalDataOptions.ToList();
