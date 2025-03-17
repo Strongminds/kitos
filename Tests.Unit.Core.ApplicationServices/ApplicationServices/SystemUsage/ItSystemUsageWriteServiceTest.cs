@@ -2810,10 +2810,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             var usage = new ItSystemUsage { Uuid = A<Guid>() };
             var org = new Organization { Uuid = A<Guid>() };
-            ExpectGetOrganizationReturns(org.Uuid, org);
-            ExpectGetSystemUsageReturns(usage.Uuid, usage);
-            ExpectAllowModifyReturns(usage, true);
-            ExpectTransaction();
+            SetupSimpleUpdate(usage, org);
             var parameters = new SystemUsageUpdateParameters { GeneralProperties = new UpdatedSystemUsageGeneralProperties { WebAccessibilityCompliance = A<YesNoPartiallyOption>().FromNullable().AsChangedValue(), LastWebAccessibilityCheck = A<DateTime>().FromNullable().AsChangedValue(), WebAccessibilityNotes = A<string>().AsChangedValue() } };
 
             var result = _sut.Update(usage.Uuid, parameters);
@@ -2831,10 +2828,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             var usage = new ItSystemUsage { Uuid = A<Guid>(), WebAccessibilityCompliance = A<YesNoPartiallyOption>(), LastWebAccessibilityCheck = A<DateTime>(), WebAccessibilityNotes = A<string>() };
             var org = new Organization { Uuid = A<Guid>() };
-            ExpectGetOrganizationReturns(org.Uuid, org);
-            ExpectGetSystemUsageReturns(usage.Uuid, usage);
-            ExpectAllowModifyReturns(usage, true);
-            ExpectTransaction();
+            SetupSimpleUpdate(usage, org);
             var parameters = new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -2853,6 +2847,14 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Null(updatedSystem.WebAccessibilityCompliance);
             Assert.Null(updatedSystem.LastWebAccessibilityCheck);
             Assert.Null(updatedSystem.WebAccessibilityNotes);
+        }
+
+        private void SetupSimpleUpdate(ItSystemUsage usage, Organization org)
+        {
+            ExpectGetOrganizationReturns(org.Uuid, org);
+            ExpectGetSystemUsageReturns(usage.Uuid, usage);
+            ExpectAllowModifyReturns(usage, true);
+            ExpectTransaction();
         }
 
         private void ExpectAddExternalReferenceReturns(int usageId, ExternalReferenceProperties properties, Result<ExternalReference, OperationError> result)
