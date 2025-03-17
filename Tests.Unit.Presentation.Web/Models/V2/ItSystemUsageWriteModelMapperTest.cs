@@ -1312,7 +1312,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.NumberOfExpectedUsers.UpperBound,
                 AssertPropertyContainsDataChange(output.NumberOfExpectedUsersInterval).upperBound);
             AssertContainsAiTechnology(input.ContainsAITechnology, output.ContainsAITechnology);
-            Assert.Equal(input.WebAccessibilityCompliance, AssertPropertyContainsDataChange(output.WebAccessibilityCompliance).ToYesNoUndecidedChoice());
+            Assert.Equal(input.WebAccessibilityCompliance, AssertPropertyContainsDataChange(output.WebAccessibilityCompliance).ToYesNoPartiallyChoice());
         }
 
         private static void AssertContainsAiTechnology(YesNoUndecidedChoice? expected, OptionalValueChange<Maybe<YesNoUndecidedOption>> actual)
