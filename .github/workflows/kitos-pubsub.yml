@@ -18,11 +18,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Show GitHub context   
-        env: 
-          GITHUB_CONTEXT: ${{ toJson(github) }}   
-        run: echo "$GITHUB_CONTEXT"
-
       - name: Checkout code
         uses: actions/checkout@v3
 
