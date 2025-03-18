@@ -40,6 +40,7 @@ jobs:
             echo "IDP_HOST_MAPPING=${{ secrets.STAGING_IDP_HOST_MAPPING }}" >> $GITHUB_ENV
             echo "DEPLOY_USER=${{ secrets.STAGING_DEPLOY_USER }}" >> $GITHUB_ENV
             echo "SSH_PRIVATE_KEY=${{ secrets.STAGING_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
           fi 
 
       - name: Build and push PubSub API Docker image
