@@ -40,12 +40,13 @@ jobs:
 
       - name: Build and push Docker image of PubSub API
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest --file PubSub.Application/Dockerfile .
-          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest 
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
-      #sh build.sh
-  
+          sh build-and-pusher.docker-image.sh ${{ secrets.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} ${{ env.TAG }} 
+
+       # docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest --file PubSub.Application/Dockerfile .
+            # docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
+            # docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest 
+            # docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
+    
       - name: deploy-pubsub-api
         uses: appleboy/ssh-action@v0.1.10
         with:
