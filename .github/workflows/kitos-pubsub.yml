@@ -4,6 +4,7 @@ env:
     RABBIT_MQ_USERNAME: ${{ secrets.RABBIT_MQ_USERNAME }}
     RABBIT_MQ_PASSWORD: ${{ secrets.RABBIT_MQ_PASSWORD }}
     PUBSUB_API_KEY: ${{ secrets.PUBSUB_API_KEY }}
+    DOCKER_REPO: kitos-pubsub
 
 on:
   workflow_dispatch:
@@ -38,13 +39,11 @@ jobs:
           fi 
 
       - name: Build and push Docker image of PubSub API
-#        working-directory: PubSub.Application/Deployment
-       # working-directory: PubSub.Application
         run: |
-          docker build -t sawcicd/kitos-pubsub:latest --file PubSub.Application/Dockerfile .
-          docker tag sawcicd/kitos-pubsub:latest sawcicd/kitos-pubsub:${{ env.TAG }} 
-          docker push sawcicd/kitos-pubsub:latest 
-          docker push sawcicd/kitos-pubsub:${{ env.TAG }} 
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest --file PubSub.Application/Dockerfile .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest 
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
       #sh build.sh
       
       # - name: Deploy PubSub API
