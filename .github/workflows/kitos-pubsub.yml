@@ -46,8 +46,9 @@ jobs:
           username: ${{ secrets.STAGING_DEPLOY_USER }} 
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: | 
-            cd /home/kitosadmintest/app 
-            docker-compose pull 
-            docker-compose up -d --remove-orphans 
-            docker image prune -f
+            cd /home/kitosadmintest/app
+            sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
+          # docker-compose pull 
+          # docker-compose up -d --remove-orphans 
+          # docker image prune -f
 

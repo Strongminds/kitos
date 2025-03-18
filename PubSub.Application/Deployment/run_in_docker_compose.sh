@@ -22,7 +22,11 @@ export PUBSUB_API_KEY
 
 #RUN DOCKER COMPOSE
 if [[ "$(uname)" == "Linux" ]]; then
-	sudo docker compose up --detach
+  sudo docker-compose pull 
+  sudo docker-compose up -d --remove-orphans 
+  sudo docker image prune -f
 else
-	docker compose up --detach
+	docker-compose pull 
+  docker-compose up -d --remove-orphans 
+  docker image prune -f
 fi
