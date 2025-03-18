@@ -51,9 +51,9 @@ jobs:
         with:
           host: ${{ env.SERVER }} 
           username: ${{ secrets.STAGING_DEPLOY_USER }} 
-          key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: | 
-            cd /home/deploy/app 
+            cd /home/kitosadmintest/app 
             docker-compose pull 
             docker-compose up -d --remove-orphans 
             docker image prune -f 
