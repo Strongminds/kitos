@@ -31,7 +31,6 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       
       - name: Set Environment Variables 
-        id: vars 
         run: | 
           if [ "${{ github.event.inputs.environment }}" == "Staging" ]; then 
             echo "SERVER=${{ secrets.STAGING_PUBSUB_SERVER }}" >> $GITHUB_ENV 
@@ -39,7 +38,7 @@ jobs:
           fi 
 
       - name: Build and push PubSub API Docker image
-        run:  sh PubSub.Application/Deployment/build-and-push-docker-image.sh ${{ secrets.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} ${{ env.TAG }} 
+        run:  sh PubSub.Application/Deployment/build_and_push_docker_image.sh ${{ secrets.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} ${{ env.TAG }} 
       - name: deploy-pubsub-api
         uses: appleboy/ssh-action@v0.1.10
         with:
