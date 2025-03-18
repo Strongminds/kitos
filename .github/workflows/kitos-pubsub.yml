@@ -36,10 +36,14 @@ jobs:
           if [ "${{ github.event.inputs.environment }}" == "Staging" ]; then 
             echo "SERVER=${{ secrets.STAGING_PUBSUB_SERVER }}" >> $GITHUB_ENV 
             echo "TAG=staging" >> $GITHUB_ENV
+            echo "set up the envs"
           fi 
 
       - name: Build and push Docker image of PubSub API
         run: |
+          echo ${{ env.DOCKER_REPO }} is repo
+          echo ${{ env.TAG }} is tag
+          echo ${{ secrets.DOCKER_USERNAME }} is username
           sh PubSub.Application/Deployment/build-and-push-docker-image.sh ${{ secrets.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} ${{ env.TAG }} 
 
        # docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest --file PubSub.Application/Dockerfile .
