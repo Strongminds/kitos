@@ -39,9 +39,9 @@ jobs:
 
       - name: Build and push Docker image of PubSub API
 #        working-directory: PubSub.Application/Deployment
-        working-directory: PubSub.Application
+       # working-directory: PubSub.Application
         run: |
-          docker build -t sawcicd/kitos-pubsub:latest .
+          docker build -t sawcicd/kitos-pubsub:latest --file PubSub.Application/Dockerfile .
           docker tag sawcicd/kitos-pubsub:latest sawcicd/kitos-pubsub:${{ env.TAG }} 
           docker push sawcicd/kitos-pubsub:latest 
           docker push sawcicd/kitos-pubsub:${{ env.TAG }} 
