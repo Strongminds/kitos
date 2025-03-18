@@ -6,6 +6,7 @@ env:
     PUBSUB_API_KEY: ${{ secrets.PUBSUB_API_KEY }}
     DOCKER_REPO: kitos-pubsub
 
+
 on:
   workflow_dispatch:
     inputs:
@@ -35,6 +36,7 @@ jobs:
           if [ "${{ github.event.inputs.environment }}" == "Staging" ]; then 
             echo "SERVER=${{ secrets.STAGING_PUBSUB_SERVER }}" >> $GITHUB_ENV 
             echo "TAG=staging" >> $GITHUB_ENV
+            echo "IDP_HOST_MAPPING=${{ secrets.STAGING_IDP_HOST_MAPPING }}" >> $GITHUB_ENV
           fi 
 
       - name: Build and push PubSub API Docker image
@@ -48,7 +50,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: | 
             cd /home/kitosadmintest/app
-            sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }} ${{ secrets.IDP_HOST_MAPPING }}
+            sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }} ${{ env.IDP_HOST_MAPPING }}
           # docker-compose pull 
           # docker-compose up -d --remove-orphans 
           # docker image prune -f 
