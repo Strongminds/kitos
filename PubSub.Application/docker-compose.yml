@@ -3,6 +3,7 @@
 services:
   rabbitmq:
     image: rabbitmq:3-management
+    restart: always
     container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: $(RABBIT_MQ_USER)
