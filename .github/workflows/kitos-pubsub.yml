@@ -40,6 +40,7 @@ jobs:
 
       - name: Build and push Docker image of PubSub API
         run: |
+          pwd
           sh PubSub.Application/Deployment/build-and-pusher.docker-image.sh ${{ secrets.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} ${{ env.TAG }} 
 
        # docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest --file PubSub.Application/Dockerfile .
