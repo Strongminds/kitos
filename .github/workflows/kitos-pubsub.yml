@@ -39,6 +39,7 @@ jobs:
 
       - name: Build and push PubSub API Docker image
         run:  sh PubSub.Application/Deployment/build_and_push_docker_image.sh ${{ secrets.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} ${{ env.TAG }} 
+      
       - name: deploy-pubsub-api
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -47,8 +48,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: | 
             cd /home/kitosadmintest/app
-            sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }}
+            sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }} ${{ secrets.IDP_HOST_MAPPING }}
           # docker-compose pull 
           # docker-compose up -d --remove-orphans 
-          # docker image prune -f
+          # docker image prune -f 
 
