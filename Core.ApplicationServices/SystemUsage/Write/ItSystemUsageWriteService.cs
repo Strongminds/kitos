@@ -227,8 +227,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             //Optionally apply changes across the entire update specification
             return systemUsage.WithOptionalUpdate(parameters.GeneralProperties, PerformGeneralDataPropertiesUpdate)
                 .Bind(usage => usage.WithOptionalUpdate(parameters.Roles, PerformRoleAssignmentUpdates))
-                .Bind(usage =>
-                    usage.WithOptionalUpdate(parameters.OrganizationalUsage, PerformOrganizationalUsageUpdate))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.OrganizationalUsage, PerformOrganizationalUsageUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.KLE, PerformKLEUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.GDPR, PerformGDPRUpdates))
