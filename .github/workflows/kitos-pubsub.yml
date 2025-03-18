@@ -1,6 +1,9 @@
 name: Deploy Kitos PubSub
 
 env:
+    RABBIT_MQ_USERNAME: ${{ secrets.RABBIT_MQ_USERNAME }}
+    RABBIT_MQ_PASSWORD: ${{ secrets.RABBIT_MQ_PASSWORD }}
+    PUBSUB_API_KEY: ${{ secrets.PUBSUB_API_KEY }}
     DOCKER_REPO: kitos-pubsub
     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -36,9 +39,6 @@ jobs:
             echo "TAG=staging" >> $GITHUB_ENV
             echo "IDP_HOST_MAPPING=${{ secrets.STAGING_IDP_HOST_MAPPING }}" >> $GITHUB_ENV
             echo "DEPLOY_USER=${{ secrets.STAGING_DEPLOY_USER }}" >> $GITHUB_ENV
-            echo "RABBIT_MQ_USERNAME=${{ secrets.STAGING_RABBIT_MQ_USERNAME }}" >> $GITHUB_ENV
-            echo "RABBIT_MQ_PASSWORD=${{ secrets.STAGING_RABBIT_MQ_PASSWORD }}" >> $GITHUB_ENV
-            echo "PUBSUB_API_KEY=${{ secrets.STAGING_PUBSUB_API_KEY }}" >> $GITHUB_ENV
           fi 
 
       - name: Build and push PubSub API Docker image
