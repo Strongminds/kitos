@@ -19,7 +19,7 @@ on:
           - 'Production'
   
 jobs:
-  deploy:
+  build-and-push-docker-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,10 +41,10 @@ jobs:
 #        working-directory: PubSub.Application/Deployment
         working-directory: PubSub.Application
         run: |
-          docker build -t sawcicd@strongminds.dk/kitos-pubsub:latest .
-          docker tag sawcicd@strongminds.dk/kitos-pubsub:latest sawcicd@strongminds.dk/kitos-pubsub:${{ env.TAG }} 
-          docker push sawcicd@strongminds.dk/kitos-pubsub:latest 
-          docker push sawcicd@strongminds.dk/kitos-pubsub:${{ env.TAG }} 
+          docker build -t sawcicd/kitos-pubsub:latest .
+          docker tag sawcicd/kitos-pubsub:latest sawcicd/kitos-pubsub:${{ env.TAG }} 
+          docker push sawcicd/kitos-pubsub:latest 
+          docker push sawcicd/kitos-pubsub:${{ env.TAG }} 
       #sh build.sh
       
       # - name: Deploy PubSub API
