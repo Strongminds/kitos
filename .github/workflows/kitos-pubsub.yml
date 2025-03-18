@@ -29,13 +29,30 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Build PubSub API
-        working-directory: PubSub.Application/Deployment
-        run: sh build.sh
       
-      - name: Deploy PubSub API
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      
+      - name: Set Environment Variables 
+        id: vars 
+        run: | 
+          if [ "${{ github.event.inputs.environment }}" == "Staging" ]; then 
+            echo "SERVER=${{ secrets.SERVER_STAGING }}" >> $GITHUB_ENV 
+            echo "TAG=staging" >> $GITHUB_ENV
+          fi 
+
+      - name: Build and push Docker image of PubSub API
+#        working-directory: PubSub.Application/Deployment
         working-directory: PubSub.Application
-        run: sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ env.RABBIT_MQ_USERNAME }} ${{ env.RABBIT_MQ_PASSWORD }} ${{ env.PUBSUB_API_KEY }}
+        run: |
+          docker build -t sawcicd@strongminds.dk/kitos-pubsub:latest .
+          docker tag sawcicd@strongminds.dk/kitos-pubsub:latest sawcicd@strongminds.dk/kitos-pubsub:${{ env.TAG }} 
+          docker push sawcicd@strongminds.dk/kitos-pubsub:latest 
+          docker push sawcicd@strongminds.dk/kitos-pubsub:${{ env.TAG }} 
+      #sh build.sh
+      
+      # - name: Deploy PubSub API
+      #   working-directory: PubSub.Application
+      #   run: sh ./Deployment/deploy_to_docker_compose.sh ${{ github.event.inputs.environment }} ${{ env.RABBIT_MQ_USERNAME }} ${{ env.RABBIT_MQ_PASSWORD }} ${{ env.PUBSUB_API_KEY }}
         
 
