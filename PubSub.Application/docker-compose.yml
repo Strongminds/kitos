@@ -6,8 +6,8 @@ services:
     restart: always
     container_name: rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: $(RABBIT_MQ_USER)
-      RABBITMQ_DEFAULT_PASS: $(RABBIT_MQ_PASSWORD)
+      RABBITMQ_DEFAULT_USER: ${RABBIT_MQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_MQ_PASSWORD}
     networks:
       - app_network
 
