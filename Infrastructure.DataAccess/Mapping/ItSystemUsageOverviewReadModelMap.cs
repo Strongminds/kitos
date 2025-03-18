@@ -191,9 +191,6 @@ namespace Infrastructure.DataAccess.Mapping
                 .IsOptional()
                 .HasIndexAnnotation("IX_LastWebAccessibilityCheck");
 
-            Property(x => x.WebAccessibilityNotes)
-                .HasIndexAnnotation("IX_WebAccessibilityNotes");
-
             //No index bc we don't know how long it might be
             Property(x => x.ItSystemKLEIdsAsCsv).IsOptional();
             Property(x => x.ItSystemKLENamesAsCsv).IsOptional();
