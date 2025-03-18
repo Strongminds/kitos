@@ -45,6 +45,18 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest 
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.TAG }} 
       #sh build.sh
+  
+      - name: deploy-pubsub-api
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ env.SERVER }} 
+          username: ${{ secrets.STAGING_DEPLOY_USER }} 
+          key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          script: | 
+            cd /home/deploy/app 
+            docker-compose pull 
+            docker-compose up -d --remove-orphans 
+            docker image prune -f 
       
       # - name: Deploy PubSub API
       #   working-directory: PubSub.Application
