@@ -34,7 +34,7 @@ jobs:
         id: vars 
         run: | 
           if [ "${{ github.event.inputs.environment }}" == "Staging" ]; then 
-            echo "SERVER=${{ secrets.SERVER_STAGING }}" >> $GITHUB_ENV 
+            echo "SERVER=${{ secrets.STAGING_PUBSUB_SERVER }}" >> $GITHUB_ENV 
             echo "TAG=staging" >> $GITHUB_ENV
           fi 
 
