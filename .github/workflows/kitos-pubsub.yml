@@ -20,10 +20,10 @@ on:
   
 jobs:
   deploy:
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        runner:
+        server:
           - ${{ github.event.inputs.environment }}-pubsub-server
 
     steps:
