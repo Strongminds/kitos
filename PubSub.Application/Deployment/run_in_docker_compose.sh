@@ -15,6 +15,9 @@ export PUBSUB_API_KEY
 IDP_HOST_MAPPING=$5
 export IDP_HOST_MAPPING
 
+DOCKER_USERNAME=$6
+export DOCKER_USERNAME
+
 #RUN DOCKER COMPOSE
 if [[ "$(uname)" == "Linux" ]]; then
   sudo docker-compose pull 

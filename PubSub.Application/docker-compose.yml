@@ -12,7 +12,7 @@ services:
       - app_network
 
   api:
-    image: kitos-pubsub
+    image: ${DOCKER_USERNAME}/kitos-pubsub:latest
     container_name: kitos-pubsub
     depends_on:
       - rabbitmq
