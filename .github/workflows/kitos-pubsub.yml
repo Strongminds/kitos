@@ -17,6 +17,7 @@ env:
   DOCKER_REPO: kitos-pubsub
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  APP_ROOT_FOLDER: "/home/kitosadmintest/app"
 
 jobs:
   deploy:
@@ -35,8 +36,28 @@ jobs:
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
           sh PubSub.Application/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
+      - name: Copy docker-compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.PUBSUB_SERVER }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "PubSub.Application/docker-compose.yml"
+          target: "/home/kitosadmintest/app"
+
+      - name: Copy run script to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.PUBSUB_SERVER }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "PubSub.Application/Deployment/run_in_docker_compose.sh"
+          target: "/home/kitosadmintest/app"
+
       - name: Deploy PubSub API
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.PUBSUB_SERVER }}
           username: ${{ secrets.DEPLOY_USER }}
