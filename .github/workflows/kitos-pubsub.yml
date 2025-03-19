@@ -37,26 +37,6 @@ jobs:
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
           sh ${{ env.PROJECT_ROOT_FOLDER }}/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
-      - name: Install OpenConnect
-        run: sudo apt-get update && sudo apt-get install -y openconnect
-
-      - name: Connect to Cisco VPN
-        run: |
-          sudo openconnect -b ${{ secrets.VPN_SERVER }} \
-            --user=${{ secrets.VPN_USERNAME }} \
-            --passwd-on-stdin <<< "${{ secrets.VPN_PASSWORD }}"
-            --useragent=AnyConnect
-            --no-xmlpost 
-
-      - name: Wait for VPN Connection
-        run: sleep 10  # Adjust as needed
-
-      - name: Check VPN Connection
-        run: curl ifconfig.me  # Should return VPN IP
-
-      - name: Run Your Tasks
-        run: echo "Connected to Cisco VPN!"
-
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@v0.1.7
         with:
