@@ -17,7 +17,8 @@ env:
   DOCKER_REPO: kitos-pubsub
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  APP_ROOT_FOLDER: "/home/kitosadmintest/app"
+  SERVER_APP_ROOT_FOLDER: "/home/kitosadmintest/app"
+  PROJECT_ROOT_FOLDER: "PubSub.Application"
 
 jobs:
   deploy:
@@ -34,7 +35,7 @@ jobs:
       - name: Build and push PubSub API Docker image
         run: |
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
-          sh PubSub.Application/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
+          sh ${{ env.PROJECT_ROOT_FOLDER }}/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@v0.1.7
@@ -43,8 +44,8 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "PubSub.Application/docker-compose.yml"
-          target: "/home/kitosadmintest/app"
+          source: "${{ env.PROJECT_ROOT_FOLDER }}/docker-compose.yml"
+          target: ${{ env.SERVER_APP_ROOT_FOLDER }}
 
       - name: Copy run script to server
         uses: appleboy/scp-action@v0.1.7
@@ -53,8 +54,8 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "PubSub.Application/Deployment/run_in_docker_compose.sh"
-          target: "/home/kitosadmintest/app"
+          source: "${{ env.PROJECT_ROOT_FOLDER }}/Deployment/run_in_docker_compose.sh"
+          target: ${{ env.SERVER_APP_ROOT_FOLDER }}
 
       - name: Deploy PubSub API
         uses: appleboy/ssh-action@v1.2.2
@@ -63,5 +64,5 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/kitosadmintest/app
+            cd ${{ env.SERVER_APP_ROOT_FOLDER }}
             sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }} ${{ secrets.IDP_HOST_MAPPING }}
