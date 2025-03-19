@@ -45,6 +45,7 @@ jobs:
           sudo openconnect -b ${{ secrets.VPN_SERVER }} \
             --user=${{ secrets.VPN_USERNAME }} \
             --passwd-on-stdin <<< "${{ secrets.VPN_PASSWORD }}"
+            --useragent=AnyConnect
 
       - name: Wait for VPN Connection
         run: sleep 10  # Adjust as needed
