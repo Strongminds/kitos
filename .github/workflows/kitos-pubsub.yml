@@ -46,6 +46,7 @@ jobs:
             --user=${{ secrets.VPN_USERNAME }} \
             --passwd-on-stdin <<< "${{ secrets.VPN_PASSWORD }}"
             --useragent=AnyConnect
+            --no-xmlpost 
 
       - name: Wait for VPN Connection
         run: sleep 10  # Adjust as needed
