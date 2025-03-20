@@ -48,6 +48,9 @@ jobs:
     needs: unit-test
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Login to Docker Hub
         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
 
