@@ -2,12 +2,13 @@
 
 namespace Core.DomainModel.Events;
 
-public class EntityUpdatedEventWithSnapshot<TEntity, TSnapshot> : EntityUpdatedEvent<TEntity>
+public class EntityUpdatedEventWithSnapshot<TEntity, TEntitySnapshot> : EntityUpdatedEvent<TEntity>
+where TEntitySnapshot : ISnapshot<TEntity>
 {
-    public EntityUpdatedEventWithSnapshot(TEntity entity, Maybe<TSnapshot> snapshot) : base(entity)
+    public EntityUpdatedEventWithSnapshot(TEntity entity, Maybe<TEntitySnapshot> snapshot) : base(entity)
     {
         Snapshot = snapshot;
     }
 
-    public Maybe<TSnapshot> Snapshot { get; set; }
+    public Maybe<TEntitySnapshot> Snapshot { get; set; }
 }

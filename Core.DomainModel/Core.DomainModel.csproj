@@ -73,6 +73,7 @@
     <Compile Include="GDPR\Events\DataProcessingRegistrationRemovedFromItContractEvent.cs" />
     <Compile Include="IHasDirtyMarking.cs" />
     <Compile Include="IHasReadonlyName.cs" />
+    <Compile Include="ISnapshot.cs" />
     <Compile Include="ISupportsUserSpecificAccessControl.cs" />
     <Compile Include="ItContract\CriticalityType.cs" />
     <Compile Include="ItContract\ItContractValidationCategory.cs" />
