@@ -34,11 +34,12 @@ public class KitosHttpClient : IKitosHttpClient
 
         try
         {
-            return await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
+            _logger.Fatal($"Post result. Url: {uri}, payload: {serializedObject}, response code: {response.StatusCode}, response: {response}");
         }
         catch (Exception ex)
         {
-            _logger.Error($"Could not post content. Url: {uri}, payload: {serializedObject}, exception: {ex}");
+            _logger.Fatal($"Could not post content. Url: {uri}, payload: {serializedObject}, exception: {ex}");
             throw ex;
         }
     }
