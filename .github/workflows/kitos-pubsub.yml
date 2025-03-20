@@ -20,6 +20,7 @@ env:
   SERVER_APP_ROOT_FOLDER: "/home/kitosadmintest/app"
   PROJECT_APP_FOLDER: "PubSub.Application"
   PROJECT_TEST_FOLDER: "PubSub.Test"
+  PROJECT_DEPLOYMENT_SUB_FOLDER: "Deployment"
 
 jobs:
   unit-test:
@@ -53,7 +54,7 @@ jobs:
       - name: Build and push PubSub API Docker image
         run: |
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
-          sh ${{ env.PROJECT_APP_FOLDER }}/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
+          sh ${{ env.PROJECT_APP_FOLDER }}/${{ env.PROJECT_DEPLOYMENT_SUB_FOLDER }}/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
   deploy:
     runs-on: ubuntu-latest
@@ -78,11 +79,11 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "${{ env.PROJECT_APP_FOLDER }}/Deployment/run_in_docker_compose.sh"
+          source: "${{ env.PROJECT_APP_FOLDER }}/${{ env.PROJECT_DEPLOYMENT_SUB_FOLDER }}/run_in_docker_compose.sh"
           target: ${{ env.SERVER_APP_ROOT_FOLDER }}
       
       - name: Adapt formatting of the run script to a Linux environment
-        working-directory: ${{ env.PROJECT_APP_FOLDER }}/Deployment
+        working-directory: ${{ env.PROJECT_APP_FOLDER }}/${{ env.PROJECT_DEPLOYMENT_SUB_FOLDER }}
         run: | 
           sed -i '1s/^\xef\xbb\xbf//' run_in_docker_compose.sh 
           sed -i 's/\r$//' run_in_docker_compose.sh
