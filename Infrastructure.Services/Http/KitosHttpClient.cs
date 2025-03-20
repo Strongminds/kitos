@@ -36,6 +36,7 @@ public class KitosHttpClient : IKitosHttpClient
         {
             var response = await _httpClient.SendAsync(request);
             _logger.Fatal($"Post result. Url: {uri}, payload: {serializedObject}, response code: {response.StatusCode}, response: {response}");
+            return response;
         }
         catch (Exception ex)
         {
