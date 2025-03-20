@@ -1,4 +1,4 @@
-﻿version: '3.8'
+﻿version: '2.2'
 
 services:
   rabbitmq:
@@ -11,7 +11,7 @@ services:
       - app_network
 
   api:
-    image: kitos-pubsub
+    image: ${DOCKER_USERNAME}/kitos-pubsub:latest
     container_name: kitos-pubsub
     depends_on:
       - rabbitmq
