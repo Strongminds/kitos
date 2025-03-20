@@ -18,7 +18,8 @@ env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   SERVER_APP_ROOT_FOLDER: "/home/kitosadmintest/app"
-  PROJECT_ROOT_FOLDER: "PubSub.Application"
+  PROJECT_APP_FOLDER: "PubSub.Application"
+  PROJECT_TEST_FOLDER: "PubSub.Test"
 
 jobs:
   deploy:
@@ -28,6 +29,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Run unit tests
+        working-directory: ${{ env.PROJECT_TEST_FOLDER }}
+        run: dotnet test --logger trx --results-directory TestResults
+      
 
       - name: Login to Docker Hub
         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
@@ -35,7 +41,7 @@ jobs:
       - name: Build and push PubSub API Docker image
         run: |
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
-          sh ${{ env.PROJECT_ROOT_FOLDER }}/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
+          sh ${{ env.PROJECT_APP_FOLDER }}/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@v0.1.7
@@ -44,7 +50,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "${{ env.PROJECT_ROOT_FOLDER }}/docker-compose.yml"
+          source: "${{ env.PROJECT_APP_FOLDER }}/docker-compose.yml"
           target: ${{ env.SERVER_APP_ROOT_FOLDER }}
 
       - name: Copy run script to server
@@ -54,7 +60,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "${{ env.PROJECT_ROOT_FOLDER }}/Deployment/run_in_docker_compose.sh"
+          source: "${{ env.PROJECT_APP_FOLDER }}/Deployment/run_in_docker_compose.sh"
           target: ${{ env.SERVER_APP_ROOT_FOLDER }}
 
       - name: Deploy PubSub API
