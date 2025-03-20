@@ -27,11 +27,19 @@ echo "IDP_HOST_MAPPING=$IDP_HOST_MAPPING"
 echo "DOCKER_USERNAME=$DOCKER_USERNAME"
 
 #RUN DOCKER COMPOSE
+  sudo docker stop rabbitmq
+  sudo docker stop kitos-pubsub
+  sudo docker rm rabbitmq
+  sudo docker rm kitos-pubsub
 if [[ "$(uname)" == "Linux" ]]; then
   sudo docker compose pull 
   sudo docker compose up -d --remove-orphans 
   sudo docker image prune -f
 else
+  docker stop rabbitmq
+  docker stop kitos-pubsub
+  docker rm rabbitmq
+  docker rm kitos-pubsub
 	docker-compose pull 
   docker-compose up -d --remove-orphans 
   docker image prune -f
