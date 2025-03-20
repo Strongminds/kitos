@@ -13,7 +13,7 @@ using Core.DomainModel.Organization;
 
 namespace Core.ApplicationServices.KitosEvents;
 
-public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChangedEvent>, IDomainEventHandler<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>
+public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>>, IDomainEventHandler<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>
 {
     private readonly IKitosEventPublisherService _eventPublisher;
     private const string QueueTopic = KitosQueueTopics.SystemChangedEventTopic;
@@ -22,7 +22,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
     {
         _eventPublisher = eventPublisher;
     }
-    public void Handle(ItSystemChangedEvent domainEvent)
+    public void Handle(EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot> domainEvent)
     {
         var changeEvent = CalculateChangeEventFromSystemModel(domainEvent);
         if (changeEvent.IsNone)
@@ -85,7 +85,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<ItSystemChan
         return dataProcessor.IsNone ? system.GetRightsHolder() : dataProcessor;
     }
 
-    private static Maybe<SystemChangeEventBodyModel> CalculateChangeEventFromSystemModel(ItSystemChangedEvent changeEvent)
+    private static Maybe<SystemChangeEventBodyModel> CalculateChangeEventFromSystemModel(EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot> changeEvent)
     {
         var snapshotMaybe = changeEvent.Snapshot;
         var systemAfter = changeEvent.Entity;

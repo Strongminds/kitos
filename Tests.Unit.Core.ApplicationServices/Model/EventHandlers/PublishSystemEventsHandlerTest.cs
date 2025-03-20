@@ -36,7 +36,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
     {
         var snapshot = A<ItSystemSnapshot>();
         var itSystem = CreateItSystem();
-        var newEvent = new ItSystemChangedEvent(itSystem, snapshot);
+        var newEvent = new EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>(itSystem, snapshot);
         var expectedBody = new SystemChangeEventBodyModel
         {
             SystemUuid = itSystem.Uuid,
