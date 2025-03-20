@@ -80,6 +80,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "${{ env.PROJECT_APP_FOLDER }}/Deployment/run_in_docker_compose.sh"
           target: ${{ env.SERVER_APP_ROOT_FOLDER }}
+      
+      - name: Adapt formatting of the run script to a Linux environment
+        working-directory: ${{ env.PROJECT_APP_FOLDER }}/Deployment
+        run: | 
+          sed -i '1s/^\xef\xbb\xbf//' run_in_docker_compose.sh 
+          sed -i 's/\r$//' run_in_docker_compose.sh
 
       - name: Deploy PubSub API
         uses: appleboy/ssh-action@v1.2.2
