@@ -22,7 +22,7 @@ env:
   PROJECT_TEST_FOLDER: "PubSub.Test"
 
 jobs:
-  deploy:
+  unit-test:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
 
@@ -40,8 +40,13 @@ jobs:
           name: kitos-pubsub-unit-test-results
           path: ${{ env.PROJECT_TEST_FOLDER }}/TestResults
           retention-days: 7
+    
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    needs: unit-test
 
-
+    steps:
       - name: Login to Docker Hub
         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
 
@@ -50,6 +55,12 @@ jobs:
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
           sh ${{ env.PROJECT_APP_FOLDER }}/Deployment/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    needs: build-and-push-docker-image
+
+    steps:
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@v0.1.7
         with:
