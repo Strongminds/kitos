@@ -24,9 +24,9 @@ export DOCKER_USERNAME
   sudo docker rm rabbitmq
   sudo docker rm kitos-pubsub
 if [[ "$(uname)" == "Linux" ]]; then
-  sudo docker compose pull 
-  sudo docker compose up -d --remove-orphans 
-  sudo docker image prune -f
+  sudo -E docker compose pull 
+  sudo -E docker compose up -d --remove-orphans 
+  sudo -E docker image prune -f
 else
   docker stop rabbitmq
   docker stop kitos-pubsub
