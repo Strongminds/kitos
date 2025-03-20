@@ -34,6 +34,13 @@ jobs:
         working-directory: ${{ env.PROJECT_TEST_FOLDER }}
         run: dotnet test --logger trx --results-directory TestResults
       
+      - name: Upload unit test results
+        uses: actions/uploads-artifact@v3
+        with:
+          name: kitos-pubsub-unit-test-results
+          path: ${{ env.PROJECT_TEST_FOLDER }}/TestResults
+          retention-days: 7
+
 
       - name: Login to Docker Hub
         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
