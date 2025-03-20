@@ -54,6 +54,8 @@ jobs:
       - name: Build and push PubSub API Docker image
         run: |
           TAG=${{ github.event.inputs.environment }}  # Tag images based on environment
+          pwd
+          ls
           sh ${{ env.PROJECT_APP_FOLDER }}/${{ env.PROJECT_DEPLOYMENT_SUB_FOLDER }}/build_and_push_docker_image.sh ${{ env.DOCKER_USERNAME }} ${{ env.DOCKER_REPO }} $TAG
 
   deploy:
