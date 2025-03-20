@@ -38,7 +38,7 @@ public class KitosHttpClient : IKitosHttpClient
         }
         catch (Exception ex)
         {
-            _logger.Error($"Could not post content. Url: {uri}, payload: {payload}, exception: {ex}");
+            _logger.Error($"Could not post content. Url: {uri}, payload: {serializedObject}, exception: {ex}");
             throw ex;
         }
     }
