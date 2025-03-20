@@ -35,7 +35,7 @@ jobs:
         run: dotnet test --logger trx --results-directory TestResults
       
       - name: Upload unit test results
-        uses: actions/uploads-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: kitos-pubsub-unit-test-results
           path: ${{ env.PROJECT_TEST_FOLDER }}/TestResults
