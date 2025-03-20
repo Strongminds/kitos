@@ -28,8 +28,8 @@ echo "DOCKER_USERNAME=$DOCKER_USERNAME"
 
 #RUN DOCKER COMPOSE
 if [[ "$(uname)" == "Linux" ]]; then
-  sudo docker-compose pull 
-  sudo docker-compose up -d --remove-orphans 
+  sudo docker compose pull 
+  sudo docker compose up -d --remove-orphans 
   sudo docker image prune -f
 else
 	docker-compose pull 
