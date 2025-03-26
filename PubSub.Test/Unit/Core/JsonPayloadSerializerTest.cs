@@ -1,39 +1,41 @@
-﻿using PubSub.Core.Services.Serializer;
+﻿using System.Text;
+using System.Text.Json;
+using PubSub.Core.Services.Serializer;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
-using System.Text;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class JsonPayloadSerializerTest: WithAutoFixture
+    public class JsonPayloadSerializerTest : WithAutoFixture
     {
-        private JsonPayloadSerializer _sut;
+        private readonly JsonPayloadSerializer _sut;
 
-        public JsonPayloadSerializerTest() {
+        public JsonPayloadSerializerTest()
+        {
             _sut = new JsonPayloadSerializer();
         }
 
         [Fact]
         public void Can_Serialize()
         {
+            var jsonString = "\"Hello, World!\"";
+            var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonString);
 
-            var message = A<string>();
+            var result = _sut.Serialize(jsonElement);
 
-            //var result = _sut.Serialize(message);
-
-            var expected = Encoding.UTF8.GetBytes(message);
-            //Assert.Equal(expected, result);
+            var expected = Encoding.UTF8.GetBytes(jsonString);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
         public void Can_Deserialize()
         {
-
-            var bytes = A<byte[]>();
-            var expected = Encoding.UTF8.GetString(bytes);
+            var jsonString = "{\"Name\":\"John\",\"Age\":30}";
+            var bytes = Encoding.UTF8.GetBytes(jsonString);
 
             var result = _sut.Deserialize(bytes);
 
-            //Assert.Equal(expected, result);
+            Assert.Equal("John", result.GetProperty("Name").GetString());
+            Assert.Equal(30, result.GetProperty("Age").GetInt32());
         }
     }
 }
