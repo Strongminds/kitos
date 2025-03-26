@@ -58,11 +58,11 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         dpr.DataProcessors.Add(newestProcessor);
 
         var newEvent = new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(dpr, snapshot);
-        var expectedBody = new SystemNameChangeEventBodyModel
+        var expectedBody = new SystemDataProcessorChangeEventBodyModel
         {
             SystemUuid = dpr.SystemUsages.First().ItSystem.Uuid,
-            //DataProcessorName = newestProcessor.Name.AsChangedValue(),
-            //DataProcessorUuid = newestProcessor.Uuid.FromNullable().AsChangedValue()
+            DataProcessorName = newestProcessor.Name,
+            DataProcessorUuid = newestProcessor.Uuid
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
@@ -78,11 +78,11 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var dpr = CreateDpr(new List<Guid>());
         var system = dpr.SystemUsages.First().ItSystem;
         var newEvent = new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(dpr, snapshot);
-        var expectedBody = new SystemNameChangeEventBodyModel
+        var expectedBody = new SystemDataProcessorChangeEventBodyModel
         {
             SystemUuid = system.Uuid,
-            //DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue(),
-            //DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+            DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).GetValueOrNull(),
+            DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault()
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
@@ -99,22 +99,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 
     private static bool EventsMatch(KitosEvent event1, KitosEvent event2)
     {
-        var kvp1 = event1.EventBody;
-        var kvp2 = event2.EventBody;
-        return event1.Topic == event2.Topic && kvp1.Equals(kvp2);
-    }
-
-    private static bool DictionariesAreEqual(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
-    {
-        if (dict1.Count != dict2.Count)
-            return false;
-        foreach (var kvp in dict1)
-        {
-            if (!dict2.TryGetValue(kvp.Key, out var value))
-                return false;
-            if (!Equals(kvp.Value, value))
-                return false;
-        }
+        Assert.Equivalent(event1, event2);
         return true;
     }
 
