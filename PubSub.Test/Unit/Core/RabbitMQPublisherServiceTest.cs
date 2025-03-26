@@ -5,6 +5,7 @@ using PubSub.Core.Services.Publisher;
 using PubSub.Core.Services.Serializer;
 using PubSub.Test.Base;
 using RabbitMQ.Client;
+using System.Text.Json;
 
 namespace PubSub.Test.Unit.Core
 {
@@ -22,7 +23,10 @@ namespace PubSub.Test.Unit.Core
             var messageSerializer = new Mock<IPayloadSerializer>();
 
             var sut = new RabbitMQPublisherService(connectionManager.Object, messageSerializer.Object);
-            var publication = A<Publication>();
+
+            var jsonString = "\"Test Payload\"";
+            var payload = JsonSerializer.Deserialize<JsonElement>(jsonString);
+            var publication = new Publication(A<Topic>(), payload);
 
             await sut.PublishAsync(publication);
             AssertChannelDeclaresQueue(channel);
