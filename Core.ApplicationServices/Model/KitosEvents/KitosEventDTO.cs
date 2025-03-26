@@ -2,7 +2,7 @@
 
 public class KitosEventDTO
 {
-    public KitosEventDTO(string payload, string topic)
+    public KitosEventDTO(object payload, string topic)
     {
 
         Payload = payload;
