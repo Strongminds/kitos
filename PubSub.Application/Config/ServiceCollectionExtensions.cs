@@ -23,7 +23,9 @@ public static class ServiceCollectionExtensions
     {
         var rabbitMQAppSettings = configuration.GetSection(Constants.Config.MessageBus.ConfigSection);
         var hostName = rabbitMQAppSettings.GetValue<string>(Constants.Config.MessageBus.HostName) ?? throw new ArgumentNullException("No RabbitMQ host name found in settings.");
-        return new ConnectionFactory { HostName = hostName };
+        var user = configuration.GetValue<string>(Constants.Config.MessageBus.User) ?? throw new ArgumentNullException("No RabbitMQ username found in settings.");
+        var password = configuration.GetValue<string>(Constants.Config.MessageBus.Password) ?? throw new ArgumentNullException("No RabbitMQ password found in settings.");
+        return new ConnectionFactory { HostName = hostName, UserName = user, Password = password };
     }
 
     public static IServiceCollection AddRequestMapping(this IServiceCollection services)
