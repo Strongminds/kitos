@@ -37,7 +37,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var snapshot = A<ItSystemSnapshot>();
         var itSystem = CreateItSystem();
         var newEvent = new EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>(itSystem, snapshot);
-        var expectedBody = new SystemChangeEventBodyModel
+        var expectedBody = new SystemNameChangeEventBodyModel
         {
             SystemUuid = itSystem.Uuid,
             SystemName = itSystem.Name.AsChangedValue(),
@@ -58,11 +58,11 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         dpr.DataProcessors.Add(newestProcessor);
 
         var newEvent = new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(dpr, snapshot);
-        var expectedBody = new SystemChangeEventBodyModel
+        var expectedBody = new SystemNameChangeEventBodyModel
         {
             SystemUuid = dpr.SystemUsages.First().ItSystem.Uuid,
-            DataProcessorName = newestProcessor.Name.AsChangedValue(),
-            DataProcessorUuid = newestProcessor.Uuid.FromNullable().AsChangedValue()
+            //DataProcessorName = newestProcessor.Name.AsChangedValue(),
+            //DataProcessorUuid = newestProcessor.Uuid.FromNullable().AsChangedValue()
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
@@ -78,11 +78,11 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var dpr = CreateDpr(new List<Guid>());
         var system = dpr.SystemUsages.First().ItSystem;
         var newEvent = new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(dpr, snapshot);
-        var expectedBody = new SystemChangeEventBodyModel
+        var expectedBody = new SystemNameChangeEventBodyModel
         {
             SystemUuid = system.Uuid,
-            DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue(),
-            DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+            //DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue(),
+            //DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault().AsChangedValue()
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 

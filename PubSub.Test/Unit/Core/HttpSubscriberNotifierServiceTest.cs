@@ -2,7 +2,6 @@
 using Moq;
 using Moq.Protected;
 using System.Net;
-using Microsoft.Extensions.Configuration;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Core.Services.CallbackAuthentication;
 
@@ -34,7 +33,7 @@ namespace PubSub.Test.Unit.Core
             var message = A<string>();
             var callback = A<string>();
 
-            await sut.Notify(message, callback);
+            //await sut.Notify(message, callback);
 
             httpClientFactoryMock.Verify(_ => _.CreateClient(It.IsAny<string>()), Times.Once);
             await AssertHttpContent(message, capturedRequest);

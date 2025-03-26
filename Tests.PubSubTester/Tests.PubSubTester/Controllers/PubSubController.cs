@@ -28,7 +28,7 @@ namespace Tests.PubSubTester.Controllers
 
         [HttpPost]
         [Route("callback/{id}")]
-        public IActionResult Callback(string id, [FromBody] ExpectedDTO message)
+        public IActionResult Callback(string id, [FromBody] ExpectedDTO<object> message)
         {
             logger.LogInformation($"callbackId: {id}, message: {message}");
 
@@ -53,6 +53,13 @@ namespace Tests.PubSubTester.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("dataProcessorChange")]
+        public IActionResult Callback([FromBody] ExpectedDTO<DataProcessorChangeDTO> dto)
+        {
+            return Ok();
+        }
+
         private static HttpClient CreateClient()
         {
             var client = new HttpClient();
@@ -73,7 +80,14 @@ namespace Tests.PubSubTester.Controllers
     }
 }
 
-public class ExpectedDTO
+public class ExpectedDTO<T>
 {
-    public object Payload { get; set; }
+    public T Payload { get; set; }
+}
+
+public class DataProcessorChangeDTO
+{
+    public Guid SystemUuid { get; set; }
+    public Guid? DataProcessorUuid { get; set; }
+    public string? DataProcessorName { get; set; }
 }

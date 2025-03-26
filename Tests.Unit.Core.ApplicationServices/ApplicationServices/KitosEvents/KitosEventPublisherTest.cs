@@ -28,7 +28,7 @@ namespace Tests.Unit.Core.ApplicationServices.KitosEvents
         [Fact]
         public void Can_Publish_Event()
         {
-            var testEvent = new KitosEvent(A<SystemChangeEventBodyModel>(), A<string>());
+            var testEvent = new KitosEvent(A<SystemNameChangeEventBodyModel>(), A<string>());
             var testDto = A<KitosEventDTO>();
             _kitosEventMapperMock
                 .Setup(m => m.MapKitosEventToDTO(testEvent))
