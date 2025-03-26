@@ -24,7 +24,7 @@ namespace Tests.Unit.Core.ApplicationServices.KitosEvents
 
             var dto = _sut.MapKitosEventToDTO(kitosEvent);
 
-            Assert.Equal(expectedMessage, dto.Message);
+            Assert.Equal(expectedMessage, dto.Payload);
             Assert.Equal(expectedTopic, dto.Topic);
         }
     }
