@@ -60,6 +60,13 @@ namespace Tests.PubSubTester.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("nameChange")]
+        public IActionResult Callback([FromBody] ExpectedDTO<NameChangeDTO> dto)
+        {
+            return Ok();
+        }
+
         private static HttpClient CreateClient()
         {
             var client = new HttpClient();
@@ -90,4 +97,10 @@ public class DataProcessorChangeDTO
     public Guid SystemUuid { get; set; }
     public Guid? DataProcessorUuid { get; set; }
     public string? DataProcessorName { get; set; }
+}
+
+public class NameChangeDTO
+{
+    public Guid SystemUuid { get; set; }
+    public string SystemName { get; set; }
 }
