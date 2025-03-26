@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.Shared;
@@ -12,6 +13,7 @@ using Core.ApplicationServices.References;
 using Core.DomainModel.Events;
 using Core.DomainModel;
 using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystem.DomainEvents;
 using Core.DomainModel.References;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Repositories.Organization;
@@ -87,7 +89,7 @@ namespace Core.ApplicationServices.System.Write
 
                 if (result.Ok)
                 {
-                    SaveAndNotify(result.Value, transaction);
+                    SaveAndNotify(result.Value, transaction, Maybe<ItSystemSnapshot>.None);
                 }
                 else
                 {
@@ -106,29 +108,7 @@ namespace Core.ApplicationServices.System.Write
 
         public Result<ItSystem, OperationError> Update(Guid systemUuid, SystemUpdateParameters parameters)
         {
-            using var transaction = _transactionManager.Begin();
-            try
-            {
-                var result = GetSystemAndAuthorizeAccess(systemUuid)
-                    .Bind(system => ApplyUpdates(system, parameters));
-
-                if (result.Ok)
-                {
-                    SaveAndNotify(result.Value, transaction);
-                }
-                else
-                {
-                    transaction.Rollback();
-                    _logger.Error("User {id} failed to update It-System {uuid} due to error: {errorMessage}", _userContext.UserId, systemUuid, result.Error.ToString());
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "User {id} Failed updating system with uuid {uuid}", _userContext.UserId, systemUuid);
-                return new OperationError(OperationFailure.UnknownError);
-            }
+            return PerformUpdateTransaction(systemUuid, system => ApplyUpdates(system, parameters), WithWriteAccess);
         }
 
         public Result<ItSystem, OperationError> Delete(Guid systemUuid)
@@ -145,6 +125,11 @@ namespace Core.ApplicationServices.System.Write
 
                     return new OperationError(deleteResult.ToString("G"), OperationFailure.UnknownError);
                 });
+        }
+
+        public Result<ItSystem, OperationError> LegalPropertiesUpdate(Guid systemUuid, LegalUpdateParameters parameters)
+        {
+            return PerformUpdateTransaction(systemUuid, system => ApplyLegalPropertyUpdates(system, parameters), WithLegalPropertyWriteAccess);
         }
 
         public Result<ExternalReference, OperationError> AddExternalReference(Guid systemUuid, ExternalReferenceProperties externalReferenceProperties)
@@ -177,6 +162,42 @@ namespace Core.ApplicationServices.System.Write
                 });
         }
 
+        private Result<ItSystem, OperationError> PerformUpdateTransaction(Guid systemUuid,
+            Func<ItSystem, Result<ItSystem, OperationError>> mutation, Func<ItSystem, Result<ItSystem, OperationError>> authorizeMethod)
+        {
+            using var transaction = _transactionManager.Begin();
+            try
+            {
+                var systemWithWriteAccess = _systemService.GetSystem(systemUuid)
+                    .Bind(authorizeMethod);
+                if (systemWithWriteAccess.Failed)
+                {
+                    return systemWithWriteAccess.Error;
+                }
+
+                var system = systemWithWriteAccess.Value;
+                var snapshot = system.Snapshot();
+                var result = mutation(system);
+
+                if (result.Ok)
+                {
+                    SaveAndNotify(result.Value, transaction, snapshot.FromNullable());
+                }
+                else
+                {
+                    transaction.Rollback();
+                    _logger.Error("User {id} failed to update It-System {uuid} due to error: {errorMessage}", _userContext.UserId, systemUuid, result.Error.ToString());
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "User {id} Failed updating system with uuid {uuid}", _userContext.UserId, systemUuid);
+                return new OperationError(OperationFailure.UnknownError);
+            }
+        }
+
         private Result<ItSystem, OperationError> WithWriteAccess(ItSystem system)
         {
             return _authorizationContext.AllowModify(system) ? system : new OperationError(OperationFailure.Forbidden);
@@ -197,6 +218,13 @@ namespace Core.ApplicationServices.System.Write
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.RightsHolderUuid, (itSystem, newValue) => _systemService.UpdateRightsHolder(itSystem.Id, newValue)))
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Scope, (itSystem, newValue) => _systemService.UpdateAccessModifier(itSystem.Id, newValue)))
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Deactivated, HandleDeactivatedState));
+        }
+
+        private static Result<ItSystem, OperationError> ApplyLegalPropertyUpdates(ItSystem itSystem, LegalUpdateParameters parameters)
+        {
+            return itSystem.WithOptionalUpdate(parameters.SystemName, (sys, legalName) => sys.UpdateLegalName(legalName))
+                .Bind(system => system.WithOptionalUpdate(parameters.DataProcessorName, (sys, legalDataProcessorName) => sys.UpdateLegalDataProcessorName(legalDataProcessorName)));
+
         }
 
         private Result<ItSystem, OperationError> HandleDeactivatedState(ItSystem itSystem, bool deactivated)
@@ -266,9 +294,9 @@ namespace Core.ApplicationServices.System.Write
 
         }
 
-        private void SaveAndNotify(ItSystem system, IDatabaseTransaction transaction)
+        private void SaveAndNotify(ItSystem system, IDatabaseTransaction transaction, Maybe<ItSystemSnapshot> snapshot)
         {
-            _domainEvents.Raise(new EntityUpdatedEvent<ItSystem>(system));
+            _domainEvents.Raise(new EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>(system, snapshot));
             _databaseControl.SaveChanges();
             transaction.Commit();
         }
@@ -278,6 +306,12 @@ namespace Core.ApplicationServices.System.Write
             return _systemService
                 .GetSystem(systemUuid)
                 .Bind(WithWriteAccess);
+        }
+
+        private Result<ItSystem, OperationError> WithLegalPropertyWriteAccess(ItSystem system)
+        {
+            var hasPermission = _authorizationContext.HasPermission(new ChangeLegalSystemPropertiesPermission());
+            return hasPermission ? system : new OperationError(OperationFailure.Forbidden);
         }
     }
 }

@@ -49,6 +49,7 @@ namespace Core.DomainModel.GDPR.Read
         public DateTime? AgreementConcludedAt { get; set; }
 
         public DateTime? LatestOversightDate { get; set; }
+        public string LatestOversightRemark { get; set; }
 
         public string BasisForTransfer{ get; set; }
 
@@ -71,5 +72,9 @@ namespace Core.DomainModel.GDPR.Read
         public int? LastChangedById { get; set; }
         public string LastChangedByName { get; set; }
         public DateTime LastChangedAt { get; set; }
+
+        public Guid? ResponsibleOrgUnitUuid { get; set; }
+        public int? ResponsibleOrgUnitId { get; set; }
+        public string ResponsibleOrgUnitName { get; set; }
     }
 }

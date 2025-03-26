@@ -17,6 +17,7 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Rights;
 using Core.DomainServices.Generic;
 using Core.ApplicationServices.Model.Users;
+using Core.DomainServices;
 
 namespace Tests.Unit.Core.ApplicationServices.Users
 {
@@ -32,6 +33,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolverMock;
         private readonly Mock<IUserRightsService> _userRightsServiceMock;
         private readonly Mock<IOrganizationalUserContext> _organizationalUserContextMock;
+        private readonly Mock<IUserRepository> _userRepositoryMock;
 
         public UserWriteServiceTest()
         {
@@ -43,6 +45,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             _entityIdentityResolverMock = new Mock<IEntityIdentityResolver>();
             _userRightsServiceMock = new Mock<IUserRightsService>();
             _organizationalUserContextMock = new Mock<IOrganizationalUserContext>();
+            _userRepositoryMock = new Mock<IUserRepository>();
 
 
             _sut = new UserWriteService(_userServiceMock.Object, 
@@ -52,7 +55,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
                 _organizationServiceMock.Object,
                 _entityIdentityResolverMock.Object,
                 _userRightsServiceMock.Object,
-                _organizationalUserContextMock.Object);
+                _organizationalUserContextMock.Object,
+                _userRepositoryMock.Object);
         }
 
         [Fact]
@@ -178,7 +182,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             //Act
             var result = _sut.SendNotification(orgUuid, userUuid);
 
-            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId), Times.Once);
+            _userServiceMock.Verify(x => x.IssueAdvisMail(user, false, orgId, true), Times.Once);
             Assert.True(result.IsNone);
         }
 
@@ -487,6 +491,70 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             transaction.Verify(x => x.Commit(), Times.AtLeastOnce);
         }
 
+        [Fact]
+        public void Can_Issue_Password_Reset()
+        {
+            var user = SetupUser();
+            ExpectGetUserByEmailReturns(user.Email, user);
+
+            _sut.RequestPasswordReset(user.Email, true);
+
+            _userServiceMock.Verify(x => x.IssuePasswordReset(user, null, null, true), Times.Once());
+        }
+
+        [Fact]
+        public void Can_Not_Issue_Password_Reset_If_Email_Doesnt_Exist()
+        {
+            var nonExistantMail = "test@mail.dk";
+            ExpectGetUserByEmailReturns(nonExistantMail, null);
+
+            _sut.RequestPasswordReset(nonExistantMail, true);
+
+            VerifyNoPasswordResetsHasBeenIssued();
+        }
+
+        [Fact]
+        public void Can_Not_Issue_Password_Reset_If_User_Cant_Authenticate()
+        {
+            var user = SetupUser();
+            user.Deleted = true; //Make user unable to authenticate
+            ExpectGetUserByEmailReturns(user.Email, user);
+
+            _sut.RequestPasswordReset(user.Email, true);
+
+            VerifyNoPasswordResetsHasBeenIssued();
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Can_Only_Update_System_Integrator_Role_As_Global_Admin(bool isGlobalAdmin)
+        {
+            var user = SetupUser();
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectIsGlobalAdminReturns(isGlobalAdmin);
+            ExpectTransactionBegins();
+
+            var result = _sut.UpdateSystemIntegrator(user.Uuid, true);
+
+            if (isGlobalAdmin)
+            {
+                _userServiceMock.Verify(x => x.UpdateUser(user, null, null, true), Times.Once);
+                Assert.True(result.Value.IsSystemIntegrator);
+            }
+            Assert.Equal(result.Ok, isGlobalAdmin);
+        }
+
+        private void VerifyNoPasswordResetsHasBeenIssued()
+        {
+            _userServiceMock.Verify(x => x.IssuePasswordReset(It.IsAny<User>(), null, null, true), Times.Never());
+        }
+
+        private void ExpectGetUserByEmailReturns(string email, User user)
+        {
+            _userRepositoryMock.Setup(x => x.GetByEmail(email)).Returns(user);
+        }
+
         private void ExpectIsGlobalAdminReturns(bool expected)
         {
             _organizationalUserContextMock.Setup(x => x.IsGlobalAdmin()).Returns(expected);
@@ -536,7 +604,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
 
         private void ExpectAddUserReturns(User user, bool sendMailOnCreation, int orgId)
         {
-            _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId)).Returns(user);
+            _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId, true)).Returns(user);
         }
         
         private void ExpectAddRoleReturns(OrganizationRole role, int organizationId, int userId, Result<OrganizationRight, OperationFailure> result)

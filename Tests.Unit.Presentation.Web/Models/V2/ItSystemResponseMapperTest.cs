@@ -74,7 +74,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             AssertBaseResponseProperties(itSystem, expectedReferences, dto);
-
+            Assert.Equal(itSystem.LegalName, dto.LegalName);
+            Assert.Equal(itSystem.LegalDataProcessorName, dto.LegalDataProcessorName);
         }
 
         [Fact]
@@ -156,7 +157,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     Uuid = x.Uuid,
                     Description = x.Description,
                     TaskKey = x.KleNumber
-                }).ToList()
+                }).ToList(),
+                LegalName = A<string>(),
+                LegalDataProcessorName = A<string>()
             };
             return itSystem;
         }

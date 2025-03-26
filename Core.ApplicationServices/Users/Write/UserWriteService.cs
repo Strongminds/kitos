@@ -12,6 +12,7 @@ using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Rights;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
+using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Infrastructure.Services.DataAccess;
 
@@ -27,6 +28,7 @@ namespace Core.ApplicationServices.Users.Write
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly IUserRightsService _userRightsService;
         private readonly IOrganizationalUserContext _organizationalUserContext;
+        private readonly IUserRepository _userRepository;
 
         public UserWriteService(IUserService userService,
             IOrganizationRightsService organizationRightsService,
@@ -35,7 +37,8 @@ namespace Core.ApplicationServices.Users.Write
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver,
             IUserRightsService userRightsService,
-            IOrganizationalUserContext organizationalUserContext)
+            IOrganizationalUserContext organizationalUserContext,
+            IUserRepository userRepository)
         {
             _userService = userService;
             _organizationRightsService = organizationRightsService;
@@ -45,6 +48,7 @@ namespace Core.ApplicationServices.Users.Write
             _entityIdentityResolver = entityIdentityResolver;
             _userRightsService = userRightsService;
             _organizationalUserContext = organizationalUserContext;
+            _userRepository = userRepository;
         }
 
         public Result<User, OperationError> Create(Guid organizationUuid, CreateUserParameters parameters)
@@ -59,7 +63,7 @@ namespace Core.ApplicationServices.Users.Write
                             using var transaction = _transactionManager.Begin();
 
 
-                            var user = _userService.AddUser(parameters.User, parameters.SendMailOnCreation, organization.Id);
+                            var user = _userService.AddUser(parameters.User, parameters.SendMailOnCreation, organization.Id, true);
 
                             var roleAssignmentError = AssignUserAdministrativeRoles(organization.Id, user.Id, parameters.Roles);
 
@@ -99,7 +103,7 @@ namespace Core.ApplicationServices.Users.Write
             }
 
             var user = updateUserResult.Value;
-            _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id);
+            _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id, true);
             transactionManager.Commit();
             return user;
         }
@@ -117,7 +121,7 @@ namespace Core.ApplicationServices.Users.Write
             {
                 return user.Error;
             }
-            _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value);
+            _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value, true);
             return Maybe<OperationError>.None;
         }
 
@@ -177,6 +181,26 @@ namespace Core.ApplicationServices.Users.Write
             return ChangeLocalAdminStatus(organizationUuid, userUuid, (orgId, userId) => _organizationRightsService.RemoveRole(orgId, userId, OrganizationRole.LocalAdmin)).MatchFailure();
         }
 
+        public Result<User, OperationError> UpdateSystemIntegrator(Guid userUuid, bool systemIntegratorStatus)
+        {
+            return UpdateUser(userUuid, user => UpdateSystemIntegrator(user, systemIntegratorStatus));
+        }
+
+        public void RequestPasswordReset(string email, bool newUi)
+        {
+            var userResult = _userRepository.GetByEmail(email).FromNullable();
+            if (userResult.IsNone)
+            {
+                return;
+            }
+            var user = userResult.Value;
+            if (!user.CanAuthenticate())
+            {
+                return;
+            }
+            _userService.IssuePasswordReset(user, null, null, newUi);
+        }
+
         private Result<User, OperationError> ChangeLocalAdminStatus<T>(Guid organizationUuid, Guid userUuid, Func<int, int, Result<T, OperationFailure>> changeLocalAdminStatus)
         {
             var transaction = _transactionManager.Begin();
@@ -197,42 +221,67 @@ namespace Core.ApplicationServices.Users.Write
                         transaction.Commit();
                         return user.Value;
                     },
-                    failure => { 
+                    failure =>
+                    {
                         transaction.Rollback();
-                        return new OperationError(failure); 
+                        return new OperationError(failure);
                     });
+        }
+
+        private Result<User, OperationError> UpdateUser(Guid userUuid, Func<User, Result<User, OperationError>> mutation)
+        {
+            using var transaction = _transactionManager.Begin();
+            var updateResult = _userService.GetUserByUuid(userUuid)
+                .Bind(mutation);
+            if (updateResult.Failed)
+            {
+                transaction.Rollback();
+                return updateResult.Error;
+            }
+
+            var updatedUser = updateResult.Value;
+            _userService.UpdateUser(updatedUser, null, null, true);
+            transaction.Commit();
+            return updatedUser;
         }
 
         private Result<User, OperationError> SetUsersGlobalAdminStatus(Guid userUuid, bool status)
         {
-            using var transaction = _transactionManager.Begin();
-            return _userService.GetUserByUuid(userUuid)
-                .Bind(user => UpdateGlobalAdminStatus(user, status))
-                .Match<Result<User, OperationError>>(
-                    user =>
-                    {
-                        transaction.Commit();
-                        _userService.UpdateUser(user, null, null);
-                        return user;
-                    },
-                    error =>
-                    {
-                        transaction.Rollback();
-                        return error;
-                    });
+            return UpdateUser(userUuid, (user) => UpdateGlobalAdminStatus(user, status));
+        }
+
+        private Result<User, OperationError> UpdateSystemIntegrator(User user, bool systemIntegratorStatus)
+        {
+            var globalAdminWriteAccess = WithGlobalAdminWriteAccess(user);
+            if (globalAdminWriteAccess.Failed)
+            {
+                return globalAdminWriteAccess.Error;
+            }
+            user.SetSystemIntegratorStatus(systemIntegratorStatus);
+            return user;
         }
 
         private Result<User, OperationError> UpdateGlobalAdminStatus(User user, bool requestedGlobalAdminStatus)
         {
-            if (!_organizationalUserContext.IsGlobalAdmin())
+            var globalAdminWriteAccess = WithGlobalAdminWriteAccess(user);
+            if (globalAdminWriteAccess.Failed)
             {
-                return new OperationError("Only global admins can add or remove global admins", OperationFailure.Forbidden);
+                return globalAdminWriteAccess.Error;
             }
             if (!requestedGlobalAdminStatus && _organizationalUserContext.UserId == user.Id)
             {
                 return new OperationError("You can not remove yourself as global admin", OperationFailure.Forbidden);
             }
-            user.IsGlobalAdmin = requestedGlobalAdminStatus;
+            user.SetGlobalAdminStatus(requestedGlobalAdminStatus);
+            return user;
+        }
+
+        private Result<User, OperationError> WithGlobalAdminWriteAccess(User user)
+        {
+            if (!_organizationalUserContext.IsGlobalAdmin())
+            {
+                return new OperationError("Only global admins can perform this operation", OperationFailure.Forbidden);
+            }
             return user;
         }
 
@@ -291,8 +340,8 @@ namespace Core.ApplicationServices.Users.Write
 
         private Maybe<OperationError> UpdateEmail(User user, string email)
         {
-            return _userService.IsEmailInUse(email) 
-                ? new OperationError($"Email '{email}' is already in use.", OperationFailure.Conflict) 
+            return _userService.IsEmailInUse(email)
+                ? new OperationError($"Email '{email}' is already in use.", OperationFailure.Conflict)
                 : user.UpdateEmail(email);
         }
 

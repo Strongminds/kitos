@@ -66,11 +66,11 @@
     <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.5.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.4.1\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="dk.nita.saml20, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\dk.nita.saml20.2.0.5\lib\net472\dk.nita.saml20.dll</HintPath>
     </Reference>
     <Reference Include="Elasticsearch.Net, Version=7.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
       <HintPath>..\packages\Elasticsearch.Net.7.8.2\lib\net461\Elasticsearch.Net.dll</HintPath>
@@ -89,6 +89,9 @@
     </Reference>
     <Reference Include="Hangfire.SqlServer, Version=1.7.31.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hangfire.SqlServer.1.7.31\lib\net45\Hangfire.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="kitos.dk.nita.saml20, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kitos.dk.nita.saml20.1.0.1\lib\net472\kitos.dk.nita.saml20.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.OData, Version=7.5.14.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.OData.7.5.14\lib\net45\Microsoft.AspNet.OData.dll</HintPath>
@@ -367,10 +370,19 @@
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationResponseMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationTypeMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\Generic\YesNoPartiallyMappingExtensions.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\ItSystemDBSV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\LegalPropertyWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\ILegalPropertyWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\OrganizationUnits\OrganizationUnitRoleTypeV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\External\Tokens\TokenV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\ExternalReferences\ExternalReferencesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\GdprExportReportInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationGlobalCountryCodesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationUnit\OrganizationUnitGlobalRoleOptionTypesInternalV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Messages\Mapping\PublicMessageStatusChoiceExtension.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Notifications\AlertsV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\QA\BrokenExternalReferencesReportInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRegularOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRoleOptionTypesInternalV2Controller.cs" />
@@ -484,6 +496,7 @@
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\OrganizationRoleMappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserResponseModelMapper.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\Mapping\UserWriteModelMapper.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\UsersInternalV2Controller.cs" />
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
@@ -524,8 +537,16 @@
     <Compile Include="Models\API\V2\Internal\Request\OrganizationUnit\ChangePaymentRegistrationV2RequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\OrganizationUnit\TransferOrganizationUnitRegistrationV2RequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\UIModuleCustomizationRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\RequestPasswordResetRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\ResetPasswordRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\User\MutateRightRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\User\MutateUserRightsRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\ExternalReferences\ExternalReferenceWithLastChangedResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\GdprReportResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\ItContract\AppliedProcurementPlanResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\Notifications\AlertResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\PasswordResetResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\PublicMessageStatusChoice.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportColumnsV2.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportCsvMapperV2.cs" />
     <Compile Include="Models\API\V2\Internal\Response\QA\BrokenExternalReferencesReportStatusResponseDTO.cs" />
@@ -590,11 +611,17 @@
     <Compile Include="Models\API\V2\Request\OrganizationUnit\UpdateOrganizationUnitRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationMasterDataRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationMasterDataRolesResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Request\System\Regular\LegalPropertiesUpdateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Request\Token\ClaimResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Request\Token\TokenIntrospectionRequest.cs" />
+    <Compile Include="Models\API\V2\Request\Token\TokenIntrospectionResponseDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\BaseUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\CreateUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\User\DefaultUserStartPreferenceChoice.cs" />
     <Compile Include="Models\API\V2\Request\User\OrganizationRoleChoice.cs" />
     <Compile Include="Models\API\V2\Request\User\UpdateUserRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Response\System\ItSystemHierarchyNodeResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Types\Notifications\AlertType.cs" />
     <Compile Include="Models\API\V2\Types\Organization\OrganizationUnitOriginChoice.cs" />
     <Compile Include="Models\API\V2\Request\SystemUsage\ArchivingCreationRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\SystemUsage\ArchivingUpdateRequestDTO.cs" />
@@ -650,6 +677,7 @@
     <Compile Include="Models\API\V2\Types\Notifications\OwnerResourceType.cs" />
     <Compile Include="Models\API\V2\Types\Notifications\RepetitionFrequencyOptions.cs" />
     <Compile Include="Models\API\V2\Types\Shared\CommonOrderByProperty.cs" />
+    <Compile Include="Models\API\V2\Types\Shared\YesNoPartiallyChoice.cs" />
     <Compile Include="Models\API\V2\Types\System\SystemDeletionConflict.cs" />
     <Compile Include="Swagger\PurgeUnusedTypesDocumentFilter.cs" />
     <Compile Include="Swagger\RemoveUnneededMutatingCallsFilter.cs" />
@@ -765,8 +793,8 @@
     <Compile Include="Models\API\V1\ItContract\ContractProcurementPlanDTO.cs" />
     <Compile Include="Models\API\V1\ItContract\ContractValidationDetailsResponseDTO.cs" />
     <Compile Include="Models\API\V1\Users\UserAdministrationPermissionsDTO.cs" />
-    <Compile Include="Models\API\V2\Internal\Request\PublicMessagesRequestDTO.cs" />
-    <Compile Include="Models\API\V2\Internal\Response\PublicMessagesResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\PublicMessageRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Response\PublicMessageResponseDTO.cs" />
     <Compile Include="Models\API\V2\Request\DataProcessing\DataProcessorRegistrationSubDataProcessorWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Generic\ExternalReferences\ExternalReferenceDataWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Generic\ExternalReferences\UpdateExternalReferenceDataWriteRequestDTO.cs" />
@@ -1420,10 +1448,7 @@
     <Compile Include="Infrastructure\Attributes\PublicApiAttribute.cs" />
     <Compile Include="Infrastructure\ExceptionLogFilterAttribute.cs" />
     <Compile Include="Infrastructure\LogInterceptor.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\BearerTokenConfig.cs" />
-    <Compile Include="Infrastructure\Model\Authentication\KitosApiToken.cs" />
     <Compile Include="Infrastructure\Middleware\OwinNinjectMiddleware.cs" />
-    <Compile Include="Infrastructure\TokenValidator.cs" />
     <Compile Include="Models\API\V1\ArchivePeriodDTO.cs" />
     <Compile Include="Models\API\V1\ContactPersonDTO.cs" />
     <Compile Include="Models\API\V1\DataResponsibleDTO.cs" />
@@ -1965,6 +1990,9 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Schema\public-extensions-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -2009,7 +2037,7 @@
       <Name>Core.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj">
-      <Project>{f0986888-8f35-4559-8fba-428bc9ec9add}</Project>
+      <Project>{F0986888-8F35-4559-8FBA-428BC9EC9ADD}</Project>
       <Name>Core.ApplicationServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.BackgroundJobs\Core.BackgroundJobs.csproj">

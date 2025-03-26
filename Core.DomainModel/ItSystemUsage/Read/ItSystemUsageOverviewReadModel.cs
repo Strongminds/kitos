@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.DomainModel.ItSystem.DataTypes;
+using Core.DomainModel.Shared;
 
 namespace Core.DomainModel.ItSystemUsage.Read
 {
@@ -67,7 +68,9 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public int? ParentItSystemId { get; set; }
         public Guid? ParentItSystemUuid { get; set; }
         public bool? ParentItSystemDisabled { get; set; }
+        public Guid? ParentItSystemUsageUuid { get; set; }
         public string Version { get; set; }
+        public YesNoUndecidedOption? ContainsAITechnology { get; set; }
         public string LocalCallName { get; set; }
         public string LocalSystemId { get; set; }
         public virtual ICollection<ItSystemUsageOverviewRoleAssignmentReadModel> RoleAssignments { get; set; }
@@ -80,6 +83,9 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string ItSystemBusinessTypeName { get; set; }
         public int? ItSystemRightsHolderId { get; set; }
         public string ItSystemRightsHolderName { get; set; }
+        public int? ItSystemCategoriesId { get; set; }
+        public Guid? ItSystemCategoriesUuid { get; set; }
+        public string ItSystemCategoriesName { get; set; }
         public string ItSystemKLEIdsAsCsv { get; set; }
         public string ItSystemKLENamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewTaskRefReadModel> ItSystemTaskRefs { get; set; } // Adding TaskRefs as collection to enable indexed search
@@ -114,6 +120,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public virtual ICollection<ItSystemUsageOverviewDataProcessingRegistrationReadModel> DataProcessingRegistrations { get; set; }
         public string GeneralPurpose { get; set; }
         public HostedAt HostedAt { get; set; }
+        public UserCount UserCount { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }
@@ -124,5 +131,16 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public virtual ICollection<ItSystemUsageOverviewRelevantOrgUnitReadModel> RelevantOrganizationUnits { get; set; }
         public string AssociatedContractsNamesCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewItContractReadModel> AssociatedContracts { get; set; }
+
+        public DataOptions? DPIAConducted { get; set; }
+
+        public DataOptions? IsBusinessCritical { get; set; }
+
+        public ArchiveDutyRecommendationTypes? CatalogArchiveDuty { get; set; }
+        public string CatalogArchiveDutyComment { get; set; }
+
+        public YesNoPartiallyOption? WebAccessibilityCompliance { get; set; }
+        public DateTime? LastWebAccessibilityCheck { get; set; }
+        public string WebAccessibilityNotes { get; set; }
     }
 }

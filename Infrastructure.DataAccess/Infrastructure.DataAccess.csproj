@@ -100,6 +100,7 @@
     <Compile Include="Mapping\KendoOrganizationalConfigurationMap.cs" />
     <Compile Include="Mapping\LifeCycleTrackingEventMap.cs" />
     <Compile Include="Mapping\PendingReadModelUpdateMap.cs" />
+    <Compile Include="Mapping\PublicMessageMap.cs" />
     <Compile Include="Mapping\StsOrganizationChangeLogMap.cs" />
     <Compile Include="Mapping\StsOrganizationConnectionMap.cs" />
     <Compile Include="Mapping\StsOrganizationConsequenceLogMap.cs" />
@@ -1071,6 +1072,78 @@
     <Compile Include="Migrations\202411191141307_Add country code to organization.designer.cs">
       <DependentUpon>202411191141307_Add country code to organization.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202412021334284_Add_UUID_To_UserNotification.cs" />
+    <Compile Include="Migrations\202412021334284_Add_UUID_To_UserNotification.Designer.cs">
+      <DependentUpon>202412021334284_Add_UUID_To_UserNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.cs" />
+    <Compile Include="Migrations\202501091001395_UsageCategoriesAndUserCount.Designer.cs">
+      <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501160951303_Parent_Usage_Uuid_On_Read_Model.cs" />
+    <Compile Include="Migrations\202501160951303_Parent_Usage_Uuid_On_Read_Model.designer.cs">
+      <DependentUpon>202501160951303_Parent_Usage_Uuid_On_Read_Model.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.cs" />
+    <Compile Include="Migrations\202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.Designer.cs">
+      <DependentUpon>202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs" />
+    <Compile Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.Designer.cs">
+      <DependentUpon>202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502110639238_Usage_contains_ai_technology.cs" />
+    <Compile Include="Migrations\202502110639238_Usage_contains_ai_technology.designer.cs">
+      <DependentUpon>202502110639238_Usage_contains_ai_technology.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502110649472_Read_model_ai_technology_field.cs" />
+    <Compile Include="Migrations\202502110649472_Read_model_ai_technology_field.designer.cs">
+      <DependentUpon>202502110649472_Read_model_ai_technology_field.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502111858490_Usage_ai_technology_field_as_yesNoUndecided.cs" />
+    <Compile Include="Migrations\202502111858490_Usage_ai_technology_field_as_yesNoUndecided.designer.cs">
+      <DependentUpon>202502111858490_Usage_ai_technology_field_as_yesNoUndecided.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502120738253_rigsarkiv_fields_on_usage_readmodel.cs" />
+    <Compile Include="Migrations\202502120738253_rigsarkiv_fields_on_usage_readmodel.designer.cs">
+      <DependentUpon>202502120738253_rigsarkiv_fields_on_usage_readmodel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502121309143_Usage_catalogArchiveDuty_index.cs" />
+    <Compile Include="Migrations\202502121309143_Usage_catalogArchiveDuty_index.designer.cs">
+      <DependentUpon>202502121309143_Usage_catalogArchiveDuty_index.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502131152271_AddResponsibleUnitForDPR.cs" />
+    <Compile Include="Migrations\202502131152271_AddResponsibleUnitForDPR.Designer.cs">
+      <DependentUpon>202502131152271_AddResponsibleUnitForDPR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502241008469_AddDBSFieldsToItSystem.cs" />
+    <Compile Include="Migrations\202502241008469_AddDBSFieldsToItSystem.Designer.cs">
+      <DependentUpon>202502241008469_AddDBSFieldsToItSystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502250641506_AddPublicMessagesTable.cs" />
+    <Compile Include="Migrations\202502250641506_AddPublicMessagesTable.Designer.cs">
+      <DependentUpon>202502250641506_AddPublicMessagesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.cs" />
+    <Compile Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.Designer.cs">
+      <DependentUpon>202502281150544_ChangeDbsFieldsToLegalName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502281217598_AddSystemIntegratorFlagToUserModel.cs" />
+    <Compile Include="Migrations\202502281217598_AddSystemIntegratorFlagToUserModel.Designer.cs">
+      <DependentUpon>202502281217598_AddSystemIntegratorFlagToUserModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503121411159_AddRequireValidParentFieldToItContract.cs" />
+    <Compile Include="Migrations\202503121411159_AddRequireValidParentFieldToItContract.Designer.cs">
+      <DependentUpon>202503121411159_AddRequireValidParentFieldToItContract.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503171345073_AddWebAccessbilityFieldsToItSystemUsage.cs" />
+    <Compile Include="Migrations\202503171345073_AddWebAccessbilityFieldsToItSystemUsage.Designer.cs">
+      <DependentUpon>202503171345073_AddWebAccessbilityFieldsToItSystemUsage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503180748378_AddWebAccessibilityFieldsToUsageReadModel.cs" />
+    <Compile Include="Migrations\202503180748378_AddWebAccessibilityFieldsToUsageReadModel.Designer.cs">
+      <DependentUpon>202503180748378_AddWebAccessibilityFieldsToUsageReadModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix staging DB\Delete_Users_Other_Than_Preserved_Users.sql" />
@@ -1111,6 +1184,60 @@
     <EmbeddedResource Include="Migrations\202411191141307_Add country code to organization.resx">
       <DependentUpon>202411191141307_Add country code to organization.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412021334284_Add_UUID_To_UserNotification.resx">
+      <DependentUpon>202412021334284_Add_UUID_To_UserNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501091001395_UsageCategoriesAndUserCount.resx">
+      <DependentUpon>202501091001395_UsageCategoriesAndUserCount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501160951303_Parent_Usage_Uuid_On_Read_Model.resx">
+      <DependentUpon>202501160951303_Parent_Usage_Uuid_On_Read_Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.resx">
+      <DependentUpon>202501231413228_add_dpia_and_businessCritical_fields_to_usage_overview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501281353180_add_latest_oversight_remark_to_dpr_read_model.resx">
+      <DependentUpon>202501281353180_add_latest_oversight_remark_to_dpr_read_model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502110639238_Usage_contains_ai_technology.resx">
+      <DependentUpon>202502110639238_Usage_contains_ai_technology.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502110649472_Read_model_ai_technology_field.resx">
+      <DependentUpon>202502110649472_Read_model_ai_technology_field.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502111858490_Usage_ai_technology_field_as_yesNoUndecided.resx">
+      <DependentUpon>202502111858490_Usage_ai_technology_field_as_yesNoUndecided.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502120738253_rigsarkiv_fields_on_usage_readmodel.resx">
+      <DependentUpon>202502120738253_rigsarkiv_fields_on_usage_readmodel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502121309143_Usage_catalogArchiveDuty_index.resx">
+      <DependentUpon>202502121309143_Usage_catalogArchiveDuty_index.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502131152271_AddResponsibleUnitForDPR.resx">
+      <DependentUpon>202502131152271_AddResponsibleUnitForDPR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502241008469_AddDBSFieldsToItSystem.resx">
+      <DependentUpon>202502241008469_AddDBSFieldsToItSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502250641506_AddPublicMessagesTable.resx">
+      <DependentUpon>202502250641506_AddPublicMessagesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502281150544_ChangeDbsFieldsToLegalName.resx">
+      <DependentUpon>202502281150544_ChangeDbsFieldsToLegalName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502281217598_AddSystemIntegratorFlagToUserModel.resx">
+      <DependentUpon>202502281217598_AddSystemIntegratorFlagToUserModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503121411159_AddRequireValidParentFieldToItContract.resx">
+      <DependentUpon>202503121411159_AddRequireValidParentFieldToItContract.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503171345073_AddWebAccessbilityFieldsToItSystemUsage.resx">
+      <DependentUpon>202503171345073_AddWebAccessbilityFieldsToItSystemUsage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503180748378_AddWebAccessibilityFieldsToUsageReadModel.resx">
+      <DependentUpon>202503180748378_AddWebAccessibilityFieldsToUsageReadModel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
       <DependentUpon>202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.cs</DependentUpon>
@@ -1128,6 +1255,7 @@
       <DependentUpon>202303030830463_notification_uuid.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_ExternalReference.sql" />
+    <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_UserNotification.sql" />
     <Compile Include="Services\DatabaseTransaction.cs" />
     <Compile Include="Services\EntityFrameworkContextDatabaseControl.cs" />
     <Compile Include="Services\PocoTypeFromProxyResolver.cs" />

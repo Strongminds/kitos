@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
+using Core.DomainModel.ItSystem;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Generic.Hierarchy;
+using Presentation.Web.Models.API.V2.Response.System;
 
 namespace Presentation.Web.Controllers.API.V2.External.Generic
 {
@@ -14,9 +17,22 @@ namespace Presentation.Web.Controllers.API.V2.External.Generic
             return hierarchy
                 .Select(x => new RegistrationHierarchyNodeWithActivationStatusResponseDTO
                 {
-                    Node = x.MapIdentityNamePairDTO(), 
+                    Node = x.MapIdentityNamePairDTO(),
                     Parent = x.Parent?.MapIdentityNamePairDTO(),
                     Deactivated = x.Disabled
+                })
+                .ToList();
+        }
+
+        public static IEnumerable<ItSystemHierarchyNodeResponseDTO> MapSystemHierarchyToDtos(IEnumerable<ItSystem> hierarchy, Guid organizationUuid)
+        {
+            return hierarchy
+                .Select(x => new ItSystemHierarchyNodeResponseDTO
+                {
+                    Node = x.MapIdentityNamePairDTO(), 
+                    Parent = x.Parent?.MapIdentityNamePairDTO(),
+                    Deactivated = x.Disabled,
+                    IsInUse = x.Usages.Any(x => x.Organization.Uuid == organizationUuid)
                 })
                 .ToList();
         }

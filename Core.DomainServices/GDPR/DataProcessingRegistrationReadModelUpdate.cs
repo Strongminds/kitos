@@ -48,6 +48,15 @@ namespace Core.DomainServices.GDPR
             PatchContracts(source, destination);
             PatchActiveState(source, destination);
             PatchLastUpdateBy(source, destination);
+            PatchResponsibleOrganizationUnit(source, destination);
+        }
+
+        private static void PatchResponsibleOrganizationUnit(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
+        {
+            var responsibleUnit = source.ResponsibleOrganizationUnit;
+            destination.ResponsibleOrgUnitUuid = responsibleUnit?.Uuid;
+            destination.ResponsibleOrgUnitId = responsibleUnit?.Id;
+            destination.ResponsibleOrgUnitName = responsibleUnit?.Name;
         }
 
         private static void PatchBasicInformation(DataProcessingRegistration source,
@@ -65,6 +74,7 @@ namespace Core.DomainServices.GDPR
             PatchLatestOversightDate(source, destination);
             PatchIsOversightCompleted(source, destination);
             PatchOversightOptions(source, destination);
+            PatchLatestOversightRemark(source, destination);
         }
 
         private void PatchOversightOptions(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
@@ -93,7 +103,7 @@ namespace Core.DomainServices.GDPR
         private static void PatchDataProcessors(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
             destination.DataProcessorNamesAsCsv = string.Join(", ", source.DataProcessors.Select(x => x.Name));
-            destination.SubDataProcessorNamesAsCsv = string.Join(", ", source.AssignedSubDataProcessors.Select(x=>x.Organization).Select(x => x.Name));
+            destination.SubDataProcessorNamesAsCsv = string.Join(", ", source.AssignedSubDataProcessors.Select(x => x.Organization).Select(x => x.Name));
         }
 
         private static void PatchIsAgreementConcluded(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
@@ -213,15 +223,15 @@ namespace Core.DomainServices.GDPR
 
         private static void PatchLatestOversightDate(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
-            // Only show the lastes oversight date in the overview
-            if (source.OversightDates.Any())
-            {
-                destination.LatestOversightDate = source.OversightDates.OrderByDescending(x => x.OversightDate).Select(x => x.OversightDate).First();
-            }
-            else
-            {
-                destination.LatestOversightDate = null;
-            }
+            var latestOversight = source.GetLatestOversight();
+            destination.LatestOversightDate = latestOversight.HasValue ? latestOversight.Value.OversightDate : null;
+        }
+
+        private static void PatchLatestOversightRemark(DataProcessingRegistration source,
+            DataProcessingRegistrationReadModel destination)
+        {
+            var latestOversight = source.GetLatestOversight();
+            destination.LatestOversightRemark = latestOversight.Select(x => x.OversightRemark).GetValueOrDefault();
         }
 
         private static void PatchLastUpdateBy(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)

@@ -141,6 +141,7 @@
     <Compile Include="Queries\QueryByChangedSinceGtEq.cs" />
     <Compile Include="Queries\QueryByEnabledEntitiesOnly.cs" />
     <Compile Include="Queries\QueryByOrganizationUuid.cs" />
+    <Compile Include="Queries\QueryByPublicAccessOrOrganizationUuid.cs" />
     <Compile Include="Queries\QueryByUuid.cs" />
     <Compile Include="Queries\QueryExceptEntitiesWithUuids.cs" />
     <Compile Include="Queries\SystemUsage\QueryByRelationToSystem.cs" />
@@ -153,8 +154,10 @@
     <Compile Include="Queries\User\QueryByCrossOrganizationPermissions.cs" />
     <Compile Include="Queries\User\QueryByRoleAssignment.cs" />
     <Compile Include="Queries\ItSystem\QuerySystemByUsedInOrganizationUuid.cs" />
+    <Compile Include="Queries\User\QueryBySystemIntegrator.cs" />
     <Compile Include="Queries\User\QueryGlobalAdmin.cs" />
     <Compile Include="Queries\User\QueryUserByEmail.cs" />
+    <Compile Include="RaiseEntityUpdatedOnSnapshotEventsHandler.cs" />
     <Compile Include="Repositories\Contract\IItContractOverviewReadModelRepository.cs" />
     <Compile Include="Repositories\Contract\ItContractOverviewReadModelRepository.cs" />
     <Compile Include="Repositories\Kendo\IKendoOrganizationalConfigurationRepository.cs" />

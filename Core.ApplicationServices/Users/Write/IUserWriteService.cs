@@ -28,5 +28,9 @@ namespace Core.ApplicationServices.Users.Write
         Result<User, OperationError> AddLocalAdmin(Guid organizationUuid, Guid userUuid);
 
         Maybe<OperationError> RemoveLocalAdmin(Guid organizationUuid, Guid userUuid);
+
+        Result<User, OperationError> UpdateSystemIntegrator(Guid userUuid, bool systemIntegratorStatus);
+
+        void RequestPasswordReset(string email, bool newUi);
     }
 }

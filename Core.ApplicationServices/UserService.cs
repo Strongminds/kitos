@@ -24,6 +24,7 @@ using Core.DomainServices.Extensions;
 using Core.DomainServices.Queries;
 using Infrastructure.Services.DataAccess;
 using Core.DomainServices.Generic;
+using Core.DomainServices.Queries.User;
 
 
 namespace Core.ApplicationServices
@@ -50,7 +51,7 @@ namespace Core.ApplicationServices
         private readonly ICommandBus _commandBus;
         private readonly IEntityIdentityResolver _identityResolver;
         private static readonly RNGCryptoServiceProvider rngCsp = new();
-        private const string KitosManualsLink = "https://info.kitos.dk/s/qZPox9byHBRsMi2";
+        private const string KitosManualsLink = "https://info.kitos.dk/s/YeFJqK6D2f2CQCR";
 
         public UserService(TimeSpan ttl,
             string baseUrl,
@@ -96,7 +97,7 @@ namespace Core.ApplicationServices
             }
         }
 
-        public User AddUser(User user, bool sendMailOnCreation, int orgId)
+        public User AddUser(User user, bool sendMailOnCreation, int orgId, bool newUI)
         {
             // hash his salt and default password
             var utcNow = DateTime.UtcNow;
@@ -120,12 +121,12 @@ namespace Core.ApplicationServices
             _domainEvents.Raise(new EntityCreatedEvent<User>(savedUser));
 
             if (sendMailOnCreation)
-                IssueAdvisMail(savedUser, false, orgId);
+                IssueAdvisMail(savedUser, false, orgId, newUI);
 
             return savedUser;
         }
 
-        public void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId)
+        public void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId, bool newUI)
         {
             _userRepository.Update(user);
 
@@ -133,11 +134,11 @@ namespace Core.ApplicationServices
 
             if (sendMailOnUpdate.HasValue && sendMailOnUpdate.Value && scopedToOrganizationId.HasValue)
             {
-                IssueAdvisMail(user, false, scopedToOrganizationId.Value);
+                IssueAdvisMail(user, false, scopedToOrganizationId.Value, newUI);
             }
         }
 
-        public void IssueAdvisMail(User user, bool reminder, int orgId)
+        public void IssueAdvisMail(User user, bool reminder, int orgId, bool newUI)
         {
             if (user == null || _userRepository.GetByKey(user.Id) == null)
                 throw new ArgumentNullException(nameof(user));
@@ -145,7 +146,7 @@ namespace Core.ApplicationServices
             var org = _orgRepository.GetByKey(orgId);
 
             var reset = GenerateResetRequest(user);
-            var resetLink = _baseUrl + "#/reset-password/" + HttpUtility.UrlEncode(reset.Hash);
+            var resetLink = _baseUrl + GetUrlRoute(newUI) + HttpUtility.UrlEncode(reset.Hash);
 
             var subject = (reminder ? "Påmindelse: " : string.Empty) + "Oprettelse som ny bruger i KITOS " + _mailSuffix;
             var content = "<h2>Kære " + user.Name + "</h2>" +
@@ -165,7 +166,7 @@ namespace Core.ApplicationServices
             _userRepository.Save();
         }
 
-        public PasswordResetRequest IssuePasswordReset(User user, string subject, string content)
+        public PasswordResetRequest IssuePasswordReset(User user, string subject, string content, bool newUI = false)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -175,7 +176,7 @@ namespace Core.ApplicationServices
             if (content == null)
             {
                 reset = GenerateResetRequest(user);
-                var resetLink = _baseUrl + "#/reset-password/" + HttpUtility.UrlEncode(reset.Hash);
+                var resetLink = _baseUrl + GetUrlRoute(newUI) + HttpUtility.UrlEncode(reset.Hash);
                 mailContent = "<p>Du har bedt om at få nulstillet dit password.</p>" +
                               "<p><a href='" + resetLink +
                               "'>Klik her for at nulstille passwordet for din KITOS profil</a>.</p>" +
@@ -241,6 +242,24 @@ namespace Core.ApplicationServices
                 });
         }
 
+        public Result<User, OperationError> GetGlobalAdmin()
+        {
+            var globalAdmin = GetUsers(new QueryByGlobalAdmin()).FirstOrNone();
+            return globalAdmin.Match<Result<User, OperationError>>(user => user, () => new OperationError(OperationFailure.NotFound));
+        }
+
+        //Temporary solution for supporting links to both both the old and new UI. (27/11/2024)
+        private string GetUrlRoute(bool newUI)
+        {
+            if (newUI)
+            {
+                return "ui/reset-password/";
+            }
+            else
+            {
+                return "#/reset-password/";
+            }
+        }
 
         private PasswordResetRequest GenerateResetRequest(User user)
         {

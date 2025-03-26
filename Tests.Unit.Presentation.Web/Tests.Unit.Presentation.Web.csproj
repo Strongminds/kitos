@@ -297,6 +297,7 @@
     <Compile Include="Infrastructure\SimpleLinkNameMaxLengthAttributeTest.cs" />
     <Compile Include="Models\EntityWithDeactivatedStatusMapperTest.cs" />
     <Compile Include="Models\V2\CommandPermissionsResponseMapperTest.cs" />
+    <Compile Include="Models\V2\LegalPropertyWriteModelMapperTest.cs" />
     <Compile Include="Models\V2\Enums\BaseEnumMapperTest.cs" />
     <Compile Include="Models\V2\Enums\ItInterfaceDeletionConflictMappingExtensionsTest.cs" />
     <Compile Include="Models\V2\Enums\SystemDeletionConflictMappingExtensionsTest.cs" />
@@ -358,7 +359,7 @@
       <Name>Core.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj">
-      <Project>{f0986888-8f35-4559-8fba-428bc9ec9add}</Project>
+      <Project>{F0986888-8F35-4559-8FBA-428BC9EC9ADD}</Project>
       <Name>Core.ApplicationServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.DomainModel\Core.DomainModel.csproj">

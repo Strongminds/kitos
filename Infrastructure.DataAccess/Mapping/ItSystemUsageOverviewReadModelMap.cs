@@ -42,6 +42,9 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.ParentItSystemUuid).IsOptional();
 
+            Property(x => x.ParentItSystemUsageUuid).IsOptional()
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ParentItSystemUsageUuid", 0);
+
             Property(x => x.ParentItSystemName)
                 .HasMaxLength(ItSystem.MaxNameLength)
                 .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemParentName", 0);
@@ -73,6 +76,16 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.ItSystemRightsHolderName)
                 .HasMaxLength(Organization.MaxNameLength)
                 .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemBelongsToName", 0);
+
+            Property(x => x.ItSystemCategoriesUuid)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesUuid", 0);
+
+            Property(x => x.ItSystemCategoriesId)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesId", 0);
+
+            Property(x => x.ItSystemCategoriesName)
+                .HasMaxLength(Organization.MaxNameLength)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesName", 0);
 
             Property(x => x.LocalReferenceTitle)
                 .HasMaxLength(ItSystemUsageOverviewReadModel.MaxReferenceTitleLenght)
@@ -106,6 +119,13 @@ namespace Infrastructure.DataAccess.Mapping
                .IsOptional()
                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ArchiveDuty", 0);
 
+            Property(x => x.CatalogArchiveDuty)
+                .IsOptional()
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_CatalogArchiveDuty", 0);
+
+            Property(x => x.ContainsAITechnology)
+                .IsOptional();
+
             Property(x => x.IsHoldingDocument)
                 .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_IsHoldingDocument", 0);
 
@@ -123,6 +143,15 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.HostedAt)
                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_HostedAt", 0);
+
+            Property(x => x.UserCount)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_UserCount");
+
+            Property(x => x.DPIAConducted)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_DPIAConducted");
+
+            Property(x => x.IsBusinessCritical)
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_IsBusinessCritical");
 
             Property(x => x.ActiveAccordingToValidityPeriod)
                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_ActiveAccordingToValidityPeriod", 0);
@@ -153,6 +182,14 @@ namespace Infrastructure.DataAccess.Mapping
 
             Property(x => x.LastChangedAt)
                 .HasIndexAnnotation("IX_LastChangedAt");
+
+            Property(x => x.WebAccessibilityCompliance)
+                .IsOptional()
+                .HasIndexAnnotation("IX_WebAccessibilityCompliance");
+
+            Property(x => x.LastWebAccessibilityCheck)
+                .IsOptional()
+                .HasIndexAnnotation("IX_LastWebAccessibilityCheck");
 
             //No index bc we don't know how long it might be
             Property(x => x.ItSystemKLEIdsAsCsv).IsOptional();

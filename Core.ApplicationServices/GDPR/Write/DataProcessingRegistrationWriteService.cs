@@ -13,6 +13,7 @@ using Core.ApplicationServices.References;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.GDPR.Events;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
@@ -121,7 +122,7 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Select(ExtractAssignedRoles)
                 .Bind<DataProcessingRegistrationModificationParameters>(existingRoles =>
                 {
-                     if (!existingRoles.Contains(assignment))
+                    if (!existingRoles.Contains(assignment))
                     {
                         return new OperationError("Assignment does not exist", OperationFailure.BadInput);
                     }
@@ -134,12 +135,21 @@ namespace Core.ApplicationServices.GDPR.Write
         {
             using var transaction = _transactionManager.Begin();
 
-            var result = getDpr()
-                .Bind(systemUsage => PerformUpdates(systemUsage, parameters));
+            var dprResult = getDpr();
+
+            if (dprResult.Failed)
+            {
+                return dprResult.Error;
+            }
+
+            var dpr = dprResult.Value;
+            var snapshot = dpr.Snapshot();
+
+            var result = PerformUpdates(dpr, parameters);
 
             if (result.Ok)
             {
-                _domainEvents.Raise(new EntityUpdatedEvent<DataProcessingRegistration>(result.Value));
+                _domainEvents.Raise(new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(result.Value, snapshot.FromNullable()));
                 _databaseControl.SaveChanges();
                 transaction.Commit();
             }
@@ -185,7 +195,7 @@ namespace Core.ApplicationServices.GDPR.Write
                 return new OperationError($"Duplicates of 'User Role Pairs' are not allowed", OperationFailure.BadInput);
             }
 
-            var existingRightsList = dpr.Rights.Select(x => new UserRolePair(x.User.Uuid,x.Role.Uuid)).ToList();
+            var existingRightsList = dpr.Rights.Select(x => new UserRolePair(x.User.Uuid, x.Role.Uuid)).ToList();
 
             foreach (var (delta, item) in existingRightsList.ComputeDelta(newRightsList, x => x))
             {
@@ -286,7 +296,20 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Bind(r => r.WithOptionalUpdate(parameters.DataProcessorUuids, UpdateDataProcessors))
                 .Bind(r => r.WithOptionalUpdate(parameters.HasSubDataProcessors, (registration, newValue) => _applicationService.SetSubDataProcessorsState(registration.Id, newValue ?? YesNoUndecidedOption.Undecided)))
                 .Bind(r => r.WithOptionalUpdate(parameters.SubDataProcessors, UpdateSubDataProcessors))
-                .Bind(r => r.WithOptionalUpdate(parameters.MainContractUuid, UpdateMainContract));
+                .Bind(r => r.WithOptionalUpdate(parameters.MainContractUuid, UpdateMainContract))
+                .Bind(r => r.WithOptionalUpdate(parameters.ResponsibleUnitUuid, UpdateResponsibleUnit));
+        }
+
+        private Result<DataProcessingRegistration, OperationError> UpdateResponsibleUnit(DataProcessingRegistration dpr, Guid? orgUnitUuid)
+        {
+            if (orgUnitUuid == null)
+            {
+                dpr.ResetResponsibleOrganizationUnit();
+                return dpr;
+            }
+            var updateResult = dpr.SetResponsibleOrganizationUnit(orgUnitUuid.Value);
+            return updateResult.Match<Result<DataProcessingRegistration, OperationError>>(err => err, () => dpr);
+
         }
 
         private Result<DataProcessingRegistration, OperationError> UpdateSystemAssignments(DataProcessingRegistration dpr, IEnumerable<Guid> systemUsageUuids)
@@ -482,7 +505,7 @@ namespace Core.ApplicationServices.GDPR.Write
                 Roles = new UpdatedDataProcessingRegistrationRoles
                 {
                     UserRolePairs = existingRoles.FromNullable().AsChangedValue()
-                } 
+                }
             };
         }
     }

@@ -13,6 +13,7 @@ using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
+using Presentation.Web.Models.API.V2.Response.Generic.Hierarchy;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.KLE;
 using Presentation.Web.Models.API.V2.Response.Organization;
@@ -22,6 +23,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.System;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Internal.References;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
 using Xunit;
@@ -427,6 +429,31 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var response = await ItSystemV2Helper.GetHierarchyAsync(token, rootUuid);
 
             //Assert
+            AssertHierarchy(rootUuid, response, createdSystems);
+        }
+
+        [Fact]
+        public async Task Can_Get_Internal_Hierarchy()
+        {
+            //Arrange
+            var organization = await CreateOrganizationAsync();
+            var (rootUuid, createdSystems) = CreateHierarchy(organization.Id);
+            var firstSystem = createdSystems.First();
+            await ItSystemHelper.TakeIntoUseAsync(firstSystem.Id, organization.Id);
+
+
+            //Act
+            var response = await ItSystemV2Helper.GetInternalHierarchyAsync(organization.Uuid, rootUuid);
+
+            //Assert
+            var hierarchy = response.ToList();
+            AssertHierarchy(rootUuid, hierarchy, createdSystems);
+            var usedSystem = Assert.Single(hierarchy.Where(x => x.IsInUse));
+            Assert.Equal(firstSystem.Uuid, usedSystem.Node.Uuid);
+        }
+
+        private static void AssertHierarchy(Guid rootUuid, IEnumerable<RegistrationHierarchyNodeWithActivationStatusResponseDTO> response, IReadOnlyList<Core.DomainModel.ItSystem.ItSystem> createdSystems)
+        {
             var hierarchy = response.ToList();
             Assert.Equal(createdSystems.Count, hierarchy.Count);
 
@@ -850,16 +877,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(expected.Uuid, actual.Uuid);
         }
 
-        private IEnumerable<T> WithRandomMaster<T>(IEnumerable<T> references) where T : ExternalReferenceDataWriteRequestDTO
-        {
-            var orderedRandomly = references.OrderBy(x => A<int>()).ToList();
-            orderedRandomly.First().MasterReference = true;
-            foreach (var externalReferenceDataDto in orderedRandomly.Skip(1))
-                externalReferenceDataDto.MasterReference = false;
-
-            return orderedRandomly;
-        }
-
         private async Task<(
             CreateItSystemRequestDTO fullRequest,
             List<KLEDetailsDTO> kleChoices,
@@ -911,7 +928,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
         private List<ExternalReferenceDataWriteRequestDTO> CreateExternalReferences()
         {
-            return Many<ExternalReferenceDataWriteRequestDTO>().Transform(WithRandomMaster).ToList();
+            return Many<ExternalReferenceDataWriteRequestDTO>().Transform(ExternalReferenceTestHelper.WithRandomMaster).ToList();
         }
 
         private static async Task<IdentityNamePairResponseDTO> GetRandomBusinessType(OrganizationDTO organizationDto)
