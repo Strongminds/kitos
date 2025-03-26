@@ -4,6 +4,6 @@ namespace PubSub.Core.Services.Notifier
 {
     public interface ISubscriberNotifierService
     {
-        Task Notify(JsonElement message, string recipient);
+        Task Notify(JsonElement payload, string recipient);
     }
 }

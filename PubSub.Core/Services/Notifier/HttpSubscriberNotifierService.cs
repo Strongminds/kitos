@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using PubSub.Core.Models;
 using PubSub.Core.Services.CallbackAuthentication;
 
 namespace PubSub.Core.Services.Notifier
@@ -14,13 +15,13 @@ namespace PubSub.Core.Services.Notifier
             _httpClientFactory = httpClientFactory;
             _callbackAuthenticator = callbackAuthenticator;
         }
-        public async Task Notify(JsonElement message, string recipient)
+        public async Task Notify(JsonElement payload, string recipient)
         {
             using var httpClient = _httpClientFactory.CreateClient();
 
-            var payloadWrapper = new { Payload = message };
+            var publicationDto = new PublicationDTO(payload);
 
-            string jsonPayload = JsonSerializer.Serialize(payloadWrapper);
+            string jsonPayload = JsonSerializer.Serialize(publicationDto);
 
             var authentication = _callbackAuthenticator.GetAuthentication(jsonPayload);
             httpClient.DefaultRequestHeaders.Add("Signature-Header", authentication);
