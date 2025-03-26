@@ -18,7 +18,7 @@ namespace Tests.Unit.Core.ApplicationServices.KitosEvents
         public void Can_Map_Kitos_Events()
         {
             var eventBody = A<SystemNameChangeEventBodyModel>();
-            var expectedMessage = JsonConvert.SerializeObject(eventBody.ToKeyValuePairs());
+            var expectedMessage = JsonConvert.SerializeObject(eventBody);
             var expectedTopic = A<string>();
             var kitosEvent = new KitosEvent(eventBody, expectedTopic);
 

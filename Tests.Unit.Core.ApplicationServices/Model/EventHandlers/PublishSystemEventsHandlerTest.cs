@@ -40,7 +40,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var expectedBody = new SystemNameChangeEventBodyModel
         {
             SystemUuid = itSystem.Uuid,
-            SystemName = itSystem.Name.AsChangedValue(),
+            SystemName = itSystem.Name,
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
@@ -99,9 +99,9 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 
     private static bool EventsMatch(KitosEvent event1, KitosEvent event2)
     {
-        var kvp1 = event1.EventBody.ToKeyValuePairs();
-        var kvp2 = event2.EventBody.ToKeyValuePairs();
-        return event1.Topic == event2.Topic && DictionariesAreEqual(kvp1, kvp2);
+        var kvp1 = event1.EventBody;
+        var kvp2 = event2.EventBody;
+        return event1.Topic == event2.Topic && kvp1.Equals(kvp2);
     }
 
     private static bool DictionariesAreEqual(Dictionary<string, object> dict1, Dictionary<string, object> dict2)

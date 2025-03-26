@@ -73,8 +73,8 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         return new SystemDataProcessorChangeEventBodyModel
         {
             SystemUuid = usage.ItSystem.Uuid,
-            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
-            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).GetValueOrNull(),
+            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault()
         };
     }
 
@@ -103,7 +103,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         return new SystemNameChangeEventBodyModel
         {
             SystemUuid = systemAfter.Uuid,
-            SystemName = systemAfter.Name.AsChangedValue()
+            SystemName = systemAfter.Name
         };
     }
 }
