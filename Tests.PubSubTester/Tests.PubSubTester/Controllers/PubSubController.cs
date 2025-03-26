@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tests.PubSubTester.DTOs;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Tests.PubSubTester.Controllers
 {
@@ -33,7 +34,7 @@ namespace Tests.PubSubTester.Controllers
             logger.LogInformation($"callbackId: {id}, message: {message}");
 
             using var hmacsha256 = new HMACSHA256(Encoding.UTF8.GetBytes("local-no-secret"));
-            var hash = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(message.Payload.ToString()));
+            var hash = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
             var result = Convert.ToBase64String(hash);
 
             if (Request.Headers.TryGetValue("Signature-Header", out var signatureHeader))
