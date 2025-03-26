@@ -316,6 +316,11 @@ namespace Core.ApplicationServices.SystemUsage.Write
             var removedPersonalDataOptions = result.Value;
             _personalDataOptionsRepository.RemoveRange(removedPersonalDataOptions);
 
+            if (!systemUsage.SensitiveDataLevelExists(SensitiveDataLevel.SENSITIVEDATA))
+            {
+                UpdateSensitivePersonDataIds(systemUsage, new List<Guid>());
+            }
+
             return Maybe<OperationError>.None;
         }
 
