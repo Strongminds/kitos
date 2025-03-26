@@ -19,7 +19,7 @@ namespace PubSub.Test.Unit.Core
             connectionManager.Setup(_ => _.GetConnectionAsync()).ReturnsAsync(connection.Object);
             connection.Setup(_ => _.CreateChannelAsync(null, default)).ReturnsAsync(channel.Object);
 
-            var messageSerializer = new Mock<IMessageSerializer>();
+            var messageSerializer = new Mock<IPayloadSerializer>();
 
             var sut = new RabbitMQPublisherService(connectionManager.Object, messageSerializer.Object);
             var publication = A<Publication>();

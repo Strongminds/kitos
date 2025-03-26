@@ -28,12 +28,12 @@ namespace Tests.PubSubTester.Controllers
 
         [HttpPost]
         [Route("callback/{id}")]
-        public IActionResult Callback(string id, [FromBody] string message)
+        public IActionResult Callback(string id, [FromBody] ExpectedDTO message)
         {
             logger.LogInformation($"callbackId: {id}, message: {message}");
 
             using var hmacsha256 = new HMACSHA256(Encoding.UTF8.GetBytes("local-no-secret"));
-            var hash = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(message));
+            var hash = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(message.Payload.ToString()));
             var result = Convert.ToBase64String(hash);
 
             if (Request.Headers.TryGetValue("Signature-Header", out var signatureHeader))
@@ -71,4 +71,9 @@ namespace Tests.PubSubTester.Controllers
             return Ok(response);
         }
     }
+}
+
+public class ExpectedDTO
+{
+    public object Payload { get; set; }
 }
