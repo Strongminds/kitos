@@ -46,11 +46,11 @@ namespace PubSub.Core.Consumers
                 try
                 {
                     var body = eventArgs.Body.ToArray();
-                    var message = _payloadSerializer.Deserialize(body);
+                    var payload = _payloadSerializer.Deserialize(body);
 
                     foreach (var callbackUrl in _callbackUrls)
                     {
-                        await _subscriberNotifierService.Notify(message, callbackUrl.AbsoluteUri);
+                        await _subscriberNotifierService.Notify(payload, callbackUrl.AbsoluteUri);
                     }
                 }
                 catch (Exception ex)
