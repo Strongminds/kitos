@@ -29,7 +29,7 @@ namespace Tests.PubSubTester.Controllers
 
         [HttpPost]
         [Route("callback/{id}")]
-        public IActionResult Callback(string id, [FromBody] ExpectedDTO<object> message)
+        public IActionResult Callback(string id, [FromBody] MessageDTO<object> message)
         {
             logger.LogInformation($"callbackId: {id}, message: {message}");
 
