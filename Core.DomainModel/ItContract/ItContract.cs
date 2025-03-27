@@ -79,7 +79,7 @@ namespace Core.DomainModel.ItContract
                 }
             }
 
-            if (RequireValidParent && Parent != null && !Parent.IsActive)
+            if (RequireValidParent && Parent is { IsActive: false })
             {
                 errors.Add(ItContractValidationError.InvalidParentContract);
             }
