@@ -7,7 +7,6 @@ using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystem;
-using Core.DomainModel.ItSystem.DomainEvents;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 
