@@ -7,16 +7,15 @@ using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystem.DomainEvents;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 
 namespace Core.ApplicationServices.KitosEvents;
-
 public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>>, IDomainEventHandler<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>
 {
     private readonly IKitosEventPublisherService _eventPublisher;
     private const string QueueTopic = KitosQueueTopics.SystemChangedEventTopic;
-
     public PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher)
     {
         _eventPublisher = eventPublisher;
@@ -31,7 +30,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         var newEvent = new KitosEvent(changeEvent.Value, QueueTopic);
         _eventPublisher.PublishEvent(newEvent);
     }
-
     public void Handle(EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot> domainEvent)
     {
         var changeEvents = CalculateChangeEventsFromDprModel(domainEvent);
@@ -39,7 +37,6 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         {
             return;
         }
-
         foreach (var changeEvent in changeEvents.Value)
         {
             var newEvent = new KitosEvent(changeEvent, QueueTopic);
@@ -47,13 +44,13 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         }
     }
 
-    private static Maybe<IEnumerable<SystemDataProcessorChangeEventBodyModel>> CalculateChangeEventsFromDprModel(EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot> domainEvent)
+    private static Maybe<IEnumerable<SystemChangeEventBodyModel>> CalculateChangeEventsFromDprModel(EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot> domainEvent)
     {
         var snapshotMaybe = domainEvent.Snapshot;
         var dprAfter = domainEvent.Entity;
         if (snapshotMaybe.IsNone)
         {
-            return Maybe<IEnumerable<SystemDataProcessorChangeEventBodyModel>>.None;
+            return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
         }
 
         var snapshot = snapshotMaybe.Value;
@@ -61,20 +58,20 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
 
         if (snapshot.DataProcessorUuids.SetEquals(dataProcessorUuidsAfter))
         {
-            return Maybe<IEnumerable<SystemDataProcessorChangeEventBodyModel>>.None;
+            return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
         }
 
         return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable();
     }
 
-    private static SystemDataProcessorChangeEventBodyModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
+    private static SystemChangeEventBodyModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
     {
         var dataProcessor = GetDataProcessor(dpr, usage.ItSystem);
-        return new SystemDataProcessorChangeEventBodyModel
+        return new SystemChangeEventBodyModel
         {
             SystemUuid = usage.ItSystem.Uuid,
-            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).GetValueOrNull(),
-            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault()
+            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
+            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
         };
     }
 
@@ -84,26 +81,26 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         return dataProcessor.IsNone ? system.GetRightsHolder() : dataProcessor;
     }
 
-    private static Maybe<SystemNameChangeEventBodyModel> CalculateChangeEventFromSystemModel(EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot> changeEvent)
+    private static Maybe<SystemChangeEventBodyModel> CalculateChangeEventFromSystemModel(EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot> changeEvent)
     {
         var snapshotMaybe = changeEvent.Snapshot;
         var systemAfter = changeEvent.Entity;
         if (snapshotMaybe.IsNone)
         {
-            return Maybe<SystemNameChangeEventBodyModel>.None;
+            return Maybe<SystemChangeEventBodyModel>.None;
         }
 
         var snapshot = snapshotMaybe.Value;
 
         if (snapshot.Name.Equals(systemAfter.Name))
         {
-            return Maybe<SystemNameChangeEventBodyModel>.None;
+            return Maybe<SystemChangeEventBodyModel>.None;
         }
 
-        return new SystemNameChangeEventBodyModel
+        return new SystemChangeEventBodyModel
         {
             SystemUuid = systemAfter.Uuid,
-            SystemName = systemAfter.Name
+            SystemName = systemAfter.Name.AsChangedValue()
         };
     }
 }

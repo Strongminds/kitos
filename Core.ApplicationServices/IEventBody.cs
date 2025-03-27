@@ -1,6 +1,8 @@
-﻿namespace Core.ApplicationServices;
+﻿using System.Collections.Generic;
+
+namespace Core.ApplicationServices;
 
 public interface IEventBody
 {
-    string Type();
+    Dictionary<string, object> ToKeyValuePairs();
 }

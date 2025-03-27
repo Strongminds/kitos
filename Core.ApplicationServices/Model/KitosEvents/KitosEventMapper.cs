@@ -6,8 +6,8 @@ public class KitosEventMapper : IKitosEventMapper
 {
     public KitosEventDTO MapKitosEventToDTO(KitosEvent kitosEvent)
     {
-        var payload = kitosEvent.EventBody;
-        var topic = kitosEvent.Topic + kitosEvent.EventBody.Type();
+        var payload = kitosEvent.EventBody.ToKeyValuePairs();
+        var topic = kitosEvent.Topic;
         return new KitosEventDTO(payload, topic);
     }
 }

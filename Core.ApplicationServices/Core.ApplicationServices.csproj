@@ -221,8 +221,7 @@
     <Compile Include="Model\KitosEvents\KitosEvent.cs" />
     <Compile Include="Model\KitosEvents\KitosEventDTO.cs" />
     <Compile Include="Model\KitosEvents\KitosEventMapper.cs" />
-    <Compile Include="Model\KitosEvents\SystemDataProcessorChangeEventBodyModel.cs" />
-    <Compile Include="Model\KitosEvents\SystemNameChangeEventBodyModel.cs" />
+    <Compile Include="Model\KitosEvents\SystemChangeEventBodyModel.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />

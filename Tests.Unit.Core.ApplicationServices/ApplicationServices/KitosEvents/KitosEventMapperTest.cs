@@ -17,14 +17,14 @@ namespace Tests.Unit.Core.ApplicationServices.KitosEvents
         [Fact]
         public void Can_Map_Kitos_Events()
         {
-            var eventBody = A<SystemNameChangeEventBodyModel>();
+            var eventBody = A<SystemChangeEventBodyModel>();
             var expectedTopic = A<string>();
             var kitosEvent = new KitosEvent(eventBody, expectedTopic);
 
             var dto = _sut.MapKitosEventToDTO(kitosEvent);
 
             Assert.Equal(eventBody, dto.Payload);
-            Assert.Equal(expectedTopic + eventBody.Type(), dto.Topic);
+            Assert.Equal(expectedTopic, dto.Topic);
         }
     }
 }
