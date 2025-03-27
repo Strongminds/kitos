@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Moq;
+﻿using Moq;
 using Xunit;
 using Serilog;
 using Core.ApplicationServices.Model.KitosEvents;
@@ -28,7 +25,7 @@ namespace Tests.Unit.Core.ApplicationServices.KitosEvents
         [Fact]
         public void Can_Publish_Event()
         {
-            var testEvent = new KitosEvent(A<SystemNameChangeEventBodyModel>(), A<string>());
+            var testEvent = new KitosEvent(A<SystemChangeEventBodyModel>(), A<string>());
             var testDto = A<KitosEventDTO>();
             _kitosEventMapperMock
                 .Setup(m => m.MapKitosEventToDTO(testEvent))
