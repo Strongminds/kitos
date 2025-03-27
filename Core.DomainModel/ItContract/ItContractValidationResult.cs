@@ -14,7 +14,7 @@ namespace Core.DomainModel.ItContract
 
         {
             var errors = validationErrors.ToList();
-            var contractResult = requireValidParent ? parentIsValid : errors.Any();
+            var contractResult = requireValidParent ? parentIsValid : errors.Any() == false;
             ValidationErrors = errors;
             Result = enforcedValid || contractResult;
             EnforcedValid = enforcedValid;
