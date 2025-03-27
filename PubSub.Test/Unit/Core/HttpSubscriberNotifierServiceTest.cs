@@ -3,7 +3,6 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Text.Json;
-using Newtonsoft.Json;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Core.Services.CallbackAuthentication;
 using JsonSerializer = System.Text.Json.JsonSerializer;
