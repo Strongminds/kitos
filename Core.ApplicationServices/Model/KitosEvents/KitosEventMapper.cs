@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Core.ApplicationServices.Model.KitosEvents;
+﻿namespace Core.ApplicationServices.Model.KitosEvents;
 
 public class KitosEventMapper : IKitosEventMapper
 {
