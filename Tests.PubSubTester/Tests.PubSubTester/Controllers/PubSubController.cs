@@ -55,15 +55,8 @@ namespace Tests.PubSubTester.Controllers
         }
 
         [HttpPost]
-        [Route("dataProcessorChange")]
-        public IActionResult Callback([FromBody] ExpectedDTO<DataProcessorChangeDTO> dto)
-        {
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("nameChange")]
-        public IActionResult Callback([FromBody] ExpectedDTO<NameChangeDTO> dto)
+        [Route("systemChange")]
+        public IActionResult Callback([FromBody] MessageDTO<SystemChangeDTO> dto)
         {
             return Ok();
         }
@@ -88,20 +81,15 @@ namespace Tests.PubSubTester.Controllers
     }
 }
 
-public class ExpectedDTO<T>
+public class MessageDTO<T>
 {
     public T Payload { get; set; }
 }
 
-public class DataProcessorChangeDTO
-{
-    public Guid SystemUuid { get; set; }
-    public Guid? DataProcessorUuid { get; set; }
-    public string? DataProcessorName { get; set; }
-}
-
-public class NameChangeDTO
+public class SystemChangeDTO
 {
     public Guid SystemUuid { get; set; }
     public string SystemName { get; set; }
+    public Guid? DataProcessorUuid { get; set; }
+    public string? DataProcessorName { get; set; }
 }
