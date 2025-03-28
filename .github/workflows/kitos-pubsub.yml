@@ -73,7 +73,7 @@ jobs:
       - name: Connect to VPN
         run: |
           sudo apt-get update && sudo apt-get install -y openconnect
-          echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect --protocol=anyconnect --user=${{ secrets.VPN_USERNAME }} --useragent="Cisco AnyConnect Secure Mobility Client/4.10.01043" --passwd-on-stdin "https://vpn.kitos.dk/test/" & sleep 15
+          echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect --protocol=anyconnect --user=${{ secrets.VPN_USERNAME }} --useragent="Cisco AnyConnect Secure Mobility Client/5.1.8.122" --passwd-on-stdin "https://vpn.kitos.dk/test/" & sleep 15
 
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@v0.1.7
