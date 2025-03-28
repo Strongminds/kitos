@@ -110,3 +110,7 @@ jobs:
           script: |
             cd ${{ env.SERVER_APP_ROOT_FOLDER }}
             sudo sh run_in_docker_compose.sh ${{ github.event.inputs.environment }} ${{ secrets.RABBIT_MQ_USERNAME }} ${{ secrets.RABBIT_MQ_PASSWORD }} ${{ secrets.PUBSUB_API_KEY }} ${{ secrets.IDP_HOST_MAPPING }} ${{ env.DOCKER_USERNAME }}
+
+      - name: Disconnect VPN
+        run: sudo pkill openconnect
+
