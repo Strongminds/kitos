@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to deploy to'
+        description: "Environment to deploy to"
         required: true
         type: choice
-        default: 'Staging'
+        default: "Staging"
         options:
-          - 'Development'
-          - 'Staging'
-          - 'Production'
+          - "Development"
+          - "Staging"
+          - "Production"
 
 env:
   DOCKER_REPO: kitos-pubsub
@@ -30,18 +30,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Run unit tests
         working-directory: ${{ env.PROJECT_TEST_FOLDER }}
         run: dotnet test --logger trx --results-directory TestResults
-      
+
       - name: Upload unit test results
         uses: actions/upload-artifact@v4
         with:
           name: kitos-pubsub-unit-test-results
           path: ${{ env.PROJECT_TEST_FOLDER }}/TestResults
           retention-days: 7
-    
+
   build-and-push-docker-image:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
@@ -94,10 +94,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "${{ env.PROJECT_APP_FOLDER }}/${{ env.PROJECT_DEPLOYMENT_SUB_FOLDER }}/run_in_docker_compose.sh"
           target: ${{ env.SERVER_APP_ROOT_FOLDER }}
-      
+
       - name: Adapt formatting of the run script to a Linux environment
         working-directory: ${{ env.PROJECT_APP_FOLDER }}/${{ env.PROJECT_DEPLOYMENT_SUB_FOLDER }}
-        run: | 
+        run: |
           sed -i '1s/^\xef\xbb\xbf//' run_in_docker_compose.sh 
           sed -i 's/\r$//' run_in_docker_compose.sh
 
@@ -113,4 +113,3 @@ jobs:
 
       - name: Disconnect VPN
         run: sudo pkill openconnect
-
