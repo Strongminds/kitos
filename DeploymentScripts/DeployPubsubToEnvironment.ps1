@@ -5,7 +5,7 @@ param (
 Write-Host "Deploying PubSub to environment: $targetEnvironment"
 
 # Configure
-$keyPath = "$env:USERPROFILE\.ssh\id_rsa"
+$keyPath = "C:\TeamCity\buildAgent\ssh\id_rsa"
 $composeFile = Join-Path $PSScriptRoot "..\PubSub.Application\docker-compose.yml"
 if (-Not (Test-Path $composeFile)) {
     Write-Error "Compose file not found at: $composeFile"
