@@ -6,7 +6,11 @@ Write-Host "Deploying PubSub to environment: $targetEnvironment"
 
 # Configure
 $keyPath = "$env:USERPROFILE\.ssh\id_rsa"
-$composeFile = "PubSub.Application/docker-compose.yml"
+$composeFile = Join-Path $PSScriptRoot "..\PubSub.Application\docker-compose.yml"
+if (-Not (Test-Path $composeFile)) {
+    Write-Error "Compose file not found at: $composeFile"
+    exit 1
+}
 $remoteUser = "kitosadmintest"
 $remoteHost = "10.212.74.11"
 $remotePath = "/home/kitosadmintest/app"
