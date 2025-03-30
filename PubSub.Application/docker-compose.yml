@@ -1,17 +1,17 @@
-﻿version: '3.8'
+﻿version: '2.2'
 
 services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: $(RABBIT_MQ_USER)
-      RABBITMQ_DEFAULT_PASS: $(RABBIT_MQ_PASSWORD)
+      RABBITMQ_DEFAULT_USER: ${RABBIT_MQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_MQ_PASSWORD}
     networks:
       - app_network
 
   api:
-    image: kitos-pubsub
+    image: ${DOCKER_USERNAME}/kitos-pubsub:latest
     container_name: kitos-pubsub
     depends_on:
       - rabbitmq

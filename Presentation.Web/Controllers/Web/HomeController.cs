@@ -4,6 +4,7 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.SSO.Model;
 using Core.DomainServices;
+using Presentation.Web.Controllers.Web.Old;
 using Presentation.Web.Models.Application.FeatureToggle;
 using Presentation.Web.Models.Application.RuntimeEnv;
 
@@ -33,7 +34,7 @@ namespace Presentation.Web.Controllers.Web
             AppendFeatureToggles();
             AppendSsoLoginInformation();
 
-            return View();
+            return Redirect("/ui");
         }
 
         private void AppendSsoLoginInformation()
@@ -74,7 +75,7 @@ namespace Presentation.Web.Controllers.Web
                 PushTempVariable(ssoErrorCode, SsoErrorKey);
             }
 
-            return RedirectToAction(nameof(Index));
+            return Redirect("/old");
         }
 
         public ActionResult WithFeature(TemporaryFeature? feature)
@@ -82,14 +83,14 @@ namespace Presentation.Web.Controllers.Web
             if (feature.HasValue)
                 PushTempVariable(feature, FeatureToggleKey);
 
-            return RedirectToAction(nameof(Index));
+            return Redirect("/old");
         }
 
         public ActionResult SsoAuthenticated()
         {
             PushTempVariable(true, SsoAuthenticationCompletedKey);
 
-            return RedirectToAction(nameof(Index));
+            return Redirect("/old");
         }
 
         private void PushTempVariable<T>(T value, string key)
