@@ -6,7 +6,7 @@ Write-Host "Deploying PubSub to environment: $targetEnvironment"
 
 # Configure
 $keyPath = "$env:USERPROFILE\.ssh\id_rsa"
-$composeFile = "docker-compose.yml"
+$composeFile = "PubSub.Application/docker-compose.yml"
 $remoteUser = "kitosadmintest"
 $remoteHost = "10.212.74.11"
 $remotePath = "/home/kitosadmintest/app"
