@@ -18,7 +18,7 @@ $remoteTarget = "${remoteUser}@${remoteHost}:${remotePath}"
 
 # Copy compose-file
 Write-Host "Copying $composeFile to $remoteTarget"
-Get-Content -Path $composeFile -Raw | ssh -i $keyPath $remoteUser@$remoteHost "cat > $remotePath/docker-compose.yml"
+Get-Content -Path $composeFile -Raw | ssh -i $keyPath "$remoteUser@$remoteHost" "cat > $remotePath/docker-compose.yml"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "SCP failed with exit code $LASTEXITCODE"
