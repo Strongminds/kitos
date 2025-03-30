@@ -16,16 +16,9 @@ $remoteHost = "10.212.74.11"
 $remotePath = "/home/kitosadmintest/app"
 $remoteTarget = "${remoteUser}@${remoteHost}:${remotePath}"
 
-# Copy compose-file via SCP
+# Copy compose-file
 Write-Host "Copying $composeFile to $remoteTarget"
-scp `
-    -i $keyPath `
-    -o ConnectTimeout=10 `
-    -o ServerAliveInterval=15 `
-    -o ServerAliveCountMax=2 `
-    -o StrictHostKeyChecking=no `
-    -o UserKnownHostsFile=/dev/null `
-    $composeFile $remoteTarget
+Get-Content -Path $composeFile -Raw | ssh -i $keyPath $remoteUser@$remoteHost "cat > $remotePath/docker-compose.yml"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "SCP failed with exit code $LASTEXITCODE"
