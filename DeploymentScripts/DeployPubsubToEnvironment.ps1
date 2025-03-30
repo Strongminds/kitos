@@ -18,7 +18,8 @@ $remoteTarget = "${remoteUser}@${remoteHost}:${remotePath}"
 
 # Copy compose-file via SCP
 Write-Host "Copying $composeFile to $remoteTarget"
-scp -i $keyPath $composeFile $remoteTarget
+scp -i $keyPath -o ConnectTimeout=10 $composeFile $remoteTarget
+
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "SCP failed with exit code $LASTEXITCODE"
