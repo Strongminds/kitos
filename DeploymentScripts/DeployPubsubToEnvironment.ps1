@@ -19,7 +19,7 @@ $remoteTarget = "${remoteUser}@${remoteHost}:${remotePath}"
 # Copy compose-file
 Write-Host "Copying $composeFile to $remoteTarget"
 Get-Content -Path $composeFile -Raw | ssh -i $keyPath `
-    -o Compression=no -o IPQoS=throughput `
+    -o Compression=no -o IPQoS=throughput -o StrictHostKeyChecking=accept-new `
     "$remoteUser@$remoteHost" "cat > $remotePath/docker-compose.yml"
 
 if ($LASTEXITCODE -ne 0) {
