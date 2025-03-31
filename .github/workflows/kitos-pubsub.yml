@@ -70,10 +70,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Connect to VPN
+      - name: Install OpenVPN
         run: |
-          sudo apt-get update && sudo apt-get install -y openconnect
-          echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect --protocol=anyconnect --user=${{ secrets.VPN_USERNAME }} --useragent="Cisco Secure Client/5.1.8.122" --passwd-on-stdin "https://vpn.kitos.dk/test/" & sleep 15
+          sudo apt update
+          sudo apt install -y openvpn openvpn-systemd-resolved
+
+      - name: Connect to VPN
+        uses: "kota65535/github-openvpn-connect-action@v2"
+        with:
+          config_file: .github/workflows/client.ovpn
+          username: ${{ secrets.VPN_PASSWORD }}
+          password: ${{ secrets.VPN_USERNAME }}
 
       - name: Copy docker-compose to server
         uses: appleboy/scp-action@v0.1.7
