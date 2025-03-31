@@ -11,7 +11,7 @@ services:
       - app_network
 
   api:
-    image: ${DOCKER_USERNAME}/kitos-pubsub:latest
+    image: strongminds/kitos-pubsub:${IMAGE_TAG}
     container_name: kitos-pubsub
     depends_on:
       - rabbitmq
