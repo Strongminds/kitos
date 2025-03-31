@@ -74,5 +74,20 @@
     <Setting Name="PubSubBaseUrl" Type="System.String" Scope="Application">
       <Value Profile="(Default)">https://localhost:7226/</Value>
     </Setting>
+    <Setting Name="RabbitMqUser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">user</Value>
+    </Setting>
+    <Setting Name="RabbitMqPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">pw</Value>
+    </Setting>
+    <Setting Name="PubSubApiKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">local-no-secret</Value>
+    </Setting>
+    <Setting Name="DockerUsername" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">user</Value>
+    </Setting>
+    <Setting Name="DockerPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">local-no-secret</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

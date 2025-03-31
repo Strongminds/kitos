@@ -241,5 +241,50 @@ namespace Presentation.Web.Properties {
                 return ((string)(this["PubSubBaseUrl"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("user")]
+        public string RabbitMqUser {
+            get {
+                return ((string)(this["RabbitMqUser"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("pw")]
+        public string RabbitMqPassword {
+            get {
+                return ((string)(this["RabbitMqPassword"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("local-no-secret")]
+        public string PubSubApiKey {
+            get {
+                return ((string)(this["PubSubApiKey"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("user")]
+        public string DockerUsername {
+            get {
+                return ((string)(this["DockerUsername"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("local-no-secret")]
+        public string DockerPassword {
+            get {
+                return ((string)(this["DockerPassword"]));
+            }
+        }
     }
 }
