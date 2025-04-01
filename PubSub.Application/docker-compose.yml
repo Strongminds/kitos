@@ -22,7 +22,6 @@ services:
       PUBSUB_API_KEY: ${PUBSUB_API_KEY}
     ports:
       - "443:8080"
-      - "443:8081"
     networks:
       - app_network
     extra_hosts:
