@@ -66,10 +66,15 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-# Run docker-compose on the remote host
-Write-Host "Running docker-compose on remote host..."
-$sshCommand = "cd $remotePath && docker-compose pull && docker-compose up -d"
-ssh -i $keyPath "${remoteUser}@${remoteHost}" $sshCommand
+# Cleanup previous containers using docker-compose down and deploy new ones
+Write-Host "Cleaning up old containers and deploying with docker-compose..."
+$sshCommand = @"
+cd $remotePath;
+docker-compose down || true;
+docker-compose pull;
+docker-compose up -d --remove-orphans;
+docker image prune -f;
+"@
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "SSH command failed with exit code $LASTEXITCODE"
