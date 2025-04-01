@@ -15,6 +15,8 @@ services:
     container_name: kitos-pubsub
     depends_on:
       - rabbitmq
+    volumes:
+      - /etc/ssl/certs/kitos-staging.pem:/etc/ssl/certs/kitos-staging.pem:ro 
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       RABBIT_MQ_USER: ${RABBIT_MQ_USER}

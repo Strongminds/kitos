@@ -19,6 +19,17 @@ builder.Configuration
     .AddJsonFile($"appsettings.{environment}.json")
     .AddEnvironmentVariables();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(443, listenOptions =>
+    {
+        // Retrieve the HTTPS password from an environment variable
+        var pfxPassword = Environment.GetEnvironmentVariable("HTTPS_PFX_PASSWORD") ?? "your-password";
+        listenOptions.UseHttps("/etc/ssl/certs/kitos-staging.pem", pfxPassword);
+    });
+});
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
