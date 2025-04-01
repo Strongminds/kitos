@@ -3,12 +3,12 @@ using System.Web.SessionState;
 
 namespace Presentation.Web.Controllers.Web
 {
-    [SessionState(SessionStateBehavior.Required)]
+    /*[SessionState(SessionStateBehavior.Required)]
     public class HomeController : Controller
     {
         public ActionResult Index()
         {
             return Redirect("/");
         }
-    }
+    }*/
 }
