@@ -8,7 +8,7 @@ namespace Presentation.Web.Controllers.Web
     {
         public ActionResult Index()
         {
-            return Redirect("/ui");
+            return Redirect("/");
         }
     }
 }
