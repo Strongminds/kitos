@@ -14,8 +14,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeploymentScripts", "DeploymentScripts", "{BD718C5F-DE87-40E1-AA4E-0A4F76D8AE10}"
 	ProjectSection(SolutionItems) = preProject
 		DeploymentScripts\DeployPubsubToEnvironment.ps1 = DeploymentScripts\DeployPubsubToEnvironment.ps1
-		LoginDocker.ps1 = LoginDocker.ps1
-		SetupPubsubEnviroment.ps1 = SetupPubsubEnviroment.ps1
+		DeploymentScripts\LoginDocker.ps1 = DeploymentScripts\LoginDocker.ps1
+		DeploymentScripts\SetupPubsubEnviroment.ps1 = DeploymentScripts\SetupPubsubEnviroment.ps1
 	EndProjectSection
 EndProject
 Global

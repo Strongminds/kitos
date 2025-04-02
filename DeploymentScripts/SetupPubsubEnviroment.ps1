@@ -1,4 +1,4 @@
-.$PSScriptRoot\..\..\deploymentscripts\AwsApi.ps1
+.$PSScriptRoot\AwsApi.ps1
 
 Function Load-Environment-Secrets-From-Aws([String] $envName) {
 	$parameters = Get-SSM-Parameters -environmentName "$envName"
