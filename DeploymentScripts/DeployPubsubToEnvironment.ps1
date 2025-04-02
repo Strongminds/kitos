@@ -1,5 +1,3 @@
-.$PSScriptRoot\SetupPubsubEnviroment.ps1
-
 param (
     [Parameter(Mandatory = $true)]
     [string]$targetEnvironment,
@@ -7,6 +5,8 @@ param (
     [Parameter(Mandatory = $true)]
     [string]$ASPNETCORE_ENVIRONMENT
 )
+
+.$PSScriptRoot\SetupPubsubEnviroment.ps1
 
 # Load environment secrets from AWS for the specified target environment
 Write-Host "Loading environment secrets for $targetEnvironment..."
