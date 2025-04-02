@@ -1,6 +1,7 @@
 .$PSScriptRoot\AwsApi.ps1
 
-Function Load-Environment-Secrets-From-Aws([String] $envName) {
+Function Load-Pubsub-Parameters([String] $envName) {
+    Configure-Aws -accessKeyId "$Env:AwsAccessKeyId" -secretAccessKey "$Env:AwsSecretAccessKey"
 	$parameters = Get-SSM-Parameters -environmentName "$envName"
 
     if($parameters.Count -eq 0) {
