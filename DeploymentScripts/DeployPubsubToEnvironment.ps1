@@ -40,13 +40,14 @@ if ($LASTEXITCODE -ne 0) {
 # Generate the .env file content with the passed variables and AWS loaded secrets
 $envContent = @"
 ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
-RABBIT_MQ_USER=$RABBIT_MQ_USER
-RABBIT_MQ_PASSWORD=$RABBIT_MQ_PASSWORD
-PUBSUB_API_KEY=$PUBSUB_API_KEY
-IDP_HOST_MAPPING=$IDP_HOST_MAPPING
-CERT_PASSWORD=$CERT_PASSWORD
+RABBIT_MQ_USER=$Env:RABBIT_MQ_USER
+RABBIT_MQ_PASSWORD=$Env:RABBIT_MQ_PASSWORD
+PUBSUB_API_KEY=$Env:PUBSUB_API_KEY
+IDP_HOST_MAPPING=$Env:IDP_HOST_MAPPING
+CERT_PASSWORD=$Env:CERT_PASSWORD
 "@
 
+Write-Host "Debug: RabbitMqUsername $Env:RABBIT_MQ_USER"
 # Copy the .env file to the remote host
 Write-Host "Copying .env file to remote host..."
 $envContent | ssh -i $keyPath `
