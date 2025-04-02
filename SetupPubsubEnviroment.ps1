@@ -7,9 +7,9 @@ Function Load-Enviroment-Secrets-From-Aws([String] $envName) {
         throw "No parameters found for environment $envName"
     }
 
-    $Env:RABBIT_MQ_USER         = $parameters["RABBIT_MQ_USER"]
-    $Env:RABBIT_MQ_PASSWORD     = $parameters["RABBIT_MQ_PASSWORD"]
-    $Env:PUBSUB_API_KEY         = $parameters["PUBSUB_API_KEY"]
-    $Env:CERT_PASSWORD          = $parameters["CERT_PASSWORD"]
-    $Env:IDP_HOST_MAPPING       = $parameters["IDP_HOST_MAPPING"]
+    $Env:RABBIT_MQ_USER         = $parameters["RabbitMqUsername"]
+    $Env:RABBIT_MQ_PASSWORD     = $parameters["RabbitMqPassword"]
+    $Env:PUBSUB_API_KEY         = $parameters["PubSubApiKey"]
+    $Env:CERT_PASSWORD          = $parameters["CertPassword"]
+    $Env:IDP_HOST_MAPPING       = $parameters["IdpHostMapping"]
 }
