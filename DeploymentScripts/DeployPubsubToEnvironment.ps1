@@ -1,25 +1,16 @@
-param (
-    [string]$targetEnvironment = "staging",
+.$PSScriptRoot\SetupPubsubEnviroment.ps1
 
-    # Environment variables for docker-compose
+param (
     [Parameter(Mandatory = $true)]
-    [string]$ASPNETCORE_ENVIRONMENT,
-    
+    [string]$targetEnvironment,
+
     [Parameter(Mandatory = $true)]
-    [string]$RABBIT_MQ_USER,
-    
-    [Parameter(Mandatory = $true)]
-    [string]$RABBIT_MQ_PASSWORD,
-    
-    [Parameter(Mandatory = $true)]
-    [string]$PUBSUB_API_KEY,
-    
-    [Parameter(Mandatory = $true)]
-    [string]$IDP_HOST_MAPPING,
-    
-    [Parameter(Mandatory = $true)]
-    [string]$IMAGE_TAG
+    [string]$ASPNETCORE_ENVIRONMENT
 )
+
+# Load environment secrets from AWS for the specified target environment
+Write-Host "Loading environment secrets for $targetEnvironment..."
+Load-Enviroment-Secrets-From-Aws -envName $targetEnvironment
 
 Write-Host "Deploying PubSub to environment: $targetEnvironment"
 
@@ -46,14 +37,14 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-# Generate the .env file content with the passed variables
+# Generate the .env file content with the passed variables and AWS loaded secrets
 $envContent = @"
 ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
 RABBIT_MQ_USER=$RABBIT_MQ_USER
 RABBIT_MQ_PASSWORD=$RABBIT_MQ_PASSWORD
 PUBSUB_API_KEY=$PUBSUB_API_KEY
 IDP_HOST_MAPPING=$IDP_HOST_MAPPING
-IMAGE_TAG=$IMAGE_TAG
+CERT_PASSWORD=$CERT_PASSWORD
 "@
 
 # Copy the .env file to the remote host
