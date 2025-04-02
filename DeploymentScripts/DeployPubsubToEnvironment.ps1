@@ -10,7 +10,7 @@ param (
 
 # Load environment secrets from AWS for the specified target environment
 Write-Host "Loading environment secrets for $targetEnvironment..."
-Load-Enviroment-Secrets-From-Aws -envName $targetEnvironment
+Load-Environment-Secrets-From-Aws -envName $targetEnvironment
 
 Write-Host "Deploying PubSub to environment: $targetEnvironment"
 
