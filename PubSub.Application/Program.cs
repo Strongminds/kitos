@@ -23,9 +23,8 @@ builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(443, listenOptions =>
     {
-        // Retrieve the HTTPS password from an environment variable
-        var pfxPassword = Environment.GetEnvironmentVariable("HTTPS_PFX_PASSWORD") ?? "your-password";
-        listenOptions.UseHttps("/etc/ssl/certs/kitos-staging.pem", pfxPassword);
+        var certPassword = Environment.GetEnvironmentVariable(Constants.Config.Certificate.CertPassword);
+        listenOptions.UseHttps("/etc/ssl/certs/kitos-staging.pem", certPassword);
     });
 });
 

@@ -22,6 +22,7 @@ services:
       RABBIT_MQ_USER: ${RABBIT_MQ_USER}
       RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
       PUBSUB_API_KEY: ${PUBSUB_API_KEY}
+      CERT_PASSWORD: ${CERT_PASSWORD}
     ports:
       - "443:8080"
     networks:
