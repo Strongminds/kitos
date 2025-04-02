@@ -47,7 +47,6 @@ IDP_HOST_MAPPING=$Env:IDP_HOST_MAPPING
 CERT_PASSWORD=$Env:CERT_PASSWORD
 "@
 
-Write-Host "Debug: RabbitMqUsername $Env:RABBIT_MQ_USER"
 # Copy the .env file to the remote host
 Write-Host "Copying .env file to remote host..."
 $envContent | ssh -i $keyPath `
