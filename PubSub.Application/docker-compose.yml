@@ -16,7 +16,7 @@ services:
     depends_on:
       - rabbitmq
     volumes:
-      - /etc/ssl/certs/kitos-staging.pem:/etc/ssl/certs/kitos-staging.pem:ro 
+      - /etc/ssl/certs/kitos-pubsub.pfx:/etc/ssl/certs/kitos-pubsub.pfx:ro 
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       RABBIT_MQ_USER: ${RABBIT_MQ_USER}
