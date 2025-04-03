@@ -66,6 +66,9 @@ docker-compose up -d --remove-orphans;
 docker image prune -f;
 "@
 
+# Remove any carriage return characters
+$sshCommand = $sshCommand -replace "\r", ""
+
 $sshCommand | ssh -i $keyPath `
     -o Compression=no -o IPQoS=throughput -o StrictHostKeyChecking=accept-new `
     "$remoteUser@$remoteHost" "bash -s"
