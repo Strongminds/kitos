@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 
 namespace Infrastructure.Services.Http;
@@ -20,8 +21,12 @@ public class KitosHttpClient : IKitosHttpClient
 
     public async Task<HttpResponseMessage> PostAsync(object content, Uri uri, string token)
     {
+        var settings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
 
-        var serializedObject = JsonConvert.SerializeObject(content);
+        var serializedObject = JsonConvert.SerializeObject(content, settings);
         var payload = new StringContent(serializedObject, Encoding.UTF8, "application/json");
 
         var request = new HttpRequestMessage(HttpMethod.Post, uri)
