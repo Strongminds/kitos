@@ -47,9 +47,6 @@ IDP_HOST_MAPPING=$Env:IDP_HOST_MAPPING
 CERT_PASSWORD=$Env:CERT_PASSWORD
 "@
 
-# Remove any carriage return characters
-$envContent = $envContent -replace "\r", ""
-
 # Copy the .env file to the remote host
 Write-Host "Copying .env file to remote host..."
 $envContent | ssh -i $keyPath `
@@ -68,9 +65,6 @@ docker-compose pull;
 docker-compose up -d --remove-orphans;
 docker image prune -f;
 "@
-
-# Remove any carriage return characters
-$sshCommand = $sshCommand -replace "\r", ""
 
 $sshCommand | ssh -i $keyPath `
     -o Compression=no -o IPQoS=throughput -o StrictHostKeyChecking=accept-new `
