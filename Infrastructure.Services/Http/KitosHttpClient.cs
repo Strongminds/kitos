@@ -36,7 +36,7 @@ public class KitosHttpClient : IKitosHttpClient
         }
         catch (Exception e)
         {
-            _logger.Fatal($"Failed to send to {request.RequestUri}, payload: {serializedObject}, exception: {e}");
+            _logger.Warning($"Failed to send to {request.RequestUri}, payload: {serializedObject}, exception: {e}");
             throw e;
         }
 
