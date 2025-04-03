@@ -68,7 +68,8 @@ docker image prune -f;
 
 $sshCommand | ssh -i $keyPath `
     -o Compression=no -o IPQoS=throughput -o StrictHostKeyChecking=accept-new `
-    "$remoteUser@$remoteHost" "bash -s"
+    "$remoteUser@$remoteHost" "tr -d '\r' | bash -s"
+
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "SSH command failed with exit code $LASTEXITCODE"
