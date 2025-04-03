@@ -36,6 +36,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.IncludeErrorDetails = true;
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Constants.Config.Validation.CanPublishPolicy, policy =>
+        policy.RequireClaim("CanPublish", "true"));
+});
+
+
 var pubSubApiKey = builder.Configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey) ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
 var callbackAuthenticatorConfig = new CallbackAuthenticatorConfig() { ApiKey = pubSubApiKey };
 
