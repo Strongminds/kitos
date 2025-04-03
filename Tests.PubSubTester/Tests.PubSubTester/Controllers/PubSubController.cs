@@ -13,7 +13,7 @@ namespace Tests.PubSubTester.Controllers
     {
         //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
         //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
-        private static readonly string PubSubApiUrl = "https://185.150.74.157/";
+        private static readonly string PubSubApiUrl = "https://localhost:7226";
 
         [HttpPost]
         [Route("subscribe")]
@@ -22,7 +22,6 @@ namespace Tests.PubSubTester.Controllers
             var client = CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request.Subscription), Encoding.UTF8, "application/json");
-            logger.LogInformation($"Sending subscribe request to ${client.BaseAddress}");
             var response = await client.PostAsync("api/subscribe", content);
 
             return Ok(response);
