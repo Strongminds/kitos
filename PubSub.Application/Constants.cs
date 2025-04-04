@@ -29,6 +29,11 @@
             {
                 public const string PubSubApiKey = "PUBSUB_API_KEY";
             }
+
+            public class Certificate
+            {
+                public const string CertPassword = "CERT_PASSWORD";
+            }
         }
     }
 }
