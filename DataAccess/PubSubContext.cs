@@ -8,8 +8,11 @@ namespace PubSub.DataAccess
         public PubSubContext()
         {
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => throw new NotImplementedException();
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connectionString = "Server=.\\SQLEXPRESS;Database=Kitos_PubSub;Trusted_Connection=True;"; //TODO
+            optionsBuilder.UseSqlServer(connectionString);
+        }
 
         public DbSet<Subscription> Subscriptions { get; set; }
     }

@@ -19,12 +19,19 @@ builder.Configuration
     .AddJsonFile($"appsettings.{environment}.json")
     .AddEnvironmentVariables();
 
-builder.WebHost.ConfigureKestrel(options =>
+builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.ListenAnyIP(443, listenOptions =>
     {
-        var certPassword = Environment.GetEnvironmentVariable(Constants.Config.Certificate.CertPassword);
-        listenOptions.UseHttps("/etc/ssl/certs/kitos-pubsub.pfx", certPassword);
+        if (context.HostingEnvironment.IsDevelopment())
+        {
+            listenOptions.UseHttps();
+        }
+        else
+        {
+            var certPassword = Environment.GetEnvironmentVariable(Constants.Config.Certificate.CertPassword);
+            listenOptions.UseHttps("/etc/ssl/certs/kitos-pubsub.pfx", certPassword);
+        }
     });
 });
 
