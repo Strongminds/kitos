@@ -9,6 +9,8 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBIT_MQ_PASSWORD}
     networks:
       - app_network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   api:
     image: strongminds/kitos-pubsub:latest
@@ -33,3 +35,7 @@ services:
 networks:
   app_network:
     driver: bridge
+
+volumes:
+  rabbitmq_data:    
+    
