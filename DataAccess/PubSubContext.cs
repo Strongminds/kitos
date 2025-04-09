@@ -11,6 +11,12 @@ namespace PubSub.DataAccess
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Apply the Subscription configuration.
+            modelBuilder.ApplyConfiguration(new Mappings.SubscriptionMappingConfiguration());
 
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
