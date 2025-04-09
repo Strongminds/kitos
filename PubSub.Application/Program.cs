@@ -5,10 +5,12 @@ using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using PubSub.Core.Services.Subscribe;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Config;
 using PubSub.Core.Services.CallbackAuthentication;
 using PubSub.Core.Services.CallbackAuthenticator;
 using PubSub.Core.Config;
+using PubSub.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,11 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 });
 
 
+builder.Services.AddDbContext<PubSubContext>(options =>
+{
+    var connectionString = "Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos_PubSub;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;"; //TODO
+    options.UseSqlServer(connectionString);
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

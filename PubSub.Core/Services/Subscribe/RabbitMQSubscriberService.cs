@@ -33,15 +33,13 @@ namespace PubSub.Core.Services.Subscribe
 
         private async Task UpdateConsumersAsync(Subscription subscription)
         {
-            foreach (var topic in subscription.Topics)
+            var topic = subscription.Topic;
+            if (!_subscriptionStore.HasTopic(topic))
             {
-                if (!_subscriptionStore.HasTopic(topic))
-                {
-                    await CreateAndStartNewConsumerAsync(topic);
-                }
-
-                _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
+                await CreateAndStartNewConsumerAsync(topic);
             }
+
+            _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
         }
 
         private async Task CreateAndStartNewConsumerAsync(Topic topic)

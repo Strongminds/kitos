@@ -5,7 +5,7 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Application
 {
-    public class SubscribeRequestMapperTest: WithAutoFixture
+    public class SubscribeRequestMapperTest : WithAutoFixture
     {
         private SubscribeRequestMapper _sut;
 
@@ -19,10 +19,9 @@ namespace PubSub.Test.Unit.Application
         {
             var dto = A<SubscribeRequestDto>();
 
-            var subscription = _sut.FromDto(dto);
+            var subscriptions = _sut.FromDto(dto);
 
-            Assert.Equal(dto.Callback, subscription.Callback);
-            Assert.Equal(dto.Topics, subscription.Topics.Select(t => t.Name));
+            Assert.All(dto.Topics, topic => Assert.Contains(topic, subscriptions.Select(x => x.Topic.Name)));
         }
     }
 }

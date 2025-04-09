@@ -9,7 +9,7 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQSubscriberServiceTest: WithAutoFixture
+    public class RabbitMQSubscriberServiceTest : WithAutoFixture
     {
         private RabbitMQSubscriberService _sut;
         private readonly Mock<ISubscriptionStore> _subscriptionStore;
@@ -35,7 +35,7 @@ namespace PubSub.Test.Unit.Core
             var subs = new List<Subscription> { subscription };
             var mockConnectionManager = new Mock<IConnectionManager>();
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            var topic = subscription.Topics.First();
+            var topic = subscription.Topic;
             var consumer = new Mock<IConsumer>();
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
@@ -51,25 +51,21 @@ namespace PubSub.Test.Unit.Core
         public async Task Can_Update_Subscription_Callbacks_If_Consumer_Exists()
         {
             var topic = await SetupExistingConsumerWithCallback();
-            var newSubscription = new Subscription()
-            {
-                Callback = A<Uri>(),
-                Topics = new List<Topic> { topic }
-            };
+            var newSubscription = new Subscription(A<Uri>(), topic.Name);
 
             var newSubs = new List<Subscription> { newSubscription };
             await _sut.AddSubscriptionsAsync(newSubs);
 
             _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, newSubscription.Callback));
         }
-        
+
         private async Task<Topic> SetupExistingConsumerWithCallback()
         {
             var subscription = A<Subscription>();
             var subs = new List<Subscription> { subscription };
             var mockConnectionManager = new Mock<IConnectionManager>();
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            var topic = subscription.Topics.First();
+            var topic = subscription.Topic;
             var consumer = new Mock<IConsumer>();
 
 

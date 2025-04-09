@@ -29,8 +29,7 @@ public class SubscribeController : ControllerBase
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var subscription = _subscribeRequestMapper.FromDto(request);
-        var subscriptions = new List<Subscription>() { subscription };
+        var subscriptions = _subscribeRequestMapper.FromDto(request);
         await _subscriberService.AddSubscriptionsAsync(subscriptions);
         return NoContent();
     }

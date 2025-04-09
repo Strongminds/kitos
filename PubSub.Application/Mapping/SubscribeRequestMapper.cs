@@ -5,13 +5,9 @@ namespace PubSub.Application.Mapping
 {
     public class SubscribeRequestMapper : ISubscribeRequestMapper
     {
-        public Subscription FromDto(SubscribeRequestDto dto)
+        public IEnumerable<Subscription> FromDto(SubscribeRequestDto dto)
         {
-            return new Subscription()
-            {
-                Callback = dto.Callback,
-                Topics = dto.Topics.Select(t => new Topic(t))
-            };
+            return dto.Topics.Select(topicName => new Subscription(dto.Callback, topicName));
         }
     }
 }

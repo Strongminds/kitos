@@ -5,6 +5,6 @@ namespace PubSub.Application.Mapping
 {
     public interface ISubscribeRequestMapper
     {
-        Subscription FromDto(SubscribeRequestDto dto);
+        IEnumerable<Subscription> FromDto(SubscribeRequestDto dto);
     }
 }
