@@ -83,6 +83,21 @@ builder.Services.AddRequestMapping();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<PubSubContext>();
+    var pendingMigrations = context.Database.GetPendingMigrations();
+
+    if (pendingMigrations.Any())
+    {
+        // Log or report details if necessary.
+        throw new InvalidOperationException(
+            "The database is not up to date with the latest schema. " +
+            "Pending migrations: " + string.Join(", ", pendingMigrations));
+    }
+}
+
+
 if (!app.Environment.IsProduction())
 {
     app.UseSwagger();
