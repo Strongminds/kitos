@@ -2,6 +2,10 @@
 {
     public class Subscription
     {
+        protected Subscription()
+        {
+            Uuid = Guid.NewGuid();
+        }
         public Subscription(Uri callback, string topicName)
         {
             Uuid = Guid.NewGuid();

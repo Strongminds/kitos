@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
-using PubSub.Core.Models;
 using PubSub.Core.Services.Subscribe;
 
 
