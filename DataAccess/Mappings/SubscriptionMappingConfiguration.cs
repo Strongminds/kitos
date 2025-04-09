@@ -4,7 +4,7 @@ using PubSub.Core.Models;
 
 namespace PubSub.DataAccess.Mappings
 {
-    internal class SubscriptionMappingConfiguration : IEntityTypeConfiguration<Subscription>
+    public class SubscriptionMappingConfiguration : IEntityTypeConfiguration<Subscription>
     {
         public void Configure(EntityTypeBuilder<Subscription> builder)
         {
