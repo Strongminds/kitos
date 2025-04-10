@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
-using PubSub.Core.Services.Subscribe;
-
+using PubSub.Application.Services;
 
 namespace PubSub.Application.Controllers;
 
@@ -12,12 +11,12 @@ namespace PubSub.Application.Controllers;
 [Route("api/subscribe")]
 public class SubscribeController : ControllerBase
 {
-    private readonly ISubscriberService _subscriberService;
+    private readonly ISubscriptionService _subscriptionService;
     private readonly ISubscribeRequestMapper _subscribeRequestMapper;
 
-    public SubscribeController(ISubscriberService subscriberService, ISubscribeRequestMapper subscribeRequestMapper)
+    public SubscribeController(ISubscriptionService subscriberService, ISubscribeRequestMapper subscribeRequestMapper)
     {
-        _subscriberService = subscriberService;
+        _subscriptionService = subscriberService;
         _subscribeRequestMapper = subscribeRequestMapper;
     }
 
@@ -29,7 +28,7 @@ public class SubscribeController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest();
         var subscriptions = _subscribeRequestMapper.FromDto(request);
-        await _subscriberService.AddSubscriptionsAsync(subscriptions);
+        await _subscriptionService.AddSubscriptionsAsync(subscriptions);
         return NoContent();
     }
 }

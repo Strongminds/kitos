@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PubSub.Application.Mapping;
+using PubSub.Application.Services;
 using PubSub.Core.Config;
 using PubSub.Core.Consumers;
 using PubSub.Core.Managers;
@@ -89,6 +90,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
         services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
         services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
+
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
 
         var pubSubApiKey = configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey)
                            ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
