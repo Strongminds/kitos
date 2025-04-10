@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using PubSub.Core.Models;
+using PubSub.Core.Services.Subscribe;
 using PubSub.DataAccess;
-using PubSub.DataAccess.Helpers;
 
 namespace PubSub.Application.Services;
 
@@ -9,10 +9,12 @@ public class SubscriptionService : ISubscriptionService
 {
     private readonly ISubscriptionRepository _repository;
     private readonly ICurrentUserService _currentUserService;
-    public SubscriptionService(ISubscriptionRepository repository, ICurrentUserService currentUserService)
+    private readonly ISubscriberService _subscriberService;
+    public SubscriptionService(ISubscriptionRepository repository, ISubscriberService subscriberService, ICurrentUserService currentUserService)
     {
         _repository = repository;
         _currentUserService = currentUserService;
+        _subscriberService = subscriberService;
     }
     public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
     {
@@ -23,6 +25,7 @@ public class SubscriptionService : ISubscriptionService
         if (subs.HasValue)
         {
             await _repository.AddRangeAsync(subs.Value);
+            await _subscriberService.AddSubscriptionsAsync(subs.Value);
         }
     }
 

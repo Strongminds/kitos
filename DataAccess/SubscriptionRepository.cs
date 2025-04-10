@@ -18,6 +18,11 @@ public class SubscriptionRepository : ISubscriptionRepository
         return await _context.Subscriptions.ToListAsync();
     }
 
+    public async Task<IEnumerable<Subscription>> GetByTopic(string topic)
+    {
+        return await _context.Subscriptions.Where(x => x.Topic.Name == topic).ToListAsync();
+    }
+
     public async Task<Maybe<Subscription>> GetAsync(Guid uuid)
     {
         var subscription = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Uuid == uuid);
