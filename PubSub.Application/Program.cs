@@ -31,6 +31,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddAuthenticationServices(builder.Configuration);

@@ -93,6 +93,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         var pubSubApiKey = configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey)
                            ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
