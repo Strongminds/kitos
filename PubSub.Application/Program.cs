@@ -1,13 +1,6 @@
 using PubSub.Application;
-using PubSub.Core.Consumers;
-using PubSub.Core.Services.Notifier;
-using PubSub.Core.Services.Serializer;
-using PubSub.Core.Services.Subscribe;
 using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Config;
-using PubSub.Core.Services.CallbackAuthentication;
-using PubSub.Core.Services.CallbackAuthenticator;
-using PubSub.Core.Config;
 using PubSub.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
