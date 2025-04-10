@@ -1,10 +1,8 @@
-using Microsoft.IdentityModel.Tokens;
 using PubSub.Application;
 using PubSub.Core.Consumers;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using PubSub.Core.Services.Subscribe;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Config;
 using PubSub.Core.Services.CallbackAuthentication;
@@ -37,49 +35,13 @@ builder.WebHost.ConfigureKestrel((context, options) =>
     });
 });
 
-
-builder.Services.AddDbContext<PubSubContext>(options =>
-{
-    var connectionString = "Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos_PubSub;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;"; //TODO
-    options.UseSqlServer(connectionString);
-});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            SignatureValidator = (token, _) => TokenValidator.ValidateTokenAsync(token, builder.Configuration, builder.Services).GetAwaiter().GetResult(),
-            ValidateIssuerSigningKey = false,
-            ValidateIssuer = false,
-            ValidateAudience = false,
-        };
-        options.IncludeErrorDetails = true;
-    });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Constants.Config.Validation.CanPublishPolicy, policy =>
-        policy.RequireClaim("CanPublish", "true"));
-});
-
-
-var pubSubApiKey = builder.Configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey) ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
-var callbackAuthenticatorConfig = new CallbackAuthenticatorConfig() { ApiKey = pubSubApiKey };
-
-builder.Services.AddRabbitMQ(builder.Configuration);
-builder.Services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
-builder.Services.AddSingleton<IPayloadSerializer, JsonPayloadSerializer>();
-builder.Services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
-builder.Services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
-builder.Services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
-builder.Services.AddSingleton<ICallbackAuthenticatorConfig>(callbackAuthenticatorConfig);
-builder.Services.AddSingleton<ICallbackAuthenticator, HmacCallbackAuthenticator>();
-builder.Services.AddRequestMapping();
-
+builder.Services.AddDatabaseServices(builder.Configuration);
+builder.Services.AddAuthenticationServices(builder.Configuration);
+builder.Services.AddPubSubServices(builder.Configuration);
 
 var app = builder.Build();
 
