@@ -4,11 +4,13 @@ using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 using PubSub.Core.Models;
+using PubSub.DataAccess;
 using PubSub.Test.Base;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQConsumerTest: TestClassWithIChannelBase
+    public class RabbitMQConsumerTest : TestClassWithIChannelBase
     {
         [Fact]
         public async Task Can_Consume_On_Channel()
@@ -16,6 +18,7 @@ namespace PubSub.Test.Unit.Core
             var mockConnectionManager = new Mock<IConnectionManager>();
             var connection = new Mock<IConnection>();
             var channel = new Mock<IChannel>();
+            var repo = new Mock<IServiceScopeFactory>();
             mockConnectionManager.Setup(_ => _.GetConnectionAsync()).ReturnsAsync(connection.Object);
             connection.Setup(_ => _.CreateChannelAsync(null, default)).ReturnsAsync(channel.Object);
             var messageSerializer = new Mock<IPayloadSerializer>();
@@ -27,7 +30,8 @@ namespace PubSub.Test.Unit.Core
                 mockConnectionManager.Object,
                 mockSubscriberNotifierService.Object,
                 messageSerializer.Object,
-                topic
+                topic,
+                repo.Object
             );
 
             await sut.StartListeningAsync();

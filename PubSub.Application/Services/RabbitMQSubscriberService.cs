@@ -11,14 +11,16 @@ namespace PubSub.Application.Services
         private readonly ISubscriptionStore _subscriptionStore;
         private readonly IRabbitMQConsumerFactory _consumerFactory;
         private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public RabbitMQSubscriberService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ISubscriptionStore subscriptionStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer)
+        public RabbitMQSubscriberService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ISubscriptionStore subscriptionStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, IServiceScopeFactory scopeFactory)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
             _subscriptionStore = subscriptionStore;
             _consumerFactory = consumerFactory;
             _payloadSerializer = payloadSerializer;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
@@ -42,7 +44,7 @@ namespace PubSub.Application.Services
 
         private async Task CreateAndStartNewConsumerAsync(Topic topic)
         {
-            var consumer = _consumerFactory.Create(_connectionManager, _subscriberNotifierService, _payloadSerializer, topic);
+            var consumer = _consumerFactory.Create(_connectionManager, _subscriberNotifierService, _payloadSerializer, topic, _scopeFactory);
             _subscriptionStore.SetConsumerForTopic(topic, consumer);
             await consumer.StartListeningAsync();
         }

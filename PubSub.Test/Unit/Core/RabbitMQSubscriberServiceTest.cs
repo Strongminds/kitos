@@ -1,8 +1,10 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using PubSub.Application.Services;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
+using PubSub.DataAccess;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
@@ -15,6 +17,8 @@ namespace PubSub.Test.Unit.Core
         private readonly Mock<IConnectionManager> _mockConnectionManager;
         private readonly Mock<ISubscriberNotifierService> _mockSubscriberNotifierService;
         private readonly Mock<IPayloadSerializer> _messageSerializer;
+        private readonly Mock<IServiceScopeFactory> _subscriptionRepository;
+        
 
         public RabbitMQSubscriberServiceTest()
         {
@@ -23,7 +27,8 @@ namespace PubSub.Test.Unit.Core
             _consumerFactory = new Mock<IRabbitMQConsumerFactory>();
             _mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
             _messageSerializer = new Mock<IPayloadSerializer>();
-            _sut = new RabbitMQSubscriberService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object, _messageSerializer.Object);
+            _subscriptionRepository = new Mock<IServiceScopeFactory>();
+            _sut = new RabbitMQSubscriberService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object, _messageSerializer.Object, _subscriptionRepository.Object);
         }
 
         [Fact]
@@ -37,10 +42,10 @@ namespace PubSub.Test.Unit.Core
             var consumer = new Mock<IConsumer>();
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>(), It.IsAny<IServiceScopeFactory>())).Returns(consumer.Object);
 
             await _sut.AddSubscriptionsAsync(subs);
-            _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>()));
+            _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>(), It.IsAny<IServiceScopeFactory>()));
             consumer.Verify(_ => _.StartListeningAsync());
             _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, subscription.Callback));
         }
@@ -68,7 +73,7 @@ namespace PubSub.Test.Unit.Core
 
 
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<Topic, IConsumer>());
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>(), It.IsAny<IServiceScopeFactory>())).Returns(consumer.Object);
 
             await _sut.AddSubscriptionsAsync(subs);
 
@@ -77,7 +82,7 @@ namespace PubSub.Test.Unit.Core
                 { topic, consumer.Object }
             };
             _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(existingSubscriptions);
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>())).Returns(consumer.Object);
+            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<Topic>(), It.IsAny<IServiceScopeFactory>())).Returns(consumer.Object);
 
             return topic;
         }

@@ -1,6 +1,7 @@
 ﻿using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
+using PubSub.DataAccess;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -16,14 +17,16 @@ namespace PubSub.Application.Services
         private IConnection _connection;
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
+        private readonly IServiceScopeFactory _scopeFactory;
 
 
-        public RabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, Topic topic)
+        public RabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, Topic topic, IServiceScopeFactory scopeFactory)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
             _topic = topic;
             _payloadSerializer = payloadSerializer;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task StartListeningAsync()
@@ -37,7 +40,8 @@ namespace PubSub.Application.Services
             await _channel.BasicConsumeAsync(topicName, autoAck: true, consumer: _consumerCallback);
         }
 
-        private AsyncEventingBasicConsumer GetConsumerCallback() {
+        private AsyncEventingBasicConsumer GetConsumerCallback()
+        {
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (_, eventArgs) =>
             {
@@ -45,7 +49,9 @@ namespace PubSub.Application.Services
                 {
                     var body = eventArgs.Body.ToArray();
                     var payload = _payloadSerializer.Deserialize(body);
-
+                    using var scope = _scopeFactory.CreateScope();
+                    var repo = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
+                    var subs = await repo.GetByTopic(_topic.Name);
                     foreach (var callbackUrl in _callbackUrls)
                     {
                         await _subscriberNotifierService.Notify(payload, callbackUrl.AbsoluteUri);
