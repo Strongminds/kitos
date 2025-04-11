@@ -95,11 +95,15 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-        var pubSubApiKey = configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey)
-                           ?? throw new ArgumentNullException("No api key for callback authentication found in appsettings");
-        var callbackAuthenticatorConfig = new CallbackAuthenticatorConfig() { ApiKey = pubSubApiKey };
-        services.AddSingleton<ICallbackAuthenticatorConfig>(callbackAuthenticatorConfig);
-        services.AddSingleton<ICallbackAuthenticator, HmacCallbackAuthenticator>();
+        services.AddTransient<ICallbackAuthenticatorConfig>(provider =>
+        {
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            var pubSubApiKey = configuration.GetValue<string>(Constants.Config.CallbackAuthentication.PubSubApiKey)
+                               ?? throw new ArgumentNullException("No API key for callback authentication found in appsettings");
+
+            return new CallbackAuthenticatorConfig() { ApiKey = pubSubApiKey };
+        });
+        services.AddTransient<ICallbackAuthenticator, HmacCallbackAuthenticator>();
 
         services.AddRequestMapping();
 
