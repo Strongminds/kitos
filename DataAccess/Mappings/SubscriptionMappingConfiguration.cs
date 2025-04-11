@@ -11,10 +11,7 @@ namespace PubSub.DataAccess.Mappings
             builder.HasKey(x => x.Uuid);
 
             builder.Property(x => x.Callback)
-                .HasConversion(
-                    uri => uri.ToString(),
-                    str => new Uri(str)
-                );
+                .HasConversion<string>();
         }
     }
 }
