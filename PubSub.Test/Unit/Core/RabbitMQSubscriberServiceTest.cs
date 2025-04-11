@@ -1,9 +1,7 @@
 ﻿using Moq;
-using PubSub.Core.Consumers;
-using PubSub.Core.Managers;
+using PubSub.Application.Services;
 using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
-using PubSub.Core.Services.Subscribe;
 using PubSub.Core.Services.Serializer;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 

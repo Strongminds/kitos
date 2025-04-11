@@ -1,8 +1,7 @@
-﻿using PubSub.Core.Consumers;
+﻿using System.Collections.Concurrent;
 using PubSub.Core.Models;
-using System.Collections.Concurrent;
 
-namespace PubSub.Core.Services.Subscribe
+namespace PubSub.Application.Services
 {
     public class InMemorySubscriptionStore : ISubscriptionStore
     {

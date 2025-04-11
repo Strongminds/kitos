@@ -1,9 +1,8 @@
-﻿using PubSub.Core.Managers;
+﻿using PubSub.Core.Models;
 using PubSub.Core.Services.Serializer;
-using PubSub.Core.Models;
 using RabbitMQ.Client;
 
-namespace PubSub.Core.Services.Publisher
+namespace PubSub.Application.Services
 {
     public class RabbitMQPublisherService : IPublisherService
     {

@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using PubSub.Core.Models;
-using PubSub.Core.Services.Subscribe;
 using PubSub.DataAccess;
 
 namespace PubSub.Application.Services;

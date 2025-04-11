@@ -4,14 +4,10 @@ using Microsoft.IdentityModel.Tokens;
 using PubSub.Application.Mapping;
 using PubSub.Application.Services;
 using PubSub.Core.Config;
-using PubSub.Core.Consumers;
-using PubSub.Core.Managers;
 using PubSub.Core.Services.CallbackAuthentication;
 using PubSub.Core.Services.CallbackAuthenticator;
 using PubSub.Core.Services.Notifier;
-using PubSub.Core.Services.Publisher;
 using PubSub.Core.Services.Serializer;
-using PubSub.Core.Services.Subscribe;
 using PubSub.DataAccess;
 using RabbitMQ.Client;
 

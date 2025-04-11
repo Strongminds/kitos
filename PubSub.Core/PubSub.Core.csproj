@@ -12,4 +12,9 @@
     <PackageReference Include="RabbitMQ.Client" Version="7.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Consumers\" />
+    <Folder Include="Managers\" />
+  </ItemGroup>
+
 </Project>

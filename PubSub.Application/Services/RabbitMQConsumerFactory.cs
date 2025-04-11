@@ -1,9 +1,8 @@
-﻿using PubSub.Core.Managers;
-using PubSub.Core.Models;
+﻿using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 
-namespace PubSub.Core.Consumers
+namespace PubSub.Application.Services
 {
     public class RabbitMQConsumerFactory : IRabbitMQConsumerFactory
     {

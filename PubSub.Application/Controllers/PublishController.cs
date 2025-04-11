@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
-using PubSub.Core.Services.Publisher;
+using PubSub.Application.Services;
 
 namespace PubSub.Application.Controllers
 {

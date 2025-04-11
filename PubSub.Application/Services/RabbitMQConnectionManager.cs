@@ -1,6 +1,6 @@
 using RabbitMQ.Client;
 
-namespace PubSub.Core.Managers
+namespace PubSub.Application.Services
 {
     public class RabbitMQConnectionManager : IConnectionManager
     {

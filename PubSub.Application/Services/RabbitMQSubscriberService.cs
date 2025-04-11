@@ -1,10 +1,8 @@
-﻿using PubSub.Core.Consumers;
-using PubSub.Core.Managers;
-using PubSub.Core.Models;
+﻿using PubSub.Core.Models;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 
-namespace PubSub.Core.Services.Subscribe
+namespace PubSub.Application.Services
 {
     public class RabbitMQSubscriberService : ISubscriberService
     {

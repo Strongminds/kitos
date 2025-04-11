@@ -1,7 +1,6 @@
 ﻿using Moq;
-using PubSub.Core.Consumers;
+using PubSub.Application.Services;
 using PubSub.Core.Models;
-using PubSub.Core.Services.Subscribe;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
