@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
         services.AddScoped<ISubscriberService, RabbitMQSubscriberService>();
         services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
-        services.AddSingleton<IPublisherService, RabbitMQPublisherService>();
+        services.AddScoped<IPublisherService, RabbitMQPublisherService>();
 
         return services;
     }
