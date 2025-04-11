@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
     {
         var connectionFactory = GetConnectionFactory(configuration);
         services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
-        services.AddSingleton<ISubscriberService, RabbitMQSubscriberService>();
+        services.AddScoped<ISubscriberService, RabbitMQSubscriberService>();
         services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
         services.AddSingleton<IPublisherService, RabbitMQPublisherService>();
 
@@ -87,9 +87,9 @@ public static class ServiceCollectionExtensions
         services.AddRabbitMQ(configuration);
         services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
         services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
-        services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
+        services.AddScoped<ISubscriberNotifierService, HttpSubscriberNotifierService>();
         services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
-        services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
+        services.AddScoped<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
 
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
