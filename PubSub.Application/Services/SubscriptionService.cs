@@ -30,7 +30,7 @@ public class SubscriptionService : ISubscriptionService
                 await _repository.AddAsync(sub);
             }
 
-            await _subscriberService.AddSubscriptionsAsync(subs.Value);
+            //await _subscriberService.AddSubscriptionsAsync(subs.Value);
         }
     }
 

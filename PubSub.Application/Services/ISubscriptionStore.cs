@@ -1,6 +1,4 @@
-﻿using PubSub.Core.Models;
-
-namespace PubSub.Application.Services
+﻿namespace PubSub.Application.Services
 {
     public interface ISubscriptionStore
     {

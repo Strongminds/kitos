@@ -23,23 +23,12 @@ namespace PubSub.Application.Services
             _scopeFactory = scopeFactory;
         }
 
-        public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
+        public async Task AddSubscriptionsAsync(string topic)
         {
-            foreach (var subscription in subscriptions)
-            {
-                await UpdateConsumersAsync(subscription);
-            }
-        }
-
-        private async Task UpdateConsumersAsync(Subscription subscription)
-        {
-            var topic = subscription.Topic;
             if (!_subscriptionStore.HasTopic(topic))
             {
                 await CreateAndStartNewConsumerAsync(topic);
             }
-
-            _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
         }
 
         private async Task CreateAndStartNewConsumerAsync(string topic)

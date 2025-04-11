@@ -1,9 +1,7 @@
-﻿using PubSub.Core.Models;
-
-namespace PubSub.Application.Services
+﻿namespace PubSub.Application.Services
 {
     public interface ISubscriberService
     {
-        Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions);
+        Task AddSubscriptionsAsync(string topic);
     }
 }
