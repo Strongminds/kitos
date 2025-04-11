@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
+using PubSub.Core.Abstractions.MonadExtensions;
 using PubSub.Core.Models;
 using PubSub.DataAccess.Helpers;
 
@@ -21,6 +22,12 @@ public class SubscriptionRepository : ISubscriptionRepository
     public async Task<IEnumerable<Subscription>> GetByTopic(string topic)
     {
         return await _context.Subscriptions.Where(x => x.Topic == topic).ToListAsync();
+    }
+
+    public async Task<bool> Exists(string topic, string url)
+    {
+        var byTopic = await GetByTopic(topic);
+        return byTopic.TryFirst(x => x.Callback.AbsoluteUri == url).HasValue;
     }
 
     public async Task<Maybe<Subscription>> GetAsync(Guid uuid)

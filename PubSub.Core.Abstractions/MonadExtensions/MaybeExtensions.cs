@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace PubSub.DataAccess.Helpers;
+namespace PubSub.Core.Abstractions.MonadExtensions;
 
 public static class MaybeExtensions
 {

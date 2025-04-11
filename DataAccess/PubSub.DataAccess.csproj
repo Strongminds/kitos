@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PubSub.Core.Abstractions\PubSub.Core.Abstractions.csproj" />
     <ProjectReference Include="..\PubSub.Core\PubSub.Core.csproj" />
   </ItemGroup>
 

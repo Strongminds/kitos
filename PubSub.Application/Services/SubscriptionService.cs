@@ -19,11 +19,17 @@ public class SubscriptionService : ISubscriptionService
     {
         var maybeUserId = _currentUserService.UserId;
         var subs = maybeUserId.Map(userId =>
-             subscriptions.Select(x => ToSubscriptionWithOwnerId(x, userId))
+             subscriptions.Select(x => ToSubscriptionWithOwnerId(x, userId)).ToList()
         );
         if (subs.HasValue)
         {
-            await _repository.AddRangeAsync(subs.Value);
+            foreach (var sub in subs.Value)
+            {
+                var exists = await _repository.Exists(sub.Topic, sub.Callback.AbsoluteUri);
+                if (exists) continue;
+                await _repository.AddAsync(sub);
+            }
+
             await _subscriberService.AddSubscriptionsAsync(subs.Value);
         }
     }
