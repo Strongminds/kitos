@@ -86,7 +86,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddRabbitMQ(configuration);
         services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
-        services.AddSingleton<IPayloadSerializer, JsonPayloadSerializer>();
+        services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
         services.AddSingleton<ISubscriberNotifierService, HttpSubscriberNotifierService>();
         services.AddSingleton<ISubscriptionStore, InMemorySubscriptionStore>();
         services.AddSingleton<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
