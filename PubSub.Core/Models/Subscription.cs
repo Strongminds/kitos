@@ -10,11 +10,11 @@
         {
             Uuid = Guid.NewGuid();
             Callback = callback;
-            Topic = new Topic(topicName);
+            Topic = topicName;
         }
         public Guid Uuid { get; set; }
         public Uri Callback { get; set; }
-        public Topic Topic { get; set; }
+        public string Topic { get; set; }
         public string OwnerId { get; set; }
     }
 }

@@ -4,12 +4,12 @@ namespace PubSub.Application.Services
 {
     public interface ISubscriptionStore
     {
-        void AddCallbackToTopic(Topic topic, Uri callback);
+        void AddCallbackToTopic(string topic, Uri callback);
 
-        void SetConsumerForTopic(Topic topic, IConsumer consumer);
+        void SetConsumerForTopic(string topic, IConsumer consumer);
 
-        IDictionary<Topic, IConsumer> GetSubscriptions();
+        IDictionary<string, IConsumer> GetSubscriptions();
 
-        bool HasTopic(Topic topic);
+        bool HasTopic(string topic);
     }
 }

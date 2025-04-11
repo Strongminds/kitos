@@ -21,7 +21,7 @@ namespace PubSub.Test.Unit.Application
 
             var subscriptions = _sut.FromDto(dto);
 
-            Assert.All(dto.Topics, topic => Assert.Contains(topic, subscriptions.Select(x => x.Topic.Name)));
+            Assert.All(dto.Topics, topic => Assert.Contains(topic, subscriptions.Select(x => x.Topic)));
         }
     }
 }

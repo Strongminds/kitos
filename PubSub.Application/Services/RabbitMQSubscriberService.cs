@@ -42,7 +42,7 @@ namespace PubSub.Application.Services
             _subscriptionStore.AddCallbackToTopic(topic, subscription.Callback);
         }
 
-        private async Task CreateAndStartNewConsumerAsync(Topic topic)
+        private async Task CreateAndStartNewConsumerAsync(string topic)
         {
             var consumer = _consumerFactory.Create(_connectionManager, _subscriberNotifierService, _payloadSerializer, topic, _scopeFactory);
             _subscriptionStore.SetConsumerForTopic(topic, consumer);

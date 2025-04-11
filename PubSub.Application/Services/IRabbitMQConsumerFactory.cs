@@ -7,6 +7,6 @@ namespace PubSub.Application.Services
 {
     public interface IRabbitMQConsumerFactory
     {
-        IConsumer Create(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, Topic topic, IServiceScopeFactory scopeFactory);
+        IConsumer Create(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, IServiceScopeFactory scopeFactory);
     }
 }

@@ -7,7 +7,7 @@ namespace PubSub.Application.Services
 {
     public class RabbitMQConsumerFactory : IRabbitMQConsumerFactory
     {
-        public IConsumer Create(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, Topic topic, IServiceScopeFactory scopeFactory)
+        public IConsumer Create(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, IServiceScopeFactory scopeFactory)
         {
             return new RabbitMQConsumer(connectionManager, subscriberNotifierService, payloadSerializer, topic, scopeFactory);
         }

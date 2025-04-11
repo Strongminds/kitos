@@ -15,10 +15,6 @@ namespace PubSub.DataAccess.Mappings
                     uri => uri.ToString(),
                     str => new Uri(str)
                 );
-
-            builder.Property(x => x.Topic)
-                .HasConversion(topic => topic.Name, name => new Topic(name));
-
         }
     }
 }

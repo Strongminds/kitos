@@ -35,7 +35,7 @@ public class SubscriptionService : ISubscriptionService
 
     private static Subscription ToSubscriptionWithOwnerId(Subscription subscription, string ownerId)
     {
-        return new Subscription(subscription.Callback, subscription.Topic.Name)
+        return new Subscription(subscription.Callback, subscription.Topic)
         {
             Uuid = subscription.Uuid,
             OwnerId = ownerId

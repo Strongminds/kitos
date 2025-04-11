@@ -3,8 +3,6 @@ using PubSub.Application.Services;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
-using PubSub.Core.Models;
-using PubSub.DataAccess;
 using PubSub.Test.Base;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,7 +22,7 @@ namespace PubSub.Test.Unit.Core
             var messageSerializer = new Mock<IPayloadSerializer>();
 
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            var topic = A<Topic>();
+            var topic = A<string>();
 
             var sut = new RabbitMQConsumer(
                 mockConnectionManager.Object,
