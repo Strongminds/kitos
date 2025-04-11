@@ -1,9 +1,8 @@
-﻿using PubSub.Core.Managers;
+﻿using PubSub.Core.Models;
 using PubSub.Core.Services.Serializer;
-using PubSub.Core.Models;
 using RabbitMQ.Client;
 
-namespace PubSub.Core.Services.Publisher
+namespace PubSub.Application.Services
 {
     public class RabbitMQPublisherService : IPublisherService
     {
@@ -25,7 +24,12 @@ namespace PubSub.Core.Services.Publisher
             await channel.QueueDeclareAsync(queue: topic.Name, durable: true, exclusive: false, autoDelete: false);
 
             var serializedBody = _payloadSerializer.Serialize(publication.Payload);
-            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: topic.Name, body: serializedBody);
+            var properties = new BasicProperties
+            {
+                Persistent = true
+            };
+
+            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: topic.Name, true, basicProperties: properties, body: serializedBody);
         }
     }
 }
