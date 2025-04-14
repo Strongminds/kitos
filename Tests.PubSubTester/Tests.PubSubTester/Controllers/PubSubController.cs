@@ -60,14 +60,7 @@ namespace Tests.PubSubTester.Controllers
         [Route("subscribeToSystemChanges")]
         public async Task<IActionResult> SubscribeToSystemChange()
         {
-            var kitosClient = CreateClient(KitosApiUrl);
-            var body = new LoginDTO { Email = "local-api-global-admin-user@kitos.dk", Password = "localNoSecret" };
-            var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-            var tokenResponse = await kitosClient.PostAsync("api/authorize/GetToken", content);
-            var jsonResponse = await tokenResponse.Content.ReadAsStringAsync();
-            dynamic result = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
-            string token = result.response.token;  // Adjust property names as needed
-
+            var token = await GetKitosToken();
             var request = new SubscribeRequestWithTokenDTO
             {
                 Token = token,
@@ -82,10 +75,47 @@ namespace Tests.PubSubTester.Controllers
         }
 
         [HttpPost]
+        [Route("deleteSystemChangeSubscription")]
+        public async Task<IActionResult> DeleteSubscription(Guid uuid)
+        {
+            var token = await GetKitosToken();
+            var client = CreateClient(PubSubApiUrl);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            var route = $"api/subscribe/{uuid}";
+            var response = await client.DeleteAsync(route);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("getAll")]
+        public async Task<IActionResult> GetSubscriptions()
+        {
+            var token = await GetKitosToken();
+            var client = CreateClient(PubSubApiUrl);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            const string route = "api/subscribe";
+            var response = await client.GetAsync(route);
+            var stringResponse = response.Content.ReadFromJsonAsync<IEnumerable<dynamic>>();
+            return Ok(stringResponse);
+        }
+
+        [HttpPost]
         [Route("systemChange")]
         public IActionResult Callback([FromBody] MessageDTO<SystemChangeDTO> dto)
         {
             return Ok();
+        }
+
+        private async Task<string> GetKitosToken()
+        {
+            var kitosClient = CreateClient(KitosApiUrl);
+            var body = new LoginDTO { Email = "local-api-global-admin-user@kitos.dk", Password = "localNoSecret" };
+            var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            var tokenResponse = await kitosClient.PostAsync("api/authorize/GetToken", content);
+            var jsonResponse = await tokenResponse.Content.ReadAsStringAsync();
+            dynamic result = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+            string token = result.response.token;
+            return token;
         }
 
         private static HttpClient CreateClient(string baseUrl)

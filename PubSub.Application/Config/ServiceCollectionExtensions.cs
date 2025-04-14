@@ -90,6 +90,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<ISubscriptionMapper, SubscriptionMapper>();
 
         services.AddTransient<ICallbackAuthenticatorConfig>(provider =>
         {

@@ -1,3 +1,4 @@
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
@@ -13,11 +14,13 @@ public class SubscribeController : ControllerBase
 {
     private readonly ISubscriptionService _subscriptionService;
     private readonly ISubscribeRequestMapper _subscribeRequestMapper;
+    private readonly ISubscriptionMapper _subscriptionMapper;
 
-    public SubscribeController(ISubscriptionService subscriberService, ISubscribeRequestMapper subscribeRequestMapper)
+    public SubscribeController(ISubscriptionService subscriberService, ISubscribeRequestMapper subscribeRequestMapper, ISubscriptionMapper subscriptionMapper)
     {
         _subscriptionService = subscriberService;
         _subscribeRequestMapper = subscribeRequestMapper;
+        _subscriptionMapper = subscriptionMapper;
     }
 
     [HttpPost]
@@ -31,4 +34,26 @@ public class SubscribeController : ControllerBase
         await _subscriptionService.AddSubscriptionsAsync(subscriptions);
         return NoContent();
     }
+
+    [HttpDelete]
+    [Route("{uuid:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid uuid)
+    {
+        var result = await _subscriptionService.DeleteSubscription(uuid);
+        return result.Match(_ => NoContent(), NoContent); // TODO
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<SubscriptionResponseDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSubscriptions()
+    {
+        var subscriptions = await _subscriptionService.GetActiveUserSubscriptions();
+        return Ok(subscriptions.Select(_subscriptionMapper.ToResponseDTO));
+    }
+
 }

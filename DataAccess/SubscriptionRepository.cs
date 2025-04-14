@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using PubSub.Core.Abstractions.MonadExtensions;
+using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.Models;
 
 namespace PubSub.DataAccess;
@@ -13,9 +13,9 @@ public class SubscriptionRepository : ISubscriptionRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Subscription>> GetAllAsync()
+    public async Task<IEnumerable<Subscription>> GetAllByUserId(string userId)
     {
-        return await _context.Subscriptions.ToListAsync();
+        return await _context.Subscriptions.Where(x => x.OwnerId == userId).ToListAsync();
     }
 
     public async Task<IEnumerable<Subscription>> GetByTopic(string topic)
@@ -53,21 +53,25 @@ public class SubscriptionRepository : ISubscriptionRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid uuid)
+    public async Task<Maybe<OperationError>> DeleteAsync(Guid uuid)
     {
+        var maybeSubscription = await GetAsync(uuid);
+        if (maybeSubscription.HasNoValue)
+        {
+            return OperationError.NotFound; //TODO
+        }
+        await DeleteSubscription(maybeSubscription.Value);
+        return Maybe<OperationError>.None;
+    }
 
-        var subscription = await GetAsync(uuid);
-        subscription.Tap(DeleteSubscription);
+    private async Task DeleteSubscription(Subscription subscription)
+    {
+        _context.Subscriptions.Remove(subscription);
+        await _context.SaveChangesAsync();
     }
 
     private IQueryable<Subscription> SubscriptionsByTopic(string topic)
     {
         return _context.Subscriptions.Where(x => x.Topic == topic);
-    }
-
-    private async void DeleteSubscription(Subscription subscription)
-    {
-        _context.Subscriptions.Remove(subscription);
-        await _context.SaveChangesAsync();
     }
 }

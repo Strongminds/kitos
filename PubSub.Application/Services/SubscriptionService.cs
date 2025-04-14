@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.Models;
 using PubSub.DataAccess;
 
@@ -8,7 +9,7 @@ public class SubscriptionService : ISubscriptionService
 {
     private readonly ISubscriptionRepository _repository;
     private readonly ICurrentUserService _currentUserService;
-    public SubscriptionService(ISubscriptionRepository repository, ISubscriberService subscriberService, ICurrentUserService currentUserService)
+    public SubscriptionService(ISubscriptionRepository repository, ICurrentUserService currentUserService)
     {
         _repository = repository;
         _currentUserService = currentUserService;
@@ -27,15 +28,20 @@ public class SubscriptionService : ISubscriptionService
                 if (exists) continue;
                 await _repository.AddAsync(sub);
             }
-
-            //await _subscriberService.AddSubscriptionsAsync(subs.Value);
         }
     }
 
-    public async Task<IEnumerable<Subscription>> GetSubscriptionsAsync()
+    public Task<IEnumerable<Subscription>> GetActiveUserSubscriptions()
     {
-        return await _repository.GetAllAsync();
+        return _repository.GetAllByUserId(_currentUserService.UserId.Value);
     }
+
+    public async Task<Maybe<OperationError>> DeleteSubscription(Guid uuid)
+    {
+        await _repository.DeleteAsync(uuid);
+        return Maybe.None; //TODO
+    }
+
 
     private static Subscription ToSubscriptionWithOwnerId(Subscription subscription, string ownerId)
     {
