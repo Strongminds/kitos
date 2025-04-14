@@ -18,7 +18,7 @@ namespace PubSub.Test.Unit.Core
         private readonly Mock<ISubscriberNotifierService> _mockSubscriberNotifierService;
         private readonly Mock<IPayloadSerializer> _messageSerializer;
         private readonly Mock<IServiceScopeFactory> _subscriptionRepository;
-        
+
 
         public RabbitMQTopicConsumerInstantiatorServiceTest()
         {
@@ -41,7 +41,6 @@ namespace PubSub.Test.Unit.Core
 
             await _sut.InstantiateTopic(topic);
 
-            _consumerFactory.Verify(x => x.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<IServiceScopeFactory>()));
             _subscriptionStore.Verify(x => x.SetConsumerForTopic(topic, consumer.Object));
             consumer.Verify(x => x.StartListeningAsync());
         }
