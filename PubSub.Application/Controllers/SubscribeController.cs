@@ -45,7 +45,7 @@ public class SubscribeController : PubSubBaseController
     public async Task<IActionResult> Delete(Guid uuid)
     {
         var result = await _subscriptionService.DeleteSubscription(uuid);
-        return result.Match(FromOperationError, NoContent); // TODO
+        return result.Match(FromOperationError, NoContent);
     }
 
     [HttpGet]

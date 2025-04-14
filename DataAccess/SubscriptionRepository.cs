@@ -58,7 +58,7 @@ public class SubscriptionRepository : ISubscriptionRepository
         var maybeSubscription = await GetAsync(uuid);
         if (maybeSubscription.HasNoValue)
         {
-            return OperationError.NotFound; //TODO
+            return OperationError.NotFound;
         }
         await DeleteSubscription(maybeSubscription.Value);
         return Maybe<OperationError>.None;
