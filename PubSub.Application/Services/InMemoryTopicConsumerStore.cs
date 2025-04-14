@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using PubSub.Core.Models;
 
 namespace PubSub.Application.Services
 {
-    public class InMemorySubscriptionStore : ISubscriptionStore
+    public class InMemoryTopicConsumerStore : ITopicConsumerStore
     {
         private readonly ConcurrentDictionary<string, IConsumer> _consumersByTopicDictionary = new();
 
@@ -12,12 +11,7 @@ namespace PubSub.Application.Services
             _consumersByTopicDictionary[topic] = consumer;
         }
 
-        public IDictionary<string, IConsumer> GetSubscriptions()
-        {
-            return _consumersByTopicDictionary;
-        }
-
-        public bool HasTopic(string topic)
+        public bool HasConsumer(string topic)
         {
             return _consumersByTopicDictionary.ContainsKey(topic);
         }
