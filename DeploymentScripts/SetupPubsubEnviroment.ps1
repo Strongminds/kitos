@@ -13,4 +13,6 @@ Function Load-Pubsub-Parameters([String] $envName) {
     $Env:PUBSUB_API_KEY         = $parameters["PubSubApiKey"]
     $Env:CERT_PASSWORD          = $parameters["CertPassword"]
     $Env:IDP_HOST_MAPPING       = $parameters["IdpHostMapping"]
+    $Env:PUBSUB_MIGRATIONS_FOLDER = "TODO"
+    $Env:PUBSUB_CONNECTION_STRING = "TODO"
 }
