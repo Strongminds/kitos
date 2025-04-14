@@ -5,5 +5,7 @@ namespace PubSub.Application.Mapping;
 
 public interface ISubscriptionMapper
 {
-    public SubscriptionResponseDTO ToResponseDTO(Subscription subscription);
+    SubscriptionResponseDTO ToResponseDTO(Subscription subscription);
+
+    IEnumerable<Subscription> FromDTO(SubscribeRequestDto dto);
 }

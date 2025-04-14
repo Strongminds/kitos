@@ -14,4 +14,9 @@ public class SubscriptionMapper : ISubscriptionMapper
             Topic = subscription.Topic
         };
     }
+
+    public IEnumerable<Subscription> FromDTO(SubscribeRequestDto dto)
+    {
+        return dto.Topics.Select(topicName => new Subscription(dto.Callback.AbsoluteUri, topicName));
+    }
 }

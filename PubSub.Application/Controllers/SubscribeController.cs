@@ -13,13 +13,11 @@ namespace PubSub.Application.Controllers;
 public class SubscribeController : PubSubBaseController
 {
     private readonly ISubscriptionService _subscriptionService;
-    private readonly ISubscribeRequestMapper _subscribeRequestMapper;
     private readonly ISubscriptionMapper _subscriptionMapper;
 
-    public SubscribeController(ISubscriptionService subscriptionService, ISubscribeRequestMapper subscribeRequestMapper, ISubscriptionMapper subscriptionMapper)
+    public SubscribeController(ISubscriptionService subscriptionService, ISubscriptionMapper subscriptionMapper)
     {
         _subscriptionService = subscriptionService;
-        _subscribeRequestMapper = subscribeRequestMapper;
         _subscriptionMapper = subscriptionMapper;
     }
 
@@ -30,7 +28,7 @@ public class SubscribeController : PubSubBaseController
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
-        var subscriptions = _subscribeRequestMapper.FromDto(request);
+        var subscriptions = _subscriptionMapper.FromDTO(request);
         await _subscriptionService.AddSubscriptionsAsync(subscriptions);
         return NoContent();
     }

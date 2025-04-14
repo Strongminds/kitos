@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRequestMapping(this IServiceCollection services)
     {
         services.AddScoped<IPublishRequestMapper, PublishRequestMapper>();
-        services.AddScoped<ISubscribeRequestMapper, SubscribeRequestMapper>();
         return services;
     }
 
