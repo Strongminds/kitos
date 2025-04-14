@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Moq;
+using PubSub.Application.Models;
 using PubSub.Application.Services;
 using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.Models;
@@ -26,8 +27,7 @@ namespace PubSub.Test.Unit.Application
         [InlineData(true)]
         public async void Can_Only_Delete_Subscription_If_User_Owns_It(bool userOwnsSubscription)
         {
-            var currentUserId = A<string>();
-            _currentUserService.Setup(x => x.UserId).Returns(currentUserId);
+            var currentUserId = ExpectCurrentUserIs();
             var subscriptionOwnerId = userOwnsSubscription ? currentUserId : A<string>();
             var subscription = CreateSubscription(subscriptionOwnerId);
             _repository.Setup(x => x.GetAsync(subscription.Uuid)).ReturnsAsync(subscription);
@@ -49,6 +49,60 @@ namespace PubSub.Test.Unit.Application
             var result = await _sut.DeleteSubscription(uuid);
 
             Assert.Equal(OperationError.NotFound, result);
+        }
+
+        [Fact]
+        public async void Does_Not_Create_Subscriptions_For_Duplicates()
+        {
+            var request = A<CreateSubscriptionParameters>();
+            ExpectCurrentUserIs();
+            _repository.Setup(x => x.Exists(request.Topic, request.Callback)).ReturnsAsync(true);
+
+            await _sut.AddSubscriptionsAsync(new List<CreateSubscriptionParameters> { request });
+
+            _repository.Verify(x => x.AddAsync(It.IsAny<Subscription>()), Times.Never);
+            _consumerInstantiator.Verify(x => x.InstantiateTopic(request.Topic), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddSubscriptions_CreatesSubscriptionsWithCorrectData()
+        {
+            //Arrange
+            var subscriptionRequests = Many<CreateSubscriptionParameters>().ToList();
+            var currentUserId = ExpectCurrentUserIs();
+
+            var addedSubscriptions = new List<Subscription>();
+            _repository.Setup(x => x.AddAsync(It.IsAny<Subscription>()))
+                .Callback<Subscription>(addedSubscriptions.Add)
+                .Returns(Task.CompletedTask);
+
+            //Act
+            await _sut.AddSubscriptionsAsync(subscriptionRequests);
+
+            //Assert
+            Assert.Equal(subscriptionRequests.Count, addedSubscriptions.Count);
+
+            foreach (var request in subscriptionRequests)
+            {
+                var subscription = addedSubscriptions
+                    .FirstOrDefault(s => s.Callback == request.Callback && s.Topic == request.Topic);
+
+                Assert.NotNull(subscription); // Ensure a matching subscription was created.
+                Assert.Equal(currentUserId, subscription.OwnerId);
+                Assert.NotEqual(Guid.Empty, subscription.Uuid);
+            }
+
+            foreach (var subscription in addedSubscriptions)
+            {
+                _consumerInstantiator.Verify(x => x.InstantiateTopic(subscription.Topic), Times.Once());
+            }
+        }
+
+        private string ExpectCurrentUserIs()
+        {
+            var userId = A<string>();
+            _currentUserService.Setup(x => x.UserId).Returns(Maybe<string>.From(userId));
+            return userId;
         }
 
         private IEnumerable<Subscription> CreateSubscriptions(string currentUserId)
