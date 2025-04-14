@@ -47,19 +47,6 @@ namespace PubSub.Test.Unit.Core
             //await _sut.AddSubscriptionsAsync(subs);
             _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<IServiceScopeFactory>()));
             consumer.Verify(_ => _.StartListeningAsync());
-            _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, subscription.Callback));
-        }
-
-        [Fact]
-        public async Task Can_Update_Subscription_Callbacks_If_Consumer_Exists()
-        {
-            var topic = await SetupExistingConsumerWithCallback();
-            var newSubscription = new Subscription(A<Uri>(), topic);
-
-            var newSubs = new List<Subscription> { newSubscription };
-            //await _sut.AddSubscriptionsAsync(newSubs);
-
-            _subscriptionStore.Verify(_ => _.AddCallbackToTopic(topic, newSubscription.Callback));
         }
 
         private async Task<string> SetupExistingConsumerWithCallback()

@@ -13,7 +13,6 @@ namespace PubSub.Application.Services
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly string _topic;
         private readonly IPayloadSerializer _payloadSerializer;
-        private readonly HashSet<Uri> _callbackUrls = new();
         private IConnection _connection;
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
@@ -54,7 +53,7 @@ namespace PubSub.Application.Services
                     var subs = await repo.GetByTopic(_topic);
                     foreach (var callbackUrl in subs.Select(x => x.Callback))
                     {
-                        await _subscriberNotifierService.Notify(payload, callbackUrl.AbsoluteUri);
+                        await _subscriberNotifierService.Notify(payload, callbackUrl);
                     }
                 }
                 catch (Exception ex)
@@ -63,11 +62,6 @@ namespace PubSub.Application.Services
                 }
             };
             return consumer;
-        }
-
-        public void AddCallbackUrl(Uri callbackUrl)
-        {
-            _callbackUrls.Add(callbackUrl);
         }
 
         public void Dispose()

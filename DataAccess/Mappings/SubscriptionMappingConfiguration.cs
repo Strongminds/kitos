@@ -10,8 +10,9 @@ namespace PubSub.DataAccess.Mappings
         {
             builder.HasKey(x => x.Uuid);
 
-            builder.Property(x => x.Callback)
-                .HasConversion<string>();
+            builder.Property(x => x.Callback).IsRequired();
+            builder.Property(x => x.Topic).IsRequired();
+            builder.Property(x => x.OwnerId).IsRequired();
         }
     }
 }

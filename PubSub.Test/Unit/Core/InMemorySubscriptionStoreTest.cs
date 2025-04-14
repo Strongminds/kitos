@@ -40,16 +40,6 @@ namespace PubSub.Test.Unit.Core
             Assert.Equal(subscriptions[topic], secondConsumer.Object);
         }
 
-        [Fact]
-        public void Can_Add_Callback_To_Consumer_By_Topic()
-        {
-            var (topic, callback, consumer) = SetupCreateConsumer();
-
-            _sut.AddCallbackToTopic(topic, callback);
-
-            consumer.Verify(_ => _.AddCallbackUrl(callback));
-        }
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]

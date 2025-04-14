@@ -2,7 +2,6 @@
 {
     public interface ISubscriptionStore
     {
-        void AddCallbackToTopic(string topic, Uri callback);
 
         void SetConsumerForTopic(string topic, IConsumer consumer);
 

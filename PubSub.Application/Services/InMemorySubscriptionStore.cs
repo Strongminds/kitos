@@ -7,11 +7,6 @@ namespace PubSub.Application.Services
     {
         private readonly ConcurrentDictionary<string, IConsumer> _consumersByTopicDictionary = new();
 
-        public void AddCallbackToTopic(string topic, Uri callback)
-        {
-            _consumersByTopicDictionary[topic].AddCallbackUrl(callback);
-        }
-
         public void SetConsumerForTopic(string topic, IConsumer consumer)
         {
             _consumersByTopicDictionary[topic] = consumer;

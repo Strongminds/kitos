@@ -8,12 +8,10 @@ public class SubscriptionService : ISubscriptionService
 {
     private readonly ISubscriptionRepository _repository;
     private readonly ICurrentUserService _currentUserService;
-    private readonly ISubscriberService _subscriberService;
     public SubscriptionService(ISubscriptionRepository repository, ISubscriberService subscriberService, ICurrentUserService currentUserService)
     {
         _repository = repository;
         _currentUserService = currentUserService;
-        _subscriberService = subscriberService;
     }
     public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
     {
@@ -25,7 +23,7 @@ public class SubscriptionService : ISubscriptionService
         {
             foreach (var sub in subs.Value)
             {
-                var exists = await _repository.Exists(sub.Topic, sub.Callback.AbsoluteUri);
+                var exists = await _repository.Exists(sub.Topic, sub.Callback);
                 if (exists) continue;
                 await _repository.AddAsync(sub);
             }

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using PubSub.Core.Abstractions.MonadExtensions;
 using PubSub.Core.Models;
-using PubSub.DataAccess.Helpers;
 
 namespace PubSub.DataAccess;
 
@@ -27,7 +26,7 @@ public class SubscriptionRepository : ISubscriptionRepository
     public async Task<bool> Exists(string topic, string url)
     {
         var byTopic = await GetByTopic(topic);
-        return byTopic.TryFirst(x => x.Callback.AbsoluteUri == url).HasValue;
+        return byTopic.TryFirst(x => x.Callback == url).HasValue;
     }
 
     public async Task<Maybe<Subscription>> GetAsync(Guid uuid)

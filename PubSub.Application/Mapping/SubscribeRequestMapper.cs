@@ -7,7 +7,7 @@ namespace PubSub.Application.Mapping
     {
         public IEnumerable<Subscription> FromDto(SubscribeRequestDto dto)
         {
-            return dto.Topics.Select(topicName => new Subscription(dto.Callback, topicName));
+            return dto.Topics.Select(topicName => new Subscription(dto.Callback.AbsoluteUri, topicName));
         }
     }
 }
