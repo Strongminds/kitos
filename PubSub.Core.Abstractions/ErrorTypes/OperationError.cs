@@ -3,6 +3,7 @@
     public enum OperationError
     {
         Duplicate,
-        NotFound
+        NotFound,
+        Forbidden
     }
 }

@@ -38,10 +38,18 @@ public class SubscriptionService : ISubscriptionService
 
     public async Task<Maybe<OperationError>> DeleteSubscription(Guid uuid)
     {
-        await _repository.DeleteAsync(uuid);
-        return Maybe.None; //TODO
+        var subscription = await _repository.GetAsync(uuid);
+        return subscription.Match(ValidateUserOwnsSubscription, () => OperationError.NotFound);
     }
 
+    private Maybe<OperationError> ValidateUserOwnsSubscription(Subscription subscription)
+    {
+        if (subscription.OwnerId != _currentUserService.UserId)
+        {
+            return OperationError.Forbidden;
+        }
+        return Maybe<OperationError>.None;
+    }
 
     private static Subscription ToSubscriptionWithOwnerId(Subscription subscription, string ownerId)
     {
