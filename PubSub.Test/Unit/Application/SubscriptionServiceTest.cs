@@ -65,7 +65,7 @@ namespace PubSub.Test.Unit.Application
         }
 
         [Fact]
-        public async Task AddSubscriptions_CreatesSubscriptionsWithCorrectData()
+        public async Task Can_Add_Subscriptions_With_Correct_Values()
         {
             //Arrange
             var subscriptionRequests = Many<CreateSubscriptionParameters>().ToList();
