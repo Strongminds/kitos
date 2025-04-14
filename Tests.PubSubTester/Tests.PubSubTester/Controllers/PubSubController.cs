@@ -106,7 +106,7 @@ namespace Tests.PubSubTester.Controllers
             return Ok();
         }
 
-        private async Task<string> GetKitosToken()
+        private static async Task<string> GetKitosToken()
         {
             var kitosClient = CreateClient(KitosApiUrl);
             var body = new LoginDTO { Email = "local-api-global-admin-user@kitos.dk", Password = "localNoSecret" };
