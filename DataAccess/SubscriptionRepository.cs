@@ -60,7 +60,7 @@ public class SubscriptionRepository : ISubscriptionRepository
         subscription.Tap(DeleteSubscription);
     }
 
-    public IQueryable<Subscription> SubscriptionsByTopic(string topic)
+    private IQueryable<Subscription> SubscriptionsByTopic(string topic)
     {
         return _context.Subscriptions.Where(x => x.Topic == topic);
     }
