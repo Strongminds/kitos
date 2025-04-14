@@ -13,4 +13,4 @@ Load-Pubsub-Parameters -environmentName $targetEnvironment
 #-------------------------------------------------------------
 Write-Host "Running migrations"
 #-------------------------------------------------------------
-Run-Pubsub-DB-Migrations -newDb $false -migrationsFolder "$Env:PUBSUB_MIGRATIONS_FOLDER" -connectionString "$Env:PUBSUB_CONNECTION_STRING"
+Run-Pubsub-DB-Migrations -connectionString "$Env:PUBSUB_CONNECTION_STRING"

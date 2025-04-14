@@ -1,18 +1,15 @@
-Function Run-Pubsub-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [string]$connectionString) {
+Function Run-Pubsub-DB-Migrations(
+    [string]$connectionString
+) {
     Write-Host "Executing pubsub db migrations"
 
-    if($newDb -eq $true) {
-        Write-Host "Enabling seed for new database"
-    } else {
-        Write-Host "Disabling seed for new database"
-    }
+    $dataAccessFolder = Resolve-Path "$PSScriptRoot\..\PubSub.DataAccess"
 
-    & "$migrationsFolder\ef6.exe"  `
-        database update  `
-        --assembly "$migrationsFolder\Infrastructure.DataAccess.dll"  `
-        --connection-string "$connectionString"  `
-        --connection-provider "System.Data.SqlClient"  `
-        --project-dir "$migrationsFolder"
-    
-    if($LASTEXITCODE -ne 0)	{ Throw "FAILED TO MIGRATE PUBSUB DB" }
+    & dotnet ef database update `
+         --project "$dataAccessFolder" `
+         --connection "$connectionString"
+
+    if ($LASTEXITCODE -ne 0) { 
+        Throw "FAILED TO MIGRATE PUBSUB DB" 
+    }
 }
