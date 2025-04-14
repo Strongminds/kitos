@@ -54,11 +54,6 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task DeleteAsync(Subscription subscription)
     {
-        await DeleteSubscription(subscription);
-    }
-
-    private async Task DeleteSubscription(Subscription subscription)
-    {
         _context.Subscriptions.Remove(subscription);
         await _context.SaveChangesAsync();
     }
