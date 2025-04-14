@@ -20,9 +20,12 @@ namespace PubSub.Test.Unit.Application
         {
             var dto = A<SubscribeRequestDto>();
 
-            var subscriptions = _sut.FromDTO(dto);
+            var createSubscriptionRequests = _sut.FromDTO(dto).ToList();
 
-            Assert.All(dto.Topics, topic => Assert.Contains(topic, subscriptions.Select(x => x.Topic)));
+            Assert.All(createSubscriptionRequests.Select(x => x.Callback), requestCallback => Assert.Equal(dto.Callback.AbsoluteUri, requestCallback));
+            var createRequestSet = createSubscriptionRequests.Select(x => x.Topic).ToHashSet();
+            var dtoSet = dto.Topics.ToHashSet();
+            Assert.True(createRequestSet.SetEquals(dtoSet));
         }
 
         [Fact]

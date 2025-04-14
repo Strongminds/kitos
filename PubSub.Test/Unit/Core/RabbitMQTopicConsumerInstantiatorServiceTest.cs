@@ -48,30 +48,5 @@ namespace PubSub.Test.Unit.Core
             _consumerFactory.Verify(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<IServiceScopeFactory>()));
             consumer.Verify(_ => _.StartListeningAsync());
         }
-
-        private async Task<string> SetupExistingConsumerWithCallback()
-        {
-            var subscription = A<Subscription>();
-            var subs = new List<Subscription> { subscription };
-            var mockConnectionManager = new Mock<IConnectionManager>();
-            var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
-            var topic = subscription.Topic;
-            var consumer = new Mock<IConsumer>();
-
-
-            _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(new Dictionary<string, IConsumer>());
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<IServiceScopeFactory>())).Returns(consumer.Object);
-
-            //await _sut.AddSubscriptionsAsync(subs);
-
-            var existingSubscriptions = new Dictionary<string, IConsumer>
-            {
-                { topic, consumer.Object }
-            };
-            _subscriptionStore.Setup(_ => _.GetSubscriptions()).Returns(existingSubscriptions);
-            _consumerFactory.Setup(_ => _.Create(It.IsAny<IConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<IServiceScopeFactory>())).Returns(consumer.Object);
-
-            return topic;
-        }
     }
 }

@@ -2,15 +2,12 @@
 {
     public class Subscription
     {
-        protected Subscription()
+        public Subscription(string callback, string topic, string ownerId)
         {
-            Uuid = Guid.NewGuid();
-        }
-        public Subscription(string callback, string topicName)
-        {
-            Uuid = Guid.NewGuid();
             Callback = callback;
-            Topic = topicName;
+            Topic = topic;
+            OwnerId = ownerId;
+            Uuid = Guid.NewGuid();
         }
         public Guid Uuid { get; set; }
         public string Callback { get; set; }

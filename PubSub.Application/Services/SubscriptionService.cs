@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PubSub.Application.Models;
 using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.Models;
 using PubSub.DataAccess;
@@ -16,20 +17,18 @@ public class SubscriptionService : ISubscriptionService
         _currentUserService = currentUserService;
         _topicConsumerInstantiatorService = topicConsumerInstantiatorService;
     }
-    public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
+    public async Task AddSubscriptionsAsync(IEnumerable<CreateSubscriptionParameters> requests)
     {
         var maybeUserId = _currentUserService.UserId;
-        var subs = maybeUserId.Map(userId =>
-             subscriptions.Select(x => ToSubscriptionWithOwnerId(x, userId)).ToList()
-        );
-        if (subs.HasValue)
+        if (maybeUserId.HasValue)
         {
-            foreach (var sub in subs.Value)
+            foreach (var request in requests)
             {
-                var exists = await _repository.Exists(sub.Topic, sub.Callback);
+                var exists = await _repository.Exists(request.Topic, request.Callback);
                 if (exists) continue;
-                await _repository.AddAsync(sub);
-                await _topicConsumerInstantiatorService.InstantiateTopic(sub.Topic);
+                var newSubscription = ToSubscriptionWithOwnerId(request, maybeUserId.Value);
+                await _repository.AddAsync(newSubscription);
+                await _topicConsumerInstantiatorService.InstantiateTopic(newSubscription.Topic);
             }
         }
     }
@@ -60,12 +59,8 @@ public class SubscriptionService : ISubscriptionService
         return subscription.OwnerId == _currentUserService.UserId;
     }
 
-    private static Subscription ToSubscriptionWithOwnerId(Subscription subscription, string ownerId)
+    private static Subscription ToSubscriptionWithOwnerId(CreateSubscriptionParameters parameters, string userId)
     {
-        return new Subscription(subscription.Callback, subscription.Topic)
-        {
-            Uuid = subscription.Uuid,
-            OwnerId = ownerId
-        };
+        return new Subscription(parameters.Callback, parameters.Topic, userId);
     }
 }

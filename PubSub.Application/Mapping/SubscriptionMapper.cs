@@ -1,4 +1,5 @@
 ﻿using PubSub.Application.DTOs;
+using PubSub.Application.Models;
 using PubSub.Core.Models;
 
 namespace PubSub.Application.Mapping;
@@ -15,8 +16,8 @@ public class SubscriptionMapper : ISubscriptionMapper
         };
     }
 
-    public IEnumerable<Subscription> FromDTO(SubscribeRequestDto dto)
+    public IEnumerable<CreateSubscriptionParameters> FromDTO(SubscribeRequestDto dto)
     {
-        return dto.Topics.Select(topicName => new Subscription(dto.Callback.AbsoluteUri, topicName));
+        return dto.Topics.Select(topic => new CreateSubscriptionParameters(dto.Callback.AbsoluteUri, topic));
     }
 }
