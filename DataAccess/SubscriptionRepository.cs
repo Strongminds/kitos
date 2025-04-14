@@ -20,13 +20,12 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<IEnumerable<Subscription>> GetByTopic(string topic)
     {
-        return await _context.Subscriptions.Where(x => x.Topic == topic).ToListAsync();
+        return await SubscriptionsByTopic(topic).ToListAsync();
     }
 
     public async Task<bool> Exists(string topic, string url)
     {
-        var byTopic = await GetByTopic(topic);
-        return byTopic.TryFirst(x => x.Callback == url).HasValue;
+        return await SubscriptionsByTopic(topic).Where(x => x.Callback == url).AnyAsync();
     }
 
     public async Task<Maybe<Subscription>> GetAsync(Guid uuid)
@@ -59,6 +58,11 @@ public class SubscriptionRepository : ISubscriptionRepository
 
         var subscription = await GetAsync(uuid);
         subscription.Tap(DeleteSubscription);
+    }
+
+    public IQueryable<Subscription> SubscriptionsByTopic(string topic)
+    {
+        return _context.Subscriptions.Where(x => x.Topic == topic);
     }
 
     private async void DeleteSubscription(Subscription subscription)
