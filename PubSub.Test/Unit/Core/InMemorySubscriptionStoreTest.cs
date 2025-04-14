@@ -56,13 +56,5 @@ namespace PubSub.Test.Unit.Core
             Assert.Equal(expected, actual);
         }
 
-        private (string topic, Uri callback, Mock<IConsumer> consumer) SetupCreateConsumer()
-        {
-            var topic = A<string>();
-            var consumer = new Mock<IConsumer>();
-            var callback = A<Uri>();
-            _sut.SetConsumerForTopic(topic, consumer.Object);
-            return (topic, callback, consumer);
-        }
     }
 }
