@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.Models;
 
 namespace PubSub.DataAccess;
@@ -53,15 +52,9 @@ public class SubscriptionRepository : ISubscriptionRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Maybe<OperationError>> DeleteAsync(Guid uuid)
+    public async Task DeleteAsync(Subscription subscription)
     {
-        var maybeSubscription = await GetAsync(uuid);
-        if (maybeSubscription.HasNoValue)
-        {
-            return OperationError.NotFound;
-        }
-        await DeleteSubscription(maybeSubscription.Value);
-        return Maybe<OperationError>.None;
+        await DeleteSubscription(subscription);
     }
 
     private async Task DeleteSubscription(Subscription subscription)

@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.Models;
 
 namespace PubSub.DataAccess;
@@ -13,5 +12,5 @@ public interface ISubscriptionRepository
     Task AddAsync(Subscription subscription);
     Task AddRangeAsync(IEnumerable<Subscription> subscriptions);
     Task UpdateAsync(Subscription subscription);
-    Task<Maybe<OperationError>> DeleteAsync(Guid uuid);
+    Task DeleteAsync(Subscription subscription);
 }
