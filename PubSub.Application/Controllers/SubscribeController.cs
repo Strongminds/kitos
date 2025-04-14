@@ -10,15 +10,15 @@ namespace PubSub.Application.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/subscribe")]
-public class SubscribeController : ControllerBase
+public class SubscribeController : PubSubBaseController
 {
     private readonly ISubscriptionService _subscriptionService;
     private readonly ISubscribeRequestMapper _subscribeRequestMapper;
     private readonly ISubscriptionMapper _subscriptionMapper;
 
-    public SubscribeController(ISubscriptionService subscriberService, ISubscribeRequestMapper subscribeRequestMapper, ISubscriptionMapper subscriptionMapper)
+    public SubscribeController(ISubscriptionService subscriptionService, ISubscribeRequestMapper subscribeRequestMapper, ISubscriptionMapper subscriptionMapper)
     {
-        _subscriptionService = subscriberService;
+        _subscriptionService = subscriptionService;
         _subscribeRequestMapper = subscribeRequestMapper;
         _subscriptionMapper = subscriptionMapper;
     }
@@ -45,7 +45,7 @@ public class SubscribeController : ControllerBase
     public async Task<IActionResult> Delete(Guid uuid)
     {
         var result = await _subscriptionService.DeleteSubscription(uuid);
-        return result.Match(_ => NoContent(), NoContent); // TODO
+        return result.Match(FromOperationError, NoContent); // TODO
     }
 
     [HttpGet]

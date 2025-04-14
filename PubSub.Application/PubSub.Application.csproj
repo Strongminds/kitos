@@ -24,4 +24,8 @@
     <ProjectReference Include="..\PubSub.Core\PubSub.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\NewFolder\" />
+  </ItemGroup>
+
 </Project>
