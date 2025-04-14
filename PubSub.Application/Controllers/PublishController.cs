@@ -13,13 +13,13 @@ namespace PubSub.Application.Controllers
     {
         private readonly IPublisherService _publisherService;
         private readonly IPublishRequestMapper _publishRequestMapper;
-        private readonly ISubscriberService _subscriberService;
+        private readonly ITopicConsumerInstantiatorService _topicConsumerInstantiatorService;
 
-        public PublishController(IPublisherService publisherService, IPublishRequestMapper publishRequestMapper, ISubscriberService subscriberService)
+        public PublishController(IPublisherService publisherService, IPublishRequestMapper publishRequestMapper, ITopicConsumerInstantiatorService topicConsumerInstantiatorService)
         {
             _publisherService = publisherService;
             _publishRequestMapper = publishRequestMapper;
-            _subscriberService = subscriberService;
+            _topicConsumerInstantiatorService = topicConsumerInstantiatorService;
         }
 
         [HttpPost]
@@ -31,7 +31,7 @@ namespace PubSub.Application.Controllers
 
             var publication = _publishRequestMapper.FromDto(request);
             await _publisherService.PublishAsync(publication);
-            await _subscriberService.AddSubscriptionsAsync(request.Topic);
+            await _topicConsumerInstantiatorService.InstantiateTopic(request.Topic);
 
             return NoContent();
         }

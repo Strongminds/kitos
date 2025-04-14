@@ -4,7 +4,7 @@ using PubSub.Core.Services.Serializer;
 
 namespace PubSub.Application.Services
 {
-    public class RabbitMQSubscriberService : ISubscriberService
+    public class RabbitMQTopicConsumerInstantiatorService : ITopicConsumerInstantiatorService
     {
         private readonly IConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
@@ -13,7 +13,7 @@ namespace PubSub.Application.Services
         private readonly IPayloadSerializer _payloadSerializer;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public RabbitMQSubscriberService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ISubscriptionStore subscriptionStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, IServiceScopeFactory scopeFactory)
+        public RabbitMQTopicConsumerInstantiatorService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ISubscriptionStore subscriptionStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, IServiceScopeFactory scopeFactory)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
@@ -23,7 +23,7 @@ namespace PubSub.Application.Services
             _scopeFactory = scopeFactory;
         }
 
-        public async Task AddSubscriptionsAsync(string topic)
+        public async Task InstantiateTopic(string topic)
         {
             if (!_subscriptionStore.HasTopic(topic))
             {

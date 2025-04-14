@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     {
         var connectionFactory = GetConnectionFactory(configuration);
         services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
-        services.AddScoped<ISubscriberService, RabbitMQSubscriberService>();
+        services.AddScoped<ITopicConsumerInstantiatorService, RabbitMQTopicConsumerInstantiatorService>();
         services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
         services.AddScoped<IPublisherService, RabbitMQPublisherService>();
 

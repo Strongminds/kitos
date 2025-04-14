@@ -9,9 +9,9 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core
 {
-    public class RabbitMQSubscriberServiceTest : WithAutoFixture
+    public class RabbitMQTopicConsumerInstantiatorServiceTest : WithAutoFixture
     {
-        private RabbitMQSubscriberService _sut;
+        private RabbitMQTopicConsumerInstantiatorService _sut;
         private readonly Mock<ISubscriptionStore> _subscriptionStore;
         private readonly Mock<IRabbitMQConsumerFactory> _consumerFactory;
         private readonly Mock<IConnectionManager> _mockConnectionManager;
@@ -20,7 +20,7 @@ namespace PubSub.Test.Unit.Core
         private readonly Mock<IServiceScopeFactory> _subscriptionRepository;
         
 
-        public RabbitMQSubscriberServiceTest()
+        public RabbitMQTopicConsumerInstantiatorServiceTest()
         {
             _mockConnectionManager = new Mock<IConnectionManager>();
             _subscriptionStore = new Mock<ISubscriptionStore>();
@@ -28,7 +28,7 @@ namespace PubSub.Test.Unit.Core
             _mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
             _messageSerializer = new Mock<IPayloadSerializer>();
             _subscriptionRepository = new Mock<IServiceScopeFactory>();
-            _sut = new RabbitMQSubscriberService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object, _messageSerializer.Object, _subscriptionRepository.Object);
+            _sut = new RabbitMQTopicConsumerInstantiatorService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object, _messageSerializer.Object, _subscriptionRepository.Object);
         }
 
         [Fact]

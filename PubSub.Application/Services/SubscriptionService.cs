@@ -9,12 +9,12 @@ public class SubscriptionService : ISubscriptionService
 {
     private readonly ISubscriptionRepository _repository;
     private readonly ICurrentUserService _currentUserService;
-    private readonly ISubscriberService _subscriberService;
-    public SubscriptionService(ISubscriptionRepository repository, ICurrentUserService currentUserService, ISubscriberService subscriberService)
+    private readonly ITopicConsumerInstantiatorService _topicConsumerInstantiatorService;
+    public SubscriptionService(ISubscriptionRepository repository, ICurrentUserService currentUserService, ITopicConsumerInstantiatorService topicConsumerInstantiatorService)
     {
         _repository = repository;
         _currentUserService = currentUserService;
-        _subscriberService = subscriberService;
+        _topicConsumerInstantiatorService = topicConsumerInstantiatorService;
     }
     public async Task AddSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
     {
@@ -29,7 +29,7 @@ public class SubscriptionService : ISubscriptionService
                 var exists = await _repository.Exists(sub.Topic, sub.Callback);
                 if (exists) continue;
                 await _repository.AddAsync(sub);
-                await _subscriberService.AddSubscriptionsAsync(sub.Topic);
+                await _topicConsumerInstantiatorService.InstantiateTopic(sub.Topic);
             }
         }
     }
