@@ -40,18 +40,6 @@ public class SubscriptionRepository : ISubscriptionRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task AddRangeAsync(IEnumerable<Subscription> subscriptions)
-    {
-        await _context.Subscriptions.AddRangeAsync(subscriptions);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateAsync(Subscription subscription)
-    {
-        _context.Subscriptions.Update(subscription);
-        await _context.SaveChangesAsync();
-    }
-
     public async Task DeleteAsync(Subscription subscription)
     {
         _context.Subscriptions.Remove(subscription);

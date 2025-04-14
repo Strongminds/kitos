@@ -1,0 +1,68 @@
+﻿using CSharpFunctionalExtensions;
+using Moq;
+using PubSub.Application.Services;
+using PubSub.Core.Abstractions.ErrorTypes;
+using PubSub.Core.Models;
+using PubSub.DataAccess;
+using PubSub.Test.Base.Tests.Toolkit.Patterns;
+
+namespace PubSub.Test.Unit.Application
+{
+    public class SubscriptionServiceTest : WithAutoFixture
+    {
+        private readonly Mock<ISubscriptionRepository> _repository = new Mock<ISubscriptionRepository>();
+        private readonly Mock<ICurrentUserService> _currentUserService = new Mock<ICurrentUserService>();
+        private readonly Mock<ITopicConsumerInstantiatorService> _consumerInstantiator = new Mock<ITopicConsumerInstantiatorService>();
+        private readonly SubscriptionService _sut;
+
+        public SubscriptionServiceTest()
+        {
+            _sut = new SubscriptionService(_repository.Object, _currentUserService.Object,
+                _consumerInstantiator.Object);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async void Can_Only_Delete_Subscription_If_User_Owns_It(bool userOwnsSubscription)
+        {
+            var currentUserId = A<string>();
+            _currentUserService.Setup(x => x.UserId).Returns(currentUserId);
+            var subscriptionOwnerId = userOwnsSubscription ? currentUserId : A<string>();
+            var subscription = CreateSubscription(subscriptionOwnerId);
+            _repository.Setup(x => x.GetAsync(subscription.Uuid)).ReturnsAsync(subscription);
+
+            var result = await _sut.DeleteSubscription(subscription.Uuid);
+
+            var expectedResult = userOwnsSubscription ? Maybe.None : Maybe.From(OperationError.Forbidden);
+            var expectedDeleteCalls = userOwnsSubscription ? Times.Once() : Times.Never();
+            Assert.Equal(expectedResult, result);
+            _repository.Verify(x => x.DeleteAsync(subscription), expectedDeleteCalls);
+        }
+
+        [Fact]
+        public async void Can_Delete_Returns_Not_Found_When_Subscription_Does_Not_Exist()
+        {
+            var uuid = A<Guid>();
+            _repository.Setup(x => x.GetAsync(uuid)).ReturnsAsync(Maybe.None);
+
+            var result = await _sut.DeleteSubscription(uuid);
+
+            Assert.Equal(OperationError.NotFound, result);
+        }
+
+        private IEnumerable<Subscription> CreateSubscriptions(string currentUserId)
+        {
+            var someOtherUserId = A<string>();
+            var s1 = CreateSubscription(currentUserId);
+            var s2 = CreateSubscription(currentUserId);
+            var s3 = CreateSubscription(someOtherUserId);
+            return new List<Subscription> { s1, s2, s3 };
+        }
+
+        private Subscription CreateSubscription(string ownerId)
+        {
+            return new Subscription(A<string>(), A<string>(), ownerId);
+        }
+    }
+}

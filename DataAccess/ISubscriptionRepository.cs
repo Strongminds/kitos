@@ -10,7 +10,5 @@ public interface ISubscriptionRepository
     Task<bool> Exists(string topic, string url);
     Task<Maybe<Subscription>> GetAsync(Guid uuid);
     Task AddAsync(Subscription subscription);
-    Task AddRangeAsync(IEnumerable<Subscription> subscriptions);
-    Task UpdateAsync(Subscription subscription);
     Task DeleteAsync(Subscription subscription);
 }
