@@ -13,7 +13,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   api:
-    image: strongminds/kitos-pubsub:latest
+    image: strongminds/kitos-pubsub:${IMAGE_TAG}
     container_name: kitos-pubsub
     depends_on:
       - rabbitmq

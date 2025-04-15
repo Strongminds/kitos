@@ -3,7 +3,10 @@ param (
     [string]$targetEnvironment,
 
     [Parameter(Mandatory = $true)]
-    [string]$ASPNETCORE_ENVIRONMENT
+    [string]$ASPNETCORE_ENVIRONMENT,
+
+    [Parameter(Mandatory = false)]
+    [string]$IMAGE_TAG = "latest"
 )
 
 .$PSScriptRoot\SetupPubsubEnviroment.ps1
@@ -46,6 +49,7 @@ PUBSUB_API_KEY=$Env:PUBSUB_API_KEY
 IDP_HOST_MAPPING=$Env:IDP_HOST_MAPPING
 CERT_PASSWORD=$Env:CERT_PASSWORD
 PUBSUB_CONNECTION_STRING=$Env:PUBSUB_CONNECTION_STRING
+IMAGE_TAG=$IMAGE_TAG
 "@
 
 # Copy the .env file to the remote host
