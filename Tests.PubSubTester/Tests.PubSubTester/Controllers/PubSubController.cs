@@ -114,7 +114,7 @@ namespace Tests.PubSubTester.Controllers
             var tokenResponse = await kitosClient.PostAsync("api/authorize/GetToken", content);
             var jsonResponse = await tokenResponse.Content.ReadAsStringAsync();
             dynamic result = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
-            string token = result.response.token;
+            string token = result.response.token; 
             return token;
         }
 
