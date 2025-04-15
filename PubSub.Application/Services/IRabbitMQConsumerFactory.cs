@@ -1,7 +1,5 @@
-﻿using PubSub.Core.Models;
-using PubSub.Core.Services.Notifier;
+﻿using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
-using PubSub.DataAccess;
 
 namespace PubSub.Application.Services
 {

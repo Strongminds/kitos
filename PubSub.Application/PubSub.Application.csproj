@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\PubSub.DataAccess.csproj" />
     <ProjectReference Include="..\PubSub.Core\PubSub.Core.csproj" />
+    <ProjectReference Include="..\PubSub.DataAccess\PubSub.DataAccess.csproj" />
   </ItemGroup>
 
   <ItemGroup>

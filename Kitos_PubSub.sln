@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeploymentScripts", "Deploy
 		DeploymentScripts\PreparePubsubDatabase.ps1 = DeploymentScripts\PreparePubsubDatabase.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.DataAccess", "DataAccess\PubSub.DataAccess.csproj", "{0F9EAAA6-056A-4A1D-8A0A-4A09803A797A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.DataAccess", "PubSub.DataAccess\PubSub.DataAccess.csproj", "{0F9EAAA6-056A-4A1D-8A0A-4A09803A797A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.Core.Abstractions", "PubSub.Core.Abstractions\PubSub.Core.Abstractions.csproj", "{EDD341A1-685C-4D21-BF5B-76DEEB87E001}"
 EndProject
