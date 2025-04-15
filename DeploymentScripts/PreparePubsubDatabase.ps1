@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 .$PSScriptRoot\SetupPubsubEnviroment.ps1
 .$PSScriptRoot\PubsubDBMigrations.ps1
 
-Load-Pubsub-Parameters -environmentName $targetEnvironment
+Load-Pubsub-Parameters -envName $targetEnvironment
 
 #-------------------------------------------------------------
 Write-Host "Running migrations"
