@@ -34,11 +34,6 @@
             {
                 public const string CertPassword = "CERT_PASSWORD";
             }
-
-            public class Database
-            {
-                public const string ConnectionString = "CONNECTION_STRING";
-            }
         }
     }
 }
