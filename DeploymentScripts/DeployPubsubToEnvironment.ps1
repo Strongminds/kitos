@@ -6,7 +6,7 @@ param (
     [string]$ASPNETCORE_ENVIRONMENT,
 
     [Parameter(Mandatory = false)]
-    [string]$IMAGE_TAG = "latest"
+    [string]$IMAGE_TAG
 )
 
 .$PSScriptRoot\SetupPubsubEnviroment.ps1
