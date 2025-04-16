@@ -5,8 +5,8 @@ param (
     [Parameter(Mandatory = $true)]
     [string]$ASPNETCORE_ENVIRONMENT,
 
-    [Parameter(Mandatory = false)]
-    [string]$IMAGE_TAG
+    [Parameter(Mandatory = $true)]
+    [string]$IMAGE_TAG 
 )
 
 .$PSScriptRoot\SetupPubsubEnviroment.ps1
