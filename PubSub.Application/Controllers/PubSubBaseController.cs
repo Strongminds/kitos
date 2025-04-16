@@ -9,7 +9,7 @@ public class PubSubBaseController : ControllerBase
     {
         return error switch
         {
-            OperationError.Duplicate => throw new NotImplementedException(),
+            OperationError.Duplicate => Conflict(),
             OperationError.NotFound => NotFound(),
             OperationError.Forbidden => Forbid(),
             _ => throw new ArgumentOutOfRangeException(nameof(error), error, null)
