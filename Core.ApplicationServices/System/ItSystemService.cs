@@ -115,15 +115,17 @@ namespace Core.ApplicationServices.System
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItSystem>>.None;
 
-            var isStakeHolder = _userContext.HasStakeHolderAccess();
-
-            if (!isStakeHolder && accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
+            if (_userContext.HasStakeHolderAccess())
+            {
+                //Do nothing, Stakeholders can read all systems
+            }
+            else if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
             {
                 var rightsHoldingOrganizations = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
 
                 refinement = new QueryByRightsHolderIdOrOwnOrganizationIds(rightsHoldingOrganizations, _userContext.OrganizationIds);
             }
-            else if (!isStakeHolder && accessLevel < CrossOrganizationDataReadAccessLevel.All)
+            else if (accessLevel < CrossOrganizationDataReadAccessLevel.All)
             {
                 refinement = new QueryAllByRestrictionCapabilities<ItSystem>(accessLevel, _userContext.OrganizationIds);
             }
@@ -344,7 +346,7 @@ namespace Core.ApplicationServices.System
             return GetSystem(uuid).Transform(GetPermissions);
         }
 
-        private Result<SystemPermissions, OperationError> GetPermissions(Result<ItSystem,OperationError> systemResult)
+        private Result<SystemPermissions, OperationError> GetPermissions(Result<ItSystem, OperationError> systemResult)
         {
             return systemResult
                 .Transform
