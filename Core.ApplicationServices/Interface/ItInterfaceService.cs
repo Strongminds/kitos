@@ -122,7 +122,11 @@ namespace Core.ApplicationServices.Interface
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItInterface>>.None;
 
-            if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
+            if (_userContext.HasStakeHolderAccess())
+            {
+                //Do nothing, Stakeholders can read all interfaces
+            }
+            else if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
             {
                 var rightsHolderOrgs = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
                 refinement = new QueryByRightsHolderIdsOrOwnOrganizationIds(rightsHolderOrgs, _userContext.OrganizationIds);
