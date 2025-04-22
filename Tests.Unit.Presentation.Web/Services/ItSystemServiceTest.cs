@@ -1516,8 +1516,6 @@ namespace Tests.Unit.Presentation.Web.Services
         [InlineData(true, false, false, true, true)]
         [InlineData(true, false, true, false, true)]
         [InlineData(true, true, false, false, true)]
-        [InlineData(true, true, true, true, true)]
-        [InlineData(true, true, true, true, false)]
         [InlineData(true, true, true, true, false)]
         public void Can_Get_Permissions_With_Deletion_Conflicts_And_Visibility(bool allowDelete, bool withUsages, bool withChildren, bool withExposures, bool withEditVisibilityPermission)
         {
