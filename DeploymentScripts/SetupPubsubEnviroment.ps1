@@ -18,11 +18,4 @@ Function Load-Pubsub-Parameters([String] $envName) {
     $Env:PUBSUB_REMOTE_TARGET_USER          = $parameters["PubSubRemoteTargetUser"]
     $Env:PUBSUB_REMOTE_TARGET_HOST          = $parameters["PubSubRemoteTargetHost"]
     $Env:PUBSUB_REMOTE_TARGET_PATH          = $parameters["PubSubRemoteTargetPath"]
-
-    # Debug output to check set environment variables
-    Write-Output "Set environment variables:"
-    Write-Output "IDP_HOST_MAPPING: $Env:IDP_HOST_MAPPING"
-    Write-Output "PUBSUB_REMOTE_TARGET_USER: $Env:PUBSUB_REMOTE_TARGET_USER"
-    Write-Output "PUBSUB_REMOTE_TARGET_HOST: $Env:PUBSUB_REMOTE_TARGET_HOST"
-    Write-Output "PUBSUB_REMOTE_TARGET_PATH: $Env:PUBSUB_REMOTE_TARGET_PATH"
 }
