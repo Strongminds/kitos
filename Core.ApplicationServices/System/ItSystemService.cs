@@ -115,13 +115,9 @@ namespace Core.ApplicationServices.System
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItSystem>>.None;
 
-            if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
-            {
-                var rightsHoldingOrganizations = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
-
-                refinement = new QueryByRightsHolderIdOrOwnOrganizationIds(rightsHoldingOrganizations, _userContext.OrganizationIds);
-            }
-            else if (accessLevel < CrossOrganizationDataReadAccessLevel.All)
+            var hasGlobalCatalogAccess = accessLevel == CrossOrganizationDataReadAccessLevel.All ||
+                                         accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder;
+            if (!hasGlobalCatalogAccess)
             {
                 refinement = new QueryAllByRestrictionCapabilities<ItSystem>(accessLevel, _userContext.OrganizationIds);
             }
@@ -342,7 +338,7 @@ namespace Core.ApplicationServices.System
             return GetSystem(uuid).Transform(GetPermissions);
         }
 
-        private Result<SystemPermissions, OperationError> GetPermissions(Result<ItSystem,OperationError> systemResult)
+        private Result<SystemPermissions, OperationError> GetPermissions(Result<ItSystem, OperationError> systemResult)
         {
             return systemResult
                 .Transform

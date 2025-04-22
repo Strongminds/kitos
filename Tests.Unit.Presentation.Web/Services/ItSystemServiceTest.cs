@@ -196,30 +196,6 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
-        public void GetAvailableSystems_With_RightsHolders_Access()
-        {
-            //Arrange
-            var mainOrg = A<int>();
-            var rightsHoldingOrganization1 = mainOrg + 1;
-            var rightsHoldingOrganization2 = rightsHoldingOrganization1 + 1;
-            var otherOrganizationId = rightsHoldingOrganization2 + 1;
-            var includedSystem1 = CreateSystem(mainOrg, AccessModifier.Public, rightsHoldingOrganization1);
-            var includedSystem2 = CreateSystem(mainOrg, AccessModifier.Local, rightsHoldingOrganization2);
-            var excludedWrongRightsHolder = CreateSystem(otherOrganizationId, AccessModifier.Public, otherOrganizationId);
-            var all = new List<ItSystem> { includedSystem1, excludedWrongRightsHolder, CreateSystem(otherOrganizationId), includedSystem2 };
-            ExpectGetSystemsReturns(all);
-            ExpectGetCrossLevelOrganizationAccessReturns(CrossOrganizationDataReadAccessLevel.RightsHolder);
-            _userContext.Setup(x => x.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess))
-                .Returns(new[] { rightsHoldingOrganization1, rightsHoldingOrganization2 });
-
-            //Act
-            var availableSystems = _sut.GetAvailableSystems().ToList();
-
-            //Assert
-            Assert.Equal(new[] { includedSystem1, includedSystem2 }, availableSystems);
-        }
-
-        [Fact]
         public void GetAvailableSystems_Applies_Sub_queries()
         {
             //Arrange
@@ -1493,7 +1469,7 @@ namespace Tests.Unit.Presentation.Web.Services
         {
             //Arrange
             var uuid = A<Guid>();
-            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public};
+            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public };
             ExpectGetSystemReturns(uuid, itSystem);
             ExpectAllowReadsReturns(itSystem, read);
             ExpectAllowModifyReturns(itSystem, modify);
@@ -1523,7 +1499,7 @@ namespace Tests.Unit.Presentation.Web.Services
         {
             //Arrange
             var uuid = A<Guid>();
-            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public};
+            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public };
             ExpectGetSystemReturns(uuid, itSystem);
             ExpectAllowReadsReturns(itSystem, true);
             ExpectAllowModifyReturns(itSystem, true);
@@ -1599,6 +1575,21 @@ namespace Tests.Unit.Presentation.Web.Services
             //Assert
             Assert.True(result.Failed);
             Assert.Equal(error.FailureType, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void Users_With_Rights_holder_Access_Can_Get_All_Systems()
+        {
+            var localSystem = new ItSystem { AccessModifier = AccessModifier.Local};
+            var publicSystem = new ItSystem { AccessModifier = AccessModifier.Public};
+            var itSystems = new List<ItSystem> { localSystem, publicSystem };
+            ExpectGetSystemsReturns(itSystems);
+            ExpectGetUserOrganizationIdsReturns(); //No input: User has no organizations
+            ExpectGetCrossLevelOrganizationAccessReturns(CrossOrganizationDataReadAccessLevel.RightsHolder);
+
+            var query = _sut.GetAvailableSystems();
+
+            Assert.Equal(2, query.Count());
         }
 
         private (ItSystem root, IReadOnlyList<ItSystem> createdItSystems) CreateHierarchy()
@@ -1709,7 +1700,7 @@ namespace Tests.Unit.Presentation.Web.Services
 
         private ItSystemUsage CreateSystemUsage(Organization organization)
         {
-            return new() { Id = A<int>(), Organization = organization, ItSystem = new ItSystem{Name = A<string>()}};
+            return new() { Id = A<int>(), Organization = organization, ItSystem = new ItSystem { Name = A<string>() } };
         }
 
         private ItInterfaceExhibit CreateInterfaceExhibit()
