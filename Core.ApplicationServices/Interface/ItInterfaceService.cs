@@ -122,12 +122,7 @@ namespace Core.ApplicationServices.Interface
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItInterface>>.None;
 
-            if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
-            {
-                var rightsHolderOrgs = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
-                refinement = new QueryByRightsHolderIdsOrOwnOrganizationIds(rightsHolderOrgs, _userContext.OrganizationIds);
-            }
-            else
+            if (accessLevel != CrossOrganizationDataReadAccessLevel.RightsHolder)
             {
                 refinement = new QueryAllByRestrictionCapabilities<ItInterface>(accessLevel, _userContext.OrganizationIds);
             }
