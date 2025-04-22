@@ -24,9 +24,9 @@ if (-Not (Test-Path $composeFile)) {
     Write-Error "Compose file not found at: $composeFile"
     exit 1
 }
-$remoteUser = "kitosadmintest"
-$remoteHost = "10.212.74.11"
-$remotePath = "/home/kitosadmintest/app"
+$remoteUser = $Env:PUBSUB_REMOTE_TARGET_USER
+$remoteHost = $Env:PUBSUB_REMOTE_TARGET_HOST
+$remotePath = $Env:PUBSUB_REMOTE_TARGET_PATH
 $remoteTarget = "${remoteUser}@${remoteHost}:${remotePath}"
 
 # Copy the docker-compose file to the remote host
