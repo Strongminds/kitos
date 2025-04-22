@@ -105,10 +105,17 @@ namespace Core.ApplicationServices.Authorization
                 EntityReadAccessLevel.OrganizationOnly => HasRoleInSameOrganizationAs(entity),
                 EntityReadAccessLevel.OrganizationAndPublicFromOtherOrganizations =>
                     HasRoleInSameOrganizationAs(entity) ||
-                    EntityIsShared(entity),
+                    EntityIsShared(entity) ||
+                    IsItSystemOrInterface(entity),
                 EntityReadAccessLevel.All => true,
                 _ => throw new ArgumentOutOfRangeException(nameof(readAccessLevel), "unsupported read access level")
             };
+        }
+
+        private bool IsItSystemOrInterface(IEntity entity)
+        {
+            var entityType = entity.GetType();
+            return entityType == typeof(ItSystem) || entityType == typeof(ItInterface);
         }
 
         private bool IsRightsHolderFor(IEntity entity)

@@ -1493,7 +1493,7 @@ namespace Tests.Unit.Presentation.Web.Services
         {
             //Arrange
             var uuid = A<Guid>();
-            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public};
+            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public };
             ExpectGetSystemReturns(uuid, itSystem);
             ExpectAllowReadsReturns(itSystem, read);
             ExpectAllowModifyReturns(itSystem, modify);
@@ -1521,7 +1521,7 @@ namespace Tests.Unit.Presentation.Web.Services
         {
             //Arrange
             var uuid = A<Guid>();
-            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public};
+            var itSystem = new ItSystem { Uuid = uuid, AccessModifier = AccessModifier.Public };
             ExpectGetSystemReturns(uuid, itSystem);
             ExpectAllowReadsReturns(itSystem, true);
             ExpectAllowModifyReturns(itSystem, true);
@@ -1599,6 +1599,21 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.Equal(error.FailureType, result.Error.FailureType);
         }
 
+        [Fact]
+        public void Stakeholders_Can_Read_All_ItSystems()
+        {
+            var localSystem = new ItSystem { AccessModifier = AccessModifier.Local };
+            var publicSystem = new ItSystem { AccessModifier = AccessModifier.Public };
+            var systems = new List<ItSystem> { localSystem, publicSystem };
+            ExpectGetSystemsReturns(systems);
+            ExpectGetUserOrganizationIdsReturns(); //User has no organizations
+            ExpectUserIsStakeholder();
+
+            var result = _sut.GetAvailableSystems();
+
+            Assert.Equal(2, result.Count());
+        }
+
         private (ItSystem root, IReadOnlyList<ItSystem> createdItSystems) CreateHierarchy()
         {
             var root = CreateSystem();
@@ -1612,6 +1627,12 @@ namespace Tests.Unit.Presentation.Web.Services
             child.Parent = root;
 
             return (root, new List<ItSystem> { root, child, grandchild });
+        }
+
+        private void ExpectUserIsStakeholder()
+        {
+            ExpectGetCrossLevelOrganizationAccessReturns(CrossOrganizationDataReadAccessLevel.Public); //Access level of stakeholders
+            _userContext.Setup(x => x.HasStakeHolderAccess()).Returns(true);
         }
 
         private void UpdateName_Fails_With_BadInput(string newName)
@@ -1707,7 +1728,7 @@ namespace Tests.Unit.Presentation.Web.Services
 
         private ItSystemUsage CreateSystemUsage(Organization organization)
         {
-            return new() { Id = A<int>(), Organization = organization, ItSystem = new ItSystem{Name = A<string>()}};
+            return new() { Id = A<int>(), Organization = organization, ItSystem = new ItSystem { Name = A<string>() } };
         }
 
         private ItInterfaceExhibit CreateInterfaceExhibit()

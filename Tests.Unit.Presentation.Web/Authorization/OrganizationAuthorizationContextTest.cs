@@ -766,6 +766,22 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.Equal(isSystemIntegrator, result);
         }
 
+        [Fact]
+        public void Stakeholders_Can_Read_Any_Local_ItSystem_Or_Interface()
+        {
+            var localSystem = new ItSystem { AccessModifier = AccessModifier.Local };
+            var localInterface = new ItInterface { AccessModifier = AccessModifier.Local };
+            ExpectUserHasStakeHolderAccess(true);
+
+            var canReadLocalSystem = _sut.AllowReads(localSystem);
+            var canReadLocalInterface = _sut.AllowReads(localInterface);
+
+            Assert.True(canReadLocalSystem);
+            Assert.True(canReadLocalInterface);
+
+
+        }
+
         private void Allow_Create_Returns<T>(bool expectedResult)
         {
             //Arrange

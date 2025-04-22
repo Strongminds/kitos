@@ -115,13 +115,15 @@ namespace Core.ApplicationServices.System
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItSystem>>.None;
 
-            if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
+            var isStakeHolder = _userContext.HasStakeHolderAccess();
+
+            if (!isStakeHolder && accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
             {
                 var rightsHoldingOrganizations = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
 
                 refinement = new QueryByRightsHolderIdOrOwnOrganizationIds(rightsHoldingOrganizations, _userContext.OrganizationIds);
             }
-            else if (accessLevel < CrossOrganizationDataReadAccessLevel.All)
+            else if (!isStakeHolder && accessLevel < CrossOrganizationDataReadAccessLevel.All)
             {
                 refinement = new QueryAllByRestrictionCapabilities<ItSystem>(accessLevel, _userContext.OrganizationIds);
             }
