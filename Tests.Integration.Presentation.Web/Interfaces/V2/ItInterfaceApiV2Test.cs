@@ -21,7 +21,6 @@ using Tests.Toolkit.Extensions;
 using Tests.Toolkit.TestInputs;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Types.Interface;
-using System.Security.Cryptography;
 
 namespace Tests.Integration.Presentation.Web.Interfaces.V2
 {
