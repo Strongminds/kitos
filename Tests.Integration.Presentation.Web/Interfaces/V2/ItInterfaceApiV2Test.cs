@@ -62,7 +62,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         }
 
         [Fact]
-        public async Task Cannot_Get_Interface_As_Stakeholder_If_AccessModifier_Is_Local()
+        public async Task Can_Get_Local_Interface_As_Stakeholder()
         {
             //Arrange
             var (token, org) = await CreateUserInNewOrg(true);
@@ -75,7 +75,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             using var result = await InterfaceV2Helper.SendGetInterfaceAsync(token, itInterface.Uuid);
 
             //Assert
-            Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
+            Assert.True(result.IsSuccessStatusCode);
+            var interfaceResponse = await result.ReadResponseBodyAsAsync<ItInterfaceResponseDTO>();
+            Assert.Equal(itInterface.Uuid, interfaceResponse.Uuid);
         }
 
         [Fact]
