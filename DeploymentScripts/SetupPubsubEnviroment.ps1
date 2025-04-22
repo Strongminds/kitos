@@ -18,4 +18,17 @@ Function Load-Pubsub-Parameters([String] $envName) {
     $Env:PUBSUB_REMOTE_TARGET_USER          = $parameters["PubSubRemoteTarget/User"]
     $Env:PUBSUB_REMOTE_TARGET_HOST          = $parameters["PubSubRemoteTarget/Host"]
     $Env:PUBSUB_REMOTE_TARGET_PATH          = $parameters["PubSubRemoteTarget/Path"]
+
+    # Debug output to check set environment variables
+    Write-Output "Set environment variables:"
+    Write-Output "RABBIT_MQ_USER: $Env:RABBIT_MQ_USER"
+    Write-Output "RABBIT_MQ_PASSWORD: $Env:RABBIT_MQ_PASSWORD"
+    Write-Output "PUBSUB_API_KEY: $Env:PUBSUB_API_KEY"
+    Write-Output "CERT_PASSWORD: $Env:CERT_PASSWORD"
+    Write-Output "IDP_HOST_MAPPING: $Env:IDP_HOST_MAPPING"
+    Write-Output "PUBSUB_CONNECTION_STRING: $Env:PUBSUB_CONNECTION_STRING"
+    Write-Output "PUBSUB_MIGRATION_CONNECTION_STRING: $Env:PUBSUB_MIGRATION_CONNECTION_STRING"
+    Write-Output "PUBSUB_REMOTE_TARGET_USER: $Env:PUBSUB_REMOTE_TARGET_USER"
+    Write-Output "PUBSUB_REMOTE_TARGET_HOST: $Env:PUBSUB_REMOTE_TARGET_HOST"
+    Write-Output "PUBSUB_REMOTE_TARGET_PATH: $Env:PUBSUB_REMOTE_TARGET_PATH"
 }
