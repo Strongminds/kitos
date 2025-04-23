@@ -113,9 +113,8 @@ namespace Core.ApplicationServices.System
         public IQueryable<ItSystem> GetAvailableSystems(params IDomainQuery<ItSystem>[] conditions)
         {
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
-            var refinement = Maybe<IDomainQuery<ItSystem>>.None;
 
-            refinement = GetQueryRefinement(accessLevel, refinement);
+            var refinement = GetQueryRefinement(accessLevel);
 
             var mainQuery = _itSystemRepository.GetSystems();
 
@@ -126,7 +125,7 @@ namespace Core.ApplicationServices.System
             return conditions.Any() ? new IntersectionQuery<ItSystem>(conditions).Apply(refinedResult) : refinedResult;
         }
 
-        private Maybe<IDomainQuery<ItSystem>> GetQueryRefinement(CrossOrganizationDataReadAccessLevel accessLevel, Maybe<IDomainQuery<ItSystem>> refinement)
+        private Maybe<IDomainQuery<ItSystem>> GetQueryRefinement(CrossOrganizationDataReadAccessLevel accessLevel)
         {
 
             if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)

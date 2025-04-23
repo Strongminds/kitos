@@ -120,9 +120,8 @@ namespace Core.ApplicationServices.Interface
         public IQueryable<ItInterface> GetAvailableInterfaces(params IDomainQuery<ItInterface>[] conditions)
         {
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
-            var refinement = Maybe<IDomainQuery<ItInterface>>.None;
 
-            refinement = GetQueryRefinement(accessLevel, refinement);
+            var refinement = GetQueryRefinement(accessLevel);
 
             var mainQuery = _interfaceRepository.GetInterfaces();
 
@@ -133,7 +132,7 @@ namespace Core.ApplicationServices.Interface
             return conditions.Any() ? new IntersectionQuery<ItInterface>(conditions).Apply(refinedResult) : refinedResult;
         }
 
-        private Maybe<IDomainQuery<ItInterface>> GetQueryRefinement(CrossOrganizationDataReadAccessLevel accessLevel, Maybe<IDomainQuery<ItInterface>> refinement)
+        private Maybe<IDomainQuery<ItInterface>> GetQueryRefinement(CrossOrganizationDataReadAccessLevel accessLevel)
         {
             if (_userContext.HasStakeHolderAccess())
             {
