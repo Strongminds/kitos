@@ -25,6 +25,7 @@ public class SubscribeController : PubSubBaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Subscribe([FromBody] SubscribeRequestDto request)
     {
         if (!ModelState.IsValid) return BadRequest();
