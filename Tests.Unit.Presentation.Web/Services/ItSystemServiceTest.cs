@@ -1602,11 +1602,11 @@ namespace Tests.Unit.Presentation.Web.Services
         [Fact]
         public void Stakeholders_Can_Read_All_ItSystems()
         {
-            var localSystem = new ItSystem { AccessModifier = AccessModifier.Local };
-            var publicSystem = new ItSystem { AccessModifier = AccessModifier.Public };
+            var localSystem = new ItSystem { Organization = CreateOrganization(), AccessModifier = AccessModifier.Local };
+            var publicSystem = new ItSystem { Organization = CreateOrganization(), AccessModifier = AccessModifier.Public };
             var systems = new List<ItSystem> { localSystem, publicSystem };
             ExpectGetSystemsReturns(systems);
-            ExpectGetUserOrganizationIdsReturns(); //User has no organizations
+            ExpectGetUserOrganizationIdsReturns(A<int>());
             ExpectUserIsStakeholder();
 
             var result = _sut.GetAvailableSystems();
@@ -1699,7 +1699,7 @@ namespace Tests.Unit.Presentation.Web.Services
 
         private Organization CreateOrganization()
         {
-            return new() { Id = A<int>(), Name = A<string>() };
+            return new() { Id = A<int>(), Uuid = A<Guid>(), Name = A<string>() };
         }
 
         private ItSystem CreateSystem(int? organizationId = null, AccessModifier accessModifier = AccessModifier.Local, int? belongsToId = null, string name = null)
