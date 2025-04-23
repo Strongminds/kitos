@@ -30,7 +30,10 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+});
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDatabaseServices(builder.Configuration);

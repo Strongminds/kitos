@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
 using PubSub.Application.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace PubSub.Application.Controllers;
 
@@ -22,6 +23,11 @@ public class SubscribeController : PubSubBaseController
     }
 
     [HttpPost]
+    [SwaggerOperation(
+        Summary = "Establishes a new subscription.",
+        Description = "Calling this endpoint multiple times with the same (Topic, CallbackUrl) pair will not create duplicates. " +
+                      "The subscription is owned by the user represented by the token."
+        )]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -34,6 +40,10 @@ public class SubscribeController : PubSubBaseController
         return NoContent();
     }
 
+    [SwaggerOperation(
+        Summary = "Deletes an existing subscription by its UUID.",
+        Description = "You can only delete subscriptions that belong to you. "
+    )]
     [HttpDelete]
     [Route("{uuid:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -47,6 +57,9 @@ public class SubscribeController : PubSubBaseController
         return result.Match(FromOperationError, NoContent);
     }
 
+    [SwaggerOperation(
+        Summary = "Retrieves all active subscriptions owned by the current user represented by the token."
+    )]
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<SubscriptionResponseDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
