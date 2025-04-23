@@ -778,8 +778,6 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             Assert.True(canReadLocalSystem);
             Assert.True(canReadLocalInterface);
-
-
         }
 
         private void Allow_Create_Returns<T>(bool expectedResult)
