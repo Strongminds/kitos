@@ -14,7 +14,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<IEnumerable<Subscription>> GetAllByUserId(string userId)
     {
-        return await _context.Subscriptions.Where(x => x.OwnerId == userId).ToListAsync();
+        return await AsQueryable().Where(x => x.OwnerId == userId).ToListAsync();
     }
 
     public async Task<IEnumerable<Subscription>> GetByTopic(string topic)
@@ -29,7 +29,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<Maybe<Subscription>> GetAsync(Guid uuid)
     {
-        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Uuid == uuid);
+        var subscription = await AsQueryable().FirstOrDefaultAsync(x => x.Uuid == uuid);
         return Maybe<Subscription>.From(subscription);
     }
 
@@ -46,8 +46,13 @@ public class SubscriptionRepository : ISubscriptionRepository
         await _context.SaveChangesAsync();
     }
 
+    private IQueryable<Subscription> AsQueryable()
+    {
+        return _context.Subscriptions;
+    }
+
     private IQueryable<Subscription> SubscriptionsByTopic(string topic)
     {
-        return _context.Subscriptions.Where(x => x.Topic == topic);
+        return AsQueryable().Where(x => x.Topic == topic);
     }
 }
