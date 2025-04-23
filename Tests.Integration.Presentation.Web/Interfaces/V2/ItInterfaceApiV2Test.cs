@@ -28,44 +28,10 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
     public class ItInterfaceApiV2Test : BaseItInterfaceApiV2Test
     {
         [Fact]
-        public async Task Can_Get_Interface_As_Stakeholder_If_AccessModifier_Is_Public()
+        public async Task Can_Get_Other_Organizations_Local_Interface_As_Stakeholder()
         {
             //Arrange
-            var (token, org) = await CreateUserInNewOrg(true);
-
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Local);
-            var itInterface = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public, A<string>()));
-            await InterfaceExhibitHelper.SendCreateExhibitRequest(system.Id, itInterface.Id).DisposeAsync();
-
-            //Act
-            var itInterfaceDTO = await InterfaceV2Helper.GetInterfaceAsync(token, itInterface.Uuid);
-
-            //Assert
-            CheckBaseDTOValues(system, itInterface, itInterfaceDTO);
-        }
-
-        [Fact]
-        public async Task Can_Get_Interface_As_Stakeholder_If_Interface_In_Org_Where_User_Has_Any_Role()
-        {
-            //Arrange
-            var (token, org) = await CreateUserInNewOrg(true);
-
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), org.Id, AccessModifier.Local);
-            var itInterface = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), org.Id, AccessModifier.Local));
-            await InterfaceExhibitHelper.SendCreateExhibitRequest(system.Id, itInterface.Id).DisposeAsync();
-
-            //Act
-            var itInterfaceDTO = await InterfaceV2Helper.GetInterfaceAsync(token, itInterface.Uuid);
-
-            //Assert
-            CheckBaseDTOValues(system, itInterface, itInterfaceDTO);
-        }
-
-        [Fact]
-        public async Task Can_Get_Local_Interface_As_Stakeholder()
-        {
-            //Arrange
-            var (token, org) = await CreateUserInNewOrg(true);
+            var (token, _) = await CreateUserInNewOrg(true);
 
             var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Local);
             var itInterface = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Local));
@@ -135,7 +101,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
 
             var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Local);
             var itInterface1 = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public));
-            var itInterface2 = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public));
+            var itInterface2 = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), org.Id, AccessModifier.Public));
             await InterfaceExhibitHelper.SendCreateExhibitRequest(system.Id, itInterface1.Id).DisposeAsync();
             await InterfaceExhibitHelper.SendCreateExhibitRequest(system.Id, itInterface2.Id).DisposeAsync();
 
