@@ -18,6 +18,6 @@ public class SubscriptionMapper : ISubscriptionMapper
 
     public IEnumerable<CreateSubscriptionParameters> FromDTO(SubscribeRequestDto dto)
     {
-        return dto.Topics.Select(topic => new CreateSubscriptionParameters(dto.Callback.AbsoluteUri, topic));
+        return dto.Topics.Select(topic => new CreateSubscriptionParameters(dto.Callback.AbsoluteUri, topic)).ToList();
     }
 }
