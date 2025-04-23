@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using PubSub.Core.Models;
 
-namespace PubSub.DataAccess;
+namespace PubSub.DataAccess.Repositories;
 
 public interface ISubscriptionRepository
 {

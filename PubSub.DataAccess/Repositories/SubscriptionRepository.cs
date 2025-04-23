@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PubSub.Core.Models;
 
-namespace PubSub.DataAccess;
+namespace PubSub.DataAccess.Repositories;
 
 public class SubscriptionRepository : ISubscriptionRepository
 {

@@ -9,6 +9,7 @@ using PubSub.Core.Services.CallbackAuthenticator;
 using PubSub.Core.Services.Notifier;
 using PubSub.Core.Services.Serializer;
 using PubSub.DataAccess;
+using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
 
 namespace PubSub.Application.Config;

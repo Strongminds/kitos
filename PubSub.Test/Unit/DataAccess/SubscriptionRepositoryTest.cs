@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PubSub.Core.Models;
 using PubSub.DataAccess;
+using PubSub.DataAccess.Repositories;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.DataAccess;
