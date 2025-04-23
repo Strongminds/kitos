@@ -122,19 +122,7 @@ namespace Core.ApplicationServices.Interface
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItInterface>>.None;
 
-            if (_userContext.HasStakeHolderAccess())
-            {
-                //Do nothing, Stakeholders can read all interfaces
-            }
-            else if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
-            {
-                var rightsHolderOrgs = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
-                refinement = new QueryByRightsHolderIdsOrOwnOrganizationIds(rightsHolderOrgs, _userContext.OrganizationIds);
-            }
-            else
-            {
-                refinement = new QueryAllByRestrictionCapabilities<ItInterface>(accessLevel, _userContext.OrganizationIds);
-            }
+            refinement = GetQueryRefinement(accessLevel, refinement);
 
             var mainQuery = _interfaceRepository.GetInterfaces();
 
@@ -143,6 +131,23 @@ namespace Core.ApplicationServices.Interface
                 .GetValueOrFallback(mainQuery);
 
             return conditions.Any() ? new IntersectionQuery<ItInterface>(conditions).Apply(refinedResult) : refinedResult;
+        }
+
+        private Maybe<IDomainQuery<ItInterface>> GetQueryRefinement(CrossOrganizationDataReadAccessLevel accessLevel, Maybe<IDomainQuery<ItInterface>> refinement)
+        {
+            if (_userContext.HasStakeHolderAccess())
+            {
+                return Maybe<IDomainQuery<ItInterface>>.None;
+            }
+            else if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
+            {
+                var rightsHolderOrgs = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
+                return new QueryByRightsHolderIdsOrOwnOrganizationIds(rightsHolderOrgs, _userContext.OrganizationIds);
+            }
+            else
+            {
+                return new QueryAllByRestrictionCapabilities<ItInterface>(accessLevel, _userContext.OrganizationIds);
+            }
         }
 
         public Result<ItInterface, OperationError> GetInterface(Guid uuid)

@@ -115,20 +115,7 @@ namespace Core.ApplicationServices.System
             var accessLevel = _authorizationContext.GetCrossOrganizationReadAccess();
             var refinement = Maybe<IDomainQuery<ItSystem>>.None;
 
-            if (_userContext.HasStakeHolderAccess())
-            {
-                //Do nothing, Stakeholders can read all systems
-            }
-            else if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
-            {
-                var rightsHoldingOrganizations = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
-
-                refinement = new QueryByRightsHolderIdOrOwnOrganizationIds(rightsHoldingOrganizations, _userContext.OrganizationIds);
-            }
-            else if (accessLevel < CrossOrganizationDataReadAccessLevel.All)
-            {
-                refinement = new QueryAllByRestrictionCapabilities<ItSystem>(accessLevel, _userContext.OrganizationIds);
-            }
+            refinement = GetQueryRefinement(accessLevel, refinement);
 
             var mainQuery = _itSystemRepository.GetSystems();
 
@@ -137,6 +124,23 @@ namespace Core.ApplicationServices.System
                 .GetValueOrFallback(mainQuery);
 
             return conditions.Any() ? new IntersectionQuery<ItSystem>(conditions).Apply(refinedResult) : refinedResult;
+        }
+
+        private Maybe<IDomainQuery<ItSystem>> GetQueryRefinement(CrossOrganizationDataReadAccessLevel accessLevel, Maybe<IDomainQuery<ItSystem>> refinement)
+        {
+
+            if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
+            {
+                var rightsHoldingOrganizations = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
+
+                return new QueryByRightsHolderIdOrOwnOrganizationIds(rightsHoldingOrganizations, _userContext.OrganizationIds);
+            }
+            else if (accessLevel < CrossOrganizationDataReadAccessLevel.All && !_userContext.HasStakeHolderAccess())
+            {
+                return new QueryAllByRestrictionCapabilities<ItSystem>(accessLevel, _userContext.OrganizationIds);
+            }
+
+            return Maybe<IDomainQuery<ItSystem>>.None;
         }
 
         public IQueryable<ItSystem> GetAvailableSystems(int organizationId, string optionalNameSearch = null)
