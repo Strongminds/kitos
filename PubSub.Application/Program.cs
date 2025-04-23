@@ -42,7 +42,7 @@ builder.Services.AddPubSubServices(builder.Configuration);
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {
