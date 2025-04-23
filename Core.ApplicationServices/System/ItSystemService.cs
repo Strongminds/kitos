@@ -135,7 +135,7 @@ namespace Core.ApplicationServices.System
 
                 return new QueryByRightsHolderIdOrOwnOrganizationIds(rightsHoldingOrganizations, _userContext.OrganizationIds);
             }
-            else if (accessLevel < CrossOrganizationDataReadAccessLevel.All && !_userContext.HasStakeHolderAccess())
+            if (accessLevel < CrossOrganizationDataReadAccessLevel.All && !_userContext.HasStakeHolderAccess())
             {
                 return new QueryAllByRestrictionCapabilities<ItSystem>(accessLevel, _userContext.OrganizationIds);
             }

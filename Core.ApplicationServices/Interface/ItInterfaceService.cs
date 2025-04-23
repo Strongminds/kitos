@@ -139,15 +139,12 @@ namespace Core.ApplicationServices.Interface
             {
                 return Maybe<IDomainQuery<ItInterface>>.None;
             }
-            else if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
+            if (accessLevel == CrossOrganizationDataReadAccessLevel.RightsHolder)
             {
                 var rightsHolderOrgs = _userContext.GetOrganizationIdsWhereHasRole(OrganizationRole.RightsHolderAccess);
                 return new QueryByRightsHolderIdsOrOwnOrganizationIds(rightsHolderOrgs, _userContext.OrganizationIds);
             }
-            else
-            {
-                return new QueryAllByRestrictionCapabilities<ItInterface>(accessLevel, _userContext.OrganizationIds);
-            }
+            return new QueryAllByRestrictionCapabilities<ItInterface>(accessLevel, _userContext.OrganizationIds);
         }
 
         public Result<ItInterface, OperationError> GetInterface(Guid uuid)
