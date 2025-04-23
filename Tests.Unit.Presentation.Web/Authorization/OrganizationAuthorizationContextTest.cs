@@ -769,11 +769,11 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void Stakeholders_Can_Read_Any_Local_ItSystem(bool userHasRoleInOrganization)
+        public void Stakeholders_Can_Read_Any_Local_ItSystem(bool hasRoleInOrganization)
         {
             var localSystem = new ItSystem { OrganizationId = A<int>(), AccessModifier = AccessModifier.Local };
             ExpectUserHasStakeHolderAccess(true);
-            ExpectUserHasRoleIn(localSystem.OrganizationId, userHasRoleInOrganization);
+            ExpectUserHasRoleIn(localSystem.OrganizationId, hasRoleInOrganization);
 
             var canReadLocalSystem = _sut.AllowReads(localSystem);
 
@@ -783,11 +783,11 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void Stakeholders_Can_Read_Any_Local_ItInterface(bool userHasRoleInOrganization)
+        public void Stakeholders_Can_Read_Any_Local_ItInterface(bool hasRoleInOrganization)
         {
             var localInterface = new ItInterface { OrganizationId = A<int>(), AccessModifier = AccessModifier.Local };
             ExpectUserHasStakeHolderAccess(true);
-            ExpectUserHasRoleIn(localInterface.OrganizationId, userHasRoleInOrganization);
+            ExpectHasRoleInSameOrganizationAsReturns(localInterface, hasRoleInOrganization);
 
             var canReadLocalInterface = _sut.AllowReads(localInterface);
 
