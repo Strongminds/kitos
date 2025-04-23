@@ -4,8 +4,10 @@ using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
 using PubSub.Application.Services;
 
+
 namespace PubSub.Application.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] 
     [ApiController]
     [Authorize(Policy = Constants.Config.Validation.CanPublishPolicy)]
     [Route("api/publish")]
