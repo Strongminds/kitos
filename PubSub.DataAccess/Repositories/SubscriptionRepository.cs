@@ -24,7 +24,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<bool> Exists(string topic, string url)
     {
-        return await SubscriptionsByTopic(topic).Where(x => x.Callback == url).AnyAsync();
+        return await SubscriptionsByTopic(topic).AnyAsync(x => x.Callback == url);
     }
 
     public async Task<Maybe<Subscription>> GetAsync(Guid uuid)
