@@ -42,15 +42,18 @@ builder.Services.AddPubSubServices(builder.Configuration);
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsDevelopment())
 {
-    var context = scope.ServiceProvider.GetRequiredService<PubSubContext>();
-    var pendingMigrations = context.Database.GetPendingMigrations().ToArray();
-    if (pendingMigrations.Any())
+    using (var scope = app.Services.CreateScope())
     {
-        throw new InvalidOperationException(
-            "The database is not up to date with the latest schema. " +
-            "Pending migrations: " + string.Join(", ", pendingMigrations));
+        var context = scope.ServiceProvider.GetRequiredService<PubSubContext>();
+        var pendingMigrations = context.Database.GetPendingMigrations().ToArray();
+        if (pendingMigrations.Any())
+        {
+            throw new InvalidOperationException(
+                "The database is not up to date with the latest schema. " +
+                "Pending migrations: " + string.Join(", ", pendingMigrations));
+        }
     }
 }
 
