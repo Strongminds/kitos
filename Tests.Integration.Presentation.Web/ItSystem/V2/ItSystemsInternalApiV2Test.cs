@@ -37,22 +37,22 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (cookie, organization) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
-            var rightsHolder = await CreateOrganizationAsync();
+            var otherOrganization = await CreateOrganizationAsync();
 
             var expected1 = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Local);
             var expected2 = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
-            var expected3 = await CreateSystemAsync(organization.Id, AccessModifier.Local);
+            var expected3 = await CreateSystemAsync(otherOrganization.Id, AccessModifier.Local);
 
-            using var resp1 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected1.dbId, rightsHolder.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp2 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected2.dbId, rightsHolder.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp3 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected3.dbId, rightsHolder.Id, organization.Id);
+            using var resp1 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected1.dbId, otherOrganization.Id, TestEnvironment.DefaultOrganizationId);
+            using var resp2 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected2.dbId, otherOrganization.Id, TestEnvironment.DefaultOrganizationId);
+            using var resp3 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected3.dbId, otherOrganization.Id, otherOrganization.Id);
 
             Assert.Equal(HttpStatusCode.OK, resp1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, resp2.StatusCode);
             Assert.Equal(HttpStatusCode.OK, resp3.StatusCode);
 
             //Act
-            var systems = (await ItSystemV2Helper.GetManyInternalAsync(cookie, rightsHolderId: rightsHolder.Uuid)).ToList();
+            var systems = (await ItSystemV2Helper.GetManyInternalAsync(cookie, rightsHolderId: otherOrganization.Uuid)).ToList();
 
             Assert.Equal(3, systems.Count);
             Assert.Contains(systems, dto => dto.Uuid == expected1.uuid);
