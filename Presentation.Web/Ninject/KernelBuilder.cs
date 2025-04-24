@@ -142,7 +142,6 @@ using Core.ApplicationServices.LocalOptions;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
-using Core.DomainModel.Organization.DomainEvents;
 
 namespace Presentation.Web.Ninject
 {
