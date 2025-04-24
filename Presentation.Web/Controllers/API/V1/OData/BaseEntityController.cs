@@ -16,6 +16,7 @@ using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Infrastructure.Authorization.Controller.Crud;
 using Presentation.Web.Infrastructure.Authorization.Controller.General;
 using System.Net.Http;
+using Core.DomainModel.ItSystem;
 
 namespace Presentation.Web.Controllers.API.V1.OData
 {
@@ -45,7 +46,14 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
             var entityAccessLevel = GetEntityTypeReadAccessLevel<T>();
 
-            var refinement = entityAccessLevel == EntityReadAccessLevel.All ?
+            var entityType = typeof(T);
+            var isItSystemOrInterface = entityType == typeof(ItSystem) || entityType == typeof(ItInterface);
+            var hasStakeholderAccess = UserContext.HasStakeHolderAccess();
+
+            var canReadAll = entityAccessLevel == EntityReadAccessLevel.All ||
+                             (hasStakeholderAccess && isItSystemOrInterface);
+
+            var refinement = canReadAll ?
                 Maybe<QueryAllByRestrictionCapabilities<T>>.None :
                 Maybe<QueryAllByRestrictionCapabilities<T>>.Some(new QueryAllByRestrictionCapabilities<T>(crossOrganizationReadAccess, organizationIds));
 
