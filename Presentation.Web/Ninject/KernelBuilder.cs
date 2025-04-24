@@ -808,10 +808,7 @@ namespace Presentation.Web.Ninject
         {
             //User context
             kernel.Bind<UserContextFactory>().ToSelf();
-            kernel.Bind<IUserContextFactory>().ToMethod(context =>
-                    new CachingUserContextFactory(context.Kernel.GetRequiredService<UserContextFactory>(),
-                        context.Kernel.GetRequiredService<IObjectCache>()))
-                .InCommandScope(Mode);
+            kernel.Bind<IUserContextFactory>().To<UserContextFactory>().InCommandScope(Mode);
 
             kernel.Bind<IOrganizationalUserContext>()
                 .ToMethod(ctx =>
