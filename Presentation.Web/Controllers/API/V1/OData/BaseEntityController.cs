@@ -46,9 +46,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
             var entityAccessLevel = GetEntityTypeReadAccessLevel<T>();
 
-            var canReadAll = entityAccessLevel == EntityReadAccessLevel.All;
-
-            var refinement = canReadAll ?
+            var refinement = entityAccessLevel == EntityReadAccessLevel.All ?
                 Maybe<QueryAllByRestrictionCapabilities<T>>.None :
                 Maybe<QueryAllByRestrictionCapabilities<T>>.Some(new QueryAllByRestrictionCapabilities<T>(crossOrganizationReadAccess, organizationIds));
 
