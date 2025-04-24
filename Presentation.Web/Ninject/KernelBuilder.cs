@@ -142,6 +142,7 @@ using Core.ApplicationServices.LocalOptions;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
+using Core.DomainModel.Organization.DomainEvents;
 
 namespace Presentation.Web.Ninject
 {
@@ -808,7 +809,10 @@ namespace Presentation.Web.Ninject
         {
             //User context
             kernel.Bind<UserContextFactory>().ToSelf();
-            kernel.Bind<IUserContextFactory>().To<UserContextFactory>().InCommandScope(Mode);
+            kernel.Bind<IUserContextFactory>().ToMethod(context =>
+                    new CachingUserContextFactory(context.Kernel.GetRequiredService<UserContextFactory>(),
+                        context.Kernel.GetRequiredService<IObjectCache>()))
+                .InCommandScope(Mode);
 
             kernel.Bind<IOrganizationalUserContext>()
                 .ToMethod(ctx =>
