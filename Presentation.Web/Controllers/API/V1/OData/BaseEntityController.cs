@@ -16,7 +16,6 @@ using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Infrastructure.Authorization.Controller.Crud;
 using Presentation.Web.Infrastructure.Authorization.Controller.General;
 using System.Net.Http;
-using Core.DomainModel.ItSystem;
 
 namespace Presentation.Web.Controllers.API.V1.OData
 {
