@@ -46,12 +46,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
             var entityAccessLevel = GetEntityTypeReadAccessLevel<T>();
 
-            var entityType = typeof(T);
-            var isItSystemOrInterface = entityType == typeof(ItSystem) || entityType == typeof(ItInterface);
-            var hasStakeholderAccess = UserContext.HasStakeHolderAccess();
-
-            var canReadAll = entityAccessLevel == EntityReadAccessLevel.All ||
-                             (hasStakeholderAccess && isItSystemOrInterface);
+            var canReadAll = entityAccessLevel == EntityReadAccessLevel.All;
 
             var refinement = canReadAll ?
                 Maybe<QueryAllByRestrictionCapabilities<T>>.None :
