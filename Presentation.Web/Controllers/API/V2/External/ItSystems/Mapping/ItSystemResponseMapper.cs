@@ -83,6 +83,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 .TaskRefs
                 .Select(taskRef => taskRef.MapIdentityNamePairDTO())
                 .ToList();
+            dto.MainContractSuppliers =
+                arg.Usages.Select(x => x.MainContract.ItContract.Supplier.MapShallowOrganizationResponseDTO());
         }
     }
 }

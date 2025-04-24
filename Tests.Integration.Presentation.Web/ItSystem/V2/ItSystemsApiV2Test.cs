@@ -757,6 +757,12 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             }), SystemDeletionConflict.HasInterfaceExposures);
         }
 
+        [Fact]
+        public async Task Can_Get_Main_Contract_Suppliers()
+        {
+            
+        }
+
         private async Task Test_Get_ItSystem_Permissions_With_Deletion_Conflicts(Func<string, ItSystemResponseDTO, Task> createConflict, SystemDeletionConflict expectedConflict)
         {
             //Arrange
