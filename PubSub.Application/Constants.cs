@@ -9,6 +9,7 @@
                 public const string Url = "JwtValidation:ApiUrl";
                 public const string Endpoint = "JwtValidation:ValidationEndpoint";
                 public const string CanPublishPolicy = "CanPublishPolicy";
+                public const string CanSubscribePolicy = "CanSubscribePolicy";
             }
 
             public class Environment
