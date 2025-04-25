@@ -2,6 +2,7 @@
 using Core.Abstractions.Extensions;
 using Core.ApplicationServices.Model.System;
 using Core.DomainModel.ItSystem;
+using Microsoft.Ajax.Utilities;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.System;
@@ -84,7 +85,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 .Select(taskRef => taskRef.MapIdentityNamePairDTO())
                 .ToList();
             dto.MainContractSuppliers =
-                arg.Usages.Select(x => x.MainContract.ItContract.Supplier.MapShallowOrganizationResponseDTO());
+                arg.Usages.Select(x => x.MainContract.ItContract.Supplier.MapIdentityNamePairDTO()).DistinctBy(x => x.Uuid).ToList();
         }
     }
 }
