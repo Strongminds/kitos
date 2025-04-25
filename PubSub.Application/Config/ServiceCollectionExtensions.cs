@@ -73,10 +73,7 @@ public static class ServiceCollectionExtensions
         {
             options.AddPolicy(Constants.Config.Validation.CanPublishPolicy, policy =>
                 policy.RequireClaim(Constants.Claims.CanPublish, Constants.Claims.True));
-        });
 
-        services.AddAuthorization(options =>
-        {
             options.AddPolicy(Constants.Config.Validation.CanSubscribePolicy,
                 policy => policy.RequireClaim(Constants.Claims.CanSubscribe, Constants.Claims.True));
         });
