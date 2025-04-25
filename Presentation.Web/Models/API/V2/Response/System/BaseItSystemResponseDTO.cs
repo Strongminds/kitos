@@ -89,7 +89,7 @@ namespace Presentation.Web.Models.API.V2.Response.System
         [Required]
         public RecommendedArchiveDutyResponseDTO RecommendedArchiveDuty { get; set; }
         /// <summary>
-        ///TODO (How to write this?):  A list of all unique supplier organizations of this systems related contract. 
+        ///A list of unique suppliers associated with each usage’s main contract.
         /// </summary>
         [Required]
         public IEnumerable<IdentityNamePairResponseDTO> MainContractSuppliers { get; set; }
