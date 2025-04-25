@@ -8,6 +8,7 @@ using Core.ApplicationServices.Model.Authentication;
 using Core.DomainModel;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Serilog.Core;
 
 namespace Core.ApplicationServices.Authentication
 {
@@ -93,12 +94,12 @@ namespace Core.ApplicationServices.Authentication
         {
             if (user.IsGlobalAdmin)
             {
-                identity.AddClaim(new Claim("CanPublish", "true"));
+                identity.AddClaim(new Claim(Constants.ClaimConstants.CanPublish, Constants.ClaimConstants.True));
             }
 
             if (user.IsSystemIntegrator)
             {
-                identity.AddClaim(new Claim("CanSubscribe", "true"));
+                identity.AddClaim(new Claim(Constants.ClaimConstants.CanSubscribe, Constants.ClaimConstants.True));
             }
         }
     }
