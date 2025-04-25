@@ -8,7 +8,6 @@ using Core.ApplicationServices.Model.Authentication;
 using Core.DomainModel;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Core;
 
 namespace Core.ApplicationServices.Authentication
 {
