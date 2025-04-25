@@ -478,7 +478,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         }
 
         [Fact]
-        public async Task Can_Get_Main_Contract_Suppliers()
+        public async Task Can_Get_Unique_Main_Contract_Suppliers()
         {
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var organization = await CreateOrganizationAsync();
