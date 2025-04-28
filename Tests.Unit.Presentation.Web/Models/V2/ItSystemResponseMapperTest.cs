@@ -13,7 +13,6 @@ using Moq;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.KLE;
 using Presentation.Web.Models.API.V2.Response.Shared;
@@ -145,6 +144,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     CreateItSystemUsage(),
                     CreateItSystemUsage(),
                     CreateItSystemUsage(),
+                    CreateItSystemUsage(false),
+                    CreateItSystemUsage(true, false),
                 },
                 Organization = hasOrganization ? CreateOrganization() : null,
                 ObjectOwner = hasOwner ? CreateUser() : null,
@@ -176,7 +177,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 LegalDataProcessorName = A<string>()
             };
             itSystem.Usages.First().MainContract.ItContract.Supplier =
-                itSystem.Usages.Last().MainContract.ItContract.Supplier; //setup duplicate supplier
+                itSystem.Usages.Skip(2).First().MainContract.ItContract.Supplier; //setup duplicate supplier
             return itSystem;
         }
 
@@ -199,23 +200,24 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             };
         }
 
-        private ItSystemUsage CreateItSystemUsage()
+        private ItSystemUsage CreateItSystemUsage(bool withMainContract = true, bool withSupplier = true)
         {
             return new ItSystemUsage
             {
                 Organization = CreateOrganization(),
-                MainContract = new ItContractItSystemUsage
-                {
-                    ItContract = CreateContract()
-                }
+                MainContract = withMainContract
+                    ? new ItContractItSystemUsage
+                    {
+                        ItContract = CreateContract(withSupplier)
+                    } : null
             };
         }
 
-        private ItContract CreateContract()
+        private ItContract CreateContract(bool withSupplier = true)
         {
             return new ItContract
             {
-                Supplier = CreateOrganization()
+                Supplier = withSupplier ? CreateOrganization() : null,
             };
         }
     }

@@ -486,6 +486,11 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (_, supplierUuid1) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, null);
             var (_, supplierUuid2) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, null);
             var (_, _) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, supplierUuid1); //Create duplicate supplier
+            await ItSystemUsageV2Helper.PostAsync(token.Token, new CreateItSystemUsageRequestDTO
+            {
+                SystemUuid = itSystem.Uuid,
+                OrganizationUuid = organization.Uuid
+            }); //System with no maincontract
 
             var itSystemResponse = await ItSystemV2Helper.GetSingleAsync(token.Token, itSystem.Uuid);
 
