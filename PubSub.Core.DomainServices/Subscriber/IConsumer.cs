@@ -1,4 +1,4 @@
-﻿namespace PubSub.Application.Services.Consumer
+﻿namespace PubSub.Core.DomainServices.Subscriber
 {
     public interface IConsumer : IDisposable
     {

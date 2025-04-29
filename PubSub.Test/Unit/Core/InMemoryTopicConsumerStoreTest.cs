@@ -1,7 +1,7 @@
 ﻿using Moq;
-using PubSub.Application.Services.Consumer;
-using PubSub.Core.DomainModel;
+using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
+using PubSub.Application.Services;
 
 namespace PubSub.Test.Unit.Core
 {

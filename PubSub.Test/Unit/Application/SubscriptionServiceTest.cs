@@ -1,12 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using Moq;
-using PubSub.Application.Models;
-using PubSub.Application.Repositories;
-using PubSub.Application.Services.Consumer;
-using PubSub.Application.Services.Identity;
-using PubSub.Application.Services.Subscribe;
+using PubSub.Application.Services;
 using PubSub.Core.Abstractions.ErrorTypes;
+using PubSub.Core.ApplicationServices.Models;
 using PubSub.Core.DomainModel;
+using PubSub.Core.DomainServices.Subscriber;
 using PubSub.DataAccess.Repositories;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 

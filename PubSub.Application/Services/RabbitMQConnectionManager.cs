@@ -1,6 +1,7 @@
+using PubSub.Core.DomainServices.RabbitMQConnection;
 using RabbitMQ.Client;
 
-namespace PubSub.Application.Services.RabbitMQConnection
+namespace PubSub.Application.Services   
 {
     public class RabbitMQConnectionManager : IRabbitMQConnectionManager
     {

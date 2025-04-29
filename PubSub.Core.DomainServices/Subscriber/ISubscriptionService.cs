@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
-using PubSub.Application.Models;
 using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.DomainModel;
+using PubSub.Core.ApplicationServices.Models;
 
-namespace PubSub.Application.Services.Subscribe;
+namespace PubSub.Core.DomainServices.Subscriber;
 
 public interface ISubscriptionService
 {

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using PubSub.Application.Services.Consumer;
-using PubSub.Application.Services.RabbitMQConnection;
 using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
+using PubSub.Core.DomainServices.RabbitMQConnection;
+using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
+using PubSub.Application.Services;
+
 
 namespace PubSub.Test.Unit.Core
 {

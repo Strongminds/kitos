@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using PubSub.Application.DTOs.Response;
 using PubSub.Application.DTOs.Request;
 
-namespace PubSub.Application.Services.Identity
+namespace PubSub.Application.Services
 {
     public class TokenValidator
     {

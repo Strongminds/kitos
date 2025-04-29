@@ -1,12 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
-using PubSub.Application.Models;
-using PubSub.Application.Services.Consumer;
-using PubSub.Application.Services.Identity;
 using PubSub.Core.Abstractions.ErrorTypes;
+using PubSub.Core.ApplicationServices.Models;
 using PubSub.Core.DomainModel;
+using PubSub.Core.DomainServices.Subscriber;
 using PubSub.DataAccess.Repositories;
 
-namespace PubSub.Application.Services.Subscribe;
+namespace PubSub.Application.Services;
 
 public class SubscriptionService : ISubscriptionService
 {

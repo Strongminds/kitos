@@ -1,6 +1,6 @@
 ﻿using PubSub.Core.DomainModel;
 
-namespace PubSub.Application.Services.Publisher
+namespace PubSub.Core.DomainServices.Publisher
 {
     public interface IPublisherService
     {

@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace PubSub.Application.Services.Identity;
+namespace PubSub.Application.Services;
 
 public interface ICurrentUserService
 {

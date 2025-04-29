@@ -1,6 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using PubSub.Core.DomainServices.Subscriber;
+using System.Collections.Concurrent;
 
-namespace PubSub.Application.Services.Consumer
+namespace PubSub.Application.Services
 {
     public class InMemoryTopicConsumerStore : ITopicConsumerStore
     {

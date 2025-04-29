@@ -4,8 +4,8 @@ using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.Test.Base;
 using RabbitMQ.Client;
 using System.Text.Json;
-using PubSub.Application.Services.RabbitMQConnection;
-using PubSub.Application.Services.Publisher;
+using PubSub.Application.Services;
+using PubSub.Core.DomainServices.RabbitMQConnection;
 
 namespace PubSub.Test.Unit.Core
 {

@@ -4,8 +4,8 @@ using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
 using Microsoft.Extensions.DependencyInjection;
-using PubSub.Application.Services.RabbitMQConnection;
-using PubSub.Application.Services.Consumer;
+using PubSub.Core.DomainServices.RabbitMQConnection;
+using PubSub.Application.Services;
 
 namespace PubSub.Test.Unit.Core
 {

@@ -21,13 +21,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="RabbitMQ.Client" Version="7.1.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PubSub.Core.ApplicationServices\PubSub.Core.ApplicationServices.csproj" />
+    <ProjectReference Include="..\PubSub.Core.DomainServices\PubSub.Core.DomainServices.csproj" />
     <ProjectReference Include="..\PubSub.DataAccess\PubSub.DataAccess.csproj" />
   </ItemGroup>
 

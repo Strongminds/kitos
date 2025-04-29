@@ -1,8 +1,9 @@
-﻿using PubSub.Application.Services.RabbitMQConnection;
-using PubSub.Core.ApplicationServices.Notifier;
+﻿using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
+using PubSub.Core.DomainServices.RabbitMQConnection;
+using PubSub.Core.DomainServices.Subscriber;
 
-namespace PubSub.Application.Services.Consumer
+namespace PubSub.Application.Services
 {
     public interface IRabbitMQConsumerFactory
     {

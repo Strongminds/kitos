@@ -9,12 +9,10 @@ using PubSub.Core.ApplicationServices.Config;
 using PubSub.DataAccess;
 using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
-using PubSub.Application.Services.Consumer;
-using PubSub.Application.Services.Publisher;
-using PubSub.Application.Services.Identity;
-using PubSub.Application.Services.Subscribe;
-using PubSub.Application.Services.RabbitMQConnection;
-using PubSub.Application.Repositories;
+using PubSub.Application.Services;
+using PubSub.Core.DomainServices.Subscriber;
+using PubSub.Core.DomainServices.Publisher;
+using PubSub.Core.DomainServices.RabbitMQConnection;
 
 namespace PubSub.Application;
 
