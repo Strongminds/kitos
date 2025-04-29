@@ -3,9 +3,9 @@ using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
-using Microsoft.Extensions.DependencyInjection;
 using PubSub.Core.DomainServices.RabbitMQConnection;
 using PubSub.Application.Services;
+using PubSub.Core.ApplicationServices.Repositories;
 
 namespace PubSub.Test.Unit.Core
 {
@@ -17,7 +17,7 @@ namespace PubSub.Test.Unit.Core
             var mockConnectionManager = new Mock<IRabbitMQConnectionManager>();
             var connection = new Mock<IConnection>();
             var channel = new Mock<IChannel>();
-            var repo = new Mock<IServiceScopeFactory>();
+            var repo = new Mock<ISubscriptionRepositoryProvider>();
             mockConnectionManager.Setup(_ => _.GetConnectionAsync()).ReturnsAsync(connection.Object);
             connection.Setup(_ => _.CreateChannelAsync(null, default)).ReturnsAsync(channel.Object);
             var messageSerializer = new Mock<IPayloadSerializer>();

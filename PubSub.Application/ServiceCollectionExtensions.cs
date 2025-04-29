@@ -13,7 +13,6 @@ using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Core.DomainServices.RabbitMQConnection;
-using PubSub.Core.DomainServices.Repositories;
 using PubSub.Core.ApplicationServices.Repositories;
 
 namespace PubSub.Application;
@@ -27,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITopicConsumerInstantiatorService, RabbitMQTopicConsumerInstantiatorService>();
         services.AddSingleton<IRabbitMQConnectionManager, RabbitMQConnectionManager>();
         services.AddScoped<IPublisherService, RabbitMQPublisherService>();
+        services.AddScoped<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
 
         return services;
     }
@@ -92,7 +92,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
         services.AddScoped<ISubscriberNotifierService, HttpSubscriberNotifierService>();
         services.AddSingleton<ITopicConsumerStore, InMemoryTopicConsumerStore>();
-        services.AddScoped<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
+        services.AddScoped<ISubscriptionRepositoryProvider, SubscriptionRepositoryProvider>();
 
         services.AddScoped<ISubscriptionRepository, EntityFrameworkSubscriptionRepository>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();

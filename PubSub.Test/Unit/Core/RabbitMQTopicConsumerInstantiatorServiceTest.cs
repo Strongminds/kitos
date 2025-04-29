@@ -6,6 +6,7 @@ using PubSub.Core.DomainServices.RabbitMQConnection;
 using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Application.Services;
+using PubSub.Core.ApplicationServices.Repositories;
 
 
 namespace PubSub.Test.Unit.Core
@@ -18,7 +19,7 @@ namespace PubSub.Test.Unit.Core
         private readonly Mock<IRabbitMQConnectionManager> _mockConnectionManager;
         private readonly Mock<ISubscriberNotifierService> _mockSubscriberNotifierService;
         private readonly Mock<IPayloadSerializer> _messageSerializer;
-        private readonly Mock<IServiceScopeFactory> _subscriptionRepository;
+        private readonly Mock<ISubscriptionRepositoryProvider> _subscriptionRepository;
 
 
         public RabbitMQTopicConsumerInstantiatorServiceTest()
@@ -28,7 +29,7 @@ namespace PubSub.Test.Unit.Core
             _consumerFactory = new Mock<IRabbitMQConsumerFactory>();
             _mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
             _messageSerializer = new Mock<IPayloadSerializer>();
-            _subscriptionRepository = new Mock<IServiceScopeFactory>();
+            _subscriptionRepository = new Mock<ISubscriptionRepositoryProvider>();
             _sut = new RabbitMQTopicConsumerInstantiatorService(_mockConnectionManager.Object, _mockSubscriberNotifierService.Object, _subscriptionStore.Object, _consumerFactory.Object, _messageSerializer.Object, _subscriptionRepository.Object);
         }
 
@@ -38,7 +39,7 @@ namespace PubSub.Test.Unit.Core
             var topic = A<string>();
             var consumer = new Mock<IConsumer>();
             _subscriptionStore.Setup(x => x.HasConsumer(topic)).Returns(false);
-            _consumerFactory.Setup(x => x.Create(It.IsAny<IRabbitMQConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<IServiceScopeFactory>())).Returns(consumer.Object);
+            _consumerFactory.Setup(x => x.Create(It.IsAny<IRabbitMQConnectionManager>(), It.IsAny<ISubscriberNotifierService>(), It.IsAny<IPayloadSerializer>(), It.IsAny<string>(), It.IsAny<ISubscriptionRepositoryProvider>())).Returns(consumer.Object);
 
             await _sut.InstantiateTopic(topic);
 

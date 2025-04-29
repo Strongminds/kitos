@@ -2,7 +2,6 @@
 using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.Core.DomainServices.RabbitMQConnection;
-using PubSub.Core.DomainServices.Repositories;
 using PubSub.Core.DomainServices.Subscriber;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -19,15 +18,19 @@ namespace PubSub.Application.Services
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ISubscriptionRepositoryProvider subscriptionRepositoryProvider;
 
-
-        public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, IServiceScopeFactory scopeFactory)
+        public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, 
+            ISubscriberNotifierService subscriberNotifierService, 
+            IPayloadSerializer payloadSerializer, 
+            string topic,
+            ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
             _topic = topic;
             _payloadSerializer = payloadSerializer;
-            _scopeFactory = scopeFactory;
+            this.subscriptionRepositoryProvider = subscriptionRepositoryProvider;
         }
 
         public async Task StartListeningAsync()
@@ -50,8 +53,7 @@ namespace PubSub.Application.Services
                 {
                     var body = eventArgs.Body.ToArray();
                     var payload = _payloadSerializer.Deserialize(body);
-                    using var scope = _scopeFactory.CreateScope();
-                    var repository = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
+                    var repository = subscriptionRepositoryProvider.Get();
                     var subscriptions = await repository.GetByTopic(_topic);
                     foreach (var callbackUrl in subscriptions.Select(x => x.Callback))
                     {

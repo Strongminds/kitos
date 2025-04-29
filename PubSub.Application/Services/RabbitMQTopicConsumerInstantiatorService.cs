@@ -1,4 +1,5 @@
 ﻿using PubSub.Core.ApplicationServices.Notifier;
+using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.Core.DomainServices.RabbitMQConnection;
 using PubSub.Core.DomainServices.Subscriber;
@@ -12,16 +13,16 @@ namespace PubSub.Application.Services
         private readonly ITopicConsumerStore _topicConsumerStore;
         private readonly IRabbitMQConsumerFactory _consumerFactory;
         private readonly IPayloadSerializer _payloadSerializer;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ISubscriptionRepositoryProvider subscriptionRepositoryProvider;
 
-        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, IServiceScopeFactory scopeFactory)
+        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
             _topicConsumerStore = topicConsumerStore;
             _consumerFactory = consumerFactory;
             _payloadSerializer = payloadSerializer;
-            _scopeFactory = scopeFactory;
+            this.subscriptionRepositoryProvider = subscriptionRepositoryProvider;
         }
 
         public async Task InstantiateTopic(string topic)
@@ -34,7 +35,7 @@ namespace PubSub.Application.Services
 
         private async Task CreateAndStartNewConsumerAsync(string topic)
         {
-            var consumer = _consumerFactory.Create(_connectionManager, _subscriberNotifierService, _payloadSerializer, topic, _scopeFactory);
+            var consumer = _consumerFactory.Create(_connectionManager, _subscriberNotifierService, _payloadSerializer, topic, subscriptionRepositoryProvider);
             _topicConsumerStore.SetConsumerForTopic(topic, consumer);
             await consumer.StartListeningAsync();
         }
