@@ -1,7 +1,6 @@
-﻿using System.Security.Claims;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 
-namespace PubSub.Application.Services;
+namespace PubSub.Application.Services.Identity;
 
 public class CurrentUserService : ICurrentUserService
 {

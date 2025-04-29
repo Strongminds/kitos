@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace PubSub.Application.Services
+namespace PubSub.Application.Services.Consumer
 {
     public class InMemoryTopicConsumerStore : ITopicConsumerStore
     {

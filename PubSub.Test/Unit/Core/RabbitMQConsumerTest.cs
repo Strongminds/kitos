@@ -1,10 +1,11 @@
 ﻿using Moq;
-using PubSub.Application.Services;
 using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
 using Microsoft.Extensions.DependencyInjection;
+using PubSub.Application.Services.RabbitMQConnection;
+using PubSub.Application.Services.Consumer;
 
 namespace PubSub.Test.Unit.Core
 {
@@ -13,7 +14,7 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public async Task Can_Consume_On_Channel()
         {
-            var mockConnectionManager = new Mock<IConnectionManager>();
+            var mockConnectionManager = new Mock<IRabbitMQConnectionManager>();
             var connection = new Mock<IConnection>();
             var channel = new Mock<IChannel>();
             var repo = new Mock<IServiceScopeFactory>();

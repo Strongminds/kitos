@@ -1,14 +1,15 @@
-﻿using PubSub.Core.ApplicationServices.Notifier;
+﻿using PubSub.Application.Services.RabbitMQConnection;
+using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace PubSub.Application.Services
+namespace PubSub.Application.Services.Consumer
 {
     public class RabbitMQConsumer : IConsumer
     {
-        private readonly IConnectionManager _connectionManager;
+        private readonly IRabbitMQConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly string _topic;
         private readonly IPayloadSerializer _payloadSerializer;
@@ -18,7 +19,7 @@ namespace PubSub.Application.Services
         private readonly IServiceScopeFactory _scopeFactory;
 
 
-        public RabbitMQConsumer(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, IServiceScopeFactory scopeFactory)
+        public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, IServiceScopeFactory scopeFactory)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;
@@ -48,9 +49,9 @@ namespace PubSub.Application.Services
                     var body = eventArgs.Body.ToArray();
                     var payload = _payloadSerializer.Deserialize(body);
                     using var scope = _scopeFactory.CreateScope();
-                    var repo = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
-                    var subs = await repo.GetByTopic(_topic);
-                    foreach (var callbackUrl in subs.Select(x => x.Callback))
+                    var repository = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
+                    var subscriptions = await repository.GetByTopic(_topic);
+                    foreach (var callbackUrl in subscriptions.Select(x => x.Callback))
                     {
                         await _subscriberNotifierService.Notify(payload, callbackUrl);
                     }

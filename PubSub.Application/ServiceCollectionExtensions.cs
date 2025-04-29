@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PubSub.Application.Mapping;
-using PubSub.Application.Services;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
@@ -10,17 +9,22 @@ using PubSub.Core.ApplicationServices.Config;
 using PubSub.DataAccess;
 using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
+using PubSub.Application.Services.Consumer;
+using PubSub.Application.Services.Publisher;
+using PubSub.Application.Services.Identity;
+using PubSub.Application.Services.Subscribe;
+using PubSub.Application.Services.RabbitMQConnection;
 
-namespace PubSub.Application.Config;
+namespace PubSub.Application;
 
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, ConfigurationManager configuration)
     {
         var connectionFactory = GetConnectionFactory(configuration);
-        services.AddSingleton<IConnectionFactory>(_ => connectionFactory);
+        services.AddSingleton(_ => connectionFactory);
         services.AddScoped<ITopicConsumerInstantiatorService, RabbitMQTopicConsumerInstantiatorService>();
-        services.AddSingleton<IConnectionManager, RabbitMQConnectionManager>();
+        services.AddSingleton<IRabbitMQConnectionManager, RabbitMQConnectionManager>();
         services.AddScoped<IPublisherService, RabbitMQPublisherService>();
 
         return services;

@@ -1,4 +1,4 @@
-﻿namespace PubSub.Application.Services
+﻿namespace PubSub.Application.Services.Consumer
 {
     public interface ITopicConsumerInstantiatorService
     {

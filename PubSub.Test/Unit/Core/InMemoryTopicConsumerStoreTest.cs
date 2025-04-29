@@ -1,5 +1,5 @@
 ﻿using Moq;
-using PubSub.Application.Services;
+using PubSub.Application.Services.Consumer;
 using PubSub.Core.DomainModel;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 

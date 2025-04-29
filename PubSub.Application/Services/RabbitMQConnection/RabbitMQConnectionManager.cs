@@ -1,8 +1,8 @@
 using RabbitMQ.Client;
 
-namespace PubSub.Application.Services
+namespace PubSub.Application.Services.RabbitMQConnection
 {
-    public class RabbitMQConnectionManager : IConnectionManager
+    public class RabbitMQConnectionManager : IRabbitMQConnectionManager
     {
         private readonly IConnectionFactory _connectionFactory;
         private IConnection? _connection;

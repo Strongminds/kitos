@@ -1,18 +1,19 @@
-﻿using PubSub.Core.ApplicationServices.Notifier;
+﻿using PubSub.Application.Services.RabbitMQConnection;
+using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
 
-namespace PubSub.Application.Services
+namespace PubSub.Application.Services.Consumer
 {
     public class RabbitMQTopicConsumerInstantiatorService : ITopicConsumerInstantiatorService
     {
-        private readonly IConnectionManager _connectionManager;
+        private readonly IRabbitMQConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly ITopicConsumerStore _topicConsumerStore;
         private readonly IRabbitMQConsumerFactory _consumerFactory;
         private readonly IPayloadSerializer _payloadSerializer;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public RabbitMQTopicConsumerInstantiatorService(IConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, IServiceScopeFactory scopeFactory)
+        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, IServiceScopeFactory scopeFactory)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;

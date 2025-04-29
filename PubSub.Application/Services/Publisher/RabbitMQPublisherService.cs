@@ -1,15 +1,16 @@
 ﻿using PubSub.Core.DomainModel;
 using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
+using PubSub.Application.Services.RabbitMQConnection;
 
-namespace PubSub.Application.Services
+namespace PubSub.Application.Services.Publisher
 {
     public class RabbitMQPublisherService : IPublisherService
     {
-        private readonly IConnectionManager _connectionManager;
+        private readonly IRabbitMQConnectionManager _connectionManager;
         private readonly IPayloadSerializer _payloadSerializer;
 
-        public RabbitMQPublisherService(IConnectionManager connectionManager, IPayloadSerializer payloadSerializer)
+        public RabbitMQPublisherService(IRabbitMQConnectionManager connectionManager, IPayloadSerializer payloadSerializer)
         {
             _connectionManager = connectionManager;
             _payloadSerializer = payloadSerializer;

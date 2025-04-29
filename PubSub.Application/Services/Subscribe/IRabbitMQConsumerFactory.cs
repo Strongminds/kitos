@@ -1,0 +1,11 @@
+﻿using PubSub.Application.Services.RabbitMQConnection;
+using PubSub.Core.ApplicationServices.Notifier;
+using PubSub.Core.ApplicationServices.Serializer;
+
+namespace PubSub.Application.Services.Consumer
+{
+    public interface IRabbitMQConsumerFactory
+    {
+        IConsumer Create(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, IServiceScopeFactory scopeFactory);
+    }
+}

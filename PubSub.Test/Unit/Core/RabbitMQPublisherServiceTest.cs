@@ -4,7 +4,8 @@ using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.Test.Base;
 using RabbitMQ.Client;
 using System.Text.Json;
-using PubSub.Application.Services;
+using PubSub.Application.Services.RabbitMQConnection;
+using PubSub.Application.Services.Publisher;
 
 namespace PubSub.Test.Unit.Core
 {
@@ -13,7 +14,7 @@ namespace PubSub.Test.Unit.Core
         [Fact]
         public async Task Can_Publish_On_Queue()
         {
-            var connectionManager = new Mock<IConnectionManager>();
+            var connectionManager = new Mock<IRabbitMQConnectionManager>();
             var connection = new Mock<IConnection>();
             var channel = new Mock<IChannel>();
             connectionManager.Setup(_ => _.GetConnectionAsync()).ReturnsAsync(connection.Object);
