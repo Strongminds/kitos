@@ -1,5 +1,5 @@
-﻿using PubSub.Core.Services.Notifier;
-using PubSub.Core.Services.Serializer;
+﻿using PubSub.Core.ApplicationServices.Notifier;
+using PubSub.Core.ApplicationServices.Serializer;
 
 namespace PubSub.Application.Services
 {

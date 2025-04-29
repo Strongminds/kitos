@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using PubSub.Application.DTOs;
+﻿using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Text.Json;

@@ -1,10 +1,10 @@
-﻿using PubSub.Core.Services.Notifier;
+﻿using PubSub.Core.ApplicationServices.Notifier;
 using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Text.Json;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
-using PubSub.Core.Services.CallbackAuthentication;
+using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PubSub.Test.Unit.Core

@@ -1,5 +1,5 @@
 ﻿using PubSub.Core.DomainModel;
-using PubSub.Core.Services.Serializer;
+using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 
 namespace PubSub.Application.Services

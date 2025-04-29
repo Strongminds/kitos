@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PubSub.Application\PubSub.Application.csproj" />
+    <ProjectReference Include="..\PubSub.Core.ApplicationServices\PubSub.Core.ApplicationServices.csproj" />
     <ProjectReference Include="..\PubSub.DataAccess\PubSub.DataAccess.csproj" />
   </ItemGroup>
 

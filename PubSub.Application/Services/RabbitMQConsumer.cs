@@ -1,6 +1,5 @@
-﻿using PubSub.Core.Services.Notifier;
-using PubSub.Core.Services.Serializer;
-using PubSub.DataAccess;
+﻿using PubSub.Core.ApplicationServices.Notifier;
+using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

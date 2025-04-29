@@ -1,7 +1,7 @@
 ﻿using Moq;
 using PubSub.Application.Services;
-using PubSub.Core.Services.Notifier;
-using PubSub.Core.Services.Serializer;
+using PubSub.Core.ApplicationServices.Notifier;
+using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
 using Microsoft.Extensions.DependencyInjection;

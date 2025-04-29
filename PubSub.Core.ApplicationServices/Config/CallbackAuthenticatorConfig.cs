@@ -1,4 +1,4 @@
-﻿namespace PubSub.Core.Config
+﻿namespace PubSub.Core.ApplicationServices.Config
 {
     public class CallbackAuthenticatorConfig: ICallbackAuthenticatorConfig
     {

@@ -1,6 +1,6 @@
 ﻿using Moq;
-using PubSub.Core.Config;
-using PubSub.Core.Services.CallbackAuthenticator;
+using PubSub.Core.ApplicationServices.Config;
+using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Security.Cryptography;
 using System.Text;

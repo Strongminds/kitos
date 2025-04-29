@@ -1,6 +1,6 @@
 ﻿using Moq;
 using PubSub.Core.DomainModel;
-using PubSub.Core.Services.Serializer;
+using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.Test.Base;
 using RabbitMQ.Client;
 using System.Text.Json;

@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using PubSub.Core.Config;
+using PubSub.Core.ApplicationServices.Config;
 
 namespace PubSub.Core.ApplicationServices.CallbackAuthenticator
 {
