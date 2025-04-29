@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using PubSub.Application.DTOs.Response;
+using PubSub.Application.DTOs.Request;
 
 namespace PubSub.Application.Config
 {

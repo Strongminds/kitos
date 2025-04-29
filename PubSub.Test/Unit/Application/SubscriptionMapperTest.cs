@@ -1,4 +1,4 @@
-﻿using PubSub.Application.DTOs;
+﻿using PubSub.Application.DTOs.Request;
 using PubSub.Application.Mapping;
 using PubSub.Core.DomainModel;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;

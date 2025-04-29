@@ -1,4 +1,4 @@
-﻿using PubSub.Application.DTOs;
+﻿using PubSub.Application.DTOs.Request;
 using PubSub.Application.Mapping;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Text.Json;

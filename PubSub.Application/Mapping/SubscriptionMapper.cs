@@ -1,5 +1,5 @@
-﻿using PubSub.Application.DTOs;
-using PubSub.Application.DTOs.Request;
+﻿using PubSub.Application.DTOs.Request;
+using PubSub.Application.DTOs.Response;
 using PubSub.Application.Models;
 using PubSub.Core.DomainModel;
 
