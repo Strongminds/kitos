@@ -8,7 +8,7 @@ namespace PubSub.Infrastructure.MessageQueue
 {
     public class RabbitMQConsumerFactory : IRabbitMQConsumerFactory
     {
-        public IConsumer Create(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IPayloadSerializer payloadSerializer, string topic, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
+        public IConsumer Create(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, IJsonPayloadSerializer payloadSerializer, string topic, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
         {
             return new RabbitMQConsumer(connectionManager, subscriberNotifierService, payloadSerializer, topic, subscriptionRepositoryProvider);
         }

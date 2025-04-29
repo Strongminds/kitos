@@ -12,10 +12,10 @@ namespace PubSub.Infrastructure.MessageQueue
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly ITopicConsumerStore _topicConsumerStore;
         private readonly IRabbitMQConsumerFactory _consumerFactory;
-        private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IJsonPayloadSerializer _payloadSerializer;
         private readonly ISubscriptionRepositoryProvider subscriptionRepositoryProvider;
 
-        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IPayloadSerializer payloadSerializer, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
+        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IJsonPayloadSerializer payloadSerializer, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;

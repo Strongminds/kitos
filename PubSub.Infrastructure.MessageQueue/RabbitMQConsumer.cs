@@ -13,7 +13,7 @@ namespace PubSub.Infrastructure.MessageQueue
         private readonly IRabbitMQConnectionManager _connectionManager;
         private readonly ISubscriberNotifierService _subscriberNotifierService;
         private readonly string _topic;
-        private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IJsonPayloadSerializer _payloadSerializer;
         private IConnection _connection;
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
@@ -21,7 +21,7 @@ namespace PubSub.Infrastructure.MessageQueue
 
         public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, 
             ISubscriberNotifierService subscriberNotifierService, 
-            IPayloadSerializer payloadSerializer, 
+            IJsonPayloadSerializer payloadSerializer, 
             string topic,
             ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
         {

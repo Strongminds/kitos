@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace PubSub.Core.ApplicationServices.Serializer
 {
-    public class JsonPayloadSerializer : IPayloadSerializer
+    public class JsonPayloadSerializer : IJsonPayloadSerializer
     {
         public JsonElement Deserialize(byte[] bytes)
         {

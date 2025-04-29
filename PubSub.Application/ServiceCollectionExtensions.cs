@@ -89,7 +89,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddRabbitMQ(configuration);
         services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
-        services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
+        services.AddTransient<IJsonPayloadSerializer, JsonPayloadSerializer>();
         services.AddScoped<ISubscriberNotifierService, HttpSubscriberNotifierService>();
         services.AddSingleton<ITopicConsumerStore, InMemoryTopicConsumerStore>();
         services.AddScoped<ISubscriptionRepositoryProvider, SubscriptionRepositoryProvider>();

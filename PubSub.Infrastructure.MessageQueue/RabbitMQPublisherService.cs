@@ -9,9 +9,9 @@ namespace PubSub.Infrastructure.MessageQueue
     public class RabbitMQPublisherService : IPublisherService
     {
         private readonly IRabbitMQConnectionManager _connectionManager;
-        private readonly IPayloadSerializer _payloadSerializer;
+        private readonly IJsonPayloadSerializer _payloadSerializer;
 
-        public RabbitMQPublisherService(IRabbitMQConnectionManager connectionManager, IPayloadSerializer payloadSerializer)
+        public RabbitMQPublisherService(IRabbitMQConnectionManager connectionManager, IJsonPayloadSerializer payloadSerializer)
         {
             _connectionManager = connectionManager;
             _payloadSerializer = payloadSerializer;

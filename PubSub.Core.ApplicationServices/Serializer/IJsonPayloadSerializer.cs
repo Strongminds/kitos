@@ -2,7 +2,7 @@
 
 namespace PubSub.Core.ApplicationServices.Serializer
 {
-    public interface IPayloadSerializer
+    public interface IJsonPayloadSerializer
     {
         byte[] Serialize(JsonElement message);
 

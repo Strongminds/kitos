@@ -20,7 +20,7 @@ namespace PubSub.Test.Unit.Core
             var repo = new Mock<ISubscriptionRepositoryProvider>();
             mockConnectionManager.Setup(_ => _.GetConnectionAsync()).ReturnsAsync(connection.Object);
             connection.Setup(_ => _.CreateChannelAsync(null, default)).ReturnsAsync(channel.Object);
-            var messageSerializer = new Mock<IPayloadSerializer>();
+            var messageSerializer = new Mock<IJsonPayloadSerializer>();
 
             var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
             var topic = A<string>();
