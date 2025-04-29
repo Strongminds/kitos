@@ -1,7 +1,6 @@
-﻿using AutoFixture;
-using PubSub.Application.DTOs;
+﻿using PubSub.Application.DTOs;
 using PubSub.Application.Mapping;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Application

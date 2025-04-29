@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 
 namespace PubSub.DataAccess.Mappings
 {

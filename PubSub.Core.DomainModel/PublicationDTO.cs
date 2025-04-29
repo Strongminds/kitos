@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
-namespace PubSub.Core.Models;
+namespace PubSub.Core.DomainModel;
 
 public class PublicationDTO
 {

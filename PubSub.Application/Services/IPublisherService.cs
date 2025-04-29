@@ -1,4 +1,4 @@
-﻿using PubSub.Core.Models;
+﻿using PubSub.Core.DomainModel;
 
 namespace PubSub.Application.Services
 {

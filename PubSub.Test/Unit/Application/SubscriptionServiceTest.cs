@@ -3,8 +3,7 @@ using Moq;
 using PubSub.Application.Models;
 using PubSub.Application.Services;
 using PubSub.Core.Abstractions.ErrorTypes;
-using PubSub.Core.Models;
-using PubSub.DataAccess;
+using PubSub.Core.DomainModel;
 using PubSub.DataAccess.Repositories;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 

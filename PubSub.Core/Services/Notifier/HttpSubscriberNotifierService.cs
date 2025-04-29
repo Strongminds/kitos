@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 using PubSub.Core.Services.CallbackAuthentication;
 
 namespace PubSub.Core.Services.Notifier

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 using PubSub.DataAccess;
 using PubSub.DataAccess.Repositories;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;

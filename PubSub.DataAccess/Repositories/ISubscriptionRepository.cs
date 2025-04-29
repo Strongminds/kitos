@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 
 namespace PubSub.DataAccess.Repositories;
 

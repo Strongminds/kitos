@@ -1,4 +1,4 @@
-﻿using PubSub.Core.Models;
+﻿using PubSub.Core.DomainModel;
 using PubSub.Core.Services.Serializer;
 using RabbitMQ.Client;
 

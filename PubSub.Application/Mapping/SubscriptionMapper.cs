@@ -1,6 +1,6 @@
 ﻿using PubSub.Application.DTOs;
 using PubSub.Application.Models;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 
 namespace PubSub.Application.Mapping;
 

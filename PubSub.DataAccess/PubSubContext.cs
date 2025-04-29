@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PubSub.Core.Models;
+using PubSub.Core.DomainModel;
 
 namespace PubSub.DataAccess
 {

@@ -1,8 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using PubSub.Application.Models;
 using PubSub.Core.Abstractions.ErrorTypes;
-using PubSub.Core.Models;
-using PubSub.DataAccess;
+using PubSub.Core.DomainModel;
 using PubSub.DataAccess.Repositories;
 
 namespace PubSub.Application.Services;
