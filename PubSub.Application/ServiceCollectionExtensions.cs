@@ -13,6 +13,8 @@ using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Core.DomainServices.RabbitMQConnection;
+using PubSub.Core.DomainServices.Repositories;
+using PubSub.Core.ApplicationServices.Repositories;
 
 namespace PubSub.Application;
 
