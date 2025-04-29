@@ -1,4 +1,4 @@
-﻿namespace PubSub.Application.DTOs
+﻿namespace PubSub.Application.DTOs.Request
 {
     public record SubscribeRequestDto
     {

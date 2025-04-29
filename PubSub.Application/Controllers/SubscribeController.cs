@@ -1,7 +1,8 @@
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PubSub.Application.DTOs;
+using PubSub.Application.DTOs.Request;
+using PubSub.Application.DTOs.Response;
 using PubSub.Application.Mapping;
 using PubSub.Application.Services;
 using Swashbuckle.AspNetCore.Annotations;
