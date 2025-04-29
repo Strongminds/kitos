@@ -23,13 +23,13 @@ public class SubscriptionRepositoryTests : WithAutoFixture
 
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             await repository.AddAsync(subscription);
         }
 
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             var retrieved = await repository.GetAsync(subscription.Uuid);
             Assert.True(retrieved.HasValue);
             Assert.Equal(subscription.Callback, retrieved.Value.Callback);
@@ -53,7 +53,7 @@ public class SubscriptionRepositoryTests : WithAutoFixture
 
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             var exists = await repository.Exists(topic, callback);
             Assert.True(exists);
         }
@@ -65,7 +65,7 @@ public class SubscriptionRepositoryTests : WithAutoFixture
         var options = CreateNewContextOptions();
 
         await using var context = new PubSubContext(options);
-        var repository = new SubscriptionRepository(context);
+        var repository = new EntityFrameworkSubscriptionRepository(context);
         var exists = await repository.Exists("NonExistentTopic", "http://nonexistent.url");
         Assert.False(exists);
     }
@@ -88,7 +88,7 @@ public class SubscriptionRepositoryTests : WithAutoFixture
 
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             var userSubscriptions = (await repository.GetAllByUserId(userId)).ToList();
             Assert.Equal(2, userSubscriptions.Count);
             foreach (var subscription in userSubscriptions)
@@ -116,7 +116,7 @@ public class SubscriptionRepositoryTests : WithAutoFixture
 
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             var topicSubscriptions = (await repository.GetByTopic(topic)).ToList();
             Assert.Equal(2, topicSubscriptions.Count);
             foreach (var subscription in topicSubscriptions)
@@ -140,14 +140,14 @@ public class SubscriptionRepositoryTests : WithAutoFixture
 
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             await repository.DeleteAsync(subscription);
         }
 
         
         await using (var context = new PubSubContext(options))
         {
-            var repository = new SubscriptionRepository(context);
+            var repository = new EntityFrameworkSubscriptionRepository(context);
             var retrieved = await repository.GetAsync(subscription.Uuid);
             Assert.False(retrieved.HasValue);
         }

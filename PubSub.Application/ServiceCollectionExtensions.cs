@@ -14,6 +14,7 @@ using PubSub.Application.Services.Publisher;
 using PubSub.Application.Services.Identity;
 using PubSub.Application.Services.Subscribe;
 using PubSub.Application.Services.RabbitMQConnection;
+using PubSub.Application.Repositories;
 
 namespace PubSub.Application;
 
@@ -93,7 +94,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ITopicConsumerStore, InMemoryTopicConsumerStore>();
         services.AddScoped<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
 
-        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ISubscriptionRepository, EntityFrameworkSubscriptionRepository>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ISubscriptionMapper, SubscriptionMapper>();

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Moq;
 using PubSub.Application.Models;
+using PubSub.Application.Repositories;
 using PubSub.Application.Services.Consumer;
 using PubSub.Application.Services.Identity;
 using PubSub.Application.Services.Subscribe;

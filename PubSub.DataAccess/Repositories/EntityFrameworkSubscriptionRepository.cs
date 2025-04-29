@@ -4,10 +4,10 @@ using PubSub.Core.DomainModel;
 
 namespace PubSub.DataAccess.Repositories;
 
-public class SubscriptionRepository : ISubscriptionRepository
+public class EntityFrameworkSubscriptionRepository : ISubscriptionRepository
 {
     private readonly PubSubContext _context;
-    public SubscriptionRepository(PubSubContext context)
+    public EntityFrameworkSubscriptionRepository(PubSubContext context)
     {
         _context = context;
     }
