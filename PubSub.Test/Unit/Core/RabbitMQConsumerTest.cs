@@ -4,8 +4,8 @@ using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
 using PubSub.Application.Services;
-using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Infrastructure.MessageQueue;
+using PubSub.Core.DomainModel.Repositories;
 
 namespace PubSub.Test.Unit.Core
 {

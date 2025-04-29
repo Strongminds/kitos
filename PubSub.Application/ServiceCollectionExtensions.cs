@@ -13,7 +13,7 @@ using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Infrastructure.MessageQueue;
-using PubSub.Core.ApplicationServices.Repositories;
+using PubSub.Core.DomainModel.Repositories;
 
 namespace PubSub.Application;
 

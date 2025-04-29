@@ -1,4 +1,4 @@
-﻿using PubSub.Core.ApplicationServices.Repositories;
+﻿using PubSub.Core.DomainModel.Repositories;
 
 namespace PubSub.Application
 {

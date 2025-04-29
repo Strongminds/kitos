@@ -1,7 +1,7 @@
 ﻿using PubSub.Application.Services;
 using PubSub.Core.ApplicationServices.Notifier;
-using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Core.ApplicationServices.Serializer;
+using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainServices.Subscriber;
 
 namespace PubSub.Infrastructure.MessageQueue

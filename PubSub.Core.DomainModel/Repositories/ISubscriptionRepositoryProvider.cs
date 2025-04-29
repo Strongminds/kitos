@@ -1,4 +1,4 @@
-﻿namespace PubSub.Core.ApplicationServices.Repositories
+﻿namespace PubSub.Core.DomainModel.Repositories
 {
     public interface ISubscriptionRepositoryProvider
     {
