@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Http;
 
 namespace PubSub.Application.Services;
 

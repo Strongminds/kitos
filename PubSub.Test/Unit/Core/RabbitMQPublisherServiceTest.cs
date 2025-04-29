@@ -5,8 +5,7 @@ using PubSub.Test.Base;
 using RabbitMQ.Client;
 using System.Text.Json;
 using PubSub.Application.Services;
-using PubSub.Core.DomainServices.RabbitMQConnection;
-
+using PubSub.Infrastructure.MessageQueue;
 namespace PubSub.Test.Unit.Core
 {
     public class RabbitMQPublisherServiceTest : TestClassWithIChannelBase

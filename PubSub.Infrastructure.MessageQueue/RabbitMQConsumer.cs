@@ -1,12 +1,12 @@
 ﻿using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Core.ApplicationServices.Serializer;
-using PubSub.Core.DomainServices.RabbitMQConnection;
+using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Subscriber;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace PubSub.Application.Services
+namespace PubSub.Infrastructure.MessageQueue
 {
     public class RabbitMQConsumer : IConsumer
     {
@@ -17,7 +17,6 @@ namespace PubSub.Application.Services
         private IConnection _connection;
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
-        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ISubscriptionRepositoryProvider subscriptionRepositoryProvider;
 
         public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, 

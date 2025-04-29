@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PubSub.Application.Services\PubSub.Application.Services.csproj" />
     <ProjectReference Include="..\PubSub.Application\PubSub.Application.csproj" />
     <ProjectReference Include="..\PubSub.Core.Abstractions\PubSub.Core.Abstractions.csproj" />
     <ProjectReference Include="..\PubSub.Core.ApplicationServices\PubSub.Core.ApplicationServices.csproj" />

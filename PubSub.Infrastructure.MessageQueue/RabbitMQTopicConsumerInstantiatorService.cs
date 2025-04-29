@@ -1,10 +1,10 @@
 ﻿using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Core.ApplicationServices.Serializer;
-using PubSub.Core.DomainServices.RabbitMQConnection;
 using PubSub.Core.DomainServices.Subscriber;
+using PubSub.Application.Services;
 
-namespace PubSub.Application.Services
+namespace PubSub.Infrastructure.MessageQueue
 {
     public class RabbitMQTopicConsumerInstantiatorService : ITopicConsumerInstantiatorService
     {

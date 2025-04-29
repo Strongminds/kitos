@@ -12,7 +12,7 @@ using RabbitMQ.Client;
 using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Core.DomainServices.Publisher;
-using PubSub.Core.DomainServices.RabbitMQConnection;
+using PubSub.Infrastructure.MessageQueue;
 using PubSub.Core.ApplicationServices.Repositories;
 
 namespace PubSub.Application;

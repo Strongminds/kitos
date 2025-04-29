@@ -12,6 +12,7 @@ public class SubscriptionService : ISubscriptionService
     private readonly ISubscriptionRepository _repository;
     private readonly ICurrentUserService _currentUserService;
     private readonly ITopicConsumerInstantiatorService _topicConsumerInstantiatorService;
+
     public SubscriptionService(ISubscriptionRepository repository, ICurrentUserService currentUserService, ITopicConsumerInstantiatorService topicConsumerInstantiatorService)
     {
         _repository = repository;

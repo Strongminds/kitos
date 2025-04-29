@@ -1,7 +1,6 @@
 ﻿using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Repositories;
 using PubSub.Core.ApplicationServices.Serializer;
-using PubSub.Core.DomainServices.RabbitMQConnection;
 using PubSub.Core.DomainServices.Subscriber;
 
 namespace PubSub.Application.Services

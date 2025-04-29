@@ -3,9 +3,9 @@ using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
-using PubSub.Core.DomainServices.RabbitMQConnection;
 using PubSub.Application.Services;
 using PubSub.Core.ApplicationServices.Repositories;
+using PubSub.Infrastructure.MessageQueue;
 
 namespace PubSub.Test.Unit.Core
 {
