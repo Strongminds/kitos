@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using PubSub.Core.DomainModel.Serializer;
+using System.Text;
 using System.Text.Json;
 
-namespace PubSub.Core.ApplicationServices.Serializer
+namespace PubSub.Infrastructure.MessageQueue
 {
     public class JsonPayloadSerializer : IJsonPayloadSerializer
     {

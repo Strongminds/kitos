@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using PubSub.Application.Mapping;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.ApplicationServices.Notifier;
-using PubSub.Core.ApplicationServices.Serializer;
 using PubSub.Core.ApplicationServices.Config;
 using PubSub.DataAccess;
 using PubSub.DataAccess.Repositories;
@@ -14,6 +13,7 @@ using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Infrastructure.MessageQueue;
 using PubSub.Core.DomainModel.Repositories;
+using PubSub.Core.DomainModel.Serializer;
 
 namespace PubSub.Application;
 

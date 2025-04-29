@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace PubSub.Core.ApplicationServices.Serializer
+namespace PubSub.Core.DomainModel.Serializer
 {
     public interface IJsonPayloadSerializer
     {

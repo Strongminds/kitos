@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using PubSub.Core.ApplicationServices.Serializer;
+using PubSub.Infrastructure.MessageQueue;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Core

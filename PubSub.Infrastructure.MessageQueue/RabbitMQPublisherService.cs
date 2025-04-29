@@ -1,8 +1,8 @@
 ﻿using PubSub.Core.DomainModel;
-using PubSub.Core.ApplicationServices.Serializer;
 using RabbitMQ.Client;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Application.Services;
+using PubSub.Core.DomainModel.Serializer;
 
 namespace PubSub.Infrastructure.MessageQueue
 {
