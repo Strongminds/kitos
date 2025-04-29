@@ -58,6 +58,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeploymentScripts", "Deploy
 		DeploymentScripts\CheckWebsiteVersion.ps1 = DeploymentScripts\CheckWebsiteVersion.ps1
 		DeploymentScripts\DbMigrations.ps1 = DeploymentScripts\DbMigrations.ps1
 		DeploymentScripts\DeploymentSetup.ps1 = DeploymentScripts\DeploymentSetup.ps1
+		DeploymentScripts\DeployPubsubToEnvironment.ps1 = DeploymentScripts\DeployPubsubToEnvironment.ps1
 		DeploymentScripts\DeployWebsite.ps1 = DeploymentScripts\DeployWebsite.ps1
 		DeploymentScripts\DeployWebsiteToEnvironment.ps1 = DeploymentScripts\DeployWebsiteToEnvironment.ps1
 		DeploymentScripts\PrepareCleanDeveloperDatabase.ps1 = DeploymentScripts\PrepareCleanDeveloperDatabase.ps1
@@ -65,7 +66,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeploymentScripts", "Deploy
 		DeploymentScripts\PrepareLocalDatabase.ps1 = DeploymentScripts\PrepareLocalDatabase.ps1
 		DeploymentScripts\PreparePackage.ps1 = DeploymentScripts\PreparePackage.ps1
 		DeploymentScripts\PrepareProductionDatabase.ps1 = DeploymentScripts\PrepareProductionDatabase.ps1
+		DeploymentScripts\PreparePubsubDatabase.ps1 = DeploymentScripts\PreparePubsubDatabase.ps1
 		DeploymentScripts\PrepareTestDatabase.ps1 = DeploymentScripts\PrepareTestDatabase.ps1
+		DeploymentScripts\SetupPubsubEnviroment.ps1 = DeploymentScripts\SetupPubsubEnviroment.ps1
 		DeploymentScripts\VpnCli.ps1 = DeploymentScripts\VpnCli.ps1
 	EndProjectSection
 EndProject
