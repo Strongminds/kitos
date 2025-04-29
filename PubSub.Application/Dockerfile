@@ -2,7 +2,10 @@
 WORKDIR app
 
 COPY ["PubSub.Application/PubSub.Application.csproj", "PubSub.Application/"]
-COPY ["PubSub.Core/PubSub.Core.csproj", "PubSub.Core/"]
+COPY ["PubSub.Core.Abstractions/PubSub.Core.Abstractions.csproj", "PubSub.Core/"]
+COPY ["PubSub.Core.ApplicationServices/PubSub.Core.ApplicationServices.csproj", "PubSub.Core/"]
+COPY ["PubSub.Core.DomainModel/PubSub.Core.DomainModel.csproj", "PubSub.Core/"]
+COPY ["PubSub.DataAccess/PubSub.DataAccess.csproj", "PubSub.Core/"]
 
 RUN dotnet restore "PubSub.Application/PubSub.Application.csproj"
 
