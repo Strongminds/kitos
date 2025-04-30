@@ -19,6 +19,7 @@ using PubSub.Infrastructure.DataAccess;
 using PubSub.Core.DomainModel.Notifier;
 using PubSub.Core.DomainModel.Publisher;
 using PubSub.Infrastructure.MessageQueue.Notifier;
+using PubSub.Infrastructure.DataAccess.TopicConsumerStore;
 
 namespace PubSub.Application.Api.Configuration;
 

@@ -2,7 +2,7 @@
 using PubSub.Core.DomainServices.Consumer;
 using System.Collections.Concurrent;
 
-namespace PubSub.Application.Services
+namespace PubSub.Infrastructure.DataAccess.TopicConsumerStore
 {
     public class InMemoryTopicConsumerStore : ITopicConsumerStore
     {

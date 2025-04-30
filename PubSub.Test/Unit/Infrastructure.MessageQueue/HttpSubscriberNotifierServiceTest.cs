@@ -1,4 +1,4 @@
-﻿using PubSub.Core.ApplicationServices.Notifier;
+﻿using PubSub.Infrastructure.MessageQueue.Notifier;
 using Moq;
 using Moq.Protected;
 using System.Net;
