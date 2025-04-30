@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PubSub.Core.DomainModel;
 
-namespace PubSub.DataAccess
+namespace PubSub.Infrastructure.DataAccess
 {
     public class PubSubContext : DbContext
     {

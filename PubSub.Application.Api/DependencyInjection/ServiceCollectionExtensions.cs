@@ -4,8 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Config;
-using PubSub.DataAccess;
-using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
 using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Publisher;
@@ -18,6 +16,8 @@ using PubSub.Core.DomainServices.Consumer;
 using PubSub.Infrastructure.MessageQueue.Consumer;
 using PubSub.Infrastructure.MessageQueue.Publisher;
 using PubSub.Application.Api.Mapping;
+using PubSub.Infrastructure.DataAccess.Repositories;
+using PubSub.Infrastructure.DataAccess;
 
 namespace PubSub.Application.Api.DependencyInjection;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace PubSub.DataAccess.Factories
+namespace PubSub.Infrastructure.DataAccess.Factories
 {
     public class PubSubContextFactory : IDesignTimeDbContextFactory<PubSubContext>
     {

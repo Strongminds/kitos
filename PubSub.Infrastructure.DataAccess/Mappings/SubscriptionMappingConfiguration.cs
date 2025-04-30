@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PubSub.Core.DomainModel;
 
-namespace PubSub.DataAccess.Mappings
+namespace PubSub.Infrastructure.DataAccess.Mappings
 {
     public class SubscriptionMappingConfiguration : IEntityTypeConfiguration<Subscription>
     {

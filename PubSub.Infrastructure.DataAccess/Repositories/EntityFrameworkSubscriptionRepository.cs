@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel;
 
-namespace PubSub.DataAccess.Repositories;
+namespace PubSub.Infrastructure.DataAccess.Repositories;
 
 public class EntityFrameworkSubscriptionRepository : ISubscriptionRepository
 {

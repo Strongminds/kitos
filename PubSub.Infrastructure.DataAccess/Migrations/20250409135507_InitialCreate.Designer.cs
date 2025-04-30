@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PubSub.DataAccess;
+using PubSub.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace PubSub.DataAccess.Migrations
+namespace PubSub.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(PubSubContext))]
     [Migration("20250409135507_InitialCreate")]

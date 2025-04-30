@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PubSub.DataAccess.Migrations
+namespace PubSub.Infrastructure.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

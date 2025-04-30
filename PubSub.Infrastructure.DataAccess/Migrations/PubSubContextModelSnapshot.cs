@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PubSub.DataAccess;
 
 #nullable disable
 
-namespace PubSub.DataAccess.Migrations
+namespace PubSub.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(PubSubContext))]
     partial class PubSubContextModelSnapshot : ModelSnapshot
