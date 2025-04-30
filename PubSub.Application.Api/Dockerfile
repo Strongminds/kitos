@@ -4,7 +4,7 @@ WORKDIR app
 COPY ["PubSub.Application.Api/PubSub.Application.Api.csproj", "PubSub.Application.Api/"]
 COPY ["PubSub.Application.Services/PubSub.Application.Services.csproj", "PubSub.Application.Services/"]
 COPY ["PubSub.Core.Abstractions/PubSub.Core.Abstractions.csproj", "PubSub.Core.Abstractions/"]
-COPY ["PubSub.Core.DomainServices/PubSub.Core.DomainServices.csproj", "PubSub.Core.DomainServices/"]
+COPY ["PubSub.Core.Interfaces/PubSub.Core.Interfaces.csproj", "PubSub.Core.Interfaces/"]
 COPY ["PubSub.Core.DomainModel/PubSub.Core.DomainModel.csproj", "PubSub.Core.DomainModel/"]
 COPY ["PubSub.Infrastructure.DataAccess/PubSub.Infrastructure.DataAccess.csproj", "PubSub.Infrastructure.DataAccess/"]
 COPY ["PubSub.Infrastructure.MessageQueue/PubSub.Infrastructure.MessageQueue.csproj", "PubSub.Infrastructure.MessageQueue/"]
