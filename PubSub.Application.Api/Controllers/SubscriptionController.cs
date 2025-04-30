@@ -11,13 +11,13 @@ namespace PubSub.Application.Api.Controllers;
 
 [ApiController]
 [Authorize(Policy = Constants.Config.Validation.CanSubscribePolicy)]
-[Route("api/subscribe")]
-public class SubscribeController : PubSubBaseController
+[Route("api/subscription")]
+public class SubscriptionController : PubSubBaseController
 {
     private readonly ISubscriptionService _subscriptionService;
     private readonly ISubscriptionMapper _subscriptionMapper;
 
-    public SubscribeController(ISubscriptionService subscriptionService, ISubscriptionMapper subscriptionMapper)
+    public SubscriptionController(ISubscriptionService subscriptionService, ISubscriptionMapper subscriptionMapper)
     {
         _subscriptionService = subscriptionService;
         _subscriptionMapper = subscriptionMapper;
