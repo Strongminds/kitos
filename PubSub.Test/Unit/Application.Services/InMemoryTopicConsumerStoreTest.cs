@@ -3,7 +3,7 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Application.Services;
 using PubSub.Core.DomainServices.Consumer;
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Application.Services
 {
     public class InMemoryTopicConsumerStoreTest: WithAutoFixture
     {

@@ -9,7 +9,7 @@ using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainServices.Consumer;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
-namespace PubSub.Test.Unit.Application
+namespace PubSub.Test.Unit.Application.Services
 {
     public class SubscriptionServiceTest : WithAutoFixture
     {

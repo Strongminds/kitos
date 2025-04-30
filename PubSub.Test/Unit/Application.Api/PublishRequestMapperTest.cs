@@ -3,7 +3,7 @@ using PubSub.Application.Api.DTOs.Request;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Text.Json;
 
-namespace PubSub.Test.Unit.Application
+namespace PubSub.Test.Unit.Application.Api
 {
     public class PublishRequestMapperTest : WithAutoFixture
     {

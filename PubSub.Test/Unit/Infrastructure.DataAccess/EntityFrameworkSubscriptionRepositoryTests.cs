@@ -4,9 +4,9 @@ using PubSub.Infrastructure.DataAccess.Repositories;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
-namespace PubSub.Test.Unit.DataAccess;
+namespace PubSub.Test.Unit.Infrastructure.DataAccess;
 
-public class SubscriptionRepositoryTests : WithAutoFixture
+public class EntityFrameworkSubscriptionRepositoryTests : WithAutoFixture
 {
     private DbContextOptions<PubSubContext> CreateNewContextOptions()
     {

@@ -7,7 +7,7 @@ using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
     public class RabbitMQConsumerTest : TestClassWithIChannelBase
     {

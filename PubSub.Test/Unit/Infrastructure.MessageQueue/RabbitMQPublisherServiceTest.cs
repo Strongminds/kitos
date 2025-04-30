@@ -6,7 +6,7 @@ using System.Text.Json;
 using PubSub.Infrastructure.MessageQueue.Publisher;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
     public class RabbitMQPublisherServiceTest : TestClassWithIChannelBase
     {

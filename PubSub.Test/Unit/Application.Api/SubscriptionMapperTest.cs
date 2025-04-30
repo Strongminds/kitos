@@ -3,7 +3,7 @@ using PubSub.Application.Api.Mapping;
 using PubSub.Core.DomainModel;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
-namespace PubSub.Test.Unit.Application
+namespace PubSub.Test.Unit.Application.Api
 {
     public class SubscriptionMapperTest : WithAutoFixture
     {

@@ -2,7 +2,7 @@
 using PubSub.Infrastructure.MessageQueue;
 using RabbitMQ.Client;
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Application.Services
 {
     public class RabbitMQConnectionManagerTest
     {

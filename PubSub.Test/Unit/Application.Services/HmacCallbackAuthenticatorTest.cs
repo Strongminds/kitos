@@ -5,7 +5,7 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Application.Services
 {
     public class HmacCallbackAuthenticatorTest: WithAutoFixture
     {

@@ -8,7 +8,7 @@ using PubSub.Core.DomainServices.Consumer;
 using PubSub.Infrastructure.MessageQueue.Consumer;
 
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
     public class RabbitMQTopicConsumerInstantiatorServiceTest : WithAutoFixture
     {

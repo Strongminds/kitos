@@ -7,7 +7,7 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
     public class HttpSubscriberNotifierServiceTest: WithAutoFixture
     {

@@ -3,7 +3,7 @@ using System.Text.Json;
 using PubSub.Infrastructure.MessageQueue;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
-namespace PubSub.Test.Unit.Core
+namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
     public class JsonPayloadSerializerTest : WithAutoFixture
     {
