@@ -1,11 +1,13 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR app
 
-COPY ["PubSub.Application/PubSub.Application.csproj", "PubSub.Application/"]
-COPY ["PubSub.Core.Abstractions/PubSub.Core.Abstractions.csproj", "PubSub.Core/"]
-COPY ["PubSub.Core.ApplicationServices/PubSub.Core.ApplicationServices.csproj", "PubSub.Core/"]
-COPY ["PubSub.Core.DomainModel/PubSub.Core.DomainModel.csproj", "PubSub.Core/"]
-COPY ["PubSub.DataAccess/PubSub.DataAccess.csproj", "PubSub.Core/"]
+COPY ["PubSub.Application.Api/PubSub.Application.Api.csproj", "PubSub.Application.Api/"]
+COPY ["PubSub.Application.Services/PubSub.Application.Services.csproj", "PubSub.Application.Services/"]
+COPY ["PubSub.Core.Abstractions/PubSub.Core.Abstractions.csproj", "PubSub.Core.Abstractions/"]
+COPY ["PubSub.Core.DomainServices/PubSub.Core.DomainServices.csproj", "PubSub.Core.DomainServices/"]
+COPY ["PubSub.Core.DomainModel/PubSub.Core.DomainModel.csproj", "PubSub.Core.DomainModel/"]
+COPY ["PubSub.Infrastructure.DataAccess/PubSub.Infrastructure.DataAccess.csproj", "PubSub.Infrastructure.DataAccess/"]
+COPY ["PubSub.Infrastructure.MessageQueue/PubSub.Infrastructure.MessageQueue.csproj", "PubSub.Infrastructure.MessageQueue/"]
 
 RUN dotnet restore "PubSub.Application/PubSub.Application.csproj"
 
