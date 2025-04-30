@@ -326,7 +326,9 @@ namespace Core.ApplicationServices.Organizations
         {
             var existingRoles = RoleMappingHelper.ExtractAssignedRoles(unit);
             var newRoles = assignments.ToList();
-            return Result<IEnumerable<UserRolePair>, OperationError>.Success(existingRoles.Concat(newRoles));
+            if (existingRoles.Any(newRoles.Contains)) ?
+                return new OperationError("Role assignment exists", OperationFailure.Conflict) :
+                return Result<IEnumerable<UserRolePair>, OperationError>.Success(existingRoles.Concat(newRoles));
 
         }
 
