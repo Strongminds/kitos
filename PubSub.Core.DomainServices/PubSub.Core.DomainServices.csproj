@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PubSub.Core.Abstractions\PubSub.Core.Abstractions.csproj" />
-    <ProjectReference Include="..\PubSub.Core.ApplicationServices\PubSub.Core.ApplicationServices.csproj" />
     <ProjectReference Include="..\PubSub.Core.DomainModel\PubSub.Core.DomainModel.csproj" />
   </ItemGroup>
 

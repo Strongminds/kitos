@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using PubSub.Core.DomainModel;
 using PubSub.Core.DomainModel.Repositories;
+using PubSub.Core.DomainModel;
 
 namespace PubSub.DataAccess.Repositories;
 

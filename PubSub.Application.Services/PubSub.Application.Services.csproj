@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PubSub.Core.ApplicationServices\PubSub.Core.ApplicationServices.csproj" />
     <ProjectReference Include="..\PubSub.Core.DomainModel\PubSub.Core.DomainModel.csproj" />
     <ProjectReference Include="..\PubSub.Core.DomainServices\PubSub.Core.DomainServices.csproj" />
   </ItemGroup>
