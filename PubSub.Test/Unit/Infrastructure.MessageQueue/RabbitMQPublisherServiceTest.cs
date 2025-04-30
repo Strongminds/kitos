@@ -1,11 +1,13 @@
 ﻿using Moq;
-using PubSub.Core.DomainModel;
 using PubSub.Test.Base;
 using RabbitMQ.Client;
 using System.Text.Json;
 using PubSub.Infrastructure.MessageQueue.Publisher;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
+using PubSub.Core.DomainModel.Publications;
+using PubSub.Core.DomainModel.Topics;
+
 namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
     public class RabbitMQPublisherServiceTest : TestClassWithIChannelBase

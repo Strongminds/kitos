@@ -1,5 +1,5 @@
 ﻿using PubSub.Application.Api.DTOs.Request;
-using PubSub.Core.DomainModel;
+using PubSub.Core.DomainModel.Publications;
 
 namespace PubSub.Application.Api.Mapping
 {

@@ -1,6 +1,6 @@
 ﻿using PubSub.Application.Api.DTOs.Request;
 using PubSub.Application.Api.Mapping;
-using PubSub.Core.DomainModel;
+using PubSub.Core.DomainModel.Subscriptions;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Application.Api

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PubSub.Core.DomainModel;
+using PubSub.Core.DomainModel.Subscriptions;
 
 namespace PubSub.Infrastructure.DataAccess
 {

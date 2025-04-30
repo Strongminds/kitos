@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PubSub.Core.DomainModel.Subscriptions;
 
 namespace PubSub.Core.DomainModel.Repositories;
 

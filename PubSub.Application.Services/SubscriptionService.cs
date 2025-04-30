@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using PubSub.Application.Services.CurrentUserService;
 using PubSub.Core.Abstractions.ErrorTypes;
-using PubSub.Core.ApplicationServices.Models;
-using PubSub.Core.DomainModel;
+using PubSub.Core.DomainModel.Parameters;
 using PubSub.Core.DomainModel.Repositories;
+using PubSub.Core.DomainModel.Subscriptions;
 using PubSub.Core.DomainServices.Consumer;
 
 namespace PubSub.Application.Services;

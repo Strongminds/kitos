@@ -1,4 +1,4 @@
-﻿namespace PubSub.Core.DomainModel;
+﻿namespace PubSub.Core.DomainModel.Topics;
 
 public class Topic
 {

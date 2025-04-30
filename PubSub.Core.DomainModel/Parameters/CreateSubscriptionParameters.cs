@@ -1,4 +1,4 @@
-﻿namespace PubSub.Core.ApplicationServices.Models
+﻿namespace PubSub.Core.DomainModel.Parameters
 {
     public class CreateSubscriptionParameters
     {
