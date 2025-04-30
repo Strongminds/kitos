@@ -21,7 +21,7 @@ namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 
             var messageSerializer = new Mock<IJsonPayloadSerializer>();
 
-            var sut = new RabbitMQPublisherService(connectionManager.Object, messageSerializer.Object);
+            var sut = new RabbitMQPublisher(connectionManager.Object, messageSerializer.Object);
 
             var jsonString = "\"Test Payload\"";
             var payload = JsonSerializer.Deserialize<JsonElement>(jsonString);

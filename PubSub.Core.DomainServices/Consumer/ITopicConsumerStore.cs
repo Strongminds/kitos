@@ -1,4 +1,6 @@
-﻿namespace PubSub.Core.DomainServices.Consumer
+﻿using PubSub.Core.DomainModel.Consumer;
+
+namespace PubSub.Core.DomainServices.Consumer
 {
     public interface ITopicConsumerStore
     {

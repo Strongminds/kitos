@@ -2,15 +2,16 @@
 using System.Text.Json;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.DomainModel;
+using PubSub.Core.DomainModel.Notifier;
 
 namespace PubSub.Core.ApplicationServices.Notifier
 {
-    public class HttpSubscriberNotifierService : ISubscriberNotifierService
+    public class HttpSubscriberNotifier : ISubscriberNotifier
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ICallbackAuthenticator _callbackAuthenticator;
 
-        public HttpSubscriberNotifierService(IHttpClientFactory httpClientFactory, ICallbackAuthenticator callbackAuthenticator)
+        public HttpSubscriberNotifier(IHttpClientFactory httpClientFactory, ICallbackAuthenticator callbackAuthenticator)
         {
             _httpClientFactory = httpClientFactory;
             _callbackAuthenticator = callbackAuthenticator;

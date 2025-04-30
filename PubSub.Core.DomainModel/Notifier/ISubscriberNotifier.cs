@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 
-namespace PubSub.Core.ApplicationServices.Notifier
+namespace PubSub.Core.DomainModel.Notifier
 {
-    public interface ISubscriberNotifierService
+    public interface ISubscriberNotifier
     {
         Task Notify(JsonElement payload, string recipient);
     }

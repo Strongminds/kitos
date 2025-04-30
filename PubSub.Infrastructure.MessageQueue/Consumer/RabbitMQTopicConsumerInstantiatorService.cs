@@ -1,21 +1,21 @@
-﻿using PubSub.Core.ApplicationServices.Notifier;
-using PubSub.Core.DomainModel.Repositories;
+﻿using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
 using PubSub.Core.DomainServices.Consumer;
+using PubSub.Core.DomainModel.Notifier;
 
 namespace PubSub.Infrastructure.MessageQueue.Consumer
 {
     public class RabbitMQTopicConsumerInstantiatorService : ITopicConsumerInstantiatorService
     {
         private readonly IRabbitMQConnectionManager _connectionManager;
-        private readonly ISubscriberNotifierService _subscriberNotifierService;
+        private readonly ISubscriberNotifier _subscriberNotifierService;
         private readonly ITopicConsumerStore _topicConsumerStore;
         private readonly IRabbitMQConsumerFactory _consumerFactory;
         private readonly IJsonPayloadSerializer _payloadSerializer;
         private readonly ISubscriptionRepositoryProvider subscriptionRepositoryProvider;
 
-        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifierService subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IJsonPayloadSerializer payloadSerializer, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
+        public RabbitMQTopicConsumerInstantiatorService(IRabbitMQConnectionManager connectionManager, ISubscriberNotifier subscriberNotifierService, ITopicConsumerStore topicConsumerStore, IRabbitMQConsumerFactory consumerFactory, IJsonPayloadSerializer payloadSerializer, ISubscriptionRepositoryProvider subscriptionRepositoryProvider)
         {
             _connectionManager = connectionManager;
             _subscriberNotifierService = subscriberNotifierService;

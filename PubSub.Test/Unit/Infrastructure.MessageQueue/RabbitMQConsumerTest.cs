@@ -1,11 +1,11 @@
 ﻿using Moq;
-using PubSub.Core.ApplicationServices.Notifier;
 using RabbitMQ.Client;
 using PubSub.Test.Base;
 using PubSub.Infrastructure.MessageQueue.Consumer;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
+using PubSub.Core.DomainModel.Notifier;
 
 namespace PubSub.Test.Unit.Infrastructure.MessageQueue
 {
@@ -22,7 +22,7 @@ namespace PubSub.Test.Unit.Infrastructure.MessageQueue
             connection.Setup(_ => _.CreateChannelAsync(null, default)).ReturnsAsync(channel.Object);
             var messageSerializer = new Mock<IJsonPayloadSerializer>();
 
-            var mockSubscriberNotifierService = new Mock<ISubscriberNotifierService>();
+            var mockSubscriberNotifierService = new Mock<ISubscriberNotifier>();
             var topic = A<string>();
 
             var sut = new RabbitMQConsumer(

@@ -1,17 +1,17 @@
-﻿using PubSub.Core.ApplicationServices.Notifier;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
-using PubSub.Core.DomainServices.Consumer;
+using PubSub.Core.DomainModel.Consumer;
+using PubSub.Core.DomainModel.Notifier;
 
 namespace PubSub.Infrastructure.MessageQueue.Consumer
 {
     public class RabbitMQConsumer : IConsumer
     {
         private readonly IRabbitMQConnectionManager _connectionManager;
-        private readonly ISubscriberNotifierService _subscriberNotifierService;
+        private readonly ISubscriberNotifier _subscriberNotifierService;
         private readonly string _topic;
         private readonly IJsonPayloadSerializer _payloadSerializer;
         private IConnection _connection;
@@ -20,7 +20,7 @@ namespace PubSub.Infrastructure.MessageQueue.Consumer
         private readonly ISubscriptionRepositoryProvider subscriptionRepositoryProvider;
 
         public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, 
-            ISubscriberNotifierService subscriberNotifierService, 
+            ISubscriberNotifier subscriberNotifierService, 
             IJsonPayloadSerializer payloadSerializer, 
             string topic,
             ISubscriptionRepositoryProvider subscriptionRepositoryProvider)

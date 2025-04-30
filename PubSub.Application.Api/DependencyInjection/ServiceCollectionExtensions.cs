@@ -6,7 +6,6 @@ using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Config;
 using RabbitMQ.Client;
 using PubSub.Application.Services;
-using PubSub.Core.DomainServices.Publisher;
 using PubSub.Infrastructure.MessageQueue;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
@@ -18,6 +17,8 @@ using PubSub.Infrastructure.MessageQueue.Publisher;
 using PubSub.Application.Api.Mapping;
 using PubSub.Infrastructure.DataAccess.Repositories;
 using PubSub.Infrastructure.DataAccess;
+using PubSub.Core.DomainModel.Notifier;
+using PubSub.Core.DomainModel.Publisher;
 
 namespace PubSub.Application.Api.DependencyInjection;
 
@@ -29,7 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(_ => connectionFactory);
         services.AddScoped<ITopicConsumerInstantiatorService, RabbitMQTopicConsumerInstantiatorService>();
         services.AddSingleton<IRabbitMQConnectionManager, RabbitMQConnectionManager>();
-        services.AddScoped<IPublisherService, RabbitMQPublisherService>();
+        services.AddScoped<IPublisher, RabbitMQPublisher>();
         services.AddScoped<IRabbitMQConsumerFactory, RabbitMQConsumerFactory>();
 
         return services;
@@ -92,9 +93,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPubSubServices(this IServiceCollection services, ConfigurationManager configuration)
     {
         services.AddRabbitMQ(configuration);
-        services.AddHttpClient<ISubscriberNotifierService, HttpSubscriberNotifierService>();
+        services.AddHttpClient<ISubscriberNotifier, HttpSubscriberNotifier>();
         services.AddTransient<IJsonPayloadSerializer, JsonPayloadSerializer>();
-        services.AddScoped<ISubscriberNotifierService, HttpSubscriberNotifierService>();
+        services.AddScoped<ISubscriberNotifier, HttpSubscriberNotifier>();
         services.AddSingleton<ITopicConsumerStore, InMemoryTopicConsumerStore>();
         services.AddScoped<ISubscriptionRepositoryProvider, SubscriptionRepositoryProvider>();
 

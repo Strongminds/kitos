@@ -35,7 +35,7 @@ namespace PubSub.Test.Unit.Infrastructure.MessageQueue
                 });
             var httpClientFactoryMock = SetupHttpClientFactory(handlerMock.Object);
             var callbackAuthenticator = new Mock<ICallbackAuthenticator>();
-            var sut = new HttpSubscriberNotifierService(httpClientFactoryMock.Object, callbackAuthenticator.Object);
+            var sut = new HttpSubscriberNotifier(httpClientFactoryMock.Object, callbackAuthenticator.Object);
            
             var callback = A<string>();
             var dummy = new DummyDTO { Field = "TestValue" };

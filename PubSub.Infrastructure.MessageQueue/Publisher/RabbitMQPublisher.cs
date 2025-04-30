@@ -1,17 +1,17 @@
 ﻿using PubSub.Core.DomainModel;
 using RabbitMQ.Client;
-using PubSub.Core.DomainServices.Publisher;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
+using PubSub.Core.DomainModel.Publisher;
 
 namespace PubSub.Infrastructure.MessageQueue.Publisher
 {
-    public class RabbitMQPublisherService : IPublisherService
+    public class RabbitMQPublisher : IPublisher
     {
         private readonly IRabbitMQConnectionManager _connectionManager;
         private readonly IJsonPayloadSerializer _payloadSerializer;
 
-        public RabbitMQPublisherService(IRabbitMQConnectionManager connectionManager, IJsonPayloadSerializer payloadSerializer)
+        public RabbitMQPublisher(IRabbitMQConnectionManager connectionManager, IJsonPayloadSerializer payloadSerializer)
         {
             _connectionManager = connectionManager;
             _payloadSerializer = payloadSerializer;
