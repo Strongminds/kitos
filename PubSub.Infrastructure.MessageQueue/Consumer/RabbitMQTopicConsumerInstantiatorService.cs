@@ -1,8 +1,8 @@
 ﻿using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
-using PubSub.Core.DomainServices.Consumer;
 using PubSub.Core.DomainModel.Notifier;
+using PubSub.Core.DomainServices;
 
 namespace PubSub.Infrastructure.MessageQueue.Consumer
 {

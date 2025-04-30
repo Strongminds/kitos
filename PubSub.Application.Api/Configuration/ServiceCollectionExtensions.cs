@@ -10,7 +10,6 @@ using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.CurrentUserService;
 using PubSub.Application.Services.RabbitMQUtils;
-using PubSub.Core.DomainServices.Consumer;
 using PubSub.Infrastructure.MessageQueue.Consumer;
 using PubSub.Infrastructure.MessageQueue.Publisher;
 using PubSub.Application.Api.Mapping;
@@ -20,6 +19,7 @@ using PubSub.Core.DomainModel.Notifier;
 using PubSub.Core.DomainModel.Publisher;
 using PubSub.Infrastructure.MessageQueue.Notifier;
 using PubSub.Infrastructure.DataAccess.TopicConsumerStore;
+using PubSub.Core.DomainServices;
 
 namespace PubSub.Application.Api.Configuration;
 

@@ -24,7 +24,7 @@
     <ProjectReference Include="..\PubSub.Application.Api\PubSub.Application.Api.csproj" />
     <ProjectReference Include="..\PubSub.Core.Abstractions\PubSub.Core.Abstractions.csproj" />
     <ProjectReference Include="..\PubSub.Core.DomainModel\PubSub.Core.DomainModel.csproj" />
-    <ProjectReference Include="..\PubSub.Core.DomainServices\PubSub.Core.DomainServices.csproj" />
+    <ProjectReference Include="..\PubSub.Core.Interfaces\PubSub.Core.Interfaces.csproj" />
     <ProjectReference Include="..\PubSub.Infrastructure.MessageQueue\PubSub.Infrastructure.MessageQueue.csproj" />
   </ItemGroup>
 

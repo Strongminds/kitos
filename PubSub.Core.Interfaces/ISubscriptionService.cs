@@ -3,7 +3,7 @@ using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.DomainModel.Parameters;
 using PubSub.Core.DomainModel.Subscriptions;
 
-namespace PubSub.Core.DomainServices.Consumer;
+namespace PubSub.Core.DomainServices;
 
 public interface ISubscriptionService
 {

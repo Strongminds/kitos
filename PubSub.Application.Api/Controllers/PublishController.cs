@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PubSub.Core.DomainServices.Consumer;
 using PubSub.Application.Api.DTOs.Request;
 using PubSub.Application.Api.Mapping;
 using PubSub.Core.DomainModel.Publisher;
+using PubSub.Core.DomainServices;
 
 
 namespace PubSub.Application.Api.Controllers

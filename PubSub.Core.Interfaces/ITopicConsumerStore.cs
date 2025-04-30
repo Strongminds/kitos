@@ -1,6 +1,6 @@
 ﻿using PubSub.Core.DomainModel.Consumer;
 
-namespace PubSub.Core.DomainServices.Consumer
+namespace PubSub.Core.DomainServices
 {
     public interface ITopicConsumerStore
     {

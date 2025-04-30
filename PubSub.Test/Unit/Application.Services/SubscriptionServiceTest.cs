@@ -6,7 +6,7 @@ using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.DomainModel.Parameters;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Subscriptions;
-using PubSub.Core.DomainServices.Consumer;
+using PubSub.Core.DomainServices;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Application.Services

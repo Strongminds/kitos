@@ -1,5 +1,5 @@
 ﻿using PubSub.Core.DomainModel.Consumer;
-using PubSub.Core.DomainServices.Consumer;
+using PubSub.Core.DomainServices;
 using System.Collections.Concurrent;
 
 namespace PubSub.Infrastructure.DataAccess.TopicConsumerStore

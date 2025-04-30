@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.Core.Abstractions", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.Core.DomainModel", "PubSub.Core.DomainModel\PubSub.Core.DomainModel.csproj", "{1994AE95-B1AD-418E-9053-78878BEFD2CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.Core.DomainServices", "PubSub.Core.DomainServices\PubSub.Core.DomainServices.csproj", "{BA7D647F-84B1-49BC-BE7E-E1630CEAE6EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.Core.Interfaces", "PubSub.Core.Interfaces\PubSub.Core.Interfaces.csproj", "{BA7D647F-84B1-49BC-BE7E-E1630CEAE6EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSub.Infrastructure.MessageQueue", "PubSub.Infrastructure.MessageQueue\PubSub.Infrastructure.MessageQueue.csproj", "{42BA14DB-15FB-4111-9E06-A880C1CCCAE0}"
 EndProject

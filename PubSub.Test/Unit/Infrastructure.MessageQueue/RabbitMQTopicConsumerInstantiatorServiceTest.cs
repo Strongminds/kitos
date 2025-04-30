@@ -3,10 +3,10 @@ using PubSub.Test.Base.Tests.Toolkit.Patterns;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
 using PubSub.Application.Services.RabbitMQUtils;
-using PubSub.Core.DomainServices.Consumer;
 using PubSub.Infrastructure.MessageQueue.Consumer;
 using PubSub.Core.DomainModel.Consumer;
 using PubSub.Core.DomainModel.Notifier;
+using PubSub.Core.DomainServices;
 
 
 namespace PubSub.Test.Unit.Infrastructure.MessageQueue
