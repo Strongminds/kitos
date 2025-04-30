@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace PubSub.Application.DTOs.Request
+namespace PubSub.Application.Api.DTOs.Request
 {
     public class PublishRequestDto
     {

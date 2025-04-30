@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PubSub.Application.Mapping;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Config;
@@ -18,8 +17,9 @@ using PubSub.Application.Services.RabbitMQUtils;
 using PubSub.Core.DomainServices.Consumer;
 using PubSub.Infrastructure.MessageQueue.Consumer;
 using PubSub.Infrastructure.MessageQueue.Publisher;
+using PubSub.Application.Api.Mapping;
 
-namespace PubSub.Application.DependencyInjection;
+namespace PubSub.Application.Api.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {

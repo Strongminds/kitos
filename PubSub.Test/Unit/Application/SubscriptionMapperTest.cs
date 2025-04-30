@@ -1,5 +1,5 @@
-﻿using PubSub.Application.DTOs.Request;
-using PubSub.Application.Mapping;
+﻿using PubSub.Application.Api.DTOs.Request;
+using PubSub.Application.Api.Mapping;
 using PubSub.Core.DomainModel;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 

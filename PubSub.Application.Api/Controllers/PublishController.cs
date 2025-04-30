@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PubSub.Application.DTOs.Request;
-using PubSub.Application.Mapping;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Core.DomainServices.Consumer;
+using PubSub.Application.Api.DTOs.Request;
+using PubSub.Application.Api.Mapping;
 
 
-namespace PubSub.Application.Controllers
+namespace PubSub.Application.Api.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)] 
     [ApiController]

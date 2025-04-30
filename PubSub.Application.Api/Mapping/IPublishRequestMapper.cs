@@ -1,7 +1,7 @@
-﻿using PubSub.Application.DTOs.Request;
+﻿using PubSub.Application.Api.DTOs.Request;
 using PubSub.Core.DomainModel;
 
-namespace PubSub.Application.Mapping
+namespace PubSub.Application.Api.Mapping
 {
     public interface IPublishRequestMapper
     {

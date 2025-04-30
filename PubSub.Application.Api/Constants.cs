@@ -1,4 +1,4 @@
-﻿namespace PubSub.Application
+﻿namespace PubSub.Application.Api
 {
     public static class Constants
     {

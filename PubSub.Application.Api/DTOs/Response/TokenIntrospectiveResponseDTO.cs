@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PubSub.Application.DTOs.Response
+namespace PubSub.Application.Api.DTOs.Response
 {
     public class TokenIntrospectiveResponseDTO
     {

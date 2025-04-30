@@ -1,4 +1,4 @@
-﻿namespace PubSub.Application.DTOs.Response
+﻿namespace PubSub.Application.Api.DTOs.Response
 {
     public class SubscriptionResponseDTO
     {

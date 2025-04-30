@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PubSub.Core.Abstractions.ErrorTypes;
 
-namespace PubSub.Application.Controllers;
+namespace PubSub.Application.Api.Controllers;
 
 public class PubSubBaseController : ControllerBase
 {

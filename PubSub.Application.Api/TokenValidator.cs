@@ -2,10 +2,10 @@
 using System.Text.Json;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using PubSub.Application.DTOs.Response;
-using PubSub.Application.DTOs.Request;
+using PubSub.Application.Api.DTOs.Request;
+using PubSub.Application.Api.DTOs.Response;
 
-namespace PubSub.Application.Services
+namespace PubSub.Application.Api
 {
     public class TokenValidator
     {

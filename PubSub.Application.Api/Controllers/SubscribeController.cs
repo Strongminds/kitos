@@ -1,13 +1,13 @@
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PubSub.Application.DTOs.Request;
-using PubSub.Application.DTOs.Response;
-using PubSub.Application.Mapping;
+using PubSub.Application.Api.DTOs.Request;
+using PubSub.Application.Api.DTOs.Response;
+using PubSub.Application.Api.Mapping;
 using PubSub.Core.DomainServices.Consumer;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace PubSub.Application.Controllers;
+namespace PubSub.Application.Api.Controllers;
 
 [ApiController]
 [Authorize(Policy = Constants.Config.Validation.CanSubscribePolicy)]

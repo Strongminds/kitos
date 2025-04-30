@@ -1,7 +1,7 @@
-using PubSub.Application;
 using Microsoft.EntityFrameworkCore;
 using PubSub.DataAccess;
-using PubSub.Application.DependencyInjection;
+using PubSub.Application.Api.DependencyInjection;
+using PubSub.Application.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
