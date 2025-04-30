@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\PubSub.Application.Services\PubSub.Application.Services.csproj" />
     <ProjectReference Include="..\PubSub.Core.Interfaces\PubSub.Core.Interfaces.csproj" />
-    <ProjectReference Include="..\PubSub.DataAccess\PubSub.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
