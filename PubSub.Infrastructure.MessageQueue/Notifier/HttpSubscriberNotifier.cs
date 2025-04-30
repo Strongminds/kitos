@@ -1,10 +1,9 @@
 ﻿using System.Text;
 using System.Text.Json;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
-using PubSub.Core.DomainModel;
 using PubSub.Core.DomainModel.Notifier;
 
-namespace PubSub.Core.ApplicationServices.Notifier
+namespace PubSub.Infrastructure.MessageQueue.Notifier
 {
     public class HttpSubscriberNotifier : ISubscriberNotifier
     {

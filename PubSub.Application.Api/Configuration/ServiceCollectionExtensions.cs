@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
-using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.ApplicationServices.Config;
 using RabbitMQ.Client;
 using PubSub.Application.Services;
@@ -19,6 +18,7 @@ using PubSub.Infrastructure.DataAccess.Repositories;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Core.DomainModel.Notifier;
 using PubSub.Core.DomainModel.Publisher;
+using PubSub.Infrastructure.MessageQueue.Notifier;
 
 namespace PubSub.Application.Api.Configuration;
 
