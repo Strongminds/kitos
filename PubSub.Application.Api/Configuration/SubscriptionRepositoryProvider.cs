@@ -1,6 +1,6 @@
 ﻿using PubSub.Core.DomainModel.Repositories;
 
-namespace PubSub.Application.Api.DependencyInjection
+namespace PubSub.Application.Api.Configuration
 {
     public class SubscriptionRepositoryProvider : ISubscriptionRepositoryProvider
     {

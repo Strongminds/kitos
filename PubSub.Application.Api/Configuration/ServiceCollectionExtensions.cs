@@ -20,7 +20,7 @@ using PubSub.Infrastructure.DataAccess;
 using PubSub.Core.DomainModel.Notifier;
 using PubSub.Core.DomainModel.Publisher;
 
-namespace PubSub.Application.Api.DependencyInjection;
+namespace PubSub.Application.Api.Configuration;
 
 public static class ServiceCollectionExtensions
 {
