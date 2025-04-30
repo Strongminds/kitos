@@ -1,11 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Moq;
 using PubSub.Application.Services;
+using PubSub.Application.Services.CurrentUserService;
 using PubSub.Core.Abstractions.ErrorTypes;
 using PubSub.Core.ApplicationServices.Models;
 using PubSub.Core.DomainModel;
 using PubSub.Core.DomainModel.Repositories;
-using PubSub.Core.DomainServices.Subscriber;
+using PubSub.Core.DomainServices.Consumer;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
 
 namespace PubSub.Test.Unit.Application

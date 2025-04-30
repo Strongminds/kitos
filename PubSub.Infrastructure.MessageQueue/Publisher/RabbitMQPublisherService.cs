@@ -1,10 +1,10 @@
 ﻿using PubSub.Core.DomainModel;
 using RabbitMQ.Client;
 using PubSub.Core.DomainServices.Publisher;
-using PubSub.Application.Services;
 using PubSub.Core.DomainModel.Serializer;
+using PubSub.Application.Services.RabbitMQUtils;
 
-namespace PubSub.Infrastructure.MessageQueue
+namespace PubSub.Infrastructure.MessageQueue.Publisher
 {
     public class RabbitMQPublisherService : IPublisherService
     {

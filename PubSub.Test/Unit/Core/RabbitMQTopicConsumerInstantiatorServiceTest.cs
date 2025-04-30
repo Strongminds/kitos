@@ -1,11 +1,11 @@
 ﻿using Moq;
 using PubSub.Core.ApplicationServices.Notifier;
-using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Test.Base.Tests.Toolkit.Patterns;
-using PubSub.Application.Services;
-using PubSub.Infrastructure.MessageQueue;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
+using PubSub.Application.Services.RabbitMQUtils;
+using PubSub.Core.DomainServices.Consumer;
+using PubSub.Infrastructure.MessageQueue.Consumer;
 
 
 namespace PubSub.Test.Unit.Core

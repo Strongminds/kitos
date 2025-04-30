@@ -1,4 +1,4 @@
-using PubSub.Application.Services;
+using PubSub.Application.Services.RabbitMQUtils;
 using RabbitMQ.Client;
 
 namespace PubSub.Infrastructure.MessageQueue

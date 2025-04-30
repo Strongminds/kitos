@@ -1,10 +1,10 @@
-﻿using PubSub.Application.Services;
+﻿using PubSub.Application.Services.RabbitMQUtils;
 using PubSub.Core.ApplicationServices.Notifier;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
-using PubSub.Core.DomainServices.Subscriber;
+using PubSub.Core.DomainServices.Consumer;
 
-namespace PubSub.Infrastructure.MessageQueue
+namespace PubSub.Infrastructure.MessageQueue.Consumer
 {
     public class RabbitMQConsumerFactory : IRabbitMQConsumerFactory
     {

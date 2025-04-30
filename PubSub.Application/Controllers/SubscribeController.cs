@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs.Request;
 using PubSub.Application.DTOs.Response;
 using PubSub.Application.Mapping;
-using PubSub.Core.DomainServices.Subscriber;
+using PubSub.Core.DomainServices.Consumer;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace PubSub.Application.Controllers;

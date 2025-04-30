@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.DTOs.Request;
 using PubSub.Application.Mapping;
 using PubSub.Core.DomainServices.Publisher;
-using PubSub.Core.DomainServices.Subscriber;
+using PubSub.Core.DomainServices.Consumer;
 
 
 namespace PubSub.Application.Controllers

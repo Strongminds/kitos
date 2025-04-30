@@ -9,13 +9,17 @@ using PubSub.DataAccess;
 using PubSub.DataAccess.Repositories;
 using RabbitMQ.Client;
 using PubSub.Application.Services;
-using PubSub.Core.DomainServices.Subscriber;
 using PubSub.Core.DomainServices.Publisher;
 using PubSub.Infrastructure.MessageQueue;
 using PubSub.Core.DomainModel.Repositories;
 using PubSub.Core.DomainModel.Serializer;
+using PubSub.Application.Services.CurrentUserService;
+using PubSub.Application.Services.RabbitMQUtils;
+using PubSub.Core.DomainServices.Consumer;
+using PubSub.Infrastructure.MessageQueue.Consumer;
+using PubSub.Infrastructure.MessageQueue.Publisher;
 
-namespace PubSub.Application;
+namespace PubSub.Application.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {

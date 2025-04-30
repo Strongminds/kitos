@@ -1,4 +1,4 @@
-﻿namespace PubSub.Core.DomainServices.Subscriber
+﻿namespace PubSub.Core.DomainServices.Consumer
 {
     public interface ITopicConsumerStore
     {

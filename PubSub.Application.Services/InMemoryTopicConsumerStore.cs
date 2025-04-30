@@ -1,4 +1,4 @@
-﻿using PubSub.Core.DomainServices.Subscriber;
+﻿using PubSub.Core.DomainServices.Consumer;
 using System.Collections.Concurrent;
 
 namespace PubSub.Application.Services

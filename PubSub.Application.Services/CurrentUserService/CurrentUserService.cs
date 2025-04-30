@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Http;
 
-namespace PubSub.Application.Services;
+namespace PubSub.Application.Services.CurrentUserService;
 
 public class CurrentUserService : ICurrentUserService
 {
