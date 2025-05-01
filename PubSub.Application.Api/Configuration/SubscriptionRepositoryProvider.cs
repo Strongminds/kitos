@@ -1,4 +1,5 @@
 ﻿using PubSub.Core.DomainModel.Repositories;
+using PubSub.Infrastructure.DataAccess;
 
 namespace PubSub.Application.Api.Configuration
 {
@@ -14,6 +15,7 @@ namespace PubSub.Application.Api.Configuration
         public ISubscriptionRepository Get()
         {
             using var scope = serviceScopeFactory.CreateScope();
+            scope.ServiceProvider.GetRequiredService<PubSubContext>();
             return scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
         }
     }
