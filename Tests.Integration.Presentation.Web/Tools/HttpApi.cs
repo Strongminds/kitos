@@ -548,12 +548,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await PostWithCookieAsync(TestEnvironment.CreateUrl($"odata/Organizations({organizationId})/Rights"), cookie, roleDto);
         }
 
-        public static async Task<HttpResponseMessage> SendRemoveRoleToUserAsync(int rightId, int organizationId = TestEnvironment.DefaultOrganizationId, Cookie optionalLoginCookie = null)
-        {
-            var cookie = optionalLoginCookie ?? await GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await DeleteWithCookieAsync(TestEnvironment.CreateUrl($"odata/Organizations({organizationId})/Rights({rightId})"), cookie);
-        }
-
         public static async Task PatchOdataUserAsync(ApiUserDTO userDto, int userId)
         {
             var cookie = await GetCookieAsync(OrganizationRole.GlobalAdmin);
