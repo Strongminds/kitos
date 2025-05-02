@@ -262,15 +262,6 @@ namespace Presentation.Web
             var localInterfaceType = BindEntitySet<LocalInterfaceType, LocalInterfaceTypesController>(builder);
             localInterfaceType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
-            var localItContractRole = BindEntitySet<LocalItContractRole, LocalItContractRolesController>(builder);
-            localItContractRole.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localItContractTemplateType = BindEntitySet<LocalItContractTemplateType, LocalItContractTemplateTypesController>(builder);
-            localItContractTemplateType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localItContractType = BindEntitySet<LocalItContractType, LocalItContractTypesController>(builder);
-            localItContractType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
             var localItSystemRole = BindEntitySet<LocalItSystemRole, LocalItSystemRolesController>(builder);
             localItSystemRole.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
@@ -402,13 +393,6 @@ namespace Presentation.Web
             BindEntitySet<DataProcessingDataResponsibleOption, DataProcessingDataResponsibleOptionsController>(builder);
             var countryConfig = BindEntitySet<DataProcessingCountryOption, DataProcessingCountryOptionsController>(builder);
             countryConfig.EntityType.Ignore(x => x.SubDataProcessors);
-
-            //Generic local options
-            BindEntitySet<LocalDataProcessingBasisForTransferOption, LocalDataProcessingBasisForTransferOptionsController>(builder);
-            BindEntitySet<LocalDataProcessingOversightOption, LocalDataProcessingOversightOptionsController>(builder);
-            BindEntitySet<LocalDataProcessingDataResponsibleOption, LocalDataProcessingDataResponsibleOptionsController>(builder);
-            BindEntitySet<LocalDataProcessingCountryOption, LocalDataProcessingCountryOptionsController>(builder);
-            BindEntitySet<LocalDataProcessingRegistrationRole, LocalDataProcessingRegistrationRolesController>(builder);
 
             //Remove parent from dpa to prevent expand
             builder.StructuralTypes.First(t => t.ClrType == typeof(DataProcessingRegistrationReadModel)).RemoveProperty(typeof(DataProcessingRegistrationReadModel).GetProperty(nameof(DataProcessingRegistrationReadModel.SourceEntity)));

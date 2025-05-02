@@ -988,11 +988,6 @@
     <Compile Include="Controllers\API\V1\SystemRelationController.cs" />
     <Compile Include="Controllers\API\V1\OData\DataProcessingRegistrationRightsController.cs" />
     <Compile Include="Controllers\API\V1\OData\ItSystemUsageOverviewReadModelsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalDataProcessingRegistrationRolesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalDataProcessingCountryOptionsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalDataProcessingDataResponsibleOptionsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalDataProcessingOversightOptionsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalDataProcessingBasisForTransferOptionsController.cs" />
     <Compile Include="Controllers\API\V1\OData\OptionControllers\DataProcessingRegistrationRolesController.cs" />
     <Compile Include="Controllers\API\V1\OData\OptionControllers\DataProcessingCountryOptionsController.cs" />
     <Compile Include="Controllers\API\V1\OData\OptionControllers\DataProcessingDataResponsibleOptionsController.cs" />
@@ -1119,9 +1114,6 @@
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalDataTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalFrequencyTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalInterfaceTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItContractRolesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItContractTemplateTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItContractTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItSystemCategoriesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItSystemRolesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalOptionExtendTypesController.cs" />
