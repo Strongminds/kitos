@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Core.DomainModel;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
 using Xunit;
