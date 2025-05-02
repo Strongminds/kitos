@@ -234,10 +234,6 @@ namespace Presentation.Web
 
             //Local options
 
-            var localAgreementElementType = BindEntitySet<LocalAgreementElementType, LocalAgreementElementTypesController>(builder);
-            localAgreementElementType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-
             var localArchiveType = BindEntitySet<LocalArchiveType, LocalArchiveTypesController>(builder);
             localArchiveType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
@@ -253,9 +249,6 @@ namespace Presentation.Web
             var localBusinessType = BindEntitySet<LocalBusinessType, LocalBusinessTypesController>(builder);
             localBusinessType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
-            var localDataType = BindEntitySet<LocalDataType, LocalDataTypesController>(builder);
-            localDataType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
             var localFrequencyType = BindEntitySet<LocalRelationFrequencyType, LocalFrequencyTypesController>(builder);
             localFrequencyType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
@@ -264,27 +257,6 @@ namespace Presentation.Web
 
             var localItSystemRole = BindEntitySet<LocalItSystemRole, LocalItSystemRolesController>(builder);
             localItSystemRole.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localOptionExtendType = BindEntitySet<LocalOptionExtendType, LocalOptionExtendTypesController>(builder);
-            localOptionExtendType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localPaymentFreqencyType = BindEntitySet<LocalPaymentFreqencyType, LocalPaymentFrequencyTypesController>(builder);
-            localPaymentFreqencyType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localPaymentModelType = BindEntitySet<LocalPaymentModelType, LocalPaymentModelTypesController>(builder);
-            localPaymentModelType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localPriceRegulationType = BindEntitySet<LocalPriceRegulationType, LocalPriceRegulationTypesController>(builder);
-            localPriceRegulationType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localProcurementStrategyType = BindEntitySet<LocalProcurementStrategyType, LocalProcurementStrategyTypesController>(builder);
-            localProcurementStrategyType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localPurchaseFormType = BindEntitySet<LocalPurchaseFormType, LocalPurchaseFormTypesController>(builder);
-            localPurchaseFormType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localCriticalityType = BindEntitySet<LocalCriticalityType, LocalCriticalityTypesController>(builder);
-            localCriticalityType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
             var removeOption = builder.Function("RemoveOption");
             removeOption.Parameter<int>("id");
@@ -312,12 +284,6 @@ namespace Presentation.Web
 
             var localRegisterTypes = BindEntitySet<LocalRegisterType, LocalRegisterTypesController>(builder);
             localRegisterTypes.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localTerminationDeadlineType = BindEntitySet<LocalTerminationDeadlineType, LocalTerminationDeadlineTypesController>(builder);
-            localTerminationDeadlineType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localOrganizationUnitRole = BindEntitySet<LocalOrganizationUnitRole, LocalOrganizationUnitRolesController>(builder);
-            localOrganizationUnitRole.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
             BindEntitySet<TerminationDeadlineType, TerminationDeadlineTypesController>(builder);
 
