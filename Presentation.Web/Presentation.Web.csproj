@@ -1105,9 +1105,6 @@
     <Compile Include="Controllers\API\V1\OData\ItSystemsController.cs" />
     <Compile Include="Controllers\API\V1\OData\ItSystemUsagesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionBaseController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalArchiveLocationsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalArchiveTestLocationsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalArchiveTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalBusinessTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalFrequencyTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalInterfaceTypesController.cs" />

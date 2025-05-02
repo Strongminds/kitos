@@ -234,15 +234,6 @@ namespace Presentation.Web
 
             //Local options
 
-            var localArchiveType = BindEntitySet<LocalArchiveType, LocalArchiveTypesController>(builder);
-            localArchiveType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localArchiveLocation = BindEntitySet<LocalArchiveLocation, LocalArchiveLocationsController>(builder);
-            localArchiveLocation.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localArchiveTestLocation = BindEntitySet<LocalArchiveTestLocation, LocalArchiveTestLocationsController>(builder);
-            localArchiveTestLocation.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
             var localItSystemCategories = BindEntitySet<LocalItSystemCategories, LocalItSystemCategoriesController>(builder);
             localItSystemCategories.HasRequiredBinding(x => x.Organization, entitySetOrganizations);
 
