@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Extensions;
 using Presentation.Web.Models.API.V1;
-using Presentation.Web.Models.API.V1.Organizations;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Tools
