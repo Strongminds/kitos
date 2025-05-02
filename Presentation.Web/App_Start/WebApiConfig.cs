@@ -234,9 +234,6 @@ namespace Presentation.Web
 
             //Local options
 
-            var localItSystemCategories = BindEntitySet<LocalItSystemCategories, LocalItSystemCategoriesController>(builder);
-            localItSystemCategories.HasRequiredBinding(x => x.Organization, entitySetOrganizations);
-
             var localBusinessType = BindEntitySet<LocalBusinessType, LocalBusinessTypesController>(builder);
             localBusinessType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
@@ -266,9 +263,6 @@ namespace Presentation.Web
 
             var localSensitivePersonalDataTypes = BindEntitySet<LocalSensitivePersonalDataType, LocalSensitivePersonalDataTypesController>(builder);
             localSensitivePersonalDataTypes.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localRegisterTypes = BindEntitySet<LocalRegisterType, LocalRegisterTypesController>(builder);
-            localRegisterTypes.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
             BindEntitySet<TerminationDeadlineType, TerminationDeadlineTypesController>(builder);
 
