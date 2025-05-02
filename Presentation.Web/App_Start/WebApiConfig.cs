@@ -240,12 +240,6 @@ namespace Presentation.Web
             var localBusinessType = BindEntitySet<LocalBusinessType, LocalBusinessTypesController>(builder);
             localBusinessType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
-            var localFrequencyType = BindEntitySet<LocalRelationFrequencyType, LocalFrequencyTypesController>(builder);
-            localFrequencyType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localInterfaceType = BindEntitySet<LocalInterfaceType, LocalInterfaceTypesController>(builder);
-            localInterfaceType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
             var localItSystemRole = BindEntitySet<LocalItSystemRole, LocalItSystemRolesController>(builder);
             localItSystemRole.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 

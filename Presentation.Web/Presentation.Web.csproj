@@ -1106,8 +1106,6 @@
     <Compile Include="Controllers\API\V1\OData\ItSystemUsagesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionBaseController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalBusinessTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalFrequencyTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalInterfaceTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItSystemCategoriesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItSystemRolesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalRegisterTypesController.cs" />
