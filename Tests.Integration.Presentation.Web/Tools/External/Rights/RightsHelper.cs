@@ -29,26 +29,6 @@ namespace Tests.Integration.Presentation.Web.Tools.External.Rights
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
-        public static async Task AddDprRoleToUser(int userId, int orgId, string name = "", int? objectId = null)
-        {
-            if (objectId == null)
-            {
-                var dpr = await DataProcessingRegistrationHelper.CreateAsync(orgId, name);
-                objectId = dpr.Id;
-            }
-
-            var roles = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(objectId.Value);
-            var roleDtos = roles.ToList();
-            Assert.True(roleDtos.Any());
-
-            var singleRole = roleDtos.FirstOrDefault();
-            Assert.NotNull(singleRole);
-
-            using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(objectId.Value, singleRole.Id, userId);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
         private static async Task<string> PrepareUrl(int orgId, string name, RightsType rightsType, int? objectId = null)
         {
             switch (rightsType)

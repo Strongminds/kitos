@@ -48,20 +48,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.DeleteWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}"), cookie);
         }
 
-        public static async Task<DataProcessingRegistrationDTO> GetAsync(int id, Cookie optionalLogin = null)
-        {
-            using var response = await SendGetRequestAsync(id, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<DataProcessingRegistrationDTO>();
-        }
-
-        public static async Task<HttpResponseMessage> SendGetRequestAsync(int id, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}"), cookie);
-        }
-
         public static async Task<HttpResponseMessage> SendChangeNameRequestAsync(int id, string name, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -71,15 +57,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/name"), cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendSetMasterReferenceRequestAsync(int id, int refId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new { Value = refId };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/master-reference"), cookie, body);
-        }
-
         public static async Task<HttpResponseMessage> SendChangeOversightIntervalOptionRequestAsync(int id, YearMonthIntervalOption? oversightInterval, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -87,23 +64,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             var body = new SingleValueDTO<YearMonthIntervalOption?> { Value = oversightInterval };
 
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-interval"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendChangeOversightIntervalOptionRemarkRequestAsync(int id, string remark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<string> { Value = remark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-interval-remark"), cookie, body);
-
-        }
-
-        public static async Task<HttpResponseMessage> SendCanCreateRequestAsync(int organizationId, string name, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration?orgId={organizationId}&checkname={name}"), cookie);
         }
 
         public static async Task<IEnumerable<DataProcessingRegistrationReadModel>> QueryReadModelByNameContent(int organizationId, string nameContent, int top, int skip, Cookie optionalLogin = null)
@@ -154,15 +114,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 new { });
         }
 
-        public static async Task<IEnumerable<NamedEntityWithEnabledStatusDTO>> GetAvailableSystemsAsync(int id, string nameQuery, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/it-systems/available?nameQuery={nameQuery}"), cookie);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<IEnumerable<NamedEntityWithEnabledStatusDTO>>();
-        }
-
         public static async Task<HttpResponseMessage> SendAssignSystemRequestAsync(int registrationId, int systemId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -170,41 +121,10 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/it-systems/assign"), cookie, new { Value = systemId });
         }
 
-        public static async Task<HttpResponseMessage> SendRemoveSystemRequestAsync(int registrationId, int systemId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/it-systems/remove"), cookie, new { Value = systemId });
-        }
-
-        public static async Task<IEnumerable<ShallowOrganizationDTO>> GetAvailableDataProcessors(int id, string nameQuery, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/data-processors/available?nameQuery={nameQuery}"), cookie);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<IEnumerable<ShallowOrganizationDTO>>();
-        }
-
         public static async Task<HttpResponseMessage> SendAssignDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/data-processors/assign"), cookie, new SingleValueDTO<int> { Value = organizationId });
-        }
-
-        public static async Task<HttpResponseMessage> SendRemoveDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/data-processors/remove"), cookie, new SingleValueDTO<int> { Value = organizationId });
-        }
-
-        public static async Task<IEnumerable<ShallowOrganizationDTO>> GetAvailableSubDataProcessors(int id, string nameQuery, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/sub-data-processors/available?nameQuery={nameQuery}"), cookie);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<IEnumerable<ShallowOrganizationDTO>>();
         }
 
         public static async Task<HttpResponseMessage> SendAssignSubDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null, SubDataProcessorDetailsDTO details = null)
@@ -215,22 +135,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 OrganizationId = organizationId,
                 Details = details
             });
-        }
-
-        public static async Task<HttpResponseMessage> SendUpdateSubDataProcessorRequestAsync(int registrationId, int organizationId, SubDataProcessorDetailsDTO details, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/sub-data-processors/update"), cookie, new UpdateSubDataProcessorRequestDTO
-            {
-                OrganizationId = organizationId,
-                Details = details
-            });
-        }
-
-        public static async Task<HttpResponseMessage> SendRemoveSubDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/sub-data-processors/remove"), cookie, new SingleValueDTO<int> { Value = organizationId });
         }
 
         public static async Task<HttpResponseMessage> SendSetUseSubDataProcessorsStateRequestAsync(int registrationId, YesNoUndecidedOption value, Cookie optionalLogin = null)
@@ -248,15 +152,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/agreement-concluded"), cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendChangeAgreementConcludedRemarkRequestAsync(int id, string agreementConcludedRemark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<string> { Value = agreementConcludedRemark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/agreement-concluded-remark"), cookie, body);
-        }
-
         public static async Task<HttpResponseMessage> SendChangeAgreementConcludedAtRequestAsync(int id, DateTime? dateTime, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -266,39 +161,10 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/agreement-concluded-at"), cookie, body);
         }
 
-
-        public static async Task<HttpResponseMessage> SendAssignInsecureThirdCountryRequestAsync(int registrationId, int countryId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/insecure-third-countries/assign"), cookie, new SingleValueDTO<int> { Value = countryId });
-        }
-
-        public static async Task<HttpResponseMessage> SendRemoveInsecureThirdCountryRequestAsync(int registrationId, int countryId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/insecure-third-countries/remove"), cookie, new SingleValueDTO<int> { Value = countryId });
-        }
-
         public static async Task<HttpResponseMessage> SendSetUseTransferToInsecureThirdCountriesStateRequestAsync(int registrationId, YesNoUndecidedOption value, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/insecure-third-countries/state"), cookie, new SingleValueDTO<YesNoUndecidedOption> { Value = value });
-        }
-
-        public static async Task<IEnumerable<OptionDTO>> GetCountryOptionsAsync(int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/LocalDataProcessingCountryOptions?organizationId={organizationId}"), cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadOdataListResponseBodyAsAsync<OptionDTO>();
-        }
-
-        public static async Task<IEnumerable<OptionDTO>> GetBasisForTransferOptionsAsync(int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/LocalDataProcessingBasisForTransferOptions?organizationId={organizationId}"), cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadOdataListResponseBodyAsAsync<OptionDTO>();
         }
 
         public static async Task<HttpResponseMessage> SendAssignBasisForTransferRequestAsync(int registrationId, int basisForTransferId, Cookie optionalLogin = null)
@@ -307,27 +173,11 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/basis-for-transfer/assign"), cookie, new SingleValueDTO<int> { Value = basisForTransferId });
         }
 
-        public static async Task<HttpResponseMessage> SendClearBasisForTransferRequestAsync(int registrationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/basis-for-transfer/clear"), cookie, new { });
-        }
-
         public static async Task<DataProcessingOptionsDTO> GetAvailableOptionsRequestAsync(int organizationId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
 
             var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/available-options-in/{organizationId}"), cookie);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<DataProcessingOptionsDTO>();
-        }
-
-        public static async Task<DataProcessingOptionsDTO> GetAvailableOptionsByUuidRequestAsync(Guid organizationUuid, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/available-options-in/organization/{organizationUuid}"), cookie);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsKitosApiResponseAsync<DataProcessingOptionsDTO>();
@@ -342,22 +192,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/data-responsible/assign"), cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendClearDataResponsibleRequestAsync(int id, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/data-responsible/clear"), cookie, null);
-        }
-
-        public static async Task<HttpResponseMessage> SendUpdateDataResponsibleRemarkRequestAsync(int id, string dataResponsibleRemark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<string> { Value = dataResponsibleRemark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/data-responsible-remark"), cookie, body);
-        }
-
         public static async Task<HttpResponseMessage> SendAssignOversightOptionRequestAsync(int id, int oversightOptionId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -365,24 +199,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             var body = new SingleValueDTO<int> { Value = oversightOptionId };
 
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-option/assign"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendRemoveOversightOptionRequestAsync(int id, int oversightOptionId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<int> { Value = oversightOptionId };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-option/remove"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendUpdateOversightOptionRemarkRequestAsync(int id, string remark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<string> { Value = remark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-option-remark"), cookie, body);
         }
 
         public static async Task<HttpResponseMessage> SendChangeIsOversightCompletedRequestAsync(int id, YesNoUndecidedOption? yesNoUndecidedOption, Cookie optionalLogin = null)
@@ -412,32 +228,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-date/assign"), cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendModifyOversightDateRequestAsync(int id, int oversightDateId, DateTime dateTime, string remark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new DataProcessingRegistrationOversightDateDTO { Id = oversightDateId, OversightDate = dateTime, OversightRemark = remark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-date/modify"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendRemoveOversightDateRequestAsync(int id, int oversightDateId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<int> { Value = oversightDateId };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-date/remove"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendChangeOversightCompletedRemarkRequestAsync(int id, string remark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<string> { Value = remark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-completed-remark"), cookie, body);
-        }
         public static async Task<HttpResponseMessage> SendUpdateMainContractRequestAsync(int id, int contractId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -447,11 +237,5 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/main-contract/update"), cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendRemoveMainContractRequestAsync(int id, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/main-contract/remove"), cookie, new { });
-        }
     }
 }
