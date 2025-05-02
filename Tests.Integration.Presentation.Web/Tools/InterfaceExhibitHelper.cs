@@ -36,12 +36,5 @@ namespace Tests.Integration.Presentation.Web.Tools
 
             return await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"api/exhibit"), cookie, body);
         }
-
-        public static async Task<HttpResponseMessage> SendRemoveExhibitRequest(int interfaceId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.DeleteWithCookieAsync(TestEnvironment.CreateUrl($"api/exhibit/{interfaceId}?{KitosApiConstants.UnusedOrganizationIdParameter}" /*org id not used*/), cookie);
-        }
     }
 }

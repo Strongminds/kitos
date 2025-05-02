@@ -51,45 +51,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PostWithCookieAsync(url, cookie, input);
         }
 
-        public static async Task CreateInterfaces(params ItInterfaceDTO[] interfaces)
-        {
-            foreach (var dto in interfaces)
-            {
-                await CreateInterface(dto);
-            }
-        }
-
-        public static async Task<DataRowDTO> CreateDataRowAsync(int organizationId, int interfaceId, Cookie optionalLogin = null)
-        {
-            using (var response = await SendCreateDataRowRequestAsync(organizationId, interfaceId, optionalLogin))
-            {
-                Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-                return await response.ReadResponseBodyAsKitosApiResponseAsync<DataRowDTO>();
-            }
-        }
-
-        public static async Task<HttpResponseMessage> SendCreateDataRowRequestAsync(int organizationId, int interfaceId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"/api/dataRow?organizationId={organizationId}");
-
-            var body = new
-            {
-                itInterfaceId = interfaceId
-            };
-
-            return await HttpApi.PostWithCookieAsync(url, cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendGetInterfaceRequestAsync(int interfaceId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var url = TestEnvironment.CreateUrl($"api/itinterface/{interfaceId}");
-
-            return await HttpApi.GetWithCookieAsync(url, cookie);
-        }
-
         public static async Task<ItInterfaceDTO> SetUrlAsync(int interfaceId, string url, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -100,16 +61,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 return await response.ReadResponseBodyAsKitosApiResponseAsync<ItInterfaceDTO>();
             }
         }
-
-        public static async Task<ItInterfaceDTO> GetInterfaceById(int interfaceId, Cookie optionalLogin = null)
-        {
-            using (var response = await SendGetInterfaceRequestAsync(interfaceId, optionalLogin))
-            {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                return await response.ReadResponseBodyAsKitosApiResponseAsync<ItInterfaceDTO>();
-            }
-        }
-
 
         public static async Task<HttpResponseMessage> SendChangeNameRequestAsync(int interfaceId, string newName, int orgId, Cookie optionalLogin = null)
         {
@@ -125,20 +76,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 return response;
             }
-        }
-
-        public static async Task<IEnumerable<ItInterfaceDTO>> GetInterfacesAsync(Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var url = TestEnvironment.CreateUrl($"odata/ItInterfaces");
-
-            using (var response = await HttpApi.GetWithCookieAsync(url, cookie))
-            {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                return await response.ReadOdataListResponseBodyAsAsync<ItInterfaceDTO>();
-            }
-
         }
 
         public static async Task DeleteInterfaceAsync(int itInterfaceId)
