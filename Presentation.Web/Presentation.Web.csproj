@@ -1098,10 +1098,6 @@
     <Compile Include="Controllers\API\V1\OData\AdviceController.cs" />
     <Compile Include="Controllers\API\V1\OData\AdviceSentController.cs" />
     <Compile Include="Controllers\API\V1\OData\ArchivePeriodsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\AttachedOptions\AttachedOptionsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\AttachedOptions\AttachedOptionsFunctionController.cs" />
-    <Compile Include="Controllers\API\V1\OData\AttachedOptions\ItsystemUsage\AttachedOptionsRegisterTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\AttachedOptions\ItsystemUsage\AttachedOptionsSensitivePersonalDataController.cs" />
     <Compile Include="Controllers\API\V1\OData\BaseController.cs" />
     <Compile Include="Controllers\API\V1\OData\BaseEntityController.cs" />
     <Compile Include="Controllers\API\V1\OData\BaseOptionController.cs" />

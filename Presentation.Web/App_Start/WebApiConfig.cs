@@ -15,7 +15,6 @@ using Presentation.Web.Controllers.API.V1.OData.OptionControllers;
 using Presentation.Web.Infrastructure;
 using Core.DomainModel.Advice;
 using System.Linq;
-using Presentation.Web.Controllers.API.V1.OData.AttachedOptions;
 using Microsoft.OData;
 using Microsoft.OData.UriParser;
 using System.Collections.Generic;
@@ -105,8 +104,6 @@ namespace Presentation.Web
             BindEntitySet<ItContractRight, ItContractRightsController>(builder);
 
             BindEntitySet<ItContractRole, ItContractRolesController>(builder);
-
-            BindEntitySet<AttachedOption, AttachedOptionsController>(builder);
 
             BindEntitySet<DataType, DataTypesController>(builder);
 
