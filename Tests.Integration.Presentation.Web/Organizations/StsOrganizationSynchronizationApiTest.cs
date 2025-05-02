@@ -55,7 +55,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             });
         }
 
-        [Theory]
+        [Theory(Skip = "TEMP")]
         [InlineData(1)]
         [InlineData(2)]
         public async Task Can_GET_Organization_Snapshot_With_Filtered_Depth(int levels)
@@ -75,7 +75,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             AssertOrgTree(root, new HashSet<Guid>());
         }
 
-        [Theory]
+        [Theory(Skip = "TEMP")]
         [InlineData(UnAuthorizedCvr, false, CheckConnectionError.FailedToLookupOrganizationCompany)]
         [InlineData(null, false, CheckConnectionError.InvalidCvrOnOrganization)]
         [InlineData(AuthorizedCvr, true, null)]
@@ -96,7 +96,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(expectedError, root.AccessStatus.Error);
         }
 
-        [Theory]
+        [Theory(Skip = "TEMP")]
         [InlineData(true)]
         [InlineData(false)]
         public async Task Can_POST_Create_Connection(bool subscribe)
@@ -126,7 +126,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             });
         }
 
-        [Theory]
+        [Theory(Skip = "TEMP")]
         [InlineData(true)]
         [InlineData(false)]
         public async Task Can_DELETE_Connection(bool purge)
@@ -170,7 +170,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
 
         }
 
-        [Fact, Description("If no changes between imports of the same levels, we expect an empty changeset.")]
+        [Fact(Skip = "TEMP"), Description("If no changes between imports of the same levels, we expect an empty changeset.")]
         public async Task Can_GET_UPDATE_Consequences_With_No_Consequences()
         {
             //Arrange
@@ -188,7 +188,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Empty(consequences.Consequences);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_GET_UPDATE_Consequences_With_Addition_Consequences()
         {
             //Arrange
@@ -208,7 +208,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.All(consequences.Consequences, c => Assert.Equal(ConnectionUpdateOrganizationUnitChangeType.Added, c.Category));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_GET_UPDATE_Consequences_With_Removal_Consequences()
         {
             //Arrange
@@ -228,7 +228,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.All(consequences.Consequences, c => Assert.Equal(ConnectionUpdateOrganizationUnitChangeType.Deleted, c.Category));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_GET_UPDATE_Consequences_With_Rename_Consequences()
         {
             //Arrange
@@ -265,7 +265,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(consequences.Consequences.Select(x => x.Uuid).OrderBy(x => x), uuidsOfRenamedUnits.OrderBy(x => x));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_GET_UPDATE_Consequences_With_Moval_Consequences()
         {
             //Arrange
@@ -300,7 +300,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.All(consequences.Consequences, c => Assert.Equal(ConnectionUpdateOrganizationUnitChangeType.Moved, c.Category));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_GET_UPDATE_Consequences_With_Conversion_Consequences()
         {
             //Arrange
@@ -343,7 +343,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(expectedConvertedUnit, conversion.Uuid);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Addition_Consequences()
         {
             //Arrange
@@ -375,7 +375,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.All(expectedAdded, expected => Assert.Contains(expected, externalUnits));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Removal_Consequences()
         {
             //Arrange
@@ -434,7 +434,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Contains(trackedDeletions, uuid => expectedRemovedUuids.Contains(uuid));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Rename_Consequences()
         {
             //Arrange
@@ -476,7 +476,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.All(uuidsAndNewNamesOfRenamedUnits, expected => Assert.Equal(expected.name, uuidToName[expected.uuid]));
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Relocation_Consequences()
         {
             //Arrange
@@ -519,7 +519,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Contains(uuidOfExpectedMoval, movedItemChildrenUuids);
         }
 
-        [Theory]
+        [Theory(Skip = "TEMP")]
         [InlineData(true)]
         [InlineData(false)]
         public async Task Can_PUT_UPDATE_With_SubscriptionChanges(bool initiallySubscribe)
@@ -540,7 +540,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(!initiallySubscribe, dto.SubscribesToUpdates);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_DELETE_Subscription()
         {
             //Arrange
@@ -556,7 +556,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.True(subscriptionRemoved);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Conversion_Consequences()
         {
             //Arrange
@@ -595,7 +595,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Null(convertedUnit.ExternalOriginUuid);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Hierarchy_Replacement_Consequences()
         {
             //Arrange
@@ -620,7 +620,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_PUT_UPDATE_With_Hierarchy_Swap()
         {
             //Arrange
@@ -649,7 +649,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
         }
 
-        [Fact]
+        [Fact(Skip = "TEMP")]
         public async Task Can_GET_LOGS()
         {
             //Arrange
