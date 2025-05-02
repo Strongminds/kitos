@@ -29,64 +29,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.GetWithCookieAsync(url, cookie);
         }
 
-        public static async Task<ContactPersonDTO> GetContactPersonAsync(int organizationId)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/contactPerson/{organizationId}"); //NOTE: This looks odd but it is how it works. On GET it uses the orgId and on patch it uses the contactPersonId
-
-            using var response = await HttpApi.GetWithCookieAsync(url, cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<ContactPersonDTO>();
-        }
-
-        public static async Task<ContactPersonDTO> ChangeContactPersonAsync(int contactPersonId, int organizationId, string name, string lastName, string email, string phone, Cookie optionalLogin = null)
-        {
-            using var createdResponse = await SendChangeContactPersonRequestAsync(contactPersonId, organizationId, name, lastName, email, phone, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, createdResponse.StatusCode);
-            var response = await createdResponse.ReadResponseBodyAsKitosApiResponseAsync<ContactPersonDTO>();
-
-            return response;
-        }
-
-        public static async Task<HttpResponseMessage> SendChangeContactPersonRequestAsync(int contactPersonId, int organizationId, string name, string lastName, string email, string phone, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new
-            {
-                organizationId = organizationId,
-                name = name,
-                email = email,
-                lastName = lastName,
-                phoneNumber = phone
-            };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/contactPerson/{contactPersonId}?organizationId={organizationId}"), cookie, body);
-        }
-
-        public static async Task<OrganizationDTO> UpdateAsync(int organizationId, int owningOrganizationId, string name, string cvr, Cookie optionalLogin = null)
-        {
-            using var createdResponse = await SendUpdateAsync(organizationId, owningOrganizationId, name, cvr, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, createdResponse.StatusCode);
-            var response = await createdResponse.ReadResponseBodyAsKitosApiResponseAsync<OrganizationDTO>();
-
-            return response;
-        }
-
-        public static async Task<HttpResponseMessage> SendUpdateAsync(int organizationId, int owningOrganizationId, string name, string cvr, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new
-            {
-                organizationId = organizationId,
-                name = name,
-                cvr = cvr
-            };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/organization/{organizationId}?organizationId={owningOrganizationId}"), cookie, body);
-        }
-
         public static async Task<OrganizationDTO> CreateOrganizationAsync(int owningOrganizationId, string name, string cvr, OrganizationTypeKeys type, AccessModifier accessModifier, Cookie optionalLogin = null)
         {
             using var createdResponse = await SendCreateOrganizationRequestAsync(owningOrganizationId, name, cvr, type, accessModifier, optionalLogin);
@@ -143,48 +85,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             using var createdResponse = await HttpApi.PostWithCookieAsync(url, cookie, body);
             Assert.Equal(HttpStatusCode.Created, createdResponse.StatusCode);
             return await createdResponse.ReadResponseBodyAsKitosApiResponseAsync<OrgUnitDTO>();
-        }
-
-        public static async Task<OrganizationRemovalConflictsDTO> GetOrganizationRemovalConflictsAsync(Guid organizationUuid, Cookie optionalLogin = null)
-        {
-            using var response = await SendGetOrganizationRemovalConflictsRequestAsync(organizationUuid, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<OrganizationRemovalConflictsDTO>();
-        }
-
-        public static async Task<HttpResponseMessage> SendGetOrganizationRemovalConflictsRequestAsync(Guid organizationUuid, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/v1/organizations/{organizationUuid:D}/deletion/conflicts");
-            return await HttpApi.GetWithCookieAsync(url, cookie);
-        }
-
-        public static async Task<HttpResponseMessage> SendDeleteOrganizationRequestAsync(Guid organizationUuid, bool enforce = false, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/v1/organizations/{organizationUuid:D}/deletion?enforce={enforce}");
-            return await HttpApi.DeleteWithCookieAsync(url, cookie);
-        }
-
-        public static async Task<HttpResponseMessage> SendGetOrganizationsRequestAsync(string orderBy, bool orderByAsc = true)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/authorize/GetOrganizations?orderBy={orderBy}&orderByAsc={orderByAsc}");
-            return await HttpApi.GetWithCookieAsync(url, cookie);
-        }
-
-        public static async Task<HttpResponseMessage> SendGetOrganizationSearchRequestAsync(string search)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/organization?q={search}");
-            return await HttpApi.GetWithCookieAsync(url, cookie);
-        }
-
-        public static async Task<HttpResponseMessage> SendGetUserOrganizationsRequestAsync(int userId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/authorize/GetOrganizations/{userId}");
-            return await HttpApi.GetWithCookieAsync(url, cookie);
         }
     }
 }
