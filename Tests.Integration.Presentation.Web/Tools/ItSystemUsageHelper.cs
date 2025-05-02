@@ -107,28 +107,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await okResponse.ReadResponseBodyAsKitosApiResponseAsync<ItSystemUsageDTO>();
         }
 
-        public static async Task<List<GdprExportReportCsvFormat>> GetGDPRExportReport(int organizationId)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            using (var okResponse =
-                await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/gdpr-report/csv/{organizationId}"),
-                    cookie))
-            {
-                Assert.Equal(HttpStatusCode.OK, okResponse.StatusCode);
-                using (var csvReader = new CsvReader(new StringReader(await okResponse.Content.ReadAsStringAsync()),
-                    new CsvConfiguration(CultureInfo.InvariantCulture)
-                    {
-                        Delimiter = ";",
-                        HasHeaderRecord = true
-                    }))
-                {
-                    var report = csvReader.GetRecords<GdprExportReportCsvFormat>().ToList();
-                    return report;
-                }
-            }
-        }
-
         public static async Task<IEnumerable<BusinessRoleDTO>> GetAvailableRolesAsync(int orgId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

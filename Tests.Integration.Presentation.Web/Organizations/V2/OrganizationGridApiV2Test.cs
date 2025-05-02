@@ -117,7 +117,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private string CreateEmail()
         {
-            return $"{nameof(OrganizationUnitTests)}{A<string>()}@test.dk";
+            return $"{nameof(OrganizationGridApiV2Test)}{A<string>()}@test.dk";
         }
 
         private static void AssertColumnsMatch(List<ColumnConfigurationRequestDTO> requestedColumns,

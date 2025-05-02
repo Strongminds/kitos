@@ -139,14 +139,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Advice\AdviceSequentialTest.cs" />
-    <Compile Include="Advice\AdviceTest.cs" />
-    <Compile Include="Advice\AdviceTestBase.cs" />
-    <Compile Include="Authorization\GetOrganizationsTests.cs" />
     <Compile Include="Authorization\TokenV2Tests.cs" />
     <Compile Include="Contract\ItContractOverviewReadModelsApiTest.cs" />
-    <Compile Include="Contract\ItContractSequentialTest.cs" />
-    <Compile Include="Contract\ItContractTest.cs" />
     <Compile Include="Contract\V2\ItContractsInternalApiV2Test.cs" />
     <Compile Include="Deltas\V2\DeltaFeedApiV2Test.cs" />
     <Compile Include="GDPR\V2\DataProcessingRegistrationInternalAPIV2Test.cs" />
@@ -167,7 +161,6 @@
     <Compile Include="ItSystem\V2\ItSystemUsageMigrationApiV2Test.cs" />
     <Compile Include="Notifications\AlertsApiV2Test.cs" />
     <Compile Include="Notifications\NotificationApiV2Test.cs" />
-    <Compile Include="Options\V1\OptionApiTests.cs" />
     <Compile Include="Organizations\V2\LocalOrganizationUnitRoleOptionTypesInternalV2ApiTest.cs" />
     <Compile Include="Organizations\V2\OrganizationApiV2TestBase.cs" />
     <Compile Include="Organizations\V2\OrganizationGridApiV2Test.cs" />
@@ -196,10 +189,6 @@
     <Compile Include="Tools\Internal\Users\PasswordResetV2Helper.cs" />
     <Compile Include="Tools\Internal\Users\UsersV2Helper.cs" />
     <Compile Include="Tools\OrganizationGridTestHelper.cs" />
-    <Compile Include="Users\OrganizationRightApiTest.cs" />
-    <Compile Include="Organizations\OrganizationUnitTests.cs" />
-    <Compile Include="Organizations\OrganizationUnitRegistrationTests.cs" />
-    <Compile Include="Organizations\OrganizationSequentialTests.cs" />
     <Compile Include="Organizations\StsOrganizationSynchronizationApiTest.cs" />
     <Compile Include="SystemUsage\V2\ItSystemUsageApiV2Test.cs" />
     <Compile Include="GDPR\V2\DataProcessingRegistrationApiV2Test.cs" />
@@ -212,26 +201,16 @@
     <Compile Include="Options\V2\OptionV2ApiTests.cs" />
     <Compile Include="Interfaces\V2\ItInterfaceApiV2Test.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationReadModelsTest.cs" />
-    <Compile Include="GDPR\DataProcessingRegistrationsTest.cs" />
-    <Compile Include="ItSystem\ItSystemUsageGDPRTest.cs" />
-    <Compile Include="ItSystem\SystemRelationsTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemsApiV2Test.cs" />
-    <Compile Include="Kendo\KendoOverviewConfigurationTest.cs" />
     <Compile Include="KLE\KLEDataBridgeTest.cs" />
     <Compile Include="KLE\KleUpdateIntegrationTests.cs" />
     <Compile Include="KLE\TaskRefIntegrityInput.cs" />
     <Compile Include="Organizations\V2\OrganizationApiV2Test.cs" />
     <Compile Include="Organizations\V2\OrganizationUnitsApiV2Test.cs" />
     <Compile Include="Organizations\V2\OrganizationUserApiV2Test.cs" />
-    <Compile Include="ItSystem\ItSystemTests.cs" />
-    <Compile Include="Interfaces\ItInterfacesTest.cs" />
-    <Compile Include="ItSystem\ItSystemUsageTests.cs" />
     <Compile Include="LocalAdminArea\LocalConfigTest.cs" />
-    <Compile Include="Organizations\OrganizationTest.cs" />
-    <Compile Include="ItSystem\UsingOrganizationsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qa\BrokenExternalReferencesReportTest.cs" />
-    <Compile Include="References\ExternalReferencesTest.cs" />
     <Compile Include="Security\AccessibilityTests.cs" />
     <Compile Include="Security\AuthorizationTests.cs" />
     <Compile Include="Security\CSRFProtectionTest.cs" />
@@ -286,9 +265,6 @@
     <Compile Include="Tools\UserHelper.cs" />
     <Compile Include="Tools\XUnit\SequentialTestGroup.cs" />
     <Compile Include="UI_Configuration\UIConfigurationTests.cs" />
-    <Compile Include="Users\UserPermissionsAPITest.cs" />
-    <Compile Include="Users\UserRolesManagementApiTest.cs" />
-    <Compile Include="Users\UserTest.cs" />
     <Compile Include="Users\V2\PasswordResetInternalApiV2Test.cs" />
     <Compile Include="Users\V2\UserInternalApiV2Test.cs" />
   </ItemGroup>

@@ -353,7 +353,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private string CreateEmail()
         {
-            return $"{nameof(OrganizationUnitTests)}{A<string>()}@test.dk";
+            return $"{nameof(OrganizationUnitRegistrationApiV2Test)}{A<string>()}@test.dk";
         }
 
         private async Task<(OrganizationUnitRight right, ItContract contract, EconomyStream externalEconomyStream, EconomyStream internalEconomyStream, ItSystemUsage usage, OrgUnitDTO unitDto)> SetupRegistrations(int organizationId)
