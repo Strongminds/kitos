@@ -277,11 +277,6 @@ namespace Presentation.Web
             deactivateAdvice.Parameter<int>("key").Required();
             deactivateAdvice.Returns<IHttpActionResult>();
 
-            BindEntitySet<Advice, AdviceController>(builder);
-            builder.StructuralTypes.First(t => t.ClrType == typeof(Advice)).AddProperty(typeof(Advice).GetProperty(nameof(Advice.CanBeDeleted)));
-
-            BindEntitySet<AdviceSent, AdviceSentController>(builder);
-
             BindEntitySet<ArchivePeriod, ArchivePeriodsController>(builder);
 
             var references = builder.EntitySet<ExternalReference>("ExternalReferences");

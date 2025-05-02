@@ -691,7 +691,6 @@
     <Compile Include="Swagger\SwashbuckleExtensions.cs" />
     <Compile Include="Controllers\API\V1\DataProcessingRegistrationValidationController.cs" />
     <Compile Include="Controllers\API\V1\ItSystemUsageValidationController.cs" />
-    <Compile Include="Controllers\API\V1\KendoOrganizationalConfigurationController.cs" />
     <Compile Include="Controllers\API\V1\Mapping\DTOMappingExtensions.cs" />
     <Compile Include="Controllers\API\V1\UserAdministrationPermissionsController.cs" />
     <Compile Include="Controllers\API\V2\Common\ApiV2Controller.cs" />
@@ -977,7 +976,6 @@
     <Compile Include="Controllers\API\V1\OData\BaseOdataController.cs" />
     <Compile Include="Controllers\API\V1\DataProcessingRegistrationController.cs" />
     <Compile Include="Controllers\API\V1\OData\DataProcessingRegistrationReadModelsController.cs" />
-    <Compile Include="Controllers\API\V1\GDPRExportReportController.cs" />
     <Compile Include="Controllers\API\V1\ItSystemUsageDataSensitivityLevelController.cs" />
     <Compile Include="Controllers\API\V1\KLEController.cs" />
     <Content Include="idp-metadata\sts-adgangstyring-prod.xml" />
@@ -1089,8 +1087,6 @@
     <Compile Include="Controllers\API\V1\ItSystemUsageRightsController.cs" />
     <Compile Include="Controllers\API\V1\OrganizationUnitRightsController.cs" />
     <Compile Include="Controllers\API\V1\ReferenceController.cs" />
-    <Compile Include="Controllers\API\V1\OData\AdviceController.cs" />
-    <Compile Include="Controllers\API\V1\OData\AdviceSentController.cs" />
     <Compile Include="Controllers\API\V1\OData\ArchivePeriodsController.cs" />
     <Compile Include="Controllers\API\V1\OData\BaseController.cs" />
     <Compile Include="Controllers\API\V1\OData\BaseEntityController.cs" />
