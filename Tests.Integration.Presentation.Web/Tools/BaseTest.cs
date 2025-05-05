@@ -32,7 +32,7 @@ namespace Tests.Integration.Presentation.Web.Tools
 
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             _token = token.Token;
-            return token.Token;
+            return _token;
         }
     }
 }

@@ -50,18 +50,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PostWithCookieAsync(url, cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendChangeOrganizationNameRequestAsync(int organizationId, string name, int owningOrganizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/organization/{organizationId}?organizationId={owningOrganizationId}");
-            var body = new
-            {
-                name = name
-            };
-
-            return await HttpApi.PatchWithCookieAsync(url, cookie, body);
-        }
-
         public static async Task<OrgUnitDTO> CreateOrganizationUnitAsync(int organizationId, string orgUnitName, int? parentId = null, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
