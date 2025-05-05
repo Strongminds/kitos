@@ -79,6 +79,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var oversightCompleted = YesNoUndecidedChoice.Yes;
             var oversightDate = A<DateTime>();
             var oversightRemark = A<string>();
+            var transferToThirdCountries = A<YesNoUndecidedChoice>();
             var oversightScheduledInspectionDate = A<DateTime>();
 
             Console.Out.WriteLine($"Testing in the context of DPR with name:{name}");
@@ -107,14 +108,15 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dataResponsibleOption = dataResponsibleOptions.First();
             var oversightOption = oversightOptions.First();
 
-            using var optionsResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(
+            using var generalResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(
                 token.Token,
                 registration.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
                 {
                     BasisForTransferUuid = basisForTransfer.Uuid,
                     DataResponsibleUuid = dataResponsibleOption.Uuid,
+                    TransferToInsecureThirdCountries = transferToThirdCountries
                 });
-            Assert.Equal(HttpStatusCode.OK, optionsResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, generalResponse.StatusCode);
 
             //Oversight related fields
             var oversightResponse = await DataProcessingRegistrationV2Helper.SendPatchOversightAsync(token.Token, registration.Uuid,
@@ -127,12 +129,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable()
                 });
             Assert.Equal(HttpStatusCode.OK, oversightResponse.StatusCode);
-
-
-            //Enable and set third country
-            var transferToThirdCountries = A<YesNoUndecidedOption>();
-            using var setInsecureCountryStateResponse = await DataProcessingRegistrationHelper.SendSetUseTransferToInsecureThirdCountriesStateRequestAsync(regId, transferToThirdCountries);
-            Assert.Equal(HttpStatusCode.OK, setInsecureCountryStateResponse.StatusCode);
 
             //Enable and set sub processors
             using var setStateRequest = await DataProcessingRegistrationHelper.SendSetUseSubDataProcessorsStateRequestAsync(regId, YesNoUndecidedOption.Yes);
@@ -184,7 +180,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(dataProcessor.Name, readModel.DataProcessorNamesAsCsv);
             Assert.Equal(subDataProcessor.Name, readModel.SubDataProcessorNamesAsCsv);
             Assert.Equal(isAgreementConcluded, readModel.IsAgreementConcluded);
-            Assert.Equal(transferToThirdCountries, readModel.TransferToInsecureThirdCountries);
+            Assert.Equal(transferToThirdCountries.ToYesNoUndecidedOption(), readModel.TransferToInsecureThirdCountries);
             Assert.Equal(basisForTransfer.Name, readModel.BasisForTransfer);
             Assert.Equal(dataResponsibleOption.Name, readModel.DataResponsible);
             Assert.Equal(oversightOption.Name, readModel.OversightOptionNamesAsCsv);
