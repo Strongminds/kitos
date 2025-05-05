@@ -7,12 +7,19 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel.Shared;
+using Presentation.Web.Models.API.V1.GDPR;
+using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Response.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Patterns;
 using Xunit;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit.Abstractions;
+using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 
 namespace Tests.Integration.Presentation.Web.GDPR
 {
@@ -67,8 +74,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var refUrl = $"https://www.test-rm{A<uint>()}.dk";
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var isAgreementConcluded = A<YesNoIrrelevantOption>();
-            var oversightInterval = A<YearMonthIntervalOption>();
-            var oversightCompleted = A<YesNoUndecidedOption>();
+            var oversightInterval = A<OversightIntervalChoice>();
+            var oversightCompleted =YesNoUndecidedChoice.Yes;
             var oversightDate = A<DateTime>();
             var oversightRemark = A<string>();
             var oversightScheduledInspectionDate = A<DateTime>();
@@ -78,11 +85,21 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, dpName, "22334455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
             var subDataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, subDpName, "22314455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
             var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, name);
-            await DataProcessingRegistrationHelper.SendChangeOversightIntervalOptionRequestAsync(registration.Id, oversightInterval).DisposeAsync();
 
-            await DataProcessingRegistrationHelper.SendChangeIsOversightCompletedRequestAsync(registration.Id, oversightCompleted).DisposeAsync();
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark };
 
-            await DataProcessingRegistrationHelper.SendUpdateOversightScheduledInspectionDate(registration.Id, oversightScheduledInspectionDate).DisposeAsync();
+            //Oversight related fields
+            var r = await DataProcessingRegistrationV2Helper.SendPatchOversightAsync(token.Token, registration.Uuid,
+                new DataProcessingRegistrationOversightWriteRequestDTO
+                {
+                    OversightScheduledInspectionDate = oversightScheduledInspectionDate,
+                    IsOversightCompleted = oversightCompleted,
+                    OversightDates = oversight.WrapAsEnumerable(),
+                    OversightInterval = oversightInterval
+
+
+                });
 
             var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(registration.Id);
             var role = businessRoleDtos.First();
@@ -126,9 +143,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Concluded state
             await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(registration.Id, isAgreementConcluded).DisposeAsync();
 
-            //Latest oversight date
-            await DataProcessingRegistrationHelper.SendAssignOversightDateRequestAsync(registration.Id, oversightDate, oversightRemark).DisposeAsync();
-
             //References
             await ReferencesHelper.CreateReferenceAsync(refName, refUserAssignedId, refUrl, dto => dto.DataProcessingRegistration_Id = registration.Id);
 
@@ -160,8 +174,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(refName, readModel.MainReferenceTitle);
             Assert.Equal(refUrl, readModel.MainReferenceUrl);
             Assert.Equal(refUserAssignedId, readModel.MainReferenceUserAssignedId);
-            Assert.Equal(oversightInterval, readModel.OversightInterval);
-            Assert.Equal(oversightCompleted, readModel.IsOversightCompleted);
+            Assert.Equal(oversightInterval.ToIntervalOption(), readModel.OversightInterval);
+            Assert.Equal(oversightCompleted.ToYesNoUndecidedOption(), readModel.IsOversightCompleted);
             Assert.Equal(oversightScheduledInspectionDate, readModel.OversightScheduledInspectionDate);
             Assert.Equal(dataProcessor.Name, readModel.DataProcessorNamesAsCsv);
             Assert.Equal(subDataProcessor.Name, readModel.SubDataProcessorNamesAsCsv);
