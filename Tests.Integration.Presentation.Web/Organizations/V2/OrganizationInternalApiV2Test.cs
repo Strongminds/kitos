@@ -374,7 +374,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var requestDto = CreateRequestDtoWithoutCountryCode();
 
-            using var response = await OrganizationInternalV2Helper.CreateOrganization(requestDto);
+            using var response = await OrganizationInternalV2Helper.SendCreateOrganization(requestDto);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             var organization = await response.ReadResponseBodyAsAsync<IdentityNamePairResponseDTO>();
@@ -391,7 +391,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var cookie = await HttpApi.GetCookieAsync(role);
             var requestDto = CreateRequestDtoWithoutCountryCode();
 
-            using var response = await OrganizationInternalV2Helper.CreateOrganization(requestDto, cookie);
+            using var response = await OrganizationInternalV2Helper.SendCreateOrganization(requestDto, cookie);
 
             var wasAllowed = response.StatusCode == HttpStatusCode.Created;
             var isGlobalAdmin = role == OrganizationRole.GlobalAdmin;

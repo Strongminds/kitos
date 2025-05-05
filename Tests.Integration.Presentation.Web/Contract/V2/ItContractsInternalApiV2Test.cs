@@ -23,7 +23,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 
 namespace Tests.Integration.Presentation.Web.Contract.V2
 {
-    public class ItContractsInternalApiV2Test : WithAutoFixture
+    public class ItContractsInternalApiV2Test : BaseTest
     {
         [Fact]
         public async Task Can_Get_Available_DataProcessingRegistrations()
