@@ -75,7 +75,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var refUrl = $"https://www.test-rm{A<uint>()}.dk";
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
-            var isAgreementConcluded = A<YesNoIrrelevantOption>();
+            var isAgreementConcluded = A<YesNoIrrelevantChoice>();
             var oversightInterval = A<OversightIntervalChoice>();
             var oversightCompleted = YesNoUndecidedChoice.Yes;
             var oversightDate = A<DateTime>();
@@ -101,7 +101,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             async Task<IEnumerable<IdentityNamePairResponseDTO>> OptionsFetcherHelper(string resource) => await OptionV2ApiHelper.GetOptionsAsync(resource, orgUuid, 25, 0);
-            
+
             var basisForTransferOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationBasisForTransfer);
             var dataResponsibleOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationDataResponsible);
             var oversightOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationOversight);
@@ -123,7 +123,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     TransferToInsecureThirdCountries = transferToThirdCountries,
                     HasSubDataProcessors = YesNoUndecidedChoice.Yes,
                     SubDataProcessors = subDataProcessorRequest.WrapAsEnumerable(),
-                    DataProcessorUuids = dataProcessor.Uuid.WrapAsEnumerable()
+                    DataProcessorUuids = dataProcessor.Uuid.WrapAsEnumerable(),
+                    IsAgreementConcluded = isAgreementConcluded
                 });
             Assert.Equal(HttpStatusCode.OK, generalResponse.StatusCode);
 
@@ -137,9 +138,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable(),
                 });
             Assert.Equal(HttpStatusCode.OK, oversightResponse.StatusCode);
-
-            //Concluded state
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(regId, isAgreementConcluded).DisposeAsync();
 
             //References
             await ReferencesHelper.CreateReferenceAsync(refName, refUserAssignedId, refUrl, dto => dto.DataProcessingRegistration_Id = regId);
@@ -157,16 +155,13 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
             await DataProcessingRegistrationHelper.SendUpdateMainContractRequestAsync(regId, contractDto.Id).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
-            //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
-            Console.Out.WriteLine("Read models are up to date");
 
             //Act
             var readModels = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
-            Console.Out.WriteLine("Read model found");
             Assert.Equal(name, readModel.Name);
             Assert.Equal(regId, readModel.SourceEntityId);
             Assert.Equal(refName, readModel.MainReferenceTitle);
@@ -177,7 +172,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(oversightScheduledInspectionDate, readModel.OversightScheduledInspectionDate);
             Assert.Equal(dataProcessor.Name, readModel.DataProcessorNamesAsCsv);
             Assert.Equal(subDataProcessor.Name, readModel.SubDataProcessorNamesAsCsv);
-            Assert.Equal(isAgreementConcluded, readModel.IsAgreementConcluded);
+            Assert.Equal(isAgreementConcluded.ToYesNoIrrelevantOption(), readModel.IsAgreementConcluded);
             Assert.Equal(transferToThirdCountries.ToYesNoUndecidedOption(), readModel.TransferToInsecureThirdCountries);
             Assert.Equal(basisForTransfer.Name, readModel.BasisForTransfer);
             Assert.Equal(dataResponsibleOption.Name, readModel.DataResponsible);
