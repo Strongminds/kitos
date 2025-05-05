@@ -12,12 +12,12 @@ namespace Tests.Integration.Presentation.Web.Tools
     {
         private string _token;
 
-        public async Task<DataProcessingRegistrationResponseDTO> CreateDPRAsync(Guid orgUuid)
+        public async Task<DataProcessingRegistrationResponseDTO> CreateDPRAsync(Guid orgUuid, string name = null)
         {
             var token = await GetToken();
             var request = new CreateDataProcessingRegistrationRequestDTO
             {
-                Name = A<string>(),
+                Name = name ?? A<string>(),
                 OrganizationUuid = orgUuid,
             };
             return await DataProcessingRegistrationV2Helper.PostAsync(token, request);

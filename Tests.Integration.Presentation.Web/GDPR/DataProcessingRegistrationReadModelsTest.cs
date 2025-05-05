@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.Shared;
 using Presentation.Web.Models.API.V1.GDPR;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
@@ -24,7 +25,7 @@ using Presentation.Web.Controllers.API.V2.External.Generic;
 namespace Tests.Integration.Presentation.Web.GDPR
 {
     [Collection(nameof(SequentialTestGroup))]
-    public class DataProcessingRegistrationReadModelsTest : WithAutoFixture
+    public class DataProcessingRegistrationReadModelsTest : BaseTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -73,6 +74,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var refUserAssignedId = $"REF:{name}EXT_ID";
             var refUrl = $"https://www.test-rm{A<uint>()}.dk";
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var isAgreementConcluded = A<YesNoIrrelevantOption>();
             var oversightInterval = A<OversightIntervalChoice>();
             var oversightCompleted =YesNoUndecidedChoice.Yes;
@@ -84,7 +86,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
             var dataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, dpName, "22334455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
             var subDataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, subDpName, "22314455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, name);
+            var registration = await CreateDPRAsync(orgUuid, name);
+            var regId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
 
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark };
@@ -101,50 +104,50 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
                 });
 
-            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(registration.Id);
+            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(regId);
             var role = businessRoleDtos.First();
-            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(registration.Id, role.Id);
+            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(regId, role.Id);
             var user = availableUsers.First();
-            _testOutputHelper.WriteLine($"Attempting to assign user {user.Id}:{user.Email} as role {role.Id}:{role.Name} in dpr {registration.Id}:{registration.Name}");
-            using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(registration.Id, role.Id, user.Id);
+            _testOutputHelper.WriteLine($"Attempting to assign user {user.Id}:{user.Email} as role {role.Id}:{role.Name} in dpr {regId}:{registration.Name}");
+            using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(regId, role.Id, user.Id);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             //Basis for transfer
             var dataOptions = await DataProcessingRegistrationHelper.GetAvailableOptionsRequestAsync(organizationId);
             var basisForTransfer = dataOptions.BasisForTransferOptions.First();
-            using var assignResponse = await DataProcessingRegistrationHelper.SendAssignBasisForTransferRequestAsync(registration.Id, basisForTransfer.Id);
+            using var assignResponse = await DataProcessingRegistrationHelper.SendAssignBasisForTransferRequestAsync(regId, basisForTransfer.Id);
             Assert.Equal(HttpStatusCode.OK, assignResponse.StatusCode);
 
             //Enable and set third country
             var transferToThirdCountries = A<YesNoUndecidedOption>();
-            using var setInsecureCountryStateResponse = await DataProcessingRegistrationHelper.SendSetUseTransferToInsecureThirdCountriesStateRequestAsync(registration.Id, transferToThirdCountries);
+            using var setInsecureCountryStateResponse = await DataProcessingRegistrationHelper.SendSetUseTransferToInsecureThirdCountriesStateRequestAsync(regId, transferToThirdCountries);
             Assert.Equal(HttpStatusCode.OK, setInsecureCountryStateResponse.StatusCode);
 
             //Set data responsible
             var dataResponsibleOption = dataOptions.DataResponsibleOptions.First();
-            using var setDataResponsibleResponse = await DataProcessingRegistrationHelper.SendAssignDataResponsibleRequestAsync(registration.Id, dataResponsibleOption.Id);
+            using var setDataResponsibleResponse = await DataProcessingRegistrationHelper.SendAssignDataResponsibleRequestAsync(regId, dataResponsibleOption.Id);
             Assert.Equal(HttpStatusCode.OK, setDataResponsibleResponse.StatusCode);
 
             //Set oversight option
             var oversightOption = dataOptions.OversightOptions.First();
-            using var setOversightOptionResponse = await DataProcessingRegistrationHelper.SendAssignOversightOptionRequestAsync(registration.Id, oversightOption.Id);
+            using var setOversightOptionResponse = await DataProcessingRegistrationHelper.SendAssignOversightOptionRequestAsync(regId, oversightOption.Id);
             Assert.Equal(HttpStatusCode.OK, setDataResponsibleResponse.StatusCode);
 
             //Enable and set sub processors
-            using var setStateRequest = await DataProcessingRegistrationHelper.SendSetUseSubDataProcessorsStateRequestAsync(registration.Id, YesNoUndecidedOption.Yes);
+            using var setStateRequest = await DataProcessingRegistrationHelper.SendSetUseSubDataProcessorsStateRequestAsync(regId, YesNoUndecidedOption.Yes);
             Assert.Equal(HttpStatusCode.OK, setStateRequest.StatusCode);
 
-            using var sendAssignDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignDataProcessorRequestAsync(registration.Id, dataProcessor.Id);
+            using var sendAssignDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignDataProcessorRequestAsync(regId, dataProcessor.Id);
             Assert.Equal(HttpStatusCode.OK, sendAssignDataProcessorRequestAsync.StatusCode);
 
-            using var sendAssignSubDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignSubDataProcessorRequestAsync(registration.Id, subDataProcessor.Id);
+            using var sendAssignSubDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignSubDataProcessorRequestAsync(regId, subDataProcessor.Id);
             Assert.Equal(HttpStatusCode.OK, sendAssignSubDataProcessorRequestAsync.StatusCode);
 
             //Concluded state
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(registration.Id, isAgreementConcluded).DisposeAsync();
+            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(regId, isAgreementConcluded).DisposeAsync();
 
             //References
-            await ReferencesHelper.CreateReferenceAsync(refName, refUserAssignedId, refUrl, dto => dto.DataProcessingRegistration_Id = registration.Id);
+            await ReferencesHelper.CreateReferenceAsync(refName, refUserAssignedId, refUrl, dto => dto.DataProcessingRegistration_Id = regId);
 
             //Systems
             var itSystemDto = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
@@ -154,10 +157,10 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
             //Contracts
             var contractDto = await ItContractHelper.CreateContract(contractName, organizationId);
-            using var assignDataProcessingResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contractDto.Id, registration.Id);
+            using var assignDataProcessingResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contractDto.Id, regId);
             Assert.Equal(HttpStatusCode.OK, assignDataProcessingResponse.StatusCode);
 
-            await DataProcessingRegistrationHelper.SendUpdateMainContractRequestAsync(registration.Id, contractDto.Id).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            await DataProcessingRegistrationHelper.SendUpdateMainContractRequestAsync(regId, contractDto.Id).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
@@ -170,7 +173,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var readModel = Assert.Single(readModels);
             Console.Out.WriteLine("Read model found");
             Assert.Equal(name, readModel.Name);
-            Assert.Equal(registration.Id, readModel.SourceEntityId);
+            Assert.Equal(regId, readModel.SourceEntityId);
             Assert.Equal(refName, readModel.MainReferenceTitle);
             Assert.Equal(refUrl, readModel.MainReferenceUrl);
             Assert.Equal(refUserAssignedId, readModel.MainReferenceUserAssignedId);
@@ -206,7 +209,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Console.Out.WriteLine("Role data verified");
 
             //Assert that the source object can be deleted and that the readmodel is gone now
-            using var deleteResponse = await DataProcessingRegistrationHelper.SendDeleteRequestAsync(registration.Id);
+            using var deleteResponse = await DataProcessingRegistrationHelper.SendDeleteRequestAsync(regId);
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
 
             readModels = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
