@@ -83,8 +83,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var transferToThirdCountries = A<YesNoUndecidedChoice>();
             var oversightScheduledInspectionDate = A<DateTime>();
 
-            Console.Out.WriteLine($"Testing in the context of DPR with name:{name}");
-
             var dataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, dpName, "22334455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
             var subDataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, subDpName, "22314455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
             var registration = await CreateDPRAsync(orgUuid, name);
@@ -185,18 +183,12 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.True(readModel.IsActive);
             Assert.True(readModel.ActiveAccordingToMainContract);
 
-            Console.Out.WriteLine("Flat values asserted");
-            Console.Out.WriteLine("Asserting role assignments");
-
             var roleAssignment = Assert.Single(readModel.RoleAssignments);
-            Console.Out.WriteLine("Found one role assignment as expected");
 
             Assert.Equal(role.Id, roleAssignment.RoleId);
             Assert.Equal(user.Id, roleAssignment.UserId);
             Assert.Equal(user.Name, roleAssignment.UserFullName);
             Assert.Equal(user.Email, roleAssignment.Email);
-
-            Console.Out.WriteLine("Role data verified");
 
             //Assert that the source object can be deleted and that the readmodel is gone now
             using var deleteResponse = await DataProcessingRegistrationHelper.SendDeleteRequestAsync(regId);
