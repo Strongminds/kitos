@@ -19,6 +19,7 @@ using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit.Abstractions;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Models.API.V1.GDPR;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 
 namespace Tests.Integration.Presentation.Web.GDPR
@@ -108,13 +109,20 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dataResponsibleOption = dataResponsibleOptions.First();
             var oversightOption = oversightOptions.First();
 
+            var subDataProcessorRequest = new DataProcessorRegistrationSubDataProcessorWriteRequestDTO
+            {
+                DataProcessorOrganizationUuid = subDataProcessor.Uuid
+            };
+
             using var generalResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(
                 token.Token,
                 registration.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
                 {
                     BasisForTransferUuid = basisForTransfer.Uuid,
                     DataResponsibleUuid = dataResponsibleOption.Uuid,
-                    TransferToInsecureThirdCountries = transferToThirdCountries
+                    TransferToInsecureThirdCountries = transferToThirdCountries,
+                    HasSubDataProcessors = YesNoUndecidedChoice.Yes,
+                    SubDataProcessors = subDataProcessorRequest.WrapAsEnumerable()
                 });
             Assert.Equal(HttpStatusCode.OK, generalResponse.StatusCode);
 
@@ -126,19 +134,12 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     IsOversightCompleted = oversightCompleted,
                     OversightDates = oversight.WrapAsEnumerable(),
                     OversightInterval = oversightInterval,
-                    OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable()
+                    OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable(),
                 });
             Assert.Equal(HttpStatusCode.OK, oversightResponse.StatusCode);
 
-            //Enable and set sub processors
-            using var setStateRequest = await DataProcessingRegistrationHelper.SendSetUseSubDataProcessorsStateRequestAsync(regId, YesNoUndecidedOption.Yes);
-            Assert.Equal(HttpStatusCode.OK, setStateRequest.StatusCode);
-
             using var sendAssignDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignDataProcessorRequestAsync(regId, dataProcessor.Id);
             Assert.Equal(HttpStatusCode.OK, sendAssignDataProcessorRequestAsync.StatusCode);
-
-            using var sendAssignSubDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignSubDataProcessorRequestAsync(regId, subDataProcessor.Id);
-            Assert.Equal(HttpStatusCode.OK, sendAssignSubDataProcessorRequestAsync.StatusCode);
 
             //Concluded state
             await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(regId, isAgreementConcluded).DisposeAsync();
