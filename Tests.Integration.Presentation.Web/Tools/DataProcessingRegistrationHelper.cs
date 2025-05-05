@@ -194,33 +194,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-option/assign"), cookie, body);
         }
 
-        public static async Task<HttpResponseMessage> SendChangeIsOversightCompletedRequestAsync(int id, YesNoUndecidedOption? yesNoUndecidedOption, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<YesNoUndecidedOption?> { Value = yesNoUndecidedOption };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-completed"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendUpdateOversightScheduledInspectionDate(int id, DateTime? date, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new SingleValueDTO<DateTime?> { Value = date };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-scheduled-inspection-date"), cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendAssignOversightDateRequestAsync(int id, DateTime dateTime, string remark, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new CreateDataProcessingRegistrationOversightDateDTO { OversightDate = dateTime, OversightRemark = remark };
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}/oversight-date/assign"), cookie, body);
-        }
-
         public static async Task<HttpResponseMessage> SendUpdateMainContractRequestAsync(int id, int contractId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
