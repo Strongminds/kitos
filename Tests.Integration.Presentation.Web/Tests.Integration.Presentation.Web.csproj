@@ -172,6 +172,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Tools\BaseTest.cs" />
     <Compile Include="Tools\Extensions\StringExtensions.cs" />
     <Compile Include="Tools\External\LegalItSystemPropertiesV2Helper.cs" />
     <Compile Include="Tools\HelpTextsInternalV2Helper.cs" />

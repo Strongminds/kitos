@@ -87,7 +87,8 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid:D}"), token, headers);
         }
 
-        public static async Task<DataProcessingRegistrationResponseDTO> PostAsync(string token, CreateDataProcessingRegistrationRequestDTO payload)
+        public static async Task<DataProcessingRegistrationResponseDTO> PostAsync(string token,
+            CreateDataProcessingRegistrationRequestDTO payload)
         {
             using var response = await SendPostAsync(token, payload);
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
