@@ -114,13 +114,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 new { });
         }
 
-        public static async Task<HttpResponseMessage> SendAssignSystemRequestAsync(int registrationId, int systemId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/it-systems/assign"), cookie, new { Value = systemId });
-        }
-
         public static async Task<HttpResponseMessage> SendAssignDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Core.Abstractions.Extensions;
 using Core.DomainModel.Shared;
 using Tests.Integration.Presentation.Web.Tools;
+using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Patterns;
 using Xunit;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
@@ -133,7 +135,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Systems
             var itSystemDto = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
             var usage = await ItSystemHelper.TakeIntoUseAsync(itSystemDto.Id, organizationId);
-            using var assignSystemResponse = await DataProcessingRegistrationHelper.SendAssignSystemRequestAsync(registration.Id, usage.Id);
+            using var assignSystemResponse = await DataProcessingRegistrationV2Helper.PatchSystemsAsync(registration.Uuid, usage.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignSystemResponse.StatusCode);
 
             //Contracts
@@ -209,14 +211,14 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var contract = await ItContractHelper.CreateContract(contractName, organizationId);
             using var assignDprResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contract.Id, dpr.Id).WithExpectedResponseCode(HttpStatusCode.OK);
             using var updateMainContractResponse = await DataProcessingRegistrationHelper.SendUpdateMainContractRequestAsync(dpr.Id, contract.Id).WithExpectedResponseCode(HttpStatusCode.OK);
-            
+
             await WaitForReadModelQueueDepletion();
             await ItContractHelper.SendDeleteContractRequestAsync(contract.Id).DisposeAsync();
             await WaitForReadModelQueueDepletion();
 
             //Act
             var readModels = await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, dprName, 1, 0);
-            
+
             //Assert
             var readModel = Assert.Single(readModels);
             Assert.True(readModel.IsActive);

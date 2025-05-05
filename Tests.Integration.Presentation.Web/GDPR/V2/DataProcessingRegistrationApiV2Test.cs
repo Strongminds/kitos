@@ -183,7 +183,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var newSystemUsage = await ItSystemHelper.TakeIntoUseAsync(newSystem.Id, organization.Id);
             var dpr1 = await CreateDPRAsync(organization.Id);
             var dpr2 = await CreateDPRAsync(organization.Id);
-            using var assignResult = await DataProcessingRegistrationHelper.SendAssignSystemRequestAsync(dpr1.Id, newSystemUsage.Id);
+            using var assignResult = await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dpr1.Uuid, newSystemUsage.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignResult.StatusCode);
 
             //Act
@@ -203,7 +203,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var newSystemUsage = await ItSystemHelper.TakeIntoUseAsync(newSystem.Id, organization.Id);
             var dpr1 = await CreateDPRAsync(organization.Id);
             var dpr2 = await CreateDPRAsync(organization.Id);
-            using var assignResult = await DataProcessingRegistrationHelper.SendAssignSystemRequestAsync(dpr1.Id, newSystemUsage.Id);
+            using var assignResult = await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dpr1.Uuid, newSystemUsage.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignResult.StatusCode);
 
             //Act
@@ -1351,7 +1351,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var assignment1 = roles.First();
 
             var assignment = new BulkRoleAssignmentRequestDTO
-                { RoleUuid = assignment1.RoleUuid, UserUuids = new List<Guid> { users.First().Uuid, users.Last().Uuid } };
+            { RoleUuid = assignment1.RoleUuid, UserUuids = new List<Guid> { users.First().Uuid, users.Last().Uuid } };
 
             //Act
             using var assignmentResponse = await DataProcessingRegistrationV2Helper.SendPatchAddBulkRoleAssignment(createdDpr.Uuid, assignment);
@@ -1508,7 +1508,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                 OrganizationUuid = org.Uuid
             });
             var generalData = new DataProcessingRegistrationGeneralDataWriteRequestDTO
-                { ResponsibleOrganizationUnitUuid = invalidOrgUnitGuid };
+            { ResponsibleOrganizationUnitUuid = invalidOrgUnitGuid };
 
             var response = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, createdDpr.Uuid, generalData);
 
@@ -1704,13 +1704,13 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         private List<UpdateExternalReferenceDataWriteRequestDTO> CreateNewExternalReferenceDataWithOldUuid(IEnumerable<ExternalReferenceDataResponseDTO> createExternalReferences)
         {
             return createExternalReferences.Select(externalReference => new UpdateExternalReferenceDataWriteRequestDTO
-                {
-                    Uuid = externalReference.Uuid,
-                    Title = A<string>(),
-                    DocumentId = A<string>(),
-                    Url = A<string>(),
-                    MasterReference = externalReference.MasterReference
-                })
+            {
+                Uuid = externalReference.Uuid,
+                Title = A<string>(),
+                DocumentId = A<string>(),
+                Url = A<string>(),
+                MasterReference = externalReference.MasterReference
+            })
                 .ToList();
         }
 
@@ -1871,7 +1871,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             return $"{A<string>()}{DateTime.Now.Ticks}@kitos.dk";
         }
-        
+
         private async Task<(List<RoleAssignmentRequestDTO>, List<User>)> CreateRoles(OrganizationDTO organization)
         {
             var (user1, _) = await CreateApiUserAsync(organization);
