@@ -117,6 +117,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}"), token, CreatePatchPayload(nameof(DataProcessingRegistrationWriteRequestDTO.General), payload));
         }
 
+        public static async Task<HttpResponseMessage> PatchSystemsAsync(Guid uuid, IEnumerable<Guid> payload)
+        {
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            return await SendPatchSystemsAsync(token.Token, uuid, payload);
+        }
+
         public static async Task<HttpResponseMessage> SendPatchSystemsAsync(string token, Guid uuid, IEnumerable<Guid> payload)
         {
             return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}"), token, CreatePatchPayload(nameof(DataProcessingRegistrationWriteRequestDTO.SystemUsageUuids), payload));

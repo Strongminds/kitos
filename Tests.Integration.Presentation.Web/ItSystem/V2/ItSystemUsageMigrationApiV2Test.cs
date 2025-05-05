@@ -3,20 +3,23 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Core.Abstractions.Extensions;
 using Core.ApplicationServices.Shared;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
+using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Tests.Integration.Presentation.Web.Tools;
+using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.ItSystemUsage;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
 {
-    public class ItSystemUsageMigrationApiV2Test : WithAutoFixture
+    public class ItSystemUsageMigrationApiV2Test : BaseTest
     {
         [Theory]
         [InlineData(OrganizationRole.GlobalAdmin)]
@@ -216,12 +219,12 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var newSystem = await CreateSystemAsync(organization.Id, CreateName());
             var usage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organization.Id);
 
-            var dpr = await DataProcessingRegistrationHelper.CreateAsync(organization.Id, CreateName());
-            await DataProcessingRegistrationHelper.SendAssignSystemRequestAsync(dpr.Id, usage.Id);
+            var dpr = await CreateDPRAsync(organization.Uuid);
+            await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dpr.Uuid, usage.Uuid.WrapAsEnumerable());
 
             //Act
             var result = await ItSystemUsageMigrationV2Helper.GetMigration(usage.Uuid, newSystem.Uuid);
-
+            
             //Assert
             Assert.Empty(result.AffectedRelations);
             Assert.Empty(result.AffectedContracts);
