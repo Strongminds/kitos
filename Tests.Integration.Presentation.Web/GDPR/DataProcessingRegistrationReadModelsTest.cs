@@ -101,7 +101,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             async Task<IEnumerable<IdentityNamePairResponseDTO>> OptionsFetcherHelper(string resource) => await OptionV2ApiHelper.GetOptionsAsync(resource, orgUuid, 25, 0);
-            //Basis for transfer
+            
             var basisForTransferOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationBasisForTransfer);
             var dataResponsibleOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationDataResponsible);
             var oversightOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationOversight);
@@ -122,11 +122,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     DataResponsibleUuid = dataResponsibleOption.Uuid,
                     TransferToInsecureThirdCountries = transferToThirdCountries,
                     HasSubDataProcessors = YesNoUndecidedChoice.Yes,
-                    SubDataProcessors = subDataProcessorRequest.WrapAsEnumerable()
+                    SubDataProcessors = subDataProcessorRequest.WrapAsEnumerable(),
+                    DataProcessorUuids = dataProcessor.Uuid.WrapAsEnumerable()
                 });
             Assert.Equal(HttpStatusCode.OK, generalResponse.StatusCode);
 
-            //Oversight related fields
             var oversightResponse = await DataProcessingRegistrationV2Helper.SendPatchOversightAsync(token.Token, registration.Uuid,
                 new DataProcessingRegistrationOversightWriteRequestDTO
                 {
@@ -137,9 +137,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable(),
                 });
             Assert.Equal(HttpStatusCode.OK, oversightResponse.StatusCode);
-
-            using var sendAssignDataProcessorRequestAsync = await DataProcessingRegistrationHelper.SendAssignDataProcessorRequestAsync(regId, dataProcessor.Id);
-            Assert.Equal(HttpStatusCode.OK, sendAssignDataProcessorRequestAsync.StatusCode);
 
             //Concluded state
             await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(regId, isAgreementConcluded).DisposeAsync();
