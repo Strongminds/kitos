@@ -124,7 +124,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     HasSubDataProcessors = YesNoUndecidedChoice.Yes,
                     SubDataProcessors = subDataProcessorRequest.WrapAsEnumerable(),
                     DataProcessorUuids = dataProcessor.Uuid.WrapAsEnumerable(),
-                    IsAgreementConcluded = isAgreementConcluded
+                    IsAgreementConcluded = isAgreementConcluded,
                 });
             Assert.Equal(HttpStatusCode.OK, generalResponse.StatusCode);
 
