@@ -1,6 +1,7 @@
 ﻿using Core.DomainModel;
 using Core.DomainModel.Organization;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
@@ -8,19 +9,17 @@ using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.Shared;
-using Presentation.Web.Models.API.V1.GDPR;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
-using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
-using Tests.Toolkit.Patterns;
 using Xunit;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit.Abstractions;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 
 namespace Tests.Integration.Presentation.Web.GDPR
 {
@@ -77,7 +76,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var isAgreementConcluded = A<YesNoIrrelevantOption>();
             var oversightInterval = A<OversightIntervalChoice>();
-            var oversightCompleted =YesNoUndecidedChoice.Yes;
+            var oversightCompleted = YesNoUndecidedChoice.Yes;
             var oversightDate = A<DateTime>();
             var oversightRemark = A<string>();
             var oversightScheduledInspectionDate = A<DateTime>();
@@ -92,46 +91,48 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark };
 
+            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(regId);
+            var role = businessRoleDtos.First();
+            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(regId, role.Id);
+            var user = availableUsers.First();
+            using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(regId, role.Id, user.Id);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            async Task<IEnumerable<IdentityNamePairResponseDTO>> OptionsFetcherHelper(string resource) => await OptionV2ApiHelper.GetOptionsAsync(resource, orgUuid, 25, 0);
+            //Basis for transfer
+            var basisForTransferOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationBasisForTransfer);
+            var dataResponsibleOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationDataResponsible);
+            var oversightOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationOversight);
+            var basisForTransfer = basisForTransferOptions.First();
+            var dataResponsibleOption = dataResponsibleOptions.First();
+            var oversightOption = oversightOptions.First();
+
+            using var optionsResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(
+                token.Token,
+                registration.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    BasisForTransferUuid = basisForTransfer.Uuid,
+                    DataResponsibleUuid = dataResponsibleOption.Uuid,
+                });
+            Assert.Equal(HttpStatusCode.OK, optionsResponse.StatusCode);
+
             //Oversight related fields
-            var r = await DataProcessingRegistrationV2Helper.SendPatchOversightAsync(token.Token, registration.Uuid,
+            var oversightResponse = await DataProcessingRegistrationV2Helper.SendPatchOversightAsync(token.Token, registration.Uuid,
                 new DataProcessingRegistrationOversightWriteRequestDTO
                 {
                     OversightScheduledInspectionDate = oversightScheduledInspectionDate,
                     IsOversightCompleted = oversightCompleted,
                     OversightDates = oversight.WrapAsEnumerable(),
-                    OversightInterval = oversightInterval
-
-
+                    OversightInterval = oversightInterval,
+                    OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable()
                 });
+            Assert.Equal(HttpStatusCode.OK, oversightResponse.StatusCode);
 
-            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(regId);
-            var role = businessRoleDtos.First();
-            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(regId, role.Id);
-            var user = availableUsers.First();
-            _testOutputHelper.WriteLine($"Attempting to assign user {user.Id}:{user.Email} as role {role.Id}:{role.Name} in dpr {regId}:{registration.Name}");
-            using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(regId, role.Id, user.Id);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            //Basis for transfer
-            var dataOptions = await DataProcessingRegistrationHelper.GetAvailableOptionsRequestAsync(organizationId);
-            var basisForTransfer = dataOptions.BasisForTransferOptions.First();
-            using var assignResponse = await DataProcessingRegistrationHelper.SendAssignBasisForTransferRequestAsync(regId, basisForTransfer.Id);
-            Assert.Equal(HttpStatusCode.OK, assignResponse.StatusCode);
 
             //Enable and set third country
             var transferToThirdCountries = A<YesNoUndecidedOption>();
             using var setInsecureCountryStateResponse = await DataProcessingRegistrationHelper.SendSetUseTransferToInsecureThirdCountriesStateRequestAsync(regId, transferToThirdCountries);
             Assert.Equal(HttpStatusCode.OK, setInsecureCountryStateResponse.StatusCode);
-
-            //Set data responsible
-            var dataResponsibleOption = dataOptions.DataResponsibleOptions.First();
-            using var setDataResponsibleResponse = await DataProcessingRegistrationHelper.SendAssignDataResponsibleRequestAsync(regId, dataResponsibleOption.Id);
-            Assert.Equal(HttpStatusCode.OK, setDataResponsibleResponse.StatusCode);
-
-            //Set oversight option
-            var oversightOption = dataOptions.OversightOptions.First();
-            using var setOversightOptionResponse = await DataProcessingRegistrationHelper.SendAssignOversightOptionRequestAsync(regId, oversightOption.Id);
-            Assert.Equal(HttpStatusCode.OK, setDataResponsibleResponse.StatusCode);
 
             //Enable and set sub processors
             using var setStateRequest = await DataProcessingRegistrationHelper.SendSetUseSubDataProcessorsStateRequestAsync(regId, YesNoUndecidedOption.Yes);

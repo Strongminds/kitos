@@ -166,7 +166,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsKitosApiResponseAsync<DataProcessingOptionsDTO>();
         }
-
+        
         public static async Task<HttpResponseMessage> SendAssignDataResponsibleRequestAsync(int id, int? dataResponsibleOptionId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
