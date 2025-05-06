@@ -1416,8 +1416,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             const int organizationId = TestEnvironment.DefaultOrganizationId;
             var orgPrefix = A<string>();
             var orgName = $"{orgPrefix}_{A<int>()}";
-            var organization = await OrganizationHelper.CreateOrganizationAsync(organizationId, orgName, "87654321", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, A<string>());
+            var organization = await CreateOrganizationAsync(orgName);
+            var registration = await CreateDPRAsync(organization.Uuid);
 
             //Act
             var processors = await DataProcessingRegistrationV2Helper.GetAvailableDataProcessors(registration.Uuid, orgPrefix);
@@ -1435,8 +1435,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var orgPrefix = A<string>();
             var orgName = $"{orgPrefix}_{A<int>()}";
             var orgCvr = A<string>().Substring(0, 9);
-            var organization = await OrganizationHelper.CreateOrganizationAsync(organizationId, orgName, orgCvr, OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, A<string>());
+            var organization = await CreateOrganizationAsync(orgName, orgCvr);
+            var registration = await CreateDPRAsync(organization.Uuid);
 
             //Act
             var processors = await DataProcessingRegistrationV2Helper.GetAvailableDataProcessors(registration.Uuid, orgCvr);
@@ -1449,11 +1449,10 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         public async Task Can_Get_Available_SubDataProcessors()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var orgPrefix = A<string>();
             var orgName = $"{orgPrefix}_{A<int>()}";
-            var organization = await OrganizationHelper.CreateOrganizationAsync(organizationId, orgName, "87654321", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, A<string>());
+            var organization = await CreateOrganizationAsync(orgName);
+            var registration = await CreateDPRAsync(organization.Uuid);
 
             //Act
             var processors = await DataProcessingRegistrationV2Helper.GetAvailableSubDataProcessors(registration.Uuid, orgPrefix);
@@ -1466,12 +1465,11 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         public async Task Can_Get_Available_SubDataProcessors_By_Cvr()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var orgPrefix = A<string>();
             var orgName = $"{orgPrefix}_{A<int>()}";
             var orgCvr = A<string>().Substring(0, 9);
-            var organization = await OrganizationHelper.CreateOrganizationAsync(organizationId, orgName, orgCvr, OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, A<string>());
+            var organization = await CreateOrganizationAsync(orgName, orgCvr);
+            var registration = await CreateDPRAsync(organization.Uuid);
 
             //Act
             var processors = await DataProcessingRegistrationV2Helper.GetAvailableSubDataProcessors(registration.Uuid, orgCvr);
@@ -1489,7 +1487,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var system1Name = $"{systemPrefix}{1}";
             var system2Name = $"{systemPrefix}{2}";
             var filteredOutSystemName = A<string>();
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, A<string>());
+            var registration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId));
             var system1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(system1Name, organizationId, AccessModifier.Public);
             var system2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(system2Name, organizationId, AccessModifier.Public);
             var filteredOutSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(filteredOutSystemName, organizationId, AccessModifier.Public);
@@ -1833,11 +1831,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                 ResponsibleOrganizationUnitUuid = responsibleUnit?.Uuid
             };
             return (dataResponsible, basisForTransfer, inputDTO);
-        }
-
-        private async Task<DataProcessingRegistrationDTO> CreateDPRAsync(int orgId, string name = null)
-        {
-            return await DataProcessingRegistrationHelper.CreateAsync(orgId, name ?? CreateName());
         }
 
         private async Task<(string token, User user, ShallowOrganizationResponseDTO organization)> CreatePrerequisitesAsync()

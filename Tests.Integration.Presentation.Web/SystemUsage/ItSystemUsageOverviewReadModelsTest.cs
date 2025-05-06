@@ -29,7 +29,7 @@ using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.Organ
 namespace Tests.Integration.Presentation.Web.SystemUsage
 {
     [Collection(nameof(SequentialTestGroup))]
-    public class ItSystemUsageOverviewReadModelsTest : WithAutoFixture
+    public class ItSystemUsageOverviewReadModelsTest : BaseTest
     {
         private const string TestCvr = "11224455";
 

@@ -23,12 +23,12 @@ namespace Tests.Integration.Presentation.Web.Tools
     {
         private string _token;
 
-        public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync()
+        public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync(string name = null, string cvr = null)
         {
             var defaultRequest = new OrganizationCreateRequestDTO
             {
-                Name = A<string>(),
-                Cvr = CreateCvr(),
+                Name = name ?? A<string>(),
+                Cvr = cvr ?? CreateCvr(),
                 Type = A<OrganizationType>()
             };
             using var response = OrganizationInternalV2Helper.CreateOrganization(defaultRequest);

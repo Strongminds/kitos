@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Notifications
 {
-    public class NotificationApiV2Test : WithAutoFixture
+    public class NotificationApiV2Test : BaseTest
     {
         [Fact]
         public async Task Can_Create_And_Get_ImmediateNotification()
@@ -450,7 +450,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
                     var usageResult = ItSystemUsageHelper.CreateItSystemUsage(new ItSystemUsage { ItSystemId = system.Id, OrganizationId = organizationId });
                     return usageResult.Uuid;
                 case OwnerResourceType.DataProcessingRegistration:
-                    var dpr = await DataProcessingRegistrationHelper.CreateAsync(organizationId, A<string>());
+                    var dpr = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId));
                     return dpr.Uuid;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(ownerResourceType), ownerResourceType, null);
