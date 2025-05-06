@@ -39,7 +39,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         [Fact]
         public async Task Can_Query_And_Page_ReadModels_Using_Db_Id()
         {
-            await TestQueryAndPaging(async q => await ItSystemUsageHelper.QueryReadModelByNameContent(q.orgId, q.query, q.top, q.skip));
+            await TestQueryAndPaging(async q => await ItSystemUsageHelper.QueryReadModelByNameContent(q.orgUuid, q.query, q.top, q.skip));
         }
 
         [Fact]
@@ -47,32 +47,32 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             await TestQueryAndPaging(async q =>
             {
-                var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(q.orgId);
-                return await ItSystemUsageHelper.QueryReadModelByNameContent(orgUuid, q.query, q.top, q.skip);
+                return await ItSystemUsageHelper.QueryReadModelByNameContent(q.orgUuid, q.query, q.top, q.skip);
             });
         }
 
-        private async Task TestQueryAndPaging(Func<(int orgId, string query, int top, int skip), Task<IEnumerable<ItSystemUsageOverviewReadModel>>> getPage)
+        private async Task TestQueryAndPaging(Func<(Guid orgUuid, string query, int top, int skip), Task<IEnumerable<ItSystemUsageOverviewReadModel>>> getPage)
         {
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var suffix = A<Guid>().ToString("N");
             var name1 = $"1_{suffix}";
             var name2 = $"2_{suffix}";
             var name3 = $"3_{suffix}";
 
-            var system1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(name1, organizationId, AccessModifier.Public);
-            var system2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(name2, organizationId, AccessModifier.Public);
-            var system3 = await ItSystemHelper.CreateItSystemInOrganizationAsync(name3, organizationId, AccessModifier.Public);
+            var system1 = await CreateItSystemAsync(organizationUuid, name: name1);
+            var system2 = await CreateItSystemAsync(organizationUuid, name: name2);
+            var system3 = await CreateItSystemAsync(organizationUuid, name: name3);
 
-            await ItSystemHelper.TakeIntoUseAsync(system1.Id, organizationId);
-            await ItSystemHelper.TakeIntoUseAsync(system2.Id, organizationId);
-            await ItSystemHelper.TakeIntoUseAsync(system3.Id, organizationId);
+            await TakeSystemIntoUsageAsync(system1.Uuid, organizationUuid);
+            await TakeSystemIntoUsageAsync(system2.Uuid, organizationUuid);
+            await TakeSystemIntoUsageAsync(system3.Uuid, organizationUuid);
 
 
             //Act
-            var page1 = (await getPage((organizationId, suffix, 2, 0))).ToList();
-            var page2 = (await getPage((organizationId, suffix, 2, 2))).ToList();
+            var page1 = (await getPage((organizationUuid, suffix, 2, 0))).ToList();
+            var page2 = (await getPage((organizationUuid, suffix, 2, 2))).ToList();
 
             //Assert
             Assert.Equal(2, page1.Count);

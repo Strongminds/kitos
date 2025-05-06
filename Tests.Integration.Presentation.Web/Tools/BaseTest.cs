@@ -55,11 +55,11 @@ namespace Tests.Integration.Presentation.Web.Tools
             });
         }
 
-        public async Task<ItSystemResponseDTO> CreateItSystemAsync(Guid orgGuid, RegistrationScopeChoice scope = RegistrationScopeChoice.Global)
+        public async Task<ItSystemResponseDTO> CreateItSystemAsync(Guid orgGuid, RegistrationScopeChoice scope = RegistrationScopeChoice.Global, string name = null)
         {
             var request = new CreateItSystemRequestDTO
             {
-                Name = A<string>(),
+                Name = name ?? A<string>(),
                 OrganizationUuid = orgGuid,
                 Scope = scope
             };
