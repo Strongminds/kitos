@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Core.DomainModel;
 using Core.DomainModel.Organization;
-using Core.DomainServices.Authorization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
+using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
+using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
@@ -44,6 +44,15 @@ namespace Tests.Integration.Presentation.Web.Tools
                 OrganizationUuid = orgUuid,
             };
             return await DataProcessingRegistrationV2Helper.PostAsync(token, request);
+        }
+
+        public async Task<ItContractResponseDTO> CreateItContractAsync(Guid organizationUuid, string name = null)
+        {
+            return await ItContractV2Helper.PostContractAsync(await GetGlobalToken(), new CreateNewContractRequestDTO
+            {
+                OrganizationUuid = organizationUuid,
+                Name = name ?? A<string>()
+            });
         }
 
         public async Task<ItSystemResponseDTO> CreateItSystemAsync(Guid orgGuid, RegistrationScopeChoice scope = RegistrationScopeChoice.Global)

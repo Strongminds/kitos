@@ -145,7 +145,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             //Arrange
             var ownerResourceType = A<OwnerResourceType>();
             var (relationUuid, organization, cookie) = await CreatePrerequisitesAsync(ownerResourceType);
-            var relation2Uuid = await SetupRelatedResourceAsync(ownerResourceType, organization.Id);
+            var relation2Uuid = await SetupRelatedResourceAsync(ownerResourceType, organization.Uuid);
 
             var notificationRequest1 = CreateScheduledNotificationWriteRequest(ownerResourceType);
             var notificationRequest2 = CreateScheduledNotificationWriteRequest(ownerResourceType);
@@ -433,24 +433,24 @@ namespace Tests.Integration.Presentation.Web.Notifications
         private async Task<(Guid relationUuid, OrganizationDTO organization, Cookie cookie)> CreatePrerequisitesAsync(OwnerResourceType ownerResourceType, OrganizationRole role = OrganizationRole.GlobalAdmin)
         {
             var organization = await SetupOrganizationAsync();
-            var relationUuid = await SetupRelatedResourceAsync(ownerResourceType, organization.Id);
+            var relationUuid = await SetupRelatedResourceAsync(ownerResourceType, organization.Uuid);
             var (_, _, cookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Id);
             return (relationUuid, organization, cookie);
         }
 
-        private async Task<Guid> SetupRelatedResourceAsync(OwnerResourceType ownerResourceType, int organizationId)
+        private async Task<Guid> SetupRelatedResourceAsync(OwnerResourceType ownerResourceType, Guid organizationUuid)
         {
             switch (ownerResourceType)
             {
                 case OwnerResourceType.ItContract:
-                    var result = await ItContractHelper.CreateContract(A<string>(), organizationId);
+                    var result = await CreateItContractAsync(organizationUuid);
                     return result.Uuid;
                 case OwnerResourceType.ItSystemUsage:
-                    var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), organizationId, AccessModifier.Public);
-                    var usageResult = ItSystemUsageHelper.CreateItSystemUsage(new ItSystemUsage { ItSystemId = system.Id, OrganizationId = organizationId });
+                    var system = await CreateItSystemAsync(organizationUuid);
+                    var usageResult = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
                     return usageResult.Uuid;
                 case OwnerResourceType.DataProcessingRegistration:
-                    var dpr = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId));
+                    var dpr = await CreateDPRAsync(organizationUuid);
                     return dpr.Uuid;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(ownerResourceType), ownerResourceType, null);
