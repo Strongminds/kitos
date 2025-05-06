@@ -96,7 +96,9 @@ namespace Tests.Integration.Presentation.Web.Contract
             await CreateDPRAsync(_organization.Uuid, CreateName()); //not included since it is not an agreement
             var parentContract = await ItContractHelper.CreateContract(CreateName(), organizationId);
             var itContract = await ItContractHelper.CreateContract(name, organizationId);
-            var organizationUnit = await OrganizationUnitHelper.GetOrganizationUnitsAsync(organizationId);
+            var organizationUnit =
+                (await OrganizationUnitV2Helper.GetOrganizationUnitsAsync(await GetGlobalToken(), organizationUuid)).RandomItem();
+            var organizationUnitId = DatabaseAccess.GetEntityId<OrganizationUnit>(organizationUnit.Uuid);
             var criticality = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.CriticalityTypes, organizationId)).RandomItem();
             var contractType = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ContractTypes, organizationId)).RandomItem();
             var contractTemplate = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ContractTemplateTypes, organizationId)).RandomItem();
@@ -107,7 +109,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             var optionExtend = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.OptionExtendTypes, organizationId)).RandomItem();
             var terminationDeadline = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.TerminationDeadlineTypes, organizationId)).RandomItem();
             var referenceDto = await ReferencesHelper.CreateReferenceAsync(A<string>(), A<string>(), $"https//a{A<int>()}b.dk", setTargetId: x => x.ItContract_Id = itContract.Id);
-            var economy = await ItContractHelper.CreateExternEconomyStream(itContract.Id, organizationUnit.Id, A<int>(), A<int>(), A<int>(), A<DateTime>(), A<TrafficLight>());
+            var economy = await ItContractHelper.CreateExternEconomyStream(itContract.Id, organizationUnitId, A<int>(), A<int>(), A<int>(), A<DateTime>(), A<TrafficLight>());
             var changes = new
             {
                 ItContractId = A<string>(),
@@ -121,7 +123,7 @@ namespace Tests.Integration.Presentation.Web.Contract
                 SupplierId = _supplier.Id,
                 ParentId = parentContract.Id,
                 CriticalityId = criticality.Id,
-                ResponsibleOrganizationUnitId = organizationUnit.Id,
+                ResponsibleOrganizationUnitId = organizationUnitId,
                 ContractTypeId = contractType.Id,
                 ContractTemplateId = contractTemplate.Id,
                 PurchaseFormId = purchaseForm.Id,
@@ -161,10 +163,10 @@ namespace Tests.Integration.Presentation.Web.Contract
             var role2 = roles.RandomItem();
             await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
                 new RoleAssignmentRequestDTO
-                    { RoleUuid = role1.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user1Id) });
+                { RoleUuid = role1.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user1Id) });
             await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
                 new RoleAssignmentRequestDTO
-                    { RoleUuid = role2.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user2Id) });
+                { RoleUuid = role2.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user2Id) });
 
 
             //Act
@@ -185,7 +187,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             AssertReferencedEntity(_supplier.Id, _supplier.Name, readModel.SupplierId, readModel.SupplierName);
             AssertReferencedEntity(parentContract.Id, parentContract.Name, readModel.ParentContractId, readModel.ParentContractName, parentContract.Uuid, readModel.ParentContractUuid);
             AssertReferencedEntity(criticality.Id, criticality.Name, readModel.CriticalityId, readModel.CriticalityName, criticality.Uuid, readModel.CriticalityUuid);
-            AssertReferencedEntity(organizationUnit.Id, organizationUnit.Name, readModel.ResponsibleOrgUnitId, readModel.ResponsibleOrgUnitName);
+            AssertReferencedEntity(organizationUnitId, organizationUnit.Name, readModel.ResponsibleOrgUnitId, readModel.ResponsibleOrgUnitName);
             AssertReferencedEntity(contractType.Id, contractType.Name, readModel.ContractTypeId, readModel.ContractTypeName, contractType.Uuid, readModel.ContractTypeUuid);
             AssertReferencedEntity(contractTemplate.Id, contractTemplate.Name, readModel.ContractTemplateId, readModel.ContractTemplateName, contractTemplate.Uuid, readModel.ContractTemplateUuid);
             AssertReferencedEntity(purchaseForm.Id, purchaseForm.Name, readModel.PurchaseFormId, readModel.PurchaseFormName, purchaseForm.Uuid, readModel.PurchaseFormUuid);

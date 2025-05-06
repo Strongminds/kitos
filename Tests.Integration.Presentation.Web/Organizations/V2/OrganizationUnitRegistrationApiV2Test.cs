@@ -20,7 +20,7 @@ using Tests.Integration.Presentation.Web.Tools.External;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
-    public class OrganizationUnitRegistrationApiV2Test : WithAutoFixture
+    public class OrganizationUnitRegistrationApiV2Test : BaseTest
     {
         [Fact]
         public async Task Can_Get_Registrations()
@@ -118,8 +118,9 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             await OrganizationUnitV2Helper.SendDeleteUnitAsync(organizationUuid, unit.Uuid)
                 .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
-            var rootOrganizationUnit = await OrganizationUnitHelper.GetOrganizationUnitsAsync(organization.Id);
-            Assert.DoesNotContain(unit.Id, rootOrganizationUnit.Children.Select(x => x.Id));
+            var organizationUnits =
+                await OrganizationUnitV2Helper.GetOrganizationUnitsAsync(await GetGlobalToken(), organizationUuid, 0, 100);
+            Assert.DoesNotContain(unit.Uuid, organizationUnits.Select(x => x.Uuid));
 
             using var registrationsResponse = await OrganizationUnitRegistrationV2Helper.SendGetRegistrationsAsync(organizationUuid, unit.Uuid);
             Assert.Equal(HttpStatusCode.NotFound, registrationsResponse.StatusCode);
