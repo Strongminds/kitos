@@ -12,11 +12,14 @@ using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
+using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Response.System;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
@@ -208,9 +211,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
 
             // DataProcessingRegistrations
-            var yesNoIrrelevantOption = A<YesNoIrrelevantOption>();
-            var dataProcessingRegistration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, dataProcessingRegistrationName);
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(dataProcessingRegistration.Id, yesNoIrrelevantOption).DisposeAsync();
+            var yesNoIrrelevantOption = A<YesNoIrrelevantChoice>();
+            var dataProcessingRegistration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), dataProcessingRegistrationName);
+            await DataProcessingRegistrationV2Helper.PatchIsAgreementConcludedAsync(dataProcessingRegistration.Uuid, yesNoIrrelevantOption);
             await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dataProcessingRegistration.Uuid, systemUsage.Uuid.WrapAsEnumerable()).DisposeAsync();
 
             // DependsOnInterfaces + IncomingSystemUsages + outgoing system usages
@@ -370,7 +373,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // DataProcessingRegistration
             Assert.Equal(dataProcessingRegistration.Name, readModel.DataProcessingRegistrationNamesAsCsv);
-            Assert.Equal(yesNoIrrelevantOption.GetReadableName(), readModel.DataProcessingRegistrationsConcludedAsCsv);
+            Assert.Equal(yesNoIrrelevantOption.ToYesNoIrrelevantOption().GetReadableName(), readModel.DataProcessingRegistrationsConcludedAsCsv);
             var dpr = Assert.Single(readModel.DataProcessingRegistrations);
             Assert.Equal(dataProcessingRegistration.Uuid, dpr.DataProcessingRegistrationUuid);
 
@@ -613,13 +616,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var dataProcessingRegistrationName = A<string>();
             var newDataProcessingRegistrationName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var yesNoIrrelevantOption = A<YesNoIrrelevantOption>();
+            var yesNoIrrelevantOption = A<YesNoIrrelevantChoice>();
 
             var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
             var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
 
-            var dataProcessingRegistration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, dataProcessingRegistrationName);
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(dataProcessingRegistration.Id, A<YesNoIrrelevantOption>()).DisposeAsync();
+            var dataProcessingRegistration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), dataProcessingRegistrationName);
+            await DataProcessingRegistrationV2Helper.PatchIsAgreementConcludedAsync(dataProcessingRegistration.Uuid, A<YesNoIrrelevantChoice>());
             await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dataProcessingRegistration.Uuid, systemUsage.Uuid.WrapAsEnumerable()).DisposeAsync();
 
             //Wait for read model to rebuild (wait for the LAST mutation)
@@ -627,8 +630,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await DataProcessingRegistrationHelper.SendChangeNameRequestAsync(dataProcessingRegistration.Id, newDataProcessingRegistrationName).DisposeAsync();
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(dataProcessingRegistration.Id, yesNoIrrelevantOption).DisposeAsync();
+            await DataProcessingRegistrationV2Helper.SendPatchName(await GetGlobalToken(),
+                dataProcessingRegistration.Uuid, newDataProcessingRegistrationName).DisposeAsync();
+            await DataProcessingRegistrationV2Helper.PatchIsAgreementConcludedAsync(dataProcessingRegistration.Uuid, yesNoIrrelevantOption);
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
@@ -640,11 +644,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read model found");
 
             Assert.Equal(newDataProcessingRegistrationName, readModel.DataProcessingRegistrationNamesAsCsv);
-            Assert.Equal(yesNoIrrelevantOption.GetReadableName(), readModel.DataProcessingRegistrationsConcludedAsCsv);
+            Assert.Equal(yesNoIrrelevantOption.ToYesNoIrrelevantOption().GetReadableName(), readModel.DataProcessingRegistrationsConcludedAsCsv);
             var rmDataProcessingRegistration = Assert.Single(readModel.DataProcessingRegistrations);
-            Assert.Equal(dataProcessingRegistration.Id, rmDataProcessingRegistration.DataProcessingRegistrationId);
+            Assert.Equal(dataProcessingRegistration.Uuid, rmDataProcessingRegistration.DataProcessingRegistrationUuid);
             Assert.Equal(newDataProcessingRegistrationName, rmDataProcessingRegistration.DataProcessingRegistrationName);
-            Assert.Equal(yesNoIrrelevantOption, rmDataProcessingRegistration.IsAgreementConcluded);
+            Assert.Equal(yesNoIrrelevantOption.ToYesNoIrrelevantOption(), rmDataProcessingRegistration.IsAgreementConcluded);
         }
 
         [Fact]
