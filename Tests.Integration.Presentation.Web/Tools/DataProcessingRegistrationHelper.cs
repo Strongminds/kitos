@@ -105,12 +105,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 new { });
         }
 
-        public static async Task<HttpResponseMessage> SendAssignDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/data-processors/assign"), cookie, new SingleValueDTO<int> { Value = organizationId });
-        }
-
         public static async Task<HttpResponseMessage> SendAssignSubDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null, SubDataProcessorDetailsDTO details = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

@@ -43,13 +43,10 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public string CreateCvr()
         {
-            var fixture = new Fixture();
-
-            fixture.Customizations.Add(new RandomNumericSequenceGenerator(8));
-
-            var random8Digits = fixture.Create<string>();
-
-            return random8Digits;
+            var rnd = new Random();
+            
+            return rnd.Next(0, 100_000_000)
+                .ToString("D8");
         }
 
         public async Task<string> GetGlobalToken()

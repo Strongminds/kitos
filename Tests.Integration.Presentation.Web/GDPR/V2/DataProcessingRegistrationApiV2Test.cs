@@ -36,7 +36,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Tests.Integration.Presentation.Web.GDPR.V2
 {
-    public class DataProcessingRegistrationApiV2Test : WithAutoFixture
+    public class DataProcessingRegistrationApiV2Test : BaseTest
     {
         [Fact]
         public async Task Can_GET_Specific_DPR()
@@ -219,10 +219,15 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             //Arrange
             var (token, user, organization) = await CreatePrerequisitesAsync();
-            var dataProcessor = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
-            var dpr1 = await CreateDPRAsync(organization.Id);
-            var dpr2 = await CreateDPRAsync(organization.Id);
-            using var assignResult = await DataProcessingRegistrationHelper.SendAssignDataProcessorRequestAsync(dpr1.Id, dataProcessor.Id);
+            var dataProcessor = await CreateOrganizationAsync();
+            var dpr1 = await CreateDPRAsync(organization.Uuid);
+            var dpr2 = await CreateDPRAsync(organization.Uuid);
+
+            using var assignResult = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(
+                await GetGlobalToken(), dpr1.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    DataProcessorUuids = dataProcessor.Uuid.WrapAsEnumerable()
+                });
             Assert.Equal(HttpStatusCode.OK, assignResult.StatusCode);
 
             //Act
@@ -1613,6 +1618,15 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         }
 
         private static void AssertExpectedShallowDPR(DataProcessingRegistrationDTO expectedContent, OrganizationDTO expectedOrganization, DataProcessingRegistrationResponseDTO dto)
+        {
+            Assert.Equal(expectedContent.Uuid, dto.Uuid);
+            Assert.Equal(expectedContent.Name, dto.Name);
+            Assert.Equal(expectedOrganization.Uuid, dto.OrganizationContext.Uuid);
+            Assert.Equal(expectedOrganization.Name, dto.OrganizationContext.Name);
+            Assert.Equal(expectedOrganization.Cvr, dto.OrganizationContext.Cvr);
+        }
+
+        private static void AssertExpectedShallowDPR(DataProcessingRegistrationResponseDTO expectedContent, OrganizationDTO expectedOrganization, DataProcessingRegistrationResponseDTO dto)
         {
             Assert.Equal(expectedContent.Uuid, dto.Uuid);
             Assert.Equal(expectedContent.Name, dto.Name);

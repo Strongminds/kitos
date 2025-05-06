@@ -45,7 +45,7 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
             Cookie cookie = null)
         {
             using var response = await SendCreateOrganization(dto, cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<OrganizationResponseDTO>();
         }
 
