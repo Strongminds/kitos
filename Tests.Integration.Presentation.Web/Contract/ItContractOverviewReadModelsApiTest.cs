@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net;
 using Core.DomainModel;
 using System.Threading.Tasks;
+using Core.DomainModel.GDPR;
+using Core.DomainModel.ItContract;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -10,6 +12,9 @@ using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
+using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.Shared;
+using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.External.Rights;
 using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
@@ -18,7 +23,7 @@ using Tests.Toolkit.Extensions;
 namespace Tests.Integration.Presentation.Web.Contract
 {
     [Collection(nameof(SequentialTestGroup))]
-    public class ItContractOverviewReadModelsApiTest : WithAutoFixture, IAsyncLifetime
+    public class ItContractOverviewReadModelsApiTest : BaseTest, IAsyncLifetime
     {
         private OrganizationDTO _organization;
         private OrganizationDTO _supplier;
@@ -74,11 +79,21 @@ namespace Tests.Integration.Presentation.Web.Contract
             var usage1 = await ItSystemHelper.TakeIntoUseAsync(itSystem1.Id, organizationId);
             var usage2 = await ItSystemHelper.TakeIntoUseAsync(itSystem2.Id, organizationId);
 
-            var dpr1 = await DataProcessingRegistrationHelper.CreateAsync(organizationId, CreateName());
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(dpr1.Id, YesNoIrrelevantOption.YES).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
-            var dpr2 = await DataProcessingRegistrationHelper.CreateAsync(organizationId, CreateName());
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(dpr2.Id, YesNoIrrelevantOption.YES).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
-            await DataProcessingRegistrationHelper.CreateAsync(organizationId, CreateName()); //not included since it is not an agreement
+            var dpr1 = await CreateDPRAsync(_organization.Uuid);
+            var dpr2 = await CreateDPRAsync(_organization.Uuid);
+
+            await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(await GetGlobalToken(),
+                dpr1.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    IsAgreementConcluded = YesNoIrrelevantChoice.Yes,
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(await GetGlobalToken(),
+                dpr2.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    IsAgreementConcluded = YesNoIrrelevantChoice.Yes,
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
+            await CreateDPRAsync(_organization.Uuid, CreateName()); //not included since it is not an agreement
             var parentContract = await ItContractHelper.CreateContract(CreateName(), organizationId);
             var itContract = await ItContractHelper.CreateContract(name, organizationId);
             var organizationUnit = await OrganizationUnitHelper.GetOrganizationUnitsAsync(organizationId);
@@ -120,8 +135,9 @@ namespace Tests.Integration.Presentation.Web.Contract
                 DurationOngoing = true
             };
             await ItContractHelper.PatchContract(itContract.Id, organizationId, changes);
-            await ItContractHelper.SendAssignDataProcessingRegistrationAsync(itContract.Id, dpr1.Id).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
-            await ItContractHelper.SendAssignDataProcessingRegistrationAsync(itContract.Id, dpr2.Id).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
+            await ItContractHelper.SendAssignDataProcessingRegistrationAsync(itContract.Id, DatabaseAccess.GetEntityId<DataProcessingRegistration>(dpr1.Uuid)).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            await ItContractHelper.SendAssignDataProcessingRegistrationAsync(itContract.Id, DatabaseAccess.GetEntityId<DataProcessingRegistration>(dpr2.Uuid)).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
             await SystemRelationHelper.PostRelationAsync(new CreateSystemRelationDTO
             {
                 ContractId = itContract.Id,
