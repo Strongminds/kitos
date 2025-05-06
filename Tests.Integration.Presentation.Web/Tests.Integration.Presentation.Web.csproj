@@ -219,7 +219,6 @@
     <Compile Include="TestEnvironmentValidation\TestEnvironmentTest.cs" />
     <Compile Include="Tools\BrokenExternalReferencesReportHelper.cs" />
     <Compile Include="Tools\DatabaseAccess.cs" />
-    <Compile Include="Tools\DataProcessingRegistrationHelper.cs" />
     <Compile Include="Tools\DisposableExtensions.cs" />
     <Compile Include="Tools\EntityOptionHelper.cs" />
     <Compile Include="Tools\External\ItContractV2Helper.cs" />

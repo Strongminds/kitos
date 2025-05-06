@@ -275,16 +275,18 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
             var registration = await CreateDPRAsync(orgUuid, name);
             var registrationId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
-            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(registrationId);
+            var businessRoleDtos = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationRoles, orgUuid, 25, 0);
             var role = businessRoleDtos.First();
-            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(registrationId, role.Id);
+            var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(orgUuid);
             var user = availableUsers.First();
-            using var response1 = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(registrationId, role.Id, user.Id);
+            var roleRequest = new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid };
+            using var response1 = await DataProcessingRegistrationV2Helper.SendPatchAddRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
 
             await WaitForReadModelQueueDepletion();
 
-            using var response2 = await DataProcessingRegistrationHelper.SendRemoveRoleRequestAsync(registrationId, role.Id, user.Id);
+            using var response2 =
+                await DataProcessingRegistrationV2Helper.SendPatchRemoveRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
             await WaitForReadModelQueueDepletion();
