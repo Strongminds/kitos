@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,13 +12,6 @@ namespace Tests.Integration.Presentation.Web.Tools
 {
     public static class DataProcessingRegistrationHelper
     {
-        public static async Task<HttpResponseMessage> SendDeleteRequestAsync(int id, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.DeleteWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{id}"), cookie);
-        }
-
         public static async Task<IEnumerable<DataProcessingRegistrationReadModel>> QueryReadModelByNameContent(int organizationId, string nameContent, int top, int skip, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

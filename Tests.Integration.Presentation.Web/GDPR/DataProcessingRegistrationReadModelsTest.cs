@@ -190,8 +190,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(user.Email, roleAssignment.Email);
 
             //Assert that the source object can be deleted and that the readmodel is gone now
-            using var deleteResponse = await DataProcessingRegistrationHelper.SendDeleteRequestAsync(regId);
-            Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+            await DataProcessingRegistrationV2Helper.DeleteAsync(await GetGlobalToken(), registration.Uuid);
 
             readModels = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
             Assert.Empty(readModels);
