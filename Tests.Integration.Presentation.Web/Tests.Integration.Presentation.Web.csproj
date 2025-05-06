@@ -228,7 +228,6 @@
     <Compile Include="Tools\External\InterfaceV2Helper.cs" />
     <Compile Include="Tools\External\OrganizationUnitV2Helper.cs" />
     <Compile Include="Tools\External\OrganizationUserV2Helper.cs" />
-    <Compile Include="Tools\External\Rights\RightsType.cs" />
     <Compile Include="Tools\HttpApi.cs" />
     <Compile Include="Tools\HttpCommandAssertionHelper.cs" />
     <Compile Include="Tools\InterfaceExhibitHelper.cs" />
