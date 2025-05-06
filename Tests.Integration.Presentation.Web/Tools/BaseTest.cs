@@ -32,7 +32,7 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public async Task<DataProcessingRegistrationResponseDTO> CreateDPRAsync(Guid orgUuid, string name = null)
         {
-            var token = await GetToken();
+            var token = await GetGlobalToken();
             var request = new CreateDataProcessingRegistrationRequestDTO
             {
                 Name = name ?? A<string>(),
@@ -52,7 +52,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             return random8Digits;
         }
 
-        private async Task<string> GetToken()
+        public async Task<string> GetGlobalToken()
         {
             if (_token != null)
             {

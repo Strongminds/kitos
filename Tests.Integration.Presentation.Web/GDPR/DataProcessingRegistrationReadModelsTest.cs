@@ -230,31 +230,31 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Arrange
             var name = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var isAgreementConcluded = YesNoIrrelevantOption.YES;
+            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
+            var isAgreementConcluded = YesNoIrrelevantChoice.Yes;
             var agreementConcludedAt = A<DateTime>();
 
-            Console.Out.WriteLine($"Testing in the context of DPR with name:{name}");
+            var registration = await CreateDPRAsync(orgUuid, name);
 
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, name);
-
-            await DataProcessingRegistrationHelper.SendChangeIsAgreementConcludedRequestAsync(registration.Id, isAgreementConcluded).DisposeAsync();
-            await DataProcessingRegistrationHelper.SendChangeAgreementConcludedAtRequestAsync(registration.Id, agreementConcludedAt).DisposeAsync();
+            await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(await GetGlobalToken(),
+                registration.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    IsAgreementConcluded = isAgreementConcluded,
+                    AgreementConcludedAt = agreementConcludedAt
+                });
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
-            Console.Out.WriteLine("Read models are up to date");
 
             //Act
             var result = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
 
             //Assert
-            var readModel = Assert.Single(result);
-            Console.Out.WriteLine("Read model found");
+            var readModel = Assert.Single(result); ;
             Assert.Equal(name, readModel.Name);
-            Assert.Equal(registration.Id, readModel.SourceEntityId);
+            Assert.Equal(registration.Uuid, readModel.SourceEntityUuid);
 
-            Console.Out.WriteLine("Asserting Dependent and dependee properties");
-            Assert.Equal(isAgreementConcluded, readModel.IsAgreementConcluded);
+            Assert.Equal(isAgreementConcluded.ToYesNoIrrelevantOption(), readModel.IsAgreementConcluded);
             Assert.Equal(agreementConcludedAt, readModel.AgreementConcludedAt);
 
         }

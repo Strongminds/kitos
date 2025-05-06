@@ -186,7 +186,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IHttpActionResult PatchOrganizationMasterData([FromUri] [NonEmptyGuid] Guid organizationUuid, OrganizationMasterDataRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
-            
+
             var updateParameters = _organizationWriteModelMapper.ToMasterDataUpdateParameters(requestDto);
             return _organizationWriteService.PatchMasterData(organizationUuid, updateParameters)
                 .Select(_organizationResponseMapper.ToMasterDataDTO)
