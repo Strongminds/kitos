@@ -9,7 +9,6 @@ using ExpectedObjects;
 using Presentation.Web.Models.API.V1;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
-using Tests.Toolkit.Patterns;
 using Xunit;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Tests.Toolkit.Extensions;
@@ -30,9 +29,10 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         {
             //Arrange
             const int organizationId = TestEnvironment.DefaultOrganizationId;
+            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var registrationName = A<string>();
-            var registration1 = await DataProcessingRegistrationHelper.CreateAsync(organizationId, registrationName + "1");
-            var registration2 = await DataProcessingRegistrationHelper.CreateAsync(organizationId, registrationName + "2");
+            var registration1 = await CreateDPRAsync(orgUuid, registrationName + "1");
+            var registration2 = await CreateDPRAsync(orgUuid, registrationName + "2");
             var contract = await ItContractHelper.CreateContract(A<string>(), organizationId);
 
             //Act

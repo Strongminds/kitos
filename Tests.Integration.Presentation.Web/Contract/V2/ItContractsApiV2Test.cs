@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
 using Core.Abstractions.Extensions;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainServices.Extensions;
 using ExpectedObjects;
@@ -33,7 +34,7 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Contract.V2
 {
-    public class ItContractsApiV2Test : WithAutoFixture
+    public class ItContractsApiV2Test : BaseTest
     {
         [Fact]
         public async Task Can_GET_Specific_Contract()
@@ -232,10 +233,10 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         {
             //Arrange
             var (token, user, organization) = await CreatePrerequisitesAsync();
-            var dpr = await DataProcessingRegistrationHelper.CreateAsync(organization.Id, CreateName());
+            var dpr = await CreateDPRAsync(organization.Uuid);
             var contract1 = await CreateContractAsync(organization.Id);
             var contract2 = await CreateContractAsync(organization.Id);
-            using var dprAssignmentResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contract1.Id, dpr.Id);
+            using var dprAssignmentResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contract1.Id, DatabaseAccess.GetEntityId<DataProcessingRegistration>(dpr.Uuid));
             Assert.Equal(HttpStatusCode.OK, dprAssignmentResponse.StatusCode);
 
             //Act
