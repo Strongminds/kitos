@@ -12,20 +12,22 @@ using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
+using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
-using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
+using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
-using Tests.Toolkit.Patterns;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
@@ -88,6 +90,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var organizationName = TestEnvironment.DefaultOrganizationName;
 
             var systemName = A<string>();
@@ -103,7 +106,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemUsageLocalSystemId = A<string>();
             var concluded = DateTime.UtcNow.AddDays(-A<int>());
             var systemUsageExpirationDate = DateTime.UtcNow.AddDays(A<int>());
-            var archiveDuty = A<ArchiveDutyTypes>();
+            var archiveDuty = A<ArchiveDutyChoice>();
             var riskAssessment = A<DataOptions>();
             var riskAssessmentDate = A<DateTime>();
             var linkToDirectoryUrl = A<string>();
@@ -120,23 +123,25 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var dataProcessingRegistrationName = A<string>();
 
             var system = await PrepareItSystem(systemName, systemPreviousName, systemDescription, organizationId, organizationName, AccessModifier.Public);
-            var systemParent = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemParentName, organizationId, AccessModifier.Public);
-            var systemParentUsage = await ItSystemHelper.TakeIntoUseAsync(systemParent.Id, organizationId);
+            var systemParent = await CreateItSystemAsync(organizationUuid, name:systemParentName);
+            var systemParentUsage = await TakeSystemIntoUsageAsync(systemParent.Uuid, organizationUuid);
+            var systemParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(systemParent.Uuid);
 
             var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(systemId, organizationId);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
+            var systemUsageId = DatabaseAccess.GetEntityId<ItSystemUsage>(systemUsage.Uuid);
 
             // Role assignment
             var businessRoleDtos = await ItSystemUsageHelper.GetAvailableRolesAsync(organizationId);
             var role = businessRoleDtos.First();
             var availableUsers = await ItSystemUsageHelper.GetAvailableUsersAsync(organizationId);
             var user = availableUsers.First();
-            using var assignRoleResponse = await ItSystemUsageHelper.SendAssignRoleRequestAsync(systemUsage.Id, organizationId, role.Id, user.Id);
+            using var assignRoleResponse = await ItSystemUsageHelper.SendAssignRoleRequestAsync(systemUsageId, organizationId, role.Id, user.Id);
             Assert.Equal(HttpStatusCode.Created, assignRoleResponse.StatusCode);
 
             // System changes
             await ItSystemHelper.SendSetDisabledRequestAsync(systemId, systemDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
-            await ItSystemHelper.SendSetParentSystemRequestAsync(systemId, systemParent.Id, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            await ItSystemHelper.SendSetParentSystemRequestAsync(systemId, systemParentId, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
             await ItSystemHelper.SendSetBelongsToRequestAsync(systemId, organizationId, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync(); // Using default organization as BelongsTo
 
             var availableBusinessTypeOptions = (await ItSystemHelper.GetBusinessTypeOptionsAsync(organizationId)).ToList();
@@ -148,7 +153,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await ItSystemHelper.SendAddTaskRefRequestAsync(systemId, taskRef.TaskRef.Id, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // Parent system 
-            await ItSystemHelper.SendSetDisabledRequestAsync(systemParent.Id, systemParentDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
+            await ItSystemHelper.SendSetDisabledRequestAsync(systemParentId, systemParentDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
 
             var dataClassification =
                 (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ItSystemCategories,
@@ -157,12 +162,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // System Usage changes
             var body = new
             {
-                ExpirationDate = systemUsageExpirationDate,
-                Version = systemUsageVersion,
-                LocalCallName = systemUsageLocalCallName,
-                LocalSystemId = systemUsageLocalSystemId,
-                Concluded = concluded,
-                ArchiveDuty = archiveDuty,
                 RiskAssessment = riskAssessment,
                 RiskAssessmentDate = riskAssessmentDate,
                 linkToDirectoryUrl,
@@ -173,10 +172,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 UserCount = userCount,
                 ItSystemCategoriesId = dataClassification.Id
             };
-            await ItSystemUsageHelper.PatchSystemUsage(systemUsage.Id, organizationId, body);
-            var sensitiveDataLevel = await ItSystemUsageHelper.AddSensitiveDataLevel(systemUsage.Id, A<SensitiveDataLevel>());
+            await ItSystemUsageHelper.PatchSystemUsage(systemUsageId, organizationId, body);
+            var sensitiveDataLevel = await ItSystemUsageHelper.AddSensitiveDataLevel(systemUsageId, A<SensitiveDataLevel>());
             var isHoldingDocument = A<bool>();
-            await ItSystemUsageHelper.SetIsHoldingDocumentRequestAsync(systemUsage.Id, isHoldingDocument);
 
             // Responsible Organization Unit and relevant units
             var orgUnitName1 = A<string>();
@@ -184,12 +182,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var organizationUnit1 = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, orgUnitName1);
             var organizationUnit2 = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, orgUnitName2);
             var responsibleUnit = new[] { organizationUnit1, organizationUnit2 }.RandomItem();
-            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsage.Id, organizationUnit1.Id, organizationId).DisposeAsync();
-            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsage.Id, organizationUnit2.Id, organizationId).DisposeAsync();
-            await ItSystemUsageHelper.SendSetResponsibleOrganizationUnitRequestAsync(systemUsage.Id, responsibleUnit.Id).DisposeAsync();
+            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsageId, organizationUnit1.Id, organizationId).DisposeAsync();
+            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsageId, organizationUnit2.Id, organizationId).DisposeAsync();
+            await ItSystemUsageHelper.SendSetResponsibleOrganizationUnitRequestAsync(systemUsageId, responsibleUnit.Id).DisposeAsync();
 
             //References
-            var reference = await ReferencesHelper.CreateReferenceAsync(A<string>(), A<string>(), A<string>(), dto => dto.ItSystemUsage_Id = systemUsage.Id);
+            var reference = await ReferencesHelper.CreateReferenceAsync(A<string>(), A<string>(), A<string>(), dto => dto.ItSystemUsage_Id = systemUsageId);
 
             //Main Contract
             var contract1 = await ItContractHelper.CreateContract(contract1Name, organizationId);
@@ -199,15 +197,34 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 supplierId = organizationId
             };
             await ItContractHelper.PatchContract(contract1.Id, organizationId, contractUpdateBody);
-            await ItContractHelper.AddItSystemUsage(contract1.Id, systemUsage.Id, organizationId);
-            await ItContractHelper.AddItSystemUsage(contract2.Id, systemUsage.Id, organizationId);
+            await ItContractHelper.AddItSystemUsage(contract1.Id, systemUsageId, organizationId);
+            await ItContractHelper.AddItSystemUsage(contract2.Id, systemUsageId, organizationId);
 
-            await ItSystemUsageHelper.SendSetMainContractRequestAsync(systemUsage.Id, contract1.Id).DisposeAsync();
+            await ItSystemUsageV2Helper.SendPatchGeneral(await GetGlobalToken(), systemUsage.Uuid,
+                new GeneralDataUpdateRequestDTO
+                {
+                    MainContractUuid = contract1.Uuid,
+                    SystemVersion = systemUsageVersion,
+                    LocalCallName = systemUsageLocalCallName,
+                    LocalSystemId = systemUsageLocalSystemId,
+                    Validity = new ItSystemUsageValidityWriteRequestDTO
+                    {
+                        ValidFrom = concluded,
+                        ValidTo = systemUsageExpirationDate
+                    },
+                    NumberOfExpectedUsers = UserIntervalDtoFromUerCount(userCount)
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // ArchivePeriods
             var archivePeriodStartDate = DateTime.Now.AddDays(-1);
             var archivePeriodEndDate = DateTime.Now.AddDays(1);
-            await ItSystemUsageHelper.AddArchivePeriodAsync(systemUsage.Id, archivePeriodStartDate, archivePeriodEndDate, organizationId);
+            await ItSystemUsageV2Helper.SendPatchArchiving(await GetGlobalToken(), systemUsage.Uuid,
+                new ArchivingCreationRequestDTO
+                {
+                    ArchiveDuty = archiveDuty,
+                    JournalPeriods = new List<JournalPeriodDTO>{new JournalPeriodDTO {StartDate = archivePeriodStartDate, EndDate = archivePeriodEndDate, ArchiveId = A<string>()}},
+                    DocumentBearing = isHoldingDocument
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
 
             // DataProcessingRegistrations
@@ -235,17 +252,15 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var incomingRelationDTO = new CreateSystemRelationDTO
             {
                 FromUsageId = incomingRelationSystemUsage.Id,
-                ToUsageId = systemUsage.Id
+                ToUsageId = systemUsageId
             };
             await SystemRelationHelper.PostRelationAsync(incomingRelationDTO);
 
-            var outgoingRelationDTO = new CreateSystemRelationDTO
-            {
-                FromUsageId = systemUsage.Id,
-                ToUsageId = outgoingRelationSystemUsage.Id,
-                InterfaceId = relationInterface.Id
-            };
-            await SystemRelationHelper.PostRelationAsync(outgoingRelationDTO);
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                {
+                    ToSystemUsageUuid = outgoingRelationSystemUsage.Uuid
+                });
 
 
             //Wait for read model to rebuild (wait for the LAST mutation)
@@ -253,7 +268,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read models are up to date");
 
             //Get current system usage
-            var updatedSystemUsage = await ItSystemUsageHelper.GetItSystemUsageRequestAsync(systemUsage.Id);
+            var updatedSystemUsage = await ItSystemUsageHelper.GetItSystemUsageRequestAsync(systemUsageId);
 
             //Act 
             var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
@@ -263,7 +278,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read model found");
 
             // From System Usage
-            Assert.Equal(systemUsage.Id, readModel.SourceEntityId);
+            Assert.Equal(systemUsageId, readModel.SourceEntityId);
             Assert.Equal(systemUsage.Uuid, readModel.SourceEntityUuid);
             Assert.Equal(organizationId, readModel.OrganizationId);
             Assert.Equal(systemUsageVersion, readModel.Version);
@@ -276,7 +291,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.True(readModel.ActiveAccordingToLifeCycle);
             Assert.True(readModel.SystemActive);
             Assert.Equal(updatedSystemUsage.LastChanged.Date, readModel.LastChangedAt.Date);
-            Assert.Equal(archiveDuty, readModel.ArchiveDuty);
+            Assert.Equal(archiveDuty.ToArchiveDutyTypes(), readModel.ArchiveDuty);
             Assert.Equal(isHoldingDocument, readModel.IsHoldingDocument);
             Assert.Equal(linkToDirectoryUrlName, readModel.LinkToDirectoryName);
             Assert.Equal(linkToDirectoryUrl, readModel.LinkToDirectoryUrl);
@@ -323,7 +338,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // From Parent System
             Assert.Equal(systemParentName, readModel.ParentItSystemName);
-            Assert.Equal(systemParent.Id, readModel.ParentItSystemId);
+            Assert.Equal(systemParentId, readModel.ParentItSystemId);
             Assert.Equal(systemParent.Uuid, readModel.ParentItSystemUuid);
             Assert.Equal(systemParentDisabled, readModel.ParentItSystemDisabled);
             Assert.Equal(systemParentUsage.Uuid, readModel.ParentItSystemUsageUuid);
@@ -1047,6 +1062,34 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 Description = systemDescription
             });
             return system;
+        }
+
+        private static ExpectedUsersIntervalDTO UserIntervalDtoFromUerCount(UserCount count)
+        {
+            int lower = 0;
+            int? upper = null;
+            
+            switch (count)
+            {
+                case UserCount.BELOWTEN:
+                    lower = 0;
+                    upper = 9;
+                    break;
+                case UserCount.TENTOFIFTY:
+                    lower = 10;
+                    upper = 50;
+                    break;
+                case UserCount.FIFTYTOHUNDRED:
+                    lower = 50;
+                    upper = 100;
+                    break;
+                case UserCount.HUNDREDPLUS:
+                    lower = 100;
+                    break;
+                case UserCount.UNDECIDED:
+                    return null;
+            }
+            return new ExpectedUsersIntervalDTO { LowerBound = lower, UpperBound = upper };
         }
     }
 }
