@@ -48,8 +48,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await CreateDPRAsync(orgUuid, name3);
 
             //Act
-            var page1 = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, suffix, 2, 0)).ToList();
-            var page2 = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, suffix, 2, 2)).ToList();
+            var page1 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, suffix, 2, 0)).ToList();
+            var page2 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, suffix, 2, 2)).ToList();
 
             //Assert
             Assert.Equal(2, page1.Count);
@@ -154,7 +154,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var readModels = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
+            var readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
@@ -191,7 +191,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Assert that the source object can be deleted and that the readmodel is gone now
             await DataProcessingRegistrationV2Helper.DeleteAsync(await GetGlobalToken(), registration.Uuid);
 
-            readModels = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
+            readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
             Assert.Empty(readModels);
         }
 
@@ -217,7 +217,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var readModels = await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, dprName, 1, 0);
+            var readModels = await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, dprName, 1, 0);
 
             //Assert
             var readModel = Assert.Single(readModels);
@@ -248,7 +248,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var result = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
+            var result = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(result); ;
@@ -285,7 +285,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var result = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
+            var result = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, name, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(result);
@@ -312,7 +312,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var result = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, newName, 1, 0)).ToList();
+            var result = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationId, newName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(result);
