@@ -1413,7 +1413,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         public async Task Can_Get_Available_DataProcessors()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var orgPrefix = A<string>();
             var orgName = $"{orgPrefix}_{A<int>()}";
             var organization = await CreateOrganizationAsync(orgName);
@@ -1431,7 +1430,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         public async Task Can_Get_Available_DataProcessors_By_Cvr()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var orgPrefix = A<string>();
             var orgName = $"{orgPrefix}_{A<int>()}";
             var orgCvr = A<string>().Substring(0, 9);
