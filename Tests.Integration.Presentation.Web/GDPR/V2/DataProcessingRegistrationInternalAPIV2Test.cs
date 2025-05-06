@@ -90,10 +90,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var retrievedDPR = Assert.Single(dprs);
             AssertExpectedShallowDPR(dpr1, organization1, retrievedDPR);
         }
-        private async Task<DataProcessingRegistrationDTO> CreateDPRAsync(int orgId)
-        {
-            return await DataProcessingRegistrationHelper.CreateAsync(orgId, CreateName());
-        }
 
         private static void AssertExpectedShallowDPRs(DataProcessingRegistrationResponseDTO expectedContent, ShallowOrganizationResponseDTO expectedOrganization, IEnumerable<DataProcessingRegistrationResponseDTO> dtos)
         {
@@ -122,12 +118,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             var userAndGetCookie = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.GlobalAdmin, organizationId);
             return (userAndGetCookie.userId, userAndGetCookie.loginCookie);
-        }
-
-
-        private string CreateName()
-        {
-            return $"{nameof(DataProcessingRegistrationApiV2Test)}æøå{A<string>()}";
         }
 
         private string CreateEmail()
