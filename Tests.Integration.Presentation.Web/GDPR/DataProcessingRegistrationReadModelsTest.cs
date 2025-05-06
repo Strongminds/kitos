@@ -97,6 +97,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
             using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(regId, role.Id, user.Id);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
+            //Contracts
+            var contractDto = await ItContractHelper.CreateContract(contractName, organizationId);
+            using var assignDataProcessingResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contractDto.Id, regId);
+            Assert.Equal(HttpStatusCode.OK, assignDataProcessingResponse.StatusCode);
+
             async Task<IEnumerable<IdentityNamePairResponseDTO>> OptionsFetcherHelper(string resource) => await OptionV2ApiHelper.GetOptionsAsync(resource, orgUuid, 25, 0);
 
             var basisForTransferOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationBasisForTransfer);
@@ -122,6 +127,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     SubDataProcessors = subDataProcessorRequest.WrapAsEnumerable(),
                     DataProcessorUuids = dataProcessor.Uuid.WrapAsEnumerable(),
                     IsAgreementConcluded = isAgreementConcluded,
+                    MainContractUuid = contractDto.Uuid
                 });
             Assert.Equal(HttpStatusCode.OK, generalResponse.StatusCode);
 
@@ -144,13 +150,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var usage = await ItSystemHelper.TakeIntoUseAsync(itSystemDto.Id, organizationId);
             using var assignSystemResponse = await DataProcessingRegistrationV2Helper.PatchSystemsAsync(registration.Uuid, usage.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignSystemResponse.StatusCode);
-
-            //Contracts
-            var contractDto = await ItContractHelper.CreateContract(contractName, organizationId);
-            using var assignDataProcessingResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contractDto.Id, regId);
-            Assert.Equal(HttpStatusCode.OK, assignDataProcessingResponse.StatusCode);
-
-            await DataProcessingRegistrationHelper.SendUpdateMainContractRequestAsync(regId, contractDto.Id).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             await WaitForReadModelQueueDepletion();
 
