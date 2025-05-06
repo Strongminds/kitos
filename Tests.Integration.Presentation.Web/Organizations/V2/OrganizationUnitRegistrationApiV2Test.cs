@@ -16,6 +16,7 @@ using System.Linq;
 using Presentation.Web.Models.API.V2.Internal.Common;
 using Presentation.Web.Models.API.V2.Internal.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Internal.Response.OrganizationUnit;
+using Tests.Integration.Presentation.Web.Tools.External;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
@@ -111,15 +112,16 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         public async Task Can_Delete_Unit_With_All_Registrations()
         {
             var organization = await CreateOrganizationAsync();
-            var organizationId = organization.Uuid;
+            var organizationUuid = organization.Uuid;
             var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Id);
 
-            await OrganizationUnitHelper.DeleteUnitAsync(organizationId, unit.Uuid);
+            await OrganizationUnitV2Helper.SendDeleteUnitAsync(organizationUuid, unit.Uuid)
+                .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             var rootOrganizationUnit = await OrganizationUnitHelper.GetOrganizationUnitsAsync(organization.Id);
             Assert.DoesNotContain(unit.Id, rootOrganizationUnit.Children.Select(x => x.Id));
 
-            using var registrationsResponse = await OrganizationUnitRegistrationV2Helper.SendGetRegistrationsAsync(organizationId, unit.Uuid);
+            using var registrationsResponse = await OrganizationUnitRegistrationV2Helper.SendGetRegistrationsAsync(organizationUuid, unit.Uuid);
             Assert.Equal(HttpStatusCode.NotFound, registrationsResponse.StatusCode);
             var deletionTrackingFound = DatabaseAccess.MapFromEntitySet<LifeCycleTrackingEvent, bool>(all => all.AsQueryable().Any(track => track.EntityUuid == unit.Uuid));
             Assert.True(deletionTrackingFound);

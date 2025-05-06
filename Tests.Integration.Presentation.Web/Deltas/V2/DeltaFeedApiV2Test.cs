@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
@@ -134,7 +135,8 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
             await ItSystemHelper.DeleteItSystemAsync(system.Id, system.OrganizationId);
             await ItSystemUsageV2Helper.DeleteAsync(token, systemUsage.Uuid);
             await InterfaceHelper.DeleteInterfaceAsync(itInterface.Id);
-            await OrganizationUnitHelper.DeleteUnitAsync(organization.Uuid, createdOrgUnit.Uuid);
+            await OrganizationUnitV2Helper.SendDeleteUnitAsync(organization.Uuid, createdOrgUnit.Uuid)
+                .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //Act
             var dtos = await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, entityType);

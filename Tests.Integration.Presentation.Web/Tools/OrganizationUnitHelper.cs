@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V1;
@@ -18,15 +17,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             return await response.ReadResponseBodyAsKitosApiResponseAsync<OrgUnitDTO>();
-        }
-
-        public static async Task DeleteUnitAsync(Guid organizationUuid, Guid unitUuid, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var orgUnitUrl = TestEnvironment.CreateUrl($"api/v1/organizations/{organizationUuid}/organization-units/{unitUuid}");
-
-            using var response = await HttpApi.DeleteWithCookieAsync(orgUnitUrl, cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
