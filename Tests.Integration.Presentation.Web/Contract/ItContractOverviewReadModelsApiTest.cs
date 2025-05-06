@@ -13,6 +13,7 @@ using Core.DomainModel.Shared;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.External.Rights;
@@ -73,6 +74,7 @@ namespace Tests.Integration.Presentation.Web.Contract
         {
             //Arrange
             var organizationId = _organization.Id;
+            var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var name = CreateName();
             var itSystem1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organizationId, AccessModifier.Public);
             var itSystem2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organizationId, AccessModifier.Public);
@@ -155,10 +157,17 @@ namespace Tests.Integration.Presentation.Web.Contract
 
             var user1Id = await HttpApi.CreateOdataUserAsync(new ApiUserDTO() { Email = $"{A<Guid>():N}@kitos.dk", Name = A<string>(), LastName = A<string>() }, OrganizationRole.User, organizationId);
             var user2Id = await HttpApi.CreateOdataUserAsync(new ApiUserDTO() { Email = $"{A<Guid>():N}@kitos.dk", Name = A<string>(), LastName = A<string>() }, OrganizationRole.User, organizationId);
-            var role1 = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ContractRoles, organizationId)).RandomItem();
-            var role2 = (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ContractRoles, organizationId)).RandomItem();
-            await RightsHelper.AddUserRole(user1Id, organizationId, RightsType.ItContractRights, idOfRoleToUse: role1.Id, objectId: itContract.Id);
-            await RightsHelper.AddUserRole(user2Id, organizationId, RightsType.ItContractRights, idOfRoleToUse: role2.Id, objectId: itContract.Id);
+            var roles = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItContractRoles,
+                organizationUuid, 25, 0);
+            var role1 = roles.RandomItem();
+            var role2 = roles.RandomItem();
+            await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
+                new RoleAssignmentRequestDTO
+                    { RoleUuid = role1.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user1Id) });
+            await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
+                new RoleAssignmentRequestDTO
+                    { RoleUuid = role2.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user2Id) });
+
 
             //Act
             await ReadModelTestTools.WaitForReadModelQueueDepletion();
@@ -208,8 +217,8 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(2, readModel.NumberOfAssociatedSystemRelations);
             AssertCsv(readModel.ItSystemUsagesCsv, itSystem1.Name, itSystem2.Name);
             Assert.Equal(2, readModel.RoleAssignments.Count);
-            Assert.Contains(readModel.RoleAssignments, ra => ra.RoleId == role1.Id && ra.UserId == user1Id);
-            Assert.Contains(readModel.RoleAssignments, ra => ra.RoleId == role2.Id && ra.UserId == user2Id);
+            Assert.Contains(readModel.RoleAssignments, ra => DatabaseAccess.GetEntityUuid<ItContractRole>(ra.RoleId) == role1.Uuid && ra.UserId == user1Id);
+            Assert.Contains(readModel.RoleAssignments, ra => DatabaseAccess.GetEntityUuid<ItContractRole>(ra.RoleId) == role2.Uuid && ra.UserId == user2Id);
         }
 
         private static void AssertCsv(string csv, params string[] expectedNames)
