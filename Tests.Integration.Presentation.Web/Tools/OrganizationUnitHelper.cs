@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
@@ -19,17 +18,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             return await response.ReadResponseBodyAsKitosApiResponseAsync<OrgUnitDTO>();
-        }
-
-        public static async Task<List<OrganizationUnitRole>> GetOrganizationUnitRolesAsync(Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var orgUnitUrl = TestEnvironment.CreateUrl("odata/OrganizationUnitRoles");
-
-            using var response = await HttpApi.GetWithCookieAsync(orgUnitUrl, cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            return await response.ReadOdataListResponseBodyAsAsync<OrganizationUnitRole>();
         }
 
         public static async Task DeleteUnitAsync(Guid organizationUuid, Guid unitUuid, Cookie optionalLogin = null)
