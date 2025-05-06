@@ -18,7 +18,10 @@ using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit.Abstractions;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
+using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
+using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 
 namespace Tests.Integration.Presentation.Web.GDPR
 {
@@ -90,11 +93,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark };
 
-            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(regId);
+            var businessRoleDtos = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationRoles, orgUuid, 25, 0);
             var role = businessRoleDtos.First();
-            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(regId, role.Id);
+            var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(orgUuid);
             var user = availableUsers.First();
-            using var response = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(regId, role.Id, user.Id);
+            using var response = await DataProcessingRegistrationV2Helper.SendPatchAddRoleAssignment(registration.Uuid, new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid });
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             //Contracts
@@ -183,8 +186,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
             var roleAssignment = Assert.Single(readModel.RoleAssignments);
 
-            Assert.Equal(role.Id, roleAssignment.RoleId);
-            Assert.Equal(user.Id, roleAssignment.UserId);
+            Assert.Equal(role.Uuid, DatabaseAccess.GetEntityUuid<DataProcessingRegistrationRole>(roleAssignment.RoleId)); //Read model assignments probably need to be extended to include uuids
+            Assert.Equal(user.Uuid, DatabaseAccess.GetEntityUuid<User>(roleAssignment.UserId));
             Assert.Equal(user.Name, roleAssignment.UserFullName);
             Assert.Equal(user.Email, roleAssignment.Email);
 

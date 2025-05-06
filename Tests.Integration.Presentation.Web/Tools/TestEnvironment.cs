@@ -137,7 +137,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             var password = GetEnvironmentVariable($"TestUser{suffix}Pw");
             return new KitosCredentials(username, password);
         }
-
         public static KitosContext GetDatabase()
         {
             return new KitosContext(ConnectionString);
