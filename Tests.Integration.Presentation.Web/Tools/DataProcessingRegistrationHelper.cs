@@ -105,22 +105,6 @@ namespace Tests.Integration.Presentation.Web.Tools
                 new { });
         }
 
-        public static async Task<HttpResponseMessage> SendAssignSubDataProcessorRequestAsync(int registrationId, int organizationId, Cookie optionalLogin = null, SubDataProcessorDetailsDTO details = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/sub-data-processors/assign"), cookie, new AssignSubDataProcessorRequestDTO()
-            {
-                OrganizationId = organizationId,
-                Details = details
-            });
-        }
-
-        public static async Task<HttpResponseMessage> SendSetUseSubDataProcessorsStateRequestAsync(int registrationId, YesNoUndecidedOption value, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration/{registrationId}/sub-data-processors/state"), cookie, new SingleValueDTO<YesNoUndecidedOption> { Value = value });
-        }
-
         public static async Task<HttpResponseMessage> SendChangeIsAgreementConcludedRequestAsync(int id, YesNoIrrelevantOption? yesNoIrrelevantOption, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

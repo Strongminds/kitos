@@ -243,13 +243,18 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             //Arrange
             var (token, user, organization) = await CreatePrerequisitesAsync();
-            var subDataProcessor = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
-            var dpr1 = await CreateDPRAsync(organization.Id);
-            var dpr2 = await CreateDPRAsync(organization.Id);
-            using var setStateResult = await DataProcessingRegistrationHelper.SendSetUseSubDataProcessorsStateRequestAsync(dpr1.Id, YesNoUndecidedOption.Yes);
-            Assert.Equal(HttpStatusCode.OK, setStateResult.StatusCode);
-            using var assignResult = await DataProcessingRegistrationHelper.SendAssignSubDataProcessorRequestAsync(dpr1.Id, subDataProcessor.Id);
-            Assert.Equal(HttpStatusCode.OK, assignResult.StatusCode);
+            var subDataProcessor = await CreateOrganizationAsync();
+            var dpr1 = await CreateDPRAsync(organization.Uuid);
+            var dpr2 = await CreateDPRAsync(organization.Uuid);
+
+            using var patchResult = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(
+                await GetGlobalToken(), dpr1.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    HasSubDataProcessors = YesNoUndecidedChoice.Yes,
+                    SubDataProcessors = new[] { new DataProcessorRegistrationSubDataProcessorWriteRequestDTO { DataProcessorOrganizationUuid = subDataProcessor.Uuid } }
+                });
+
+            Assert.Equal(HttpStatusCode.OK, patchResult.StatusCode);
 
             //Act
             var dprs = await DataProcessingRegistrationV2Helper.GetDPRsAsync(token, 0, 250, subDataProcessorUuid: subDataProcessor.Uuid);
