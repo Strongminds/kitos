@@ -189,7 +189,7 @@
     <Compile Include="Tools\Internal\References\ExternalReferenceTestHelper.cs" />
     <Compile Include="Tools\Internal\Users\PasswordResetV2Helper.cs" />
     <Compile Include="Tools\Internal\Users\UsersV2Helper.cs" />
-    <Compile Include="Tools\OrganizationGridTestHelper.cs" />
+    <Compile Include="Tools\OrganizationGridConfigV2Helper.cs" />
     <Compile Include="Organizations\StsOrganizationSynchronizationApiTest.cs" />
     <Compile Include="SystemUsage\V2\ItSystemUsageApiV2Test.cs" />
     <Compile Include="GDPR\V2\DataProcessingRegistrationApiV2Test.cs" />

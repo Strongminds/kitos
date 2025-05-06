@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Tools
 {
-    internal class OrganizationGridTestHelper
+    public static class OrganizationGridConfigV2Helper
     {
 
         private static string GetPathForGridConfigOperations(Guid orgUuid, string operation, OverviewType overviewType = OverviewType.ItSystemUsage)

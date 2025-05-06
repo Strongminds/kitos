@@ -22,10 +22,10 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var columns = CreateTestColumns().ToArray();
             var (org, localAdminCookie) = await CreatePrerequisites();
-            await OrganizationGridTestHelper.SaveConfigurationRequestAsync(org.Uuid, columns, localAdminCookie);
+            await OrganizationGridConfigV2Helper.SaveConfigurationRequestAsync(org.Uuid, columns, localAdminCookie);
 
             using var deleteResponse = await 
-                OrganizationGridTestHelper.SendDeleteConfigurationRequestAsync(org.Uuid, localAdminCookie);
+                OrganizationGridConfigV2Helper.SendDeleteConfigurationRequestAsync(org.Uuid, localAdminCookie);
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
@@ -36,7 +36,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var (_, _, userCookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, org.Id);
 
             using var response = await
-                OrganizationGridTestHelper.SendSaveConfigurationRequestAsync(org.Uuid, CreateTestColumns(), userCookie);
+                OrganizationGridConfigV2Helper.SendSaveConfigurationRequestAsync(org.Uuid, CreateTestColumns(), userCookie);
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
@@ -44,13 +44,13 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         public async Task RegularUserCanNotDeleteGridConfiguration()
         {
             var (org, localAdminCookie) = await CreatePrerequisites();
-            await OrganizationGridTestHelper.SendSaveConfigurationRequestAsync(org.Uuid,
+            await OrganizationGridConfigV2Helper.SendSaveConfigurationRequestAsync(org.Uuid,
                 CreateTestColumns(), localAdminCookie);
 
             var (_, _, userCookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, org.Id);
 
             using var response = await
-                OrganizationGridTestHelper.SendDeleteConfigurationRequestAsync(org.Uuid, userCookie);
+                OrganizationGridConfigV2Helper.SendDeleteConfigurationRequestAsync(org.Uuid, userCookie);
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
@@ -60,22 +60,22 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             //Local admin saves grid config
             var columns = CreateTestColumns().ToList();
             var (org, localAdminCookie) = await CreatePrerequisites();
-            await OrganizationGridTestHelper.SaveConfigurationRequestAsync(org.Uuid,
+            await OrganizationGridConfigV2Helper.SaveConfigurationRequestAsync(org.Uuid,
                 columns, localAdminCookie);
 
             var (_, _, userCookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, org.Id);
 
             //User retrieves Grid Config
-            var body = await OrganizationGridTestHelper.GetResponseBodyAsync(org.Uuid, userCookie);
+            var body = await OrganizationGridConfigV2Helper.GetResponseBodyAsync(org.Uuid, userCookie);
             AssertColumnsMatch(columns, body.VisibleColumns.ToList());
             
 
             //Local admin deletes grid config
-            await OrganizationGridTestHelper.SendDeleteConfigurationRequestAsync(org.Uuid, localAdminCookie);
+            await OrganizationGridConfigV2Helper.SendDeleteConfigurationRequestAsync(org.Uuid, localAdminCookie);
 
             //Users tries to retrieve grid config after it has been deleted
             using var response = await
-                OrganizationGridTestHelper.SendGetConfigurationRequestAsync(org.Uuid, userCookie);
+                OrganizationGridConfigV2Helper.SendGetConfigurationRequestAsync(org.Uuid, userCookie);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
@@ -87,7 +87,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var (org, localAdminCookie) = await CreatePrerequisites();
             var cookie = (role == OrganizationRole.LocalAdmin) ? localAdminCookie : await HttpApi.GetCookieAsync(role);
-            var permissions = await OrganizationGridTestHelper.GetOrganizationPermissionsAsync(org.Uuid, cookie);
+            var permissions = await OrganizationGridConfigV2Helper.GetOrganizationPermissionsAsync(org.Uuid, cookie);
             Assert.Equal(permissions.HasConfigModificationPermissions, expected);
         }
 
