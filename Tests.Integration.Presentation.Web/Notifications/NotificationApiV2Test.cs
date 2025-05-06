@@ -7,7 +7,6 @@ using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
-using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Notification;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V1;
@@ -16,7 +15,6 @@ using Presentation.Web.Models.API.V2.Internal.Response.Notifications;
 using Presentation.Web.Models.API.V2.Types.Notifications;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.Internal.Notifications;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Notifications
