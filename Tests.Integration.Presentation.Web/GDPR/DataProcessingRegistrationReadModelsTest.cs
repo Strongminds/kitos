@@ -8,7 +8,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel.GDPR;
-using Core.DomainModel.Shared;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
@@ -19,7 +18,6 @@ using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit.Abstractions;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
-using Presentation.Web.Models.API.V1.GDPR;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 
 namespace Tests.Integration.Presentation.Web.GDPR
@@ -39,14 +37,15 @@ namespace Tests.Integration.Presentation.Web.GDPR
         {
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var suffix = A<Guid>().ToString("N");
             var name1 = $"1_{suffix}";
             var name2 = $"2_{suffix}";
             var name3 = $"3_{suffix}";
 
-            await DataProcessingRegistrationHelper.CreateAsync(organizationId, name1);
-            await DataProcessingRegistrationHelper.CreateAsync(organizationId, name2);
-            await DataProcessingRegistrationHelper.CreateAsync(organizationId, name3);
+            await CreateDPRAsync(orgUuid, name1);
+            await CreateDPRAsync(orgUuid, name2);
+            await CreateDPRAsync(orgUuid, name3);
 
             //Act
             var page1 = (await DataProcessingRegistrationHelper.QueryReadModelByNameContent(organizationId, suffix, 2, 0)).ToList();
@@ -205,11 +204,15 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dprName = A<string>();
             var contractName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var dpr = await DataProcessingRegistrationHelper.CreateAsync(organizationId, dprName);
+            var dpr = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), dprName);
 
             var contract = await ItContractHelper.CreateContract(contractName, organizationId);
-            using var assignDprResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contract.Id, dpr.Id).WithExpectedResponseCode(HttpStatusCode.OK);
-            using var updateMainContractResponse = await DataProcessingRegistrationHelper.SendUpdateMainContractRequestAsync(dpr.Id, contract.Id).WithExpectedResponseCode(HttpStatusCode.OK);
+            using var assignDprResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contract.Id, DatabaseAccess.GetEntityId<DataProcessingRegistration>(dpr.Uuid)).WithExpectedResponseCode(HttpStatusCode.OK);
+            using var updateMainContractResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(await GetGlobalToken(), dpr.Uuid,
+                new DataProcessingRegistrationGeneralDataWriteRequestDTO
+                {
+                    MainContractUuid = contract.Uuid
+                });
 
             await WaitForReadModelQueueDepletion();
             await ItContractHelper.SendDeleteContractRequestAsync(contract.Id).DisposeAsync();

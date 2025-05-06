@@ -1,6 +1,4 @@
 ﻿using Core.DomainModel.Organization;
-using Core.DomainModel;
-using Presentation.Web.Models.API.V1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +6,6 @@ using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
 using System.Net;
 using Xunit;
-using Presentation.Web.Models.API.V1.GDPR;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools.Internal.DPR;
