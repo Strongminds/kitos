@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
+using Core.DomainServices.Authorization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.System.Regular;
+using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using Presentation.Web.Models.API.V2.Response.System;
+using Presentation.Web.Models.API.V2.Response.SystemUsage;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
 using Tests.Toolkit.Patterns;
@@ -39,6 +46,27 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await DataProcessingRegistrationV2Helper.PostAsync(token, request);
         }
 
+        public async Task<ItSystemResponseDTO> CreateItSystemAsync(Guid orgGuid, RegistrationScopeChoice scope = RegistrationScopeChoice.Global)
+        {
+            var request = new CreateItSystemRequestDTO
+            {
+                Name = A<string>(),
+                OrganizationUuid = orgGuid,
+                Scope = scope
+            };
+            return await ItSystemV2Helper.CreateSystemAsync(await GetGlobalToken(), request);
+        }
+
+        public async Task<ItSystemUsageResponseDTO> TakeSystemIntoUsageAsync(Guid systemUuid, Guid orgUuid)
+        {
+            var request = new CreateItSystemUsageRequestDTO
+            {
+                SystemUuid = systemUuid,
+                OrganizationUuid = orgUuid
+            };
+            return await ItSystemUsageV2Helper.PostAsync(await GetGlobalToken(), request);
+        }
+
         public string CreateCvr()
         {
             var rnd = new Random();
@@ -57,6 +85,12 @@ namespace Tests.Integration.Presentation.Web.Tools
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             _token = token.Token;
             return _token;
+        }
+
+        //Temp. method to strangle out old helpers
+        public int GetOrgId(Guid orgUuid)
+        {
+            return DatabaseAccess.GetEntityId<Organization>(orgUuid);
         }
     }
 }

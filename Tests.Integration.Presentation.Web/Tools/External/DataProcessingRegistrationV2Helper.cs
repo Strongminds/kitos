@@ -16,6 +16,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Options;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Shared;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Tools.External
@@ -260,6 +261,19 @@ namespace Tests.Integration.Presentation.Web.Tools.External
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<IEnumerable<IdentityNamePairResponseDTO>>();
+        }
+
+        public static async Task<DataProcessingRegistrationResponseDTO> PatchIsAgreementConcludedAsync(Guid dprUuid,
+            YesNoIrrelevantChoice choice)
+        {
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            var request = new DataProcessingRegistrationGeneralDataWriteRequestDTO
+            {
+                IsAgreementConcluded = choice
+            };
+            using var response = await SendPatchGeneralDataAsync(token.Token, dprUuid, request);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<DataProcessingRegistrationResponseDTO>();
         }
     }
 }
