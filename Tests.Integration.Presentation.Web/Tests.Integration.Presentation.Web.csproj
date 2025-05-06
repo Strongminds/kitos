@@ -253,7 +253,6 @@
     <Compile Include="Tools\TestEnvironment.cs" />
     <Compile Include="Tools\External\ItSystemV2Helper.cs" />
     <Compile Include="Tools\External\OrganizationV2Helper.cs" />
-    <Compile Include="Tools\UserHelper.cs" />
     <Compile Include="Tools\XUnit\SequentialTestGroup.cs" />
     <Compile Include="UI_Configuration\UIConfigurationTests.cs" />
     <Compile Include="Users\V2\PasswordResetInternalApiV2Test.cs" />

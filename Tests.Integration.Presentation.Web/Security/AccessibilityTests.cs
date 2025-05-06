@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Tests.Integration.Presentation.Web.Tools;
+using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 using Xunit;
 using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Toolkit.Patterns;
@@ -66,7 +68,7 @@ namespace Tests.Integration.Presentation.Web.Security
                 Assert.NotNull(requestResponse);
                 Assert.Equal(HttpStatusCode.Forbidden, requestResponse.StatusCode);
             };
-            await UserHelper.SendDeleteUserAsync(createdUserId).DisposeAsync();
+            await UsersV2Helper.DeleteUserGlobally(DatabaseAccess.GetEntityUuid<User>(createdUserId));
         }
 
         private static string CreateEmail()
