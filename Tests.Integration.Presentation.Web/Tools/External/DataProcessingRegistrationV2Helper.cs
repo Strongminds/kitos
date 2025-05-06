@@ -200,6 +200,11 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}"), token, CreatePatchPayload(nameof(UpdateDataProcessingRegistrationRequestDTO.Name), name));
         }
 
+        public static async Task<HttpResponseMessage> SendPatchName(Cookie cookie, Guid uuid, string name)
+        {
+            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}"), cookie, CreatePatchPayload(nameof(UpdateDataProcessingRegistrationRequestDTO.Name), name));
+        }
+
         public static async Task<DataProcessingRegistrationPermissionsResponseDTO> GetPermissionsAsync(string token, Guid uuid)
         {
             using var response = await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid:D}/permissions"), token);

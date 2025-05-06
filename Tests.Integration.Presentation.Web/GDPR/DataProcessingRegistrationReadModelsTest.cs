@@ -270,17 +270,18 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var name = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
 
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, name);
-            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(registration.Id);
+            var registration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), name);
+            var registrationId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
+            var businessRoleDtos = await DataProcessingRegistrationHelper.GetAvailableRolesAsync(registrationId);
             var role = businessRoleDtos.First();
-            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(registration.Id, role.Id);
+            var availableUsers = await DataProcessingRegistrationHelper.GetAvailableUsersAsync(registrationId, role.Id);
             var user = availableUsers.First();
-            using var response1 = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(registration.Id, role.Id, user.Id);
+            using var response1 = await DataProcessingRegistrationHelper.SendAssignRoleRequestAsync(registrationId, role.Id, user.Id);
             Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
 
             await WaitForReadModelQueueDepletion();
 
-            using var response2 = await DataProcessingRegistrationHelper.SendRemoveRoleRequestAsync(registration.Id, role.Id, user.Id);
+            using var response2 = await DataProcessingRegistrationHelper.SendRemoveRoleRequestAsync(registrationId, role.Id, user.Id);
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
             await WaitForReadModelQueueDepletion();
@@ -291,7 +292,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Assert
             var readModel = Assert.Single(result);
             Assert.Equal(name, readModel.Name);
-            Assert.Equal(registration.Id, readModel.SourceEntityId);
+            Assert.Equal(registrationId, readModel.SourceEntityId);
             Assert.Empty(readModel.RoleAssignments);
         }
 
@@ -305,9 +306,9 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var orgRole = OrganizationRole.GlobalAdmin;
             var organizationId = TestEnvironment.DefaultOrganizationId;
 
-            var registration = await DataProcessingRegistrationHelper.CreateAsync(organizationId, name);
+            var registration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), name);
             var (userId, _, cookie) = await HttpApi.CreateUserAndLogin(email, orgRole);
-            using var response = await DataProcessingRegistrationHelper.SendChangeNameRequestAsync(registration.Id, newName, cookie);
+            using var response = await DataProcessingRegistrationV2Helper.SendPatchName(cookie, registration.Uuid, newName);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             await WaitForReadModelQueueDepletion();
@@ -318,7 +319,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Assert
             var readModel = Assert.Single(result);
             Assert.Equal(newName, readModel.Name);
-            Assert.Equal(registration.Id, readModel.SourceEntityId);
+            Assert.Equal(registration.Uuid, readModel.SourceEntityUuid);
             Assert.Equal(userId, readModel.LastChangedById);
         }
         private static async Task WaitForReadModelQueueDepletion()

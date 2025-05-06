@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.Organization;
-using Core.DomainModel.Shared;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.GDPR;
 using Xunit;
@@ -14,33 +13,6 @@ namespace Tests.Integration.Presentation.Web.Tools
 {
     public static class DataProcessingRegistrationHelper
     {
-        public static async Task<DataProcessingRegistrationDTO> CreateAsync(int organizationId, string name, Cookie optionalLogin = null)
-        {
-            using var createdResponse = await SendCreateRequestAsync(organizationId, name, optionalLogin);
-            if (!createdResponse.IsSuccessStatusCode)
-                throw new Exception($"ERROR creating DPR:{name} in org with id:{organizationId}. Error code: {createdResponse.StatusCode} Message:{await createdResponse.Content.ReadAsStringAsync()}");
-
-            Assert.Equal(HttpStatusCode.Created, createdResponse.StatusCode);
-            var response = await createdResponse.ReadResponseBodyAsKitosApiResponseAsync<DataProcessingRegistrationDTO>();
-
-            Assert.Equal(name, response.Name);
-
-            return response;
-        }
-
-        public static async Task<HttpResponseMessage> SendCreateRequestAsync(int organizationId, string name, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var body = new CreateDataProcessingRegistrationDTO
-            {
-                Name = name,
-                OrganizationId = organizationId
-            };
-
-            return await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/data-processing-registration"), cookie, body);
-        }
-
         public static async Task<HttpResponseMessage> SendDeleteRequestAsync(int id, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
