@@ -45,7 +45,7 @@ public class OrganizationWriteService : IOrganizationWriteService {
         _dataProtectionAdvisorRepository = dataProtectionAdvisorRepository;
         _countryCodeRepository = countryCodeRepository;
     }
-
+    
     public Result<Organization, OperationError> PatchMasterData(Guid organizationUuid, OrganizationMasterDataUpdateParameters parameters)
     {
         using var transaction = _transactionManager.Begin();

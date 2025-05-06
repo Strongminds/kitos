@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoFixture;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
-using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools.External;
@@ -18,13 +16,13 @@ namespace Tests.Integration.Presentation.Web.Tools
     {
         private string _token;
 
-        public async Task<OrganizationResponseDTO> CreateOrganizationAsync()
+        public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync()
         {
             var defaultRequest = new OrganizationCreateRequestDTO
             {
                 Name = A<string>(),
                 Cvr = CreateCvr(),
-                Type = OrganizationType.Municipality
+                Type = A<OrganizationType>()
             };
             using var response = OrganizationInternalV2Helper.CreateOrganization(defaultRequest);
             return await response;
