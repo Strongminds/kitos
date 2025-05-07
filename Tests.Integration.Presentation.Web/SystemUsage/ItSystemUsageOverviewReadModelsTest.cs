@@ -140,9 +140,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // System changes
-            await ItSystemHelper.SendSetDisabledRequestAsync(systemId, systemDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
-            await ItSystemHelper.SendSetParentSystemRequestAsync(systemId, systemParentId, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
-            await ItSystemHelper.SendSetBelongsToRequestAsync(systemId, organizationId, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync(); // Using default organization as BelongsTo
+            KeyValuePair<string, object>[] systemChanges = [
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid)
+            ];
+            await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
 
             var availableBusinessTypeOptions = (await ItSystemHelper.GetBusinessTypeOptionsAsync(organizationId)).ToList();
             var businessType = availableBusinessTypeOptions[Math.Abs(A<int>()) % availableBusinessTypeOptions.Count];
