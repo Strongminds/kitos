@@ -147,6 +147,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             var refs = await KleOptionV2Helper.GetKleNumbersAsync(await GetGlobalToken());
             var taskRef = refs.Payload.RandomItem();
+            var sensitiveDataLevel = A<DataSensitivityLevelChoice>();
 
             // System changes
             KeyValuePair<string, object>[] systemChanges = [
@@ -171,11 +172,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 DirectoryDocumentation = new SimpleLinkDTO { Name = linkToDirectoryUrlName, Url = linkToDirectoryUrl },
                 UserSupervisionDocumentation = new SimpleLinkDTO { Name = riskSupervisionDocumentationUrlName, Url = riskSupervisionDocumentationUrl },
                 RiskAssessmentConducted = riskAssessment,
-                PlannedRiskAssessmentDate = riskAssessmentDate
+                PlannedRiskAssessmentDate = riskAssessmentDate,
+                DataSensitivityLevels = sensitiveDataLevel.WrapAsEnumerable()
 
             }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
-            var sensitiveDataLevel = await ItSystemUsageHelper.AddSensitiveDataLevel(systemUsageId, A<SensitiveDataLevel>());
             var isHoldingDocument = A<bool>();
 
             // Responsible Organization Unit and relevant units
@@ -326,8 +327,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // Sensitive Data Level
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
-            Assert.Equal(sensitiveDataLevel.DataSensitivityLevel, rmSensitiveDataLevel.SensitivityDataLevel);
-            Assert.Equal(sensitiveDataLevel.DataSensitivityLevel.GetReadableName(), readModel.SensitiveDataLevelsAsCsv);
+            Assert.Equal(sensitiveDataLevel.ToSensitiveDataLevel(), rmSensitiveDataLevel.SensitivityDataLevel);
+            Assert.Equal(sensitiveDataLevel.ToSensitiveDataLevel().GetReadableName(), readModel.SensitiveDataLevelsAsCsv);
 
             // From System
             Assert.Equal(systemName, readModel.SystemName);
