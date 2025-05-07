@@ -4,6 +4,7 @@ using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Contract;
@@ -74,6 +75,17 @@ namespace Tests.Integration.Presentation.Web.Tools
                 OrganizationUuid = orgUuid
             };
             return await ItSystemUsageV2Helper.PostAsync(await GetGlobalToken(), request);
+        }
+
+        public async Task<OrganizationUnitResponseDTO> CreateOrganizationUnitAsync(Guid organizationUuid, string name = null, Guid? parentUnitUuid = null)
+        {
+            var rootUnit = await OrganizationUnitV2Helper.GetRootUnit(organizationUuid);
+            var request = new CreateOrganizationUnitRequestDTO
+            {
+                Name = name ?? A<string>(),
+                ParentUuid = parentUnitUuid ?? rootUnit.Uuid
+            };
+            return await OrganizationUnitV2Helper.CreateUnitAsync(organizationUuid, request);
         }
 
         public string CreateCvr()

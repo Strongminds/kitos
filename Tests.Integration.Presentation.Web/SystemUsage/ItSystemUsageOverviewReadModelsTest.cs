@@ -20,6 +20,7 @@ using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
@@ -155,7 +156,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
 
             // Parent system 
-            await ItSystemHelper.SendSetDisabledRequestAsync(systemParentId, systemParentDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
+            await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), systemParent.Uuid, new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemParentDisabled));
 
             var dataClassification = await
                 OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageDataClassification,
@@ -179,12 +180,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // Responsible Organization Unit and relevant units
             var orgUnitName1 = A<string>();
             var orgUnitName2 = A<string>();
-            var organizationUnit1 = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, orgUnitName1);
-            var organizationUnit2 = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, orgUnitName2);
-            var responsibleUnit = new[] { organizationUnit1, organizationUnit2 }.RandomItem();
-            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsageId, organizationUnit1.Id, organizationId).DisposeAsync();
-            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsageId, organizationUnit2.Id, organizationId).DisposeAsync();
-            await ItSystemUsageHelper.SendSetResponsibleOrganizationUnitRequestAsync(systemUsageId, responsibleUnit.Id).DisposeAsync();
+            var organizationUnit1 = await CreateOrganizationUnitAsync(organizationUuid, orgUnitName1);
+            var organizationUnit2 = await CreateOrganizationUnitAsync(organizationUuid, orgUnitName2);
+            var units = new List<OrganizationUnitResponseDTO> { organizationUnit1, organizationUnit2 };
+            var responsibleUnit = units.RandomItem();
+
+            await ItSystemUsageV2Helper.SendPatchOrganizationalUsage(await GetGlobalToken(), systemUsage.Uuid,
+                new OrganizationUsageWriteRequestDTO
+                {
+                    UsingOrganizationUnitUuids = units.Select(x => x.Uuid).ToList(),
+                    ResponsibleOrganizationUnitUuid = responsibleUnit.Uuid
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //References
             var reference = await ReferencesHelper.CreateReferenceAsync(A<string>(), A<string>(), A<string>(), dto => dto.ItSystemUsage_Id = systemUsageId);
@@ -357,7 +363,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // Responsible Organization Unit
             Assert.Equal(responsibleUnit.Uuid, readModel.ResponsibleOrganizationUnitUuid);
-            Assert.Equal(responsibleUnit.Id, readModel.ResponsibleOrganizationUnitId);
             Assert.Equal(responsibleUnit.Name, readModel.ResponsibleOrganizationUnitName);
             Assert.Contains(readModel.RelevantOrganizationUnits, orgUnitReadModel => MatchExpectedOrgUnit(orgUnitReadModel, organizationUnit1));
             Assert.Contains(readModel.RelevantOrganizationUnits, orgUnitReadModel => MatchExpectedOrgUnit(orgUnitReadModel, organizationUnit2));
@@ -1046,9 +1051,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await ReadModelTestTools.WaitForReadModelQueueDepletion();
         }
 
-        private static bool MatchExpectedOrgUnit(ItSystemUsageOverviewRelevantOrgUnitReadModel x, OrgUnitDTO organizationUnit1)
+        private static bool MatchExpectedOrgUnit(ItSystemUsageOverviewRelevantOrgUnitReadModel x, OrganizationUnitResponseDTO organizationUnit1)
         {
-            return x.OrganizationUnitId == organizationUnit1.Id && x.OrganizationUnitUuid == organizationUnit1.Uuid && x.OrganizationUnitName == organizationUnit1.Name;
+            return x.OrganizationUnitUuid == organizationUnit1.Uuid && x.OrganizationUnitName == organizationUnit1.Name;
         }
 
         private static async Task<ItSystemResponseDTO> PrepareItSystem(string systemName, string systemPreviousName, string systemDescription, int organizationId, string organizationName, AccessModifier accessModifier)
