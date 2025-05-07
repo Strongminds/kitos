@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
+using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
@@ -17,6 +18,7 @@ using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
+using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
@@ -128,7 +130,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemParentUsage = await TakeSystemIntoUsageAsync(systemParent.Uuid, organizationUuid);
             var systemParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(systemParent.Uuid);
 
-            var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
             var systemUsageId = DatabaseAccess.GetEntityId<ItSystemUsage>(systemUsage.Uuid);
 
@@ -194,16 +195,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var reference = await ReferencesHelper.CreateReferenceAsync(A<string>(), A<string>(), A<string>(), dto => dto.ItSystemUsage_Id = systemUsageId);
 
             //Main Contract
-            var contract1 = await ItContractHelper.CreateContract(contract1Name, organizationId);
-            var contract2 = await ItContractHelper.CreateContract(contract2Name, organizationId);
-            var contractUpdateBody = new
-            {
-                supplierId = organizationId
-            };
+            var contract1 = await CreateItContractAsync(organizationUuid, contract1Name);
+            var contract2 = await CreateItContractAsync(organizationUuid, contract2Name);
+            
+            await ItContractV2Helper.SendPatchContractSupplierAsync(await GetGlobalToken(), contract1.Uuid,
+                new ContractSupplierDataWriteRequestDTO { OrganizationUuid = organizationUuid });
 
-            await ItContractHelper.PatchContract(contract1.Id, organizationId, contractUpdateBody);
-            await ItContractHelper.AddItSystemUsage(contract1.Id, systemUsageId, organizationId);
-            await ItContractHelper.AddItSystemUsage(contract2.Id, systemUsageId, organizationId);
+            await ItContractV2Helper.SendPatchSystemUsagesAsync(await GetGlobalToken(), contract1.Uuid,
+                systemUsage.Uuid.WrapAsEnumerable());
+            await ItContractV2Helper.SendPatchSystemUsagesAsync(await GetGlobalToken(), contract2.Uuid,
+                systemUsage.Uuid.WrapAsEnumerable());
 
             await ItSystemUsageV2Helper.SendPatchGeneral(await GetGlobalToken(), systemUsage.Uuid,
                 new GeneralDataUpdateRequestDTO
@@ -366,7 +367,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(reference.ExternalReferenceId, readModel.LocalReferenceDocumentId);
 
             // Main Contract
-            Assert.Equal(contract1.Id, readModel.MainContractId);
+            Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0));
             Assert.Equal(organizationId, readModel.MainContractSupplierId);
             Assert.Equal(organizationName, readModel.MainContractSupplierName);
             Assert.True(readModel.MainContractIsActive);
@@ -377,7 +378,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             foreach (var expectedContract in expectedContracts)
             {
                 Assert.Contains(expectedContract.Name, readModel.AssociatedContractsNamesCsv);
-                Assert.Contains(readModel.AssociatedContracts, c => c.ItContractId == expectedContract.Id);
+                Assert.Contains(readModel.AssociatedContracts, c => c.ItContractUuid == expectedContract.Uuid);
             }
 
             // ArchivePeriods
