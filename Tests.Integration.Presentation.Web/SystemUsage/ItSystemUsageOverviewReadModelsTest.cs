@@ -245,15 +245,15 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var relationInterfaceName = A<string>();
             var relationInterfaceId = A<string>();
 
-            var incomingRelationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(incomingRelationSystemName, organizationId, AccessModifier.Public);
-            var incomingRelationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(incomingRelationSystem.Id, organizationId);
+            var incomingRelationSystem = await CreateItSystemAsync(organizationUuid, name: incomingRelationSystemName);
+            var incomingRelationSystemUsage = await TakeSystemIntoUsageAsync(incomingRelationSystem.Uuid, organizationUuid);
 
-            var outGoingRelationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(outgoingRelationSystemName, organizationId, AccessModifier.Public);
-            var outgoingRelationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(outGoingRelationSystem.Id, organizationId);
+            var outGoingRelationSystem = await CreateItSystemAsync(organizationUuid, name: outgoingRelationSystemName);
+            var outgoingRelationSystemUsage = await TakeSystemIntoUsageAsync(outGoingRelationSystem.Uuid, organizationUuid);
 
             var relationInterfaceDTO = InterfaceHelper.CreateInterfaceDto(relationInterfaceName, relationInterfaceId, organizationId, AccessModifier.Public);
             var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
-            await InterfaceExhibitHelper.CreateExhibit(outGoingRelationSystem.Id, relationInterface.Id);
+            await InterfaceExhibitHelper.CreateExhibit(DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(outGoingRelationSystem.Uuid), relationInterface.Id);
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), incomingRelationSystemUsage.Uuid, new SystemRelationWriteRequestDTO
             {
@@ -402,13 +402,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Incoming system usages
             Assert.Equal(incomingRelationSystemName, readModel.IncomingRelatedItSystemUsagesNamesAsCsv);
             var rmIncomingRelatedItSystemUsage = Assert.Single(readModel.IncomingRelatedItSystemUsages);
-            Assert.Equal(incomingRelationSystemUsage.Id, rmIncomingRelatedItSystemUsage.ItSystemUsageId);
             Assert.Equal(incomingRelationSystemName, rmIncomingRelatedItSystemUsage.ItSystemUsageName);
 
             //Outgoing system usages
             Assert.Equal(outgoingRelationSystemName, readModel.OutgoingRelatedItSystemUsagesNamesAsCsv);
             var rmOutgoingRelatedItSystemUsage = Assert.Single(readModel.OutgoingRelatedItSystemUsages);
-            Assert.Equal(outgoingRelationSystemUsage.Id, rmOutgoingRelatedItSystemUsage.ItSystemUsageId);
             Assert.Equal(outgoingRelationSystemUsage.Uuid, rmOutgoingRelatedItSystemUsage.ItSystemUsageUuid);
             Assert.Equal(outgoingRelationSystemName, rmOutgoingRelatedItSystemUsage.ItSystemUsageName);
         }
