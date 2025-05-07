@@ -139,17 +139,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await ItSystemUsageV2Helper.SendPatchAddRoleAssignment(await GetGlobalToken(), systemUsage.Uuid,
                 new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
+
+            var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationUuid);
+
             // System changes
             KeyValuePair<string, object>[] systemChanges = [
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid)
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid)
             ];
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
-
-            var availableBusinessTypeOptions = (await ItSystemHelper.GetBusinessTypeOptionsAsync(organizationId)).ToList();
-            var businessType = availableBusinessTypeOptions[Math.Abs(A<int>()) % availableBusinessTypeOptions.Count];
-            await ItSystemHelper.SendSetBusinessTypeRequestAsync(systemId, businessType.Id, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             var taskRefs = (await ItSystemHelper.GetAvailableTaskRefsRequestAsync(systemId)).ToList();
             var taskRef = taskRefs[Math.Abs(A<int>()) % taskRefs.Count];
@@ -328,7 +328,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(systemDescription, readModel.SystemDescription);
             Assert.Equal(systemDisabled, readModel.ItSystemDisabled);
             Assert.Equal(system.Uuid.ToString("D"), readModel.ItSystemUuid);
-            Assert.Equal(businessType.Id, readModel.ItSystemBusinessTypeId);
             Assert.Equal(businessType.Uuid, readModel.ItSystemBusinessTypeUuid);
             Assert.Equal(businessType.Name, readModel.ItSystemBusinessTypeName);
             Assert.Equal(dataClassification.Uuid, readModel.ItSystemCategoriesUuid);
