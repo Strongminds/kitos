@@ -272,7 +272,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read models are up to date");
 
             //Get current system usage
-            var updatedSystemUsage = await ItSystemUsageHelper.GetItSystemUsageRequestAsync(systemUsageId);
+            var updatedSystemUsage = await ItSystemUsageV2Helper.GetSingleAsync(await GetGlobalToken(), systemUsage.Uuid);
 
             //Act 
             var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
@@ -287,14 +287,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(organizationId, readModel.OrganizationId);
             Assert.Equal(systemUsageVersion, readModel.Version);
             Assert.Equal(systemUsageLocalCallName, readModel.LocalCallName);
-            Assert.Equal(updatedSystemUsage.ObjectOwnerFullName, readModel.ObjectOwnerName);
-            Assert.Equal(updatedSystemUsage.ObjectOwnerFullName, readModel.LastChangedByName); // Same user was used to create and change the systemUsage
+            Assert.Equal(updatedSystemUsage.CreatedBy.Name, readModel.ObjectOwnerName);
+            Assert.Equal(updatedSystemUsage.LastModifiedBy.Name, readModel.LastChangedByName);
             Assert.Equal(concluded.Date, readModel.Concluded?.Date);
             Assert.Equal(systemUsageExpirationDate.Date, readModel.ExpirationDate?.Date);
             Assert.True(readModel.ActiveAccordingToValidityPeriod);
             Assert.True(readModel.ActiveAccordingToLifeCycle);
             Assert.True(readModel.SystemActive);
-            Assert.Equal(updatedSystemUsage.LastChanged.Date, readModel.LastChangedAt.Date);
+            Assert.Equal(updatedSystemUsage.LastModified.Date, readModel.LastChangedAt.Date);
             Assert.Equal(archiveDuty.ToArchiveDutyTypes(), readModel.ArchiveDuty);
             Assert.Equal(isHoldingDocument, readModel.IsHoldingDocument);
             Assert.Equal(linkToDirectoryUrlName, readModel.LinkToDirectoryName);
