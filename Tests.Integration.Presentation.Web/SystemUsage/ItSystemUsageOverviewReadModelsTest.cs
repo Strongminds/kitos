@@ -108,7 +108,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var concluded = DateTime.UtcNow.AddDays(-A<int>());
             var systemUsageExpirationDate = DateTime.UtcNow.AddDays(A<int>());
             var archiveDuty = A<ArchiveDutyChoice>();
-            var riskAssessment = A<DataOptions>();
+            var riskAssessment = A<YesNoDontKnowChoice>();
             var riskAssessmentDate = A<DateTime>();
             var linkToDirectoryUrl = A<string>();
             var linkToDirectoryUrlName = A<string>();
@@ -162,18 +162,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageDataClassification,
                     organizationUuid);
 
-            // System Usage changes
-            var body = new
+            await ItSystemUsageV2Helper.SendPatchGDPR(await GetGlobalToken(), systemUsage.Uuid, new GDPRWriteRequestDTO
             {
-                RiskAssessment = riskAssessment,
-                RiskAssessmentDate = riskAssessmentDate,
-                linkToDirectoryUrl,
-                linkToDirectoryUrlName,
-                riskSupervisionDocumentationUrl,
-                riskSupervisionDocumentationUrlName,
-                GeneralPurpose = generalPurpose,
-            };
-            await ItSystemUsageHelper.PatchSystemUsage(systemUsageId, organizationId, body);
+                Purpose = generalPurpose,
+                DirectoryDocumentation = new SimpleLinkDTO { Name = linkToDirectoryUrlName, Url = linkToDirectoryUrl },
+                UserSupervisionDocumentation = new SimpleLinkDTO { Name = riskSupervisionDocumentationUrlName, Url = riskSupervisionDocumentationUrl },
+                RiskAssessmentConducted = riskAssessment,
+                PlannedRiskAssessmentDate = riskAssessmentDate
+
+            }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
             var sensitiveDataLevel = await ItSystemUsageHelper.AddSensitiveDataLevel(systemUsageId, A<SensitiveDataLevel>());
             var isHoldingDocument = A<bool>();
 
@@ -257,14 +255,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
             await InterfaceExhibitHelper.CreateExhibit(outGoingRelationSystem.Id, relationInterface.Id);
 
-
-
-            var incomingRelationDTO = new CreateSystemRelationDTO
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), incomingRelationSystemUsage.Uuid, new SystemRelationWriteRequestDTO
             {
-                FromUsageId = incomingRelationSystemUsage.Id,
-                ToUsageId = systemUsageId
-            };
-            await SystemRelationHelper.PostRelationAsync(incomingRelationDTO);
+                ToSystemUsageUuid = systemUsage.Uuid
+            });
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
                 new SystemRelationWriteRequestDTO
@@ -309,7 +303,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(hostedAt, readModel.HostedAt);
             Assert.Equal(userCount, readModel.UserCount);
 
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowChoice.Yes)
             {
                 Assert.Equal(riskSupervisionDocumentationUrlName, readModel.RiskSupervisionDocumentationName);
                 Assert.Equal(riskSupervisionDocumentationUrl, readModel.RiskSupervisionDocumentationUrl);
