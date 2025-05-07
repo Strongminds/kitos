@@ -12,13 +12,12 @@ using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
-using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
-using Presentation.Web.Models.API.V2.Request.Interface;
+using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.System;
@@ -133,12 +132,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemUsageId = DatabaseAccess.GetEntityId<ItSystemUsage>(systemUsage.Uuid);
 
             // Role assignment
-            var businessRoleDtos = await ItSystemUsageHelper.GetAvailableRolesAsync(organizationId);
-            var role = businessRoleDtos.First();
-            var availableUsers = await ItSystemUsageHelper.GetAvailableUsersAsync(organizationId);
+            var role = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageRoles,
+                organizationUuid);
+            var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(organizationUuid);
             var user = availableUsers.First();
-            using var assignRoleResponse = await ItSystemUsageHelper.SendAssignRoleRequestAsync(systemUsageId, organizationId, role.Id, user.Id);
-            Assert.Equal(HttpStatusCode.Created, assignRoleResponse.StatusCode);
+            await ItSystemUsageV2Helper.SendPatchAddRoleAssignment(await GetGlobalToken(), systemUsage.Uuid,
+                new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // System changes
             await ItSystemHelper.SendSetDisabledRequestAsync(systemId, systemDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
@@ -253,7 +252,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
 
             var incomingRelationDTO = new CreateSystemRelationDTO
-                {
+            {
                 FromUsageId = incomingRelationSystemUsage.Id,
                 ToUsageId = systemUsageId
             };
@@ -348,12 +347,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // Role assignment
             var roleAssignment = Assert.Single(readModel.RoleAssignments);
-            Console.Out.WriteLine("Found one role assignment as expected");
 
-            Assert.Equal(role.Id, roleAssignment.RoleId);
-            Assert.Equal(DatabaseAccess.GetEntityUuid<ItSystemRole>(role.Id), roleAssignment.RoleUuid);
-            Assert.Equal(user.Id, roleAssignment.UserId);
-            Assert.Equal(user.FullName, roleAssignment.UserFullName);
+            Assert.Equal(role.Uuid, roleAssignment.RoleUuid);
+            Assert.Equal(role.Uuid, roleAssignment.RoleUuid);
+            Assert.Equal(DatabaseAccess.GetEntityId<User>(user.Uuid), roleAssignment.UserId);
+            Assert.Equal($"{user.FirstName} {user.LastName}", roleAssignment.UserFullName);
             Assert.Equal(user.Email, roleAssignment.Email);
 
             // Responsible Organization Unit
