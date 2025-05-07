@@ -189,17 +189,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(url, cookie, body);
         }
 
-        public static async Task<IEnumerable<TaskRefSelectedDTO>> GetAvailableTaskRefsRequestAsync(int systemId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var url = TestEnvironment.CreateUrl($"api/itSystem/{systemId}?tasks=true&onlySelected=false&taskGroup=undefined&skip=0&take=50&orderBy=taskKey");
-
-            using var response = await HttpApi.GetWithCookieAsync(url, cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<IEnumerable<TaskRefSelectedDTO>>();
-        }
-
         public static async Task<HttpResponseMessage> SendAddTaskRefRequestAsync(int systemId, int taskRefId, int organizationId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);

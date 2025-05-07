@@ -30,17 +30,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await response.ReadOdataListResponseBodyAsAsync<ItSystemUsageOverviewReadModel>();
         }
 
-        public static async Task<ItSystemUsageDTO> GetItSystemUsageRequestAsync(int systemUsageId)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            using (var okResponse = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/itsystemusage/{systemUsageId}"), cookie))
-            {
-                Assert.Equal(HttpStatusCode.OK, okResponse.StatusCode);
-                return await okResponse.ReadResponseBodyAsKitosApiResponseAsync<ItSystemUsageDTO>();
-            }
-        }
-
         public static async Task<ItSystemUsageSensitiveDataLevelDTO> AddSensitiveDataLevel(int systemUsageId, SensitiveDataLevel sensitiveDataLevel)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
@@ -48,15 +37,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             using var okResponse = await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v1/itsystemusage/{systemUsageId}/sensitivityLevel/add"), cookie, sensitiveDataLevel);
             Assert.Equal(HttpStatusCode.OK, okResponse.StatusCode);
             return await okResponse.ReadResponseBodyAsKitosApiResponseAsync<ItSystemUsageSensitiveDataLevelDTO>();
-        }
-
-        public static async Task<ItSystemUsageDTO> PatchSystemUsage(int usageSystemId, int orgId, object body)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            using var okResponse = await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/itsystemusage/{usageSystemId}?organizationId={orgId}"), cookie, body);
-            Assert.Equal(HttpStatusCode.OK, okResponse.StatusCode);
-            return await okResponse.ReadResponseBodyAsKitosApiResponseAsync<ItSystemUsageDTO>();
         }
 
         public static async Task<IEnumerable<BusinessRoleDTO>> GetAvailableRolesAsync(int orgId, Cookie optionalLogin = null)
