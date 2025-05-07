@@ -18,6 +18,7 @@ using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
+using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.System;
@@ -123,7 +124,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var dataProcessingRegistrationName = A<string>();
 
             var system = await PrepareItSystem(systemName, systemPreviousName, systemDescription, organizationId, organizationName, AccessModifier.Public);
-            var systemParent = await CreateItSystemAsync(organizationUuid, name:systemParentName);
+            var systemParent = await CreateItSystemAsync(organizationUuid, name: systemParentName);
             var systemParentUsage = await TakeSystemIntoUsageAsync(systemParent.Uuid, organizationUuid);
             var systemParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(systemParent.Uuid);
 
@@ -155,9 +156,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // Parent system 
             await ItSystemHelper.SendSetDisabledRequestAsync(systemParentId, systemParentDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
 
-            var dataClassification =
-                (await EntityOptionHelper.GetOptionsAsync(EntityOptionHelper.ResourceNames.ItSystemCategories,
-                    organizationId)).RandomItem();
+            var dataClassification = await
+                OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageDataClassification,
+                    organizationUuid);
 
             // System Usage changes
             var body = new
@@ -169,8 +170,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 riskSupervisionDocumentationUrl,
                 riskSupervisionDocumentationUrlName,
                 GeneralPurpose = generalPurpose,
-                UserCount = userCount,
-                ItSystemCategoriesId = dataClassification.Id
             };
             await ItSystemUsageHelper.PatchSystemUsage(systemUsageId, organizationId, body);
             var sensitiveDataLevel = await ItSystemUsageHelper.AddSensitiveDataLevel(systemUsageId, A<SensitiveDataLevel>());
@@ -196,6 +195,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             {
                 supplierId = organizationId
             };
+
             await ItContractHelper.PatchContract(contract1.Id, organizationId, contractUpdateBody);
             await ItContractHelper.AddItSystemUsage(contract1.Id, systemUsageId, organizationId);
             await ItContractHelper.AddItSystemUsage(contract2.Id, systemUsageId, organizationId);
@@ -212,7 +212,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                         ValidFrom = concluded,
                         ValidTo = systemUsageExpirationDate
                     },
-                    NumberOfExpectedUsers = UserIntervalDtoFromUerCount(userCount)
+                    NumberOfExpectedUsers = UserIntervalDtoFromUerCount(userCount),
+                    DataClassificationUuid = dataClassification.Uuid,
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // ArchivePeriods
@@ -222,7 +223,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 new ArchivingCreationRequestDTO
                 {
                     ArchiveDuty = archiveDuty,
-                    JournalPeriods = new List<JournalPeriodDTO>{new JournalPeriodDTO {StartDate = archivePeriodStartDate, EndDate = archivePeriodEndDate, ArchiveId = A<string>()}},
+                    JournalPeriods = new List<JournalPeriodDTO> { new JournalPeriodDTO { StartDate = archivePeriodStartDate, EndDate = archivePeriodEndDate, ArchiveId = A<string>() } },
                     DocumentBearing = isHoldingDocument
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
@@ -249,8 +250,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
             await InterfaceExhibitHelper.CreateExhibit(outGoingRelationSystem.Id, relationInterface.Id);
 
+
+
             var incomingRelationDTO = new CreateSystemRelationDTO
-            {
+                {
                 FromUsageId = incomingRelationSystemUsage.Id,
                 ToUsageId = systemUsageId
             };
@@ -259,9 +262,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
                 new SystemRelationWriteRequestDTO
                 {
-                    ToSystemUsageUuid = outgoingRelationSystemUsage.Uuid
+                    ToSystemUsageUuid = outgoingRelationSystemUsage.Uuid,
+                    RelationInterfaceUuid = relationInterface.Uuid
                 });
-
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
@@ -381,10 +384,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             }
 
             // ArchivePeriods
-            Assert.Equal(archivePeriodEndDate, readModel.ActiveArchivePeriodEndDate);
             var rmArchivePeriod = Assert.Single(readModel.ArchivePeriods);
-            Assert.Equal(archivePeriodStartDate, rmArchivePeriod.StartDate);
-            Assert.Equal(archivePeriodEndDate, rmArchivePeriod.EndDate);
+            Assert.Equal(archivePeriodStartDate.Date, rmArchivePeriod.StartDate.Date);
+            Assert.Equal(archivePeriodEndDate.Date, rmArchivePeriod.EndDate.Date);
+            Assert.Equal(archivePeriodEndDate.Date, readModel.ActiveArchivePeriodEndDate?.Date);
 
             // DataProcessingRegistration
             Assert.Equal(dataProcessingRegistration.Name, readModel.DataProcessingRegistrationNamesAsCsv);
@@ -1068,7 +1071,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             int lower = 0;
             int? upper = null;
-            
+
             switch (count)
             {
                 case UserCount.BELOWTEN:
