@@ -19,11 +19,13 @@ using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.Contract;
+using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
+using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
@@ -192,7 +194,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //References
-            var reference = await ReferencesHelper.CreateReferenceAsync(A<string>(), A<string>(), A<string>(), dto => dto.ItSystemUsage_Id = systemUsageId);
+            var referenceRequestDTO = A<UpdateExternalReferenceDataWriteRequestDTO>();
+            referenceRequestDTO.Uuid = null;
+            referenceRequestDTO.MasterReference = true;
+            using var referenceResponse = await ItSystemUsageV2Helper.SendPatchExternalReferences(await GetGlobalToken(), systemUsage.Uuid,
+                referenceRequestDTO.WrapAsEnumerable());
+            var reference = (await referenceResponse.ReadResponseBodyAsAsync<ItSystemUsageResponseDTO>()).ExternalReferences.Single();
 
             //Main Contract
             var contract1 = await CreateItContractAsync(organizationUuid, contract1Name);
@@ -363,8 +370,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // Reference
             Assert.Equal(reference.Title, readModel.LocalReferenceTitle);
-            Assert.Equal(reference.URL, readModel.LocalReferenceUrl);
-            Assert.Equal(reference.ExternalReferenceId, readModel.LocalReferenceDocumentId);
+            Assert.Equal(reference.Url, readModel.LocalReferenceUrl);
+            Assert.Equal(reference.DocumentId, readModel.LocalReferenceDocumentId);
 
             // Main Contract
             Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0));
