@@ -139,21 +139,20 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await ItSystemUsageV2Helper.SendPatchAddRoleAssignment(await GetGlobalToken(), systemUsage.Uuid,
                 new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
-
             var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationUuid);
+
+            var taskRefs = (await ItSystemHelper.GetAvailableTaskRefsRequestAsync(systemId)).ToList();
+            var taskRef = taskRefs.RandomItem();
 
             // System changes
             KeyValuePair<string, object>[] systemChanges = [
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid)
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid),
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.TaskRef.Uuid.WrapAsEnumerable())
             ];
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
-
-            var taskRefs = (await ItSystemHelper.GetAvailableTaskRefsRequestAsync(systemId)).ToList();
-            var taskRef = taskRefs[Math.Abs(A<int>()) % taskRefs.Count];
-            await ItSystemHelper.SendAddTaskRefRequestAsync(systemId, taskRef.TaskRef.Id, organizationId).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // Parent system 
             await ItSystemHelper.SendSetDisabledRequestAsync(systemParentId, systemParentDisabled).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
