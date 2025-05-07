@@ -142,8 +142,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationUuid);
 
-            var taskRefs = (await ItSystemHelper.GetAvailableTaskRefsRequestAsync(systemId)).ToList();
-            var taskRef = taskRefs.RandomItem();
+            var refs = await KleOptionV2Helper.GetKleNumbersAsync(await GetGlobalToken());
+            var taskRef = refs.Payload.RandomItem();
 
             // System changes
             KeyValuePair<string, object>[] systemChanges = [
@@ -151,7 +151,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.TaskRef.Uuid.WrapAsEnumerable())
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.Uuid.WrapAsEnumerable())
             ];
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
 
@@ -339,11 +339,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(dataClassification.Name, readModel.ItSystemCategoriesName);
             Assert.Equal(organizationId, readModel.ItSystemRightsHolderId);
             Assert.Equal(organizationName, readModel.ItSystemRightsHolderName);
-            Assert.Equal(taskRef.TaskRef.TaskKey ?? string.Empty, readModel.ItSystemKLEIdsAsCsv);
-            Assert.Equal(taskRef.TaskRef.Description, readModel.ItSystemKLENamesAsCsv);
+            Assert.Equal(taskRef.Description, readModel.ItSystemKLENamesAsCsv);
             var readTaskRef = Assert.Single(readModel.ItSystemTaskRefs);
-            Assert.Equal(taskRef.TaskRef.TaskKey, readTaskRef.KLEId);
-            Assert.Equal(taskRef.TaskRef.Description, readTaskRef.KLEName);
+            Assert.Equal(taskRef.KleNumber, readTaskRef.KLEId);
+            Assert.Equal(taskRef.Description, readTaskRef.KLEName);
 
             // From Parent System
             Assert.Equal(systemParentName, readModel.ParentItSystemName);
