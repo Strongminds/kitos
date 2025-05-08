@@ -159,8 +159,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await DataProcessingRegistrationV2Helper.SendPatchExternalReferences(await GetGlobalToken(), registration.Uuid, referenceRequest.WrapAsEnumerable());
 
             //Systems
-            var itSystemDto = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var usage = await ItSystemHelper.TakeIntoUseAsync(itSystemDto.Id, organizationId);
+            var itSystemDto = await CreateItSystemAsync(organizationUuid, systemName);
+            var usage = await TakeSystemIntoUsageAsync(itSystemDto.Uuid, organizationUuid);
             using var assignSystemResponse = await DataProcessingRegistrationV2Helper.PatchSystemsAsync(registration.Uuid, usage.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignSystemResponse.StatusCode);
 
@@ -215,11 +215,13 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dprName = A<string>();
             var contractName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
-            var dpr = await CreateDPRAsync(orgUuid, dprName);
+            var organizationUuid = DefaultOrgUuid;
+            var dpr = await CreateDPRAsync(organizationUuid, dprName);
 
-            var contract = await ItContractHelper.CreateContract(contractName, organizationId);
-            using var assignDprResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contract.Id, DatabaseAccess.GetEntityId<DataProcessingRegistration>(dpr.Uuid)).WithExpectedResponseCode(HttpStatusCode.OK);
+            var contract = await CreateItContractAsync(organizationUuid, contractName);
+            using var assignDprResponse =
+                await ItContractV2Helper.SendPatchDataProcessingRegistrationsAsync(await GetGlobalToken(),
+                    contract.Uuid, dpr.Uuid.WrapAsEnumerable());
             using var updateMainContractResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(await GetGlobalToken(), dpr.Uuid,
                 new DataProcessingRegistrationGeneralDataWriteRequestDTO
                 {
@@ -227,11 +229,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
                 });
 
             await WaitForReadModelQueueDepletion();
-            await ItContractHelper.SendDeleteContractRequestAsync(contract.Id).DisposeAsync();
+            await ItContractV2Helper.DeleteContractAsync(await GetGlobalToken(), contract.Uuid);
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var readModels = await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(orgUuid, dprName, 1, 0);
+            var readModels = await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, dprName, 1, 0);
 
             //Assert
             var readModel = Assert.Single(readModels);
