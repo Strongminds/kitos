@@ -691,8 +691,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var relationSystemName = A<string>();
             var relationInterfaceName = A<string>();
             var newRelationInterfaceName = A<string>();
-            var relationInterfaceId = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, systemName);
@@ -757,26 +755,22 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var relationSystemName = A<string>();
             var relationInterfaceName = A<string>();
-            var relationInterfaceId = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var relationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(relationSystemName, organizationId, AccessModifier.Public);
-            var relationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(relationSystem.Id, organizationId);
+            var relationSystem = await CreateItSystemAsync(organizationUuid, relationSystemName);
+            var relationSystemUsage = await TakeSystemIntoUsageAsync(relationSystem.Uuid, organizationUuid);
+            var relationInterface = await CreateItInterfaceAsync(organizationUuid, relationInterfaceName);
+            await InterfaceV2Helper.SendPatchExposedBySystemAsync(await GetGlobalToken(), relationInterface.Uuid, relationSystem.Uuid);
 
-            var relationInterfaceDTO = InterfaceHelper.CreateInterfaceDto(relationInterfaceName, relationInterfaceId, organizationId, AccessModifier.Public);
-            var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
-            await InterfaceExhibitHelper.CreateExhibit(relationSystem.Id, relationInterface.Id);
-
-            var outgoingRelationDTO = new CreateSystemRelationDTO
-            {
-                FromUsageId = systemUsage.Id,
-                ToUsageId = relationSystemUsage.Id,
-                InterfaceId = relationInterface.Id
-            };
-            var relation = await SystemRelationHelper.PostRelationAsync(outgoingRelationDTO);
+            var relation = await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                {
+                    ToSystemUsageUuid = relationSystemUsage.Uuid,
+                    RelationInterfaceUuid = relationInterface.Uuid
+                });
 
 
             //Wait for read model to rebuild (wait for the LAST mutation)
@@ -784,14 +778,15 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await SystemRelationHelper.SendDeleteRelationRequestAsync(systemUsage.Id, relation.Id).DisposeAsync();
+            await ItSystemUsageV2Helper.SendDeleteRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
+                relation.Uuid);
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
             //Assert
-            var mainSystemReadModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var mainSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             var mainSystemReadModel = Assert.Single(mainSystemReadModels);
             Console.Out.WriteLine("Read model found");
 
@@ -801,7 +796,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Empty(mainSystemReadModel.IncomingRelatedItSystemUsages);
 
 
-            var relationSystemReadModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, relationSystemName, 1, 0)).ToList();
+            var relationSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, relationSystemName, 1, 0)).ToList();
             var relationSystemReadModel = Assert.Single(relationSystemReadModels);
             Console.Out.WriteLine("Read model found");
 
