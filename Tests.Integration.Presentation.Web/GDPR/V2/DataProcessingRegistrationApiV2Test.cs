@@ -177,7 +177,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             //Arrange
             var (token, user, organization) = await CreatePrerequisitesAsync();
-            var newSystem = await CreateItSystemAsync(organization.Uuid, RegistrationScopeChoice.Local);
+            var newSystem = await CreateItSystemAsync(organization.Uuid, scope: RegistrationScopeChoice.Local);
             var newSystemUsage = await TakeSystemIntoUsageAsync(newSystem.Uuid, organization.Uuid);
             var dpr1 = await CreateDPRAsync(organization.Uuid);
             var dpr2 = await CreateDPRAsync(organization.Uuid);
@@ -197,7 +197,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             //Arrange
             var (token, user, organization) = await CreatePrerequisitesAsync();
-            var newSystem = await CreateItSystemAsync(organization.Uuid, RegistrationScopeChoice.Local);
+            var newSystem = await CreateItSystemAsync(organization.Uuid, scope: RegistrationScopeChoice.Local);
             var newSystemUsage = await TakeSystemIntoUsageAsync(newSystem.Uuid, organization.Uuid);
             var dpr1 = await CreateDPRAsync(organization.Uuid);
             var dpr2 = await CreateDPRAsync(organization.Uuid);

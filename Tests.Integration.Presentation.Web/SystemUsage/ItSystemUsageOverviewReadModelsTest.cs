@@ -533,7 +533,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var organizationName1 = A<string>();
             var organizationName2 = A<string>();
-            var defaultOrganizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
@@ -603,7 +602,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var systemName = A<string>();
             var contractName = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
