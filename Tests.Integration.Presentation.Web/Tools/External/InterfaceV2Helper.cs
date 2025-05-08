@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Xunit;
 using Presentation.Web.Models.API.V2.Response.Shared;
+using Presentation.Web.Models.API.V2.Request.System.Regular;
+using System.Linq.Expressions;
 
 namespace Tests.Integration.Presentation.Web.Tools.External
 {
@@ -293,6 +295,26 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<HttpResponseMessage> SendDeleteItInterfaceDataDescriptionAsync(string token, Guid uuid, Guid dataUuid)
         {
             return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/it-interfaces/{uuid}/data/{dataUuid}"), token);
+        }
+
+        public static async Task<HttpResponseMessage> SendPatchExposedBySystemAsync(string token, Guid interfaceUuid,
+            Guid exposedBySystemUuid)
+        {
+            return await SendPatchInterfaceAsync(token, interfaceUuid, x => x.ExposedBySystemUuid, exposedBySystemUuid);
+        }
+
+        public static async Task<HttpResponseMessage> SendPatchInterfaceAsync<T>(
+            string token,
+            Guid uuid,
+            Expression<Func<UpdateItInterfaceRequestDTO, T>> propertySelector,
+            T value)
+        {
+            if (!(propertySelector.Body is MemberExpression m))
+                throw new ArgumentException("Selector must be a simple member access", nameof(propertySelector));
+
+            var propertyName = m.Member.Name;
+            var kvp = new KeyValuePair<string, object>(propertyName, value);
+            return await SendPatchInterfaceAsync(token, uuid, kvp);
         }
     }
 }

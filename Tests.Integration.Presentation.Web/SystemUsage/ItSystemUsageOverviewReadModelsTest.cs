@@ -693,24 +693,26 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var newRelationInterfaceName = A<string>();
             var relationInterfaceId = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var relationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(relationSystemName, organizationId, AccessModifier.Public);
-            var relationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(relationSystem.Id, organizationId);
+            var relationSystem = await CreateItSystemAsync(organizationUuid, relationSystemName);
+            var relationSystemUsage = await TakeSystemIntoUsageAsync(relationSystem.Uuid, organizationUuid);
 
             var relationInterfaceDTO = InterfaceHelper.CreateInterfaceDto(relationInterfaceName, relationInterfaceId, organizationId, AccessModifier.Public);
             var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
-            await InterfaceExhibitHelper.CreateExhibit(relationSystem.Id, relationInterface.Id);
 
-            var outgoingRelationDTO = new CreateSystemRelationDTO
-            {
-                FromUsageId = systemUsage.Id,
-                ToUsageId = relationSystemUsage.Id,
-                InterfaceId = relationInterface.Id
-            };
-            await SystemRelationHelper.PostRelationAsync(outgoingRelationDTO);
+            await InterfaceV2Helper.SendPatchExposedBySystemAsync(await GetGlobalToken(), relationInterface.Uuid,
+                relationSystem.Uuid);
+
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                {
+                    ToSystemUsageUuid = relationSystemUsage.Uuid,
+                    RelationInterfaceUuid = relationInterface.Uuid
+                });
 
 
             //Wait for read model to rebuild (wait for the LAST mutation)
@@ -744,7 +746,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(systemName, relationSystemReadModel.IncomingRelatedItSystemUsagesNamesAsCsv);
             Assert.Empty(relationSystemReadModel.DependsOnInterfaces);
             var rmIncomingSystemUsage = Assert.Single(relationSystemReadModel.IncomingRelatedItSystemUsages);
-            Assert.Equal(systemUsage.Id, rmIncomingSystemUsage.ItSystemUsageId);
+            Assert.Equal(systemUsage.Uuid, rmIncomingSystemUsage.ItSystemUsageUuid);
             Assert.Equal(systemName, rmIncomingSystemUsage.ItSystemUsageName);
         }
 
