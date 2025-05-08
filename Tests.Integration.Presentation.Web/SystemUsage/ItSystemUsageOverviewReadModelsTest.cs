@@ -8,15 +8,12 @@ using Core.DomainModel;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
-using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
-using Presentation.Web.Models.API.V1;
-using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
@@ -31,6 +28,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Internal;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
@@ -516,7 +514,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
@@ -995,7 +993,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         public async Task When_SystemRightIsDeleted_Role_Assignment_In_Readmodel_Is_Updated()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
             var systemName = A<string>();
@@ -1030,8 +1027,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await Console.Out.WriteLineAsync("Found one role assignment as expected");
 
             //Act - remove the right using the odata api
-            var rightId = DatabaseAccess.MapFromEntitySet<ItSystemRight, int>(rights => rights.AsQueryable().Single(x => x.ObjectId == readModel.SourceEntityId).Id);
+            var rightId = DatabaseAccess.MapFromEntitySet<ItSystemRight, int>(rights => rights.AsQueryable().Single(x => x.ObjectId == readModel.SourceEntityId).Id); //This block needs to fixed at some time
+            var rightUuid = DatabaseAccess.MapFromEntitySet<ItSystemRight, Guid>(rights => rights.AsQueryable().Single(x => x.ObjectId == readModel.SourceEntityId).Role.Uuid);
             await ItSystemUsageHelper.SendOdataDeleteRightRequestAsync(rightId).WithExpectedResponseCode(HttpStatusCode.NoContent).DisposeAsync();
+            await LocalOptionTypeV2Helper.DeleteLocalOptionType(organizationUuid, rightUuid, "it-systems-roles",
+                "api/v2/internal/it-systems").WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //Assert
             await WaitForReadModelQueueDepletion();
