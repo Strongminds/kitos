@@ -452,7 +452,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var systemParentName = A<string>();
             var newSystemParentName = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgGuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
@@ -470,7 +469,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
@@ -486,25 +485,34 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var systemName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgGuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             var orgUnitName1 = A<string>();
             var orgUnitName2 = A<string>();
-            var organizationUnit1 = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, orgUnitName1);
-            var organizationUnit2 = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, orgUnitName2);
+            var organizationUnit1 = await CreateOrganizationUnitAsync(organizationUuid, orgUnitName1);
+            var organizationUnit2 = await CreateOrganizationUnitAsync(organizationUuid, orgUnitName2);
 
-            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsage.Id, organizationUnit1.Id, organizationId).DisposeAsync();
-            await ItSystemUsageHelper.SendAddOrganizationUnitRequestAsync(systemUsage.Id, organizationUnit2.Id, organizationId).DisposeAsync();
-            await ItSystemUsageHelper.SendSetResponsibleOrganizationUnitRequestAsync(systemUsage.Id, organizationUnit1.Id).DisposeAsync();
+            await ItSystemUsageV2Helper.SendPatchOrganizationalUsage(await GetGlobalToken(), systemUsage.Uuid,
+                new OrganizationUsageWriteRequestDTO
+                {
+                    UsingOrganizationUnitUuids = new[] { organizationUnit1, organizationUnit2 }.Select(x => x.Uuid),
+                    ResponsibleOrganizationUnitUuid = organizationUnit1.Uuid
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await ItSystemUsageHelper.SendSetResponsibleOrganizationUnitRequestAsync(systemUsage.Id, organizationUnit2.Id).DisposeAsync();
+            await ItSystemUsageV2Helper.SendPatchOrganizationalUsage(await GetGlobalToken(), systemUsage.Uuid,
+                new OrganizationUsageWriteRequestDTO
+                {
+                    UsingOrganizationUnitUuids = new[] { organizationUnit1, organizationUnit2 }.Select(x => x.Uuid),
+                    ResponsibleOrganizationUnitUuid = organizationUnit2.Uuid
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
@@ -514,7 +522,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var readModel = Assert.Single(readModels);
             Console.Out.WriteLine("Read model found");
 
-            Assert.Equal(organizationUnit2.Id, readModel.ResponsibleOrganizationUnitId);
+            Assert.Equal(organizationUnit2.Uuid, readModel.ResponsibleOrganizationUnitUuid);
             Assert.Equal(orgUnitName2, readModel.ResponsibleOrganizationUnitName);
         }
 
