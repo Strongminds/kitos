@@ -23,6 +23,7 @@ namespace Tests.Integration.Presentation.Web.Tools
     public class BaseTest : WithAutoFixture
     {
         private string _token;
+        public readonly Guid DefaultOrgGuid = DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
 
         public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync(string name = null, string cvr = null)
         {
@@ -112,6 +113,11 @@ namespace Tests.Integration.Presentation.Web.Tools
         public int GetOrgId(Guid orgUuid)
         {
             return DatabaseAccess.GetEntityId<Organization>(orgUuid);
+        }
+
+        public Guid DefaultOrganizationUuid()
+        {
+            return DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
         }
     }
 }

@@ -148,14 +148,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PatchWithCookieAsync(url, cookie, body);
         }
 
-        public static async Task<IEnumerable<OptionDTO>> GetBusinessTypeOptionsAsync(int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/LocalBusinessTypes?$filter=IsLocallyAvailable eq true or IsObligatory eq true&$orderby=Priority desc&organizationId={organizationId}"), cookie);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadOdataListResponseBodyAsAsync<OptionDTO>();
-        }
-
         public static async Task<HttpResponseMessage> SendSetBusinessTypeRequestAsync(
             int systemId,
             int businessTypeId,

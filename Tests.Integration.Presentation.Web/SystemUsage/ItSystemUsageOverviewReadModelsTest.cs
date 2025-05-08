@@ -453,18 +453,21 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemParentName = A<string>();
             var newSystemParentName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgGuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemParent = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemParentName, organizationId, AccessModifier.Public);
-            await ItSystemHelper.SendSetParentSystemRequestAsync(system.Id, systemParent.Id, organizationId).DisposeAsync();
-            await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
+            var systemParent = await CreateItSystemAsync(organizationUuid, name: systemParentName);
+            var systemParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(systemParent.Uuid);
+            await ItSystemHelper.SendSetParentSystemRequestAsync(systemId, systemParentId, organizationId).DisposeAsync();
+            await ItSystemHelper.TakeIntoUseAsync(systemId, organizationId);
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await ItSystemHelper.SendSetNameRequestAsync(systemParent.Id, newSystemParentName, organizationId).DisposeAsync();
+            await ItSystemHelper.SendSetNameRequestAsync(systemParentId, newSystemParentName, organizationId).DisposeAsync();
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
@@ -475,7 +478,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read model found");
 
             Assert.Equal(newSystemParentName, readModel.ParentItSystemName);
-            Assert.Equal(systemParent.Id, readModel.ParentItSystemId);
+            Assert.Equal(systemParentId, readModel.ParentItSystemId);
         }
 
         [Fact]
