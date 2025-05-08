@@ -137,6 +137,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await SendPatchSystemAsync(token, uuid, x => x.RightsHolderUuid, rightsHolderUuid);
         }
 
+        public static async Task<HttpResponseMessage> SendPatchBusinessTypeAsync(string token, Guid uuid,
+            Guid businessTypeUuid)
+        {
+            return await SendPatchSystemAsync(token, uuid, x => x.BusinessTypeUuid, businessTypeUuid);
+        }
+
         public static async Task<IEnumerable<ItSystemSearchResponseDTO>> GetManyInternalAsync(
             Cookie cookie,
             int? page = null,

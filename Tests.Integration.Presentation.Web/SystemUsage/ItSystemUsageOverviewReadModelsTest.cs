@@ -570,15 +570,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var businessTypeName1 = A<string>();
             var businessTypeName2 = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
             var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             var businessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessTypeName1, organizationId);
 
-            await ItSystemHelper.SendSetBusinessTypeRequestAsync(system.Id, businessType.Id, organizationId).DisposeAsync();
+            await ItSystemV2Helper.SendPatchBusinessTypeAsync(await GetGlobalToken(), system.Uuid, businessType.Uuid);
 
-            //Wait for read model to rebuild (wait for the LAST mutation)
+            //Wait for read model to rebuild (wait for the LAST mutation)k
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
@@ -587,7 +588,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
@@ -603,32 +604,32 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var contractName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var contract = await ItContractHelper.CreateContract(contractName, organizationId);
+            var contract = await CreateItContractAsync(organizationUuid, contractName);
 
-            var contractUpdateBody = new
-            {
-                supplierId = organizationId
-            };
-            await ItContractHelper.PatchContract(contract.Id, organizationId, contractUpdateBody);
-            await ItContractHelper.AddItSystemUsage(contract.Id, systemUsage.Id, organizationId);
+            await ItContractV2Helper.SendPatchContractSupplierAsync(await GetGlobalToken(),
+                contract.Uuid, new ContractSupplierDataWriteRequestDTO { OrganizationUuid = organizationUuid });
+            await ItContractV2Helper.SendPatchSystemUsagesAsync(await GetGlobalToken(), contract.Uuid,
+                systemUsage.Uuid.WrapAsEnumerable());
 
-            await ItSystemUsageHelper.SendSetMainContractRequestAsync(systemUsage.Id, contract.Id).DisposeAsync();
+            await ItSystemUsageV2Helper.SendPatchGeneral(await GetGlobalToken(), systemUsage.Uuid,
+                new GeneralDataUpdateRequestDTO { MainContractUuid = contract.Uuid });
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await ItContractHelper.SendDeleteContractRequestAsync(contract.Id).DisposeAsync();
+            await ItContractV2Helper.DeleteContractAsync(await GetGlobalToken(), contract.Uuid);
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
