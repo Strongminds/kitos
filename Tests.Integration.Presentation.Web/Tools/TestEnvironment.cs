@@ -19,13 +19,10 @@ namespace Tests.Integration.Presentation.Web.Tools
         private static readonly IReadOnlyDictionary<OrganizationRole, KitosCredentials> ApiUsersFromEnvironment;
         private static readonly KitosTestEnvironment ActiveEnvironment;
         private static readonly string DefaultUserPassword;
-        public const int DefaultItSystemId = 1;
         public const int DefaultOrganizationId = 1;
         public const string DefaultOrganizationName = "Fælles Kommune";
         public const int SecondOrganizationId = 2;
         public const int DefaultUserId = 1;
-        public const int DefaultTaskRefId = 1;
-        public const string EmptyListApiJson = "{\"msg\":\"\",\"response\":[]}";
         private static readonly string ConnectionString;
 
         static TestEnvironment()

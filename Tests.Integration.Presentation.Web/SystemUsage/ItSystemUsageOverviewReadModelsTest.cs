@@ -425,16 +425,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var systemName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
