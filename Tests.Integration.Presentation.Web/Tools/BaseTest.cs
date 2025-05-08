@@ -4,11 +4,13 @@ using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
+using Presentation.Web.Models.API.V2.Response.Interface;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
@@ -89,10 +91,20 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await OrganizationUnitV2Helper.CreateUnitAsync(organizationUuid, request);
         }
 
+        public async Task<ItInterfaceResponseDTO> CreateItInterfaceAsync(Guid organizationUuid, string name = null)
+        {
+            var request = new CreateItInterfaceRequestDTO
+            {
+                Name = name ?? A<string>(),
+                OrganizationUuid = organizationUuid
+            };
+            return await InterfaceV2Helper.CreateItInterfaceAsync(await GetGlobalToken(), request);
+        }
+
         public string CreateCvr()
         {
             var rnd = new Random();
-            
+
             return rnd.Next(0, 100_000_000)
                 .ToString("D8");
         }
