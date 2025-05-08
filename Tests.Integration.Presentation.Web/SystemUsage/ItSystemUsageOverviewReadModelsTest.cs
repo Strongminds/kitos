@@ -21,6 +21,7 @@ using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
+using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Organization;
@@ -260,9 +261,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var outGoingRelationSystem = await CreateItSystemAsync(organizationUuid, name: outgoingRelationSystemName);
             var outgoingRelationSystemUsage = await TakeSystemIntoUsageAsync(outGoingRelationSystem.Uuid, organizationUuid);
 
-            var relationInterfaceDTO = InterfaceHelper.CreateInterfaceDto(relationInterfaceName, relationInterfaceId, organizationId, AccessModifier.Public);
-            var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
-            await InterfaceExhibitHelper.CreateExhibit(DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(outGoingRelationSystem.Uuid), relationInterface.Id);
+            var relationInterface = await InterfaceV2Helper.CreateItInterfaceAsync(await GetGlobalToken(), new CreateItInterfaceRequestDTO
+            {
+                OrganizationUuid = organizationUuid,
+                Name = relationInterfaceName,
+                ExposedBySystemUuid = outGoingRelationSystem.Uuid
+            });
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), incomingRelationSystemUsage.Uuid, new SystemRelationWriteRequestDTO
             {
@@ -404,7 +408,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // DependsOnInterfaces 
             Assert.Equal(relationInterfaceName, readModel.DependsOnInterfacesNamesAsCsv);
             var rmDependsOnInterface = Assert.Single(readModel.DependsOnInterfaces);
-            Assert.Equal(relationInterface.Id, rmDependsOnInterface.InterfaceId);
             Assert.Equal(relationInterface.Uuid, rmDependsOnInterface.InterfaceUuid);
             Assert.Equal(relationInterfaceName, rmDependsOnInterface.InterfaceName);
 
