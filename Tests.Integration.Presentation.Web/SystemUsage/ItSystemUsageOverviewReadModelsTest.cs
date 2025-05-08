@@ -47,7 +47,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         [Fact]
         public async Task Can_Query_And_Page_ReadModels_Using_Db_Id()
         {
-            await TestQueryAndPaging(async q => await ItSystemUsageHelper.QueryReadModelByNameContent(q.orgUuid, q.query, q.top, q.skip));
+            await TestQueryAndPaging(async q => await ItSystemUsageV2Helper.QueryReadModelByNameContent(q.orgUuid, q.query, q.top, q.skip));
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             await TestQueryAndPaging(async q =>
             {
-                return await ItSystemUsageHelper.QueryReadModelByNameContent(q.orgUuid, q.query, q.top, q.skip);
+                return await ItSystemUsageV2Helper.QueryReadModelByNameContent(q.orgUuid, q.query, q.top, q.skip);
             });
         }
 
@@ -286,7 +286,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var updatedSystemUsage = await ItSystemUsageV2Helper.GetSingleAsync(await GetGlobalToken(), systemUsage.Uuid);
 
             //Act 
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
