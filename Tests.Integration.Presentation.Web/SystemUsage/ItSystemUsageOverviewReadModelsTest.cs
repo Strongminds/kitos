@@ -942,50 +942,51 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var incomingRelationSystemName_initial = A<string>();
             var incomingRelationSystemName_changed = $"{incomingRelationSystemName_initial}_1";
             var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var outGoingRelationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(outgoingRelationSystemName_initial, organizationId, AccessModifier.Public);
-            var outGoingRelationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(outGoingRelationSystem.Id, organizationId);
+            var outGoingRelationSystem =
+                await CreateItSystemAsync(organizationUuid, outgoingRelationSystemName_initial);
+            var outGoingRelationSystemUsage =
+                await TakeSystemIntoUsageAsync(outGoingRelationSystem.Uuid, organizationUuid);
 
-            var incomingRelationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(incomingRelationSystemName_initial, organizationId, AccessModifier.Public);
-            var incomingRelationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(incomingRelationSystem.Id, organizationId);
+            var incomingRelationSystem =
+                await CreateItSystemAsync(organizationUuid, incomingRelationSystemName_initial);
+            var incomingRelationSystemUsage = await TakeSystemIntoUsageAsync(incomingRelationSystem.Uuid, organizationUuid);
 
-            var outgoingRelationDTO = new CreateSystemRelationDTO
-            {
-                FromUsageId = systemUsage.Id,
-                ToUsageId = outGoingRelationSystemUsage.Id,
-            };
-
-            var incomingRelationDTO = new CreateSystemRelationDTO
-            {
-                FromUsageId = incomingRelationSystemUsage.Id,
-                ToUsageId = systemUsage.Id,
-            };
-
-
-            await SystemRelationHelper.PostRelationAsync(outgoingRelationDTO);
-            await SystemRelationHelper.PostRelationAsync(incomingRelationDTO);
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                {
+                    ToSystemUsageUuid = outGoingRelationSystemUsage.Uuid
+                });
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), incomingRelationSystemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                {
+                    ToSystemUsageUuid = systemUsage.Uuid
+                });
 
             //Await first update
             await WaitForReadModelQueueDepletion();
 
             //Act + assert - Rename the system used in incoming relation and verify that the readmodel is updated
-            using var renameIncomingSystem = await ItSystemHelper.SendSetNameRequestAsync(incomingRelationSystem.Id, incomingRelationSystemName_changed, organizationId);
+            using var renameIncomingSystem = await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(),
+                incomingRelationSystem.Uuid, incomingRelationSystemName_changed);
             Assert.Equal(HttpStatusCode.OK, renameIncomingSystem.StatusCode);
 
             await WaitForReadModelQueueDepletion();
-            var mainSystemReadModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var mainSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             var mainSystemReadModel = Assert.Single(mainSystemReadModels);
             Assert.Equal(incomingRelationSystemName_changed, mainSystemReadModel.IncomingRelatedItSystemUsagesNamesAsCsv);
 
             //Act + assert - Rename the system used in outgoing relation and verify that the readmodel is updated
-            using var renameOutgoingSystem = await ItSystemHelper.SendSetNameRequestAsync(outGoingRelationSystem.Id, outgoingRelationSystemName_changed, organizationId);
+            using var renameOutgoingSystem = await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(),
+                outGoingRelationSystem.Uuid, outgoingRelationSystemName_changed);
             Assert.Equal(HttpStatusCode.OK, renameOutgoingSystem.StatusCode);
             await WaitForReadModelQueueDepletion();
 
-            mainSystemReadModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            mainSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             mainSystemReadModel = Assert.Single(mainSystemReadModels);
             Assert.Equal(outgoingRelationSystemName_changed, mainSystemReadModel.OutgoingRelatedItSystemUsagesNamesAsCsv);
         }
@@ -995,18 +996,24 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             //Arrange
             const int organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
             var systemName = A<string>();
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             // Role assignment
-            var businessRoleDtos = await ItSystemUsageHelper.GetAvailableRolesAsync(organizationId);
-            var role = businessRoleDtos.First();
-            var availableUsers = await ItSystemUsageHelper.GetAvailableUsersAsync(organizationId);
+            var role = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageRoles,
+                organizationUuid);
+            var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(organizationUuid);
             var user = availableUsers.First();
-            using var assignRoleResponse = await ItSystemUsageHelper.SendAssignRoleRequestAsync(systemUsage.Id, organizationId, role.Id, user.Id);
-            Assert.Equal(HttpStatusCode.Created, assignRoleResponse.StatusCode);
+            using var assignRoleResponse = await ItSystemUsageV2Helper.SendPatchAddRoleAssignment(
+                await GetGlobalToken(), systemUsage.Uuid, new RoleAssignmentRequestDTO
+                {
+                    UserUuid = user.Uuid,
+                    RoleUuid = role.Uuid
+                });
+            Assert.Equal(HttpStatusCode.OK, assignRoleResponse.StatusCode);
 
 
             //Wait for read model to rebuild (wait for the LAST mutation)
@@ -1014,12 +1021,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await Console.Out.WriteLineAsync("Read models are up to date");
 
             //Act 
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
             await Console.Out.WriteLineAsync("Read model found");
-            var roleAssignment = Assert.Single(readModel.RoleAssignments);
+            Assert.Single(readModel.RoleAssignments);
             await Console.Out.WriteLineAsync("Found one role assignment as expected");
 
             //Act - remove the right using the odata api
@@ -1030,7 +1037,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await WaitForReadModelQueueDepletion();
             await Console.Out.WriteLineAsync("Read models are up to date");
 
-            readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             readModel = Assert.Single(readModels);
             Assert.Empty(readModel.RoleAssignments);
         }
