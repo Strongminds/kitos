@@ -131,10 +131,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var system = await PrepareItSystem(systemName, systemPreviousName, systemDescription, organizationId, organizationName, AccessModifier.Public);
             var systemParent = await CreateItSystemAsync(organizationUuid, name: systemParentName);
             var systemParentUsage = await TakeSystemIntoUsageAsync(systemParent.Uuid, organizationUuid);
-            var systemParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(systemParent.Uuid);
 
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
-            var systemUsageId = DatabaseAccess.GetEntityId<ItSystemUsage>(systemUsage.Uuid);
 
             // Role assignment
             var role = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageRoles,
@@ -206,7 +204,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Main Contract
             var contract1 = await CreateItContractAsync(organizationUuid, contract1Name);
             var contract2 = await CreateItContractAsync(organizationUuid, contract2Name);
-            
+
             await ItContractV2Helper.SendPatchContractSupplierAsync(await GetGlobalToken(), contract1.Uuid,
                 new ContractSupplierDataWriteRequestDTO { OrganizationUuid = organizationUuid });
 
@@ -245,7 +243,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // DataProcessingRegistrations
             var yesNoIrrelevantOption = A<YesNoIrrelevantChoice>();
-            var dataProcessingRegistration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), dataProcessingRegistrationName);
+            var dataProcessingRegistration = await CreateDPRAsync(organizationUuid, dataProcessingRegistrationName);
             await DataProcessingRegistrationV2Helper.PatchIsAgreementConcludedAsync(dataProcessingRegistration.Uuid, yesNoIrrelevantOption);
             await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dataProcessingRegistration.Uuid, systemUsage.Uuid.WrapAsEnumerable()).DisposeAsync();
 
@@ -288,14 +286,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var updatedSystemUsage = await ItSystemUsageV2Helper.GetSingleAsync(await GetGlobalToken(), systemUsage.Uuid);
 
             //Act 
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
             Console.Out.WriteLine("Read model found");
 
             // From System Usage
-            Assert.Equal(systemUsageId, readModel.SourceEntityId);
             Assert.Equal(systemUsage.Uuid, readModel.SourceEntityUuid);
             Assert.Equal(organizationId, readModel.OrganizationId);
             Assert.Equal(systemUsageVersion, readModel.Version);
@@ -353,7 +350,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             // From Parent System
             Assert.Equal(systemParentName, readModel.ParentItSystemName);
-            Assert.Equal(systemParentId, readModel.ParentItSystemId);
             Assert.Equal(systemParent.Uuid, readModel.ParentItSystemUuid);
             Assert.Equal(systemParentDisabled, readModel.ParentItSystemDisabled);
             Assert.Equal(systemParentUsage.Uuid, readModel.ParentItSystemUsageUuid);
@@ -363,7 +359,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             Assert.Equal(role.Uuid, roleAssignment.RoleUuid);
             Assert.Equal(role.Uuid, roleAssignment.RoleUuid);
-            Assert.Equal(DatabaseAccess.GetEntityId<User>(user.Uuid), roleAssignment.UserId);
+            Assert.Equal(DatabaseAccess.GetEntityId<User>(user.Uuid), roleAssignment.UserId); //Probably need UserUuid on roleassignments
             Assert.Equal($"{user.FirstName} {user.LastName}", roleAssignment.UserFullName);
             Assert.Equal(user.Email, roleAssignment.Email);
 
@@ -379,7 +375,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(reference.DocumentId, readModel.LocalReferenceDocumentId);
 
             // Main Contract
-            Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0));
+            Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0)); //also MainContractUuid
             Assert.Equal(organizationId, readModel.MainContractSupplierId);
             Assert.Equal(organizationName, readModel.MainContractSupplierName);
             Assert.True(readModel.MainContractIsActive);
