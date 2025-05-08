@@ -18,9 +18,11 @@ using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit.Abstractions;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
+using Tests.Integration.Presentation.Web.Tools.Internal.References;
 using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 
 namespace Tests.Integration.Presentation.Web.GDPR
@@ -40,19 +42,19 @@ namespace Tests.Integration.Presentation.Web.GDPR
         {
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
+            var organizationUuid = DefaultOrgUuid;
             var suffix = A<Guid>().ToString("N");
             var name1 = $"1_{suffix}";
             var name2 = $"2_{suffix}";
             var name3 = $"3_{suffix}";
 
-            await CreateDPRAsync(orgUuid, name1);
-            await CreateDPRAsync(orgUuid, name2);
-            await CreateDPRAsync(orgUuid, name3);
+            await CreateDPRAsync(organizationUuid, name1);
+            await CreateDPRAsync(organizationUuid, name2);
+            await CreateDPRAsync(organizationUuid, name3);
 
             //Act
-            var page1 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(orgUuid, suffix, 2, 0)).ToList();
-            var page2 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(orgUuid, suffix, 2, 2)).ToList();
+            var page1 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 0)).ToList();
+            var page2 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 2)).ToList();
 
             //Assert
             Assert.Equal(2, page1.Count);
@@ -76,7 +78,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var refUserAssignedId = $"REF:{name}EXT_ID";
             var refUrl = $"https://www.test-rm{A<uint>()}.dk";
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var orgUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
+            var organizationUuid = DefaultOrgUuid;
             var isAgreementConcluded = A<YesNoIrrelevantChoice>();
             var oversightInterval = A<OversightIntervalChoice>();
             var oversightCompleted = YesNoUndecidedChoice.Yes;
@@ -85,27 +87,29 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var transferToThirdCountries = A<YesNoUndecidedChoice>();
             var oversightScheduledInspectionDate = A<DateTime>();
 
-            var dataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, dpName, "22334455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var subDataProcessor = await OrganizationHelper.CreateOrganizationAsync(organizationId, subDpName, "22314455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
-            var registration = await CreateDPRAsync(orgUuid, name);
+            var dataProcessor = await CreateOrganizationAsync(dpName);
+            var subDataProcessor = await CreateOrganizationAsync(subDpName);
+            var registration = await CreateDPRAsync(organizationUuid, name);
             var regId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
 
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark };
 
-            var businessRoleDtos = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationRoles, orgUuid, 25, 0);
+            var businessRoleDtos = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationRoles, organizationUuid, 25, 0);
             var role = businessRoleDtos.First();
-            var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(orgUuid);
+            var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(organizationUuid);
             var user = availableUsers.First();
             using var response = await DataProcessingRegistrationV2Helper.SendPatchAddRoleAssignment(registration.Uuid, new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid });
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             //Contracts
-            var contractDto = await ItContractHelper.CreateContract(contractName, organizationId);
-            using var assignDataProcessingResponse = await ItContractHelper.SendAssignDataProcessingRegistrationAsync(contractDto.Id, regId);
+            var contractDto = await CreateItContractAsync(organizationUuid, contractName);
+            using var assignDataProcessingResponse =
+                await ItContractV2Helper.SendPatchDataProcessingRegistrationsAsync(await GetGlobalToken(),
+                    contractDto.Uuid, registration.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignDataProcessingResponse.StatusCode);
 
-            async Task<IEnumerable<IdentityNamePairResponseDTO>> OptionsFetcherHelper(string resource) => await OptionV2ApiHelper.GetOptionsAsync(resource, orgUuid, 25, 0);
+            async Task<IEnumerable<IdentityNamePairResponseDTO>> OptionsFetcherHelper(string resource) => await OptionV2ApiHelper.GetOptionsAsync(resource, organizationUuid, 25, 0);
 
             var basisForTransferOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationBasisForTransfer);
             var dataResponsibleOptions = await OptionsFetcherHelper(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationDataResponsible);
@@ -146,7 +150,13 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(HttpStatusCode.OK, oversightResponse.StatusCode);
 
             //References
-            await ReferencesHelper.CreateReferenceAsync(refName, refUserAssignedId, refUrl, dto => dto.DataProcessingRegistration_Id = regId);
+            var referenceRequest = new UpdateExternalReferenceDataWriteRequestDTO
+            {
+                Title = refName,
+                DocumentId = refUserAssignedId,
+                Url = refUrl
+            };
+            await DataProcessingRegistrationV2Helper.SendPatchExternalReferences(await GetGlobalToken(), registration.Uuid, referenceRequest.WrapAsEnumerable());
 
             //Systems
             var itSystemDto = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
@@ -157,7 +167,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await WaitForReadModelQueueDepletion();
 
             //Act
-            var readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(orgUuid, name, 1, 0)).ToList();
+            var readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, name, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
@@ -194,7 +204,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Assert that the source object can be deleted and that the readmodel is gone now
             await DataProcessingRegistrationV2Helper.DeleteAsync(await GetGlobalToken(), registration.Uuid);
 
-            readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(orgUuid, name, 1, 0)).ToList();
+            readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, name, 1, 0)).ToList();
             Assert.Empty(readModels);
         }
 

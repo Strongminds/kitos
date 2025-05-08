@@ -9,7 +9,6 @@ using Core.DomainModel.ItContract;
 using Core.DomainModel.ItContract.Read;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V1;
-using Presentation.Web.Models.API.V1.ItContract;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Tools
