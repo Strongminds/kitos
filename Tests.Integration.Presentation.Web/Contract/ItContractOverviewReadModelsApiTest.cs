@@ -13,6 +13,7 @@ using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Model;
@@ -24,13 +25,13 @@ namespace Tests.Integration.Presentation.Web.Contract
     [Collection(nameof(SequentialTestGroup))]
     public class ItContractOverviewReadModelsApiTest : BaseTest, IAsyncLifetime
     {
-        private OrganizationDTO _organization;
-        private OrganizationDTO _supplier;
+        private ShallowOrganizationResponseDTO _organization;
+        private ShallowOrganizationResponseDTO _supplier;
 
         public async Task InitializeAsync()
         {
-            _organization = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
-            _supplier = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
+            _organization = await CreateOrganizationAsync();
+            _supplier = await CreateOrganizationAsync();
 
         }
 
@@ -44,19 +45,19 @@ namespace Tests.Integration.Presentation.Web.Contract
         public async Task Can_Query_And_Page_ReadModels()
         {
             ////Arrange
-            var organizationId = _organization.Id;
+            var organizationUuid = _organization.Uuid;
             var suffix = A<Guid>().ToString("N");
             var name1 = $"1_{suffix}";
             var name2 = $"2_{suffix}";
             var name3 = $"3_{suffix}";
 
-            await ItContractHelper.CreateContract(name1, organizationId);
-            await ItContractHelper.CreateContract(name2, organizationId);
-            await ItContractHelper.CreateContract(name3, organizationId);
+            await CreateItContractAsync(organizationUuid, name1);
+            await CreateItContractAsync(organizationUuid, name2);
+            await CreateItContractAsync(organizationUuid, name3);
 
             //Act
-            var page1 = (await ItContractHelper.QueryReadModelByNameContent(organizationId, suffix, 2, 0)).ToList();
-            var page2 = (await ItContractHelper.QueryReadModelByNameContent(organizationId, suffix, 2, 2)).ToList();
+            var page1 = (await ItContractV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 0)).ToList();
+            var page2 = (await ItContractV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 2)).ToList();
 
             //Assert
             Assert.Equal(2, page1.Count);
@@ -71,7 +72,7 @@ namespace Tests.Integration.Presentation.Web.Contract
         public async Task ReadModels_Contain_Correct_Content()
         {
             //Arrange
-            var organizationId = _organization.Id;
+            var organizationId = GetOrgId(_organization.Uuid);
             var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
             var name = CreateName();
             var itSystem1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organizationId, AccessModifier.Public);
@@ -120,7 +121,7 @@ namespace Tests.Integration.Presentation.Web.Contract
                 Terminated = A<DateTime>(),
                 Concluded = A<DateTime>(),
                 ExpirationDate = A<DateTime>(),
-                SupplierId = _supplier.Id,
+                SupplierId = GetOrgId(_supplier.Uuid),
                 ParentId = parentContract.Id,
                 CriticalityId = criticality.Id,
                 ResponsibleOrganizationUnitId = organizationUnitId,
@@ -184,7 +185,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(changes.Terminated.Date, readModel.TerminatedAt);
             Assert.Equal(changes.Concluded.Date, readModel.Concluded);
             Assert.Equal(changes.ExpirationDate.Date, readModel.ExpirationDate);
-            AssertReferencedEntity(_supplier.Id, _supplier.Name, readModel.SupplierId, readModel.SupplierName);
+            AssertReferencedEntity(GetOrgId(_supplier.Uuid), _supplier.Name, readModel.SupplierId, readModel.SupplierName);
             AssertReferencedEntity(parentContract.Id, parentContract.Name, readModel.ParentContractId, readModel.ParentContractName, parentContract.Uuid, readModel.ParentContractUuid);
             AssertReferencedEntity(criticality.Id, criticality.Name, readModel.CriticalityId, readModel.CriticalityName, criticality.Uuid, readModel.CriticalityUuid);
             AssertReferencedEntity(organizationUnitId, organizationUnit.Name, readModel.ResponsibleOrgUnitId, readModel.ResponsibleOrgUnitName);
