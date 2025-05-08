@@ -452,7 +452,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var systemParentName = A<string>();
             var newSystemParentName = A<string>();
-            var organizationUuid = DefaultOrgGuid;
+            var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
             var systemParent = await CreateItSystemAsync(organizationUuid, name: systemParentName);
@@ -485,7 +485,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var systemName = A<string>();
             var organizationId = TestEnvironment.DefaultOrganizationId;
-            var organizationUuid = DefaultOrgGuid;
+            var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
@@ -534,13 +534,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var organizationName1 = A<string>();
             var organizationName2 = A<string>();
             var defaultOrganizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, defaultOrganizationId, AccessModifier.Public);
-            await ItSystemHelper.TakeIntoUseAsync(system.Id, defaultOrganizationId);
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var organization1 = await OrganizationHelper.CreateOrganizationAsync(defaultOrganizationId, organizationName1, "", OrganizationTypeKeys.Kommune, AccessModifier.Public);
+            var organization1 = await CreateOrganizationAsync(organizationName1);
 
-            await ItSystemHelper.SendSetBelongsToRequestAsync(system.Id, organization1.Id, defaultOrganizationId).DisposeAsync();
+            await ItSystemV2Helper.SendPatchRightsHolderAsync(await GetGlobalToken(), system.Uuid, organization1.Uuid).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
@@ -552,7 +553,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(defaultOrganizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);

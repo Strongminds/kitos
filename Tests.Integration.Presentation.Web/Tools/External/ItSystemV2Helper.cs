@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -127,8 +128,13 @@ namespace Tests.Integration.Presentation.Web.Tools.External
 
         public static async Task<HttpResponseMessage> SendPatchSystemNameAsync(string token, Guid uuid, string name)
         {
-            var request = new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Name), name);
-            return await SendPatchSystemAsync(token, uuid, request);
+            return await SendPatchSystemAsync(token, uuid, x => x.Name, name);
+        }
+
+        public static async Task<HttpResponseMessage> SendPatchRightsHolderAsync(string token, Guid uuid,
+            Guid rightsHolderUuid)
+        {
+            return await SendPatchSystemAsync(token, uuid, x => x.RightsHolderUuid, rightsHolderUuid);
         }
 
         public static async Task<IEnumerable<ItSystemSearchResponseDTO>> GetManyInternalAsync(
@@ -363,6 +369,20 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             return await response.ReadResponseBodyAsAsync<ResourceCollectionPermissionsResponseDTO>();
+        }
+
+        public static async Task<HttpResponseMessage> SendPatchSystemAsync<T>(
+            string token,
+            Guid uuid,
+            Expression<Func<UpdateItSystemRequestDTO, T>> propertySelector,
+            T value)
+        {
+            if (!(propertySelector.Body is MemberExpression m))
+                throw new ArgumentException("Selector must be a simple member access", nameof(propertySelector));
+
+            var propertyName = m.Member.Name;
+            var kvp = new KeyValuePair<string, object>(propertyName, value);
+            return await SendPatchSystemAsync(token, uuid, kvp);
         }
     }
 }
