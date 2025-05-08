@@ -893,44 +893,36 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var relationSystemName = A<string>();
             var relationInterfaceName = A<string>();
-            var relationInterfaceId = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var relationSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(relationSystemName, organizationId, AccessModifier.Public);
-            var relationSystemUsage = await ItSystemHelper.TakeIntoUseAsync(relationSystem.Id, organizationId);
+            var relationSystem = await CreateItSystemAsync(organizationUuid, relationSystemName);
+            var relationSystemUsage = await TakeSystemIntoUsageAsync(relationSystem.Uuid, organizationUuid);
 
-            var relationInterfaceDTO = InterfaceHelper.CreateInterfaceDto(relationInterfaceName, relationInterfaceId, organizationId, AccessModifier.Public);
-            var relationInterface = await InterfaceHelper.CreateInterface(relationInterfaceDTO);
-            await InterfaceExhibitHelper.CreateExhibit(relationSystem.Id, relationInterface.Id);
+            var relationInterface = await CreateItInterfaceAsync(organizationUuid, relationInterfaceName);
+            await InterfaceV2Helper.SendPatchExposedBySystemAsync(await GetGlobalToken(), relationInterface.Uuid, relationSystem.Uuid);
 
-            var outgoingRelationDTO = new CreateSystemRelationDTO
-            {
-                FromUsageId = systemUsage.Id,
-                ToUsageId = relationSystemUsage.Id,
-                InterfaceId = relationInterface.Id
-            };
-
-            var incomingRelationDto = new CreateSystemRelationDTO
-            {
-                FromUsageId = relationSystemUsage.Id,
-                ToUsageId = systemUsage.Id
-            };
-            await SystemRelationHelper.PostRelationAsync(outgoingRelationDTO);
-            await SystemRelationHelper.PostRelationAsync(incomingRelationDto);
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                    { ToSystemUsageUuid = relationSystemUsage.Uuid, RelationInterfaceUuid = relationInterface.Uuid });
+            await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), relationSystemUsage.Uuid,
+                new SystemRelationWriteRequestDTO
+                {
+                    ToSystemUsageUuid = systemUsage.Uuid
+                });
 
             //Await first update
             await WaitForReadModelQueueDepletion();
 
             //Act - Second update should blank out the relation fields since the affected usage has been killed
-            using var removeUsage = await ItSystemHelper.SendRemoveUsageAsync(relationSystemUsage.Id, organizationId);
-            Assert.Equal(HttpStatusCode.OK, removeUsage.StatusCode);
+            using var removeUsage = await ItSystemUsageV2Helper.SendDeleteAsync(await GetGlobalToken(), relationSystemUsage.Uuid);
+            Assert.Equal(HttpStatusCode.NoContent, removeUsage.StatusCode);
 
             //Assert
             await WaitForReadModelQueueDepletion();
-            var mainSystemReadModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var mainSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             var mainSystemReadModel = Assert.Single(mainSystemReadModels);
             Console.Out.WriteLine("Read model found");
 
