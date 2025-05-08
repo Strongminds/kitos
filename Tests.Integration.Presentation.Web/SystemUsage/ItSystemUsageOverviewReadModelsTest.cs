@@ -465,8 +465,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), systemParent.Uuid,
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Name), newSystemParentName));
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), systemParent.Uuid,
+                newSystemParentName).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");

@@ -125,6 +125,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl($"{BaseRightsHolderPath}/{uuid:D}"), token);
         }
 
+        public static async Task<HttpResponseMessage> SendPatchSystemNameAsync(string token, Guid uuid, string name)
+        {
+            var request = new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Name), name);
+            return await SendPatchSystemAsync(token, uuid, request);
+        }
+
         public static async Task<IEnumerable<ItSystemSearchResponseDTO>> GetManyInternalAsync(
             Cookie cookie,
             int? page = null,
