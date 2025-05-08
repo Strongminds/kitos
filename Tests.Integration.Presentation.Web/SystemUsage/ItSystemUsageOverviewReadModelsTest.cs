@@ -647,13 +647,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemName = A<string>();
             var dataProcessingRegistrationName = A<string>();
             var newDataProcessingRegistrationName = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
             var yesNoIrrelevantOption = A<YesNoIrrelevantChoice>();
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
-            var systemUsage = await ItSystemHelper.TakeIntoUseAsync(system.Id, organizationId);
+            var system = await CreateItSystemAsync(organizationUuid, systemName);
+            var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var dataProcessingRegistration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId), dataProcessingRegistrationName);
+            var dataProcessingRegistration = await CreateDPRAsync(organizationUuid, dataProcessingRegistrationName);
             await DataProcessingRegistrationV2Helper.PatchIsAgreementConcludedAsync(dataProcessingRegistration.Uuid, A<YesNoIrrelevantChoice>());
             await DataProcessingRegistrationV2Helper.PatchSystemsAsync(dataProcessingRegistration.Uuid, systemUsage.Uuid.WrapAsEnumerable()).DisposeAsync();
 
@@ -669,7 +669,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
-            var readModels = (await ItSystemUsageHelper.QueryReadModelByNameContent(organizationId, systemName, 1, 0)).ToList();
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
 
             //Assert
             var readModel = Assert.Single(readModels);
