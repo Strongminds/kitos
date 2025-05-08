@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Core.DomainModel;
@@ -59,22 +58,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             {
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 return await response.ReadResponseBodyAsKitosApiResponseAsync<ItInterfaceDTO>();
-            }
-        }
-
-        public static async Task<HttpResponseMessage> SendChangeNameRequestAsync(int interfaceId, string newName, int orgId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/itInterface/{interfaceId}?organizationId={orgId}");
-            var body = new
-            {
-                name = newName
-            };
-
-            using (var response = await HttpApi.PatchWithCookieAsync(url, cookie, body))
-            {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                return response;
             }
         }
 
