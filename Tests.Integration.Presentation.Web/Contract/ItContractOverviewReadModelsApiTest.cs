@@ -12,6 +12,7 @@ using Xunit;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Controllers.API.V2.Internal.Users;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Request.Contract;
@@ -23,6 +24,7 @@ using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Contract;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
@@ -113,7 +115,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             var itContract = await CreateItContractAsync(organizationUuid, name);
             var organizationUnit =
                 (await OrganizationUnitV2Helper.GetOrganizationUnitsAsync(await GetGlobalToken(), organizationUuid)).RandomItem();
-            
+
             var criticality = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.CriticalityTypes, organizationUuid);
             var contractType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItContractContractTypes, organizationUuid);
             var contractTemplate = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItContractContractTemplateTypes, organizationUuid);
@@ -217,18 +219,20 @@ namespace Tests.Integration.Presentation.Web.Contract
 
             await ItContractV2Helper.SendPatchSystemUsagesAsync(await GetGlobalToken(), itContract.Uuid, new[] { usage1.Uuid, usage2.Uuid });
 
-            var user1Id = await HttpApi.CreateOdataUserAsync(new ApiUserDTO() { Email = $"{A<Guid>():N}@kitos.dk", Name = A<string>(), LastName = A<string>() }, OrganizationRole.User, organizationId);
-            var user2Id = await HttpApi.CreateOdataUserAsync(new ApiUserDTO() { Email = $"{A<Guid>():N}@kitos.dk", Name = A<string>(), LastName = A<string>() }, OrganizationRole.User, organizationId);
+            var user1 = await CreateUserAsync(organizationUuid);
+            var user1Id = DatabaseAccess.GetEntityId<User>(user1.Uuid);
+            var user2 = await CreateUserAsync(organizationUuid);
+            var user2Id = DatabaseAccess.GetEntityId<User>(user2.Uuid);
             var roles = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItContractRoles,
                 organizationUuid, 25, 0);
             var role1 = roles.RandomItem();
             var role2 = roles.RandomItem();
             await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
                 new RoleAssignmentRequestDTO
-                { RoleUuid = role1.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user1Id) });
+                { RoleUuid = role1.Uuid, UserUuid = user1.Uuid });
             await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
                 new RoleAssignmentRequestDTO
-                { RoleUuid = role2.Uuid, UserUuid = DatabaseAccess.GetEntityUuid<User>(user2Id) });
+                { RoleUuid = role2.Uuid, UserUuid = user2.Uuid });
 
             //Act
             await ReadModelTestTools.WaitForReadModelQueueDepletion();

@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
+using Presentation.Web.Models.API.V2.Internal.Response.User;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
+using Presentation.Web.Models.API.V2.Request.User;
 using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Interface;
@@ -17,6 +20,7 @@ using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
+using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 using Tests.Toolkit.Patterns;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
@@ -101,12 +105,29 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await InterfaceV2Helper.CreateItInterfaceAsync(await GetGlobalToken(), request);
         }
 
+        public async Task<UserResponseDTO> CreateUserAsync(Guid organizationUuid)
+        {
+            var request = new CreateUserRequestDTO
+            {
+                FirstName = A<string>(),
+                LastName = A<string>(),
+                Email = CreateEmail(),
+                Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
+            };
+            return await UsersV2Helper.CreateUser(organizationUuid, request);
+        }
+
         public string CreateCvr()
         {
             var rnd = new Random();
 
             return rnd.Next(0, 100_000_000)
                 .ToString("D8");
+        }
+
+        public string CreateEmail()
+        {
+            return $"{A<string>()}@kitos.dk";
         }
 
         public async Task<string> GetGlobalToken()
