@@ -456,18 +456,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var organizationUuid = DefaultOrgGuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
-            var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
             var systemParent = await CreateItSystemAsync(organizationUuid, name: systemParentName);
-            var systemParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(systemParent.Uuid);
-            await ItSystemHelper.SendSetParentSystemRequestAsync(systemId, systemParentId, organizationId).DisposeAsync();
-            await ItSystemHelper.TakeIntoUseAsync(systemId, organizationId);
+            await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid));
+            await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await ItSystemHelper.SendSetNameRequestAsync(systemParentId, newSystemParentName, organizationId).DisposeAsync();
+            await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), systemParent.Uuid,
+                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Name), newSystemParentName));
             //Wait for read model to rebuild (wait for the LAST mutation)
             await WaitForReadModelQueueDepletion();
             Console.Out.WriteLine("Read models are up to date");
@@ -478,7 +477,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read model found");
 
             Assert.Equal(newSystemParentName, readModel.ParentItSystemName);
-            Assert.Equal(systemParentId, readModel.ParentItSystemId);
+            Assert.Equal(systemParent.Uuid, readModel.ParentItSystemUuid);
         }
 
         [Fact]
