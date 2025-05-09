@@ -97,12 +97,14 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await OrganizationUnitV2Helper.CreateUnitAsync(organizationUuid, request);
         }
 
-        public async Task<ItInterfaceResponseDTO> CreateItInterfaceAsync(Guid organizationUuid, string name = null)
+        public async Task<ItInterfaceResponseDTO> CreateItInterfaceAsync(Guid organizationUuid, string name = null, RegistrationScopeChoice scope = RegistrationScopeChoice.Global, string interfaceId = null)
         {
             var request = new CreateItInterfaceRequestDTO
             {
                 Name = name ?? A<string>(),
-                OrganizationUuid = organizationUuid
+                OrganizationUuid = organizationUuid,
+                Scope = scope,
+                InterfaceId = interfaceId ?? A<string>()
             };
             return await InterfaceV2Helper.CreateItInterfaceAsync(await GetGlobalToken(), request);
         }

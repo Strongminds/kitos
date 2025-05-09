@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Tests.Integration.Presentation.Web.Tools;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Interfaces.V2
 {
-    public abstract class BaseItInterfaceApiV2Test : WithAutoFixture
+    public abstract class BaseItInterfaceApiV2Test : BaseTest
     {
         protected async Task<OrganizationDTO> CreateOrganization(string cvr = "11223344")
         {
@@ -23,11 +22,6 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         protected string CreateName()
         {
             return $"{nameof(ItInterfaceApiV2Test)}{A<string>()}";
-        }
-
-        protected string CreateEmail()
-        {
-            return $"{A<string>()}@test.dk";
         }
 
         protected string CreateLongString(string parameterName)

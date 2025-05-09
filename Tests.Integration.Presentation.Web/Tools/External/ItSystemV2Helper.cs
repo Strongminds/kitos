@@ -136,6 +136,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         {
             return await SendPatchSystemAsync(token, uuid, x => x.RightsHolderUuid, rightsHolderUuid);
         }
+        public static async Task<HttpResponseMessage> PatchRightsHolderAsync(Guid uuid,
+            Guid rightsHolderUuid)
+        {
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            return await SendPatchSystemAsync(token.Token, uuid, x => x.RightsHolderUuid, rightsHolderUuid);
+        }
 
         public static async Task<HttpResponseMessage> SendPatchBusinessTypeAsync(string token, Guid uuid,
             Guid businessTypeUuid)
