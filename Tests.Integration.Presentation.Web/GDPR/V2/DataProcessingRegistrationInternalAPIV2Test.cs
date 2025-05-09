@@ -116,10 +116,5 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var userAndGetCookie = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.GlobalAdmin, organizationId);
             return (userAndGetCookie.userId, userAndGetCookie.loginCookie);
         }
-
-        private string CreateEmail()
-        {
-            return $"{A<string>()}{DateTime.Now.Ticks}@kitos.dk";
-        }
     }
 }

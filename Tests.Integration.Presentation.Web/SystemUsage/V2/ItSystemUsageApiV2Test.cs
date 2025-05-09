@@ -2928,11 +2928,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             };
         }
 
-        private string CreateEmail()
-        {
-            return $"{CreateName()}{DateTime.Now.Ticks}@kitos.dk";
-        }
-
         private static void AssertExpectedUsageShallow(ItSystemUsageResponseDTO expectedContent, IEnumerable<ItSystemUsageResponseDTO> dtos)
         {
             var dto = Assert.Single(dtos, usage => usage.Uuid == expectedContent.Uuid);

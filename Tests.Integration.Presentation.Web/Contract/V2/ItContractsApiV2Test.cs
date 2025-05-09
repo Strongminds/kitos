@@ -2293,11 +2293,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             return $"{nameof(ItContractsApiV2Test)}æøå{A<string>()}";
         }
 
-        private string CreateEmail()
-        {
-            return $"{nameof(ItContractsApiV2Test)}{A<string>()}@test.dk";
-        }
-
         private static void AssertCrossReference<TExpected, TActual>(TExpected expected, TActual actual) where TExpected : IHasNameExternal, IHasUuidExternal where TActual : IHasNameExternal, IHasUuidExternal
         {
             Assert.Equal(expected?.Uuid, actual?.Uuid);
@@ -2317,11 +2312,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             Assert.Equal(expectedOrganization.Uuid, dto.OrganizationContext.Uuid);
             Assert.Equal(expectedOrganization.Name, dto.OrganizationContext.Name);
             Assert.Equal(expectedOrganization.Cvr, dto.OrganizationContext.Cvr);
-        }
-
-        private async Task<ItContractResponseDTO> CreateItContractAsync(Guid orgUuid, string name = null)
-        {
-            return await base.CreateItContractAsync(orgUuid, name);
         }
 
         private async Task<(string token, User user, ShallowOrganizationResponseDTO organization)> CreatePrerequisitesAsync()

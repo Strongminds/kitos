@@ -1876,11 +1876,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             return $"{nameof(DataProcessingRegistrationApiV2Test)}æøå{A<string>()}";
         }
 
-        private string CreateEmail()
-        {
-            return $"{A<string>()}{DateTime.Now.Ticks}@kitos.dk";
-        }
-
         private async Task<(List<RoleAssignmentRequestDTO>, List<User>)> CreateRoles(ShallowOrganizationResponseDTO organization)
         {
             var (user1, _) = await CreateApiUserAsync(organization);
