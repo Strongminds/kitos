@@ -1482,16 +1482,17 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             //Arrange
             var systemPrefix = A<Guid>().ToString("N");
             const int organizationId = TestEnvironment.DefaultOrganizationId;
+            var organizationUuid = DefaultOrgUuid;
             var system1Name = $"{systemPrefix}{1}";
             var system2Name = $"{systemPrefix}{2}";
             var filteredOutSystemName = A<string>();
-            var registration = await CreateDPRAsync(DatabaseAccess.GetEntityUuid<Organization>(organizationId));
-            var system1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(system1Name, organizationId, AccessModifier.Public);
-            var system2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(system2Name, organizationId, AccessModifier.Public);
-            var filteredOutSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(filteredOutSystemName, organizationId, AccessModifier.Public);
-            var usage1 = await ItSystemHelper.TakeIntoUseAsync(system1.Id, organizationId);
-            var usage2 = await ItSystemHelper.TakeIntoUseAsync(system2.Id, organizationId);
-            await ItSystemHelper.TakeIntoUseAsync(filteredOutSystem.Id, organizationId);
+            var registration = await CreateDPRAsync(organizationUuid);
+            var system1 = await CreateItSystemAsync(organizationUuid, system1Name);
+            var system2 = await CreateItSystemAsync(organizationUuid, system2Name);
+            var filteredOutSystem = await CreateItSystemAsync(organizationUuid, filteredOutSystemName);
+            var usage1 = await TakeSystemIntoUsageAsync(system1.Uuid, organizationUuid);
+            var usage2 = await TakeSystemIntoUsageAsync(system2.Uuid, organizationUuid);
+            await TakeSystemIntoUsageAsync(filteredOutSystem.Uuid, organizationUuid);
 
             //Act
             var dtos = (await DataProcessingRegistrationV2Helper.GetAvailableSystemsAsync(registration.Uuid, systemPrefix)).ToList();
