@@ -78,26 +78,5 @@ namespace Tests.Integration.Presentation.Web.Tools
             Assert.Equal(HttpStatusCode.OK, okResponse.StatusCode);
             return await okResponse.ReadResponseBodyAsKitosApiResponseAsync<ItContractDTO>();
         }
-
-        public static async Task<HttpResponseMessage> SendAssignDataProcessingRegistrationAsync(int contractId, int registrationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/itcontract/{contractId}/data-processing-registration/assign"), cookie, new { Value = registrationId });
-        }
-
-        public static async Task<HttpResponseMessage> SendAssignResponsibleOrgUnitAsync(int contractId, int orgUnitId, int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/itcontract/{contractId}?organizationId={organizationId}"), cookie, new { responsibleOrganizationUnitId = orgUnitId });
-        }
-
-        public static async Task<HttpResponseMessage> SendAssignSupplierAsync(int contractId, int supplierId, int organizationId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/itcontract/{contractId}?organizationId={organizationId}"), cookie, new { supplierId = supplierId });
-        }
     }
 }
