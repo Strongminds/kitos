@@ -2,18 +2,16 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using Core.DomainModel.Organization;
 using System.Threading.Tasks;
 using Core.ApplicationServices.Model.Authentication;
 using Presentation.Web.Models.API.V2.Request.Token;
 using Tests.Integration.Presentation.Web.Tools;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Authorization
 {
-    public class TokenV2Tests : WithAutoFixture
+    public class TokenV2Tests : BaseTest
     {
         [Fact]
         public async Task Can_Validate_Token()
@@ -91,11 +89,6 @@ namespace Tests.Integration.Presentation.Web.Authorization
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             return await response.ReadResponseBodyAsAsync<TokenIntrospectionResponse>();
-        }
-
-        private string CreateEmail()
-        {
-            return $"{nameof(TokenV2Tests)}{A<string>()}@test.dk";
         }
     }
 }

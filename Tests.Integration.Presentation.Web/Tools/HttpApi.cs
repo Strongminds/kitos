@@ -493,6 +493,12 @@ namespace Tests.Integration.Presentation.Web.Tools
             return (userId, password);
         }
 
+        public static async Task<(int userId, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
+        {
+            var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
+            return await CreateUserAndGetToken(email, role, organizationId, apiAccess, stakeHolderAccess, isSystemIntegrator);
+        }
+
         public static async Task<(int userId, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
         {
             var userId = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, stakeHolderAccess), role, organizationId);
@@ -533,6 +539,12 @@ namespace Tests.Integration.Presentation.Web.Tools
             }
 
             return userId;
+        }
+
+        public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(int userId, OrganizationRole role, Guid organizationUuid, Cookie optionalLoginCookie = null)
+        {
+            var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
+            return await SendAssignRoleToUserAsync(userId, role, organizationId, optionalLoginCookie);
         }
 
         public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(int userId, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, Cookie optionalLoginCookie = null)

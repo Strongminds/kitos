@@ -41,7 +41,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
         public async Task Can_Query_And_Page_ReadModels()
         {
             //Arrange
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
             var suffix = A<Guid>().ToString("N");
             var name1 = $"1_{suffix}";
@@ -77,7 +76,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var refName = $"REF:{name}";
             var refUserAssignedId = $"REF:{name}EXT_ID";
             var refUrl = $"https://www.test-rm{A<uint>()}.dk";
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
             var isAgreementConcluded = A<YesNoIrrelevantChoice>();
             var oversightInterval = A<OversightIntervalChoice>();
@@ -214,7 +212,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Arrange
             var dprName = A<string>();
             var contractName = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
             var dpr = await CreateDPRAsync(organizationUuid, dprName);
 

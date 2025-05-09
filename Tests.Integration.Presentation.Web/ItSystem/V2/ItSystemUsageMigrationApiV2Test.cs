@@ -641,11 +641,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return nameof(ItSystemUsageMigrationApiV2Test) + A<string>();
         }
 
-        private string CreateEmail()
-        {
-            return $"{A<string>()}@kitos.dk";
-        }
-
         private static int GetValidFrequencyTypeId()
         {
             return new Random().Next(1, 4);

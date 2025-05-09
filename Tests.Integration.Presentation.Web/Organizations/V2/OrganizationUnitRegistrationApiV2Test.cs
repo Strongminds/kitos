@@ -354,11 +354,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             return organization;
         }
 
-        private string CreateEmail()
-        {
-            return $"{nameof(OrganizationUnitRegistrationApiV2Test)}{A<string>()}@test.dk";
-        }
-
         private async Task<(OrganizationUnitRight right, ItContract contract, EconomyStream externalEconomyStream, EconomyStream internalEconomyStream, ItSystemUsage usage, OrgUnitDTO unitDto)> SetupRegistrations(int organizationId)
         {
             var (userId, _, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organizationId);

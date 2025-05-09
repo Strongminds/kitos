@@ -512,10 +512,5 @@ namespace Tests.Integration.Presentation.Web.Notifications
         {
             return nameof(NotificationApiV2Test) + A<string>();
         }
-
-        private string CreateEmail()
-        {
-            return $"{A<string>()}@test.dk";
-        }
     }
 }

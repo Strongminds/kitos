@@ -438,11 +438,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
                    assignment.User.Email == expectedUser.Email;
         }
 
-        private string CreateEmail()
-        {
-            return $"{CreateName()}@kitos.dk";
-        }
-
         private string CreateName()
         {
             return $"{nameof(ItContractsInternalApiV2Test)}{A<string>()}";

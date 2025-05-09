@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
+using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
 using Presentation.Web.Models.API.V2.Request.Contract;
@@ -115,6 +117,12 @@ namespace Tests.Integration.Presentation.Web.Tools
                 Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
             };
             return await UsersV2Helper.CreateUser(organizationUuid, request);
+        }
+
+        public async Task<ItSystemUsageResponseDTO> CreateSystemAndTakeItIntoUsage(Guid organizationUuid)
+        {
+            var system = await CreateItSystemAsync(organizationUuid);
+            return await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
         }
 
         public string CreateCvr()

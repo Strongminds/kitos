@@ -482,7 +482,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             //Arrange
             var systemName = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, name: systemName);
@@ -935,23 +934,22 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             //Arrange
             var systemName = A<string>();
-            var outgoingRelationSystemName_initial = A<string>();
-            var outgoingRelationSystemName_changed = $"{outgoingRelationSystemName_initial}_1";
-            var incomingRelationSystemName_initial = A<string>();
-            var incomingRelationSystemName_changed = $"{incomingRelationSystemName_initial}_1";
-            var organizationId = TestEnvironment.DefaultOrganizationId;
+            var outgoingRelationSystemNameInitial = A<string>();
+            var outgoingRelationSystemNameChanged = $"{outgoingRelationSystemNameInitial}_1";
+            var incomingRelationSystemNameInitial = A<string>();
+            var incomingRelationSystemNameChanged = $"{incomingRelationSystemNameInitial}_1";
             var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(organizationUuid, systemName);
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             var outGoingRelationSystem =
-                await CreateItSystemAsync(organizationUuid, outgoingRelationSystemName_initial);
+                await CreateItSystemAsync(organizationUuid, outgoingRelationSystemNameInitial);
             var outGoingRelationSystemUsage =
                 await TakeSystemIntoUsageAsync(outGoingRelationSystem.Uuid, organizationUuid);
 
             var incomingRelationSystem =
-                await CreateItSystemAsync(organizationUuid, incomingRelationSystemName_initial);
+                await CreateItSystemAsync(organizationUuid, incomingRelationSystemNameInitial);
             var incomingRelationSystemUsage = await TakeSystemIntoUsageAsync(incomingRelationSystem.Uuid, organizationUuid);
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
@@ -970,23 +968,23 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             //Act + assert - Rename the system used in incoming relation and verify that the readmodel is updated
             using var renameIncomingSystem = await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(),
-                incomingRelationSystem.Uuid, incomingRelationSystemName_changed);
+                incomingRelationSystem.Uuid, incomingRelationSystemNameChanged);
             Assert.Equal(HttpStatusCode.OK, renameIncomingSystem.StatusCode);
 
             await WaitForReadModelQueueDepletion();
             var mainSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             var mainSystemReadModel = Assert.Single(mainSystemReadModels);
-            Assert.Equal(incomingRelationSystemName_changed, mainSystemReadModel.IncomingRelatedItSystemUsagesNamesAsCsv);
+            Assert.Equal(incomingRelationSystemNameChanged, mainSystemReadModel.IncomingRelatedItSystemUsagesNamesAsCsv);
 
             //Act + assert - Rename the system used in outgoing relation and verify that the readmodel is updated
             using var renameOutgoingSystem = await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(),
-                outGoingRelationSystem.Uuid, outgoingRelationSystemName_changed);
+                outGoingRelationSystem.Uuid, outgoingRelationSystemNameChanged);
             Assert.Equal(HttpStatusCode.OK, renameOutgoingSystem.StatusCode);
             await WaitForReadModelQueueDepletion();
 
             mainSystemReadModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
             mainSystemReadModel = Assert.Single(mainSystemReadModels);
-            Assert.Equal(outgoingRelationSystemName_changed, mainSystemReadModel.OutgoingRelatedItSystemUsagesNamesAsCsv);
+            Assert.Equal(outgoingRelationSystemNameChanged, mainSystemReadModel.OutgoingRelatedItSystemUsagesNamesAsCsv);
         }
 
         [Fact]
