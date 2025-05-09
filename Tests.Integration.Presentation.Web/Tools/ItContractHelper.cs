@@ -35,22 +35,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"api/itcontract?organizationId={organizationId}"), cookie, body);
         }
 
-        public static async Task<ItContractDTO> GetItContract(int contractId)
-        {
-            using var result = await SendGetItContract(contractId);
-            var contract = await result.ReadResponseBodyAsKitosApiResponseAsync<ItContractDTO>();
-
-            return contract;
-        }
-
-        public static async Task<HttpResponseMessage> SendGetItContract(int contractId)
-        {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"api/ItContract/{contractId}");
-
-            return await HttpApi.GetWithCookieAsync(url, cookie);
-        }
-
         public static async Task<ItSystemUsageSimpleDTO> AddItSystemUsage(int contractId, int usageId, int organizationId)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
