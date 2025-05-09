@@ -306,16 +306,17 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var pageSize = 2;
             var pageNumber = 0; //Always takes the first page;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), org.Id, AccessModifier.Local);
-            var itInterface1 = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public));
-            var itInterface2 = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public));
-            await InterfaceExhibitHelper.SendCreateExhibitRequest(system.Id, itInterface1.Id).DisposeAsync();
-            await InterfaceExhibitHelper.SendCreateExhibitRequest(system.Id, itInterface2.Id).DisposeAsync();
+            var system = await CreateItSystemAsync(org.Uuid, scope: RegistrationScopeChoice.Local);
+            var itInterface1 = await CreateItInterfaceAsync(DefaultOrgUuid);
+            var itInterface2 = await CreateItInterfaceAsync(DefaultOrgUuid);
+
+            await InterfaceV2Helper.PatchExposedBySystemAsync(itInterface1.Uuid, system.Uuid);
+            await InterfaceV2Helper.PatchExposedBySystemAsync(itInterface2.Uuid, system.Uuid);
 
             // Disable second interface
             DatabaseAccess.MutateDatabase(db =>
             {
-                var dbInterface = db.ItInterfaces.AsQueryable().ById(itInterface2.Id);
+                var dbInterface = db.ItInterfaces.AsQueryable().ByUuid(itInterface2.Uuid);
                 dbInterface.Disabled = true;
                 db.SaveChanges();
             });

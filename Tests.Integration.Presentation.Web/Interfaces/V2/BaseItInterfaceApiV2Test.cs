@@ -7,6 +7,7 @@ using Presentation.Web.Models.API.V2.Response.Interface;
 using System.Threading.Tasks;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Interface;
+using Presentation.Web.Models.API.V2.Response.System;
 using Tests.Integration.Presentation.Web.Tools;
 using Xunit;
 
@@ -34,16 +35,16 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             return longString;
         }
 
-        protected static void CheckBaseDTOValues(ItSystemDTO system, ItInterfaceDTO itInterface, BaseItInterfaceResponseDTO interfaceDTO)
+        protected static void CheckBaseDTOValues(ItSystemResponseDTO system, ItInterfaceResponseDTO itInterface, BaseItInterfaceResponseDTO interfaceDTO)
         {
             Assert.Equal(itInterface.Name, interfaceDTO.Name);
             Assert.Equal(system?.Name, interfaceDTO.ExposedBySystem?.Name);
             Assert.Equal(system?.Uuid, interfaceDTO.ExposedBySystem?.Uuid);
             Assert.Equal(itInterface.Uuid, interfaceDTO.Uuid);
             Assert.Equal(itInterface.Description, interfaceDTO.Description);
-            Assert.Equal(itInterface.Note, interfaceDTO.Notes);
-            Assert.Equal(itInterface.ItInterfaceId, interfaceDTO.InterfaceId);
-            Assert.Equal(itInterface.Url, interfaceDTO.UrlReference);
+            Assert.Equal(itInterface.Notes, interfaceDTO.Notes);
+            Assert.Equal(itInterface.InterfaceId, interfaceDTO.InterfaceId);
+            Assert.Equal(itInterface.UrlReference, interfaceDTO.UrlReference);
             Assert.Equal(itInterface.Version, interfaceDTO.Version);
         }
 
