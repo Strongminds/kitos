@@ -33,13 +33,13 @@ namespace Tests.Integration.Presentation.Web.Tools
         private string _token;
         public readonly Guid DefaultOrgUuid = DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
 
-        public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync(string name = null, string cvr = null)
+        public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync(string name = null, string cvr = null, OrganizationType type = OrganizationType.Municipality)
         {
             var defaultRequest = new OrganizationCreateRequestDTO
             {
                 Name = name ?? A<string>(),
                 Cvr = cvr ?? CreateCvr(),
-                Type = A<OrganizationType>()
+                Type = type
             };
             using var response = OrganizationInternalV2Helper.CreateOrganization(defaultRequest);
             return await response;
