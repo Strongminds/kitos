@@ -11,6 +11,7 @@ using Xunit;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using System.Linq.Expressions;
+using Core.DomainModel.Organization;
 
 namespace Tests.Integration.Presentation.Web.Tools.External
 {
@@ -295,6 +296,15 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<HttpResponseMessage> SendDeleteItInterfaceDataDescriptionAsync(string token, Guid uuid, Guid dataUuid)
         {
             return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/it-interfaces/{uuid}/data/{dataUuid}"), token);
+        }
+
+        public static async Task<ItInterfaceResponseDTO> PatchExposedBySystemAsync(Guid interfaceUuid,
+            Guid exposedBySystemUuid)
+        {
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            using var response = await SendPatchInterfaceAsync(token.Token, interfaceUuid, x => x.ExposedBySystemUuid, exposedBySystemUuid);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<ItInterfaceResponseDTO>();
         }
 
         public static async Task<HttpResponseMessage> SendPatchExposedBySystemAsync(string token, Guid interfaceUuid,

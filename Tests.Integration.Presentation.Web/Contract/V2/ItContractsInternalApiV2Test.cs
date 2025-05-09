@@ -317,9 +317,9 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         public async Task Can_Transfer_Multiple_Contracts_To_None()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
-            var contract2 = await ItContractHelper.CreateContract(A<string>(), organizationId);
-            var contract3 = await ItContractHelper.CreateContract(A<string>(), organizationId);
+            var organizationUuid = DefaultOrgUuid;
+            var contract2 = await CreateItContractAsync(organizationUuid);
+            var contract3 = await CreateItContractAsync(organizationUuid);
 
             var request = new MultipleContractsRequestDto()
             {
@@ -330,11 +330,11 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             await ItContractV2Helper.TransferMultipleAsync(request);
 
             //Assert
-            var contract2Response = await ItContractHelper.GetItContract(contract2.Id);
-            var contract3Response = await ItContractHelper.GetItContract(contract3.Id);
+            var contract2Response = await ItContractV2Helper.GetItContractAsync(await GetGlobalToken(), contract2.Uuid);
+            var contract3Response = await ItContractV2Helper.GetItContractAsync(await GetGlobalToken(), contract3.Uuid);
 
-            Assert.Null(contract2Response.ParentId);
-            Assert.Null(contract3Response.ParentId);
+            Assert.Null(contract2Response.ParentContract);
+            Assert.Null(contract3Response.ParentContract);
         }
 
         protected async Task<(string token, ShallowOrganizationResponseDTO createdOrganization)> CreateStakeHolderUserInNewOrganizationAsync()
