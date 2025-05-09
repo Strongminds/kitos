@@ -50,12 +50,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             Assert.Equal(itSystemId, response.ItSystemId);
             return response;
         }
-        
-        public static async Task DeleteItSystemAsync(int systemId, int organizationId, Cookie optionalLogin = null)
-        {
-            using var response = await SendDeleteItSystemAsync(systemId, organizationId, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
 
         public static async Task<HttpResponseMessage> SendDeleteItSystemAsync(int systemId, int organizationId, Cookie optionalLogin = null)
         {

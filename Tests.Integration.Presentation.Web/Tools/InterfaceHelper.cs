@@ -60,11 +60,5 @@ namespace Tests.Integration.Presentation.Web.Tools
                 return await response.ReadResponseBodyAsKitosApiResponseAsync<ItInterfaceDTO>();
             }
         }
-
-        public static async Task DeleteInterfaceAsync(int itInterfaceId)
-        {
-            using var response = await SendDeleteInterfaceRequestAsync(itInterfaceId);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
     }
 }
