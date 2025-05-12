@@ -722,7 +722,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             bool withExternalUuid,
             OrganizationDTO rightsHolderOrganization)
         {
-            var parentCandidate = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), rightsHolderOrganization.Id, AccessModifier.Local);
+            var parentCandidate = await CreateSystemAsync(rightsHolderOrganization.Uuid, AccessModifier.Local);
 
             var businessType = GetBusinessType(0);
             var (_, uuid) = DatabaseAccess.MapFromEntitySet<TaskRef, (string key, Guid uuid)>(x =>
@@ -735,7 +735,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 PreviousName = withFormerName ? $"FormerName_{A<string>()}" : null,
                 BusinessTypeUuid = withBusinessType ? businessType : null,
                 KLEUuids = withKleUuid ? new[] { uuid } : Array.Empty<Guid>(),
-                ParentUuid = withParent ? parentCandidate.Uuid : null,
+                ParentUuid = withParent ? parentCandidate : null,
                 ExternalUuid = withExternalUuid ? A<Guid>() : null,
                 ExternalReferences = A<ExternalReferenceDataWriteRequestDTO>().Transform(x =>
                 {
