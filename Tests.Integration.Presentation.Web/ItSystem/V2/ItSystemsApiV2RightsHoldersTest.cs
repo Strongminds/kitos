@@ -168,21 +168,22 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (token, organization) = await CreateRightsHolderAccessUserInNewOrganizationAsync();
-            var system1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organization.Id, AccessModifier.Public);
-            var system2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organization.Id, AccessModifier.Public);
-            var system3 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organization.Id, AccessModifier.Public);
+            var system1 = await CreateSystemAsync(organization.Uuid, AccessModifier.Local);
+            var system2 = await CreateSystemAsync(organization.Uuid, AccessModifier.Local);
+            var system3 = await CreateSystemAsync(organization.Uuid, AccessModifier.Local);
 
-            await ItSystemHelper.SetNameAsync(system2.Id, CreateName(), organization.Id);
-            await ItSystemHelper.SetNameAsync(system3.Id, CreateName(), organization.Id);
-            await ItSystemHelper.SetNameAsync(system1.Id, CreateName(), organization.Id);
-            var system3DTO = await ItSystemHelper.GetSystemAsync(system3.Id);
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), system2, CreateName());
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), system3, CreateName());
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), system1, CreateName());
+
+            var system3DTO = await ItSystemV2Helper.GetSingleAsync(await GetGlobalToken(), system3);
 
             //Act
-            var dtos = (await ItSystemV2Helper.GetManyRightsHolderSystemsAsync(token, changedSinceGtEq: system3DTO.LastChanged, page: 0, pageSize: 10)).ToList();
+            var dtos = (await ItSystemV2Helper.GetManyRightsHolderSystemsAsync(token, changedSinceGtEq: system3DTO.LastModified, page: 0, pageSize: 10)).ToList();
 
             //Assert that the correct systems are returned in the correct order
             Assert.Equal(2, dtos.Count);
-            Assert.Equal(new[] { system3.Uuid, system1.Uuid }, dtos.Select(x => x.Uuid).ToArray());
+            Assert.Equal(new[] { system3, system1 }, dtos.Select(x => x.Uuid).ToArray());
         }
 
         [Theory]
