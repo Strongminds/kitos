@@ -13,14 +13,14 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Presentation.Web.Models.API.V2.Internal.Response.QA;
 using Tests.Integration.Presentation.Web.Tools;
+using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Qa
 {
     [Collection(nameof(SequentialTestGroup))]
-    public class BrokenExternalReferencesReportTest : WithAutoFixture
+    public class BrokenExternalReferencesReportTest : BaseTest
     {
         private const string SystemReferenceUrl = "http://google.com/notfount1337.html";
         private const string InterfaceUrl = "http://google.com/notfounth4x0r.html";
@@ -127,7 +127,8 @@ namespace Tests.Integration.Presentation.Web.Qa
             //Act
             using var deleteReferenceResponse = await ReferencesHelper.DeleteReferenceAsync(referenceToBeExplicitlyDeleted.Id);
             using var deleteItSystemResponse = await ItSystemHelper.SendDeleteItSystemAsync(system.Id, TestEnvironment.DefaultOrganizationId);
-            using var deleteInterfaceResponse = await InterfaceHelper.SendDeleteInterfaceRequestAsync(interfaceDto.Id);
+            using var deleteInterfaceResponse =
+                await InterfaceV2Helper.SendDeleteItInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid);
             Assert.Equal(HttpStatusCode.OK, deleteReferenceResponse.StatusCode);
             Assert.Equal(HttpStatusCode.OK, deleteItSystemResponse.StatusCode);
             Assert.Equal(HttpStatusCode.OK, deleteInterfaceResponse.StatusCode);
