@@ -386,15 +386,14 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (token, organization) = await CreateStakeHolderUserInNewOrganizationAsync();
-            var system1 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organization.Id, AccessModifier.Public);
-            var system2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organization.Id, AccessModifier.Public);
-            var system3 = await ItSystemHelper.CreateItSystemInOrganizationAsync(CreateName(), organization.Id, AccessModifier.Public);
+            var system1 = await CreateItSystemAsync(organization.Uuid);
+            var system2 = await CreateItSystemAsync(organization.Uuid);
+            var system3 = await CreateItSystemAsync(organization.Uuid);
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), system2.Uuid, CreateName());
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), system3.Uuid, CreateName());
+            await ItSystemV2Helper.SendPatchSystemNameAsync(await GetGlobalToken(), system1.Uuid, CreateName());
 
-            await ItSystemHelper.SetNameAsync(system2.Id, CreateName(), organization.Id);
-            await ItSystemHelper.SetNameAsync(system3.Id, CreateName(), organization.Id);
-            await ItSystemHelper.SetNameAsync(system1.Id, CreateName(), organization.Id);
             var system3DTO = await ItSystemV2Helper.GetSingleAsync(token, system3.Uuid); //system 3 was changed as the second one and system 1 the last
-
 
             //Act
             var dtos = (await ItSystemV2Helper.GetManyAsync(token, changedSinceGtEq: system3DTO.LastModified, page: 0, pageSize: 10)).ToList();
@@ -413,9 +412,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var searchName = $"{baseName}1";
             var validName2 = $"{searchName}2";
 
-            await ItSystemHelper.CreateItSystemInOrganizationAsync(baseName, organization.Id, AccessModifier.Public);
-            var system2 = await ItSystemHelper.CreateItSystemInOrganizationAsync(searchName, organization.Id, AccessModifier.Public);
-            var system3 = await ItSystemHelper.CreateItSystemInOrganizationAsync(validName2, organization.Id, AccessModifier.Public);
+            await CreateItSystemAsync(organization.Uuid, baseName);
+            var system2 = await CreateItSystemAsync(organization.Uuid, searchName);
+            var system3 = await CreateItSystemAsync(organization.Uuid, validName2);
 
             //Act
             var dtos = (await ItSystemV2Helper.GetManyAsync(token, nameContains: searchName, page: 0, pageSize: 10)).ToList();
