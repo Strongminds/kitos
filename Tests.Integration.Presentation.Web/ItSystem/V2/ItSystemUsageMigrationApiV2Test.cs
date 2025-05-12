@@ -8,8 +8,6 @@ using Core.ApplicationServices.Shared;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Presentation.Web.Controllers.API.V2.External.Generic;
-using Presentation.Web.Models.API.V1;
-using Presentation.Web.Models.API.V1.SystemRelations;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Contract;
@@ -17,6 +15,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.ItSystemUsage;
@@ -81,8 +80,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var system3Name = prefix + A<string>();
 
             var (ownLocalSystem, organization, cookie) = await CreatePrerequisitesWithUser(role, system1Name);
-            var itSystem2 = await CreateItSystemAsync(TestEnvironment.DefaultOrganizationId, system2Name, AccessModifier.Public);
-            await CreateItSystemAsync(TestEnvironment.DefaultOrganizationId, system3Name);
+            var itSystem2 = await CreateItSystemAsync(DefaultOrgUuid, system2Name);
+            await CreateItSystemAsync(DefaultOrgUuid, system3Name, RegistrationScopeChoice.Local);
             var createdSystemsUuids = new[] { ownLocalSystem.Uuid, itSystem2.Uuid };
 
             //Act
@@ -145,7 +144,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var system2Name = prefix + A<string>();
 
             var (itSystem, organization, cookie) = await CreatePrerequisitesWithUser(OrganizationRole.GlobalAdmin, system1Name, AccessModifier.Public);
-            var itSystemOtherOrg = await CreateItSystemAsync(TestEnvironment.DefaultOrganizationId, system2Name, AccessModifier.Public);
+            var itSystemOtherOrg = await CreateItSystemAsync(DefaultOrgUuid, system2Name);
             await TakeSystemIntoUsageAsync(itSystemOtherOrg.Uuid, organization.Uuid);
 
             //Act
@@ -601,42 +600,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return (system, organization);
         }
 
-        private static async Task<ItSystemDTO> CreateItSystemAsync(
-            int organizationId,
-            string name,
-            AccessModifier accessModifier = AccessModifier.Local)
-        {
-            return await ItSystemHelper.CreateItSystemInOrganizationAsync(name, organizationId, accessModifier);
-        }
-
-        private static async Task<SystemRelationDTO> CreateSystemRelation(
-            int fromUsageId,
-            int toUsageId,
-            string description,
-            int? interfaceId,
-            int? frequencyTypeId,
-            int? contractId)
-        {
-            var relationDTO = new CreateSystemRelationDTO()
-            {
-                FromUsageId = fromUsageId,
-                ToUsageId = toUsageId,
-                Description = description,
-                InterfaceId = interfaceId,
-                FrequencyTypeId = frequencyTypeId,
-                ContractId = contractId
-            };
-            return await SystemRelationHelper.PostRelationAsync(relationDTO);
-        }
-
         private string CreateName()
         {
             return nameof(ItSystemUsageMigrationApiV2Test) + A<string>();
-        }
-
-        private static int GetValidFrequencyTypeId()
-        {
-            return new Random().Next(1, 4);
         }
     }
 }
