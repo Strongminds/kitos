@@ -131,7 +131,7 @@ namespace Tests.Integration.Presentation.Web.Qa
                 await InterfaceV2Helper.SendDeleteItInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid);
             Assert.Equal(HttpStatusCode.OK, deleteReferenceResponse.StatusCode);
             Assert.Equal(HttpStatusCode.OK, deleteItSystemResponse.StatusCode);
-            Assert.Equal(HttpStatusCode.OK, deleteInterfaceResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, deleteInterfaceResponse.StatusCode);
         }
 
         private static void AssertBrokenLinkRow(LinkReportCsvFormat brokenLink, string expectedOrigin, string expectedName, string expectedReferenceName, string expectedErrorCategory, string expectedErrorCode, string expectedUrl)

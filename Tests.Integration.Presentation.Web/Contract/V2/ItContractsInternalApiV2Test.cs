@@ -29,7 +29,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         public async Task Can_Get_Available_DataProcessingRegistrations()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var orgUuid = DefaultOrgUuid;
             var registrationName = A<string>();
             var registration1 = await CreateDPRAsync(orgUuid, registrationName + "1");
@@ -290,7 +289,6 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         public async Task Can_Transfer_Multiple_Contracts()
         {
             //Arrange
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
             var contract = await CreateItContractAsync(organizationUuid);
             var contract2 = await CreateItContractAsync(organizationUuid);

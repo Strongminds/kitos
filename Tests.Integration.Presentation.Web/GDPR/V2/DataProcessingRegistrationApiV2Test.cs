@@ -1481,7 +1481,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             //Arrange
             var systemPrefix = A<Guid>().ToString("N");
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
             var system1Name = $"{systemPrefix}{1}";
             var system2Name = $"{systemPrefix}{2}";
