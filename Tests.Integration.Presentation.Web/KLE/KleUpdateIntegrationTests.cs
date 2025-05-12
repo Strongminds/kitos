@@ -11,6 +11,7 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.KLE;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
+using Core.DomainServices.Extensions;
 using ExpectedObjects;
 using Infrastructure.DataAccess;
 using Presentation.Web.Models.API.V1;
@@ -23,7 +24,7 @@ namespace Tests.Integration.Presentation.Web.KLE
 {
     //Make sure this test is not affected by others since it is slow and will cause conflicts
     [Collection(nameof(SequentialTestGroup))]
-    public class KleUpdateIntegrationTests : WithAutoFixture
+    public class KleUpdateIntegrationTests : BaseTest
     {
         private static readonly ConcurrentStack<int> TestKeys =
             Enumerable.Range(0, 999999).FromNullable().Select(x => new ConcurrentStack<int>(x)).Value;
@@ -154,7 +155,8 @@ namespace Tests.Integration.Presentation.Web.KLE
             #endregion root
 
             #region systems
-            var system1Dto = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
+
+            var system1Dto = await CreateItSystemAsync(DefaultOrgUuid);
 
             //Add some task refs to a system and save the expected keys (keys not removed)
             MutateDatabase(context =>
@@ -162,14 +164,14 @@ namespace Tests.Integration.Presentation.Web.KLE
                 using (var taskRefs = new GenericRepository<TaskRef>(context))
                 using (var systems = new GenericRepository<Core.DomainModel.ItSystem.ItSystem>(context))
                 {
-                    var itSystem = systems.GetByKey(system1Dto.Id);
+                    var itSystem = systems.AsQueryable().ByUuid(system1Dto.Uuid);
                     var toKeep = taskRefs.AsQueryable().Take(2).ToList();
                     toKeep.ForEach(itSystem.TaskRefs.Add);
                     systems.Save();
                 }
             });
 
-            var expectedSystemTaskRefs = GetSystemTaskKeys(system1Dto.Id);
+            var expectedSystemTaskRefs = GetSystemTaskKeys(system1Dto.Uuid);
             Assert.Equal(2, expectedSystemTaskRefs.Count);
 
             //Add the task refs subject to removal
@@ -186,7 +188,7 @@ namespace Tests.Integration.Presentation.Web.KLE
                     taskRefs.Save();
 
                     //Add usages which we expect to be removed
-                    var itSystem = systems.GetByKey(system1Dto.Id);
+                    var itSystem = systems.AsQueryable().ByUuid(system1Dto.Uuid);
                     itSystem.TaskRefs.Add(taskRef1);
                     itSystem.TaskRefs.Add(taskRef2);
                     systems.Save();
@@ -247,7 +249,7 @@ namespace Tests.Integration.Presentation.Web.KLE
                     taskRefs.Save();
 
                     //Add inherited key which should be removed
-                    var system = systems.GetByKey(system1Dto.Id);
+                    var system = systems.AsQueryable().ByUuid(system1Dto.Uuid);
                     system.TaskRefs.Add(taskRef1);
                     systems.Save();
 
@@ -282,7 +284,7 @@ namespace Tests.Integration.Presentation.Web.KLE
 
             //Assert - make sure the removed task refs were re-added
             VerifyTaskRefIntegrity(expectedTaskRefs);
-            var actualSystemTaskRefs = GetSystemTaskKeys(system1Dto.Id);
+            var actualSystemTaskRefs = GetSystemTaskKeys(system1Dto.Uuid);
             VerifyTaskRefUsageKeys(expectedSystemTaskRefs, actualSystemTaskRefs);
             var (actualTaskRefKeys, actualInheritedKeys, actualOptOutKeys) = GetSystemUsageTasks(usage.Id);
             VerifyTaskRefUsageKeys(expectedTaskRefKeys, actualTaskRefKeys);
@@ -433,9 +435,9 @@ namespace Tests.Integration.Presentation.Web.KLE
             kleRepo.RemoveRange(all);
             kleRepo.Save();
         }
-        private static IReadOnlyList<string> GetSystemTaskKeys(int id)
+        private static IReadOnlyList<string> GetSystemTaskKeys(Guid systemUuid)
         {
-            return MapFromEntitySet<Core.DomainModel.ItSystem.ItSystem, IReadOnlyList<string>>(systems => systems.GetByKey(id).TaskRefs.Select(x => x.TaskKey).OrderBy(x => x).ToList());
+            return MapFromEntitySet<Core.DomainModel.ItSystem.ItSystem, IReadOnlyList<string>>(systems => systems.AsQueryable().ByUuid(systemUuid).TaskRefs.Select(x => x.TaskKey).OrderBy(x => x).ToList());
         }
 
         private static (IReadOnlyList<string> taskRefKeys, IReadOnlyList<string> inheritedKeys, IReadOnlyList<string> optOutKeys) GetSystemUsageTasks(int id)
@@ -446,7 +448,7 @@ namespace Tests.Integration.Presentation.Web.KLE
 
                  var taskRefKeys = itSystemUsage.TaskRefs.Select(x => x.TaskKey).OrderBy(x => x).ToList();
                  var optOutKeys = itSystemUsage.TaskRefsOptOut.Select(x => x.TaskKey).OrderBy(x => x).ToList();
-                 var inheritedKeys = GetSystemTaskKeys(itSystemUsage.ItSystemId);
+                 var inheritedKeys = GetSystemTaskKeys(itSystemUsage.ItSystem.Uuid);
 
                  return (taskRefKeys, inheritedKeys, optOutKeys);
              });
