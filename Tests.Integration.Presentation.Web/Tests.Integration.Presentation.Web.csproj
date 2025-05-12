@@ -245,7 +245,6 @@
     <Compile Include="Tools\OrganizationHelper.cs" />
     <Compile Include="Tools\ReadModelTestTools.cs" />
     <Compile Include="Tools\ReferencesHelper.cs" />
-    <Compile Include="Tools\SystemRelationHelper.cs" />
     <Compile Include="Tools\TestEnvironment.cs" />
     <Compile Include="Tools\External\ItSystemV2Helper.cs" />
     <Compile Include="Tools\External\OrganizationV2Helper.cs" />

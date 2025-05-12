@@ -2988,12 +2988,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             return $"{nameof(ItSystemUsageApiV2Test)}æøå{A<string>()}";
         }
 
-        private static async Task<SystemRelationDTO> CreateRelationAsync(ItSystemUsageResponseDTO fromUsage, ItSystemUsageResponseDTO toUsage, ItContractResponseDTO contract = null)
+        private static async Task<OutgoingSystemRelationResponseDTO> CreateRelationAsync(ItSystemUsageResponseDTO fromUsage, ItSystemUsageResponseDTO toUsage, ItContractResponseDTO contract = null)
         {
-            var fromUsageId = DatabaseAccess.GetEntityId<ItSystemUsage>(fromUsage.Uuid);
-            var toUsageId = DatabaseAccess.GetEntityId<ItSystemUsage>(toUsage.Uuid);
-            int? contractId = contract != null ? DatabaseAccess.GetEntityId<ItContract>(contract.Uuid) : null;
-            return await SystemRelationHelper.PostRelationAsync(new CreateSystemRelationDTO { FromUsageId = fromUsageId, ToUsageId = toUsageId, ContractId = contractId });
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            return await ItSystemUsageV2Helper.PostRelationAsync(token.Token, fromUsage.Uuid, new SystemRelationWriteRequestDTO
+            {
+                ToSystemUsageUuid = toUsage.Uuid,
+                AssociatedContractUuid = contract?.Uuid
+            });
         }
 
         private IEnumerable<UpdateExternalReferenceDataWriteRequestDTO> MapExternalReferenceDtosToUpdateDtos(
