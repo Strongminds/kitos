@@ -186,6 +186,7 @@
     <Compile Include="Tools\Internal\Organizations\OrganizationInternalV2Helper.cs" />
     <Compile Include="Tools\Internal\Organizations\OrganizationUnitRegistrationV2Helper.cs" />
     <Compile Include="Tools\Internal\References\ExternalReferencesInternalV2Helper.cs" />
+    <Compile Include="Tools\Internal\References\ExternalReferencesV2Helper.cs" />
     <Compile Include="Tools\Internal\References\ExternalReferenceTestHelper.cs" />
     <Compile Include="Tools\Internal\Users\PasswordResetV2Helper.cs" />
     <Compile Include="Tools\Internal\Users\UsersV2Helper.cs" />
@@ -244,7 +245,6 @@
     <Compile Include="Tools\ObjectCreateHelper.cs" />
     <Compile Include="Tools\OrganizationHelper.cs" />
     <Compile Include="Tools\ReadModelTestTools.cs" />
-    <Compile Include="Tools\ReferencesHelper.cs" />
     <Compile Include="Tools\TestEnvironment.cs" />
     <Compile Include="Tools\External\ItSystemV2Helper.cs" />
     <Compile Include="Tools\External\OrganizationV2Helper.cs" />
