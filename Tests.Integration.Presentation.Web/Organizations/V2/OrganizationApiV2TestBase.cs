@@ -2,9 +2,7 @@
 using Core.DomainModel;
 using Presentation.Web.Models.API.V1;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Toolkit.Patterns;

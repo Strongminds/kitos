@@ -21,9 +21,6 @@ using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
-using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
-using Tests.Integration.Presentation.Web.Tools.Internal.References;
-using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 
 namespace Tests.Integration.Presentation.Web.GDPR
 {

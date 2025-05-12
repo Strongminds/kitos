@@ -6,18 +6,15 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
-using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Extensions;
 using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
-using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Generic.Roles;
@@ -29,7 +26,6 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Extensions;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Contract.V2
@@ -2206,7 +2202,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         private async Task<ContractSupplierDataWriteRequestDTO> CreateContractSupplierDataRequestDTO(bool withOrg, bool withSignedAt, bool withSignedBy)
         {
             var supplierOrganization = withOrg
-                ? (await OrganizationHelper.GetOrganizationAsync(TestEnvironment.DefaultOrganizationId))
+                ? (await OrganizationCHelper.GetOrganizationAsync(TestEnvironment.DefaultOrganizationId))
                 : null;
             var contractResponsibleDataWriteRequestDto = new ContractSupplierDataWriteRequestDTO
             {
