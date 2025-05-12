@@ -127,7 +127,6 @@ namespace Tests.Integration.Presentation.Web.Qa
             PrepareForReportGeneration();
             PurgeBrokenExternalReferencesReportTable();
             var system = await CreateItSystemAsync(DefaultOrgUuid);
-            var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
             await ExternalReferencesV2Helper.PostItSystemReference(system.Uuid, new ExternalReferenceDataWriteRequestDTO
             {
                 Title = A<string>(),
