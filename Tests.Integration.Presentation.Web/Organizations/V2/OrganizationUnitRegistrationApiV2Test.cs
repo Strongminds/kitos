@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
+using Tests.Toolkit.Patterns;
 using Xunit;
 using System.Linq;
 using Presentation.Web.Models.API.V2.Internal.Common;

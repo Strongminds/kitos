@@ -2,8 +2,11 @@
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

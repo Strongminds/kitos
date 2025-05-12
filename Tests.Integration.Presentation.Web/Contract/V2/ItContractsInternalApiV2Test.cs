@@ -6,6 +6,7 @@ using Core.DomainModel.ItContract;
 using Core.DomainModel.Organization;
 using Core.DomainModel;
 using ExpectedObjects;
+using Presentation.Web.Models.API.V1;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Xunit;

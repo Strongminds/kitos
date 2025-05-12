@@ -5,11 +5,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
-using Tests.Toolkit.Patterns;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
-    public class OrganizationApiV2TestBase: WithAutoFixture
+    public class OrganizationApiV2TestBase: BaseTest
     {
         protected async Task<OrganizationDTO> CreateOrganizationAsync(OrganizationTypeKeys orgType)
         {

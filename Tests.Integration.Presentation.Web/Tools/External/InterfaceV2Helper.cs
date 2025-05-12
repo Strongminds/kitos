@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Xunit;
 using Presentation.Web.Models.API.V2.Response.Shared;
+using Presentation.Web.Models.API.V2.Request.System.Regular;
 using System.Linq.Expressions;
 using Core.DomainModel.Organization;
 

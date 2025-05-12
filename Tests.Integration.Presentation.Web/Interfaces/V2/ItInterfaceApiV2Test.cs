@@ -1,4 +1,5 @@
-﻿using Core.DomainModel.ItSystem;
+﻿using Core.DomainModel;
+using Core.DomainModel.ItSystem;
 using Core.DomainServices.Extensions;
 using System;
 using System.Collections.Generic;
