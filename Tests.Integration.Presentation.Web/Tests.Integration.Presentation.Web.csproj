@@ -230,7 +230,6 @@
     <Compile Include="Tools\External\OrganizationUserV2Helper.cs" />
     <Compile Include="Tools\HttpApi.cs" />
     <Compile Include="Tools\HttpCommandAssertionHelper.cs" />
-    <Compile Include="Tools\InterfaceExhibitHelper.cs" />
     <Compile Include="Tools\Internal\UI_Configuration\UIConfigurationHelper.cs" />
     <Compile Include="Tools\ItSystemHelper.cs" />
     <Compile Include="Tools\ItSystemUsageHelper.cs" />
