@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
-using Core.DomainModel;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.KLE;
 using Core.DomainModel.Organization;
@@ -17,7 +16,6 @@ using Infrastructure.DataAccess;
 using Presentation.Web.Models.API.V1;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.KLE
@@ -197,7 +195,8 @@ namespace Tests.Integration.Presentation.Web.KLE
             #endregion systems
 
             #region system usages
-            var system2Dto = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
+
+            var system2Dto = await CreateItSystemAsync(DefaultOrgUuid);
 
             //Add some task refs to a system, and an opt out in the system usage as well as additional task refs
             MutateDatabase(context =>
@@ -205,7 +204,7 @@ namespace Tests.Integration.Presentation.Web.KLE
                 using (var taskRefs = new GenericRepository<TaskRef>(context))
                 using (var systems = new GenericRepository<Core.DomainModel.ItSystem.ItSystem>(context))
                 {
-                    var itSystem = systems.GetByKey(system2Dto.Id);
+                    var itSystem = systems.AsQueryable().ByUuid(system2Dto.Uuid);
                     var toKeep = taskRefs.AsQueryable().OrderBy(x => x.Id).Take(2).ToList();
                     toKeep.ForEach(itSystem.TaskRefs.Add);
                     systems.Save();
@@ -213,13 +212,13 @@ namespace Tests.Integration.Presentation.Web.KLE
             });
 
             //Take system into use and add additional task refs as well as an opt out
-            var usage = await ItSystemHelper.TakeIntoUseAsync(system2Dto.Id, TestEnvironment.DefaultOrganizationId);
+            var usage = await TakeSystemIntoUsageAsync(system2Dto.Uuid, DefaultOrgUuid);
             MutateDatabase(context =>
             {
                 using (var taskRefs = new GenericRepository<TaskRef>(context))
                 using (var systems = new GenericRepository<ItSystemUsage>(context))
                 {
-                    var systemUsage = systems.GetByKey(usage.Id);
+                    var systemUsage = systems.AsQueryable().ByUuid(usage.Uuid);
                     var toOptOut = taskRefs.AsQueryable().OrderBy(x => x.Id).Skip(1).First();
                     var additional = taskRefs.AsQueryable().OrderBy(x => x.Id).Skip(2).First();
                     systemUsage.TaskRefs.Add(additional);
@@ -228,7 +227,7 @@ namespace Tests.Integration.Presentation.Web.KLE
                 }
             });
 
-            var (expectedTaskRefKeys, expectedInheritedKeys, expectedOptOutKeys) = GetSystemUsageTasks(usage.Id);
+            var (expectedTaskRefKeys, expectedInheritedKeys, expectedOptOutKeys) = GetSystemUsageTasks(usage.Uuid);
             Assert.Equal(1, expectedTaskRefKeys.Count);
             Assert.Equal(2, expectedInheritedKeys.Count);
             Assert.Equal(1, expectedOptOutKeys.Count);
@@ -254,7 +253,7 @@ namespace Tests.Integration.Presentation.Web.KLE
                     systems.Save();
 
                     //Add additional task ref and opt out which should be removed
-                    var systemUsage = usages.GetByKey(usage.Id);
+                    var systemUsage = usages.AsQueryable().ByUuid(usage.Uuid);
                     systemUsage.TaskRefs.Add(taskRef2);
                     systemUsage.TaskRefsOptOut.Add(taskRef3);
                     usages.Save();
@@ -286,7 +285,7 @@ namespace Tests.Integration.Presentation.Web.KLE
             VerifyTaskRefIntegrity(expectedTaskRefs);
             var actualSystemTaskRefs = GetSystemTaskKeys(system1Dto.Uuid);
             VerifyTaskRefUsageKeys(expectedSystemTaskRefs, actualSystemTaskRefs);
-            var (actualTaskRefKeys, actualInheritedKeys, actualOptOutKeys) = GetSystemUsageTasks(usage.Id);
+            var (actualTaskRefKeys, actualInheritedKeys, actualOptOutKeys) = GetSystemUsageTasks(usage.Uuid);
             VerifyTaskRefUsageKeys(expectedTaskRefKeys, actualTaskRefKeys);
             VerifyTaskRefUsageKeys(expectedInheritedKeys, actualInheritedKeys);
             VerifyTaskRefUsageKeys(expectedOptOutKeys, actualOptOutKeys);
@@ -440,11 +439,11 @@ namespace Tests.Integration.Presentation.Web.KLE
             return MapFromEntitySet<Core.DomainModel.ItSystem.ItSystem, IReadOnlyList<string>>(systems => systems.AsQueryable().ByUuid(systemUuid).TaskRefs.Select(x => x.TaskKey).OrderBy(x => x).ToList());
         }
 
-        private static (IReadOnlyList<string> taskRefKeys, IReadOnlyList<string> inheritedKeys, IReadOnlyList<string> optOutKeys) GetSystemUsageTasks(int id)
+        private static (IReadOnlyList<string> taskRefKeys, IReadOnlyList<string> inheritedKeys, IReadOnlyList<string> optOutKeys) GetSystemUsageTasks(Guid usageUuid)
         {
             return MapFromEntitySet<ItSystemUsage, (IReadOnlyList<string>, IReadOnlyList<string>, IReadOnlyList<string>)>(usages =>
              {
-                 var itSystemUsage = usages.GetByKey(id);
+                 var itSystemUsage = usages.AsQueryable().ByUuid(usageUuid);
 
                  var taskRefKeys = itSystemUsage.TaskRefs.Select(x => x.TaskKey).OrderBy(x => x).ToList();
                  var optOutKeys = itSystemUsage.TaskRefsOptOut.Select(x => x.TaskKey).OrderBy(x => x).ToList();
