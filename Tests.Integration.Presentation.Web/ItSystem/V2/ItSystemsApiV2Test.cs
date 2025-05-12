@@ -445,7 +445,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var organization = await CreateOrganizationAsync();
             var (rootUuid, createdSystems) = CreateHierarchy(organization.Id);
             var firstSystem = createdSystems.First();
-            await ItSystemHelper.TakeIntoUseAsync(firstSystem.Id, organization.Id);
+            await TakeSystemIntoUsageAsync(firstSystem.Uuid, organization.Uuid);
 
 
             //Act

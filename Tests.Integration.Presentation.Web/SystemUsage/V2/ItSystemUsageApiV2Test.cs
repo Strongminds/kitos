@@ -829,15 +829,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var potentialRemovals = taskRefsOnSystem.Take(2).ToList();
 
             AddTaskRefsInDatabase(additionalTaskRefs.Concat(taskRefsOnSystem));
-            var dbIdsOfSystemTaskRefs = DatabaseAccess.MapFromEntitySet<TaskRef, int[]>(all => all.AsQueryable().Where(s => taskRefsOnSystem.Contains(s.Uuid)).Select(x => x.Id).ToArray());
 
-            foreach (var taskRefId in dbIdsOfSystemTaskRefs)
-            {
-                var organizationId = GetOrgId(organization.Uuid);
-                var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
-                using var addTaskRefResponse = await ItSystemHelper.SendAddTaskRefRequestAsync(systemId, taskRefId, organizationId);
-                Assert.Equal(HttpStatusCode.OK, addTaskRefResponse.StatusCode);
-            }
+
+            using var addTaskRefResponse = await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(),
+                    system.Uuid, x => x.KLEUuids, taskRefsOnSystem);
 
             var request = CreatePostRequest(organization.Uuid, system.Uuid, kleDeviationsRequest: new LocalKLEDeviationsRequestDTO
             {
@@ -865,15 +860,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var potentialRemovals = taskRefsOnSystem.Take(2).ToList();
 
             AddTaskRefsInDatabase(additionalTaskRefs.Concat(taskRefsOnSystem));
-            var dbIdsOfSystemTaskRefs = DatabaseAccess.MapFromEntitySet<TaskRef, int[]>(all => all.AsQueryable().Where(s => taskRefsOnSystem.Contains(s.Uuid)).Select(x => x.Id).ToArray());
 
-            foreach (var taskRefId in dbIdsOfSystemTaskRefs)
-            {
-                var organizationId = GetOrgId(organization.Uuid);
-                var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
-                using var addTaskRefResponse = await ItSystemHelper.SendAddTaskRefRequestAsync(systemId, taskRefId, organizationId);
-                Assert.Equal(HttpStatusCode.OK, addTaskRefResponse.StatusCode);
-            }
+            await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), system.Uuid, x => x.KLEUuids,
+                taskRefsOnSystem).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
             var newUsage = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
 
             //Act - add one addition
@@ -2372,14 +2362,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var taskRefsOnSystem = Many<Guid>(3).ToArray();
             var removedTaskRefs = taskRefsOnSystem.Take(2).ToArray();
             AddTaskRefsInDatabase(addedTaskRefs.Concat(taskRefsOnSystem));
-            var dbIdsOfSystemTaskRefs = DatabaseAccess.MapFromEntitySet<TaskRef, int[]>(all => all.AsQueryable().Where(s => taskRefsOnSystem.Contains(s.Uuid)).Select(x => x.Id).ToArray());
-            foreach (var taskRefId in dbIdsOfSystemTaskRefs)
-            {
-                var organizationId = GetOrgId(organization.Uuid);
-                var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
-                using var addTaskRefResponse = await ItSystemHelper.SendAddTaskRefRequestAsync(systemId, taskRefId, organizationId);
-                Assert.Equal(HttpStatusCode.OK, addTaskRefResponse.StatusCode);
-            }
+
+            await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), system.Uuid, x => x.KLEUuids,
+                taskRefsOnSystem).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
             var kleDeviations = CreateLocalKLEDeviationsRequestDTO(addedTaskRefs, removedTaskRefs);
 
             var externalReferences = CreateExternalReferenceDataDTOs<ExternalReferenceDataWriteRequestDTO>();
