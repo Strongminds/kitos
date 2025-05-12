@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
 {
-    public abstract class BaseItSystemsApiV2Test : WithAutoFixture
+    public abstract class BaseItSystemsApiV2Test : BaseTest
     {
         protected static void AssertBaseSystemDTO(Core.DomainModel.ItSystem.ItSystem dbSystem, BaseItSystemResponseDTO systemDTO)
         {

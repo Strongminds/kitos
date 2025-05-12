@@ -91,8 +91,9 @@ namespace Tests.Integration.Presentation.Web.Qa
             var systemReferenceName = A<string>();
             await ReferencesHelper.CreateReferenceAsync(systemReferenceName, null, SystemReferenceUrl, r => r.ItSystem_Id = system.Id);
 
-            var interfaceDto = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public));
-            interfaceDto = await InterfaceHelper.SetUrlAsync(interfaceDto.Id, InterfaceUrl);
+            var interfaceDto = await CreateItInterfaceAsync(DefaultOrgUuid);
+            await InterfaceV2Helper.SendPatchInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid, x => x.UrlReference,
+                InterfaceUrl).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             //Act
             await BrokenExternalReferencesReportHelper.TriggerRequestAsync();
@@ -118,8 +119,9 @@ namespace Tests.Integration.Presentation.Web.Qa
             await ReferencesHelper.CreateReferenceAsync(A<string>(), null, SystemReferenceUrl, r => r.ItSystem_Id = system.Id);
             var referenceToBeExplicitlyDeleted = await ReferencesHelper.CreateReferenceAsync(A<string>(), null, SystemReferenceUrl, r => r.ItSystem_Id = system.Id);
 
-            var interfaceDto = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), TestEnvironment.DefaultOrganizationId, AccessModifier.Public));
-            interfaceDto = await InterfaceHelper.SetUrlAsync(interfaceDto.Id, InterfaceUrl);
+            var interfaceDto = await CreateItInterfaceAsync(DefaultOrgUuid);
+            await InterfaceV2Helper.SendPatchInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid,
+                x => x.UrlReference, InterfaceUrl).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
             await BrokenExternalReferencesReportHelper.TriggerRequestAsync();
             var dto = await WaitForReportGenerationCompletedAsync();
             Assert.True(dto.Available);

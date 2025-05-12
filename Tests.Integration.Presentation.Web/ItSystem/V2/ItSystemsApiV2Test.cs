@@ -91,11 +91,11 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var system = await CreateSystemAsync(organizationId, AccessModifier.Public);
             var parentSystem = await CreateSystemAsync(organizationId, AccessModifier.Public);
             var businessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, CreateName(), organizationId);
-            var exposedInterface = await InterfaceHelper.CreateInterface(InterfaceHelper.CreateInterfaceDto(A<string>(), A<string>(), organizationId, AccessModifier.Public));
+            var exposedInterface = await CreateItInterfaceAsync(DefaultOrgUuid);
             DatabaseAccess.MutateDatabase(db =>
             {
                 var itSystem = db.ItSystems.AsQueryable().ByUuid(system.uuid);
-                var interfaceToExpose = db.Set<ItInterface>().AsQueryable().ById(exposedInterface.Id);
+                var interfaceToExpose = db.Set<ItInterface>().AsQueryable().ByUuid(exposedInterface.Uuid);
                 var taskRef = db.TaskRefs.AsQueryable().First();
 
                 itSystem.PreviousName = A<string>();
