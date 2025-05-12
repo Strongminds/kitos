@@ -1,5 +1,4 @@
-﻿using Core.DomainModel;
-using Core.DomainModel.Organization;
+﻿using Core.DomainModel.Organization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +6,11 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
 using Core.Abstractions.Extensions;
+using Core.DomainModel;
 using Core.DomainServices.Extensions;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
-using Core.DomainModel.Shared;
-using Presentation.Web.Models.API.V1.GDPR;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
@@ -31,6 +29,7 @@ using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Types.Organization;
+using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
 namespace Tests.Integration.Presentation.Web.GDPR.V2
 {
@@ -1779,10 +1778,10 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                     OptionV2ApiHelper.ResourceName.DataProcessingRegistrationCountry, organizationUuid, 10, 0)
                 )
                 .RandomItem();
-            var dataProcessor1 = withDataProcessors ? await CreateOrganizationAsync(A<OrganizationTypeKeys>()) : default;
-            var dataProcessor2 = withDataProcessors ? await CreateOrganizationAsync(A<OrganizationTypeKeys>()) : default;
-            var subDataProcessor1 = withSubDataProcessors ? await CreateOrganizationAsync(A<OrganizationTypeKeys>()) : default;
-            var subDataProcessor2 = withSubDataProcessors ? await CreateOrganizationAsync(A<OrganizationTypeKeys>()) : default;
+            var dataProcessor1 = withDataProcessors ? await CreateOrganizationAsync(type: A<OrganizationType>()) : default;
+            var dataProcessor2 = withDataProcessors ? await CreateOrganizationAsync(type: A<OrganizationType>()) : default;
+            var subDataProcessor1 = withSubDataProcessors ? await CreateOrganizationAsync(type: A<OrganizationType>()) : default;
+            var subDataProcessor2 = withSubDataProcessors ? await CreateOrganizationAsync(type: A<OrganizationType>()) : default;
             var dataResponsible = withResponsible
                 ? (await OptionV2ApiHelper.GetOptionsAsync(
                     OptionV2ApiHelper.ResourceName.DataProcessingRegistrationDataResponsible, organizationUuid, 10, 0))
@@ -1851,14 +1850,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, GetOrgId(organizationUuid));
             var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userId));
             return user;
-        }
-
-        private async Task<OrganizationDTO> CreateOrganizationAsync(OrganizationTypeKeys orgType)
-        {
-            var organizationName = CreateName();
-            var organization = await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId,
-                organizationName, string.Join("", Many<int>(8).Select(x => Math.Abs(x) % 9)), orgType, AccessModifier.Public);
-            return organization;
         }
 
         private CreateNewContractRequestDTO CreateContractWithDprUuids(Guid organizationUuid, params Guid[] dprUuids)
