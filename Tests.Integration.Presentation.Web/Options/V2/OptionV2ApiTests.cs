@@ -6,13 +6,12 @@ using Core.DomainModel.Organization;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Options.V2
 {
     [Collection(nameof(SequentialTestGroup))]
-    public class OptionV2ApiTests : WithAutoFixture
+    public class OptionV2ApiTests : BaseTest
     {
         [Theory, MemberData(nameof(GetV2ResourceNames))]
         public async Task Can_Get_AvailableOptions(string apiv2OptionResource)
@@ -33,11 +32,12 @@ namespace Tests.Integration.Presentation.Web.Options.V2
         public async Task Can_Get_Specific_Option_That_Is_Available(string apiv1OptionResource, string apiv2OptionResource)
         {
             //Arrange
-            var orgId = TestEnvironment.DefaultOrganizationId;
+            const int orgId = TestEnvironment.DefaultOrganizationId;
+            var orgUuid = DefaultOrgUuid;
             var name = A<string>();
             var description = A<string>();
             var optionDto = await EntityOptionHelper.CreateOptionTypeAsync(apiv1OptionResource, name, orgId, description: description);
-            var organizationDto = await OrganizationHelper.GetOrganizationAsync(orgId);
+            var organizationDto = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), orgUuid);
             var organizationUuid = organizationDto.Uuid;
             var options = await OptionV2ApiHelper.GetOptionsAsync(apiv2OptionResource, organizationUuid, 100, 0); //100 should be more than enough to get all.
             var option = options.First(x => x.Name.Equals(name)); //Get the newly created type.
@@ -59,7 +59,8 @@ namespace Tests.Integration.Presentation.Web.Options.V2
             var orgId = TestEnvironment.DefaultOrganizationId;
             var newName = A<string>();
             var createdType = await EntityOptionHelper.CreateOptionTypeAsync(apiv1OptionResource, newName, orgId);
-            var organizationDto = await OrganizationHelper.GetOrganizationAsync(orgId);
+            var organizationDto =
+                await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), DefaultOrgUuid);
             var organizationUuid = organizationDto.Uuid;
             var options = await OptionV2ApiHelper.GetOptionsAsync(apiv2OptionResource, organizationUuid, 100, 0); //100 should be more than enough to get all.
             var option = options.First(x => x.Name.Equals(newName)); //Get the newly created type.
@@ -84,7 +85,7 @@ namespace Tests.Integration.Presentation.Web.Options.V2
             var orgId = TestEnvironment.DefaultOrganizationId;
             var name = A<string>();
             await EntityOptionHelper.CreateRoleOptionTypeAsync(apiv1OptionResource, name, orgId, writeAccess);
-            var organizationDto = await OrganizationHelper.GetOrganizationAsync(orgId);
+            var organizationDto = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), DefaultOrgUuid);
             var organizationUuid = organizationDto.Uuid;
             var options = await OptionV2ApiHelper.GetOptionsAsync(apiv2OptionResource, organizationUuid, 100, 0); //100 should be more than enough to get all.
             var option = options.First(x => x.Name.Equals(name)); //Get the newly created type.
