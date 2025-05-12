@@ -685,7 +685,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Id).DisposeAsync();
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), org.Id, AccessModifier.Public);
+            var system = await CreateItSystemAsync(org.Uuid);
 
             //Act
             var permissionsResponseDto = await ItSystemV2Helper.GetPermissionsAsync(token, system.Uuid);
@@ -711,7 +711,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.GlobalAdmin, org.Id).DisposeAsync();
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<string>(), org.Id, AccessModifier.Local);
+            var system = await CreateItSystemAsync(org.Uuid, scope: RegistrationScopeChoice.Local);
 
             //Act
             var permissionsResponseDto = await ItSystemV2Helper.GetPermissionsAsync(token, system.Uuid);
