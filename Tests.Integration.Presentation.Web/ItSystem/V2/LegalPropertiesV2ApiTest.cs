@@ -39,7 +39,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var org = await CreateOrganizationAsync();
-            var (systemUuid, _) = await CreateSystemAsync(org.Id, AccessModifier.Public);
+            var systemUuid = await CreateSystemAsync(org.Uuid, AccessModifier.Public);
             return (token.Token, systemUuid, org.Id);
         }
     }

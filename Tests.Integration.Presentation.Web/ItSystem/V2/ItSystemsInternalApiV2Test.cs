@@ -10,6 +10,7 @@ using Core.DomainServices.Extensions;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.Organization;
 using System;
+using Core.Abstractions.Extensions;
 using Presentation.Web.Models.API.V1;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
@@ -22,8 +23,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (cookie, organization) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
-            await CreateSystemAsync(organization.Id, AccessModifier.Local);
-            await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
+            await CreateSystemAsync(organization.Uuid, AccessModifier.Local);
+            await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
 
             //Act
             var systems = await ItSystemV2Helper.GetManyInternalAsync(cookie, pageSize: 2);
@@ -39,13 +40,14 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (cookie, organization) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
             var otherOrganization = await CreateOrganizationAsync();
 
-            var expected1 = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Local);
-            var expected2 = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
-            var expected3 = await CreateSystemAsync(otherOrganization.Id, AccessModifier.Local);
+            var expected1 = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Local);
+            var expected2 = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var expected3 = await CreateSystemAsync(otherOrganization.Uuid, AccessModifier.Local);
 
-            using var resp1 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected1.dbId, otherOrganization.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp2 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected2.dbId, otherOrganization.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp3 = await ItSystemHelper.SendSetBelongsToRequestAsync(expected3.dbId, otherOrganization.Id, otherOrganization.Id);
+
+            using var resp1 = await ItSystemV2Helper.PatchRightsHolderAsync(expected1, otherOrganization.Uuid);
+            using var resp2 = await ItSystemV2Helper.PatchRightsHolderAsync(expected2, otherOrganization.Uuid);
+            using var resp3 = await ItSystemV2Helper.PatchRightsHolderAsync(expected3, otherOrganization.Uuid);
 
             Assert.Equal(HttpStatusCode.OK, resp1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, resp2.StatusCode);
@@ -55,9 +57,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var systems = (await ItSystemV2Helper.GetManyInternalAsync(cookie, rightsHolderId: otherOrganization.Uuid)).ToList();
 
             Assert.Equal(3, systems.Count);
-            Assert.Contains(systems, dto => dto.Uuid == expected1.uuid);
-            Assert.Contains(systems, dto => dto.Uuid == expected2.uuid);
-            Assert.Contains(systems, dto => dto.Uuid == expected3.uuid);
+            Assert.Contains(systems, dto => dto.Uuid == expected1);
+            Assert.Contains(systems, dto => dto.Uuid == expected2);
+            Assert.Contains(systems, dto => dto.Uuid == expected3);
         }
 
         [Theory]
@@ -69,18 +71,18 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (cookie, _) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
             var rightsHolder = await CreateOrganizationAsync();
 
-            var inactive = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
-            var active = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
+            var inactive = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var active = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
 
-            using var resp1 = await ItSystemHelper.SendSetBelongsToRequestAsync(inactive.dbId, rightsHolder.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp2 = await ItSystemHelper.SendSetBelongsToRequestAsync(active.dbId, rightsHolder.Id, TestEnvironment.DefaultOrganizationId);
+            using var resp1 = await ItSystemV2Helper.PatchRightsHolderAsync(inactive, rightsHolder.Uuid);
+            using var resp2 = await ItSystemV2Helper.PatchRightsHolderAsync(active, rightsHolder.Uuid);
 
             Assert.Equal(HttpStatusCode.OK, resp1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, resp2.StatusCode);
 
             DatabaseAccess.MutateDatabase(db =>
             {
-                var dbSystem = db.ItSystems.AsQueryable().ById(inactive.dbId);
+                var dbSystem = db.ItSystems.AsQueryable().ByUuid(inactive);
                 dbSystem.Disabled = true;
                 db.SaveChanges();
             });
@@ -92,15 +94,15 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             if (shouldIncludeDeactivated)
             {
                 Assert.Equal(2, systems.Count);
-                var activeSystemDTO = systems.First(x => x.Uuid.Equals(active.uuid));
+                var activeSystemDTO = systems.First(x => x.Uuid.Equals(active));
                 Assert.False(activeSystemDTO.Deactivated);
-                var inactiveSystemDTO = systems.First(x => x.Uuid.Equals(inactive.uuid));
+                var inactiveSystemDTO = systems.First(x => x.Uuid.Equals(inactive));
                 Assert.True(inactiveSystemDTO.Deactivated);
             }
             else
             {
                 var systemResult = Assert.Single(systems);
-                Assert.Equal(systemResult.Uuid, active.uuid);
+                Assert.Equal(systemResult.Uuid, active);
                 Assert.False(systemResult.Deactivated);
             }
         }
@@ -118,11 +120,11 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var incorrectBusinessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessType2, organizationId);
             var correctBusinessTypeId = DatabaseAccess.GetEntityUuid<BusinessType>(correctBusinessType.Id);
 
-            var unexpectedWrongBusinessType = await CreateSystemAsync(organizationId, AccessModifier.Public);
-            var expected = await CreateSystemAsync(organizationId, AccessModifier.Public);
+            var unexpectedWrongBusinessType = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var expected = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
 
-            using var setBt1 = await ItSystemHelper.SendSetBusinessTypeRequestAsync(expected.dbId, correctBusinessType.Id, organizationId);
-            using var setBt2 = await ItSystemHelper.SendSetBusinessTypeRequestAsync(unexpectedWrongBusinessType.dbId, incorrectBusinessType.Id, organizationId);
+            using var setBt1 = await ItSystemV2Helper.SendPatchBusinessTypeAsync(await GetGlobalToken(), expected, correctBusinessType.Uuid);
+            using var setBt2 = await ItSystemV2Helper.SendPatchBusinessTypeAsync(await GetGlobalToken(), unexpectedWrongBusinessType, incorrectBusinessType.Uuid);
             Assert.Equal(HttpStatusCode.OK, setBt1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, setBt2.StatusCode);
 
@@ -131,7 +133,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             //Assert
             var dto = Assert.Single(systems);
-            Assert.Equal(dto.Uuid, expected.uuid);
+            Assert.Equal(dto.Uuid, expected);
         }
 
         [Theory]
@@ -141,7 +143,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (cookie, _) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var rand = new Random(DateTime.UtcNow.Millisecond);
 
             var correctRef = new
@@ -158,16 +159,15 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             CreateTaskRefInDatabase(correctRef.key, correctRef.uuid);
             CreateTaskRefInDatabase(incorrectRef.key, incorrectRef.uuid);
 
-            var correctRefDbId = DatabaseAccess.MapFromEntitySet<TaskRef, int>(rep => rep.AsQueryable().ByUuid(correctRef.uuid).Id);
-            var incorrectRefDbId = DatabaseAccess.MapFromEntitySet<TaskRef, int>(rep => rep.AsQueryable().ByUuid(incorrectRef.uuid).Id);
 
-            var systemWithWrongRef = await CreateSystemAsync(organizationId, AccessModifier.Public);
-            var system1WithCorrectRef = await CreateSystemAsync(organizationId, AccessModifier.Public);
-            var system2WithCorrectRef = await CreateSystemAsync(organizationId, AccessModifier.Public);
+            var systemWithWrongRef = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var system1WithCorrectRef = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var system2WithCorrectRef = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
 
-            using var addRefResponse1 = await ItSystemHelper.SendAddTaskRefRequestAsync(system1WithCorrectRef.dbId, correctRefDbId, organizationId);
-            using var addRefResponse2 = await ItSystemHelper.SendAddTaskRefRequestAsync(system2WithCorrectRef.dbId, correctRefDbId, organizationId);
-            using var addRefResponse3 = await ItSystemHelper.SendAddTaskRefRequestAsync(systemWithWrongRef.dbId, incorrectRefDbId, organizationId);
+            using var addRefResponse1 = await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), system1WithCorrectRef, x => x.KLEUuids, correctRef.uuid.WrapAsEnumerable());
+            using var addRefResponse2 = await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), system2WithCorrectRef, x => x.KLEUuids, correctRef.uuid.WrapAsEnumerable());
+            using var addRefResponse3 = await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), systemWithWrongRef, x => x.KLEUuids, incorrectRef.uuid.WrapAsEnumerable());
+
             Assert.Equal(HttpStatusCode.OK, addRefResponse1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, addRefResponse2.StatusCode);
             Assert.Equal(HttpStatusCode.OK, addRefResponse3.StatusCode);
@@ -179,8 +179,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             //Assert
             Assert.Equal(2, systems.Count);
-            Assert.Contains(systems, x => x.Uuid == system1WithCorrectRef.uuid);
-            Assert.Contains(systems, x => x.Uuid == system2WithCorrectRef.uuid);
+            Assert.Contains(systems, x => x.Uuid == system1WithCorrectRef);
+            Assert.Contains(systems, x => x.Uuid == system2WithCorrectRef);
         }
 
         [Fact]
@@ -190,17 +190,17 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (cookie, organization) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
             var rightsHolder = await CreateOrganizationAsync();
 
-            var excludedSinceTooFewUsages = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
-            var includedLowerBound = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
-            var includedAboveLowerBound = await CreateSystemAsync(TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
+            var excludedSinceTooFewUsages = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var includedLowerBound = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
+            var includedAboveLowerBound = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
 
-            using var resp1 = await ItSystemHelper.SendSetBelongsToRequestAsync(excludedSinceTooFewUsages.dbId, rightsHolder.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp2 = await ItSystemHelper.SendSetBelongsToRequestAsync(includedLowerBound.dbId, rightsHolder.Id, TestEnvironment.DefaultOrganizationId);
-            using var resp3 = await ItSystemHelper.SendSetBelongsToRequestAsync(includedAboveLowerBound.dbId, rightsHolder.Id, organization.Id);
+            using var resp1 = await ItSystemV2Helper.PatchRightsHolderAsync(excludedSinceTooFewUsages, rightsHolder.Uuid);
+            using var resp2 = await ItSystemV2Helper.PatchRightsHolderAsync(includedLowerBound, rightsHolder.Uuid);
+            using var resp3 = await ItSystemV2Helper.PatchRightsHolderAsync(includedAboveLowerBound, rightsHolder.Uuid);
 
-            await TakeSystemIntoUseIn(excludedSinceTooFewUsages.dbId, TestEnvironment.DefaultOrganizationId);
-            await TakeSystemIntoUseIn(includedLowerBound.dbId, TestEnvironment.DefaultOrganizationId, TestEnvironment.SecondOrganizationId);
-            await TakeSystemIntoUseIn(includedAboveLowerBound.dbId, TestEnvironment.DefaultOrganizationId, TestEnvironment.SecondOrganizationId, rightsHolder.Id);
+            await TakeSystemIntoUsageAsync(excludedSinceTooFewUsages, DefaultOrgUuid);
+            await TakeMultipleSystemsIntoUsageAsync(includedLowerBound, DefaultOrgUuid, SecondOrgUuid);
+            await TakeMultipleSystemsIntoUsageAsync(includedAboveLowerBound, DefaultOrgUuid, SecondOrgUuid, rightsHolder.Uuid);
 
             Assert.Equal(HttpStatusCode.OK, resp1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, resp2.StatusCode);
@@ -211,8 +211,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             //Assert - only 2 are actually valid since the excluded one was hidden to the stakeholder
             Assert.Equal(2, systems.Count);
-            Assert.Contains(systems, dto => dto.Uuid == includedLowerBound.uuid);
-            Assert.Contains(systems, dto => dto.Uuid == includedAboveLowerBound.uuid);
+            Assert.Contains(systems, dto => dto.Uuid == includedLowerBound);
+            Assert.Contains(systems, dto => dto.Uuid == includedAboveLowerBound);
         }
 
         [Fact]

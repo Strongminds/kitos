@@ -33,6 +33,9 @@ namespace Tests.Integration.Presentation.Web.Tools
         private string _token;
         public readonly Guid DefaultOrgUuid = DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
 
+        public readonly Guid SecondOrgUuid =
+            DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.SecondOrganizationId);
+
         public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync(string name = null, string cvr = null, OrganizationType type = OrganizationType.Municipality)
         {
             var defaultRequest = new OrganizationCreateRequestDTO
@@ -85,6 +88,14 @@ namespace Tests.Integration.Presentation.Web.Tools
                 OrganizationUuid = orgUuid
             };
             return await ItSystemUsageV2Helper.PostAsync(await GetGlobalToken(), request);
+        }
+
+        public async Task TakeMultipleSystemsIntoUsageAsync(Guid systemUuid, params Guid[] organizationUuids)
+        {
+            foreach (var orgUuid in organizationUuids)
+            {
+                await TakeSystemIntoUsageAsync(systemUuid, orgUuid);
+            }
         }
 
         public async Task<OrganizationUnitResponseDTO> CreateOrganizationUnitAsync(Guid organizationUuid, string name = null, Guid? parentUnitUuid = null)

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel;
-using Core.DomainModel.ItSystem;
 using Core.DomainModel.Organization;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Response.System;
 using Tests.Integration.Presentation.Web.Tools;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
@@ -40,21 +38,12 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(dbTaskKeys, dtoTaskKeys);
         }
 
-        protected static async Task TakeSystemIntoUseIn(int systemDbId, params int[] organizationIds)
-        {
-            foreach (var organizationId in organizationIds)
-            {
-                await ItSystemHelper.TakeIntoUseAsync(systemDbId, organizationId);
-            }
-        }
-
-        protected async Task<(Guid uuid, int dbId)> CreateSystemAsync(int organizationId, AccessModifier accessModifier)
+        protected async Task<Guid> CreateSystemAsync(Guid organizationUuid, AccessModifier accessModifier)
         {
             var systemName = CreateName();
-            var createdSystem = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, accessModifier);
-            var entityUuid = DatabaseAccess.GetEntityUuid<Core.DomainModel.ItSystem.ItSystem>(createdSystem.Id);
+            var createdSystem = await CreateItSystemAsync(organizationUuid, systemName, accessModifier.ToChoice());
 
-            return (entityUuid, createdSystem.Id);
+            return createdSystem.Uuid;
         }
 
         protected async Task<OrganizationDTO> CreateOrganizationAsync()
@@ -68,11 +57,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         protected string CreateName()
         {
             return $"{nameof(ItSystemsApiV2Test)}{A<string>()}";
-        }
-
-        protected string CreateEmail()
-        {
-            return $"{CreateName()}@kitos.dk";
         }
 
         protected static void CreateTaskRefInDatabase(string key, Guid uuid)
