@@ -60,50 +60,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await HttpApi.DeleteWithCookieAsync(url, cookie);
         }
 
-        public static async Task<ItSystemDTO> SetNameAsync(
-            int systemId,
-            string name,
-            int organizationId,
-            Cookie optionalLogin = null)
-        {
-            using var response = await SendSetNameRequestAsync(systemId, name, organizationId, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<ItSystemDTO>();
-        }
-
-        public static async Task<HttpResponseMessage> SendSetNameRequestAsync(
-            int systemId,
-            string name,
-            int organizationId,
-            Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var url = TestEnvironment.CreateUrl($"api/itsystem/{systemId}?organizationId={organizationId}");
-            var body = new
-            {
-                name = name
-            };
-
-            return await HttpApi.PatchWithCookieAsync(url, cookie, body);
-        }
-
-        public static async Task<HttpResponseMessage> SendGetSystemRequestAsync(int systemId, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-
-            var url = TestEnvironment.CreateUrl($"api/itsystem/{systemId}");
-
-            return await HttpApi.GetWithCookieAsync(url, cookie);
-        }
-
-        public static async Task<ItSystemDTO> GetSystemAsync(int systemId, Cookie optionalLogin = null)
-        {
-            using var response = await SendGetSystemRequestAsync(systemId, optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsKitosApiResponseAsync<ItSystemDTO>();
-        }
-
         public static async Task<HttpResponseMessage> SendAddTaskRefRequestAsync(int systemId, int taskRefId, int organizationId, Cookie optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
