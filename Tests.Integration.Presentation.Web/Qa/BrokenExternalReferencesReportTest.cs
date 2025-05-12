@@ -12,6 +12,8 @@ using Core.DomainModel.Qa.References;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Presentation.Web.Models.API.V2.Internal.Response.QA;
+using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
+using Presentation.Web.Models.API.V2.Response.System;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
@@ -87,9 +89,17 @@ namespace Tests.Integration.Presentation.Web.Qa
             //Arrange - a broken link in both a system and an interface
             PrepareForReportGeneration();
             PurgeBrokenExternalReferencesReportTable();
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<Guid>().ToString("N"), TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
+            var system = await CreateItSystemAsync(DefaultOrgUuid);
             var systemReferenceName = A<string>();
-            await ReferencesHelper.CreateReferenceAsync(systemReferenceName, null, SystemReferenceUrl, r => r.ItSystem_Id = system.Id);
+            await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), system.Uuid, x => x.ExternalReferences,
+                new[]
+                {
+                    new UpdateExternalReferenceDataWriteRequestDTO
+                    {
+                        Title = systemReferenceName,
+                        Url = SystemReferenceUrl
+                    }
+                });
 
             var interfaceDto = await CreateItInterfaceAsync(DefaultOrgUuid);
             await InterfaceV2Helper.SendPatchInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid, x => x.UrlReference,
@@ -115,9 +125,10 @@ namespace Tests.Integration.Presentation.Web.Qa
             //Arrange - a broken link in both a system and an interface
             PrepareForReportGeneration();
             PurgeBrokenExternalReferencesReportTable();
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(A<Guid>().ToString("N"), TestEnvironment.DefaultOrganizationId, AccessModifier.Public);
-            await ReferencesHelper.CreateReferenceAsync(A<string>(), null, SystemReferenceUrl, r => r.ItSystem_Id = system.Id);
-            var referenceToBeExplicitlyDeleted = await ReferencesHelper.CreateReferenceAsync(A<string>(), null, SystemReferenceUrl, r => r.ItSystem_Id = system.Id);
+            var system = await CreateItSystemAsync(DefaultOrgUuid);
+            var systemId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(system.Uuid);
+            await ReferencesHelper.CreateReferenceAsync(A<string>(), null, SystemReferenceUrl, r => r.ItSystem_Id = systemId);
+            var referenceToBeExplicitlyDeleted = await ReferencesHelper.CreateReferenceAsync(A<string>(), null, SystemReferenceUrl, r => r.ItSystem_Id = systemId);
 
             var interfaceDto = await CreateItInterfaceAsync(DefaultOrgUuid);
             await InterfaceV2Helper.SendPatchInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid,
@@ -128,11 +139,12 @@ namespace Tests.Integration.Presentation.Web.Qa
 
             //Act
             using var deleteReferenceResponse = await ReferencesHelper.DeleteReferenceAsync(referenceToBeExplicitlyDeleted.Id);
-            using var deleteItSystemResponse = await ItSystemHelper.SendDeleteItSystemAsync(system.Id, TestEnvironment.DefaultOrganizationId);
+            using var deleteItSystemResponse =
+                await ItSystemV2Helper.SendDeleteSystemAsync(await GetGlobalToken(), system.Uuid);
             using var deleteInterfaceResponse =
                 await InterfaceV2Helper.SendDeleteItInterfaceAsync(await GetGlobalToken(), interfaceDto.Uuid);
             Assert.Equal(HttpStatusCode.OK, deleteReferenceResponse.StatusCode);
-            Assert.Equal(HttpStatusCode.OK, deleteItSystemResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, deleteItSystemResponse.StatusCode);
             Assert.Equal(HttpStatusCode.NoContent, deleteInterfaceResponse.StatusCode);
         }
 

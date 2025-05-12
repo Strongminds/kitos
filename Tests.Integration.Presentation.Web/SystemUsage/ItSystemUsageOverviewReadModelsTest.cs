@@ -568,7 +568,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
-            var system = await ItSystemHelper.CreateItSystemInOrganizationAsync(systemName, organizationId, AccessModifier.Public);
+            var system = await CreateItSystemAsync(DefaultOrgUuid, systemName);
             await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
             var businessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessTypeName1, organizationId);
