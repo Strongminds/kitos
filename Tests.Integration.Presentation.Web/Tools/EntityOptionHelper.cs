@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V1;
