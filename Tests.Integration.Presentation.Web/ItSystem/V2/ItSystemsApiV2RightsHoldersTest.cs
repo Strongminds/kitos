@@ -88,10 +88,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (token, rightsHolderOrganization) = await CreateRightsHolderAccessUserInNewOrganizationAsync();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var uuid = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
             var parentSystem = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
-            var businessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, CreateName(), organizationId);
+            var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, DefaultOrgUuid);
             var exposedInterface = await CreateItInterfaceAsync(DefaultOrgUuid);
             DatabaseAccess.MutateDatabase(db =>
             {
@@ -106,7 +105,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 itSystem.ArchiveDutyComment = A<string>();
                 itSystem.ParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(parentSystem);
                 itSystem.BelongsToId = GetOrgId(rightsHolderOrganization.Uuid);
-                itSystem.BusinessTypeId = businessType.Id;
+                itSystem.BusinessTypeId = DatabaseAccess.GetEntityId<BusinessType>(businessType.Uuid);
 
                 itSystem.TaskRefs.Add(taskRef);
                 db.ItInterfaceExhibits.Add(new ItInterfaceExhibit { ItInterface = interfaceToExpose, ItSystem = itSystem, ObjectOwnerId = 1, LastChangedByUserId = 1 });

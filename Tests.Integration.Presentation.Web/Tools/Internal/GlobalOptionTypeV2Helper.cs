@@ -4,8 +4,10 @@ using Core.DomainModel.Organization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System;
+using AutoFixture;
 using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
+using Presentation.Web.Models.API.V2.Internal.Response.GlobalOptions;
 
 namespace Tests.Integration.Presentation.Web.Tools.Internal
 {
@@ -89,6 +91,20 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PatchWithCookieAsync(
                 TestEnvironment.CreateUrl($"api/v2/internal/{GetPrefix(choiceTypeName)}/{GlobalOptionTypesSuffix}/{choiceTypeName}/{optionUuid}"), cookie, dto);
+        }
+
+        public static async Task<GlobalRegularOptionResponseDTO> CreateAndActivateGlobalOption(string optionTypeName, string optionName)
+        {
+            var initialCreate = await CreateGlobalOptionType(optionTypeName, new Fixture().Create<GlobalRegularOptionCreateRequestDTO>());
+            var createResponseDto = await initialCreate.ReadResponseBodyAsAsync<GlobalRegularOptionResponseDTO>();
+            var update = await PatchGlobalOptionType(createResponseDto.Uuid, optionTypeName,
+                new GlobalRegularOptionUpdateRequestDTO
+                {
+                    IsObligatory = true,
+                    IsEnabled = true,
+                    Name = optionName
+                });
+            return await update.ReadResponseBodyAsAsync<GlobalRegularOptionResponseDTO>();
         }
 
         private static string GetPrefix(string optionTypeName)

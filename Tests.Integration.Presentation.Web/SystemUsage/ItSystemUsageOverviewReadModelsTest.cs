@@ -564,15 +564,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
         {
             //Arrange
             var systemName = A<string>();
-            var businessTypeName1 = A<string>();
-            var businessTypeName2 = A<string>();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
+            var newBusinessTypeName = A<string>();
             var organizationUuid = DefaultOrgUuid;
 
             var system = await CreateItSystemAsync(DefaultOrgUuid, systemName);
             await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
-            var businessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessTypeName1, organizationId);
+            var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationUuid);
 
             await ItSystemV2Helper.SendPatchBusinessTypeAsync(await GetGlobalToken(), system.Uuid, businessType.Uuid);
 
@@ -584,7 +582,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await GlobalOptionTypeV2Helper.PatchGlobalOptionType(businessType.Uuid,
                 GlobalOptionTypeV2Helper.BusinessTypes, new GlobalRegularOptionUpdateRequestDTO
                 {
-                    Name = businessTypeName2,
+                    Name = newBusinessTypeName,
                     IsEnabled = true,
                     IsObligatory = true
                 });
@@ -597,7 +595,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var readModel = Assert.Single(readModels);
             Console.Out.WriteLine("Read model found");
 
-            Assert.Equal(businessTypeName2, readModel.ItSystemBusinessTypeName);
+            Assert.Equal(newBusinessTypeName, readModel.ItSystemBusinessTypeName);
         }
 
         [Fact]

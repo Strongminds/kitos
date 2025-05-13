@@ -16,8 +16,6 @@ namespace Tests.Integration.Presentation.Web.GlobalAdminArea
 {
     public class ItSystemGlobalRoleOptionTypesInternalV2ApiTest : WithAutoFixture
     {
-        private const string ItSystemsApiPrefix = "it-systems";
-
         [Fact]
         public async Task Can_Get_Global_Business_Types()
         {

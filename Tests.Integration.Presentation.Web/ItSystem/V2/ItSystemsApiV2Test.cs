@@ -23,6 +23,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.System;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Internal;
 using Tests.Integration.Presentation.Web.Tools.Internal.References;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
@@ -87,11 +88,10 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             //Arrange
             var (token, _) = await CreateStakeHolderUserInNewOrganizationAsync();
             var rightsHolderOrganization = await CreateOrganizationAsync();
-            var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
             var system = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
             var parentSystem = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
-            var businessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, CreateName(), organizationId);
+            var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationUuid);
             var exposedInterface = await CreateItInterfaceAsync(DefaultOrgUuid);
             DatabaseAccess.MutateDatabase(db =>
             {
@@ -105,7 +105,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 itSystem.ArchiveDutyComment = A<string>();
                 itSystem.ParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(parentSystem);
                 itSystem.BelongsToId = GetOrgId(rightsHolderOrganization.Uuid);
-                itSystem.BusinessTypeId = businessType.Id;
+                itSystem.BusinessTypeId = DatabaseAccess.GetEntityId<BusinessType>(businessType.Uuid);
 
                 itSystem.TaskRefs.Add(taskRef);
                 db.ItInterfaceExhibits.Add(new ItInterfaceExhibit { ItInterface = interfaceToExpose, ItSystem = itSystem, ObjectOwnerId = 1, LastChangedByUserId = 1 });
@@ -252,9 +252,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             const int organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
-            var correctBusinessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessType1, organizationId);
-            var incorrectBusinessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessType2, organizationId);
-            var correctBusinessTypeId = DatabaseAccess.GetEntityUuid<BusinessType>(correctBusinessType.Id);
+            var correctBusinessType = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.BusinessTypes, businessType1);
+            var incorrectBusinessType = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.BusinessTypes, businessType2);
 
             var unexpectedWrongBusinessType = await CreateSystemAsync(organizationUuid, AccessModifier.Public);
             var expected = await CreateSystemAsync(organizationUuid, AccessModifier.Public);
@@ -266,7 +265,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(HttpStatusCode.OK, setBt2.StatusCode);
 
             //Act
-            var systems = (await ItSystemV2Helper.GetManyAsync(token, businessTypeId: correctBusinessTypeId)).ToList();
+            var systems = (await ItSystemV2Helper.GetManyAsync(token, businessTypeId: correctBusinessType.Uuid)).ToList();
 
             //Assert
             var dto = Assert.Single(systems);
