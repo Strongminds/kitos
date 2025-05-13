@@ -19,7 +19,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             //Arrange
             var email = CreateEmail();
-            var userDetails = await HttpApi.CreateUserAndGetToken(email, OrganizationRole.User, TestEnvironment.DefaultOrganizationId, true);
+            var userDetails = await HttpApi.CreateUserAndGetToken(email, OrganizationRole.User, DefaultOrgUuid, true);
 
             //Act
             var organizations = await OrganizationV2Helper.GetOrganizationsForWhichUserIsRightsHolder(userDetails.token);
@@ -33,7 +33,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             //Arrange
             var email = CreateEmail();
-            var userDetails = await HttpApi.CreateUserAndGetToken(email, OrganizationRole.User, TestEnvironment.DefaultOrganizationId, true);
+            var userDetails = await HttpApi.CreateUserAndGetToken(email, OrganizationRole.User, DefaultOrgUuid, true);
             using var response1 = await HttpApi.SendAssignRoleToUserAsync(userDetails.userUuid, OrganizationRole.RightsHolderAccess, TestEnvironment.SecondOrganizationId);
             Assert.Equal(HttpStatusCode.Created, response1.StatusCode);
             var secondOrgUuid = DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.SecondOrganizationId);
