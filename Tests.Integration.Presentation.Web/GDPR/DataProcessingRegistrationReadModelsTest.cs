@@ -315,7 +315,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var organizationUuid = DefaultOrgUuid;
 
             var registration = await CreateDPRAsync(organizationUuid, name);
-            var (userUuid, _, cookie) = await HttpApi.CreateUserAndLogin(email, orgRole);
+            var (userUuid, _, cookie) = await HttpApi.CreateUserAndLogin(email, orgRole, organizationUuid);
             using var response = await DataProcessingRegistrationV2Helper.SendPatchName(cookie, registration.Uuid, newName);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

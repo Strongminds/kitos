@@ -319,7 +319,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [Fact]
         public async Task Cannot_Remove_Yourself_As_Global_Admin()
         {
-            var (userUuid, _, cookie) = await HttpApi.CreateUserAndLogin(A<string>(), OrganizationRole.GlobalAdmin);
+            var (userUuid, _, cookie) = await HttpApi.CreateUserAndLogin(A<string>(), OrganizationRole.GlobalAdmin, DefaultOrgUuid);
 
             var response = await UsersV2Helper.RemoveGlobalAdmin(userUuid, cookie);
 

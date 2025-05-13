@@ -107,14 +107,13 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         private async Task<(Cookie cookie, ShallowOrganizationResponseDTO organization)> CreatePrerequisitesAsync()
         {
             var organization = await CreateOrganizationAsync();
-            var orgId = DatabaseAccess.GetEntityId<Organization>(organization.Uuid);
-            var (userId, cookie) = await CreateApiUserAsync(orgId);
-            await HttpApi.SendAssignRoleToUserAsync(userId, OrganizationRole.GlobalAdmin, orgId).DisposeAsync();
+            var (userId, cookie) = await CreateApiUserAsync(organization.Uuid);
+            await HttpApi.SendAssignRoleToUserAsync(userId, OrganizationRole.GlobalAdmin, organization.Uuid).DisposeAsync();
             return (cookie, organization);
         }
-        private async Task<(Guid userUuid, Cookie cookie)> CreateApiUserAsync(int organizationId)
+        private async Task<(Guid userUuid, Cookie cookie)> CreateApiUserAsync(Guid organizationUuid)
         {
-            var userAndGetCookie = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.GlobalAdmin, organizationId);
+            var userAndGetCookie = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.GlobalAdmin, organizationUuid);
             return (userAndGetCookie.userUuid, userAndGetCookie.loginCookie);
         }
     }

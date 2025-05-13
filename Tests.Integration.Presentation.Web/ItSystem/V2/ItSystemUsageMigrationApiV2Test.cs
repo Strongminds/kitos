@@ -588,7 +588,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         private async Task<(ItSystemResponseDTO system, ShallowOrganizationResponseDTO organization, Cookie cookie)> CreatePrerequisitesWithUser(OrganizationRole role, string systemName = null, AccessModifier accessModifier = AccessModifier.Local)
         {
             var (system, organization) = await CreatePrerequisites(systemName, accessModifier);
-            var user = await HttpApi.CreateUserAndLogin(CreateEmail(), role, GetOrgId(organization.Uuid));
+            var user = await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Uuid);
 
             return (system, organization, user.loginCookie);
         }

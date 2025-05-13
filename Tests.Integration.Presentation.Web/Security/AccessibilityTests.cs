@@ -11,7 +11,7 @@ using Tests.Toolkit.Patterns;
 
 namespace Tests.Integration.Presentation.Web.Security
 {
-    public class AccessibilityTests : WithAutoFixture
+    public class AccessibilityTests : BaseTest
     {
         private readonly string _defaultPassword;
 
@@ -50,7 +50,7 @@ namespace Tests.Integration.Presentation.Web.Security
             //Arrange
             var email = CreateEmail();
             var userDto = ObjectCreateHelper.MakeSimpleApiUserDto(email, true);
-            var createdUserId = await HttpApi.CreateOdataUserAsync(userDto, OrganizationRole.User);
+            var createdUserId = await HttpApi.CreateOdataUserAsync(userDto, OrganizationRole.User, DefaultOrgUuid);
             var loginDto = ObjectCreateHelper.MakeSimpleLoginDto(email, _defaultPassword);
             var token = await HttpApi.GetTokenAsync(loginDto);
             using (var requestResponse = await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl("api/v2/organizations"), token.Token))
@@ -71,16 +71,10 @@ namespace Tests.Integration.Presentation.Web.Security
             await UsersV2Helper.DeleteUserGlobally(createdUserId);
         }
 
-        private static string CreateEmail()
-        {
-            return $"{Guid.NewGuid():N}@test.dk";
-        }
-
         private static async Task DisableApiAccessForUserAsync(ApiUserDTO userDto, Guid userUuid)
         {
-            var userId = DatabaseAccess.GetEntityId<User>(userUuid);
             userDto.HasApiAccess = false;
-            await HttpApi.PatchOdataUserAsync(userDto, userId);
+            await HttpApi.PatchOdataUserAsync(userDto, userUuid);
         }
 
     }

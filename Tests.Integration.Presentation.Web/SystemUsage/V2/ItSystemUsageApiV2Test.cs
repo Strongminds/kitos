@@ -2957,8 +2957,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private async Task<User> CreateUser(ShallowOrganizationResponseDTO organization)
         {
-            var organizationId = GetOrgId(organization.Uuid);
-            var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, organizationId);
+            var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, organization.Uuid);
             var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userId));
             return user;
         }
