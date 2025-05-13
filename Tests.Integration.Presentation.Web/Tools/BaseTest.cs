@@ -29,6 +29,7 @@ namespace Tests.Integration.Presentation.Web.Tools
     public class BaseTest : WithAutoFixture
     {
         private string _token;
+        private readonly Random _random = new Random();
 
         public readonly Guid DefaultOrgUuid =
             DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
@@ -145,9 +146,7 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public string CreateCvr()
         {
-            var rnd = new Random();
-
-            return rnd.Next(0, 100_000_000)
+            return _random.Next(0, 100_000_000)
                 .ToString("D8");
         }
 
