@@ -31,20 +31,5 @@ namespace Tests.Integration.Presentation.Web.Tools
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<OptionDTO>();
         }
-
-        public static async Task<HttpResponseMessage> ChangeOptionTypeNameAsync(string resource, int id, string name, Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var url = TestEnvironment.CreateUrl($"odata/{resource}({id})");
-
-            var body = new
-            {
-                Name = name
-            };
-
-            using var response = await HttpApi.PatchWithCookieAsync(url, cookie, body);
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-            return response;
-        }
     }
 }

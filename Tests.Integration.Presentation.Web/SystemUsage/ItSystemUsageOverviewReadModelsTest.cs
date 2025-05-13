@@ -581,7 +581,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read models are up to date");
 
             //Act 
-            await EntityOptionHelper.ChangeOptionTypeNameAsync(EntityOptionHelper.ResourceNames.BusinessType, businessType.Id, businessTypeName2);
             await GlobalOptionTypeV2Helper.PatchGlobalOptionType(businessType.Uuid,
                 GlobalOptionTypeV2Helper.BusinessTypes, new GlobalRegularOptionUpdateRequestDTO
                 {
