@@ -5,10 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Newtonsoft.Json;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
 using Presentation.Web.Models.API.V2.Request.Contract;
@@ -19,7 +17,6 @@ using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.Extensions;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
-using Tests.Integration.Presentation.Web.Tools.Internal.UI_Configuration;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
@@ -533,7 +530,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync(A<OrganizationType>());
             var (_, _, loginCookie) =
-                await HttpApi.CreateUserAndLogin(UIConfigurationHelper.CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid);
+                await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid);
             return (loginCookie, organization);
         }
 
