@@ -56,39 +56,93 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal
 
         private const string GlobalOptionTypesSuffix = "global-option-types";
 
-        public static async Task<HttpResponseMessage> GetGlobalOptionTypes(string choiceTypeName, string apiPrefix)
+        public static async Task<HttpResponseMessage> GetGlobalOptionTypes(string choiceTypeName)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.GetWithCookieAsync(
-                TestEnvironment.CreateUrl($"api/v2/internal/{apiPrefix}/{GlobalOptionTypesSuffix}/{choiceTypeName}"), cookie);
+                TestEnvironment.CreateUrl($"api/v2/internal/{GetPrefix(choiceTypeName)}/{GlobalOptionTypesSuffix}/{choiceTypeName}"), cookie);
         }
 
-        public static async Task<HttpResponseMessage> CreateGlobalOptionType(string choiceTypeName, GlobalRegularOptionCreateRequestDTO dto, string apiPrefix)
+        public static async Task<HttpResponseMessage> CreateGlobalOptionType(string choiceTypeName, GlobalRegularOptionCreateRequestDTO dto)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PostWithCookieAsync(
-                TestEnvironment.CreateUrl($"api/v2/internal/{apiPrefix}/{GlobalOptionTypesSuffix}/{choiceTypeName}"), cookie, dto);
+                TestEnvironment.CreateUrl($"api/v2/internal/{GetPrefix(choiceTypeName)}/{GlobalOptionTypesSuffix}/{choiceTypeName}"), cookie, dto);
         }
 
-        public static async Task<HttpResponseMessage> CreateGlobalRoleOptionType(string choiceTypeName, GlobalRoleOptionCreateRequestDTO dto, string apiPrefix)
+        public static async Task<HttpResponseMessage> CreateGlobalRoleOptionType(string choiceTypeName, GlobalRoleOptionCreateRequestDTO dto)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PostWithCookieAsync(
-                TestEnvironment.CreateUrl($"api/v2/internal/{apiPrefix}/{GlobalOptionTypesSuffix}/{choiceTypeName}"), cookie, dto);
+                TestEnvironment.CreateUrl($"api/v2/internal/{GetPrefix(choiceTypeName)}/{GlobalOptionTypesSuffix}/{choiceTypeName}"), cookie, dto);
         }
 
-        public static async Task<HttpResponseMessage> PatchGlobalOptionType(Guid optionUuid, string choiceTypeName, GlobalRegularOptionUpdateRequestDTO dto, string apiPrefix)
+        public static async Task<HttpResponseMessage> PatchGlobalOptionType(Guid optionUuid, string choiceTypeName, GlobalRegularOptionUpdateRequestDTO dto)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PatchWithCookieAsync(
-                TestEnvironment.CreateUrl($"api/v2/internal/{apiPrefix}/{GlobalOptionTypesSuffix}/{choiceTypeName}/{optionUuid}"), cookie, dto);
+                TestEnvironment.CreateUrl($"api/v2/internal/{GetPrefix(choiceTypeName)}/{GlobalOptionTypesSuffix}/{choiceTypeName}/{optionUuid}"), cookie, dto);
         }
 
-        public static async Task<HttpResponseMessage> PatchGlobalRoleOptionType(Guid optionUuid, string choiceTypeName, GlobalRoleOptionUpdateRequestDTO dto, string apiPrefix)
+        public static async Task<HttpResponseMessage> PatchGlobalRoleOptionType(Guid optionUuid, string choiceTypeName, GlobalRoleOptionUpdateRequestDTO dto)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.PatchWithCookieAsync(
-                TestEnvironment.CreateUrl($"api/v2/internal/{apiPrefix}/{GlobalOptionTypesSuffix}/{choiceTypeName}/{optionUuid}"), cookie, dto);
+                TestEnvironment.CreateUrl($"api/v2/internal/{GetPrefix(choiceTypeName)}/{GlobalOptionTypesSuffix}/{choiceTypeName}/{optionUuid}"), cookie, dto);
         }
+
+        private static string GetPrefix(string optionTypeName)
+        {
+            switch (optionTypeName)
+            {
+                // — it-systems prefixes —
+                case ItSystemRoles:
+                case BusinessTypes:
+                case ArchiveTypes:
+                case ArchiveLocationTypes:
+                case ArchiveTestLocationTypes:
+                case SensitivePersonalDataTypes:
+                case LocalRegisterTypes:
+                case ItSystemCategoriesTypes:
+                case DataTypes:
+                case FrequencyRelationTypes:
+                case InterfaceTypes:
+                    return ItSystemPrefix;
+
+                // — it-contract prefixes —
+                case ItContractRoles:
+                case ItContractTypes:
+                case TemplateTypes:
+                case PurchaseFormTypes:
+                case PaymentModelTypes:
+                case AgreementElementTypes:
+                case OptionExtendTypes:
+                case PaymentFrequencyTypes:
+                case PriceRegulationTypes:
+                case ProcurementStrategyTypes:
+                case TerminationDeadlineTypes:
+                case CriticalityTypes:
+                    return ItContractPrefix;
+
+                // — data-processing prefixes —
+                case DprRoles:
+                case BasisForTransferTypes:
+                case OversightOptionTypes:
+                case DataResponsibleTypes:
+                case CountryOptionTypes:
+                    return DataProcessingPrefix;
+
+                // — organization-unit prefixes —
+                case OrganizationUnitRoles:
+                    return OrganizationUnitPrefix;
+
+                default:
+                    throw new ArgumentException(
+                        $"Unknown choice type name: '{optionTypeName}'",
+                        nameof(optionTypeName)
+                    );
+            }
+        }
+
     }
 }
