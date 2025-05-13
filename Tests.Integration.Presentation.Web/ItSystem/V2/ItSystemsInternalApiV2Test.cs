@@ -13,6 +13,7 @@ using System;
 using Core.Abstractions.Extensions;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using Tests.Integration.Presentation.Web.Tools.Internal;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
 {
@@ -115,11 +116,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (cookie, _) = await CreateCookieStakeHolderUserInNewOrganizationAsync();
             var businessType1 = A<string>();
             var businessType2 = A<string>();
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
 
-            var correctBusinessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessType1, organizationId);
-            var incorrectBusinessType = await EntityOptionHelper.CreateOptionTypeAsync(EntityOptionHelper.ResourceNames.BusinessType, businessType2, organizationId);
-            var correctBusinessTypeId = DatabaseAccess.GetEntityUuid<BusinessType>(correctBusinessType.Id);
+            var correctBusinessType = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.BusinessTypes, businessType1);
+            var incorrectBusinessType = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.BusinessTypes, businessType2);
 
             var unexpectedWrongBusinessType = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
             var expected = await CreateSystemAsync(DefaultOrgUuid, AccessModifier.Public);
@@ -130,7 +129,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(HttpStatusCode.OK, setBt2.StatusCode);
 
             //Act
-            var systems = (await ItSystemV2Helper.GetManyInternalAsync(cookie, businessTypeId: correctBusinessTypeId)).ToList();
+            var systems = (await ItSystemV2Helper.GetManyInternalAsync(cookie, businessTypeId: correctBusinessType.Uuid)).ToList();
 
             //Assert
             var dto = Assert.Single(systems);
