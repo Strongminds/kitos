@@ -14,10 +14,10 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.GlobalAdminArea
 {
-    public class ItSystemGlobalRoleOptionTypesInternalV2ApiTest: WithAutoFixture
+    public class ItSystemGlobalRoleOptionTypesInternalV2ApiTest : WithAutoFixture
     {
         private const string RolesUrlSuffix = "it-systems-roles";
-        private const string ItSystemsApiPrefix = "api/v2/internal/it-systems";
+        private const string ItSystemsApiPrefix = "it-systems";
 
         [Fact]
         public async Task Can_Get_Global_Business_Types()
