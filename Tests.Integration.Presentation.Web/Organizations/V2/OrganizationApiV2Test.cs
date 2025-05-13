@@ -207,10 +207,5 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var expectedResult = InnerToExternalOrgType[createdWith];
             Assert.Equal(expectedResult, dto.OrganizationType);
         }
-
-        private string CreateEmail()
-        {
-            return $"{nameof(OrganizationApiV2Test)}{DateTime.Now.Ticks}{A<Guid>():N}@kitos.dk";
-        }
     }
 }

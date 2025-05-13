@@ -104,7 +104,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 itSystem.ArchiveDuty = A<ArchiveDutyRecommendationTypes>();
                 itSystem.ArchiveDutyComment = A<string>();
                 itSystem.ParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(parentSystem);
-                itSystem.BelongsToId = rightsHolderOrganization.Id;
+                itSystem.BelongsToId = GetOrgId(rightsHolderOrganization.Uuid);
                 itSystem.BusinessTypeId = businessType.Id;
 
                 itSystem.TaskRefs.Add(taskRef);
@@ -429,7 +429,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var (token, organization) = await CreateStakeHolderUserInNewOrganizationAsync();
-            var (rootUuid, createdSystems) = CreateHierarchy(organization.Id);
+            var (rootUuid, createdSystems) = CreateHierarchy(organization.Uuid);
 
             //Act
             var response = await ItSystemV2Helper.GetHierarchyAsync(token, rootUuid);
@@ -443,7 +443,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var organization = await CreateOrganizationAsync();
-            var (rootUuid, createdSystems) = CreateHierarchy(organization.Id);
+            var (rootUuid, createdSystems) = CreateHierarchy(organization.Uuid);
             var firstSystem = createdSystems.First();
             await TakeSystemIntoUsageAsync(firstSystem.Uuid, organization.Uuid);
 
@@ -681,9 +681,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var org = await CreateOrganizationAsync();
-            var (user, token) = await CreateApiUser(org.Id);
+            var (user, token) = await CreateApiUser(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Id).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Uuid).DisposeAsync();
 
             var system = await CreateItSystemAsync(org.Uuid);
 
@@ -707,9 +707,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var org = await CreateOrganizationAsync();
-            var (user, token) = await CreateApiUser(org.Id);
+            var (user, token) = await CreateApiUser(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.GlobalAdmin, org.Id).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.GlobalAdmin, org.Uuid).DisposeAsync();
 
             var system = await CreateItSystemAsync(org.Uuid, scope: RegistrationScopeChoice.Local);
 
@@ -801,9 +801,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         {
             //Arrange
             var org = await CreateOrganizationAsync();
-            var (user, token) = await CreateApiUser(org.Id);
+            var (user, token) = await CreateApiUser(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Id).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Uuid).DisposeAsync();
 
             //Act
             var permissionsResponseDto = await ItSystemV2Helper.GetCollectionPermissionsAsync(token, org.Uuid);
@@ -816,9 +816,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equivalent(expected, permissionsResponseDto);
         }
 
-        private async Task<(User user, string token)> CreateApiUser(int organizationId)
+        private async Task<(User user, string token)> CreateApiUser(Guid organizationUuid)
         {
-            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationId, true, false);
+            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true, false);
             var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
             return (user, userAndGetToken.token);
         }
@@ -831,11 +831,11 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(expected.MasterReference, actual.MasterReference);
         }
 
-        private (Guid rootUuid, IReadOnlyList<Core.DomainModel.ItSystem.ItSystem> createdItSystems) CreateHierarchy(int orgId)
+        private (Guid rootUuid, IReadOnlyList<Core.DomainModel.ItSystem.ItSystem> createdItSystems) CreateHierarchy(Guid organizationUuid)
         {
-            var rootSystem = CreateNewItSystem(orgId);
-            var childSystem = CreateNewItSystem(orgId);
-            var grandchildSystem = CreateNewItSystem(orgId);
+            var rootSystem = CreateNewItSystem(organizationUuid);
+            var childSystem = CreateNewItSystem(organizationUuid);
+            var grandchildSystem = CreateNewItSystem(organizationUuid);
 
             var createdSystems = new List<Core.DomainModel.ItSystem.ItSystem> { rootSystem, childSystem, grandchildSystem };
 
@@ -856,27 +856,27 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return (rootSystem.Uuid, createdSystems);
         }
 
-        private Core.DomainModel.ItSystem.ItSystem CreateNewItSystem(int orgId)
+        private Core.DomainModel.ItSystem.ItSystem CreateNewItSystem(Guid organizationUuid)
         {
             return new Core.DomainModel.ItSystem.ItSystem
             {
                 Name = A<string>(),
-                OrganizationId = orgId,
+                OrganizationId = GetOrgId(organizationUuid),
                 ObjectOwnerId = TestEnvironment.DefaultUserId,
                 LastChangedByUserId = TestEnvironment.DefaultUserId
             };
         }
 
-        protected async Task<(string token, OrganizationDTO createdOrganization)> CreateStakeHolderUserInNewOrganizationAsync()
+        protected async Task<(string token, ShallowOrganizationResponseDTO createdOrganization)> CreateStakeHolderUserInNewOrganizationAsync()
         {
             var organization = await CreateOrganizationAsync();
 
             var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(),
-                OrganizationRole.User, organization.Id, true, true);
+                OrganizationRole.User, organization.Uuid, true, true);
             return (token, organization);
         }
 
-        private static void AssertOrganization(OrganizationDTO expected, ShallowOrganizationResponseDTO actual)
+        private static void AssertOrganization(ShallowOrganizationResponseDTO expected, ShallowOrganizationResponseDTO actual)
         {
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Cvr, actual.Cvr);
@@ -889,8 +889,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             IdentityNamePairResponseDTO businessType,
             ItSystemResponseDTO parent,
             string token,
-            OrganizationDTO organizationDto,
-            OrganizationDTO rightsHolder)> PrepareFullItSystem()
+            ShallowOrganizationResponseDTO organizationDto,
+            ShallowOrganizationResponseDTO rightsHolder)> PrepareFullItSystem()
         {
             var organizationDto = await CreateOrganizationAsync();
             var rightsHolderOrgDto = await CreateOrganizationAsync();
@@ -937,7 +937,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return Many<ExternalReferenceDataWriteRequestDTO>().Transform(ExternalReferenceTestHelper.WithRandomMaster).ToList();
         }
 
-        private static async Task<IdentityNamePairResponseDTO> GetRandomBusinessType(OrganizationDTO organizationDto)
+        private static async Task<IdentityNamePairResponseDTO> GetRandomBusinessType(ShallowOrganizationResponseDTO organizationDto)
         {
             return (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationDto.Uuid, 10,
                     0))

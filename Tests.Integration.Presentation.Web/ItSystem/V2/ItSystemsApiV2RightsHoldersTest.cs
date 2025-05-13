@@ -15,6 +15,7 @@ using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.System.RightsHolder;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
@@ -104,7 +105,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 itSystem.ArchiveDuty = A<ArchiveDutyRecommendationTypes>();
                 itSystem.ArchiveDutyComment = A<string>();
                 itSystem.ParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(parentSystem);
-                itSystem.BelongsToId = rightsHolderOrganization.Id;
+                itSystem.BelongsToId = GetOrgId(rightsHolderOrganization.Uuid);
                 itSystem.BusinessTypeId = businessType.Id;
 
                 itSystem.TaskRefs.Add(taskRef);
@@ -245,7 +246,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             using var belongsToResponse2 = await ItSystemV2Helper.PatchRightsHolderAsync(systemUuid2, rightsHolder2Org.Uuid);
             Assert.Equal(HttpStatusCode.OK, belongsToResponse1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, belongsToResponse2.StatusCode);
-            using var assignRightsHolderInOrg2Response = await HttpApi.SendAssignRoleToUserAsync(userId, OrganizationRole.RightsHolderAccess, rightsHolder2Org.Id);
+            using var assignRightsHolderInOrg2Response = await HttpApi.SendAssignRoleToUserAsync(userId, OrganizationRole.RightsHolderAccess, rightsHolder2Org.Uuid);
             Assert.Equal(HttpStatusCode.Created, assignRightsHolderInOrg2Response.StatusCode);
 
             //Act
@@ -720,7 +721,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             bool withParent,
             bool withFormerName,
             bool withExternalUuid,
-            OrganizationDTO rightsHolderOrganization)
+            ShallowOrganizationResponseDTO rightsHolderOrganization)
         {
             var parentCandidate = await CreateSystemAsync(rightsHolderOrganization.Uuid, AccessModifier.Local);
 
@@ -745,21 +746,21 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             };
         }
 
-        protected async Task<(string token, OrganizationDTO createdOrganization)> CreateRightsHolderAccessUserInNewOrganizationAsync()
+        protected async Task<(string token, ShallowOrganizationResponseDTO createdOrganization)> CreateRightsHolderAccessUserInNewOrganizationAsync()
         {
             var organization = await CreateOrganizationAsync();
 
             var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(),
-                OrganizationRole.RightsHolderAccess, organization.Id, true);
+                OrganizationRole.RightsHolderAccess, organization.Uuid, true);
             return (token, organization);
         }
 
-        protected async Task<(int userId, string token, OrganizationDTO createdOrganization)> CreateRightsHolderAccessUserInNewOrganizationAndGetFullUserAsync()
+        protected async Task<(int userId, string token, ShallowOrganizationResponseDTO createdOrganization)> CreateRightsHolderAccessUserInNewOrganizationAndGetFullUserAsync()
         {
             var organization = await CreateOrganizationAsync();
 
             var (id, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(),
-                OrganizationRole.RightsHolderAccess, organization.Id, true);
+                OrganizationRole.RightsHolderAccess, organization.Uuid, true);
             return (id, token, organization);
         }
 

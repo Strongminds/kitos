@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Presentation.Web.Controllers.API.V2.External.Generic;
-using Presentation.Web.Models.API.V1;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
 using Tests.Integration.Presentation.Web.Tools;
 using Xunit;
+using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
 {
@@ -46,11 +47,10 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return createdSystem.Uuid;
         }
 
-        protected async Task<OrganizationDTO> CreateOrganizationAsync()
+        protected async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync()
         {
             var organizationName = CreateName();
-            var organization = await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId,
-                organizationName, "11224455", OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
+            var organization = await CreateOrganizationAsync(organizationName, type: OrganizationType.Company);
             return organization;
         }
 

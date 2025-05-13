@@ -12,6 +12,7 @@ using Core.DomainModel.Organization;
 using System;
 using Core.Abstractions.Extensions;
 using Presentation.Web.Models.API.V1;
+using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2
 {
@@ -279,12 +280,12 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(new[] { system2.Uuid, system3.Uuid }, dtos.Select(x => x.Uuid).ToArray());
         }
 
-        protected async Task<(Cookie cookie, OrganizationDTO createdOrganization)> CreateCookieStakeHolderUserInNewOrganizationAsync()
+        protected async Task<(Cookie cookie, ShallowOrganizationResponseDTO createdOrganization)> CreateCookieStakeHolderUserInNewOrganizationAsync()
         {
             var organization = await CreateOrganizationAsync();
 
             var (_, _, cookie) = await HttpApi.CreateUserAndLogin(CreateEmail(),
-                OrganizationRole.User, organization.Id, false, true);
+                OrganizationRole.User, organization.Uuid, false, true);
             return (cookie, organization);
         }
     }
