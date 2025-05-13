@@ -23,9 +23,6 @@ builder.WebHost.ConfigureKestrel((context, options) =>
         else
         {
             var certPassword = Environment.GetEnvironmentVariable(Constants.Config.Certificate.CertPassword);
-            var ddebugPath = Constants.Config.Certificate.CertFilePath;
-            Console.WriteLine("certificate path is: " + ddebugPath);
-            Console.WriteLine("cert file exists: " + File.Exists(ddebugPath));
             listenOptions.UseHttps(Constants.Config.Certificate.CertFilePath, certPassword);
         }
     });
