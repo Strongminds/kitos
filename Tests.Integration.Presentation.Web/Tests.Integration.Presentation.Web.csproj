@@ -242,7 +242,6 @@
     <Compile Include="Tools\Model\OrgRightDTO.cs" />
     <Compile Include="Tools\Model\RightDTO.cs" />
     <Compile Include="Tools\ObjectCreateHelper.cs" />
-    <Compile Include="Tools\OrganizationHelper.cs" />
     <Compile Include="Tools\ReadModelTestTools.cs" />
     <Compile Include="Tools\TestEnvironment.cs" />
     <Compile Include="Tools\External\ItSystemV2Helper.cs" />
