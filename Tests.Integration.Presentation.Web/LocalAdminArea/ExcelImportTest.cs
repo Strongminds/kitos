@@ -16,10 +16,8 @@ namespace Tests.Integration.Presentation.Web.LocalAdminArea
 {
     public class ExcelImportTest : BaseTest
     {
-
-        private readonly string excelApiPrefix = "api/local-admin/excel";
-        private readonly string byIdApiPrefix = "contracts-by-id";
-        private readonly string byUuidApiPrefix = "contracts-by-uuid";
+        private const string ExcelApiPrefix = "api/local-admin/excel";
+        private const string ByUuidApiPrefix = "contracts-by-uuid";
 
         [Fact]
         public async Task Can_Import_Contracts_From_Excel_By_Uuid()
@@ -28,7 +26,7 @@ namespace Tests.Integration.Presentation.Web.LocalAdminArea
             var (organizationDto, loginCookie, content) = await SetupSuccessfulPostExcel();
 
             //Act
-            using var response = await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"{excelApiPrefix}/{byUuidApiPrefix}?organizationUuid={organizationDto.Uuid}"), loginCookie, content);
+            using var response = await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"{ExcelApiPrefix}/{ByUuidApiPrefix}?organizationUuid={organizationDto.Uuid}"), loginCookie, content);
 
             //Assert
             AssertSuccessfulPostExcel(response, organizationDto.Uuid);
@@ -68,7 +66,7 @@ namespace Tests.Integration.Presentation.Web.LocalAdminArea
             };
 
             //Act
-            using var response = await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"{excelApiPrefix}/{byUuidApiPrefix}?organizationUuid={organizationDto.Uuid}"), loginCookie, content);
+            using var response = await HttpApi.PostWithCookieAsync(TestEnvironment.CreateUrl($"{ExcelApiPrefix}/{ByUuidApiPrefix}?organizationUuid={organizationDto.Uuid}"), loginCookie, content);
 
             //Assert
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
