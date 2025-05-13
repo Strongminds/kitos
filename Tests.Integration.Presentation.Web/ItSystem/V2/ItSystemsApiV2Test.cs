@@ -249,7 +249,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var (token, _) = await CreateStakeHolderUserInNewOrganizationAsync();
             var businessType1 = A<string>();
             var businessType2 = A<string>();
-            const int organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DefaultOrgUuid;
 
             var correctBusinessType = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.BusinessTypes, businessType1);

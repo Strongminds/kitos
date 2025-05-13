@@ -209,7 +209,6 @@
     <Compile Include="Organizations\V2\OrganizationApiV2Test.cs" />
     <Compile Include="Organizations\V2\OrganizationUnitsApiV2Test.cs" />
     <Compile Include="Organizations\V2\OrganizationUserApiV2Test.cs" />
-    <Compile Include="LocalAdminArea\LocalConfigTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qa\BrokenExternalReferencesReportTest.cs" />
     <Compile Include="Security\AccessibilityTests.cs" />
@@ -231,7 +230,6 @@
     <Compile Include="Tools\HttpApi.cs" />
     <Compile Include="Tools\HttpCommandAssertionHelper.cs" />
     <Compile Include="Tools\KitosApiConstants.cs" />
-    <Compile Include="Tools\LocalConfigHelper.cs" />
     <Compile Include="Tools\Model\ApiUserDTO.cs" />
     <Compile Include="Tools\Model\CreateUserDTO.cs" />
     <Compile Include="Tools\Model\CSRFTokenDTO.cs" />
