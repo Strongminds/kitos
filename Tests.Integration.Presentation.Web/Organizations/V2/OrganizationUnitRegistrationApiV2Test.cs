@@ -16,6 +16,7 @@ using System.Linq;
 using Presentation.Web.Models.API.V2.Internal.Common;
 using Presentation.Web.Models.API.V2.Internal.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Internal.Response.OrganizationUnit;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools.External;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
@@ -27,7 +28,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
             var organizationId = organization.Uuid;
-            var (right, contract, externalEconomyStream, internalEconomyStream, usage, unit) = await SetupRegistrations(organization.Id);
+            var (right, contract, externalEconomyStream, internalEconomyStream, usage, unit) = await SetupRegistrations(organization.Uuid);
 
             var registrationsRoot = await OrganizationUnitRegistrationV2Helper.GetRegistrationsAsync(organizationId, unit.Uuid);
 
@@ -39,7 +40,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
             var organizationId = organization.Uuid;
-            var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Id);
+            var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Uuid);
 
             var registrations = await OrganizationUnitRegistrationV2Helper.GetRegistrationsAsync(organizationId, unit.Uuid);
 
@@ -59,7 +60,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
             var organizationId = organization.Uuid;
-            var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Id);
+            var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Uuid);
 
             var registrations = await OrganizationUnitRegistrationV2Helper.GetRegistrationsAsync(organizationId, unit.Uuid);
 
@@ -113,7 +114,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
             var organizationUuid = organization.Uuid;
-            var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Id);
+            var (_, _, _, _, _, unit) = await SetupRegistrations(organization.Uuid);
 
             await OrganizationUnitV2Helper.SendDeleteUnitAsync(organizationUuid, unit.Uuid)
                 .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
@@ -133,8 +134,9 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
             var organizationId = organization.Uuid;
-            var (right, contract, externalEconomyStream, internalEconomyStream, usage, unit1) = await SetupRegistrations(organization.Id);
-            var unit2 = await OrganizationHelper.CreateOrganizationUnitAsync(organization.Id, A<string>());
+            var (right, contract, externalEconomyStream, internalEconomyStream, usage, unit1) = await SetupRegistrations(organization.Uuid);
+            var unit2 = await CreateOrganizationUnitAsync(organization.Uuid);
+            var unit2Id = DatabaseAccess.GetEntityId<OrganizationUnit>(unit2.Uuid);
 
             var registrations = await OrganizationUnitRegistrationV2Helper.GetRegistrationsAsync(organizationId, unit1.Uuid);
 
@@ -152,7 +154,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 x.AsQueryable()
                 .Where(xc =>
                     xc.RoleId == right.RoleId
-                    && xc.ObjectId == unit2.Id
+                    && xc.ObjectId == unit2Id
                     && xc.UserId == right.UserId)
                 .ToList());
 
@@ -347,35 +349,31 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             return ToChangeParametersList(dto, targetUnitUuid);
         }
 
-        private async Task<OrganizationDTO> CreateOrganizationAsync()
+        private async Task<(OrganizationUnitRight right, ItContract contract, EconomyStream externalEconomyStream, EconomyStream internalEconomyStream, ItSystemUsage usage, OrganizationUnitResponseDTO unitDto)> SetupRegistrations(Guid organizationUuid)
         {
-            var organizationName = A<string>();
-            var organization = await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId, organizationName, "13370000", OrganizationTypeKeys.Kommune, AccessModifier.Public);
-            return organization;
-        }
-
-        private async Task<(OrganizationUnitRight right, ItContract contract, EconomyStream externalEconomyStream, EconomyStream internalEconomyStream, ItSystemUsage usage, OrgUnitDTO unitDto)> SetupRegistrations(int organizationId)
-        {
-            var (userId, _, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organizationId);
+            var (userId, _, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organizationUuid);
+            var userUuid = DatabaseAccess.GetEntityUuid<User>(userId);
+            var organizationId = GetOrgId(organizationUuid);
             var organizationName = A<string>();
 
-            var unit = await OrganizationHelper.CreateOrganizationUnitAsync(organizationId, organizationName);
+            var unit = await CreateOrganizationUnitAsync(organizationUuid, organizationName);
+            var unitId = DatabaseAccess.GetEntityId<OrganizationUnit>(unit.Uuid);
 
             var newRole = new OrganizationUnitRole
             {
                 Name = A<string>()
             };
-            AssignOwnership(newRole, userId);
+            AssignOwnership(newRole, userUuid);
 
             var right = new OrganizationUnitRight
             {
-                ObjectId = unit.Id,
+                ObjectId = unitId,
                 UserId = userId
             };
-            AssignOwnership(right, userId);
+            AssignOwnership(right, userUuid);
 
-            var internalEconomyStream = CreateEconomyStream(unit.Id, userId);
-            var externalEconomyStream = CreateEconomyStream(unit.Id, userId);
+            var internalEconomyStream = CreateEconomyStream(unit.Uuid, userUuid);
+            var externalEconomyStream = CreateEconomyStream(unit.Uuid, userUuid);
 
             var contract = new ItContract
             {
@@ -384,11 +382,11 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 InternEconomyStreams = new List<EconomyStream>() { internalEconomyStream },
                 ExternEconomyStreams = new List<EconomyStream>() { externalEconomyStream }
             };
-            AssignOwnership(contract, userId);
+            AssignOwnership(contract, userUuid);
 
             var itSystemUsageOrgUnitUsage = new ItSystemUsageOrgUnitUsage
             {
-                OrganizationUnitId = unit.Id
+                OrganizationUnitId = unitId
             };
 
             var system = new Core.DomainModel.ItSystem.ItSystem
@@ -398,7 +396,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 OrganizationId = organizationId,
                 AccessModifier = AccessModifier.Local
             };
-            AssignOwnership(system, userId);
+            AssignOwnership(system, userUuid);
 
             var usage = new ItSystemUsage
             {
@@ -406,13 +404,13 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 ResponsibleUsage = itSystemUsageOrgUnitUsage,
                 UsedBy = new List<ItSystemUsageOrgUnitUsage> { itSystemUsageOrgUnitUsage }
             };
-            AssignOwnership(usage, userId);
+            AssignOwnership(usage, userUuid);
 
             DatabaseAccess.MutateDatabase(context =>
             {
-                var unitEntity = context.OrganizationUnits.FirstOrDefault(u => u.Id == unit.Id);
+                var unitEntity = context.OrganizationUnits.FirstOrDefault(u => u.Id == unitId);
                 if (unitEntity == null)
-                    throw new Exception($"Unit with ID: {unit.Id} was not found!");
+                    throw new Exception($"Unit with ID: {unitId} was not found!");
 
                 context.OrganizationUnitRoles.Add(newRole);
                 right.RoleId = newRole.Id;
@@ -432,21 +430,21 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             return (right, contract, externalEconomyStream, internalEconomyStream, usage, unit);
         }
 
-        private static EconomyStream CreateEconomyStream(int unitId, int userId)
+        private static EconomyStream CreateEconomyStream(Guid unitUuid, Guid userUuid)
         {
             var economy = new EconomyStream
             {
-                OrganizationUnitId = unitId
+                OrganizationUnitId = DatabaseAccess.GetEntityId<OrganizationUnit>(unitUuid)
             };
-            AssignOwnership(economy, userId);
+            AssignOwnership(economy, userUuid);
 
             return economy;
         }
 
-        private static void AssignOwnership(IEntity entity, int userId)
+        private static void AssignOwnership(IEntity entity, Guid userUuid)
         {
-            entity.ObjectOwnerId = userId;
-            entity.LastChangedByUserId = userId;
+            entity.ObjectOwnerId = DatabaseAccess.GetEntityId<User>(userUuid);
+            entity.LastChangedByUserId = DatabaseAccess.GetEntityId<User>(userUuid);
         }
     }
 }

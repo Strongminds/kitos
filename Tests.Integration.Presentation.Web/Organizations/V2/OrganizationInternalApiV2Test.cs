@@ -25,7 +25,7 @@ using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.Organ
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
-    public class OrganizationInternalApiV2Test: OrganizationApiV2TestBase
+    public class OrganizationInternalApiV2Test : OrganizationApiV2TestBase
     {
         private const int CvrMaxLength = 10;
 
@@ -150,7 +150,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataResponseDTO>(content);
             Assert.Equal(organization.Uuid, responseDto.Uuid);
             Assert.Equal(organization.Cvr, responseDto.Cvr);
-            Assert.Equal(organization.Phone, responseDto.Phone);
+            Assert.Equal(organization.Name, responseDto.Name);
         }
 
         [Fact]
@@ -168,7 +168,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             using var response =
                 await OrganizationInternalV2Helper.PatchOrganizationMasterData(organizationToPatch.Uuid, patchDto);
-            
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataResponseDTO>(content);
@@ -185,14 +185,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             using var response =
                 await OrganizationInternalV2Helper.PatchOrganizationMasterData(organizationToPatch.Uuid, patchDto);
-            
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataResponseDTO>(content);
             Assert.Equal(patchDto.Cvr, responseDto.Cvr);
             Assert.Equal(organizationToPatch.Uuid, responseDto.Uuid);
         }
-        
+
         [Fact]
         public async Task Can_Get_Organization_Master_Data_Roles()
         {
@@ -266,9 +266,9 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             var requestDto = new OrganizationMasterDataRolesRequestDTO()
             {
-                   ContactPerson = contactPersonDto,
-                   DataResponsible = dataResponsibleDto,
-                   DataProtectionAdvisor = dataProtectionAdvisorDto
+                ContactPerson = contactPersonDto,
+                DataResponsible = dataResponsibleDto,
+                DataProtectionAdvisor = dataProtectionAdvisorDto
             };
 
             using var response =
@@ -298,18 +298,21 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateTestOrganization();
             var resetRolesResponse =
-                 await OrganizationInternalV2Helper.PatchOrganizationMasterDataRoles(organization.Uuid, 
+                 await OrganizationInternalV2Helper.PatchOrganizationMasterDataRoles(organization.Uuid,
                      new OrganizationMasterDataRolesRequestDTO());
-             Assert.Equal(HttpStatusCode.OK, resetRolesResponse.StatusCode);
-             var (contactPersonDto, dataResponsibleDto, dataProtectionAdvisorDto) = GetRequestDtos();
-             var request = new OrganizationMasterDataRolesRequestDTO();
+            Assert.Equal(HttpStatusCode.OK, resetRolesResponse.StatusCode);
+            var (contactPersonDto, dataResponsibleDto, dataProtectionAdvisorDto) = GetRequestDtos();
+            var request = new OrganizationMasterDataRolesRequestDTO();
             switch (roleType)
             {
-                case RoleType.ContactPerson: request.ContactPerson = contactPersonDto;
+                case RoleType.ContactPerson:
+                    request.ContactPerson = contactPersonDto;
                     break;
-                case RoleType.DataResponsible: request.DataResponsible = dataResponsibleDto;
+                case RoleType.DataResponsible:
+                    request.DataResponsible = dataResponsibleDto;
                     break;
-                case RoleType.DataProtectionAdvisor: request.DataProtectionAdvisor = dataProtectionAdvisorDto; 
+                case RoleType.DataProtectionAdvisor:
+                    request.DataProtectionAdvisor = dataProtectionAdvisorDto;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(roleType), roleType, null);
@@ -317,7 +320,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             using var response =
                 await OrganizationInternalV2Helper.PatchOrganizationMasterDataRoles(organization.Uuid, request);
-            
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
@@ -378,7 +381,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             var organization = await response.ReadResponseBodyAsAsync<IdentityNamePairResponseDTO>();
-           
+
             Assert.Equal(requestDto.Name, organization.Name);
         }
 
@@ -468,7 +471,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var contract = await contractResponse.ReadResponseBodyAsAsync<ItContractResponseDTO>();
 
             //Set the original organization to be deleted as the supplier for the contract
-            var patchRequest =  new ContractSupplierDataWriteRequestDTO { OrganizationUuid = organizationUuid};
+            var patchRequest = new ContractSupplierDataWriteRequestDTO { OrganizationUuid = organizationUuid };
             var patchResponse = await ItContractV2Helper.SendPatchContractSupplierAsync(token, contract.Uuid, patchRequest);
             Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
 
@@ -514,10 +517,9 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             return (contactPersonDto, dataResponsibleDto, dataProtectionAdvisorDto);
         }
 
-        private async Task<OrganizationDTO> CreateTestOrganization()
+        private async Task<ShallowOrganizationResponseDTO> CreateTestOrganization()
         {
-            var organization = await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId, A<string>(),
-                "11223344", OrganizationTypeKeys.Kommune, AccessModifier.Local);
+            var organization = await CreateOrganizationAsync();
             Assert.NotNull(organization);
             return organization;
         }
