@@ -16,6 +16,7 @@ using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Response.Interface;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Toolkit.Extensions;
 using Tests.Toolkit.TestInputs;
@@ -219,7 +220,6 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         {
             //Arrange
             var (token, organization) = await CreateStakeHolderUserInNewOrg();
-            var orgId = organization.Id;
             var system = await CreateItSystemAsync(organization.Uuid);
             var system2 = await CreateItSystemAsync(organization.Uuid);
             var system3 = await CreateItSystemAsync(DefaultOrgUuid);
@@ -248,9 +248,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         public async Task Can_Get_Interfaces_As_Local_Admin_With_PublicOrOrganizationUuid_Filter()
         {
             var (token, organization) = await CreateUserInNewOrg(false, OrganizationRole.LocalAdmin);
-            var orgId = organization.Id;
             var otherOrganization = await CreateOrganization("99887766");
-            var otherOrgId = otherOrganization.Id;
             var systemInThisOrganization = await CreateItSystemAsync(organization.Uuid);
             var systemInOtherOrganization = await CreateItSystemAsync(otherOrganization.Uuid);
 
@@ -266,7 +264,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             await InterfaceV2Helper.PatchExposedBySystemAsync(localInterfaceInOtherOrg.Uuid, systemInThisOrganization.Uuid);
 
             var dtos = (await InterfaceV2Helper.GetInterfacesAsync(token,
-                availableInOrganizationUuid: organization.Uuid, pageNumber: 0, pageSize: 10)).ToList();
+                availableInOrganizationUuid: organization.Uuid, pageNumber: 0, pageSize: 200)).ToList();
 
             Assert.Contains(dtos, (dto) => dto.Uuid == publicInterface.Uuid);
             Assert.Contains(dtos, (dto) => dto.Uuid == localInterfaceInThisOrg.Uuid);
@@ -619,23 +617,23 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             Assert.DoesNotContain(afterDelete.Data, x => x.Uuid == createdData.Uuid);
         }
 
-        private async Task<(string token, OrganizationDTO createdOrganization)> CreateStakeHolderUserInNewOrg()
+        private async Task<(string token, ShallowOrganizationResponseDTO createdOrganization)> CreateStakeHolderUserInNewOrg()
         {
             var org = await CreateOrganization();
-            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, org.Id, true, true);
+            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, org.Uuid, true, true);
             return (token, org);
         }
 
-        protected async Task<(string token, OrganizationDTO createdOrganization)> CreateUserInNewOrg(
+        protected async Task<(string token, ShallowOrganizationResponseDTO createdOrganization)> CreateUserInNewOrg(
             bool stakeHolderAccess = false,
             OrganizationRole role = OrganizationRole.User)
         {
             var org = await CreateOrganization();
-            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), role, org.Id, true, stakeHolderAccess);
+            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), role, org.Uuid, true, stakeHolderAccess);
             return (token, org);
         }
 
-        private async Task<CreateItInterfaceRequestDTO> CreateFullItInterfaceRequestAsync(GetTokenResponseDTO token, OrganizationDTO organization)
+        private async Task<CreateItInterfaceRequestDTO> CreateFullItInterfaceRequestAsync(GetTokenResponseDTO token, ShallowOrganizationResponseDTO organization)
         {
             var exposingSystem = await ItSystemV2Helper.CreateSystemAsync(token.Token,
                 new CreateItSystemRequestDTO() { OrganizationUuid = organization.Uuid, Name = CreateName() });

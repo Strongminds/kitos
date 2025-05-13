@@ -7,6 +7,7 @@ using Presentation.Web.Models.API.V2.Response.Interface;
 using System.Threading.Tasks;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Interface;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;
 using Tests.Integration.Presentation.Web.Tools;
 using Xunit;
@@ -15,9 +16,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
 {
     public abstract class BaseItInterfaceApiV2Test : BaseTest
     {
-        protected async Task<OrganizationDTO> CreateOrganization(string cvr = "11223344")
+        protected async Task<ShallowOrganizationResponseDTO> CreateOrganization(string cvr = "11223344")
         {
-            return await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId, CreateName(), cvr, OrganizationTypeKeys.Virksomhed, AccessModifier.Public);
+            return await CreateOrganizationAsync(cvr: cvr);
         }
 
         protected string CreateName()

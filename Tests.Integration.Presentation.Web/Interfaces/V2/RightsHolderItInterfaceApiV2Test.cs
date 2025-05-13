@@ -779,7 +779,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             return (token, org);
         }
 
-        private async Task<(string token, OrganizationDTO createdOrganization1, OrganizationDTO createdOrganization2)> CreateRightsHolderUserInMultipleNewOrganizationsAsync()
+        private async Task<(string token, ShallowOrganizationResponseDTO createdOrganization1, ShallowOrganizationResponseDTO createdOrganization2)> CreateRightsHolderUserInMultipleNewOrganizationsAsync()
         {
             var org1 = await CreateOrganization();
             var org2 = await CreateOrganization();
