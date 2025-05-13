@@ -57,7 +57,7 @@ namespace Tests.Integration.Presentation.Web.Security
             {
                 Assert.NotNull(requestResponse);
                 Assert.Equal(HttpStatusCode.OK, requestResponse.StatusCode);
-            };
+            }
 
             //Act
             await DisableApiAccessForUserAsync(userDto, createdUserId);
@@ -67,7 +67,7 @@ namespace Tests.Integration.Presentation.Web.Security
             {
                 Assert.NotNull(requestResponse);
                 Assert.Equal(HttpStatusCode.Forbidden, requestResponse.StatusCode);
-            };
+            }
             await UsersV2Helper.DeleteUserGlobally(DatabaseAccess.GetEntityUuid<User>(createdUserId));
         }
 

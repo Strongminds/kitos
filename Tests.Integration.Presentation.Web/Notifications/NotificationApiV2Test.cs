@@ -9,7 +9,6 @@ using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.Notification;
 using Core.DomainModel.Organization;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Internal.Request.Notifications;
 using Presentation.Web.Models.API.V2.Internal.Response.Notifications;
 using Presentation.Web.Models.API.V2.Response.Organization;

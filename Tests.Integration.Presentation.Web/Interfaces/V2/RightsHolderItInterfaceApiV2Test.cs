@@ -9,13 +9,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
-using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit;
 
@@ -113,7 +111,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var pageNumber = 0; //Always takes the first page;
 
             var system1 = await CreateItSystemAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
-            var system2 = await CreateItSystemAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local); ;
+            var system2 = await CreateItSystemAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
             var itInterface1 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
             var itInterface2 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
 
@@ -140,8 +138,8 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var (token, organization) = await CreateRightsHolderUserInNewOrganizationAsync();
             var system = await CreateItSystemAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
             var itInterface1 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
-            var itInterface2 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local); ;
-            var itInterface3 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local); ;
+            var itInterface2 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
+            var itInterface3 = await CreateItInterfaceAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
 
             await ItSystemV2Helper.PatchRightsHolderAsync(system.Uuid, organization.Uuid)
                 .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();

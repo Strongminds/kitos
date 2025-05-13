@@ -13,7 +13,6 @@ using Core.DomainModel.Organization;
 using Core.DomainServices.Extensions;
 using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.Generic;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
 using Presentation.Web.Models.API.V2.Request.Contract;
@@ -424,8 +423,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var relationTargetSystem = await CreateItSystemAsync(organization1.Uuid);
 
             var systemUsage1 = await CreateSystemAndTakeItIntoUsage(organization1.Uuid);
-            var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization1.Uuid); ;
-            var systemUsage3 = await CreateSystemAndTakeItIntoUsage(organization1.Uuid); ;
+            var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization1.Uuid);
+            var systemUsage3 = await CreateSystemAndTakeItIntoUsage(organization1.Uuid);
             var relationTargetUsage = await TakeSystemIntoUsageAsync(relationTargetSystem.Uuid, organization1.Uuid);
 
             var contract = await CreateItContractAsync(organization1.Uuid);

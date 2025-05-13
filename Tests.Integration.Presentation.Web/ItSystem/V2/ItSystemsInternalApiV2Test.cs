@@ -7,11 +7,9 @@ using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit;
 using System.Net;
 using Core.DomainServices.Extensions;
-using Core.DomainModel.ItSystem;
 using Core.DomainModel.Organization;
 using System;
 using Core.Abstractions.Extensions;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools.Internal;
 

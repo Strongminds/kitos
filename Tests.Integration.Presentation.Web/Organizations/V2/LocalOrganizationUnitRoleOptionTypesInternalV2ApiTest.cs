@@ -1,5 +1,4 @@
 ﻿using Core.DomainModel.Organization;
-using Presentation.Web.Models.API.V1;
 using System;
 using System.Collections.Generic;
 using System.Linq;

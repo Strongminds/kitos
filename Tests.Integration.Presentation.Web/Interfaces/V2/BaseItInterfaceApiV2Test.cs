@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Core.DomainModel;
 using Core.DomainModel.ItSystem;
-using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Response.Interface;
 using System.Threading.Tasks;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Interface;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.System;

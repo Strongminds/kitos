@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Core.Abstractions.Types;
-using Core.DomainModel;
 using Core.DomainModel.Extensions;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Tracking;
@@ -19,7 +18,6 @@ using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
-using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Organizations
