@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
-    public class OrganizationUserApiV2Test : WithAutoFixture
+    public class OrganizationUserApiV2Test : BaseTest
     {
         [Fact]
         public async Task Can_GET_Organization_Users()
@@ -240,43 +240,27 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(expectedRoles, dtoUser.Roles.ToHashSet());
         }
 
-        private async Task<(User user, string token)> CreateApiUser(OrganizationDTO organization)
+        private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
-            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Id, true, false);
+            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
             var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
             return (user, userAndGetToken.token);
         }
 
-        private async Task<User> CreateUser(OrganizationDTO organization)
+        private async Task<User> CreateUser(ShallowOrganizationResponseDTO organization)
         {
-            var userAndGetToken = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organization.Id, false);
+            var userAndGetToken = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organization.Uuid, false);
             var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
             return user;
         }
 
-        private static async Task AssignRoles(OrganizationDTO organization, int userId, params OrganizationRole[] roles)
+        private static async Task AssignRoles(ShallowOrganizationResponseDTO organization, int userId, params OrganizationRole[] roles)
         {
             foreach (var organizationRole in roles)
             {
-                using var response = await HttpApi.SendAssignRoleToUserAsync(userId, organizationRole, organization.Id);
+                using var response = await HttpApi.SendAssignRoleToUserAsync(userId, organizationRole, organization.Uuid);
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             }
-        }
-
-        private async Task<OrganizationDTO> CreateOrganizationAsync()
-        {
-            var organizationName = CreateName();
-            return await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId, organizationName, null, A<OrganizationTypeKeys>(), AccessModifier.Public);
-        }
-
-        private string CreateName()
-        {
-            return $"{nameof(OrganizationUserApiV2Test)}æøå{A<Guid>():N}";
-        }
-
-        private string CreateEmail()
-        {
-            return $"{CreateName()}{DateTime.Now.Ticks}@kitos.dk";
         }
     }
 }

@@ -126,7 +126,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             var dataProcessingRegistrationName = A<string>();
 
-            var system = await PrepareItSystem(systemName, systemPreviousName, systemDescription, organizationId, organizationName, AccessModifier.Public);
+            var system = await PrepareItSystem(systemName, systemPreviousName, systemDescription, organizationId, organizationName);
             var systemParent = await CreateItSystemAsync(organizationUuid, name: systemParentName);
             var systemParentUsage = await TakeSystemIntoUsageAsync(systemParent.Uuid, organizationUuid);
 
@@ -903,7 +903,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
                 new SystemRelationWriteRequestDTO
-                    { ToSystemUsageUuid = relationSystemUsage.Uuid, RelationInterfaceUuid = relationInterface.Uuid });
+                { ToSystemUsageUuid = relationSystemUsage.Uuid, RelationInterfaceUuid = relationInterface.Uuid });
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), relationSystemUsage.Uuid,
                 new SystemRelationWriteRequestDTO
                 {
@@ -1050,10 +1050,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             return x.OrganizationUnitUuid == organizationUnit1.Uuid && x.OrganizationUnitName == organizationUnit1.Name;
         }
 
-        private static async Task<ItSystemResponseDTO> PrepareItSystem(string systemName, string systemPreviousName, string systemDescription, int organizationId, string organizationName, AccessModifier accessModifier)
+        private async Task<ItSystemResponseDTO> PrepareItSystem(string systemName, string systemPreviousName, string systemDescription, int organizationId, string organizationName)
         {
-            var organization = await OrganizationHelper.CreateOrganizationAsync(organizationId, organizationName,
-                TestCvr, OrganizationTypeKeys.Virksomhed, accessModifier);
+            var organization = await CreateOrganizationAsync(organizationName, TestCvr, OrganizationType.Company);
             var token = (await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin)).Token;
             var system = await ItSystemV2Helper.CreateSystemAsync(token, new CreateItSystemRequestDTO
             {
