@@ -1,5 +1,4 @@
 ﻿using Core.DomainModel.Organization;
-using Core.DomainModel;
 using Presentation.Web.Models.API.V1;
 using System;
 using System.Collections.Generic;
@@ -7,17 +6,16 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Presentation.Web.Models.API.V2.Internal.Response.LocalOptions;
-using Tests.Integration.Presentation.Web.Tools.Extensions;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.Internal;
-using Tests.Toolkit.Patterns;
 using Xunit;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Newtonsoft.Json;
+using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
-    public class LocalOrganizationUnitRoleOptionTypesInternalV2ApiTest: WithAutoFixture
+    public class LocalOrganizationUnitRoleOptionTypesInternalV2ApiTest : BaseTest
     {
         private const int CvrLengthLimit = 10;
         private const string OrganizationUnitRolesUrlSuffix = "organization-unit-roles";
@@ -107,9 +105,9 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         }
 
 
-        private async Task<OrganizationDTO> CreateOrganization()
+        private async Task<ShallowOrganizationResponseDTO> CreateOrganization()
         {
-            var organization = await OrganizationHelper.CreateOrganizationAsync(A<int>(), A<string>(), A<string>().Truncate(CvrLengthLimit), OrganizationTypeKeys.Kommune, AccessModifier.Public);
+            var organization = await CreateOrganizationAsync();
             Assert.NotNull(organization);
             return organization;
         }

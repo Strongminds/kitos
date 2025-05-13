@@ -25,7 +25,7 @@ using Xunit;
 namespace Tests.Integration.Presentation.Web.Organizations
 {
     [Collection(nameof(SequentialTestGroup))]
-    public class StsOrganizationSynchronizationApiTest : WithAutoFixture
+    public class StsOrganizationSynchronizationApiTest : BaseTest
     {
         private const string UnAuthorizedCvr = "55133018"; //This one is Aarhus and we don't have a service agreement with them in STS Test environment
         private const string AuthorizedCvr = "58271713"; //This one is Ballerup and we have a service agreement with them in STS Test environment
@@ -797,7 +797,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
 
         private async Task<Guid> CreateOrgWithCvr(string cvr, bool fakeInitialConnection = false, bool fakeInitialSubscription = false)
         {
-            var org = await OrganizationHelper.CreateOrganizationAsync(TestEnvironment.DefaultOrganizationId, $"StsSync_{A<Guid>():N}", cvr, OrganizationTypeKeys.Kommune, AccessModifier.Public);
+            var org = await CreateOrganizationAsync(cvr: cvr);
             if (fakeInitialConnection)
             {
                 DatabaseAccess.MutateEntitySet<Organization>(repo =>

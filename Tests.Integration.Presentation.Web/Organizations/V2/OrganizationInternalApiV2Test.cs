@@ -21,6 +21,7 @@ using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
 using Tests.Integration.Presentation.Web.Tools.Internal.UI_Configuration;
 using Xunit;
+using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
@@ -36,7 +37,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             //Arrange
             var cookie = await HttpApi.GetCookieAsync(userRole);
-            var organization = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
+            var organization = await CreateOrganizationAsync(A<OrganizationType>());
 
 
             //Act
@@ -56,7 +57,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         [Fact]
         public async Task Can_Get_Default_UI_Root_Config_For_New_Org()
         {
-            var organization = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
+            var organization = await CreateOrganizationAsync(A<OrganizationType>());
 
             var response = await OrganizationInternalV2Helper.GetOrganizationUIRootConfig(organization.Uuid);
 
@@ -70,7 +71,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         [Fact]
         public async Task Can_Patch_UI_Root_Config()
         {
-            var organization = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
+            var organization = await CreateOrganizationAsync(A<OrganizationType>());
             var dto = new UIRootConfigUpdateRequestDTO()
             {
                 ShowDataProcessing = A<bool>(),
@@ -91,7 +92,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         public async Task Get_UI_Customization_Returns_New_Empty_Customization_If_None_Exists()
         {
             var moduleName = "ItSystemUsages";
-            var organization = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
+            var organization = await CreateOrganizationAsync(A<OrganizationType>());
 
             var response = await OrganizationInternalV2Helper.GetUIModuleCustomization(organization.Uuid, moduleName);
 
@@ -526,11 +527,11 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             return A<string>().Truncate(CvrMaxLength);
         }
 
-        private async Task<(Cookie loginCookie, OrganizationDTO organization)> CreateUiCustomizationPrerequisitesAsync()
+        private async Task<(Cookie loginCookie, ShallowOrganizationResponseDTO organization)> CreateUiCustomizationPrerequisitesAsync()
         {
-            var organization = await CreateOrganizationAsync(A<OrganizationTypeKeys>());
+            var organization = await CreateOrganizationAsync(A<OrganizationType>());
             var (_, _, loginCookie) =
-                await HttpApi.CreateUserAndLogin(UIConfigurationHelper.CreateEmail(), OrganizationRole.LocalAdmin, organization.Id);
+                await HttpApi.CreateUserAndLogin(UIConfigurationHelper.CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid);
             return (loginCookie, organization);
         }
 
