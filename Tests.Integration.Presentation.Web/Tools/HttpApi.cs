@@ -584,7 +584,5 @@ namespace Tests.Integration.Presentation.Web.Tools
             using var patch = await PatchWithCookieAsync(TestEnvironment.CreateUrl($"odata/Users({userId})"), cookie, userDto);
             Assert.Equal(HttpStatusCode.NoContent, patch.StatusCode);
         }
-
-        public static readonly string OdataDateTimeFormat = "O"; //ISO 8601
     }
 }
