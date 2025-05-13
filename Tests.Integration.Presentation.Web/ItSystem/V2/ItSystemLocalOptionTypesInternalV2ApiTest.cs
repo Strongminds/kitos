@@ -18,7 +18,6 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 {
     public class ItSystemLocalOptionTypesInternalV2ApiTest: BaseTest
     {
-        private const int CvrLengthLimit = 10;
         private const string BusinessTypesUrlSuffix = "business-types";
         private const string ItSystemsApiPrefix = "api/v2/internal/it-systems";
 

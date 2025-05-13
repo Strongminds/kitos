@@ -16,7 +16,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 {
     public class LocalOrganizationUnitRoleOptionTypesInternalV2ApiTest : BaseTest
     {
-        private const int CvrLengthLimit = 10;
         private const string OrganizationUnitRolesUrlSuffix = "organization-unit-roles";
         private const string OrganizationUnitsApiPrefix = "api/v2/internal/organization-units";
 

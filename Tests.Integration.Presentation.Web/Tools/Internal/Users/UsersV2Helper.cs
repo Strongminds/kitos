@@ -237,34 +237,6 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
-        public static async Task<List<UserWithOrganizationResponseDTO>> GetUsersWithRightsholderAccessAsync(Cookie optionalLogin = null)
-        {
-            using var response = await SendGetUsersWithRightsholderAccessAsync(optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            return await response.ReadResponseBodyAsAsync<List<UserWithOrganizationResponseDTO>>();
-        }
-
-        public static async Task<HttpResponseMessage> SendGetUsersWithRightsholderAccessAsync(Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl("api/v2/internal/users/with-rightsholder-access"), cookie);
-        }
-
-        public static async Task<List<UserWithCrossOrganizationalRightsResponseDTO>> GetUsersWithCrossAccessAsync(Cookie optionalLogin = null)
-        {
-            using var response = await SendGetUsersWithCrossAccessAsync(optionalLogin);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            return await response.ReadResponseBodyAsAsync<List<UserWithCrossOrganizationalRightsResponseDTO>>();
-        }
-
-        public static async Task<HttpResponseMessage> SendGetUsersWithCrossAccessAsync(Cookie optionalLogin = null)
-        {
-            var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl("api/v2/internal/users/with-cross-organization-permissions"), cookie);
-        }
-
         public static async Task<IdentityNamePairResponseDTO> GetDefaultUnit(Guid organizationUuid, Guid userUuid, OrganizationRole role = OrganizationRole.GlobalAdmin)
         {
             var cookie = await HttpApi.GetCookieAsync(role);

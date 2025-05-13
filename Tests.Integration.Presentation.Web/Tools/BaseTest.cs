@@ -166,11 +166,6 @@ namespace Tests.Integration.Presentation.Web.Tools
         public int GetOrgId(Guid orgUuid)
         {
             return DatabaseAccess.GetEntityId<Organization>(orgUuid);
-        }
-
-        public Guid DefaultOrganizationUuid()
-        {
-            return DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
-        }
+         
     }
 }

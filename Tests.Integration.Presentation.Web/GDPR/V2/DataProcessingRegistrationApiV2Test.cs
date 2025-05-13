@@ -1624,15 +1624,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(expectedOrganization.Cvr, dto.OrganizationContext.Cvr);
         }
 
-        private static void AssertExpectedShallowDPR(DataProcessingRegistrationResponseDTO expectedContent, OrganizationDTO expectedOrganization, DataProcessingRegistrationResponseDTO dto)
-        {
-            Assert.Equal(expectedContent.Uuid, dto.Uuid);
-            Assert.Equal(expectedContent.Name, dto.Name);
-            Assert.Equal(expectedOrganization.Uuid, dto.OrganizationContext.Uuid);
-            Assert.Equal(expectedOrganization.Name, dto.OrganizationContext.Name);
-            Assert.Equal(expectedOrganization.Cvr, dto.OrganizationContext.Cvr);
-        }
-
         private static void AssertOrganizationReference(ShallowOrganizationResponseDTO expected, ShallowOrganizationResponseDTO organizationReferenceDTO)
         {
             Assert.Equal(expected.Name, organizationReferenceDTO.Name);
