@@ -315,7 +315,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var organizationUuid = DefaultOrgUuid;
 
             var registration = await CreateDPRAsync(organizationUuid, name);
-            var (userId, _, cookie) = await HttpApi.CreateUserAndLogin(email, orgRole);
+            var (userUuid, _, cookie) = await HttpApi.CreateUserAndLogin(email, orgRole);
             using var response = await DataProcessingRegistrationV2Helper.SendPatchName(cookie, registration.Uuid, newName);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -328,7 +328,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var readModel = Assert.Single(result);
             Assert.Equal(newName, readModel.Name);
             Assert.Equal(registration.Uuid, readModel.SourceEntityUuid);
-            Assert.Equal(userId, readModel.LastChangedById);
+            Assert.Equal(DatabaseAccess.GetEntityId<User>(userUuid), readModel.LastChangedById);
         }
         private static async Task WaitForReadModelQueueDepletion()
         {

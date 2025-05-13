@@ -68,7 +68,7 @@ namespace Tests.Integration.Presentation.Web.Security
                 Assert.NotNull(requestResponse);
                 Assert.Equal(HttpStatusCode.Forbidden, requestResponse.StatusCode);
             }
-            await UsersV2Helper.DeleteUserGlobally(DatabaseAccess.GetEntityUuid<User>(createdUserId));
+            await UsersV2Helper.DeleteUserGlobally(createdUserId);
         }
 
         private static string CreateEmail()
@@ -76,10 +76,11 @@ namespace Tests.Integration.Presentation.Web.Security
             return $"{Guid.NewGuid():N}@test.dk";
         }
 
-        private static async Task DisableApiAccessForUserAsync(ApiUserDTO userDto, int id)
+        private static async Task DisableApiAccessForUserAsync(ApiUserDTO userDto, Guid userUuid)
         {
+            var userId = DatabaseAccess.GetEntityId<User>(userUuid);
             userDto.HasApiAccess = false;
-            await HttpApi.PatchOdataUserAsync(userDto, id);
+            await HttpApi.PatchOdataUserAsync(userDto, userId);
         }
 
     }

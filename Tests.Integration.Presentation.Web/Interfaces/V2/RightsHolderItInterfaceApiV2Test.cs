@@ -773,7 +773,6 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         {
             var org = await CreateOrganizationAsync();
             var (userId, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.RightsHolderAccess, org.Uuid, true);
-            var userUuid = DatabaseAccess.GetEntityUuid<User>(userId);
             return (token, org);
         }
 

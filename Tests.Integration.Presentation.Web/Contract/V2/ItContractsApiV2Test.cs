@@ -25,6 +25,7 @@ using Presentation.Web.Models.API.V2.Types.Contract;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Toolkit.Extensions;
 using Xunit;
 
@@ -176,7 +177,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             var contract1 = await CreateItContractAsync(organization1.Uuid);
             var organization2 = await CreateOrganizationAsync();
             var contract2 = await CreateItContractAsync(organization2.Uuid);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             //Act
             var contracts = (await ItContractV2Helper.GetItContractsAsync(token, organizationUuid: organization1.Uuid)).ToList();
@@ -496,7 +497,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             //Arrange
             var (token, user, organization1) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync();
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
             var parent = await CreateItContractAsync(organization2.Uuid);
 
             var requestDto = new CreateNewContractRequestDTO()
@@ -1893,7 +1894,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             var org = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, role, org.Uuid).DisposeAsync();
 
             var contract = await CreateItContractAsync(org.Uuid);
 
@@ -1920,7 +1921,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             var org = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, role, org.Uuid).DisposeAsync();
 
             //Act
             var permissionsResponseDto = await ItContractV2Helper.GetCollectionPermissionsAsync(token, org.Uuid);
@@ -2314,13 +2315,13 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         {
             var organization = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(organization.Uuid);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             return (token, user, organization);
         }
         private async Task<(User user, string token)> CreateApiUserAsync(Guid organizationUuid)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
         private IEnumerable<ExternalReferenceDataWriteRequestDTO> WithRandomMaster(IEnumerable<ExternalReferenceDataWriteRequestDTO> references)

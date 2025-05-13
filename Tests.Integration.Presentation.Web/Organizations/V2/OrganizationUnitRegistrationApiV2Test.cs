@@ -349,8 +349,8 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private async Task<(OrganizationUnitRight right, ItContract contract, EconomyStream externalEconomyStream, EconomyStream internalEconomyStream, ItSystemUsage usage, OrganizationUnitResponseDTO unitDto)> SetupRegistrations(Guid organizationUuid)
         {
-            var (userId, _, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organizationUuid);
-            var userUuid = DatabaseAccess.GetEntityUuid<User>(userId);
+            var (userUuid, _, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organizationUuid);
+            var userId = DatabaseAccess.GetEntityId<User>(userUuid);
             var organizationId = GetOrgId(organizationUuid);
             var organizationName = A<string>();
 

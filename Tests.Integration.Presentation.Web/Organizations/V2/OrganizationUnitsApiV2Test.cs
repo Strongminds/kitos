@@ -15,6 +15,7 @@ using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Organization;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Toolkit.Extensions;
 using Xunit;
 
@@ -381,15 +382,15 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         private async Task<User> CreateUser(Guid organizationUuid)
         {
             var orgId = GetOrgId(organizationUuid);
-            var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, orgId);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userId));
+            var userUuid = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, orgId);
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userUuid));
             return user;
         }
 
         private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
 

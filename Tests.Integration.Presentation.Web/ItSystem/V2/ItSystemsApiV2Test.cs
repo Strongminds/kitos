@@ -24,6 +24,7 @@ using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal;
 using Tests.Integration.Presentation.Web.Tools.Internal.References;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
 using Xunit;
@@ -680,7 +681,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var org = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUser(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, role, org.Uuid).DisposeAsync();
 
             var system = await CreateItSystemAsync(org.Uuid);
 
@@ -706,7 +707,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var org = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUser(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.GlobalAdmin, org.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.GlobalAdmin, org.Uuid).DisposeAsync();
 
             var system = await CreateItSystemAsync(org.Uuid, scope: RegistrationScopeChoice.Local);
 
@@ -800,7 +801,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var org = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUser(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, org.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, role, org.Uuid).DisposeAsync();
 
             //Act
             var permissionsResponseDto = await ItSystemV2Helper.GetCollectionPermissionsAsync(token, org.Uuid);
@@ -816,7 +817,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         private async Task<(User user, string token)> CreateApiUser(Guid organizationUuid)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
 

@@ -18,8 +18,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
         public async Task Can_Only_Change_Properties_As_System_Integrator(bool isSystemIntegrator)
         {
             var (_, systemUuid, organizationUuid) = await CreatePrerequisites();
-            var (userId, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true);
-            var userUuid = DatabaseAccess.GetEntityUuid<User>(userId);
+            var (userUuid, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true);
             var request = A<LegalPropertiesUpdateRequestDTO>();
             await UsersV2Helper.UpdateSystemIntegrator(userUuid, isSystemIntegrator);
 

@@ -6,6 +6,7 @@ using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
@@ -33,7 +34,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             //Arrange
             var email = CreateEmail();
             var userDetails = await HttpApi.CreateUserAndGetToken(email, OrganizationRole.User, TestEnvironment.DefaultOrganizationId, true);
-            using var response1 = await HttpApi.SendAssignRoleToUserAsync(userDetails.userId, OrganizationRole.RightsHolderAccess, TestEnvironment.SecondOrganizationId);
+            using var response1 = await HttpApi.SendAssignRoleToUserAsync(userDetails.userUuid, OrganizationRole.RightsHolderAccess, TestEnvironment.SecondOrganizationId);
             Assert.Equal(HttpStatusCode.Created, response1.StatusCode);
             var secondOrgUuid = DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.SecondOrganizationId);
             var firstOrgUuid = DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.DefaultOrganizationId);
@@ -47,7 +48,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.NotNull(organization.Name);
 
             //Assign another org and observe the change
-            using var response2 = await HttpApi.SendAssignRoleToUserAsync(userDetails.userId, OrganizationRole.RightsHolderAccess, TestEnvironment.DefaultOrganizationId);
+            using var response2 = await HttpApi.SendAssignRoleToUserAsync(userDetails.userUuid, OrganizationRole.RightsHolderAccess, TestEnvironment.DefaultOrganizationId);
             Assert.Equal(HttpStatusCode.Created, response1.StatusCode);
 
             organizations = (await OrganizationV2Helper.GetOrganizationsForWhichUserIsRightsHolder(userDetails.token)).ToList();

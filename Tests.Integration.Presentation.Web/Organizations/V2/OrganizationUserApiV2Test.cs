@@ -10,6 +10,7 @@ using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Organization;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Organizations.V2
@@ -26,7 +27,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var user3AndToken = await CreateApiUser(organization);
 
             var rolesForUser3 = new[] { OrganizationRole.LocalAdmin, OrganizationRole.OrganizationModuleAdmin, OrganizationRole.SystemModuleAdmin };
-            await AssignRoles(organization, user3AndToken.user.Id, rolesForUser3);
+            await AssignRoles(organization, user3AndToken.user.Uuid, rolesForUser3);
 
             //Act
             var result = (await OrganizationUserV2Helper.GetOrganizationUsersAsync(user1AndToken.token, organization.Uuid)).ToList();
@@ -64,7 +65,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var user3 = await CreateUser(organization);
 
             var rolesForUser3 = new[] { OrganizationRole.LocalAdmin, OrganizationRole.OrganizationModuleAdmin, OrganizationRole.SystemModuleAdmin };
-            await AssignRoles(organization, user3.Id, rolesForUser3);
+            await AssignRoles(organization, user3.Uuid, rolesForUser3);
 
             //Act
             var result = (await OrganizationUserV2Helper.GetOrganizationUsersAsync(user1AndToken.token, organization.Uuid, nameOrEmailQuery: $"{user2.Email.Split('@')[0]}")).ToList();
@@ -84,7 +85,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var user3 = await CreateUser(organization);
 
             var rolesForUser3 = new[] { OrganizationRole.LocalAdmin, OrganizationRole.OrganizationModuleAdmin, OrganizationRole.SystemModuleAdmin };
-            await AssignRoles(organization, user3.Id, rolesForUser3);
+            await AssignRoles(organization, user3.Uuid, rolesForUser3);
 
             //Act
             var result = (await OrganizationUserV2Helper.GetOrganizationUsersAsync(user1AndToken.token, organization.Uuid, emailQuery: user2.Email)).ToList();
@@ -103,7 +104,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var user3 = await CreateUser(organization);
 
             var rolesForUser3 = new[] { OrganizationRole.LocalAdmin, OrganizationRole.OrganizationModuleAdmin, OrganizationRole.SystemModuleAdmin };
-            await AssignRoles(organization, user3.Id, rolesForUser3);
+            await AssignRoles(organization, user3.Uuid, rolesForUser3);
 
             //Act
             var result = (await OrganizationUserV2Helper.GetOrganizationUsersAsync(user1AndToken.token, organization.Uuid, roleQuery: OrganizationUserRole.SystemModuleAdmin)).ToList();
@@ -241,22 +242,22 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
 
         private async Task<User> CreateUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organization.Uuid, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return user;
         }
 
-        private static async Task AssignRoles(ShallowOrganizationResponseDTO organization, int userId, params OrganizationRole[] roles)
+        private static async Task AssignRoles(ShallowOrganizationResponseDTO organization, Guid userUuid, params OrganizationRole[] roles)
         {
             foreach (var organizationRole in roles)
             {
-                using var response = await HttpApi.SendAssignRoleToUserAsync(userId, organizationRole, organization.Uuid);
+                using var response = await HttpApi.SendAssignRoleToUserAsync(userUuid, organizationRole, organization.Uuid);
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             }
         }

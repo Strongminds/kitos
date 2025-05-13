@@ -1,4 +1,5 @@
-﻿using Core.DomainModel.Organization;
+﻿using System;
+using Core.DomainModel.Organization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Xunit;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools.Internal.DPR;
+using Tests.Integration.Presentation.Web.Tools.Model;
 
 namespace Tests.Integration.Presentation.Web.GDPR.V2
 {
@@ -110,10 +112,10 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             await HttpApi.SendAssignRoleToUserAsync(userId, OrganizationRole.GlobalAdmin, orgId).DisposeAsync();
             return (cookie, organization);
         }
-        private async Task<(int userId, Cookie cookie)> CreateApiUserAsync(int organizationId)
+        private async Task<(Guid userUuid, Cookie cookie)> CreateApiUserAsync(int organizationId)
         {
             var userAndGetCookie = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.GlobalAdmin, organizationId);
-            return (userAndGetCookie.userId, userAndGetCookie.loginCookie);
+            return (userAndGetCookie.userUuid, userAndGetCookie.loginCookie);
         }
     }
 }

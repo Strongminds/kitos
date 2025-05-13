@@ -29,6 +29,7 @@ using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Types.Organization;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
 namespace Tests.Integration.Presentation.Web.GDPR.V2
@@ -1267,7 +1268,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var orgId = DatabaseAccess.GetEntityId<Organization>(org.Uuid);
             var (user, token) = await CreateApiUserAsync(org);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, orgId).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, role, orgId).DisposeAsync();
 
             var dpr = await CreateDPRAsync(org.Uuid);
 
@@ -1295,7 +1296,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var (user, token) = await CreateApiUserAsync(org);
             var orgId = DatabaseAccess.GetEntityId<Organization>(org.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, role, orgId).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, role, orgId).DisposeAsync();
 
             //Act
             var permissionsResponseDto = await DataProcessingRegistrationV2Helper.GetCollectionPermissionsAsync(token, org.Uuid);
@@ -1314,7 +1315,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             //Arrange
             var organization = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
             var (roles, users) = await CreateRoles(organization);
             var createdDpr = await DataProcessingRegistrationV2Helper.PostAsync(token, new CreateDataProcessingRegistrationRequestDTO
             {
@@ -1347,7 +1348,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             //Arrange
             var organization = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
             var (roles, users) = await CreateRoles(organization);
             var createdDpr = await DataProcessingRegistrationV2Helper.PostAsync(token, new CreateDataProcessingRegistrationRequestDTO
             {
@@ -1382,7 +1383,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             //Arrange
             var organization = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
             var (roles, users) = await CreateRoles(organization);
             var createdDpr = await DataProcessingRegistrationV2Helper.PostAsync(token, new CreateDataProcessingRegistrationRequestDTO
             {
@@ -1825,21 +1826,21 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         {
             var organization = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUserAsync(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, GetOrgId(organization.Uuid)).DisposeAsync();
             return (token, user, organization);
         }
         private async Task<(User user, string token)> CreateApiUserAsync(ShallowOrganizationResponseDTO organization)
         {
             var orgId = DatabaseAccess.GetEntityId<Organization>(organization.Uuid);
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, orgId, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
 
         private async Task<User> CreateUser(Guid organizationUuid)
         {
-            var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, GetOrgId(organizationUuid));
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userId));
+            var userUuid = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, GetOrgId(organizationUuid));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userUuid));
             return user;
         }
 

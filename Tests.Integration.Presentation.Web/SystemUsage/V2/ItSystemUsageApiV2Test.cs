@@ -30,6 +30,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Toolkit.Extensions;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
@@ -44,7 +45,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var (token, user, organization1, system1) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system2 = await CreateItSystemAsync(organization2.Uuid);
             var system3 = await CreateItSystemAsync(organization2.Uuid);
@@ -252,7 +253,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var (token, user, organization1, system1) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync();
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system2 = await CreateItSystemAsync(organization2.Uuid);
             var system3 = await CreateItSystemAsync(organization2.Uuid);
@@ -309,7 +310,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var (token, user, organization1, system1) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync();
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system2 = await CreateItSystemAsync(organization2.Uuid);
 
@@ -332,7 +333,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var (token, user, organization1, system1) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync();
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system2 = await CreateItSystemAsync(organization2.Uuid);
 
@@ -355,7 +356,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange - setup multiple relations across orgs
             var (token, user, organization1, system1) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system2 = await CreateItSystemAsync(organization2.Uuid);
             var system3 = await CreateItSystemAsync(organization2.Uuid);
@@ -389,7 +390,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange - setup multiple relations across orgs
             var (token, user, organization1, _) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system1 = await CreateItSystemAsync(organization1.Uuid);
             var system2 = await CreateItSystemAsync(organization2.Uuid);
@@ -450,7 +451,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var content = $"CONTENT_{A<Guid>()}";
             var (token, user, organization1, _) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             var system1 = await CreateItSystemAsync(organization1.Uuid, $"{content}ONE");
             var system2 = await CreateItSystemAsync(organization2.Uuid, $"TWO{content}");
@@ -478,7 +479,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var (token, user, organization1, system) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, userRole, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, userRole, organization2.Uuid).DisposeAsync();
 
             await TakeSystemIntoUsageAsync(system.Uuid, organization1.Uuid);
             var systemUsageOrg2 = await TakeSystemIntoUsageAsync(system.Uuid, organization2.Uuid);
@@ -506,7 +507,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var (token, user, _, _) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, userRole, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, userRole, organization2.Uuid).DisposeAsync();
 
             //Act
             var permissionsResponseDto = await ItSystemUsageV2Helper.GetCollectionPermissionsAsync(token, organization2.Uuid);
@@ -526,7 +527,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var (token, user, organization1, system) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync();
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization2.Uuid).DisposeAsync();
 
             await TakeSystemIntoUsageAsync(system.Uuid, organization1.Uuid);
             var systemUsageOrg2 = await TakeSystemIntoUsageAsync(system.Uuid, organization2.Uuid);
@@ -573,7 +574,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             //Act
@@ -948,7 +949,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var user1 = await CreateUser(organization);
@@ -984,7 +985,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var user1 = await CreateUser(organization);
@@ -1024,7 +1025,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var user1 = await CreateUser(organization);
@@ -1059,7 +1060,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var user1 = await CreateUser(organization);
@@ -1093,7 +1094,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var user1 = await CreateUser(organization);
@@ -1244,7 +1245,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
             var archiveType = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageArchiveTypes, organization.Uuid, 1, 0)).First();
             var archiveLocation = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageArchiveLocations, organization.Uuid, 1, 0)).First();
@@ -1269,7 +1270,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var organization2 = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var createRequest = CreatePostRequest(organization.Uuid, system.Uuid);
@@ -2215,7 +2216,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Arrange
             var organization = await CreateOrganizationAsync(type: A<OrganizationType>());
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateSystemAndGetAsync(organization.Uuid, AccessModifier.Public);
 
             var user1 = await CreateUser(organization);
@@ -2585,7 +2586,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var organization = await CreateOrganizationAsync();
             var (user, token) = await CreateApiUser(organization.Uuid);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             var system = await CreateItSystemAsync(organization.Uuid);
             return (token, user, organization, system);
         }
@@ -2944,14 +2945,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var organizationId = GetOrgId(organizationUuid);
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationId, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
 
         private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
 
@@ -2959,7 +2960,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var organizationId = GetOrgId(organization.Uuid);
             var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, organizationId);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userId));
             return user;
         }
 

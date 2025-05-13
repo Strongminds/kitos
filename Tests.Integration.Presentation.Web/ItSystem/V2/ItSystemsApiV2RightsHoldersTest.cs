@@ -269,7 +269,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             //Arrange
             var (userId, token, createdOrganization) = await CreateRightsHolderAccessUserInNewOrganizationAndGetFullUserAsync();
             var input = await PrepareCreateRightsHolderSystemRequestAsync(withBusinessType, withKleUuid, withParent, withFormerName, withExternalUuid, createdOrganization);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(r => r.AsQueryable().ById(userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(r => r.AsQueryable().ByUuid(userId));
 
             //Act - create it and GET it to verify that response DTO matches input requests AND that a consecutive GET returns the same data
             var createdSystem = await ItSystemV2Helper.CreateRightsHolderSystemAsync(token, input);
@@ -753,7 +753,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             return (token, organization);
         }
 
-        protected async Task<(int userId, string token, ShallowOrganizationResponseDTO createdOrganization)> CreateRightsHolderAccessUserInNewOrganizationAndGetFullUserAsync()
+        protected async Task<(Guid userUuid, string token, ShallowOrganizationResponseDTO createdOrganization)> CreateRightsHolderAccessUserInNewOrganizationAndGetFullUserAsync()
         {
             var organization = await CreateOrganizationAsync();
 

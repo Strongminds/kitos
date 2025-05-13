@@ -447,7 +447,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await GetCookieAsync(userCredentials, acceptUnAuthorized);
         }
 
-        public static async Task<(int userId, KitosCredentials credentials, Cookie loginCookie)> CreateUserAndLogin(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool hasStakeHolderAccess = false)
+        public static async Task<(Guid userUuid, KitosCredentials credentials, Cookie loginCookie)> CreateUserAndLogin(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool hasStakeHolderAccess = false)
         {
             var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
             var userId = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, hasStakeHolderAccess), role, organizationId);
@@ -455,7 +455,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             DatabaseAccess.MutateEntitySet<User>(x =>
             {
                 using var crypto = new CryptoService();
-                var user = x.AsQueryable().ById(userId);
+                var user = x.AsQueryable().ByUuid(userId);
                 user.Password = crypto.Encrypt(password + user.Salt);
             });
 
@@ -464,36 +464,36 @@ namespace Tests.Integration.Presentation.Web.Tools
             return (userId, new KitosCredentials(email, password), cookie);
         }
 
-        public static async Task<(int userId, KitosCredentials credentials, Cookie loginCookie)> CreateUserAndLogin(string email, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, bool apiAccess = false, bool hasStakeHolderAccess = false)
+        public static async Task<(Guid userUuid, KitosCredentials credentials, Cookie loginCookie)> CreateUserAndLogin(string email, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, bool apiAccess = false, bool hasStakeHolderAccess = false)
         {
-            var userId = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, hasStakeHolderAccess), role, organizationId);
+            var userUuid = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, hasStakeHolderAccess), role, organizationId);
             var password = Guid.NewGuid().ToString("N");
             DatabaseAccess.MutateEntitySet<User>(x =>
             {
                 using var crypto = new CryptoService();
-                var user = x.AsQueryable().ById(userId);
+                var user = x.AsQueryable().ByUuid(userUuid);
                 user.Password = crypto.Encrypt(password + user.Salt);
             });
 
             var cookie = await GetCookieAsync(new KitosCredentials(email, password));
 
-            return (userId, new KitosCredentials(email, password), cookie);
+            return (userUuid, new KitosCredentials(email, password), cookie);
         }
 
-        public static async Task<(int userId, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
+        public static async Task<(Guid userUuid, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
         {
             var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
             return await CreateUserAndGetToken(email, role, organizationId, apiAccess, stakeHolderAccess, isSystemIntegrator);
         }
 
-        public static async Task<(int userId, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
+        public static async Task<(Guid userUuid, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
         {
             var userId = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, stakeHolderAccess), role, organizationId);
             var password = Guid.NewGuid().ToString("N");
             DatabaseAccess.MutateEntitySet<User>(x =>
             {
                 using var crypto = new CryptoService();
-                var user = x.AsQueryable().ById(userId);
+                var user = x.AsQueryable().ByUuid(userId);
                 user.Password = crypto.Encrypt(password + user.Salt);
                 user.IsGlobalAdmin = role == OrganizationRole.GlobalAdmin;
                 user.IsSystemIntegrator = isSystemIntegrator;
@@ -504,40 +504,40 @@ namespace Tests.Integration.Presentation.Web.Tools
             return (userId, new KitosCredentials(email, password), token.Token);
         }
 
-        public static async Task<int> CreateOdataUserAsync(ApiUserDTO userDto, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId)
+        public static async Task<Guid> CreateOdataUserAsync(ApiUserDTO userDto, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId)
         {
             var cookie = await GetCookieAsync(OrganizationRole.GlobalAdmin);
 
             var createUserDto = ObjectCreateHelper.MakeSimpleCreateUserDto(userDto);
 
-            int userId;
+            Guid userUuid;
             using (var createdResponse = await PostWithCookieAsync(TestEnvironment.CreateUrl("odata/Users/Users.Create"), cookie, createUserDto))
             {
                 Assert.Equal(HttpStatusCode.Created, createdResponse.StatusCode);
                 var response = await createdResponse.ReadResponseBodyAsAsync<UserDTO>();
-                userId = response.Id;
+                userUuid = response.Uuid;
 
                 Assert.Equal(userDto.Email, response.Email);
             }
 
-            using (var addedRole = await SendAssignRoleToUserAsync(userId, role, organizationId))
+            using (var addedRole = await SendAssignRoleToUserAsync(userUuid, role, organizationId))
             {
                 Assert.Equal(HttpStatusCode.Created, addedRole.StatusCode);
             }
 
-            return userId;
+            return userUuid;
         }
 
-        public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(int userId, OrganizationRole role, Guid organizationUuid, Cookie optionalLoginCookie = null)
+        public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(Guid userUuid, OrganizationRole role, Guid organizationUuid, Cookie optionalLoginCookie = null)
         {
             var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
-            return await SendAssignRoleToUserAsync(userId, role, organizationId, optionalLoginCookie);
+            return await SendAssignRoleToUserAsync(userUuid, role, organizationId, optionalLoginCookie);
         }
 
-        public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(int userId, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, Cookie optionalLoginCookie = null)
+        public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(Guid userUuid, OrganizationRole role, int organizationId = TestEnvironment.DefaultOrganizationId, Cookie optionalLoginCookie = null)
         {
             var cookie = optionalLoginCookie ?? await GetCookieAsync(OrganizationRole.GlobalAdmin);
-
+            var userId = DatabaseAccess.GetEntityId<User>(userUuid);
             var roleDto = new OrgRightDTO
             {
                 UserId = userId,

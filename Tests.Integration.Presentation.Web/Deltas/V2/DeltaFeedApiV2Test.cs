@@ -10,6 +10,7 @@ using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
@@ -149,14 +150,14 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
         {
             var organization = await CreateOrganizationAsync(type: organizationType);
             var (user, token) = await CreateApiUser(organization);
-            await HttpApi.SendAssignRoleToUserAsync(user.Id, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, organization.Uuid).DisposeAsync();
             return (token, user, organization);
         }
 
         private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ById(userAndGetToken.userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
             return (user, userAndGetToken.token);
         }
     }
