@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Tests.Integration.Presentation.Web.Tools.Internal.References
 {
@@ -29,6 +31,16 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.References
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var url = TestEnvironment.CreateUrl($"{GetItSystemBaseUrl(systemUuid)}/{referenceUuid}");
             return await HttpApi.DeleteWithCookieAsync(url, cookie);
+        }
+
+        public static IEnumerable<T> WithRandomMaster<T>(IEnumerable<T> references) where T : ExternalReferenceDataWriteRequestDTO
+        {
+            var orderedRandomly = references.OrderBy(_ => Guid.NewGuid()).ToList();
+            orderedRandomly.First().MasterReference = true;
+            foreach (var externalReferenceDataDto in orderedRandomly.Skip(1))
+                externalReferenceDataDto.MasterReference = false;
+
+            return orderedRandomly;
         }
 
         private static string GetItSystemBaseUrl(Guid systemUuid)

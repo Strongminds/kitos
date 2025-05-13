@@ -20,7 +20,7 @@ namespace Tests.Integration.Presentation.Web.References
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var org = await CreateOrganizationAsync();
             var references = Many<ExternalReferenceDataWriteRequestDTO>()
-                .Transform(ExternalReferenceTestHelper.WithRandomMaster).ToList();
+                .Transform(ExternalReferencesV2Helper.WithRandomMaster).ToList();
             var systemRequest = new CreateItSystemRequestDTO { OrganizationUuid = org.Uuid, Name = A<string>(), ExternalReferences = references };
             var system = await ItSystemV2Helper.CreateSystemAsync(token.Token, systemRequest);
 

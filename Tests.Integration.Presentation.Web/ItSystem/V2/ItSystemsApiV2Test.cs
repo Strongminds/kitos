@@ -931,7 +931,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
         private List<ExternalReferenceDataWriteRequestDTO> CreateExternalReferences()
         {
-            return Many<ExternalReferenceDataWriteRequestDTO>().Transform(ExternalReferenceTestHelper.WithRandomMaster).ToList();
+            return Many<ExternalReferenceDataWriteRequestDTO>().Transform(ExternalReferencesV2Helper.WithRandomMaster).ToList();
         }
 
         private static async Task<IdentityNamePairResponseDTO> GetRandomBusinessType(ShallowOrganizationResponseDTO organizationDto)
