@@ -346,7 +346,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
         private (Guid rootUuid, Guid childContractUuid, Guid siblingContractUuid, Guid grandchildContractUuid, IReadOnlyList<ItContract> createdItContracts) CreateHierarchy(Guid organizationUuid)
         {
-            var orgId = GetOrgId(organizationUuid);
+            var orgId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
             var rootContract = CreateContract(orgId);
             var childContract = CreateContract(orgId);
             var siblingContract = CreateContract(orgId);

@@ -74,8 +74,7 @@ namespace Tests.Integration.Presentation.Web.Contract
         public async Task ReadModels_Contain_Correct_Content()
         {
             //Arrange
-            var organizationId = GetOrgId(_organization.Uuid);
-            var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
+            var organizationUuid = _organization.Uuid;
             var name = CreateName();
             var itSystem1 = await CreateItSystemAsync(organizationUuid);
             var itSystem2 = await CreateItSystemAsync(organizationUuid);

@@ -103,7 +103,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 itSystem.ArchiveDuty = A<ArchiveDutyRecommendationTypes>();
                 itSystem.ArchiveDutyComment = A<string>();
                 itSystem.ParentId = DatabaseAccess.GetEntityId<Core.DomainModel.ItSystem.ItSystem>(parentSystem);
-                itSystem.BelongsToId = GetOrgId(rightsHolderOrganization.Uuid);
+                itSystem.BelongsToId = DatabaseAccess.GetEntityId<Organization>(rightsHolderOrganization.Uuid);
                 itSystem.BusinessTypeId = DatabaseAccess.GetEntityId<BusinessType>(businessType.Uuid);
 
                 itSystem.TaskRefs.Add(taskRef);

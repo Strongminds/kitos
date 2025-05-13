@@ -381,7 +381,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private async Task<User> CreateUser(Guid organizationUuid)
         {
-            var orgId = GetOrgId(organizationUuid);
             var userUuid = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, organizationUuid);
             var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userUuid));
             return user;

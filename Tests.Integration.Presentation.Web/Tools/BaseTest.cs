@@ -167,12 +167,5 @@ namespace Tests.Integration.Presentation.Web.Tools
             _token = token.Token;
             return _token;
         }
-
-        //Temp. method to strangle out old helpers
-        public int GetOrgId(Guid orgUuid)
-        {
-            return DatabaseAccess.GetEntityId<Organization>(orgUuid);
-
-        }
     }
 }

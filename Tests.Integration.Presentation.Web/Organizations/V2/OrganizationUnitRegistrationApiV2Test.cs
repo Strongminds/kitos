@@ -351,7 +351,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var (userUuid, _, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organizationUuid);
             var userId = DatabaseAccess.GetEntityId<User>(userUuid);
-            var organizationId = GetOrgId(organizationUuid);
+            var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
             var organizationName = A<string>();
 
             var unit = await CreateOrganizationUnitAsync(organizationUuid, organizationName);
