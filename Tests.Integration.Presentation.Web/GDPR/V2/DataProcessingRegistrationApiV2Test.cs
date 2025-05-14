@@ -23,13 +23,11 @@ using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Extensions;
 using Xunit;
 using ExpectedObjects;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Types.Organization;
-using Tests.Integration.Presentation.Web.Tools.Model;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
 namespace Tests.Integration.Presentation.Web.GDPR.V2
@@ -1836,8 +1834,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
 
         private async Task<User> CreateUser(Guid organizationUuid)
         {
-            var userUuid = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, organizationUuid);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userUuid));
+            var createdUser = await CreateUserAsync(organizationUuid);
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(createdUser.Uuid));
             return user;
         }
 

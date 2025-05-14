@@ -126,13 +126,14 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await InterfaceV2Helper.CreateItInterfaceAsync(await GetGlobalToken(), request);
         }
 
-        public async Task<UserResponseDTO> CreateUserAsync(Guid organizationUuid)
+        public async Task<UserResponseDTO> CreateUserAsync(Guid organizationUuid, string email = null, bool apiAccess = false)
         {
             var request = new CreateUserRequestDTO
             {
                 FirstName = A<string>(),
                 LastName = A<string>(),
-                Email = CreateEmail(),
+                Email = email ?? CreateEmail(),
+                HasApiAccess = apiAccess,
                 Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
             };
             return await UsersV2Helper.CreateUser(organizationUuid, request);

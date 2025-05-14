@@ -310,7 +310,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Arrange
             var name = A<string>();
             var newName = A<string>();
-            var email = A<string>();
+            var email = CreateEmail();
             var orgRole = OrganizationRole.GlobalAdmin;
             var organizationUuid = DefaultOrgUuid;
 

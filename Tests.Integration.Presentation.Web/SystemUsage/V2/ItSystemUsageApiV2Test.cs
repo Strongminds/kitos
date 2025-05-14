@@ -30,7 +30,6 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
-using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Toolkit.Extensions;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
@@ -2957,8 +2956,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private async Task<User> CreateUser(ShallowOrganizationResponseDTO organization)
         {
-            var userId = await HttpApi.CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(CreateEmail(), false), OrganizationRole.User, organization.Uuid);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userId));
+            var userResponse = await CreateUserAsync(organization.Uuid);
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userResponse.Uuid));
             return user;
         }
 

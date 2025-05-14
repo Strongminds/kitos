@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
@@ -14,8 +15,11 @@ using Core.DomainServices.Extensions;
 using Infrastructure.Services.Cryptography;
 using Newtonsoft.Json;
 using Polly;
+using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Helpers;
 using Presentation.Web.Models.API.V1;
+using Presentation.Web.Models.API.V2.Request.User;
+using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 using Tests.Integration.Presentation.Web.Tools.Model;
 using Tests.Toolkit.Extensions;
 using Xunit;
@@ -449,7 +453,12 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public static async Task<(Guid userUuid, KitosCredentials credentials, Cookie loginCookie)> CreateUserAndLogin(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool hasStakeHolderAccess = false)
         {
-            var userUuid = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, hasStakeHolderAccess), role, organizationUuid);
+            var request = new Fixture().Create<CreateUserRequestDTO>();
+            request.Email = email;
+            request.Roles = new[] { role.ToOrganizationRoleChoice() };
+            request.HasApiAccess = apiAccess;
+            request.HasStakeHolderAccess = hasStakeHolderAccess;
+            var userUuid = await CreateUserAsync(request, organizationUuid);
             var password = Guid.NewGuid().ToString("N");
             DatabaseAccess.MutateEntitySet<User>(x =>
             {
@@ -465,12 +474,19 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public static async Task<(Guid userUuid, KitosCredentials credentials, string token)> CreateUserAndGetToken(string email, OrganizationRole role, Guid organizationUuid, bool apiAccess = false, bool stakeHolderAccess = false, bool isSystemIntegrator = false)
         {
-            var userId = await CreateOdataUserAsync(ObjectCreateHelper.MakeSimpleApiUserDto(email, apiAccess, stakeHolderAccess), role, organizationUuid);
+            var request = new Fixture().Create<CreateUserRequestDTO>();
+            request.Email = email;
+            request.Roles = new[] { role.ToOrganizationRoleChoice() };
+            request.HasApiAccess = apiAccess;
+            request.HasStakeHolderAccess = stakeHolderAccess;
+
+            var userUuid = await CreateUserAsync(request, organizationUuid);
+
             var password = Guid.NewGuid().ToString("N");
             DatabaseAccess.MutateEntitySet<User>(x =>
             {
                 using var crypto = new CryptoService();
-                var user = x.AsQueryable().ByUuid(userId);
+                var user = x.AsQueryable().ByUuid(userUuid);
                 user.Password = crypto.Encrypt(password + user.Salt);
                 user.IsGlobalAdmin = role == OrganizationRole.GlobalAdmin;
                 user.IsSystemIntegrator = isSystemIntegrator;
@@ -478,31 +494,16 @@ namespace Tests.Integration.Presentation.Web.Tools
 
             var token = await GetTokenAsync(new KitosCredentials(email, password));
 
-            return (userId, new KitosCredentials(email, password), token.Token);
+            return (userUuid, new KitosCredentials(email, password), token.Token);
         }
 
-        public static async Task<Guid> CreateOdataUserAsync(ApiUserDTO userDto, OrganizationRole role, Guid organizationUuid)
+        public static async Task<Guid> CreateUserAsync(CreateUserRequestDTO userDto, Guid organizationUuid)
         {
             var cookie = await GetCookieAsync(OrganizationRole.GlobalAdmin);
 
-            var createUserDto = ObjectCreateHelper.MakeSimpleCreateUserDto(userDto);
+            var userResponse = await UsersV2Helper.CreateUser(organizationUuid, userDto, cookie);
 
-            Guid userUuid;
-            using (var createdResponse = await PostWithCookieAsync(TestEnvironment.CreateUrl("odata/Users/Users.Create"), cookie, createUserDto))
-            {
-                Assert.Equal(HttpStatusCode.Created, createdResponse.StatusCode);
-                var response = await createdResponse.ReadResponseBodyAsAsync<UserDTO>();
-                userUuid = response.Uuid;
-
-                Assert.Equal(userDto.Email, response.Email);
-            }
-
-            using (var addedRole = await SendAssignRoleToUserAsync(userUuid, role, organizationUuid))
-            {
-                Assert.Equal(HttpStatusCode.Created, addedRole.StatusCode);
-            }
-
-            return userUuid;
+            return userResponse.Uuid;
         }
 
         public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(Guid userUuid, OrganizationRole role, Guid organizationUuid, Cookie optionalLoginCookie = null)
@@ -517,15 +518,6 @@ namespace Tests.Integration.Presentation.Web.Tools
             };
 
             return await PostWithCookieAsync(TestEnvironment.CreateUrl($"odata/Organizations({organizationId})/Rights"), cookie, roleDto);
-        }
-
-        public static async Task PatchOdataUserAsync(ApiUserDTO userDto, Guid userUuid)
-        {
-            var cookie = await GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var userId = DatabaseAccess.GetEntityId<User>(userUuid);
-
-            using var patch = await PatchWithCookieAsync(TestEnvironment.CreateUrl($"odata/Users({userId})"), cookie, userDto);
-            Assert.Equal(HttpStatusCode.NoContent, patch.StatusCode);
         }
     }
 }

@@ -19,7 +19,6 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.ItSystemUsage;
-using Tests.Integration.Presentation.Web.Tools.Model;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.ItSystem.V2

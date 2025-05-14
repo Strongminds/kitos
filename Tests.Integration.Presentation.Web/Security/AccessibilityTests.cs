@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.Internal.Users;
 using Xunit;
-using Tests.Integration.Presentation.Web.Tools.Model;
-using Tests.Toolkit.Patterns;
 
 namespace Tests.Integration.Presentation.Web.Security
 {
@@ -49,8 +46,7 @@ namespace Tests.Integration.Presentation.Web.Security
         {
             //Arrange
             var email = CreateEmail();
-            var userDto = ObjectCreateHelper.MakeSimpleApiUserDto(email, true);
-            var createdUserId = await HttpApi.CreateOdataUserAsync(userDto, OrganizationRole.User, DefaultOrgUuid);
+            var createdUser = await CreateUserAsync(DefaultOrgUuid, email, true);
             var loginDto = ObjectCreateHelper.MakeSimpleLoginDto(email, _defaultPassword);
             var token = await HttpApi.GetTokenAsync(loginDto);
             using (var requestResponse = await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl("api/v2/organizations"), token.Token))
@@ -60,7 +56,7 @@ namespace Tests.Integration.Presentation.Web.Security
             }
 
             //Act
-            await DisableApiAccessForUserAsync(userDto, createdUserId);
+            await DisableApiAccessForUserAsync(DefaultOrgUuid, createdUser.Uuid);
 
             //Assert
             using (var requestResponse = await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl("api/v2/organizations"), token.Token))
@@ -68,13 +64,12 @@ namespace Tests.Integration.Presentation.Web.Security
                 Assert.NotNull(requestResponse);
                 Assert.Equal(HttpStatusCode.Forbidden, requestResponse.StatusCode);
             }
-            await UsersV2Helper.DeleteUserGlobally(createdUserId);
+            await UsersV2Helper.DeleteUserGlobally(createdUser.Uuid);
         }
 
-        private static async Task DisableApiAccessForUserAsync(ApiUserDTO userDto, Guid userUuid)
+        private static async Task DisableApiAccessForUserAsync(Guid organizationUuid, Guid userUuid)
         {
-            userDto.HasApiAccess = false;
-            await HttpApi.PatchOdataUserAsync(userDto, userUuid);
+            await UsersV2Helper.PatchUserAsync(organizationUuid, userUuid, x => x.HasApiAccess, false);
         }
 
     }
