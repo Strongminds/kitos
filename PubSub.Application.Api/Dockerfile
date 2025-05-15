@@ -14,7 +14,6 @@ RUN dotnet restore "PubSub.Application.Api/PubSub.Application.Api.csproj"
 COPY . .
 
 RUN dotnet publish "PubSub.Application.Api/PubSub.Application.Api.csproj" -c Release -o out
-RUN apt-get update && apt-get install -y libgssapi-krb5-2
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
