@@ -257,7 +257,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             foreach (var organizationRole in roles)
             {
                 using var response = await HttpApi.SendAssignRoleToUserAsync(userUuid, organizationRole, organization.Uuid);
-                Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
     }

@@ -508,16 +508,11 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(Guid userUuid, OrganizationRole role, Guid organizationUuid, Cookie optionalLoginCookie = null)
         {
-            var cookie = optionalLoginCookie ?? await GetCookieAsync(OrganizationRole.GlobalAdmin);
-            var userId = DatabaseAccess.GetEntityId<User>(userUuid);
-            var organizationId = DatabaseAccess.GetEntityId<Organization>(organizationUuid);
-            var roleDto = new OrgRightDTO
-            {
-                UserId = userId,
-                Role = role.ToString("G")
-            };
-
-            return await PostWithCookieAsync(TestEnvironment.CreateUrl($"odata/Organizations({organizationId})/Rights"), cookie, roleDto);
+            var user = await UsersV2Helper.GetUser(organizationUuid, userUuid);
+            var previousRoles = user.Roles;
+            var uniqueNewRoles = previousRoles.Append(role.ToOrganizationRoleChoice()).ToHashSet();
+            return await UsersV2Helper.PatchUserAsync(organizationUuid, userUuid, x => x.Roles,
+                uniqueNewRoles, optionalLoginCookie);
         }
     }
 }

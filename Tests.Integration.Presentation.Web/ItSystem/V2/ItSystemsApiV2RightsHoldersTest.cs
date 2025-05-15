@@ -245,7 +245,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(HttpStatusCode.OK, belongsToResponse1.StatusCode);
             Assert.Equal(HttpStatusCode.OK, belongsToResponse2.StatusCode);
             using var assignRightsHolderInOrg2Response = await HttpApi.SendAssignRoleToUserAsync(userId, OrganizationRole.RightsHolderAccess, rightsHolder2Org.Uuid);
-            Assert.Equal(HttpStatusCode.Created, assignRightsHolderInOrg2Response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, assignRightsHolderInOrg2Response.StatusCode);
 
             //Act
             var response = await ItSystemV2Helper.GetManyRightsHolderSystemsAsync(token, rightsHolderUuid: rightsHolder2Org.Uuid);

@@ -247,25 +247,25 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             return await response.ReadResponseBodyAsAsync<IdentityNamePairResponseDTO>();
         }
 
-        public static async Task<HttpResponseMessage> PatchUserAsync(Guid organizationUuid, Guid userUuid, params KeyValuePair<string, object>[] kvpPairs)
+        public static async Task<HttpResponseMessage> PatchUserAsync(Guid organizationUuid, Guid userUuid, Cookie cookie = null, params KeyValuePair<string, object>[] kvpPairs)
         {
-            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             var url = TestEnvironment.CreateUrl($"{ControllerPrefix(organizationUuid)}/{userUuid}/patch");
-            return await HttpApi.PatchWithCookieAsync(url, cookie, kvpPairs.ToDictionary(x => x.Key, x => x.Value));
+            return await HttpApi.PatchWithCookieAsync(url, requestCookie, kvpPairs.ToDictionary(x => x.Key, x => x.Value));
         }
 
         public static async Task<HttpResponseMessage> PatchUserAsync<T>(
             Guid organizationUuid,
             Guid userUuid,
             Expression<Func<UpdateUserRequestDTO, T>> propertySelector,
-            T value)
+            T value, Cookie cookie = null)
         {
             if (!(propertySelector.Body is MemberExpression m))
                 throw new ArgumentException("Selector must be a simple member access", nameof(propertySelector));
 
             var propertyName = m.Member.Name;
             var kvp = new KeyValuePair<string, object>(propertyName, value);
-            return await PatchUserAsync(organizationUuid, userUuid, kvp);
+            return await PatchUserAsync(organizationUuid, userUuid, cookie, kvp);
         }
 
         private static string ControllerPrefix(Guid organizationUuid)
