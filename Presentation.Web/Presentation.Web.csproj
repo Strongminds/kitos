@@ -1101,10 +1101,6 @@
     <Compile Include="Controllers\API\V1\OData\ItSystemsController.cs" />
     <Compile Include="Controllers\API\V1\OData\ItSystemUsagesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionBaseController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalBusinessTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalItSystemRolesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalSensitivePersonalDataTypesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\LocalOptionControllers\LocalSensitiveDataTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\OptionControllers\AgreementElementTypesController.cs" />
     <Compile Include="Controllers\API\V1\OData\OptionControllers\ArchiveLocationsController.cs" />
     <Compile Include="Controllers\API\V1\OData\OptionControllers\ArchiveTestLocationsController.cs" />

@@ -9,7 +9,6 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Microsoft.OData.Edm;
 using Presentation.Web.Controllers.API.V1.OData;
-using Presentation.Web.Controllers.API.V1.OData.LocalOptionControllers;
 using Core.DomainModel.LocalOptions;
 using Presentation.Web.Controllers.API.V1.OData.OptionControllers;
 using Presentation.Web.Infrastructure;
@@ -234,12 +233,6 @@ namespace Presentation.Web
 
             //Local options
 
-            var localBusinessType = BindEntitySet<LocalBusinessType, LocalBusinessTypesController>(builder);
-            localBusinessType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localItSystemRole = BindEntitySet<LocalItSystemRole, LocalItSystemRolesController>(builder);
-            localItSystemRole.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
             var removeOption = builder.Function("RemoveOption");
             removeOption.Parameter<int>("id");
             removeOption.Parameter<int>("objectId");
@@ -257,12 +250,6 @@ namespace Presentation.Web
             getRegisterTypeByObjectId.Parameter<int>("id");
             getRegisterTypeByObjectId.ReturnsCollectionFromEntitySet<RegisterType>("RegisterTypes");
             builder.StructuralTypes.First(t => t.ClrType == typeof(RegisterType)).AddProperty(typeof(RegisterType).GetProperty(nameof(SensitivePersonalDataType.Checked)));
-
-            var localSensitiveDataType = BindEntitySet<LocalSensitiveDataType, LocalSensitiveDataTypesController>(builder);
-            localSensitiveDataType.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
-            var localSensitivePersonalDataTypes = BindEntitySet<LocalSensitivePersonalDataType, LocalSensitivePersonalDataTypesController>(builder);
-            localSensitivePersonalDataTypes.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
 
             BindEntitySet<TerminationDeadlineType, TerminationDeadlineTypesController>(builder);
 
