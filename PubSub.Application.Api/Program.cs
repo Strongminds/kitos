@@ -3,6 +3,7 @@ using PubSub.Application.Api;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Application.Api.Configuration;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.DataProtection;
 
 
 [DllImport("System.Net.Security.Native", EntryPoint = "NetSecurityNative_EnsureGssInitialized")]
@@ -39,6 +40,8 @@ builder.WebHost.ConfigureKestrel((context, options) =>
         }
     });
 });
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"/opt/app-root/.aspnet/DataProtection-Keys"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
