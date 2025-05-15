@@ -10,7 +10,6 @@ using Core.DomainModel.Organization;
 using Microsoft.OData.Edm;
 using Presentation.Web.Controllers.API.V1.OData;
 using Core.DomainModel.LocalOptions;
-using Presentation.Web.Controllers.API.V1.OData.OptionControllers;
 using Presentation.Web.Infrastructure;
 using Core.DomainModel.Advice;
 using System.Linq;
@@ -93,8 +92,6 @@ namespace Presentation.Web
             itContractAgreementElementTypes.EntityType.HasKey(x => x.ItContract_Id).HasKey(x => x.AgreementElementType_Id);
 
             BindEntitySet<ItContractRight, ItContractRightsController>(builder);
-
-            BindEntitySet<ItContractRole, ItContractRolesController>(builder);
 
             var dataRow = builder.EntitySet<DataRow>("DataRows"); // no controller yet
             dataRow.EntityType.HasKey(x => x.Id);
@@ -185,8 +182,6 @@ namespace Presentation.Web
 
             BindEntitySet<OrganizationUnitRight, OrganizationUnitRightsController>(builder);
 
-            BindEntitySet<OrganizationUnitRole, OrganizationUnitRolesController>(builder);
-
             var removeOption = builder.Function("RemoveOption");
             removeOption.Parameter<int>("id");
             removeOption.Parameter<int>("objectId");
@@ -238,8 +233,6 @@ namespace Presentation.Web
             var itSystemRights = BindEntitySet<ItSystemRight, ItSystemRightsController>(builder);
             itSystemRights.HasRequiredBinding(u => u.Role, "ItSystemRoles");
 
-            BindEntitySet<ItSystemRole, ItSystemRolesController>(builder);
-
             var systemOrgUnitUsages =
                 builder.EntitySet<ItSystemUsageOrgUnitUsage>("ItSystemUsageOrgUnitUsages"); // no controller yet
             systemOrgUnitUsages.EntityType.HasKey(x => x.ItSystemUsageId).HasKey(x => x.OrganizationUnitId);
@@ -263,9 +256,6 @@ namespace Presentation.Web
         {
             //Read model to provide slim search options
             BindEntitySet<DataProcessingRegistrationReadModel, DataProcessingRegistrationReadModelsController>(builder);
-
-            //Generic global options
-            BindEntitySet<DataProcessingRegistrationRole, DataProcessingRegistrationRolesController>(builder);
 
             //Remove parent from dpa to prevent expand
             builder.StructuralTypes.First(t => t.ClrType == typeof(DataProcessingRegistrationReadModel)).RemoveProperty(typeof(DataProcessingRegistrationReadModel).GetProperty(nameof(DataProcessingRegistrationReadModel.SourceEntity)));

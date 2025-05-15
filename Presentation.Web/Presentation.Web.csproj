@@ -963,14 +963,12 @@
     <Compile Include="Controllers\API\V1\OData\BaseOdataController.cs" />
     <Compile Include="Controllers\API\V1\DataProcessingRegistrationController.cs" />
     <Compile Include="Controllers\API\V1\OData\DataProcessingRegistrationReadModelsController.cs" />
-    <Compile Include="Controllers\API\V1\KLEController.cs" />
     <Content Include="idp-metadata\sts-adgangstyring-prod.xml" />
     <Content Include="idp-metadata\sts-adgangstyring-test.xml" />
     <Content Include="Logout.ashx" />
     <Content Include="Login.ashx" />
     <Compile Include="Controllers\API\V1\OData\DataProcessingRegistrationRightsController.cs" />
     <Compile Include="Controllers\API\V1\OData\ItSystemUsageOverviewReadModelsController.cs" />
-    <Compile Include="Controllers\API\V1\OData\OptionControllers\DataProcessingRegistrationRolesController.cs" />
     <Compile Include="Controllers\SSO\SSOController.cs" />
     <Compile Include="Extensions\AutoMapperExtensions.cs" />
     <Compile Include="Extensions\OperationFailureExtensions.cs" />
@@ -1065,9 +1063,6 @@
     <Compile Include="Controllers\API\V1\OData\ItSystemsController.cs" />
     <Compile Include="Controllers\API\V1\OData\ItSystemUsagesController.cs" />
     <Compile Include="Controllers\API\V1\OData\LocalOptionBaseController.cs" />
-    <Compile Include="Controllers\API\V1\OData\OptionControllers\ItContractRolesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\OptionControllers\ItSystemRolesController.cs" />
-    <Compile Include="Controllers\API\V1\OData\OptionControllers\OrganizationUnitRolesController.cs" />
     <Compile Include="Controllers\API\V1\OData\OrganizationRightsController.cs" />
     <Compile Include="Controllers\API\V1\OData\OrganizationsController.cs" />
     <Compile Include="Controllers\API\V1\OData\OrganizationUnitRightsController.cs" />
@@ -1117,7 +1112,6 @@
     <Compile Include="Models\API\V1\ItSystemDTO.cs" />
     <Compile Include="Models\API\V1\CreateGlobalAdminDTO.cs" />
     <Compile Include="Models\API\V1\CreateLocalAdminDTO.cs" />
-    <Compile Include="Controllers\API\V1\GenericApiController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
