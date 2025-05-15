@@ -2,6 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Api;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Application.Api.Configuration;
+using System.Runtime.InteropServices;
+
+
+[DllImport("System.Net.Security.Native", EntryPoint = "NetSecurityNative_EnsureGssInitialized")]
+static extern int EnsureGssInitialized();
+
+if (OperatingSystem.IsLinux())
+{
+    Console.WriteLine("Ensuring Gss is Initialized ({ApplicationContext})...");
+    var output = EnsureGssInitialized();
+    Console.WriteLine($"GSS init output: {output}");
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
