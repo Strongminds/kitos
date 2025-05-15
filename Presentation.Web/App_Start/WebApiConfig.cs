@@ -9,22 +9,18 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Microsoft.OData.Edm;
 using Presentation.Web.Controllers.API.V1.OData;
-using Core.DomainModel.LocalOptions;
 using Presentation.Web.Infrastructure;
 using Core.DomainModel.Advice;
 using System.Linq;
 using Microsoft.OData;
 using Microsoft.OData.UriParser;
 using System.Collections.Generic;
-using Core.DomainModel.GDPR;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.ItContract.Read;
 using Core.DomainModel.ItSystemUsage.Read;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Routing.Conventions;
 using Presentation.Web.Infrastructure.Attributes;
-using DataType = Core.DomainModel.ItSystem.DataType;
-using HelpText = Core.DomainModel.HelpText;
 using Core.DomainModel.Shared;
 
 namespace Presentation.Web

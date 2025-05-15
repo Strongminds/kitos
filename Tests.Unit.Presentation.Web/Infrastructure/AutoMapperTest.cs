@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Core.DomainModel.ItSystem;
 using Presentation.Web;
-using Presentation.Web.Models;
 using Presentation.Web.Models.API.V1;
 using Tests.Toolkit.Patterns;
 using Xunit;
