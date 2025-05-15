@@ -508,11 +508,25 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         public static async Task<HttpResponseMessage> SendAssignRoleToUserAsync(Guid userUuid, OrganizationRole role, Guid organizationUuid, Cookie optionalLoginCookie = null)
         {
-            var user = await UsersV2Helper.GetUser(organizationUuid, userUuid);
-            var previousRoles = user.Roles;
-            var uniqueNewRoles = previousRoles.Append(role.ToOrganizationRoleChoice()).ToHashSet();
+            var userEmail = DatabaseAccess.MapFromEntitySet<User, string>(x => x.AsQueryable().ByUuid(userUuid).Email);
+            var rolesToPatch = await GetRolesToPatch(userUuid, organizationUuid, userEmail, role.ToOrganizationRoleChoice());
             return await UsersV2Helper.PatchUserAsync(organizationUuid, userUuid, x => x.Roles,
-                uniqueNewRoles, optionalLoginCookie);
+                rolesToPatch, optionalLoginCookie);
+
+        }
+
+        private static async Task<IEnumerable<OrganizationRoleChoice>> GetRolesToPatch(Guid userUuid, Guid organizationUuid, string email, OrganizationRoleChoice roleToAdd)
+        {
+            var user = await UsersV2Helper.GetUserByEmail(organizationUuid, email);
+            if (user.IsPartOfCurrentOrganization)
+            {
+                var existingOrgUser = await UsersV2Helper.GetUser(organizationUuid, userUuid);
+                return existingOrgUser.Roles.Append(roleToAdd).ToHashSet();
+            }
+            else
+            {
+                return roleToAdd.WrapAsEnumerable();
+            }
         }
     }
 }

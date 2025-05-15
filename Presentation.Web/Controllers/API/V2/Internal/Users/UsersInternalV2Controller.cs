@@ -160,7 +160,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IHttpActionResult GetUserByUuid(Guid organizationUuid, Guid userUuid)
         {
             return _userService
-                .GetUserByUuid(userUuid) //todo: investigate why this needed fixing
+                .GetUserInOrganization(organizationUuid, userUuid) //todo: investigate why this needed fixing
                 .Bind(user => _userResponseModelMapper.ToUserResponseDTO(organizationUuid, user))
                 .Match(Ok, FromOperationError);
         }
