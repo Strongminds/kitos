@@ -81,8 +81,13 @@ namespace Presentation.Web
             var optionsTypes = builder.AddEnumType(typeof(OptionType));
             optionsTypes.Namespace = kitosNamespace;
 
+            var organizationRights = BindEntitySet<OrganizationRight, OrganizationRightsController>(builder);
+            organizationRights.HasRequiredBinding(o => o.Organization, entitySetOrganizations);
+
             var itContractAgreementElementTypes = builder.EntitySet<ItContractAgreementElementTypes>("ItContractAgreementElementTypes");
             itContractAgreementElementTypes.EntityType.HasKey(x => x.ItContract_Id).HasKey(x => x.AgreementElementType_Id);
+
+            BindEntitySet<ItContractRight, ItContractRightsController>(builder);
 
             var dataRow = builder.EntitySet<DataRow>("DataRows"); // no controller yet
             dataRow.EntityType.HasKey(x => x.Id);
@@ -112,6 +117,13 @@ namespace Presentation.Web
             removeUserAction.Parameter<int>("orgKey").Required();
             removeUserAction.Parameter<int>("userId").Required();
             removeUserAction.Namespace = orgNameSpace;
+
+            var orgUnits = builder.EntitySet<OrganizationUnit>(nameof(OrganizationUnitsController).Replace(ControllerSuffix, string.Empty));
+            orgUnits.HasRequiredBinding(o => o.Organization, entitySetOrganizations);
+            orgUnits.EntityType.HasKey(x => x.Id);
+            orgUnits.EntityType.HasMany(x => x.ResponsibleForItContracts).Name = "ItContracts";
+            //Add isActive to result form odata
+            builder.StructuralTypes.First(t => t.ClrType == typeof(ItContract)).AddProperty(typeof(ItContract).GetProperty(nameof(ItContract.IsActive)));
 
             var userNameSpace = "Users";
             var userEntitySetName = nameof(UsersController).Replace(ControllerSuffix, string.Empty);
@@ -148,6 +160,10 @@ namespace Presentation.Web
 
             BindItSystemUsage(builder, entitySetOrganizations, entitySetItSystems);
 
+            var contracts = BindEntitySet<ItContract, ItContractsController>(builder);
+            contracts.HasRequiredBinding(o => o.Organization, entitySetOrganizations);
+            contracts.HasRequiredBinding(o => o.Supplier, entitySetOrganizations);
+
             //contract read models
             BindEntitySet<ItContractOverviewReadModel, ItContractOverviewReadModelsController>(builder);
             builder.StructuralTypes.First(t => t.ClrType == typeof(ItContractOverviewReadModel)).RemoveProperty(typeof(ItContractOverviewReadModel).GetProperty(nameof(ItContractOverviewReadModel.SourceEntity)));
@@ -159,6 +175,8 @@ namespace Presentation.Web
             var itInterfaceExihibits = builder.EntitySet<ItInterfaceExhibit>("ItInterfaceExhibits"); // no controller yet
             itInterfaceExihibits.HasRequiredBinding(o => o.ItSystem, entitySetItSystems);
             itInterfaceExihibits.EntityType.HasKey(x => x.Id);
+
+            BindEntitySet<OrganizationUnitRight, OrganizationUnitRightsController>(builder);
 
             var removeOption = builder.Function("RemoveOption");
             removeOption.Parameter<int>("id");
@@ -178,6 +196,9 @@ namespace Presentation.Web
             getRegisterTypeByObjectId.ReturnsCollectionFromEntitySet<RegisterType>("RegisterTypes");
             builder.StructuralTypes.First(t => t.ClrType == typeof(RegisterType)).AddProperty(typeof(RegisterType).GetProperty(nameof(SensitivePersonalDataType.Checked)));
 
+            var config = BindEntitySet<Config, ConfigsController>(builder);
+            config.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
+
             var getAdvicesByOrg = builder.Function("GetAdvicesByOrganizationId");
             getAdvicesByOrg.Parameter<int>("organizationId").Required();
             getAdvicesByOrg.ReturnsCollectionFromEntitySet<Advice>("Advice");
@@ -186,9 +207,13 @@ namespace Presentation.Web
             deactivateAdvice.Parameter<int>("key").Required();
             deactivateAdvice.Returns<IHttpActionResult>();
 
+            BindEntitySet<ArchivePeriod, ArchivePeriodsController>(builder);
+
             var references = builder.EntitySet<ExternalReference>("ExternalReferences");
             references.EntityType.HasKey(x => x.Id);
             references.HasRequiredBinding(a => a.ItSystem, entitySetItSystems);
+
+            BindEntitySet<HelpText, HelpTextsController>(builder);
 
             BindDataProcessingRegistrationModule(builder);
 
@@ -197,6 +222,22 @@ namespace Presentation.Web
 
         private static void BindItSystemUsage(ODataConventionModelBuilder builder, string entitySetOrganizations, string entitySetItSystems)
         {
+            var usages = BindEntitySet<ItSystemUsage, ItSystemUsagesController>(builder);
+            usages.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
+            usages.HasRequiredBinding(u => u.ItSystem, entitySetItSystems);
+
+            var itSystemRights = BindEntitySet<ItSystemRight, ItSystemRightsController>(builder);
+            itSystemRights.HasRequiredBinding(u => u.Role, "ItSystemRoles");
+
+            var systemOrgUnitUsages =
+                builder.EntitySet<ItSystemUsageOrgUnitUsage>("ItSystemUsageOrgUnitUsages"); // no controller yet
+            systemOrgUnitUsages.EntityType.HasKey(x => x.ItSystemUsageId).HasKey(x => x.OrganizationUnitId);
+
+            var contractItSystemUsages =
+                builder.EntitySet<ItContractItSystemUsage>("ItContractItSystemUsages"); // no controller yet
+            contractItSystemUsages.EntityType.HasKey(x => x.ItContractId).HasKey(x => x.ItSystemUsageId);
+            builder.StructuralTypes.First(t => t.ClrType == typeof(ItSystemUsage))
+                .AddProperty(typeof(ItSystemUsage).GetProperty(nameof(ItSystemUsage.IsActiveAccordingToDateFields)));
 
             //read models
             BindEntitySet<ItSystemUsageOverviewReadModel, ItSystemUsageOverviewReadModelsController>(builder);
