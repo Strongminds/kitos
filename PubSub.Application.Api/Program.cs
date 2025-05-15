@@ -2,6 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Api;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Application.Api.Configuration;
+using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.DataProtection;
+
+
+[DllImport("System.Net.Security.Native", EntryPoint = "NetSecurityNative_EnsureGssInitialized")]
+static extern int EnsureGssInitialized();
+
+if (OperatingSystem.IsLinux())
+{
+    Console.WriteLine("Ensuring Gss is Initialized ({ApplicationContext})...");
+    var output = EnsureGssInitialized();
+    Console.WriteLine($"GSS init output: {output}");
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +40,8 @@ builder.WebHost.ConfigureKestrel((context, options) =>
         }
     });
 });
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"/opt/app-root/.aspnet/DataProtection-Keys"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
