@@ -87,8 +87,6 @@ namespace Presentation.Web
             var itContractAgreementElementTypes = builder.EntitySet<ItContractAgreementElementTypes>("ItContractAgreementElementTypes");
             itContractAgreementElementTypes.EntityType.HasKey(x => x.ItContract_Id).HasKey(x => x.AgreementElementType_Id);
 
-            BindEntitySet<ItContractRight, ItContractRightsController>(builder);
-
             var dataRow = builder.EntitySet<DataRow>("DataRows"); // no controller yet
             dataRow.EntityType.HasKey(x => x.Id);
 
@@ -176,8 +174,6 @@ namespace Presentation.Web
             itInterfaceExihibits.HasRequiredBinding(o => o.ItSystem, entitySetItSystems);
             itInterfaceExihibits.EntityType.HasKey(x => x.Id);
 
-            BindEntitySet<OrganizationUnitRight, OrganizationUnitRightsController>(builder);
-
             var removeOption = builder.Function("RemoveOption");
             removeOption.Parameter<int>("id");
             removeOption.Parameter<int>("objectId");
@@ -196,9 +192,6 @@ namespace Presentation.Web
             getRegisterTypeByObjectId.ReturnsCollectionFromEntitySet<RegisterType>("RegisterTypes");
             builder.StructuralTypes.First(t => t.ClrType == typeof(RegisterType)).AddProperty(typeof(RegisterType).GetProperty(nameof(SensitivePersonalDataType.Checked)));
 
-            var config = BindEntitySet<Config, ConfigsController>(builder);
-            config.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
-
             var getAdvicesByOrg = builder.Function("GetAdvicesByOrganizationId");
             getAdvicesByOrg.Parameter<int>("organizationId").Required();
             getAdvicesByOrg.ReturnsCollectionFromEntitySet<Advice>("Advice");
@@ -207,13 +200,9 @@ namespace Presentation.Web
             deactivateAdvice.Parameter<int>("key").Required();
             deactivateAdvice.Returns<IHttpActionResult>();
 
-            BindEntitySet<ArchivePeriod, ArchivePeriodsController>(builder);
-
             var references = builder.EntitySet<ExternalReference>("ExternalReferences");
             references.EntityType.HasKey(x => x.Id);
             references.HasRequiredBinding(a => a.ItSystem, entitySetItSystems);
-
-            BindEntitySet<HelpText, HelpTextsController>(builder);
 
             BindDataProcessingRegistrationModule(builder);
 
