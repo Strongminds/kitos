@@ -131,12 +131,18 @@ namespace Tests.Integration.Presentation.Web.Contract
             externalPaymentRequest.OrganizationUnitUuid = organizationUnit.Uuid;
             await ItContractV2Helper.SendPatchPayments(await GetGlobalToken(), itContract.Uuid, new ContractPaymentsDataWriteRequestDTO { External = externalPaymentRequest.WrapAsEnumerable() });
 
+            await ItContractV2Helper.SendPatchContractSupplierAsync(await GetGlobalToken(), itContract.Uuid,
+                new ContractSupplierDataWriteRequestDTO()
+                {
+                    OrganizationUuid = _supplier.Uuid,
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
             await ItContractV2Helper.SendPatchContractResponsibleAsync(await GetGlobalToken(), itContract.Uuid,
                 new ContractResponsibleDataWriteRequestDTO
                 {
                     OrganizationUnitUuid = organizationUnit.Uuid,
                     SignedBy = contractSigner
-                });
+                }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             await ItContractV2Helper.SendPatchPaymentModelAsync(await GetGlobalToken(), itContract.Uuid,
                 new ContractPaymentModelDataWriteRequestDTO
