@@ -89,42 +89,21 @@ namespace Presentation.Web
             var organizationRights = BindEntitySet<OrganizationRight, OrganizationRightsController>(builder);
             organizationRights.HasRequiredBinding(o => o.Organization, entitySetOrganizations);
 
-            BindEntitySet<AgreementElementType, AgreementElementTypesController>(builder);
-
             var itContractAgreementElementTypes = builder.EntitySet<ItContractAgreementElementTypes>("ItContractAgreementElementTypes");
             itContractAgreementElementTypes.EntityType.HasKey(x => x.ItContract_Id).HasKey(x => x.AgreementElementType_Id);
-
-            BindEntitySet<ItContractTemplateType, ItContractTemplateTypesController>(builder);
-
-            BindEntitySet<ItContractType, ItContractTypesController>(builder);
-
-            BindEntitySet<RelationFrequencyType, FrequencyTypesController>(builder);
 
             BindEntitySet<ItContractRight, ItContractRightsController>(builder);
 
             BindEntitySet<ItContractRole, ItContractRolesController>(builder);
 
-            BindEntitySet<DataType, DataTypesController>(builder);
-
             var dataRow = builder.EntitySet<DataRow>("DataRows"); // no controller yet
             dataRow.EntityType.HasKey(x => x.Id);
-
-            BindEntitySet<ArchiveLocation, ArchiveLocationsController>(builder);
-
-            BindEntitySet<ArchiveTestLocation, ArchiveTestLocationsController>(builder);
-
-            BindEntitySet<ArchiveType, ArchiveTypesController>(builder);
-
-            BindEntitySet<ItSystemCategories, ItSystemCategoriesController>(builder);
 
             var itSystems = BindEntitySet<ItSystem, ItSystemsController>(builder);
             itSystems.HasRequiredBinding(o => o.Organization, entitySetOrganizations);
             itSystems.HasRequiredBinding(o => o.BelongsTo, entitySetOrganizations);
             itSystems.HasManyBinding(i => i.Children, entitySetItSystems);
             itSystems.HasRequiredBinding(i => i.Parent, entitySetItSystems);
-
-            var businessTypes = BindEntitySet<BusinessType, BusinessTypesController>(builder);
-            businessTypes.HasManyBinding(b => b.References, entitySetItSystems);
 
             var taskRefs = builder.EntitySet<TaskRef>("TaskRefs"); // no controller yet
             taskRefs.HasManyBinding(t => t.ItSystems, entitySetItSystems);
@@ -197,8 +176,6 @@ namespace Presentation.Web
             builder.StructuralTypes.First(t => t.ClrType == typeof(ItContractOverviewReadModel)).RemoveProperty(typeof(ItContractOverviewReadModel).GetProperty(nameof(ItContractOverviewReadModel.SourceEntity)));
             builder.StructuralTypes.First(t => t.ClrType == typeof(ItContractOverviewReadModel)).RemoveProperty(typeof(ItContractOverviewReadModel).GetProperty(nameof(ItContractOverviewReadModel.Organization)));
 
-            BindEntitySet<InterfaceType, InterfaceTypesController>(builder);
-
             var itInterfaces = BindEntitySet<ItInterface, ItInterfacesController>(builder);
             itInterfaces.HasRequiredBinding(o => o.Organization, entitySetOrganizations);
 
@@ -206,32 +183,9 @@ namespace Presentation.Web
             itInterfaceExihibits.HasRequiredBinding(o => o.ItSystem, entitySetItSystems);
             itInterfaceExihibits.EntityType.HasKey(x => x.Id);
 
-            BindEntitySet<SensitiveDataType, SensitiveDataTypesController>(builder);
-
-            BindEntitySet<RegisterType, RegisterTypesController>(builder);
-
-            var sensitivePersonalDataTypes = BindEntitySet<SensitivePersonalDataType, SensitivePersonalDataTypesController>(builder);
-            sensitivePersonalDataTypes.HasManyBinding(b => b.References, entitySetItSystems);
-
-            BindEntitySet<OptionExtendType, OptionExtendTypesController>(builder);
-
             BindEntitySet<OrganizationUnitRight, OrganizationUnitRightsController>(builder);
 
             BindEntitySet<OrganizationUnitRole, OrganizationUnitRolesController>(builder);
-
-            BindEntitySet<PaymentFreqencyType, PaymentFrequencyTypesController>(builder);
-
-            BindEntitySet<PaymentModelType, PaymentModelTypesController>(builder);
-
-            BindEntitySet<PriceRegulationType, PriceRegulationTypesController>(builder);
-
-            BindEntitySet<ProcurementStrategyType, ProcurementStrategyTypesController>(builder);
-
-            BindEntitySet<PurchaseFormType, PurchaseFormTypesController>(builder);
-
-            BindEntitySet<CriticalityType, CriticalityTypesController>(builder);
-
-            //Local options
 
             var removeOption = builder.Function("RemoveOption");
             removeOption.Parameter<int>("id");
@@ -250,8 +204,6 @@ namespace Presentation.Web
             getRegisterTypeByObjectId.Parameter<int>("id");
             getRegisterTypeByObjectId.ReturnsCollectionFromEntitySet<RegisterType>("RegisterTypes");
             builder.StructuralTypes.First(t => t.ClrType == typeof(RegisterType)).AddProperty(typeof(RegisterType).GetProperty(nameof(SensitivePersonalDataType.Checked)));
-
-            BindEntitySet<TerminationDeadlineType, TerminationDeadlineTypesController>(builder);
 
             var config = BindEntitySet<Config, ConfigsController>(builder);
             config.HasRequiredBinding(u => u.Organization, entitySetOrganizations);
@@ -314,12 +266,6 @@ namespace Presentation.Web
 
             //Generic global options
             BindEntitySet<DataProcessingRegistrationRole, DataProcessingRegistrationRolesController>(builder);
-            var basisForTransferConfig = BindEntitySet<DataProcessingBasisForTransferOption, DataProcessingBasisForTransferOptionsController>(builder);
-            basisForTransferConfig.EntityType.Ignore(x => x.SubDataProcessors);
-            BindEntitySet<DataProcessingOversightOption, DataProcessingOversightOptionsController>(builder);
-            BindEntitySet<DataProcessingDataResponsibleOption, DataProcessingDataResponsibleOptionsController>(builder);
-            var countryConfig = BindEntitySet<DataProcessingCountryOption, DataProcessingCountryOptionsController>(builder);
-            countryConfig.EntityType.Ignore(x => x.SubDataProcessors);
 
             //Remove parent from dpa to prevent expand
             builder.StructuralTypes.First(t => t.ClrType == typeof(DataProcessingRegistrationReadModel)).RemoveProperty(typeof(DataProcessingRegistrationReadModel).GetProperty(nameof(DataProcessingRegistrationReadModel.SourceEntity)));
