@@ -1,6 +1,4 @@
-﻿version: '2.2'
-
-services:
+﻿services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
