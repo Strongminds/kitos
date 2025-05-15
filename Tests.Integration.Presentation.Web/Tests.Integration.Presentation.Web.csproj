@@ -203,7 +203,6 @@
     <Compile Include="GDPR\DataProcessingRegistrationReadModelsTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemsApiV2Test.cs" />
     <Compile Include="KLE\KLEDataBridgeTest.cs" />
-    <Compile Include="KLE\KleUpdateIntegrationTests.cs" />
     <Compile Include="KLE\TaskRefIntegrityInput.cs" />
     <Compile Include="Organizations\V2\OrganizationApiV2Test.cs" />
     <Compile Include="Organizations\V2\OrganizationUnitsApiV2Test.cs" />

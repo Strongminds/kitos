@@ -358,7 +358,6 @@
   <ItemGroup>
     <Compile Include="Controllers\API\V1\Auth\AuthorizeController.cs" />
     <Compile Include="Controllers\API\V1\ExtendedApiController.cs" />
-    <Compile Include="Controllers\API\V1\GenericHierarchyApiController.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\GlobalOptionTypeWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\IGlobalOptionTypeWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\ILocalOptionTypeWriteModelMapper.cs" />
@@ -1114,12 +1113,10 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\API\V1\Auth\TokenAuthenticationController.cs" />
     <Compile Include="Controllers\API\V1\BaseApiController.cs" />
-    <Compile Include="Controllers\API\V1\GenericRightsController.cs" />
     <Compile Include="Models\API\V1\DataRowDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemDTO.cs" />
     <Compile Include="Models\API\V1\CreateGlobalAdminDTO.cs" />
     <Compile Include="Models\API\V1\CreateLocalAdminDTO.cs" />
-    <Compile Include="Controllers\API\V1\UserController.cs" />
     <Compile Include="Controllers\API\V1\GenericApiController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
