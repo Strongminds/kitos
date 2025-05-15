@@ -32,6 +32,7 @@ services:
       - app_network
     extra_hosts:
        - ${IDP_HOST_MAPPING}
+       - ${DATABASE_DUMMY_DOMAIN}:${DATABASE_PRIVATE_IP}
 
 networks:
   app_network:
