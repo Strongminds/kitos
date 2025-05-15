@@ -20,6 +20,7 @@ services:
     volumes:
       - /etc/ssl/certs/kitos-pubsub.pfx:/etc/ssl/certs/kitos-pubsub.pfx:ro
       - /etc/ssl/certs/kitos-sql.pfx:/etc/ssl/certs/kitos-sql.pfx:ro
+      - /usr/local/share/ca-certificates/kitos-prod-sql-server-root.crt:/usr/local/share/ca-certificates/kitos-prod-sql-server-root.crt:ro
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       RABBIT_MQ_USER: ${RABBIT_MQ_USER}
