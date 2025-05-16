@@ -15,9 +15,7 @@ using Presentation.Web.Infrastructure;
 using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V1.ItSystemUsage;
 using Advice = Core.DomainModel.Advice.Advice;
-using ContactPerson = Core.DomainModel.ContactPerson;
 using DataRow = Core.DomainModel.ItSystem.DataRow;
-using ExternalReference = Core.DomainModel.ExternalReference;
 using Organization = Core.DomainModel.Organization.Organization;
 using Text = Core.DomainModel.Text;
 
@@ -43,140 +41,12 @@ namespace Presentation.Web
 
     public class DropdownProfile : Profile
     {
-        public DropdownProfile()
-        {
-            CreateMap<ContactPerson, ContactPersonDTO>()
-                .ReverseMap()
-                .ForMember(x => x.Organization, opt => opt.UseDestinationValue())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<ExternalReference, ExternalReferenceDTO>()
-                .ReverseMap()
-                .ForMember(x => x.Uuid, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<AgreementElementType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<ArchiveType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<ItContractTemplateType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<ItContractType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<InterfaceType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<DataType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<PurchaseFormType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<RelationFrequencyType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<BusinessType, OptionDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<SensitiveDataType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<ProcurementStrategyType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<OptionExtendType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<PriceRegulationType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<PaymentModelType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<PaymentFreqencyType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<TerminationDeadlineType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<CriticalityType, OptionDTO>()
-                .ReverseMap()
-                .ForMember(dest => dest.References, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<ItSystemRole, RoleDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<ItContractRole, RoleDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<OrganizationUnitRole, RoleDTO>()
-                  .ReverseMap()
-                  .ForMember(dest => dest.References, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<Config, ConfigDTO>()
-                .ReverseMap()
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<DataProtectionAdvisor, DataProtectionAdvisorDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<DataResponsible, DataResponsibleDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
-        }
     }
 
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<Text, TextDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
-
             CreateMap<User, UserDTO>()
                   .ForMember(dest => dest.DefaultOrganizationUnitId,
                       opt => opt.MapFrom(src => src.OrganizationRights.FirstOrDefault() != null ? src.OrganizationRights.First().DefaultOrgUnitId : null))
