@@ -723,7 +723,6 @@
     <Compile Include="Models\API\V2\SharedProperties\IHasRegistrationScope.cs" />
     <Compile Include="Models\API\V2\Types\Shared\RegistrationScopeChoice.cs" />
     <Compile Include="Models\API\V2\Types\SystemUsage\GDPRPersonalDataChoice.cs" />
-    <Compile Include="Models\API\V1\NamedEntityWithUserFullNameDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\ConnectionUpdateOrganizationUnitConsequenceDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\ConnectionUpdateConsequencesResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\ConnectToStsOrganizationRequestDTO.cs" />
@@ -811,7 +810,6 @@
     <Compile Include="Models\API\V1\EntityWithOrganizationRelationshipDTO.cs" />
     <Compile Include="Models\API\V1\Generic\Queries\V1BoundedPaginationQuery.cs" />
     <Compile Include="Models\API\V1\Generic\Queries\IV1StandardPaginationQueryParameters.cs" />
-    <Compile Include="Models\API\V1\KendoColumnConfigurationDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\StsOrganizationOrgUnitDTO.cs" />
     <Compile Include="Models\API\V2\Request\Contract\ContractAgreementPeriodDataWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Contract\ContractGeneralDataWriteRequestDTO.cs" />
@@ -919,7 +917,6 @@
     <Compile Include="Models\API\V2\Response\Interface\ItInterfaceResponseDTO.cs" />
     <Compile Include="Models\API\V2\Types\Shared\RecommendedArchiveDutyChoice.cs" />
     <Compile Include="Models\API\V2\Response\Options\RegularOptionExtendedResponseDTO.cs" />
-    <Compile Include="Models\API\V1\KendoOrganizationalConfigurationDTO.cs" />
     <Compile Include="Controllers\API\V2\External\ExternalBaseController.cs" />
     <Compile Include="Controllers\API\V2\External\Organizations\OrganizationV2Controller.cs" />
     <Compile Include="Helpers\StringHelpers.cs" />
@@ -951,8 +948,6 @@
     <Compile Include="Infrastructure\Middleware\DenyTooLargeQueriesMiddleware.cs" />
     <Compile Include="Models\API\V1\AssignedRoleDTO.cs" />
     <Compile Include="Models\API\V1\BusinessRoleDTO.cs" />
-    <Compile Include="Models\API\V1\CreateItSystemDTO.cs" />
-    <Compile Include="Models\API\V1\CreateItsystemUsageDTO.cs" />
     <Compile Include="Models\Application\Csv\CsvColumnDefinition.cs" />
     <Compile Include="Models\Application\Csv\CsvColumnIdentity.cs" />
     <Compile Include="Models\Application\Csv\CsvResponseBuilder.cs" />
@@ -969,7 +964,6 @@
     <Compile Include="Models\API\V1\HierachyNodeDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemUsageOptionsDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemUsage\ItSystemUsageSensitiveDataLevelDTO.cs" />
-    <Compile Include="Models\API\V1\KLEUpdateDTO.cs" />
     <Compile Include="Extensions\HttpMethodIntent.cs" />
     <Compile Include="Extensions\SystemDeleteReturnConflictMapper.cs" />
     <Compile Include="Infrastructure\Authorization\Controller\Crud\ChildEntityCrudAuthorization.cs" />
@@ -977,7 +971,6 @@
     <Compile Include="Infrastructure\Authorization\Controller\Crud\IControllerCrudAuthorization.cs" />
     <Compile Include="Infrastructure\Authorization\Controller\General\ContextBasedAuthorizationStrategy.cs" />
     <Compile Include="Infrastructure\Authorization\Controller\Crud\RootEntityCrudAuthorization.cs" />
-    <Compile Include="Models\API\V1\KLEStatusDTO.cs" />
     <Compile Include="Models\API\V1\NamedEntityWithEnabledStatusDTO.cs" />
     <Compile Include="Models\API\V1\NamedEntityDTO.cs" />
     <Compile Include="Infrastructure\Tracelistener\SerilogTraceListener.cs" />
@@ -1034,16 +1027,12 @@
     <Compile Include="Infrastructure\ExceptionLogFilterAttribute.cs" />
     <Compile Include="Infrastructure\LogInterceptor.cs" />
     <Compile Include="Infrastructure\Middleware\OwinNinjectMiddleware.cs" />
-    <Compile Include="Models\API\V1\ContactPersonDTO.cs" />
-    <Compile Include="Models\API\V1\DataResponsibleDTO.cs" />
-    <Compile Include="Models\API\V1\DataProtectionAdvisorDTO.cs" />
     <Compile Include="Models\API\V1\AdviceUserRelationDTO.cs" />
     <Compile Include="Models\API\V1\EntitiesAccessRightsDTO.cs" />
     <Compile Include="Models\API\V1\ExternalReferenceDTO.cs" />
     <Compile Include="Models\API\V1\EntityAccessRightsDTO.cs" />
     <Compile Include="Models\API\V1\GetTokenResponseDTO.cs" />
     <Compile Include="Models\API\V1\OrganizationSimpleDTO.cs" />
-    <Compile Include="Models\API\V1\UpdateDefaultOrgUnitDto.cs" />
     <Compile Include="Models\API\V1\ItInterfaceDTO.cs" />
     <Compile Include="Models\API\V1\ItInterfaceExhibitDTO.cs" />
     <Compile Include="Models\API\V1\ExcelImportErrorDTO.cs" />
@@ -1062,7 +1051,6 @@
     <Compile Include="Controllers\API\V1\BaseApiController.cs" />
     <Compile Include="Models\API\V1\DataRowDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemDTO.cs" />
-    <Compile Include="Models\API\V1\CreateGlobalAdminDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -1074,7 +1062,6 @@
     <Compile Include="Infrastructure\ProviderInitializationHttpModule.cs" />
     <Compile Include="Infrastructure\UserRepositoryFactory.cs" />
     <Compile Include="Models\API\V1\ApiReturnDTO.cs" />
-    <Compile Include="Models\API\V1\AuthorizeViewModels.cs" />
     <Compile Include="Models\API\V1\ConfigDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemUsageDTO.cs" />
     <Compile Include="Models\API\V1\LoginDTO.cs" />
@@ -1086,12 +1073,8 @@
     <Compile Include="Models\API\V1\OrganizationRightDTO.cs" />
     <Compile Include="Models\API\V1\RightOutputDTO.cs" />
     <Compile Include="Models\API\V1\RightInputDTO.cs" />
-    <Compile Include="Models\API\V1\RoleDTO.cs" />
-    <Compile Include="Models\API\V1\TaskRefSelectedDTO.cs" />
     <Compile Include="Models\API\V1\TaskRefDTO.cs" />
-    <Compile Include="Models\API\V1\TextDTO.cs" />
     <Compile Include="Models\API\V1\UserDTO.cs" />
-    <Compile Include="Models\API\V1\UserOrganizationsDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
