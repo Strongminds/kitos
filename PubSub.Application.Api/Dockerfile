@@ -21,4 +21,4 @@ COPY --from=build /app/out .
 
 EXPOSE 443
 
-ENTRYPOINT /bin/sh -c "update-ca-certificates && exec dotnet PubSub.Application.Api.dll"
+ENTRYPOINT ["dotnet", "PubSub.Application.Api.dll"]
