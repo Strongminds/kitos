@@ -265,6 +265,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         public async Task Can_Delete_Contract_With_Children()
         {
             //Arrange
+            var globalAdminToken = await GetGlobalToken();
             var organization = await CreateOrganizationAsync();
             var (_, token) = await CreateApiUserAsync(organization);
             var contract = await CreateItContractAsync(organization.Uuid);
@@ -277,10 +278,10 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             await ItContractV2Helper.DeleteWithChildrenAsync(contract.Uuid);
 
             //Assert
-            await ItContractV2Helper.SendGetItContractAsync(await GetGlobalToken(), contract.Uuid)
+            await ItContractV2Helper.SendGetItContractAsync(globalAdminToken, contract.Uuid)
                 .WithExpectedResponseCode(HttpStatusCode.NotFound).DisposeAsync();
 
-            await ItContractV2Helper.SendGetItContractAsync(await GetGlobalToken(), contract2.Uuid)
+            await ItContractV2Helper.SendGetItContractAsync(globalAdminToken, contract2.Uuid)
                 .WithExpectedResponseCode(HttpStatusCode.NotFound).DisposeAsync();
         }
 
@@ -288,6 +289,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         public async Task Can_Transfer_Multiple_Contracts()
         {
             //Arrange
+            var globalToken = await GetGlobalToken();
             var organizationUuid = DefaultOrgUuid;
             var contract = await CreateItContractAsync(organizationUuid);
             var contract2 = await CreateItContractAsync(organizationUuid);
@@ -303,8 +305,8 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             await ItContractV2Helper.TransferMultipleAsync(request);
 
             //Assert
-            var contract2Response = await ItContractV2Helper.GetItContractAsync(await GetGlobalToken(), contract2.Uuid);
-            var contract3Response = await ItContractV2Helper.GetItContractAsync(await GetGlobalToken(), contract3.Uuid);
+            var contract2Response = await ItContractV2Helper.GetItContractAsync(globalToken, contract2.Uuid);
+            var contract3Response = await ItContractV2Helper.GetItContractAsync(globalToken, contract3.Uuid);
 
             Assert.Equal(contract.Uuid, contract2Response.ParentContract.Uuid);
             Assert.Equal(contract.Uuid, contract3Response.ParentContract.Uuid);
@@ -314,6 +316,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         public async Task Can_Transfer_Multiple_Contracts_To_None()
         {
             //Arrange
+            var globalToken = await GetGlobalToken();
             var organizationUuid = DefaultOrgUuid;
             var contract2 = await CreateItContractAsync(organizationUuid);
             var contract3 = await CreateItContractAsync(organizationUuid);
@@ -327,8 +330,8 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             await ItContractV2Helper.TransferMultipleAsync(request);
 
             //Assert
-            var contract2Response = await ItContractV2Helper.GetItContractAsync(await GetGlobalToken(), contract2.Uuid);
-            var contract3Response = await ItContractV2Helper.GetItContractAsync(await GetGlobalToken(), contract3.Uuid);
+            var contract2Response = await ItContractV2Helper.GetItContractAsync(globalToken, contract2.Uuid);
+            var contract3Response = await ItContractV2Helper.GetItContractAsync(globalToken, contract3.Uuid);
 
             Assert.Null(contract2Response.ParentContract);
             Assert.Null(contract3Response.ParentContract);
