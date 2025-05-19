@@ -115,7 +115,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
                 obj.Add(KLEChangeColumnName, ChangeTypeToString(elem.ChangeType));
                 obj.Add(KLEChangeDetailsColumnName, elem.ChangeDetails);
                 list.Add(obj);
-            };
+            }
         }
 
         private static IHttpActionResult CreateCsvFormattedHttpResponse(IEnumerable<dynamic> list)
