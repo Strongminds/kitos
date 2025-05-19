@@ -59,17 +59,7 @@ namespace Presentation.Web
 
             CreateMap<Organization, OrganizationSimpleDTO>();
 
-            CreateMap<OrganizationUnit, OrgUnitDTO>()
-                  .ForMember(dest => dest.Children, opt => opt.MapFrom(unit => unit.Children.OrderBy(child => child.Name, KitosConstants.DanishStringComparer).ToList()))
-                  .ReverseMap()
-                  .ForMember(dest => dest.Children, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
             CreateMap<OrganizationUnit, OrgUnitSimpleDTO>();
-
-            CreateMap<TaskRef, TaskRefDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
 
             CreateMap<OrganizationRight, OrganizationRightDTO>()
                 .ForMember(dest => dest.OrganizationUuid, opt => opt.MapFrom(src => src.Organization.Uuid))

@@ -1023,7 +1023,6 @@
     <Compile Include="Infrastructure\LogInterceptor.cs" />
     <Compile Include="Infrastructure\Middleware\OwinNinjectMiddleware.cs" />
     <Compile Include="Models\API\V1\EntitiesAccessRightsDTO.cs" />
-    <Compile Include="Models\API\V1\ExternalReferenceDTO.cs" />
     <Compile Include="Models\API\V1\EntityAccessRightsDTO.cs" />
     <Compile Include="Models\API\V1\GetTokenResponseDTO.cs" />
     <Compile Include="Models\API\V1\OrganizationSimpleDTO.cs" />
