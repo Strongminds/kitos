@@ -5,14 +5,11 @@ using Core.ApplicationServices;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
-using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainModel.GDPR;
-using Core.DomainModel.ItSystemUsage.GDPR;
 using Presentation.Web.Extensions;
 using Presentation.Web.Infrastructure;
 using Presentation.Web.Models.API.V1;
-using Presentation.Web.Models.API.V1.ItSystemUsage;
 using Advice = Core.DomainModel.Advice.Advice;
 using DataRow = Core.DomainModel.ItSystem.DataRow;
 using Organization = Core.DomainModel.Organization.Organization;
@@ -79,37 +76,8 @@ namespace Presentation.Web
                 .ReverseMap()
                 .IgnoreDestinationEntityFields();
 
-            CreateMap<RightInputDTO, OrganizationUnitRight>();
-
-            CreateMap<RightInputDTO, ItSystemRight>();
-
-            CreateMap<RightInputDTO, ItContractRight>();
-
-            CreateMap<DataRow, DataRowDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<ItSystem, ItSystemDTO>()
-                .ForMember(dest => dest.TaskRefIds, opt => opt.MapFrom(src => src.TaskRefs.Select(x => x.Id)))
-                .ForMember(dest => dest.IsUsed, opt => opt.MapFrom(src => src.Usages.Any()))
-                .ReverseMap()
-                .ForMember(dest => dest.TaskRefs, opt => opt.Ignore())
-                .ForMember(dest => dest.ItInterfaceExhibits, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            //Output only - this mapping should not be reversed
-            CreateMap<ItContract, ItContractSystemDTO>()
-                .ForMember(dest => dest.AgreementElements, opt => opt.MapFrom(src => src.AssociatedAgreementElementTypes.Select(x => x.AgreementElementType)));
-
-            CreateMap<Advice, AdviceDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
-
             //Output only - this mapping should not be reversed
             CreateMap<ExcelImportError, ExcelImportErrorDTO>();
-
-            CreateMap<ItSystemUsageSensitiveDataLevel, ItSystemUsageSensitiveDataLevelDTO>()
-                .ForMember(dest => dest.DataSensitivityLevel, opt => opt.MapFrom(src => src.SensitivityDataLevel));
 
             //DPR
             CreateMap<DataProcessingRegistration, NamedEntityDTO>();
