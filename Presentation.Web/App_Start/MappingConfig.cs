@@ -69,10 +69,6 @@ namespace Presentation.Web
                   .IgnoreDestinationEntityFields();
 
             CreateMap<OrganizationUnit, OrgUnitSimpleDTO>();
-            CreateMap<OrganizationUnit, SimpleOrgUnitDTO>();
-
-            CreateMap<PasswordResetRequest, PasswordResetRequestDTO>()
-                  .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email));
 
             CreateMap<TaskRef, TaskRefDTO>()
                   .ReverseMap()
@@ -83,19 +79,11 @@ namespace Presentation.Web
                 .ReverseMap()
                 .IgnoreDestinationEntityFields();
 
-            CreateMap<OrganizationUnitRight, RightOutputDTO>();
             CreateMap<RightInputDTO, OrganizationUnitRight>();
 
-            CreateMap<ItSystemRight, RightOutputDTO>()
-                .ForMember(dto => dto.ObjectName, opt => opt.MapFrom(src => src.Object.ItSystem.Name));
             CreateMap<RightInputDTO, ItSystemRight>();
 
-            CreateMap<ItContractRight, RightOutputDTO>();
             CreateMap<RightInputDTO, ItContractRight>();
-
-            CreateMap<ItInterfaceExhibit, ItInterfaceExhibitDTO>()
-                .ReverseMap()
-                .IgnoreDestinationEntityFields();
 
             CreateMap<DataRow, DataRowDTO>()
                   .ReverseMap()
@@ -108,33 +96,6 @@ namespace Presentation.Web
                 .ForMember(dest => dest.TaskRefs, opt => opt.Ignore())
                 .ForMember(dest => dest.ItInterfaceExhibits, opt => opt.Ignore())
                 .IgnoreDestinationEntityFields();
-
-            //Simplere mapping than the one above, only one way
-            CreateMap<ItSystem, ItSystemSimpleDTO>();
-
-            CreateMap<ItInterface, ItInterfaceDTO>()
-                .ForMember(dest => dest.IsUsed, opt => opt.MapFrom(src => src.ExhibitedBy.ItSystem.Usages.Any()))
-                .ForMember(dest => dest.BelongsToId, opt => opt.MapFrom(src => src.ExhibitedBy.ItSystem.BelongsTo.Id))
-                .ForMember(dest => dest.BelongsToName,
-                    opt => opt.MapFrom(src => src.ExhibitedBy.ItSystem.BelongsTo.Name))
-                .ReverseMap()
-                .IgnoreDestinationEntityFields();
-
-            CreateMap<ItSystemUsage, ItSystemUsageDTO>()
-                .ForMember(dest => dest.ResponsibleOrgUnitName,
-                    opt => opt.MapFrom(src => src.ResponsibleUsage.OrganizationUnit.Name))
-                .ForMember(dest => dest.Contracts, opt => opt.MapFrom(src => src.Contracts.Select(x => x.ItContract)))
-                .ForMember(dest => dest.MainContractId, opt => opt.MapFrom(src => src.MainContract.ItContractId))
-                .ForMember(dest => dest.MainContractIsActive, opt => opt.MapFrom(src => src.MainContract.ItContract.IsActive))
-                .ForMember(dest => dest.InterfaceExhibitCount, opt => opt.MapFrom(src => src.ItSystem.ItInterfaceExhibits.Count))
-                .ForMember(dest => dest.PersonalData, opt => opt.MapFrom(src => src.PersonalDataOptions.Select(x => x.PersonalData)))
-                .ReverseMap()
-                .ForMember(dest => dest.TaskRefs, opt => opt.Ignore())
-                .ForMember(dest => dest.Contracts, opt => opt.Ignore())
-                .IgnoreDestinationEntityFields();
-
-            //Simplere mapping than the one above, only one way
-            CreateMap<ItSystemUsage, ItSystemUsageSimpleDTO>();
 
             //Output only - this mapping should not be reversed
             CreateMap<ItContract, ItContractSystemDTO>()

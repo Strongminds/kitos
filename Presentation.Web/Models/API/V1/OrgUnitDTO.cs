@@ -36,10 +36,4 @@ namespace Presentation.Web.Models.API.V1
 
         public string QualifiedName => $"{Name}, {OrganizationName}";
     }
-
-    public class SimpleOrgUnitDTO
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
 }
