@@ -7,7 +7,6 @@ using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
-using Core.DomainModel.Advice;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Presentation.Web.Extensions;
@@ -17,7 +16,6 @@ using Presentation.Web.Models.API.V1.ItSystemUsage;
 using Advice = Core.DomainModel.Advice.Advice;
 using DataRow = Core.DomainModel.ItSystem.DataRow;
 using Organization = Core.DomainModel.Organization.Organization;
-using Text = Core.DomainModel.Text;
 
 namespace Presentation.Web
 {
@@ -138,30 +136,11 @@ namespace Presentation.Web
             //Simplere mapping than the one above, only one way
             CreateMap<ItSystemUsage, ItSystemUsageSimpleDTO>();
 
-            //AssociatedAgreementElementTypes
-            CreateMap<ItContract, ItContractDTO>()
-                  .ForMember(dest => dest.AssociatedSystemUsages, opt => opt.MapFrom(src => src.AssociatedSystemUsages.Select(x => x.ItSystemUsage)))
-                  .ForMember(dest => dest.AgreementElements, opt => opt.MapFrom(src => src.AssociatedAgreementElementTypes.Select(x => x.AgreementElementType)))
-                  .ForMember(dest => dest.LastChangedByName, opt => opt.MapFrom(src => src.LastChangedByUser.GetFullName()))
-                  .ForMember(dest => dest.ObjectOwnerFullName, opt => opt.MapFrom(src => src.ObjectOwner.GetFullName()))
-                  .ReverseMap()
-                  .ForMember(contract => contract.AssociatedSystemUsages, opt => opt.Ignore())
-                  .ForMember(contract => contract.AssociatedAgreementElementTypes, opt => opt.Ignore())
-                  .IgnoreDestinationEntityFields();
-
             //Output only - this mapping should not be reversed
             CreateMap<ItContract, ItContractSystemDTO>()
                 .ForMember(dest => dest.AgreementElements, opt => opt.MapFrom(src => src.AssociatedAgreementElementTypes.Select(x => x.AgreementElementType)));
 
-            CreateMap<EconomyStream, EconomyStreamDTO>()
-                .ReverseMap()
-                .IgnoreDestinationEntityFields();
-
             CreateMap<Advice, AdviceDTO>()
-                  .ReverseMap()
-                  .IgnoreDestinationEntityFields();
-
-            CreateMap<AdviceUserRelation, AdviceUserRelationDTO>()
                   .ReverseMap()
                   .IgnoreDestinationEntityFields();
 

@@ -1025,7 +1025,6 @@
     <Compile Include="Infrastructure\ExceptionLogFilterAttribute.cs" />
     <Compile Include="Infrastructure\LogInterceptor.cs" />
     <Compile Include="Infrastructure\Middleware\OwinNinjectMiddleware.cs" />
-    <Compile Include="Models\API\V1\AdviceUserRelationDTO.cs" />
     <Compile Include="Models\API\V1\EntitiesAccessRightsDTO.cs" />
     <Compile Include="Models\API\V1\ExternalReferenceDTO.cs" />
     <Compile Include="Models\API\V1\EntityAccessRightsDTO.cs" />
@@ -1037,11 +1036,9 @@
     <Compile Include="Models\API\V1\PagingModel.cs" />
     <Compile Include="Models\API\V1\ItContractSystemDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemSimpleDTO.cs" />
-    <Compile Include="Models\API\V1\EconomyStreamDTO.cs" />
     <Compile Include="Models\API\V1\AdviceDTO.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\MappingConfig.cs" />
-    <Compile Include="Models\API\V1\ItContractDTO.cs" />
     <Compile Include="Models\API\V1\ItSystemUsageSimpleDTO.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
