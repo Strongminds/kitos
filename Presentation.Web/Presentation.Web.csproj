@@ -808,8 +808,6 @@
     <Compile Include="Infrastructure\Model\Request\ICurrentHttpRequest.cs" />
     <Compile Include="Infrastructure\Model\Request\ICurrentRequestStream.cs" />
     <Compile Include="Models\API\V1\EntityWithOrganizationRelationshipDTO.cs" />
-    <Compile Include="Models\API\V1\Generic\Queries\V1BoundedPaginationQuery.cs" />
-    <Compile Include="Models\API\V1\Generic\Queries\IV1StandardPaginationQueryParameters.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Organizations\StsOrganizationOrgUnitDTO.cs" />
     <Compile Include="Models\API\V2\Request\Contract\ContractAgreementPeriodDataWriteRequestDTO.cs" />
     <Compile Include="Models\API\V2\Request\Contract\ContractGeneralDataWriteRequestDTO.cs" />
@@ -1119,6 +1117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\API\V1\Generic\" />
     <Folder Include="Models\API\V1\ItSystemUsage\GDPR\" />
     <Folder Include="Models\API\V2\Request\Organization\" />
     <Folder Include="Properties\PublishProfiles\" />
