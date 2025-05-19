@@ -145,9 +145,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
             {
                 case KLEChangeType.Removed: return "Fjernet";
                 case KLEChangeType.Added: return "Tilføjet";
-                case KLEChangeType.Renamed:
-                    return "Ændret";
-                    break;
+                case KLEChangeType.Renamed: return "Ændret";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(changeType), changeType, null);
             }
