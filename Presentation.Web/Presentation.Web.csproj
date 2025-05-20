@@ -503,6 +503,7 @@
     <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\UsersInternalV2Controller.cs" />
     <Compile Include="Controllers\Web\HomeController.cs" />
+    <Compile Include="Infrastructure\Attributes\RateLimitAttribute.cs" />
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\Mapping\NotificationTypeMappingExtensions.cs" />
