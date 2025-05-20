@@ -148,13 +148,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var sensitiveDataLevel = A<DataSensitivityLevelChoice>();
 
             // System changes
-            KeyValuePair<string, object>[] systemChanges = [
+            var systemChanges = new KeyValuePair<string, object>[]{
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.Uuid.WrapAsEnumerable())
-            ];
+            };
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
 
             // Parent system 
