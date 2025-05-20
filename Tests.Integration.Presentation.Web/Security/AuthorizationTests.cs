@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
@@ -88,6 +89,28 @@ namespace Tests.Integration.Presentation.Web.Security
                 Assert.Equal(HttpStatusCode.Unauthorized, httpResponseMessage.StatusCode);
             }
         }
+
+        [Fact]
+        public async Task TooManyLoginAttempts_ShouldEventuallyReturn429()
+        {
+            const int maxAttempts = 20;
+
+            for (int i = 1; i <= maxAttempts; i++)
+            {
+                var loginDto = ObjectCreateHelper.MakeSimpleLoginDto(A<string>(), A<string>());
+                using var response = await HttpApi.PostAsync(TestEnvironment.CreateUrl("api/authorize"), loginDto);
+                var statusCode = (int) response.StatusCode;
+
+                if (statusCode == 429)
+                {
+                    return; //Test succeeded, so we return
+                }
+            }
+
+            //If we get to this point, we never encountered the 429 status code.
+            Assert.True(false, $"Expected a 429 after at most {maxAttempts} attempts, but all returned < 429.");
+        }
+
 
     }
 }
