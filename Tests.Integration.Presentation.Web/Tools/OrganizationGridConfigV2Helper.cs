@@ -5,14 +5,13 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Core.DomainModel;
-using Presentation.Web.Models.API.V1;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Tools
 {
-    internal class OrganizationGridTestHelper
+    public static class OrganizationGridConfigV2Helper
     {
 
         private static string GetPathForGridConfigOperations(Guid orgUuid, string operation, OverviewType overviewType = OverviewType.ItSystemUsage)
