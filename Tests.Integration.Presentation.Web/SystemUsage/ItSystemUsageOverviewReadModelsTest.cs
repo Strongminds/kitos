@@ -148,7 +148,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var sensitiveDataLevel = A<DataSensitivityLevelChoice>();
 
             // System changes
-            var systemChanges = new KeyValuePair<string, object>[]{
+            var systemChanges = new KeyValuePair<string, object>[] {
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
                 new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
