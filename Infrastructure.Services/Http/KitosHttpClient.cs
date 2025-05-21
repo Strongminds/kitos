@@ -39,6 +39,7 @@ public class KitosHttpClient : IKitosHttpClient
             var debug = await _httpClient.SendAsync(request);
             var toLog = await debug.Content.ReadAsStringAsync();
             _logger.Fatal("Response from httpClient in KitosHttpClient: " + toLog + " with statuscode: " + debug.StatusCode);
+            return debug;
         }
         catch (Exception e)
         {

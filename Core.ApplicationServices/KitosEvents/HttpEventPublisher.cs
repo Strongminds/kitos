@@ -35,6 +35,7 @@ public class HttpEventPublisher : IHttpEventPublisher
         }
         _logger.Fatal("in HttpEventPublisher:PostEventAsync, token was not failed. token: " + token.Value);
         var url = new Uri(new Uri(_pubSubBaseUrl), PublishEndpoint);
+        _logger.Fatal("in HttpEventPublisher:PostEventAsync with url: " + url);
         return await _httpClient.PostAsync(eventDTO, url, token.Value.Value);
     }
 }
