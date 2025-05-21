@@ -6,6 +6,7 @@ using PubSub.Application.Services.RabbitMQUtils;
 using PubSub.Core.DomainModel.Consumer;
 using PubSub.Core.DomainModel.Notifier;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace PubSub.Infrastructure.MessageQueue.Consumer
 {
@@ -49,24 +50,29 @@ namespace PubSub.Infrastructure.MessageQueue.Consumer
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (_, eventArgs) =>
             {
-                try
-                {
-                    var body = eventArgs.Body.ToArray();
-                    var payload = _payloadSerializer.Deserialize(body);
-                    using var scope = serviceScopeFactory.CreateScope();
-                    var repository = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
-                    var subscriptions = await repository.GetByTopic(_topic);
-                    foreach (var callbackUrl in subscriptions.Select(x => x.Callback))
-                    {
-                        await _subscriberNotifierService.Notify(payload, callbackUrl);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception in consumer: {ex.Message}\n{ex.StackTrace}");
-                }
+                await OnMessageAsync(eventArgs);
             };
             return consumer;
+        }
+
+        internal async Task OnMessageAsync(BasicDeliverEventArgs args)
+        {
+            try
+            {
+                var body = args.Body.ToArray();
+                var payload = _payloadSerializer.Deserialize(body);
+                using var scope = serviceScopeFactory.CreateScope();
+                var repository = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
+                var subscriptions = await repository.GetByTopic(_topic);
+                foreach (var callbackUrl in subscriptions.Select(x => x.Callback))
+                {
+                    await _subscriberNotifierService.Notify(payload, callbackUrl);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in consumer: {ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         public void Dispose()

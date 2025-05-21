@@ -24,7 +24,7 @@ namespace Tests.PubSubTester.Controllers
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request.Subscription), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("api/subscribe", content);
+            var response = await client.PostAsync("api/subscription", content);
 
             return Ok(response);
         }
@@ -81,7 +81,7 @@ namespace Tests.PubSubTester.Controllers
             var token = await GetKitosToken();
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            var route = $"api/subscribe/{uuid}";
+            var route = $"api/subscription/{uuid}";
             var response = await client.DeleteAsync(route);
             return Ok(response);
         }
@@ -93,7 +93,7 @@ namespace Tests.PubSubTester.Controllers
             var token = await GetKitosToken();
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            const string route = "api/subscribe";
+            const string route = "api/subscription";
             var response = await client.GetAsync(route);
             var stringResponse = response.Content.ReadFromJsonAsync<IEnumerable<dynamic>>();
             return Ok(stringResponse);
