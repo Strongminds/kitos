@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Tests.Integration.Presentation.Web.Tools;
@@ -89,16 +90,18 @@ namespace Tests.Integration.Presentation.Web.Security
             }
         }
 
-        [Fact]
-        public async Task TooManyLoginAttempts_ShouldEventuallyReturn429()
+        [Theory]
+        [InlineData("api/authorize")]
+        [InlineData("api/authorize/GetToken")]
+        public async Task Too_Many_Login_Or_Get_Token_Attempts_Should_Eventually_Return_429(string route)
         {
             const int maxAttempts = 20;
 
             for (int i = 1; i <= maxAttempts; i++)
             {
                 var loginDto = ObjectCreateHelper.MakeSimpleLoginDto(A<string>(), A<string>());
-                using var response = await HttpApi.PostAsync(TestEnvironment.CreateUrl("api/authorize"), loginDto);
-                var statusCode = (int) response.StatusCode;
+                using var response = await HttpApi.PostAsync(TestEnvironment.CreateUrl(route), loginDto);
+                var statusCode = (int)response.StatusCode;
 
                 if (statusCode == 429)
                 {
