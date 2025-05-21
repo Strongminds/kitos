@@ -126,6 +126,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         // POST api/Authorize
         [AllowAnonymous]
+        [RateLimit]
         public HttpResponseMessage PostLogin(LoginDTO loginDto)
         {
             if (!ModelState.IsValid)
