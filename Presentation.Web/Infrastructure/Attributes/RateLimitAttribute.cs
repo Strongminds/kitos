@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -15,6 +16,7 @@ public class RateLimitAttribute : ActionFilterAttribute
     private static readonly ConcurrentDictionary<string, (DateTime windowStart, int count)> _requests
         = new ConcurrentDictionary<string, (DateTime, int)>();
 
+    private readonly Timer _cleanupTimer;
     private readonly int _maxRequests;
     private readonly TimeSpan _window;
 
@@ -22,6 +24,19 @@ public class RateLimitAttribute : ActionFilterAttribute
     {
         _maxRequests = maxRequests;
         _window = TimeSpan.FromSeconds(windowSeconds);
+        _cleanupTimer = new Timer(_ => Cleanup(), null, windowSeconds, windowSeconds);
+    }
+
+    private static void Cleanup()
+    {
+        var now = DateTime.UtcNow;
+        foreach (var kvp in _requests)
+        {
+            if (now - kvp.Value.windowStart > TimeSpan.FromMinutes(1))
+            {
+                _requests.TryRemove(kvp.Key, out _);
+            }
+        }
     }
 
     public override void OnActionExecuting(HttpActionContext actionContext)
