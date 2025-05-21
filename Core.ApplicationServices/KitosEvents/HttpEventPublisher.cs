@@ -27,11 +27,13 @@ public class HttpEventPublisher : IHttpEventPublisher
     public async Task<Result<HttpResponseMessage, OperationError>> PostEventAsync(KitosEventDTO eventDTO)
     {
         var token = _tokenIssuer.GetToken();
+        _logger.Fatal("in start of HttpEventPublisher:PostEventAsync");
         if (token.Failed)
         {
             _logger.Fatal("Error in HttpEventPublisher: " + token.Error);
             return token.Error;
         }
+        _logger.Fatal("in HttpEventPublisher:PostEventAsync, token was not failed. token: " + token.Value);
         var url = new Uri(new Uri(_pubSubBaseUrl), PublishEndpoint);
         return await _httpClient.PostAsync(eventDTO, url, token.Value.Value);
     }

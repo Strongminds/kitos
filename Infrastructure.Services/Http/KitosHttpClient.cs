@@ -20,8 +20,13 @@ public class KitosHttpClient : IKitosHttpClient
 
     public async Task<HttpResponseMessage> PostAsync(object content, Uri uri, string token)
     {
+        _logger.Fatal("in start of KitosHttpClient:PostAsync, with uri " + uri + " and token " + token);
         var serializedObject = JsonConvert.SerializeObject(content);
+        _logger.Fatal("KitosHttpClient:PostAsync, with serializedObject: " + serializedObject);
+
         var payload = new StringContent(serializedObject, Encoding.UTF8, "application/json");
+        var payloadDebug = await payload.ReadAsStringAsync();
+        _logger.Fatal("KitosHttpClient:PostAsync, with payload: " + payloadDebug);
 
         var request = new HttpRequestMessage(HttpMethod.Post, uri)
         {
