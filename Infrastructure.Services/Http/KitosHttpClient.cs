@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Serilog;
@@ -37,7 +36,6 @@ public class KitosHttpClient : IKitosHttpClient
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         try
         {
-            Thread.Sleep(TimeSpan.FromSeconds(2));
             var debug = await _httpClient.SendAsync(request);
             var toLog = await debug.Content.ReadAsStringAsync();
             _logger.Fatal("Response from httpClient in KitosHttpClient: " + toLog + " with statuscode: " + debug.StatusCode);
