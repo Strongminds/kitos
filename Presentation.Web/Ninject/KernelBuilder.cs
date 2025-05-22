@@ -142,6 +142,7 @@ using Core.ApplicationServices.LocalOptions;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
+using Presentation.Web.Infrastructure.Attributes.RateLimiters;
 
 namespace Presentation.Web.Ninject
 {
@@ -418,6 +419,10 @@ namespace Presentation.Web.Ninject
 
             //DBS
             kernel.Bind<ILegalPropertyWriteModelMapper>().To<LegalPropertyWriteModelMapper>().InCommandScope(Mode);
+
+            kernel.Bind<IRateLimiter>().To<FixedWindowLimiter>().InSingletonScope();
+
+            kernel.Bind<IRateLimiter>().ToSelf().InRequestScope();
 
         }
 
