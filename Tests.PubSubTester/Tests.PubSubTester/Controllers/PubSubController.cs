@@ -75,6 +75,24 @@ namespace Tests.PubSubTester.Controllers
         }
 
         [HttpPost]
+        [Route("subscribeToNonExistantUrl")]
+        public async Task<IActionResult> SubscribeToNonExistantUrl()
+        {
+            var token = await GetKitosToken();
+            var request = new SubscribeRequestWithTokenDTO
+            {
+                Token = token,
+                Subscription = new SubscriptionDTO
+                {
+                    Callback = new Uri(new Uri(PubSubTesterBaseUrl), "api/PubSub/NoUrlHere"),
+                    Topics = new List<string> { "KitosITSystemChangedEvent" }
+
+                }
+            };
+            return await Subscribe(request);
+        }
+
+        [HttpPost]
         [Route("deleteSystemChangeSubscription")]
         public async Task<IActionResult> DeleteSubscription(Guid uuid)
         {
