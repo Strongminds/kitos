@@ -29,12 +29,12 @@ public class KitosEventPublisherService : IKitosEventPublisherService
 
     private void PostEventDTO(KitosEventDTO dto)
     {
-        var postMethod = Task.Run(() =>
+        var postMethod = Task.Run(async () =>
         {
             try
             {
                 _logger.Fatal("in try block of KitosEventPublisherService:PostEventDTO");
-                _httpEventPublisher.PostEventAsync(dto);
+                await _httpEventPublisher.PostEventAsync(dto);
             }
             catch (Exception ex)
             {
