@@ -71,7 +71,11 @@ public static class ServiceCollectionExtensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Custom signature validator; consider refactoring if needed
-                    SignatureValidator = (token, _) => TokenValidator.ValidateTokenAsync(token, configuration, services).GetAwaiter().GetResult(),
+                    SignatureValidator = (token, _) =>
+                    {
+                        return TokenValidator.ValidateTokenAsync(token, configuration, services).GetAwaiter()
+                            .GetResult();
+                    },
                     ValidateIssuerSigningKey = false,
                     ValidateIssuer = false,
                     ValidateAudience = false,

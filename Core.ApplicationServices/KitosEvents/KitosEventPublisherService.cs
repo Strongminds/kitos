@@ -19,24 +19,30 @@ public class KitosEventPublisherService : IKitosEventPublisherService
     }
     public void PublishEvent(KitosEvent kitosEvent)
     {
+        _logger.Fatal("in KitosEventPublisherService:vPublishEvent, with event " + kitosEvent);
         var dto = _kitosEventMapper.MapKitosEventToDTO(kitosEvent);
         PostEventDTO(dto);
+        _logger.Fatal("in KitosEventPublisherService:vPublishEvent, after sending post call");
+
     }
+
 
     private void PostEventDTO(KitosEventDTO dto)
     {
-        var postMethod = Task.Run(() =>
+        var postMethod = Task.Run(async () =>
         {
             try
             {
-                _httpEventPublisher.PostEventAsync(dto);
+                _logger.Fatal("in try block of KitosEventPublisherService:PostEventDTO");
+                await _httpEventPublisher.PostEventAsync(dto);
             }
             catch (Exception ex)
             {
-                _logger.Fatal($"Failed to post events. Exception: {ex}");
-                throw;
+                _logger.Fatal($"Failed to post event in KitosEventPublisherService:PostEventDTO. Exception: {ex}");
+                throw ex;
             }
         });
         postMethod.Wait();
+        _logger.Fatal("after postMethod.Wait() in  KitosEventPublisherService:PostEventDTO, end of method");
     }
 }

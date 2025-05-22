@@ -9,12 +9,14 @@ using Core.ApplicationServices.KitosEvents;
 using Infrastructure.Services.Http;
 using Core.ApplicationServices.Model.Authentication;
 using Core.DomainModel;
+using Serilog;
 
 namespace Tests.Unit.Core.ApplicationServices.KitosEvents
 {
     public class HttpEventPublisherTest : WithAutoFixture
     {
         private readonly Mock<IKitosHttpClient> _httpClientMock;
+        private readonly Mock<ILogger> _logger;
         private readonly Mock<IKitosInternalTokenIssuer> _tokenIssuerMock;
         private readonly HttpEventPublisher _sut;
         private readonly string _pubSubBaseUrl = "http://localhost/";
@@ -23,7 +25,8 @@ namespace Tests.Unit.Core.ApplicationServices.KitosEvents
         {
             _httpClientMock = new Mock<IKitosHttpClient>();
             _tokenIssuerMock = new Mock<IKitosInternalTokenIssuer>();
-            _sut = new HttpEventPublisher(_httpClientMock.Object, _tokenIssuerMock.Object, _pubSubBaseUrl);
+            _logger = new Mock<ILogger>();
+            _sut = new HttpEventPublisher(_httpClientMock.Object, _tokenIssuerMock.Object, _pubSubBaseUrl, _logger.Object);
         }
 
         [Fact]

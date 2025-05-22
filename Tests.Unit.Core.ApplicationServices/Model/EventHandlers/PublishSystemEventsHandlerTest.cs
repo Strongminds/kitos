@@ -13,6 +13,7 @@ using Core.DomainModel.ItSystem.DomainEvents;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Moq;
+using Serilog;
 using Tests.Toolkit.Patterns;
 using Xunit;
 namespace Tests.Unit.Core.Model.EventHandlers;
@@ -20,11 +21,13 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
 {
     private readonly PublishSystemChangesEventHandler _sut;
     private readonly Mock<IKitosEventPublisherService> _eventPublisher;
+    private readonly Mock<ILogger> _logger;
     private const string ExpectedQueueTopic = "KitosITSystemChangedEvent";
     public PublishSystemEventsHandlerTest()
     {
         _eventPublisher = new Mock<IKitosEventPublisherService>();
-        _sut = new PublishSystemChangesEventHandler(_eventPublisher.Object);
+        _logger = new Mock<ILogger>();
+        _sut = new PublishSystemChangesEventHandler(_eventPublisher.Object, _logger.Object);
     }
     [Fact]
     public void Can_Publish_System_Name_Change()

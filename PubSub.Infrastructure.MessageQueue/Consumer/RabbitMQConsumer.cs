@@ -20,9 +20,9 @@ namespace PubSub.Infrastructure.MessageQueue.Consumer
         private IChannel _channel;
         private IAsyncBasicConsumer _consumerCallback;
 
-        public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager, 
-            ISubscriberNotifier subscriberNotifierService, 
-            IJsonPayloadSerializer payloadSerializer, 
+        public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager,
+            ISubscriberNotifier subscriberNotifierService,
+            IJsonPayloadSerializer payloadSerializer,
             string topic,
             IServiceScopeFactory serviceScopeFactory)
         {
@@ -58,7 +58,14 @@ namespace PubSub.Infrastructure.MessageQueue.Consumer
                     var subscriptions = await repository.GetByTopic(_topic);
                     foreach (var callbackUrl in subscriptions.Select(x => x.Callback))
                     {
-                        await _subscriberNotifierService.Notify(payload, callbackUrl);
+                        try
+                        {
+                            await _subscriberNotifierService.Notify(payload, callbackUrl);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error sending paylod to url: {callbackUrl}", ex);
+                        }
                     }
                 }
                 catch (Exception ex)

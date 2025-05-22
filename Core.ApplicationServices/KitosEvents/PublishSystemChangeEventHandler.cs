@@ -9,15 +9,18 @@ using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
+using Serilog;
 
 namespace Core.ApplicationServices.KitosEvents;
 public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>>, IDomainEventHandler<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>
 {
     private readonly IKitosEventPublisherService _eventPublisher;
+    private readonly ILogger _logger;
     private const string QueueTopic = KitosQueueTopics.SystemChangedEventTopic;
-    public PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher)
+    public PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher, ILogger logger)
     {
         _eventPublisher = eventPublisher;
+        _logger = logger;
     }
     public void Handle(EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot> domainEvent)
     {
@@ -32,12 +35,17 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
     public void Handle(EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot> domainEvent)
     {
         var changeEvents = CalculateChangeEventsFromDprModel(domainEvent);
+        _logger.Fatal("in PublishSystemChangesEventHandler:Handle for dprsnapshot");
         if (changeEvents.IsNone)
         {
+            _logger.Fatal("in PublishSystemChangesEventHandler:Handle for dprsnapshot changeevents were None");
+
             return;
         }
         foreach (var changeEvent in changeEvents.Value)
         {
+            _logger.Fatal("in PublishSystemChangesEventHandler:Handle for dprsnapshot, looping through changevents and this one is " + changeEvent );
+
             var newEvent = new KitosEvent(changeEvent, QueueTopic);
             _eventPublisher.PublishEvent(newEvent);
         }
