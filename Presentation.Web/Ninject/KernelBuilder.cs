@@ -420,10 +420,6 @@ namespace Presentation.Web.Ninject
             //DBS
             kernel.Bind<ILegalPropertyWriteModelMapper>().To<LegalPropertyWriteModelMapper>().InCommandScope(Mode);
 
-            kernel.Bind<IRateLimiter>().To<FixedWindowLimiter>().InSingletonScope();
-
-            kernel.Bind<IRateLimiter>().ToSelf().InRequestScope();
-
         }
 
         private void RegisterSSO(IKernel kernel)

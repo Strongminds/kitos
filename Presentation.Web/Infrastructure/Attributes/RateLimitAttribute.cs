@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Ninject;
 using Presentation.Web.Infrastructure.Attributes.RateLimiters;
 
 namespace Presentation.Web.Infrastructure.Attributes;
@@ -12,8 +11,7 @@ namespace Presentation.Web.Infrastructure.Attributes;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class RateLimitAttribute : ActionFilterAttribute
 {
-    [Inject]
-    public IRateLimiter Limiter { get; set; }
+    public IRateLimiter Limiter { get; set; } = new FixedWindowLimiter(10, TimeSpan.FromSeconds(60));
 
     public override void OnActionExecuting(HttpActionContext actionContext)
     {
