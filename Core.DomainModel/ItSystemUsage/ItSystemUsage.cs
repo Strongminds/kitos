@@ -283,8 +283,8 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrl { get; set; }
 
         public void UpdateUserSupervisionFields(Maybe<DataOptions> userSupervision,
-            Maybe<DateTime> userSupervisionDate, string userSupervisionDocumentationUrl,
-            string userSupervisionDocumentationUrlName)
+            Maybe<DateTime> userSupervisionDate, Maybe<string> userSupervisionDocumentationUrl,
+            Maybe<string> userSupervisionDocumentationUrlName)
         {
             if (userSupervision.HasValue)
             {
@@ -304,8 +304,17 @@ namespace Core.DomainModel.ItSystemUsage
                 this.UserSupervisionDate = userSupervisionDate.Value;
             }
 
-            this.UserSupervisionDocumentationUrl = userSupervisionDocumentationUrl;
-            this.UserSupervisionDocumentationUrlName = userSupervisionDocumentationUrlName; 
+            if (userSupervisionDocumentationUrl.HasValue)
+            {
+                this.UserSupervisionDocumentationUrl = userSupervisionDocumentationUrl.Value;
+
+            }
+
+            if (userSupervisionDocumentationUrlName.HasValue)
+            {
+                this.UserSupervisionDocumentationUrlName = userSupervisionDocumentationUrlName.Value;
+
+            }
         }
 
         public DataOptions? riskAssessment { get; set; }
