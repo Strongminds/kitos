@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -15,11 +14,6 @@ public class RateLimitAttribute : ActionFilterAttribute
 {
     [Inject]
     public IRateLimiter Limiter { get; set; }
-
-
-    private readonly Timer _cleanupTimer;
-    private readonly int _maxRequests;
-    private readonly TimeSpan _window;
 
     public override void OnActionExecuting(HttpActionContext actionContext)
     {
