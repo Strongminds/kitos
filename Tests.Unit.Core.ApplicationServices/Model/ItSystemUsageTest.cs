@@ -33,46 +33,41 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateUserSupervisionFields_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervisionValue)
+        public void UpdateUserSupervisionFields_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervision)
         {
             _sut.UserSupervisionDate = A<DateTime>();
             _sut.UserSupervisionDocumentationUrl = A<string>();
             _sut.UserSupervisionDocumentationUrlName = A<string>();
 
            
-            var userSupervision = OptionalValueChange<DataOptions?>.With(userSupervisionValue);
             var userSupervisionDate = A<OptionalValueChange<DateTime?>>();
             var userSupervisionDocumentation = A<OptionalValueChange<Maybe<NamedLink>>>();
 
-            _sut.UpdateUserSupervisionFields(userSupervision.NewValue,
-                userSupervisionDate.NewValue,
-                userSupervisionDocumentation.NewValue.Value.Url, userSupervisionDocumentation.NewValue.Value.Name);
+            _sut.UpdateUserSupervision(userSupervision);
 
-            Assert.Equal(userSupervision.NewValue.Value, _sut.UserSupervision);
+            Assert.Equal(userSupervision, _sut.UserSupervision);
             Assert.Null(_sut.UserSupervisionDate);
             Assert.Null(_sut.UserSupervisionDocumentationUrl);
             Assert.Null(_sut.UserSupervisionDocumentationUrlName);
         }
 
         [Fact]
-        public void UpdateUserSupervisionFields_Sets_Related_Fields_If_Yes()
+        public void UpdateUserSupervisionFields_Does_Not_Clear_Related_Fields_If_Yes()
         {
-            var userSupervision = OptionalValueChange<DataOptions?>.With(DataOptions.YES);
-            var userSupervisionDate = A<OptionalValueChange<DateTime?>>();
-            var userSupervisionDocumentation = A<OptionalValueChange<Maybe<NamedLink>>>();
+            var userSupervision = DataOptions.YES;
+            var userSupervisionDate = A<DateTime?>();
+            var userSupervisionDocumentation = A<NamedLink>();
+            _sut.UserSupervisionDate = userSupervisionDate;
+            _sut.UserSupervisionDocumentationUrl = userSupervisionDocumentation.Url;
+            _sut.UserSupervisionDocumentationUrlName = userSupervisionDocumentation.Name;
 
-            _sut.UpdateUserSupervisionFields(userSupervision.NewValue,
-                userSupervisionDate.NewValue,
-                userSupervisionDocumentation.NewValue.Value.Url, userSupervisionDocumentation.NewValue.Value.Name);
 
-            _sut.UpdateUserSupervisionFields(userSupervision.NewValue,
-                userSupervisionDate.NewValue,
-                userSupervisionDocumentation.NewValue.Value.Url, userSupervisionDocumentation.NewValue.Value.Name);
+            _sut.UpdateUserSupervision(userSupervision);
 
-            Assert.Equal(userSupervision.NewValue.Value, _sut.UserSupervision);
-            Assert.Equal(userSupervisionDate.NewValue.Value, _sut.UserSupervisionDate);
-            Assert.Equal(userSupervisionDocumentation.NewValue.Value.Url, _sut.UserSupervisionDocumentationUrl);
-            Assert.Equal(userSupervisionDocumentation.NewValue.Value.Name, _sut.UserSupervisionDocumentationUrlName);
+            Assert.Equal(userSupervision, _sut.UserSupervision);
+            Assert.Equal(userSupervisionDate, _sut.UserSupervisionDate);
+            Assert.Equal(userSupervisionDocumentation.Url, _sut.UserSupervisionDocumentationUrl);
+            Assert.Equal(userSupervisionDocumentation.Name, _sut.UserSupervisionDocumentationUrlName);
         }
 
         [Fact]

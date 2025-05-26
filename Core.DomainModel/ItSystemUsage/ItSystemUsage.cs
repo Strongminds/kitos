@@ -282,40 +282,35 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrlName { get; set; }
         public string UserSupervisionDocumentationUrl { get; set; }
 
-        public void UpdateUserSupervisionFields(Maybe<DataOptions> userSupervision,
-            Maybe<DateTime> userSupervisionDate, Maybe<string> userSupervisionDocumentationUrl,
-            Maybe<string> userSupervisionDocumentationUrlName)
+        public void UpdateUserSupervision(Maybe<DataOptions> userSupervision)
         {
             if (userSupervision.HasValue)
             {
                 this.UserSupervision = userSupervision.Value;
             }
+            if (this.UserSupervision == DataOptions.YES) return; //todo does it register change fast enough for this?
 
-            if (userSupervision.Value != DataOptions.YES)
+            this.ResetUserSupervisionFields();
+        }
+
+        private void ResetUserSupervisionFields()
+        {
+            this.UserSupervisionDate = null;
+            this.UserSupervisionDocumentationUrl = null;
+            this.UserSupervisionDocumentationUrlName = null;
+        }
+
+        public void UpdateUserSupervisionDate(DateTime userSupervisionDate)
+        {
+            if (this.UserSupervision != DataOptions.YES)
             {
-                this.UserSupervisionDate = null;
-                this.UserSupervisionDocumentationUrl = null;
-                this.UserSupervisionDocumentationUrlName = null;
                 return;
             }
 
-            if (userSupervisionDate.HasValue)
-            {
-                this.UserSupervisionDate = userSupervisionDate.Value;
-            }
-
-            if (userSupervisionDocumentationUrl.HasValue)
-            {
-                this.UserSupervisionDocumentationUrl = userSupervisionDocumentationUrl.Value;
-
-            }
-
-            if (userSupervisionDocumentationUrlName.HasValue)
-            {
-                this.UserSupervisionDocumentationUrlName = userSupervisionDocumentationUrlName.Value;
-
-            }
+            this.UserSupervisionDate = userSupervisionDate;
         }
+
+        
 
         public DataOptions? riskAssessment { get; set; }
         public DateTime? riskAssesmentDate { get; set; }
