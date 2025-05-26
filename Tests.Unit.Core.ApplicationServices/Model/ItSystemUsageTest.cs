@@ -33,11 +33,13 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateUserSupervision_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervisionValue)
+        public void UpdateUserSupervisionFields_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervisionValue)
         {
             _sut.UserSupervisionDate = A<DateTime>();
             _sut.UserSupervisionDocumentationUrl = A<string>();
             _sut.UserSupervisionDocumentationUrlName = A<string>();
+
+           
             var userSupervision = OptionalValueChange<DataOptions?>.With(userSupervisionValue);
             var userSupervisionUpdateParameters = new UpdatedSystemUsageGDPRProperties()
             {
@@ -46,7 +48,7 @@ namespace Tests.Unit.Core.Model
                 UserSupervisionDocumentation = A<OptionalValueChange<Maybe<NamedLink>>>()
             };
 
-            _sut.UpdateGdprUserSupervisionFields(userSupervisionUpdateParameters.UserSupervision.NewValue,
+            _sut.UpdateUserSupervisionFields(userSupervisionUpdateParameters.UserSupervision.NewValue,
                 userSupervisionUpdateParameters.UserSupervisionDate.NewValue,
                 userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Url, userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Name);
 
@@ -54,6 +56,28 @@ namespace Tests.Unit.Core.Model
             Assert.Null(_sut.UserSupervisionDate);
             Assert.Null(_sut.UserSupervisionDocumentationUrl);
             Assert.Null(_sut.UserSupervisionDocumentationUrlName);
+        }
+
+        [Fact]
+        public void UpdateUserSupervisionFields_Sets_Related_Fields_If_Yes()
+        {
+            var userSupervision = OptionalValueChange<DataOptions?>.With(DataOptions.YES);
+            var userSupervisionUpdateParameters = new UpdatedSystemUsageGDPRProperties()
+            {
+                UserSupervision = userSupervision,
+                UserSupervisionDate = A<OptionalValueChange<DateTime?>>(),
+                UserSupervisionDocumentation = A<OptionalValueChange<Maybe<NamedLink>>>()
+            };
+
+            _sut.UpdateUserSupervisionFields(userSupervisionUpdateParameters.UserSupervision.NewValue,
+                userSupervisionUpdateParameters.UserSupervisionDate.NewValue,
+                userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Url,
+                userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Name);
+
+            Assert.Equal(userSupervision.NewValue.Value, _sut.UserSupervision);
+            Assert.Equal(userSupervisionUpdateParameters.UserSupervisionDate.NewValue.Value, _sut.UserSupervisionDate);
+            Assert.Equal(userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Url, _sut.UserSupervisionDocumentationUrl);
+            Assert.Equal(userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Name, _sut.UserSupervisionDocumentationUrlName);
         }
 
         [Fact]

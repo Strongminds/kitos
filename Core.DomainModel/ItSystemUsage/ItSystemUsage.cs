@@ -282,7 +282,7 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrlName { get; set; }
         public string UserSupervisionDocumentationUrl { get; set; }
 
-        public void UpdateGdprUserSupervisionFields(Maybe<DataOptions> userSupervision,
+        public void UpdateUserSupervisionFields(Maybe<DataOptions> userSupervision,
             Maybe<DateTime> userSupervisionDate, string userSupervisionDocumentationUrl,
             string userSupervisionDocumentationUrlName)
         {
