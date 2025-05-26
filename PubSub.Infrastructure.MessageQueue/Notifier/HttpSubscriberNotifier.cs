@@ -34,7 +34,7 @@ namespace PubSub.Infrastructure.MessageQueue.Notifier
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Could not send reach recipient: ${recipient}, Ex: {ex}");
+                Console.WriteLine($"Could not send message to reach recipient: ${recipient}, Exception: {ex}");
             }
         }
     }
