@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Model.Shared;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
@@ -24,6 +27,33 @@ namespace Tests.Unit.Core.Model
                 Id = A<int>(),
                 OrganizationId = A<int>()
             };
+        }
+
+        [Theory]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateUserSupervision_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervisionValue)
+        {
+            _sut.UserSupervisionDate = A<DateTime>();
+            _sut.UserSupervisionDocumentationUrl = A<string>();
+            _sut.UserSupervisionDocumentationUrlName = A<string>();
+            var userSupervision = OptionalValueChange<DataOptions?>.With(userSupervisionValue);
+            var userSupervisionUpdateParameters = new UpdatedSystemUsageGDPRProperties()
+            {
+                UserSupervision = userSupervision,
+                UserSupervisionDate = A<OptionalValueChange<DateTime?>>(),
+                UserSupervisionDocumentation = A<OptionalValueChange<Maybe<NamedLink>>>()
+            };
+
+            _sut.UpdateGdprUserSupervisionFields(userSupervisionUpdateParameters.UserSupervision.NewValue,
+                userSupervisionUpdateParameters.UserSupervisionDate.NewValue,
+                userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Url, userSupervisionUpdateParameters.UserSupervisionDocumentation.NewValue.Value.Name);
+
+            Assert.Equal(userSupervision.NewValue.Value, _sut.UserSupervision);
+            Assert.Null(_sut.UserSupervisionDate);
+            Assert.Null(_sut.UserSupervisionDocumentationUrl);
+            Assert.Null(_sut.UserSupervisionDocumentationUrlName);
         }
 
         [Fact]

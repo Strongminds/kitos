@@ -282,6 +282,32 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrlName { get; set; }
         public string UserSupervisionDocumentationUrl { get; set; }
 
+        public void UpdateGdprUserSupervisionFields(Maybe<DataOptions> userSupervision,
+            Maybe<DateTime> userSupervisionDate, string userSupervisionDocumentationUrl,
+            string userSupervisionDocumentationUrlName)
+        {
+            if (userSupervision.HasValue)
+            {
+                this.UserSupervision = userSupervision.Value;
+            }
+
+            if (userSupervision.Value != DataOptions.YES)
+            {
+                this.UserSupervisionDate = null;
+                this.UserSupervisionDocumentationUrl = null;
+                this.UserSupervisionDocumentationUrlName = null;
+                return;
+            }
+
+            if (userSupervisionDate.HasValue)
+            {
+                this.UserSupervisionDate = userSupervisionDate.Value;
+            }
+
+            this.UserSupervisionDocumentationUrl = userSupervisionDocumentationUrl;
+            this.UserSupervisionDocumentationUrlName = userSupervisionDocumentationUrlName; 
+        }
+
         public DataOptions? riskAssessment { get; set; }
         public DateTime? riskAssesmentDate { get; set; }
         public RiskLevel? preriskAssessment { get; set; }
