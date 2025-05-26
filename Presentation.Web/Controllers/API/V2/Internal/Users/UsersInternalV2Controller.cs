@@ -13,6 +13,7 @@ using System.Web.Http.Results;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Model.Users;
 using Core.DomainModel.Organization;
+using Presentation.Web.Controllers.API.V2.Common;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Request.User;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
@@ -23,7 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
     /// Internal API for the users in KITOS
     /// </summary>
     [RoutePrefix("api/v2/internal/organization/{organizationUuid}/users")]
-    public class UsersInternalV2Controller : InternalApiV2Controller
+    public class UsersInternalV2Controller : ApiV2Controller
     {
         private readonly IUserWriteModelMapper _writeModelMapper;
         private readonly IUserWriteService _userWriteService;
