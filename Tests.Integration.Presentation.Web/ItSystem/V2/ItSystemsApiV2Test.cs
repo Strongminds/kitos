@@ -484,9 +484,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var organization = await CreateOrganizationAsync();
             var itSystem = await CreateItSystemAsync(organization.Uuid);
-            var (_, supplierUuid1, orgCvr1) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, null);
-            var (_, supplierUuid2, orgCvr2) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, null);
-            var (_, _, _) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, supplierUuid1); //Create duplicate supplier
+            var (_, supplierOrg1) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, null);
+            var (_, supplierOrg2) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, null);
+            var (_, _) = await CreateUsageWithMainContractAndSupplier(itSystem.Uuid, supplierOrg1.Uuid); //Create duplicate supplier
             await ItSystemUsageV2Helper.PostAsync(token.Token, new CreateItSystemUsageRequestDTO
             {
                 SystemUuid = itSystem.Uuid,
@@ -497,13 +497,13 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             var mainContractSuppliers = itSystemResponse.MainContractSuppliers.ToList();
             Assert.Equal(2, mainContractSuppliers.Count);
-            var supplier1 = Assert.Single(mainContractSuppliers, x => x.Uuid == supplierUuid1);
-            Assert.Equal(orgCvr1, supplier1.Cvr);
-            var supplier2 = Assert.Single(mainContractSuppliers, x => x.Uuid == supplierUuid2);
-            Assert.Equal(orgCvr2, supplier2.Cvr);
+            var supplier1 = Assert.Single(mainContractSuppliers, x => x.Uuid == supplierOrg1.Uuid);
+            Assert.Equal(supplierOrg1.Cvr, supplier1.Cvr);
+            var supplier2 = Assert.Single(mainContractSuppliers, x => x.Uuid == supplierOrg2.Uuid);
+            Assert.Equal(supplierOrg2.Cvr, supplier2.Cvr);
         }
 
-        private async Task<(ItSystemUsageResponseDTO, Guid, string)> CreateUsageWithMainContractAndSupplier(Guid systemUuid, Guid? supplierUuid)
+        private async Task<(ItSystemUsageResponseDTO, ShallowOrganizationResponseDTO)> CreateUsageWithMainContractAndSupplier(Guid systemUuid, Guid? supplierUuid)
         {
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
             var organization = await CreateOrganizationAsync();
@@ -514,7 +514,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             };
             var usage = await ItSystemUsageV2Helper.PostAsync(token.Token, request);
-            var finalSupplierUuid = supplierUuid ?? (await CreateOrganizationAsync()).Uuid;
+            var supplierOrganization = supplierUuid == null ? await CreateOrganizationAsync() : await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), supplierUuid.Value);
             var contract = await ItContractV2Helper.PostContractAsync(token.Token, new CreateNewContractRequestDTO
             {
                 OrganizationUuid = organization.Uuid,
@@ -522,7 +522,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 SystemUsageUuids = usage.Uuid.WrapAsEnumerable(),
                 Supplier = new ContractSupplierDataWriteRequestDTO
                 {
-                    OrganizationUuid = finalSupplierUuid
+                    OrganizationUuid = supplierOrganization.Uuid
                 }
             });
             var updateRequest = new UpdateItSystemUsageRequestDTO()
@@ -533,7 +533,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 }
             };
             await ItSystemUsageV2Helper.PutAsync(token.Token, usage.Uuid, updateRequest);
-            return (usage, finalSupplierUuid, organization.Cvr);
+            return (usage, supplierOrganization);
         }
 
         private async Task<ItSystemResponseDTO> CreateItSystemAsync(Guid organizationUuid)
