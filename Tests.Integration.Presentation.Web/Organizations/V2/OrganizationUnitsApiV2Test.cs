@@ -367,6 +367,36 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             }
         }
 
+        [Fact]
+        public async Task Consecutive_Bulk_Role_Assignments_Does_Not_Override_Previous_Role_Assignments()
+        {
+            var organization = await CreateOrganizationAsync();
+            var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            var units = await OrganizationUnitV2Helper.GetOrganizationUnitsAsync(token.Token, organization.Uuid);
+            var unit = Assert.Single(units);
+
+            var user1 = await CreateUser(organization.Uuid);
+            var user2 = await CreateUser(organization.Uuid);
+            var userUuids = new List<Guid> { user1.Uuid, user2.Uuid };
+            var orgUnitRoles = await GetOrganizationUnitRoleTypesAsync(organization.Uuid);
+            var role1 = orgUnitRoles.First();
+            var role2 = orgUnitRoles.Last();
+            var assignment1 = new BulkRoleAssignmentRequestDTO { RoleUuid = role1.Uuid, UserUuids = userUuids };
+            var assignment2 = new BulkRoleAssignmentRequestDTO { RoleUuid = role2.Uuid, UserUuids = userUuids };
+
+            //Act
+            using var firstCreation = await OrganizationUnitV2Helper.SendCreateBulkRoleAssignmentAsync(organization.Uuid, unit.Uuid, assignment1);
+            using var secondCreation =
+                await OrganizationUnitV2Helper.SendCreateBulkRoleAssignmentAsync(organization.Uuid, unit.Uuid,
+                    assignment2);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, firstCreation.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, secondCreation.StatusCode);
+            var getRightsResult = await OrganizationUnitV2Helper.GetUnitRolesAsync(organization.Uuid, unit.Uuid);
+            Assert.Equal(4, getRightsResult.Count());
+        }
+
         private static bool MatchExpectedBulkAssignment(OrganizationUnitRolesResponseDTO actual, BulkRoleAssignmentRequestDTO expected)
         {
             return actual.RoleAssignment.Role.Uuid == expected.RoleUuid && expected.UserUuids.Contains(actual.RoleAssignment.User.Uuid);
