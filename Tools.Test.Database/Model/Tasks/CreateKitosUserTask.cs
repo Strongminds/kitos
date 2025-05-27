@@ -58,10 +58,11 @@ namespace Tools.Test.Database.Model.Tasks
         {
             var globalAdmin = context.GetGlobalAdmin();
             var apiUser = "Api ";
+            var systemIntegrator = "Systemintegrator ";
             var newUser = new User
             {
                 Name = "Automatisk oprettet testbruger",
-                LastName = $"({((_apiAccess) ? apiUser : "")}{_role:G})",
+                LastName = $"({((_apiAccess) ? apiUser : "")}{(_systemIntegrator ? systemIntegrator : "")}{_role:G})",
                 Salt = _salt,
                 Email = _email,
                 ObjectOwnerId = globalAdmin.Id,
