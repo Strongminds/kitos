@@ -277,10 +277,10 @@ namespace Core.DomainModel.ItSystemUsage
         public string TechnicalSupervisionDocumentationUrlName { get; set; }
         public string TechnicalSupervisionDocumentationUrl { get; set; }
 
-        public DataOptions? UserSupervision { get; set; }
-        public DateTime? UserSupervisionDate { get; set; }
-        public string UserSupervisionDocumentationUrlName { get; set; }
-        public string UserSupervisionDocumentationUrl { get; set; }
+        public DataOptions? UserSupervision { get; private set; }
+        public DateTime? UserSupervisionDate { get; private set; }
+        public string UserSupervisionDocumentationUrlName { get; private set; }
+        public string UserSupervisionDocumentationUrl { get; private set; }
 
         public void UpdateUserSupervision(DataOptions? userSupervision)
         {

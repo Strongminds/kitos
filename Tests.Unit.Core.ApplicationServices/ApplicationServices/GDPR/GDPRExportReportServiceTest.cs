@@ -334,7 +334,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
         private ItSystemUsage CreateSystemUsage(ItSystem system, ItContract contract, int orgId)
         {
-            return new()
+            var usage = new ItSystemUsage()
             {
                 Id = Math.Abs(A<int>()),
                 ItSystem = system,
@@ -365,11 +365,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 },
                 TechnicalSupervisionDocumentationUrl = A<string>(),
                 TechnicalSupervisionDocumentationUrlName = A<string>(),
-                UserSupervisionDocumentationUrl = A<string>(),
-                UserSupervisionDocumentationUrlName = A<string>(),
                 DPIAdeleteDate = A<DateTime>(),
-
             };
+            usage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());
+            return usage;
         }
     }
 }

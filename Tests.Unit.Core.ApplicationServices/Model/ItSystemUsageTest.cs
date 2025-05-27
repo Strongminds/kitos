@@ -126,9 +126,8 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.UNDECIDED)]
         public void UpdateUserSupervision_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervision)
         {
-            _sut.UserSupervisionDate = A<DateTime>();
-            _sut.UserSupervisionDocumentationUrl = A<string>();
-            _sut.UserSupervisionDocumentationUrlName = A<string>();
+            _sut.UpdateUserSupervisionDate(A<DateTime>());
+            _sut.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
 
             _sut.UpdateUserSupervision(userSupervision);
 
@@ -144,9 +143,9 @@ namespace Tests.Unit.Core.Model
             const DataOptions userSupervision = DataOptions.YES;
             var userSupervisionDate = A<DateTime?>();
             var userSupervisionDocumentation = A<NamedLink>();
-            _sut.UserSupervisionDate = userSupervisionDate;
-            _sut.UserSupervisionDocumentationUrl = userSupervisionDocumentation.Url;
-            _sut.UserSupervisionDocumentationUrlName = userSupervisionDocumentation.Name;
+            _sut.UpdateUserSupervision(userSupervision);
+            _sut.UpdateUserSupervisionDate(userSupervisionDate);
+            _sut.UpdateUserSupervisionDocumentation(userSupervisionDocumentation.Url, userSupervisionDocumentation.Name);
 
 
             _sut.UpdateUserSupervision(userSupervision);

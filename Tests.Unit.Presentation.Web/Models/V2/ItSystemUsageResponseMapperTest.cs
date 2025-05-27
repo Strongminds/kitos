@@ -475,10 +475,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.PlannedRiskAssessmentDate = A<DateTime>();
             itSystemUsage.noteRisks = A<string>();
             itSystemUsage.preriskAssessment = A<RiskLevel>();
-            itSystemUsage.UserSupervision = A<DataOptions>();
-            itSystemUsage.UserSupervisionDate = A<DateTime>();
-            itSystemUsage.UserSupervisionDocumentationUrlName = A<string>();
-            itSystemUsage.UserSupervisionDocumentationUrl = A<string>();
+            itSystemUsage.UpdateUserSupervision(A<DataOptions>());
+            itSystemUsage.UpdateUserSupervisionDate(A<DateTime>());
+            itSystemUsage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
 
             var sensitivePersonalDataTypes = Many<Guid>(10).Select(uuid => new SensitivePersonalDataType() { Id = A<int>(), Uuid = uuid, Name = A<string>() }).ToList();
             var registerTypes = Many<Guid>(10).Select(uuid => new RegisterType() { Id = A<int>(), Uuid = uuid, Name = A<string>() }).ToList();
