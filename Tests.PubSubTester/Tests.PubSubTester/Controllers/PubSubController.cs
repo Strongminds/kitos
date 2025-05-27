@@ -13,9 +13,9 @@ namespace Tests.PubSubTester.Controllers
     {
         //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
         //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
-        private static readonly string PubSubTesterBaseUrl = "https://localhost:7118/";
-        private static readonly string PubSubApiUrl = "https://localhost/";
-        private static readonly string KitosApiUrl = "https://localhost:44300/";
+        private const string PubSubTesterBaseUrl = "https://localhost:7118/";
+        private const string PubSubApiUrl = "https://localhost/";
+        private const string KitosApiUrl = "https://localhost:44300/";
 
         private const string ApiRoutePrefix = "api/v1";
         private const string PublishRoute = $"{ApiRoutePrefix}/publish";
