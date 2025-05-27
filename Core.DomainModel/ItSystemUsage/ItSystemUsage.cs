@@ -286,14 +286,14 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateUserSupervision(DataOptions? userSupervision)
         {
             this.UserSupervision = userSupervision;
-            if (CannotUpdateUserSupervisionFields()) return;
+            if (CanUpdateUserSupervisionFields()) return;
 
             this.ResetUserSupervisionFields();
         }
 
-        private bool CannotUpdateUserSupervisionFields()
+        private bool CanUpdateUserSupervisionFields()
         {
-            return this.UserSupervision != DataOptions.YES;
+            return this.UserSupervision == DataOptions.YES;
         }
 
         private void ResetUserSupervisionFields()
@@ -305,7 +305,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateUserSupervisionDate(DateTime? userSupervisionDate)
         {
-            if (CannotUpdateUserSupervisionFields())
+            if (!CanUpdateUserSupervisionFields())
             {
                 return;
             }
@@ -315,7 +315,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateUserSupervisionDocumentation(string url, string name)
         {
-            if (CannotUpdateUserSupervisionFields())
+            if (!CanUpdateUserSupervisionFields())
             {
                 return;
             }
@@ -324,10 +324,10 @@ namespace Core.DomainModel.ItSystemUsage
             this.UserSupervisionDocumentationUrlName = name;
         }
 
-        public void UpdateRiskAssessment(DataOptions riskAssessment)
+        public void UpdateRiskAssessment(DataOptions? riskAssessment)
         {
             this.riskAssessment = riskAssessment;
-            if (CannotUpdateRiskAssessmentField()) return;
+            if (CanUpdateRiskAssessmentFields()) return;
             this.ResetRiskAssessmentFields();
         }
 
@@ -1043,15 +1043,15 @@ namespace Core.DomainModel.ItSystemUsage
             return removedPersonalData;
         }
 
-        private bool CannotUpdateTechnicalPrecautionsFields()
+        private bool CanUpdateTechnicalPrecautionsFields()
         {
-            return this.precautions != DataOptions.YES;
+            return this.precautions == DataOptions.YES;
         }
 
         public void UpdateTechnicalPrecautionsInPlace(DataOptions? precautions)
         {
             this.precautions = precautions;
-            if (CannotUpdateTechnicalPrecautionsFields()) return;
+            if (CanUpdateTechnicalPrecautionsFields()) return;
             ResetTechnicalPrecautionsFields();
 
         }
@@ -1068,7 +1068,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateTechnicalPrecautionsDocumentation(string url, string name)
         {
-            if (CannotUpdateTechnicalPrecautionsFields()) return;
+            if (!CanUpdateTechnicalPrecautionsFields()) return;
             this.TechnicalSupervisionDocumentationUrl = url;
             this.TechnicalSupervisionDocumentationUrlName = name;
         }
@@ -1092,7 +1092,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
         {
-            if (CannotUpdateTechnicalPrecautionsFields()) return Maybe<OperationError>.None;
+            if (!CanUpdateTechnicalPrecautionsFields()) return Maybe<OperationError>.None;
 
             if (technicalPrecautions == null)
                 throw new ArgumentNullException(nameof(technicalPrecautions));
@@ -1276,34 +1276,34 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
-        public void UpdateRiskAssessmentDate(DateTime date)
+        public void UpdateRiskAssessmentDate(DateTime? date)
         {
-            if (CannotUpdateRiskAssessmentField()) return;
+            if (!CanUpdateRiskAssessmentFields()) return;
             this.riskAssesmentDate = date;
         }
 
-        public void UpdateRiskAssessmentLevel(RiskLevel level)
+        public void UpdateRiskAssessmentLevel(RiskLevel? level)
         {
-            if (CannotUpdateRiskAssessmentField()) return;
+            if (!CanUpdateRiskAssessmentFields()) return;
             this.preriskAssessment = level;
         }
 
         public void UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            if (CannotUpdateRiskAssessmentField()) return;
+            if (!CanUpdateRiskAssessmentFields()) return;
             this.RiskSupervisionDocumentationUrl = url;
             this.RiskSupervisionDocumentationUrlName = name;
         }
 
         public void UpdateRiskAssessmentNote(string note)
         {
-            if (CannotUpdateRiskAssessmentField()) return;
+            if (!CanUpdateRiskAssessmentFields()) return;
             this.noteRisks = note;
         }
 
-        private bool CannotUpdateRiskAssessmentField()
+        private bool CanUpdateRiskAssessmentFields()
         {
-            return this.riskAssessment != DataOptions.YES;
+            return this.riskAssessment == DataOptions.YES;
         }
     }
 }

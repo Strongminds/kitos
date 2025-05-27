@@ -1478,7 +1478,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? userSupervision = DataOptions.YES;
             var supervisionDate = A<DateTime?>();
             var supervisionDoc = A<NamedLink>();
-            var riskAssessmentConducted = A<DataOptions?>();
+            DataOptions? riskAssessmentConducted = DataOptions.YES;
             var riskAssessmentDate = A<DateTime?>();
             var riskAssessmentDoc = A<NamedLink>();
             var riskAssessmentNotes = A<string>();
@@ -2977,6 +2977,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             DataOptions? userSupervision = DataOptions.YES;
             DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
+            DataOptions? riskAssessment = DataOptions.YES;
             return new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -3009,7 +3010,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     UserSupervision = userSupervision.AsChangedValue(),
                     UserSupervisionDate = A<DateTime?>().AsChangedValue(),
                     UserSupervisionDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
-                    RiskAssessmentConducted = A<DataOptions?>().AsChangedValue(),
+                    RiskAssessmentConducted = riskAssessment.AsChangedValue(),
                     RiskAssessmentConductedDate = A<DateTime?>().AsChangedValue(),
                     RiskAssessmentDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     RiskAssessmentNotes = A<string>().AsChangedValue(),

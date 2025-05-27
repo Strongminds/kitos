@@ -265,14 +265,10 @@ namespace Core.ApplicationServices.SystemUsage.Write
                     ))
 
                 //Risk assessments
-                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentConducted, (systemUsage, conducted) => systemUsage.riskAssessment = conducted))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentConductedDate, (systemUsage, date) => systemUsage.riskAssesmentDate = date))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentResult, (systemUsage, result) => systemUsage.preriskAssessment = result))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentDocumentation, (systemUsage, newLink) =>
-                   {
-                       systemUsage.RiskSupervisionDocumentationUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
-                       systemUsage.RiskSupervisionDocumentationUrl = newLink.Select(x => x.Url).GetValueOrDefault();
-                   }))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentConducted, (systemUsage, conducted) => systemUsage.UpdateRiskAssessment(conducted)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentConductedDate, (systemUsage, date) => systemUsage.UpdateRiskAssessmentDate(date)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentResult, (systemUsage, result) => systemUsage.UpdateRiskAssessmentLevel(result)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentDocumentation, (systemUsage, newLink) => systemUsage.UpdateRiskAssessmentDocumentation(newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentNotes, (systemUsage, notes) => systemUsage.noteRisks = notes))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.PlannedRiskAssessmentDate, (systemUsage, date) => systemUsage.PlannedRiskAssessmentDate = date))
 
