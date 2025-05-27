@@ -27,6 +27,46 @@ namespace Tests.Unit.Core.Model
             };
         }
 
+        //public DataOptions? DPIA { get; set; }
+        //public DateTime? DPIADateFor { get; set; }
+        //public string DPIASupervisionDocumentationUrlName { get; set; }
+        //public string DPIASupervisionDocumentationUrl { get; set; }
+
+
+
+
+        [Theory]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        [InlineData(DataOptions.YES)]
+        public void UpdateDPIAConducted_Only_Clears_Related_Fields_If_Not_Yes(DataOptions dpia)
+        {
+            var dpiaDateFor = A<DateTime>();
+            var dpiaSupervisionDocumentationUrl = A<string>();
+            var dpiaSupervisionDocumentationUrlName = A<string>();
+            _sut.DPIADateFor = dpiaDateFor;
+            _sut.DPIASupervisionDocumentationUrl = dpiaSupervisionDocumentationUrl;
+            _sut.DPIASupervisionDocumentationUrlName = dpiaSupervisionDocumentationUrlName;
+
+            _sut.UpdateDPIAConducted(dpia);
+
+            Assert.Equal(dpia, _sut.DPIA);
+            if (dpia == DataOptions.YES)
+            {
+                Assert.Equal(dpiaDateFor, _sut.DPIADateFor);
+                Assert.Equal(dpiaSupervisionDocumentationUrl, _sut.DPIASupervisionDocumentationUrl);
+                Assert.Equal(dpiaSupervisionDocumentationUrlName, _sut.DPIASupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Null(_sut.DPIADateFor);
+                Assert.Null(_sut.DPIASupervisionDocumentationUrl);
+                Assert.Null(_sut.DPIASupervisionDocumentationUrlName);
+            }
+            
+        }
+
         [Theory]
         [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.DONTKNOW)]
