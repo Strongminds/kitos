@@ -1475,7 +1475,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var technicalPrecautionsInPlace = A<DataOptions?>();
             var technicalPrecautions = Many<TechnicalPrecaution>().Distinct().ToList();
             var technicalPrecautionsDocumentation = A<NamedLink>();
-            var userSupervision = A<DataOptions?>();
+            DataOptions? userSupervision = DataOptions.YES;
             var supervisionDate = A<DateTime?>();
             var supervisionDoc = A<NamedLink>();
             var riskAssessmentConducted = A<DataOptions?>();
@@ -1539,6 +1539,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(technicalPrecautionsInPlace, itSystemUsage.precautions);
             Assert.Equal(technicalPrecautions.OrderBy(x => x), itSystemUsage.GetTechnicalPrecautions().OrderBy(x => x));
             AssertLink(technicalPrecautionsDocumentation, itSystemUsage.TechnicalSupervisionDocumentationUrlName, itSystemUsage.TechnicalSupervisionDocumentationUrl);
+            Assert.NotNull(itSystemUsage.UserSupervision);
             Assert.Equal(userSupervision, itSystemUsage.UserSupervision);
             Assert.Equal(supervisionDate, itSystemUsage.UserSupervisionDate);
             AssertLink(supervisionDoc, itSystemUsage.UserSupervisionDocumentationUrlName, itSystemUsage.UserSupervisionDocumentationUrl);
@@ -2972,6 +2973,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
         private SystemUsageUpdateParameters CreateSystemUsageUpdateParametersWithSimpleParametersAdded()
         {
+            DataOptions? userSupervision = DataOptions.YES;
             return new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -3001,7 +3003,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     TechnicalPrecautionsInPlace = A<DataOptions?>().AsChangedValue(),
                     TechnicalPrecautionsDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
-                    UserSupervision = A<DataOptions?>().AsChangedValue(),
+                    UserSupervision = userSupervision.AsChangedValue(),
                     UserSupervisionDate = A<DateTime?>().AsChangedValue(),
                     UserSupervisionDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     RiskAssessmentConducted = A<DataOptions?>().AsChangedValue(),
