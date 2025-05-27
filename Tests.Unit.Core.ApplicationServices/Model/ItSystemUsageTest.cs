@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel.ItContract;
@@ -82,7 +81,29 @@ namespace Tests.Unit.Core.Model
 
             if (shouldUpdate) Assert.Equal(date, _sut.UserSupervisionDate);
             else Assert.Null(_sut.UserSupervisionDate);
+        }
 
+        [Theory]
+        [InlineData(DataOptions.YES, true)]
+        [InlineData(DataOptions.NO, false)]
+        public void UpdateUserSupervisionDocumentation_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision, bool shouldUpdate)
+        {
+            _sut.UpdateUserSupervision(userSupervision);
+            var url = A<string>();
+            var name = A<string>();
+
+            _sut.UpdateUserSupervisionDocumentation(url, name);
+
+            if (shouldUpdate)
+            {
+                Assert.Equal(url, _sut.UserSupervisionDocumentationUrl);
+                Assert.Equal(name, _sut.UserSupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Null(_sut.UserSupervisionDocumentationUrl);
+                Assert.Null(_sut.UserSupervisionDocumentationUrlName);
+            }
         }
 
         [Fact]
