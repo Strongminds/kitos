@@ -464,13 +464,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.answeringDataDPIA = A<DataOptions>();
             itSystemUsage.DPIAdeleteDate = A<DateTime>();
             itSystemUsage.numberDPIA = A<int>();
-            itSystemUsage.riskAssessment = A<DataOptions>();
-            itSystemUsage.riskAssesmentDate = A<DateTime>();
-            itSystemUsage.RiskSupervisionDocumentationUrlName = A<string>();
-            itSystemUsage.RiskSupervisionDocumentationUrl = A<string>();
-            itSystemUsage.PlannedRiskAssessmentDate = A<DateTime>();
+            itSystemUsage.UpdateRiskAssessment(DataOptions.YES);
+            itSystemUsage.UpdateRiskAssessmentDate(A<DateTime>()); 
+            itSystemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
+            itSystemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
             itSystemUsage.noteRisks = A<string>();
-            itSystemUsage.preriskAssessment = A<RiskLevel>();
+            itSystemUsage.UpdateRiskAssessmentLevel(A<RiskLevel>());
             itSystemUsage.UpdateUserSupervision(A<DataOptions>());
             itSystemUsage.UpdateUserSupervisionDate(A<DateTime>());
             itSystemUsage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());

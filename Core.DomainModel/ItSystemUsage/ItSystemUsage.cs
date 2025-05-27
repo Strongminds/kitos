@@ -341,12 +341,12 @@ namespace Core.DomainModel.ItSystemUsage
             PlannedRiskAssessmentDate = null;
         }
 
-        public DataOptions? riskAssessment { get;  set; }
-        public DateTime? riskAssesmentDate { get;  set; }
-        public RiskLevel? preriskAssessment { get;  set; }
-        public DateTime? PlannedRiskAssessmentDate { get;  set; }
-        public string RiskSupervisionDocumentationUrlName { get;  set; }
-        public string RiskSupervisionDocumentationUrl { get;  set; }
+        public DataOptions? riskAssessment { get; private set; }
+        public DateTime? riskAssesmentDate { get; private set; }
+        public RiskLevel? preriskAssessment { get; private set; }
+        public DateTime? PlannedRiskAssessmentDate { get; private set; }
+        public string RiskSupervisionDocumentationUrlName { get; private set; }
+        public string RiskSupervisionDocumentationUrl { get; private set; }
         public string noteRisks { get; set; }
 
         public DataOptions? DPIA { get; set; }

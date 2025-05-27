@@ -3063,7 +3063,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RiskAssessmentConducted = new ChangedValue<DataOptions?>(null),
                     RiskAssessmentConductedDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
-                    RiskAssessmentNotes = "".AsChangedValue(),
+                    RiskAssessmentNotes = new ChangedValue<string>(null),
                     PlannedRiskAssessmentDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentResult = new ChangedValue<RiskLevel?>(null),
                     DPIAConducted = new ChangedValue<DataOptions?>(null),

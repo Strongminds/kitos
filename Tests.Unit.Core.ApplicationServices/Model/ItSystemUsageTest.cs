@@ -210,16 +210,16 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.UNDECIDED)]
         public void UpdateRiskAssessment_Only_Clears_Related_Fields_If_Not_Yes(DataOptions riskAssessment)
         {
-            var preRiskAssessment = A<RiskLevel>();
+            var level = A<RiskLevel>();
             var riskAssessmentDate = A<DateTime>();
             var url = A<string>();
             var urlName = A<string>();
             var notes = A<string>();
 
-            _sut.preriskAssessment = preRiskAssessment;
-            _sut.riskAssesmentDate = riskAssessmentDate;
-            _sut.RiskSupervisionDocumentationUrl = url;
-            _sut.RiskSupervisionDocumentationUrlName = urlName;
+            _sut.UpdateRiskAssessment(DataOptions.YES);
+            _sut.UpdateRiskAssessmentLevel(level);
+            _sut.UpdateRiskAssessmentDate(riskAssessmentDate);
+            _sut.UpdateRiskAssessmentDocumentation(url, urlName);
             _sut.noteRisks = notes;
 
             _sut.UpdateRiskAssessment(riskAssessment);
@@ -227,7 +227,7 @@ namespace Tests.Unit.Core.Model
             Assert.Equal(riskAssessment, _sut.riskAssessment);
             if (riskAssessment == DataOptions.YES)
             {
-                Assert.Equal(preRiskAssessment, _sut.preriskAssessment);
+                Assert.Equal(level, _sut.preriskAssessment);
                 Assert.Equal(riskAssessmentDate, _sut.riskAssesmentDate);
                 Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
                 Assert.Equal(urlName, _sut.RiskSupervisionDocumentationUrlName);
