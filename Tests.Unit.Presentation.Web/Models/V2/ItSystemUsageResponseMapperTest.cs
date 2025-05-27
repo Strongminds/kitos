@@ -460,9 +460,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.UpdateTechnicalPrecautionsInPlace(A<DataOptions>());
             itSystemUsage.UpdateTechnicalPrecautions(A<bool>(), A<bool>(), A<bool>(), A<bool>());
             itSystemUsage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
-            itSystemUsage.answeringDataDPIA = A<DataOptions>();
-            itSystemUsage.DPIAdeleteDate = A<DateTime>();
-            itSystemUsage.numberDPIA = A<int>();
+            itSystemUsage.UpdateRetentionPeriodDefined(DataOptions.YES);
+            itSystemUsage.UpdateNextDataRetentionEvaluationDate(A<DateTime>());
+            itSystemUsage.UpdateDataRetentionEvaluationFrequencyInMonths(A<int>());
             itSystemUsage.UpdateRiskAssessment(DataOptions.YES);
             itSystemUsage.UpdateRiskAssessmentDate(A<DateTime>()); 
             itSystemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());

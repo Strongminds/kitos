@@ -1487,9 +1487,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? dpiaConducted = DataOptions.YES;
             var dpiaDate = A<DateTime?>();
             var dpiaDoc = A<NamedLink>();
-            var retentionPeriod = A<DataOptions?>();
             var nextEvaluationDate = A<DateTime?>();
             var evaluationFrequency = A<int?>();
+            DataOptions? retentionPeriodDefined = DataOptions.YES;
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
                 Purpose = purpose.AsChangedValue(),
@@ -1514,7 +1514,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 DPIAConducted = dpiaConducted.AsChangedValue(),
                 DPIADate = dpiaDate.AsChangedValue(),
                 DPIADocumentation = dpiaDoc.FromNullable().AsChangedValue(),
-                RetentionPeriodDefined = retentionPeriod.AsChangedValue(),
+                RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                 NextDataRetentionEvaluationDate = nextEvaluationDate.AsChangedValue(),
                 DataRetentionEvaluationFrequencyInMonths = evaluationFrequency.AsChangedValue()
             };
@@ -1551,7 +1551,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(dpiaConducted, itSystemUsage.DPIA);
             Assert.Equal(dpiaDate, itSystemUsage.DPIADateFor);
             AssertLink(dpiaDoc, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
-            Assert.Equal(retentionPeriod, itSystemUsage.answeringDataDPIA);
+            Assert.Equal(retentionPeriodDefined, itSystemUsage.answeringDataDPIA);
             Assert.Equal(nextEvaluationDate, itSystemUsage.DPIAdeleteDate);
             Assert.Equal(evaluationFrequency, itSystemUsage.numberDPIA);
         }
@@ -2979,6 +2979,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
             DataOptions? riskAssessment = DataOptions.YES;
             DataOptions? dpiaConcluded = DataOptions.YES;
+            DataOptions? retentionPeriodDefined = DataOptions.YES;
             return new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -3020,7 +3021,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     DPIAConducted = dpiaConcluded.AsChangedValue(),
                     DPIADate = A<DateTime?>().AsChangedValue(),
                     DPIADocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
-                    RetentionPeriodDefined = A<DataOptions?>().AsChangedValue(),
+                    RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                     NextDataRetentionEvaluationDate = A<DateTime?>().AsChangedValue(),
                     DataRetentionEvaluationFrequencyInMonths = A<int?>().AsChangedValue()
                 }

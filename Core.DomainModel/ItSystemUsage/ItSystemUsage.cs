@@ -354,9 +354,9 @@ namespace Core.DomainModel.ItSystemUsage
         public string DPIASupervisionDocumentationUrlName { get; private set; }
         public string DPIASupervisionDocumentationUrl { get; private set; }
 
-        public DataOptions? answeringDataDPIA { get; set; }
-        public DateTime? DPIAdeleteDate { get; set; }
-        public int numberDPIA { get; set; }
+        public DataOptions? answeringDataDPIA { get; private set; }
+        public DateTime? DPIAdeleteDate { get; private set; }
+        public int numberDPIA { get; private set; }
 
         public HostedAt? HostedAt { get; set; }
         #endregion
@@ -1344,7 +1344,7 @@ namespace Core.DomainModel.ItSystemUsage
             this.DPIASupervisionDocumentationUrlName = name;
         }
 
-        public void UpdateRetentionPeriodDefined(DataOptions retentionPeriodDefined)
+        public void UpdateRetentionPeriodDefined(DataOptions? retentionPeriodDefined)
         {
             answeringDataDPIA = retentionPeriodDefined;
             if (CanUpdateRetentionPeriodFields()) return;
@@ -1362,7 +1362,7 @@ namespace Core.DomainModel.ItSystemUsage
             return answeringDataDPIA == DataOptions.YES;
         }
 
-        public void UpdateNextDataRetentionEvaluationDate(DateTime nextDataRetentionEvaluationDate)
+        public void UpdateNextDataRetentionEvaluationDate(DateTime? nextDataRetentionEvaluationDate)
         {
             if (!CanUpdateRetentionPeriodFields()) return;
             DPIAdeleteDate = nextDataRetentionEvaluationDate;

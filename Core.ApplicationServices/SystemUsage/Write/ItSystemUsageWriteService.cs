@@ -279,9 +279,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
                    systemUsage.UpdateDPIADocumentation(newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())))
 
                 //Data retention
-                .Bind(usage => usage.WithOptionalUpdate(parameters.RetentionPeriodDefined, (systemUsage, retentionPeriodDefined) => systemUsage.answeringDataDPIA = retentionPeriodDefined))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.NextDataRetentionEvaluationDate, (systemUsage, date) => systemUsage.DPIAdeleteDate = date))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.DataRetentionEvaluationFrequencyInMonths, (systemUsage, frequencyInMonths) => systemUsage.numberDPIA = frequencyInMonths.GetValueOrDefault()));
+                .Bind(usage => usage.WithOptionalUpdate(parameters.RetentionPeriodDefined, (systemUsage, retentionPeriodDefined) => systemUsage.UpdateRetentionPeriodDefined(retentionPeriodDefined)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.NextDataRetentionEvaluationDate, (systemUsage, date) => systemUsage.UpdateNextDataRetentionEvaluationDate(date)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.DataRetentionEvaluationFrequencyInMonths, (systemUsage, frequencyInMonths) => systemUsage.UpdateDataRetentionEvaluationFrequencyInMonths(frequencyInMonths.GetValueOrDefault())));
         }
 
         private Maybe<OperationError> UpdateSensitivityLevels(Maybe<IEnumerable<SensitiveDataLevel>> levels, ItSystemUsage systemUsage)
