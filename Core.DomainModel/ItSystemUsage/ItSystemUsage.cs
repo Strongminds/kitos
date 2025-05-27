@@ -286,9 +286,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateUserSupervision(DataOptions? userSupervision)
         {
             this.UserSupervision = userSupervision;
-            if (CanUpdateUserSupervisionFields()) return;
-
-            ResetUserSupervisionFields();
+            if (!CanUpdateUserSupervisionFields()) ResetUserSupervisionFields();
         }
 
         private bool CanUpdateUserSupervisionFields()
@@ -305,21 +303,12 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateUserSupervisionDate(DateTime? userSupervisionDate)
         {
-            if (!CanUpdateUserSupervisionFields())
-            {
-                return;
-            }
-
-            UserSupervisionDate = userSupervisionDate;
+            if (CanUpdateUserSupervisionFields()) UserSupervisionDate = userSupervisionDate;
         }
 
         public void UpdateUserSupervisionDocumentation(string url, string name)
         {
-            if (!CanUpdateUserSupervisionFields())
-            {
-                return;
-            }
-
+            if (!CanUpdateUserSupervisionFields()) return;
             UserSupervisionDocumentationUrl = url;
             UserSupervisionDocumentationUrlName = name;
         }
@@ -327,8 +316,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateRiskAssessment(DataOptions? riskAssessment)
         {
             this.riskAssessment = riskAssessment;
-            if (CanUpdateRiskAssessmentFields()) return;
-            ResetRiskAssessmentFields();
+            if (!CanUpdateRiskAssessmentFields()) ResetRiskAssessmentFields();
         }
 
         private void ResetRiskAssessmentFields()
@@ -1052,9 +1040,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateTechnicalPrecautionsInPlace(DataOptions? precautions)
         {
             this.precautions = precautions;
-            if (CanUpdateTechnicalPrecautionsFields()) return;
-            ResetTechnicalPrecautionsFields();
-
+            if (!CanUpdateTechnicalPrecautionsFields()) ResetTechnicalPrecautionsFields();
         }
 
         private void ResetTechnicalPrecautionsFields()
@@ -1279,27 +1265,24 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateRiskAssessmentDate(DateTime? date)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
-            riskAssesmentDate = date;
+            if (CanUpdateRiskAssessmentFields()) riskAssesmentDate = date;
         }
 
         public void UpdateRiskAssessmentLevel(RiskLevel? level)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
-            preriskAssessment = level;
+            if (CanUpdateRiskAssessmentFields()) preriskAssessment = level;
         }
 
         public void UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
+            if (CanUpdateRiskAssessmentFields()) return;
             RiskSupervisionDocumentationUrl = url;
             RiskSupervisionDocumentationUrlName = name;
         }
 
         public void UpdateRiskAssessmentNotes(string note)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
-            noteRisks = note;
+            if (CanUpdateRiskAssessmentFields()) noteRisks = note;
         }
         private bool CanUpdateRiskAssessmentFields()
         {
@@ -1309,8 +1292,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateDPIAConducted(DataOptions? dpia)
         {
             DPIA = dpia;
-            if (CanUpdateDPIAFields()) return;
-            ResetDPIAFields();
+            if (!CanUpdateDPIAFields()) ResetDPIAFields();
         }
 
         private void ResetDPIAFields()
@@ -1327,14 +1309,12 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdatePlannedRiskAssessmentDate(DateTime? date)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
-            PlannedRiskAssessmentDate = date;
+            if (CanUpdateRiskAssessmentFields()) PlannedRiskAssessmentDate = date;
         }
 
         public void UpdateDPIADate(DateTime? date)
         {
-            if (!CanUpdateDPIAFields()) return;
-            DPIADateFor = date;
+            if (CanUpdateDPIAFields()) DPIADateFor = date;
         }
 
         public void UpdateDPIADocumentation(string url, string name)
@@ -1347,8 +1327,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateRetentionPeriodDefined(DataOptions? retentionPeriodDefined)
         {
             answeringDataDPIA = retentionPeriodDefined;
-            if (CanUpdateRetentionPeriodFields()) return;
-            ResetRetentionPeriodFields();
+            if (!CanUpdateRetentionPeriodFields()) ResetRetentionPeriodFields();
         }
 
         private void ResetRetentionPeriodFields()
@@ -1364,14 +1343,12 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateNextDataRetentionEvaluationDate(DateTime? nextDataRetentionEvaluationDate)
         {
-            if (!CanUpdateRetentionPeriodFields()) return;
-            DPIAdeleteDate = nextDataRetentionEvaluationDate;
+            if (CanUpdateRetentionPeriodFields()) DPIAdeleteDate = nextDataRetentionEvaluationDate;
         }
 
         public void UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
         {
-            if (!CanUpdateRetentionPeriodFields()) return;
-            numberDPIA = dataRetentionEvaluationFrequencyInMonths;
+            if (CanUpdateRetentionPeriodFields()) numberDPIA = dataRetentionEvaluationFrequencyInMonths;
         }
     }
 }
