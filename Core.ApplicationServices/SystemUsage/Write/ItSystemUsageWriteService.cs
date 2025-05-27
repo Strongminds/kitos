@@ -273,13 +273,10 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(parameters.PlannedRiskAssessmentDate, (systemUsage, date) => systemUsage.UpdatePlannedRiskAssessmentDate(date)))
 
                 //DPIA
-                .Bind(usage => usage.WithOptionalUpdate(parameters.DPIAConducted, (systemUsage, conducted) => systemUsage.DPIA = conducted))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.DPIADate, (systemUsage, date) => systemUsage.DPIADateFor = date))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.DPIAConducted, (systemUsage, conducted) => systemUsage.UpdateDPIAConducted(conducted)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.DPIADate, (systemUsage, date) => systemUsage.UpdateDPIADate(date)))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DPIADocumentation, (systemUsage, newLink) =>
-                   {
-                       systemUsage.DPIASupervisionDocumentationUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
-                       systemUsage.DPIASupervisionDocumentationUrl = newLink.Select(x => x.Url).GetValueOrDefault();
-                   }))
+                   systemUsage.UpdateDPIADocumentation(newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())))
 
                 //Data retention
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RetentionPeriodDefined, (systemUsage, retentionPeriodDefined) => systemUsage.answeringDataDPIA = retentionPeriodDefined))

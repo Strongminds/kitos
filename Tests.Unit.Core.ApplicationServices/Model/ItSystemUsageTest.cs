@@ -27,11 +27,6 @@ namespace Tests.Unit.Core.Model
             };
         }
 
-        //public DataOptions? DPIA { get; set; }
-        //public DateTime? DPIADateFor { get; set; }
-        //public string DPIASupervisionDocumentationUrlName { get; set; }
-        //public string DPIASupervisionDocumentationUrl { get; set; }
-
         [Theory]
         [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.DONTKNOW)]
@@ -91,9 +86,9 @@ namespace Tests.Unit.Core.Model
             var dpiaDateFor = A<DateTime>();
             var dpiaSupervisionDocumentationUrl = A<string>();
             var dpiaSupervisionDocumentationUrlName = A<string>();
-            _sut.DPIADateFor = dpiaDateFor;
-            _sut.DPIASupervisionDocumentationUrl = dpiaSupervisionDocumentationUrl;
-            _sut.DPIASupervisionDocumentationUrlName = dpiaSupervisionDocumentationUrlName;
+            _sut.UpdateDPIAConducted(DataOptions.YES);
+            _sut.UpdateDPIADate(dpiaDateFor);
+            _sut.UpdateDPIADocumentation(dpiaSupervisionDocumentationUrl, dpiaSupervisionDocumentationUrlName);
 
             _sut.UpdateDPIAConducted(dpia);
 

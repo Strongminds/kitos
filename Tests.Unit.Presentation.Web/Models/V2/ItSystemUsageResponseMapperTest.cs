@@ -449,10 +449,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             itSystemUsage.GeneralPurpose = A<string>();
             itSystemUsage.isBusinessCritical = A<DataOptions>();
-            itSystemUsage.DPIA = A<DataOptions>();
-            itSystemUsage.DPIADateFor = A<DateTime>();
-            itSystemUsage.DPIASupervisionDocumentationUrlName = A<string>();
-            itSystemUsage.DPIASupervisionDocumentationUrl = A<string>();
+            itSystemUsage.UpdateDPIAConducted(DataOptions.YES);
+            itSystemUsage.UpdateDPIADate(A<DateTime>());
+            itSystemUsage.UpdateDPIADocumentation(A<string>(), A<string>());
             itSystemUsage.HostedAt = A<HostedAt>();
             itSystemUsage.LinkToDirectoryUrlName = A<string>();
             itSystemUsage.LinkToDirectoryUrl = A<string>();
