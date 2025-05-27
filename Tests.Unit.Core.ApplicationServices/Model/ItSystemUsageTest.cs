@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
@@ -32,15 +31,104 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateTechnicalPrecautionsInPlace_Clears_Related_Fields_If_Not_Yes(DataOptions precautionsInPlace)
+        {
+            var technicalPrecautions = A<List<TechnicalPrecaution>>();
+            var url = A<string>();
+            var name = A<string>();
+            _sut.UpdateTechnicalPrecautions(technicalPrecautions);
+            _sut.TechnicalSupervisionDocumentationUrl = url;
+            _sut.TechnicalSupervisionDocumentationUrlName = name;
+
+            _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
+
+            Assert.Equal(precautionsInPlace, _sut.precautions);
+            Assert.Empty(_sut.GetTechnicalPrecautions());
+            Assert.Null(_sut.TechnicalSupervisionDocumentationUrlName);
+            Assert.Null(_sut.TechnicalSupervisionDocumentationUrl);
+        }
+
+        [Fact]
+        public void UpdateTechnicalPrecautionsInPlace_Does_Not_Clear_Related_Fields_If_Yes()
+        {
+            const DataOptions precautionsInPlace = DataOptions.YES;
+            var technicalPrecautions = A<List<TechnicalPrecaution>>();
+            var url = A<string>();
+            var name = A<string>();
+            _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
+            _sut.UpdateTechnicalPrecautions(technicalPrecautions);
+            _sut.TechnicalSupervisionDocumentationUrl = url;
+            _sut.TechnicalSupervisionDocumentationUrlName = name;
+
+            _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
+
+            Assert.Equal(precautionsInPlace, _sut.precautions);
+            AssertListsContainSameElements(technicalPrecautions, _sut.GetTechnicalPrecautions().ToList());
+            Assert.Equal(url, _sut.TechnicalSupervisionDocumentationUrl);
+            Assert.Equal(name, _sut.TechnicalSupervisionDocumentationUrlName);
+        }
+        private static void AssertListsContainSameElements<T>(IList<T> expected, IList<T> actual)
+        {
+            if (expected.Count != actual.Count) Assert.Fail("Lists have different counts");
+            var listsEqual = expected.OrderBy(x => x)
+                .SequenceEqual(actual.OrderBy(x => x));
+            Assert.True(listsEqual);
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.NO)]
+        public void UpdateTechnicalPrecautions_Updates_If_Precautions_Is_Yes(DataOptions technicalPrecautionsInPlace)
+        {
+            _sut.UpdateTechnicalPrecautionsInPlace(technicalPrecautionsInPlace);
+            var technicalPrecautions = A<List<TechnicalPrecaution>>();
+
+            _sut.UpdateTechnicalPrecautions(technicalPrecautions);
+
+            var actual = _sut.GetTechnicalPrecautions().ToList();
+            if (technicalPrecautionsInPlace == DataOptions.YES)
+            {
+               AssertListsContainSameElements(technicalPrecautions, actual);
+            }
+            else
+            {
+                Assert.Empty(actual);
+            }
+        }
+
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.NO)]
+        public void UpdateTechnicalPrecautionsDocumentation_Updates_If_Precautions_Is_Yes(DataOptions technicalPrecautions)
+        {
+            _sut.UpdateTechnicalPrecautionsInPlace(technicalPrecautions);
+            var url = A<string>();
+            var name = A<string>();
+
+            _sut.UpdateTechnicalPrecautionsDocumentation(url, name);
+
+            if (technicalPrecautions == DataOptions.YES)
+            {
+                Assert.Equal(url, _sut.TechnicalSupervisionDocumentationUrl);
+                Assert.Equal(name, _sut.TechnicalSupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Null(_sut.TechnicalSupervisionDocumentationUrl);
+                Assert.Null(_sut.TechnicalSupervisionDocumentationUrlName);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateUserSupervision_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervision)
         {
             _sut.UserSupervisionDate = A<DateTime>();
             _sut.UserSupervisionDocumentationUrl = A<string>();
             _sut.UserSupervisionDocumentationUrlName = A<string>();
-
-           
-            var userSupervisionDate = A<OptionalValueChange<DateTime?>>();
-            var userSupervisionDocumentation = A<OptionalValueChange<Maybe<NamedLink>>>();
 
             _sut.UpdateUserSupervision(userSupervision);
 

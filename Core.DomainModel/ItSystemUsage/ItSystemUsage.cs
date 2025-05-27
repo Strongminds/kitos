@@ -1021,8 +1021,35 @@ namespace Core.DomainModel.ItSystemUsage
             return removedPersonalData;
         }
 
+        public void UpdateTechnicalPrecautionsInPlace(DataOptions? precautions)
+        {
+            this.precautions = precautions;
+            if (this.precautions == DataOptions.YES) return;
+            ResetTechnicalPrecautionsFields();
+
+        }
+
+        private void ResetTechnicalPrecautionsFields()
+        {
+            precautionsOptionsEncryption = false;
+            precautionsOptionsPseudonomisering = false;
+            precautionsOptionsAccessControl = false;
+            precautionsOptionsLogning = false;
+            TechnicalSupervisionDocumentationUrlName = null;
+            TechnicalSupervisionDocumentationUrl = null;
+        }
+
+        public void UpdateTechnicalPrecautionsDocumentation(string url, string name)
+        {
+            if (this.precautions != DataOptions.YES) return;
+            this.TechnicalSupervisionDocumentationUrl = url;
+            this.TechnicalSupervisionDocumentationUrlName = name;
+        }
+
         public Maybe<OperationError> UpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
         {
+            if (this.precautions != DataOptions.YES) return Maybe<OperationError>.None;
+
             if (technicalPrecautions == null)
                 throw new ArgumentNullException(nameof(technicalPrecautions));
 
