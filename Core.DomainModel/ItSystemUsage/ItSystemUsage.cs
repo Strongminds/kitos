@@ -270,10 +270,10 @@ namespace Core.DomainModel.ItSystemUsage
             if (precautionsOptionsPseudonomisering)
                 yield return TechnicalPrecaution.Pseudonymization;
         }
-        public bool precautionsOptionsEncryption { get;  set; }
-        public bool precautionsOptionsPseudonomisering { get;  set; }
-        public bool precautionsOptionsAccessControl { get;  set; }
-        public bool precautionsOptionsLogning { get;  set; }
+        public bool precautionsOptionsEncryption { get; private set; }
+        public bool precautionsOptionsPseudonomisering { get; private set; }
+        public bool precautionsOptionsAccessControl { get; private set; }
+        public bool precautionsOptionsLogning { get; private set; }
         public string TechnicalSupervisionDocumentationUrlName { get; private set; }
         public string TechnicalSupervisionDocumentationUrl { get; private set; }
 
@@ -1044,6 +1044,23 @@ namespace Core.DomainModel.ItSystemUsage
             if (this.precautions != DataOptions.YES) return;
             this.TechnicalSupervisionDocumentationUrl = url;
             this.TechnicalSupervisionDocumentationUrlName = name;
+        }
+
+        public Maybe<OperationError> UpdateTechnicalPrecautions(bool encryption,
+            bool pseudonymization, bool accessControl,
+            bool logging)
+        {
+            var precautions = new List<TechnicalPrecaution>();
+            if (encryption)
+                precautions.Add(TechnicalPrecaution.Encryption);
+            if (pseudonymization)
+                precautions.Add(TechnicalPrecaution.Pseudonymization);
+            if (accessControl)
+                precautions.Add(TechnicalPrecaution.AccessControl);
+            if (logging)
+                precautions.Add(TechnicalPrecaution.Logging);
+
+            return UpdateTechnicalPrecautions(precautions);
         }
 
         public Maybe<OperationError> UpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)

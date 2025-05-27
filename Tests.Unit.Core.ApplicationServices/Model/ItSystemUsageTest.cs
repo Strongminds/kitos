@@ -16,6 +16,21 @@ namespace Tests.Unit.Core.Model
 {
     public class ItSystemUsageTest : WithAutoFixture
     {
+        public IEnumerable<TechnicalPrecaution> GetTechnicalPrecautions()
+        {
+            if (precautionsOptionsAccessControl)
+                yield return TechnicalPrecaution.AccessControl;
+            if (precautionsOptionsEncryption)
+                yield return TechnicalPrecaution.Encryption;
+            if (precautionsOptionsLogning)
+                yield return TechnicalPrecaution.Logging;
+            if (precautionsOptionsPseudonomisering)
+                yield return TechnicalPrecaution.Pseudonymization;
+        }
+        public bool precautionsOptionsEncryption { get; set; }
+        public bool precautionsOptionsPseudonomisering { get; set; }
+        public bool precautionsOptionsAccessControl { get; set; }
+        public bool precautionsOptionsLogning { get; set; }
         private readonly ItSystemUsage _sut;
 
         public ItSystemUsageTest()

@@ -459,10 +459,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.SensitiveDataLevels = Many<SensitiveDataLevel>().Select(sensitiveDataLevel => new ItSystemUsageSensitiveDataLevel() { SensitivityDataLevel = sensitiveDataLevel }).ToList();
             itSystemUsage.PersonalDataOptions = Many<GDPRPersonalDataOption>().Select(x => new ItSystemUsagePersonalData() { PersonalData = x }).ToList();
             itSystemUsage.UpdateTechnicalPrecautionsInPlace(A<DataOptions>());
-            itSystemUsage.precautionsOptionsAccessControl = A<bool>();
-            itSystemUsage.precautionsOptionsEncryption = A<bool>();
-            itSystemUsage.precautionsOptionsLogning = A<bool>();
-            itSystemUsage.precautionsOptionsPseudonomisering = A<bool>();
+            itSystemUsage.UpdateTechnicalPrecautions(A<bool>(), A<bool>(), A<bool>(), A<bool>());
             itSystemUsage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
             itSystemUsage.answeringDataDPIA = A<DataOptions>();
             itSystemUsage.DPIAdeleteDate = A<DateTime>();
@@ -476,7 +473,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.preriskAssessment = A<RiskLevel>();
             itSystemUsage.UpdateUserSupervision(A<DataOptions>());
             itSystemUsage.UpdateUserSupervisionDate(A<DateTime>());
-            itSystemUsage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
+            itSystemUsage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());
+
 
             var sensitivePersonalDataTypes = Many<Guid>(10).Select(uuid => new SensitivePersonalDataType() { Id = A<int>(), Uuid = uuid, Name = A<string>() }).ToList();
             var registerTypes = Many<Guid>(10).Select(uuid => new RegisterType() { Id = A<int>(), Uuid = uuid, Name = A<string>() }).ToList();
