@@ -363,11 +363,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                         SensitivityDataLevel = A<SensitiveDataLevel>()
                     }
                 },
-                TechnicalSupervisionDocumentationUrl = A<string>(),
-                TechnicalSupervisionDocumentationUrlName = A<string>(),
                 DPIAdeleteDate = A<DateTime>(),
             };
             usage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());
+            usage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
             return usage;
         }
     }

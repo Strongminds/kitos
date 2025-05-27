@@ -257,7 +257,7 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ICollection<ItSystemUsagePersonalData> PersonalDataOptions { get; set; }
         public virtual ICollection<ItSystemUsageSensitiveDataLevel> SensitiveDataLevels { get; set; }
 
-        public DataOptions? precautions { get; set; }
+        public DataOptions? precautions { get; private set; }
 
         public IEnumerable<TechnicalPrecaution> GetTechnicalPrecautions()
         {
@@ -270,12 +270,12 @@ namespace Core.DomainModel.ItSystemUsage
             if (precautionsOptionsPseudonomisering)
                 yield return TechnicalPrecaution.Pseudonymization;
         }
-        public bool precautionsOptionsEncryption { get; set; }
-        public bool precautionsOptionsPseudonomisering { get; set; }
-        public bool precautionsOptionsAccessControl { get; set; }
-        public bool precautionsOptionsLogning { get; set; }
-        public string TechnicalSupervisionDocumentationUrlName { get; set; }
-        public string TechnicalSupervisionDocumentationUrl { get; set; }
+        public bool precautionsOptionsEncryption { get;  set; }
+        public bool precautionsOptionsPseudonomisering { get;  set; }
+        public bool precautionsOptionsAccessControl { get;  set; }
+        public bool precautionsOptionsLogning { get;  set; }
+        public string TechnicalSupervisionDocumentationUrlName { get; private set; }
+        public string TechnicalSupervisionDocumentationUrl { get; private set; }
 
         public DataOptions? UserSupervision { get; private set; }
         public DateTime? UserSupervisionDate { get; private set; }

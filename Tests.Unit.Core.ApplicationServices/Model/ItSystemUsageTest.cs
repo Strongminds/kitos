@@ -37,9 +37,8 @@ namespace Tests.Unit.Core.Model
             var url = A<string>();
             var name = A<string>();
             _sut.UpdateTechnicalPrecautions(technicalPrecautions);
-            _sut.TechnicalSupervisionDocumentationUrl = url;
-            _sut.TechnicalSupervisionDocumentationUrlName = name;
-
+            _sut.UpdateTechnicalPrecautionsDocumentation(url, name);
+            
             _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
 
             Assert.Equal(precautionsInPlace, _sut.precautions);
@@ -57,8 +56,7 @@ namespace Tests.Unit.Core.Model
             var name = A<string>();
             _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
             _sut.UpdateTechnicalPrecautions(technicalPrecautions);
-            _sut.TechnicalSupervisionDocumentationUrl = url;
-            _sut.TechnicalSupervisionDocumentationUrlName = name;
+            _sut.UpdateTechnicalPrecautionsDocumentation(url, name);
 
             _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
 
@@ -146,7 +144,6 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateUserSupervision(userSupervision);
             _sut.UpdateUserSupervisionDate(userSupervisionDate);
             _sut.UpdateUserSupervisionDocumentation(userSupervisionDocumentation.Url, userSupervisionDocumentation.Name);
-
 
             _sut.UpdateUserSupervision(userSupervision);
 

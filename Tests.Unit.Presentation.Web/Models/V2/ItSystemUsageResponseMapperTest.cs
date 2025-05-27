@@ -458,13 +458,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.LinkToDirectoryUrl = A<string>();
             itSystemUsage.SensitiveDataLevels = Many<SensitiveDataLevel>().Select(sensitiveDataLevel => new ItSystemUsageSensitiveDataLevel() { SensitivityDataLevel = sensitiveDataLevel }).ToList();
             itSystemUsage.PersonalDataOptions = Many<GDPRPersonalDataOption>().Select(x => new ItSystemUsagePersonalData() { PersonalData = x }).ToList();
-            itSystemUsage.precautions = A<DataOptions>();
+            itSystemUsage.UpdateTechnicalPrecautionsInPlace(A<DataOptions>());
             itSystemUsage.precautionsOptionsAccessControl = A<bool>();
             itSystemUsage.precautionsOptionsEncryption = A<bool>();
             itSystemUsage.precautionsOptionsLogning = A<bool>();
             itSystemUsage.precautionsOptionsPseudonomisering = A<bool>();
-            itSystemUsage.TechnicalSupervisionDocumentationUrlName = A<string>();
-            itSystemUsage.TechnicalSupervisionDocumentationUrl = A<string>();
+            itSystemUsage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
             itSystemUsage.answeringDataDPIA = A<DataOptions>();
             itSystemUsage.DPIAdeleteDate = A<DateTime>();
             itSystemUsage.numberDPIA = A<int>();
