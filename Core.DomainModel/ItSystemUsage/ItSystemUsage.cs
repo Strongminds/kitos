@@ -1264,5 +1264,30 @@ namespace Core.DomainModel.ItSystemUsage
                 ? ItSystemUsageValidationError.MainContractNotActive
                 : Maybe<ItSystemUsageValidationError>.None;
         }
+
+        public void UpdateRiskAssessmentDate(DateTime date)
+        {
+            if (this.riskAssessment != DataOptions.YES) return;
+            this.riskAssesmentDate = date;
+        }
+
+        public void UpdateRiskAssessmentLevel(RiskLevel level)
+        {
+            if (this.riskAssessment != DataOptions.YES) return;
+            this.preriskAssessment = level;
+        }
+
+        public void UpdateRiskAssessmentDocumentation(string url, string name)
+        {
+            if (this.riskAssessment != DataOptions.YES) return;
+            this.RiskSupervisionDocumentationUrl = url;
+            this.RiskSupervisionDocumentationUrlName = name;
+        }
+
+        public void UpdateRiskAssessmentNote(string note)
+        {
+            if (this.riskAssessment != DataOptions.YES) return;
+            this.noteRisks = note;
+            }
     }
 }

@@ -28,6 +28,99 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateRiskAssessmentDate_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        {
+            _sut.UpdateRiskAssessment(riskAssessment);
+            var date = A<DateTime>();
+
+            _sut.UpdateRiskAssessmentDate(date);
+
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(date, _sut.riskAssesmentDate);
+            }
+            else
+            {
+                Assert.Null(_sut.riskAssesmentDate);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateRiskAssessmentLevel_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        {
+            _sut.UpdateRiskAssessment(riskAssessment);
+            var level = A<RiskLevel>();
+
+            _sut.UpdateRiskAssessmentLevel(level);
+
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(level, _sut.preriskAssessment);
+            }
+            else
+            {
+                Assert.Null(_sut.preriskAssessment);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateRiskAssessmentNote_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        {
+            _sut.UpdateRiskAssessment(riskAssessment);
+            var note = A<string>();
+
+            _sut.UpdateRiskAssessmentNote(note);
+
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(note, _sut.noteRisks);
+            }
+            else
+            {
+                Assert.Null(_sut.noteRisks);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateRiskAssessmentDocumentation_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        {
+            _sut.UpdateRiskAssessment(riskAssessment);
+            var url = A<string>();
+            var name = A<string>();
+
+
+            _sut.UpdateRiskAssessmentDocumentation(url, name);
+
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
+                Assert.Equal(name, _sut.RiskSupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Null(_sut.RiskSupervisionDocumentationUrl);
+                Assert.Null(_sut.RiskSupervisionDocumentationUrlName);
+            }
+        }
+
+
+        [Theory]
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
@@ -121,7 +214,9 @@ namespace Tests.Unit.Core.Model
 
         [Theory]
         [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateTechnicalPrecautions_Updates_If_Precautions_Is_Yes(DataOptions technicalPrecautionsInPlace)
         {
             _sut.UpdateTechnicalPrecautionsInPlace(technicalPrecautionsInPlace);
@@ -143,7 +238,9 @@ namespace Tests.Unit.Core.Model
 
         [Theory]
         [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateTechnicalPrecautionsDocumentation_Updates_If_Precautions_Is_Yes(DataOptions technicalPrecautions)
         {
             _sut.UpdateTechnicalPrecautionsInPlace(technicalPrecautions);
@@ -201,7 +298,9 @@ namespace Tests.Unit.Core.Model
 
         [Theory]
         [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateUserSupervisionDate_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision)
         {
             _sut.UpdateUserSupervision(userSupervision);
@@ -215,7 +314,9 @@ namespace Tests.Unit.Core.Model
 
         [Theory]
         [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateUserSupervisionDocumentation_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision)
         {
             _sut.UpdateUserSupervision(userSupervision);
