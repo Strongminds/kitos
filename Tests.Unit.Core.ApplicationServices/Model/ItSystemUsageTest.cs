@@ -225,26 +225,14 @@ namespace Tests.Unit.Core.Model
             }
         }
 
-        [Theory]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdatePlannedRiskAssessmentDate_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        [Fact]
+        public void UpdatePlannedRiskAssessmentDate_Updates()
         {
-            _sut.UpdateRiskAssessment(riskAssessment);
             var date = A<DateTime>();
 
             _sut.UpdatePlannedRiskAssessmentDate(date);
 
-            if (riskAssessment == DataOptions.YES)
-            {
-                Assert.Equal(date, _sut.PlannedRiskAssessmentDate);
-            }
-            else
-            {
-                Assert.Null(_sut.PlannedRiskAssessmentDate);
-            }
+            Assert.Equal(date, _sut.PlannedRiskAssessmentDate);
         }
 
         [Theory]
