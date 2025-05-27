@@ -1589,8 +1589,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             var precautions = Many<TechnicalPrecaution>().Distinct().ToList();
             precautions.Add(precautions.First()); //Add duplicate
+            DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
+                TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
                 TechnicalPrecautionsApplied = precautions.FromNullable<IEnumerable<TechnicalPrecaution>>().AsChangedValue(),
             };
 
@@ -2974,6 +2976,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private SystemUsageUpdateParameters CreateSystemUsageUpdateParametersWithSimpleParametersAdded()
         {
             DataOptions? userSupervision = DataOptions.YES;
+            DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
             return new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -3001,7 +3004,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     BusinessCritical = A<DataOptions?>().AsChangedValue(),
                     HostedAt = A<HostedAt?>().AsChangedValue(),
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
-                    TechnicalPrecautionsInPlace = A<DataOptions?>().AsChangedValue(),
+                    TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
                     TechnicalPrecautionsDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     UserSupervision = userSupervision.AsChangedValue(),
                     UserSupervisionDate = A<DateTime?>().AsChangedValue(),
