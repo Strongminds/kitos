@@ -27,6 +27,81 @@ namespace Tests.Unit.Core.Model
             };
         }
 
+
+        [Theory]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        [InlineData(DataOptions.YES)]
+        public void UpdateRetentionPeriodDefined_Only_Clears_Related_Fields_If_Not_Yes(DataOptions retentionPeriodDefined)
+        {
+            var nextDataRetentionEvaluationDate = A<DateTime>();
+            var DataRetentionEvaluationFrequencyInMonths = A<int>();
+            _sut.UpdateRetentionPeriodDefined(DataOptions.YES);
+            _sut.UpdateNextDataRetentionEvaluationDate(nextDataRetentionEvaluationDate);
+            _sut.UpdateDataRetentionEvaluationFrequencyInMonths(DataRetentionEvaluationFrequencyInMonths);
+
+            _sut.UpdateRetentionPeriodDefined(retentionPeriodDefined);
+
+            Assert.Equal(retentionPeriodDefined, _sut.answeringDataDPIA);
+            if (retentionPeriodDefined == DataOptions.YES)
+            {
+                Assert.Equal(retentionPeriodDefined, _sut.answeringDataDPIA);
+                Assert.Equal(nextDataRetentionEvaluationDate, _sut.DPIAdeleteDate);
+                Assert.Equal(DataRetentionEvaluationFrequencyInMonths, _sut.numberDPIA);
+            }
+            else
+            {
+                Assert.Null(_sut.DPIADateFor);
+                Assert.Null(_sut.DPIASupervisionDocumentationUrl);
+                Assert.Null(_sut.DPIASupervisionDocumentationUrlName);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateNextDataRetentionEvaluationDate_Updates_If_Retention_Period_Defined_Is_Yes(DataOptions retentionPeriodDefined)
+        {
+            _sut.UpdateRetentionPeriodDefined(retentionPeriodDefined);
+            var date = A<DateTime>();
+
+            _sut.UpdateNextDataRetentionEvaluationDate(date);
+
+            if (retentionPeriodDefined == DataOptions.YES)
+            {
+                Assert.Equal(date, _sut.DPIAdeleteDate);
+            }
+            else
+            {
+                Assert.Null(_sut.DPIAdeleteDate);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateDataRetentionEvaluationFrequencyInMonths_Updates_If_Retention_Period_Defined_Is_Yes(DataOptions retentionPeriodDefined)
+        {
+            _sut.UpdateRetentionPeriodDefined(retentionPeriodDefined);
+            var frequency = A<int>();
+
+            _sut.UpdateDataRetentionEvaluationFrequencyInMonths(frequency);
+
+            if (retentionPeriodDefined == DataOptions.YES)
+            {
+                Assert.Equal(frequency, _sut.numberDPIA);
+            }
+            else
+            {
+                Assert.Equal(0, _sut.numberDPIA);
+            }
+        }
+
         [Theory]
         [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.DONTKNOW)]
@@ -51,7 +126,6 @@ namespace Tests.Unit.Core.Model
                 Assert.Null(_sut.DPIASupervisionDocumentationUrlName);
             }
         }
-
 
         [Theory]
         [InlineData(DataOptions.YES)]

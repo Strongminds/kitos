@@ -1343,5 +1343,35 @@ namespace Core.DomainModel.ItSystemUsage
             this.DPIASupervisionDocumentationUrl = url;
             this.DPIASupervisionDocumentationUrlName = name;
         }
+
+        public void UpdateRetentionPeriodDefined(DataOptions retentionPeriodDefined)
+        {
+            answeringDataDPIA = retentionPeriodDefined;
+            if (CanUpdateRetentionPeriodFields()) return;
+            ResetRetentionPeriodFields();
+        }
+
+        private void ResetRetentionPeriodFields()
+        {
+            DPIAdeleteDate = null;
+            numberDPIA = 0;
+        }
+
+        private bool CanUpdateRetentionPeriodFields()
+        {
+            return answeringDataDPIA == DataOptions.YES;
+        }
+
+        public void UpdateNextDataRetentionEvaluationDate(DateTime nextDataRetentionEvaluationDate)
+        {
+            if (!CanUpdateRetentionPeriodFields()) return;
+            DPIAdeleteDate = nextDataRetentionEvaluationDate;
+        }
+
+        public void UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
+        {
+            if (!CanUpdateRetentionPeriodFields()) return;
+            numberDPIA = dataRetentionEvaluationFrequencyInMonths;
+        }
     }
 }
