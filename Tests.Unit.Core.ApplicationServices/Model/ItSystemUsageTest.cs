@@ -33,7 +33,7 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateUserSupervisionFields_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervision)
+        public void UpdateUserSupervision_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervision)
         {
             _sut.UserSupervisionDate = A<DateTime>();
             _sut.UserSupervisionDocumentationUrl = A<string>();
@@ -52,9 +52,9 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
-        public void UpdateUserSupervisionFields_Does_Not_Clear_Related_Fields_If_Yes()
+        public void UpdateUserSupervision_Does_Not_Clear_Related_Fields_If_Yes()
         {
-            var userSupervision = DataOptions.YES;
+            const DataOptions userSupervision = DataOptions.YES;
             var userSupervisionDate = A<DateTime?>();
             var userSupervisionDocumentation = A<NamedLink>();
             _sut.UserSupervisionDate = userSupervisionDate;
@@ -68,6 +68,21 @@ namespace Tests.Unit.Core.Model
             Assert.Equal(userSupervisionDate, _sut.UserSupervisionDate);
             Assert.Equal(userSupervisionDocumentation.Url, _sut.UserSupervisionDocumentationUrl);
             Assert.Equal(userSupervisionDocumentation.Name, _sut.UserSupervisionDocumentationUrlName);
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES, true)]
+        [InlineData(DataOptions.NO, false)]
+        public void UpdateUserSupervisionDate_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision, bool shouldUpdate)
+        {
+            _sut.UpdateUserSupervision(userSupervision);
+            var date = A<DateTime>();
+
+            _sut.UpdateUserSupervisionDate(date);
+
+            if (shouldUpdate) Assert.Equal(date, _sut.UserSupervisionDate);
+            else Assert.Null(_sut.UserSupervisionDate);
+
         }
 
         [Fact]

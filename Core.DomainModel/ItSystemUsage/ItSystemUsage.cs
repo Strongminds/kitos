@@ -288,7 +288,8 @@ namespace Core.DomainModel.ItSystemUsage
             {
                 this.UserSupervision = userSupervision.Value;
             }
-            if (this.UserSupervision == DataOptions.YES) return; //todo does it register change fast enough for this?
+
+            if (this.UserSupervision == DataOptions.YES) return;
 
             this.ResetUserSupervisionFields();
         }
