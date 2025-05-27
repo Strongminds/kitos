@@ -269,8 +269,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentConductedDate, (systemUsage, date) => systemUsage.UpdateRiskAssessmentDate(date)))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentResult, (systemUsage, result) => systemUsage.UpdateRiskAssessmentLevel(result)))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentDocumentation, (systemUsage, newLink) => systemUsage.UpdateRiskAssessmentDocumentation(newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentNotes, (systemUsage, notes) => systemUsage.noteRisks = notes))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.PlannedRiskAssessmentDate, (systemUsage, date) => systemUsage.PlannedRiskAssessmentDate = date))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentNotes, (systemUsage, notes) => systemUsage.UpdateRiskAssessmentNotes(notes)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.PlannedRiskAssessmentDate, (systemUsage, date) => systemUsage.UpdatePlannedRiskAssessmentDate(date)))
 
                 //DPIA
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DPIAConducted, (systemUsage, conducted) => systemUsage.DPIA = conducted))

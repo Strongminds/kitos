@@ -349,13 +349,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 isBusinessCritical = A<DataOptions>(),
                 DPIA = A<DataOptions>(),
                 DPIADateFor = A<DateTime>(),
-                riskAssessment = A<DataOptions>(),
-                riskAssesmentDate = A<DateTime>(),
-                PlannedRiskAssessmentDate = A<DateTime>(),
                 noteRisks = A<string>(),
                 LinkToDirectoryUrl = A<string>(),
                 HostedAt = A<HostedAt>(),
-                preriskAssessment = A<RiskLevel>(),
                 SensitiveDataLevels = new List<ItSystemUsageSensitiveDataLevel>()
                 {
                     new()
@@ -367,6 +363,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             usage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());
             usage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
+            usage.UpdateRiskAssessment(DataOptions.YES);
+            usage.UpdateRiskAssessmentDate(A<DateTime>());
+            usage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
+            usage.UpdateRiskAssessmentLevel(A<RiskLevel>());
             return usage;
         }
     }

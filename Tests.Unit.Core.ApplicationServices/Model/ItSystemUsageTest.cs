@@ -93,6 +93,50 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateRiskAssessmentNotes_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        {
+            _sut.UpdateRiskAssessment(riskAssessment);
+            var notes = A<string>();
+
+            _sut.UpdateRiskAssessmentNotes(notes);
+
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(notes, _sut.noteRisks);
+            }
+            else
+            {
+                Assert.Null(_sut.noteRisks);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdatePlannedRiskAssessmentDate_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        {
+            _sut.UpdateRiskAssessment(riskAssessment);
+            var date = A<DateTime>();
+
+            _sut.UpdatePlannedRiskAssessmentDate(date);
+
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(date, _sut.PlannedRiskAssessmentDate);
+            }
+            else
+            {
+                Assert.Null(_sut.PlannedRiskAssessmentDate);
+            }
+        }
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateRiskAssessmentLevel_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
         {
             _sut.UpdateRiskAssessment(riskAssessment);
@@ -120,7 +164,7 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateRiskAssessment(riskAssessment);
             var note = A<string>();
 
-            _sut.UpdateRiskAssessmentNote(note);
+            _sut.UpdateRiskAssessmentNotes(note);
 
             if (riskAssessment == DataOptions.YES)
             {

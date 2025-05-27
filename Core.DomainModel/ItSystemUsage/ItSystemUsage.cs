@@ -340,12 +340,12 @@ namespace Core.DomainModel.ItSystemUsage
             noteRisks = null;
         }
 
-        public DataOptions? riskAssessment { get; set; }
-        public DateTime? riskAssesmentDate { get; set; }
-        public RiskLevel? preriskAssessment { get; set; }
-        public DateTime? PlannedRiskAssessmentDate { get; set; }
-        public string RiskSupervisionDocumentationUrlName { get; set; }
-        public string RiskSupervisionDocumentationUrl { get; set; }
+        public DataOptions? riskAssessment { get;  set; }
+        public DateTime? riskAssesmentDate { get;  set; }
+        public RiskLevel? preriskAssessment { get;  set; }
+        public DateTime? PlannedRiskAssessmentDate { get;  set; }
+        public string RiskSupervisionDocumentationUrlName { get;  set; }
+        public string RiskSupervisionDocumentationUrl { get;  set; }
         public string noteRisks { get; set; }
 
         public DataOptions? DPIA { get; set; }
@@ -1295,7 +1295,7 @@ namespace Core.DomainModel.ItSystemUsage
             RiskSupervisionDocumentationUrlName = name;
         }
 
-        public void UpdateRiskAssessmentNote(string note)
+        public void UpdateRiskAssessmentNotes(string note)
         {
             if (!CanUpdateRiskAssessmentFields()) return;
             noteRisks = note;
@@ -1324,5 +1324,10 @@ namespace Core.DomainModel.ItSystemUsage
             return DPIA == DataOptions.YES;
         }
 
+        public void UpdatePlannedRiskAssessmentDate(DateTime? date)
+        {
+            if (!CanUpdateRiskAssessmentFields()) return;
+            PlannedRiskAssessmentDate = date;
+        }
     }
 }
