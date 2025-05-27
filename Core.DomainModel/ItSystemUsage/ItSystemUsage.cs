@@ -16,6 +16,7 @@ using Core.DomainModel.Extensions;
 using Core.DomainModel.ItSystem.DataTypes;
 
 
+
 namespace Core.DomainModel.ItSystemUsage
 {
     /// <summary>
@@ -285,9 +286,14 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateUserSupervision(DataOptions? userSupervision)
         {
             this.UserSupervision = userSupervision;
-            if (this.UserSupervision == DataOptions.YES) return;
+            if (CannotUpdateUserSupervisionFields()) return;
 
             this.ResetUserSupervisionFields();
+        }
+
+        private bool CannotUpdateUserSupervisionFields()
+        {
+            return this.UserSupervision != DataOptions.YES;
         }
 
         private void ResetUserSupervisionFields()
@@ -299,7 +305,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateUserSupervisionDate(DateTime? userSupervisionDate)
         {
-            if (this.UserSupervision != DataOptions.YES)
+            if (CannotUpdateUserSupervisionFields())
             {
                 return;
             }
@@ -309,7 +315,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateUserSupervisionDocumentation(string url, string name)
         {
-            if (this.UserSupervision != DataOptions.YES)
+            if (CannotUpdateUserSupervisionFields())
             {
                 return;
             }
@@ -321,7 +327,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateRiskAssessment(DataOptions riskAssessment)
         {
             this.riskAssessment = riskAssessment;
-            if (this.riskAssessment == DataOptions.YES) return;
+            if (CannotUpdateRiskAssessmentField()) return;
             this.ResetRiskAssessmentFields();
         }
 
@@ -1037,10 +1043,15 @@ namespace Core.DomainModel.ItSystemUsage
             return removedPersonalData;
         }
 
+        private bool CannotUpdateTechnicalPrecautionsFields()
+        {
+            return this.precautions != DataOptions.YES;
+        }
+
         public void UpdateTechnicalPrecautionsInPlace(DataOptions? precautions)
         {
             this.precautions = precautions;
-            if (this.precautions == DataOptions.YES) return;
+            if (CannotUpdateTechnicalPrecautionsFields()) return;
             ResetTechnicalPrecautionsFields();
 
         }
@@ -1057,7 +1068,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateTechnicalPrecautionsDocumentation(string url, string name)
         {
-            if (this.precautions != DataOptions.YES) return;
+            if (CannotUpdateTechnicalPrecautionsFields()) return;
             this.TechnicalSupervisionDocumentationUrl = url;
             this.TechnicalSupervisionDocumentationUrlName = name;
         }
@@ -1081,7 +1092,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
         {
-            if (this.precautions != DataOptions.YES) return Maybe<OperationError>.None;
+            if (CannotUpdateTechnicalPrecautionsFields()) return Maybe<OperationError>.None;
 
             if (technicalPrecautions == null)
                 throw new ArgumentNullException(nameof(technicalPrecautions));
@@ -1267,27 +1278,32 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateRiskAssessmentDate(DateTime date)
         {
-            if (this.riskAssessment != DataOptions.YES) return;
+            if (CannotUpdateRiskAssessmentField()) return;
             this.riskAssesmentDate = date;
         }
 
         public void UpdateRiskAssessmentLevel(RiskLevel level)
         {
-            if (this.riskAssessment != DataOptions.YES) return;
+            if (CannotUpdateRiskAssessmentField()) return;
             this.preriskAssessment = level;
         }
 
         public void UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            if (this.riskAssessment != DataOptions.YES) return;
+            if (CannotUpdateRiskAssessmentField()) return;
             this.RiskSupervisionDocumentationUrl = url;
             this.RiskSupervisionDocumentationUrlName = name;
         }
 
         public void UpdateRiskAssessmentNote(string note)
         {
-            if (this.riskAssessment != DataOptions.YES) return;
+            if (CannotUpdateRiskAssessmentField()) return;
             this.noteRisks = note;
-            }
+        }
+
+        private bool CannotUpdateRiskAssessmentField()
+        {
+            return this.riskAssessment != DataOptions.YES;
+        }
     }
 }
