@@ -18,8 +18,8 @@ namespace Tests.PubSubTester.Controllers
         private static readonly string KitosApiUrl = "https://localhost:44300/";
 
         private const string ApiRoutePrefix = "api/v1";
-        private static readonly string PublishRoute = $"{ApiRoutePrefix}/publish";
-        private static readonly string SubscriptionRoute = $"{ApiRoutePrefix}/subscription";
+        private const string PublishRoute = $"{ApiRoutePrefix}/publish";
+        private const string SubscriptionRoute = $"{ApiRoutePrefix}/subscription";
 
         [HttpPost]
         [Route("subscribe")]
