@@ -64,7 +64,6 @@ namespace Tests.Unit.Core.Model
                 Assert.Null(_sut.DPIASupervisionDocumentationUrl);
                 Assert.Null(_sut.DPIASupervisionDocumentationUrlName);
             }
-            
         }
 
         [Theory]
@@ -163,28 +162,10 @@ namespace Tests.Unit.Core.Model
         [Theory]
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessment_Clears_Related_Fields_If_Not_Yes(DataOptions riskAssessment)
+        public void UpdateRiskAssessment_Only_Clears_Related_Fields_If_Not_Yes(DataOptions riskAssessment)
         {
-            _sut.preriskAssessment = A<RiskLevel>();
-            _sut.riskAssesmentDate = A<DateTime>();
-            _sut.RiskSupervisionDocumentationUrl = A<string>();
-            _sut.RiskSupervisionDocumentationUrlName = A<string>();
-            _sut.noteRisks = A<string>();
-
-            _sut.UpdateRiskAssessment(riskAssessment);
-
-            Assert.Equal(riskAssessment, _sut.riskAssessment);
-            Assert.Null(_sut.preriskAssessment);
-            Assert.Null(_sut.riskAssesmentDate);
-            Assert.Null(_sut.RiskSupervisionDocumentationUrl);
-            Assert.Null(_sut.RiskSupervisionDocumentationUrlName);
-        }
-
-        [Fact]
-        public void UpdateRiskAssessment_Does_Not_Clear_Related_Fields_If_Yes()
-        {
-            const DataOptions riskAssessment = DataOptions.YES;
             var preRiskAssessment = A<RiskLevel>();
             var riskAssessmentDate = A<DateTime>();
             var url = A<string>();
@@ -200,30 +181,53 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateRiskAssessment(riskAssessment);
 
             Assert.Equal(riskAssessment, _sut.riskAssessment);
-            Assert.Equal(preRiskAssessment, _sut.preriskAssessment);
-            Assert.Equal(riskAssessmentDate, _sut.riskAssesmentDate);
-            Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
-            Assert.Equal(urlName, _sut.RiskSupervisionDocumentationUrlName);
+            if (riskAssessment == DataOptions.YES)
+            {
+                Assert.Equal(preRiskAssessment, _sut.preriskAssessment);
+                Assert.Equal(riskAssessmentDate, _sut.riskAssesmentDate);
+                Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
+                Assert.Equal(urlName, _sut.RiskSupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Null(_sut.preriskAssessment);
+                Assert.Null(_sut.riskAssesmentDate);
+                Assert.Null(_sut.RiskSupervisionDocumentationUrl);
+                Assert.Null(_sut.RiskSupervisionDocumentationUrlName);
+            }
+              
         }
 
         [Theory]
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateTechnicalPrecautionsInPlace_Clears_Related_Fields_If_Not_Yes(DataOptions precautionsInPlace)
+        public void UpdateTechnicalPrecautionsInPlace_Only_Clears_Related_Fields_If_Not_Yes(DataOptions precautionsInPlace)
         {
             var technicalPrecautions = A<List<TechnicalPrecaution>>();
             var url = A<string>();
             var name = A<string>();
+            _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
             _sut.UpdateTechnicalPrecautions(technicalPrecautions);
             _sut.UpdateTechnicalPrecautionsDocumentation(url, name);
-            
+
             _sut.UpdateTechnicalPrecautionsInPlace(precautionsInPlace);
 
-            Assert.Equal(precautionsInPlace, _sut.precautions);
-            Assert.Empty(_sut.GetTechnicalPrecautions());
-            Assert.Null(_sut.TechnicalSupervisionDocumentationUrlName);
-            Assert.Null(_sut.TechnicalSupervisionDocumentationUrl);
+            if (precautionsInPlace == DataOptions.YES)
+            {
+                Assert.Equal(precautionsInPlace, _sut.precautions);
+                AssertListsContainSameElements(technicalPrecautions, _sut.GetTechnicalPrecautions().ToList());
+                Assert.Equal(url, _sut.TechnicalSupervisionDocumentationUrl);
+                Assert.Equal(name, _sut.TechnicalSupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Equal(precautionsInPlace, _sut.precautions);
+                Assert.Empty(_sut.GetTechnicalPrecautions());
+                Assert.Null(_sut.TechnicalSupervisionDocumentationUrlName);
+                Assert.Null(_sut.TechnicalSupervisionDocumentationUrl);
+            }
         }
 
         [Fact]
