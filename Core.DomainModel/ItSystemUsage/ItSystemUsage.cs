@@ -338,6 +338,7 @@ namespace Core.DomainModel.ItSystemUsage
             RiskSupervisionDocumentationUrl = null;
             RiskSupervisionDocumentationUrlName = null;
             noteRisks = null;
+            PlannedRiskAssessmentDate = null;
         }
 
         public DataOptions? riskAssessment { get;  set; }
