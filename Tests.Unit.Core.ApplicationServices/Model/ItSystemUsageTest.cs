@@ -70,23 +70,23 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
-        [InlineData(DataOptions.YES, true)]
-        [InlineData(DataOptions.NO, false)]
-        public void UpdateUserSupervisionDate_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision, bool shouldUpdate)
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.NO)]
+        public void UpdateUserSupervisionDate_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision)
         {
             _sut.UpdateUserSupervision(userSupervision);
             var date = A<DateTime>();
 
             _sut.UpdateUserSupervisionDate(date);
 
-            if (shouldUpdate) Assert.Equal(date, _sut.UserSupervisionDate);
+            if (userSupervision == DataOptions.YES) Assert.Equal(date, _sut.UserSupervisionDate);
             else Assert.Null(_sut.UserSupervisionDate);
         }
 
         [Theory]
-        [InlineData(DataOptions.YES, true)]
-        [InlineData(DataOptions.NO, false)]
-        public void UpdateUserSupervisionDocumentation_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision, bool shouldUpdate)
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.NO)]
+        public void UpdateUserSupervisionDocumentation_Updates_If_User_Supervision_Is_Yes(DataOptions userSupervision)
         {
             _sut.UpdateUserSupervision(userSupervision);
             var url = A<string>();
@@ -94,7 +94,7 @@ namespace Tests.Unit.Core.Model
 
             _sut.UpdateUserSupervisionDocumentation(url, name);
 
-            if (shouldUpdate)
+            if (userSupervision == DataOptions.YES)
             {
                 Assert.Equal(url, _sut.UserSupervisionDocumentationUrl);
                 Assert.Equal(name, _sut.UserSupervisionDocumentationUrlName);
