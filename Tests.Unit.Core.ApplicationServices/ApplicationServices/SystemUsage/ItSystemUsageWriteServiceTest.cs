@@ -1484,7 +1484,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var riskAssessmentNotes = A<string>();
             var plannedRiskAssessmentDate = A<DateTime?>();
             var riskAssessmentResult = A<RiskLevel?>();
-            var dpiaConducted = A<DataOptions?>();
+            DataOptions? dpiaConducted = DataOptions.YES;
             var dpiaDate = A<DateTime?>();
             var dpiaDoc = A<NamedLink>();
             var retentionPeriod = A<DataOptions?>();
@@ -2978,6 +2978,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? userSupervision = DataOptions.YES;
             DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
             DataOptions? riskAssessment = DataOptions.YES;
+            DataOptions? dpiaConcluded = DataOptions.YES;
             return new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -3016,7 +3017,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RiskAssessmentNotes = A<string>().AsChangedValue(),
                     PlannedRiskAssessmentDate = A<DateTime?>().AsChangedValue(),
                     RiskAssessmentResult = A<RiskLevel?>().AsChangedValue(),
-                    DPIAConducted = A<DataOptions?>().AsChangedValue(),
+                    DPIAConducted = dpiaConcluded.AsChangedValue(),
                     DPIADate = A<DateTime?>().AsChangedValue(),
                     DPIADocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     RetentionPeriodDefined = A<DataOptions?>().AsChangedValue(),
