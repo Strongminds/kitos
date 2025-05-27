@@ -32,7 +32,53 @@ namespace Tests.Unit.Core.Model
         //public string DPIASupervisionDocumentationUrlName { get; set; }
         //public string DPIASupervisionDocumentationUrl { get; set; }
 
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateDPIADocumentation_Updates_If_DPIA_Is_Yes(DataOptions dpia)
+        {
+            _sut.UpdateDPIAConducted(dpia);
+            var url = A<string>();
+            var name = A<string>();
 
+            _sut.UpdateDPIADocumentation(url, name);
+
+            if (dpia == DataOptions.YES)
+            {
+                Assert.Equal(url, _sut.DPIASupervisionDocumentationUrl);
+                Assert.Equal(name, _sut.DPIASupervisionDocumentationUrlName);
+            }
+            else
+            {
+                Assert.Null(_sut.DPIASupervisionDocumentationUrl);
+                Assert.Null(_sut.DPIASupervisionDocumentationUrlName);
+            }
+        }
+
+
+        [Theory]
+        [InlineData(DataOptions.YES)]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateDPIADate_Updates_If_DPIA_Is_Yes(DataOptions dpia)
+        {
+            _sut.UpdateDPIAConducted(dpia);
+            var date = A<DateTime>();
+
+            _sut.UpdateDPIADate(date);
+
+            if (dpia == DataOptions.YES)
+            {
+                Assert.Equal(date, _sut.DPIADateFor);
+            }
+            else
+            {
+                Assert.Null(_sut.DPIADateFor);
+            }
+        }
 
 
         [Theory]

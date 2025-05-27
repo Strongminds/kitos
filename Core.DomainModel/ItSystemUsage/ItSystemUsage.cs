@@ -1330,5 +1330,18 @@ namespace Core.DomainModel.ItSystemUsage
             if (!CanUpdateRiskAssessmentFields()) return;
             PlannedRiskAssessmentDate = date;
         }
+
+        public void UpdateDPIADate(DateTime date)
+        {
+            if (!CanUpdateDPIAFields()) return;
+            DPIADateFor = date;
+        }
+
+        public void UpdateDPIADocumentation(string url, string name)
+        {
+            if (!CanUpdateDPIAFields()) return;
+            this.DPIASupervisionDocumentationUrl = url;
+            this.DPIASupervisionDocumentationUrlName = name;
+        }
     }
 }
