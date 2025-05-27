@@ -318,6 +318,22 @@ namespace Core.DomainModel.ItSystemUsage
             this.UserSupervisionDocumentationUrlName = name;
         }
 
+        public void UpdateRiskAssessment(DataOptions riskAssessment)
+        {
+            this.riskAssessment = riskAssessment;
+            if (this.riskAssessment == DataOptions.YES) return;
+            this.ResetRiskAssessmentFields();
+        }
+
+        private void ResetRiskAssessmentFields()
+        {
+            this.riskAssesmentDate = null;
+            this.preriskAssessment = null;
+            this.RiskSupervisionDocumentationUrl = null;
+            this.RiskSupervisionDocumentationUrlName = null;
+            this.noteRisks = null;
+        }
+
         public DataOptions? riskAssessment { get; set; }
         public DateTime? riskAssesmentDate { get; set; }
         public RiskLevel? preriskAssessment { get; set; }

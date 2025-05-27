@@ -475,7 +475,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.UpdateUserSupervisionDate(A<DateTime>());
             itSystemUsage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());
 
-
             var sensitivePersonalDataTypes = Many<Guid>(10).Select(uuid => new SensitivePersonalDataType() { Id = A<int>(), Uuid = uuid, Name = A<string>() }).ToList();
             var registerTypes = Many<Guid>(10).Select(uuid => new RegisterType() { Id = A<int>(), Uuid = uuid, Name = A<string>() }).ToList();
             _sensitivePersonalDataTypeRepositoryMock.Setup(x => x.GetSensitivePersonalDataTypes()).Returns(sensitivePersonalDataTypes);

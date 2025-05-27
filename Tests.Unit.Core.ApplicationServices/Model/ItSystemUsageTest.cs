@@ -46,6 +46,52 @@ namespace Tests.Unit.Core.Model
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
         [InlineData(DataOptions.UNDECIDED)]
+        public void UpdateRiskAssessment_Clears_Related_Fields_If_Not_Yes(DataOptions riskAssessment)
+        {
+            _sut.preriskAssessment = A<RiskLevel>();
+            _sut.riskAssesmentDate = A<DateTime>();
+            _sut.RiskSupervisionDocumentationUrl = A<string>();
+            _sut.RiskSupervisionDocumentationUrlName = A<string>();
+            _sut.noteRisks = A<string>();
+
+            _sut.UpdateRiskAssessment(riskAssessment);
+
+            Assert.Equal(riskAssessment, _sut.riskAssessment);
+            Assert.Null(_sut.preriskAssessment);
+            Assert.Null(_sut.riskAssesmentDate);
+            Assert.Null(_sut.RiskSupervisionDocumentationUrl);
+            Assert.Null(_sut.RiskSupervisionDocumentationUrlName);
+        }
+
+        [Fact]
+        public void UpdateRiskAssessment_Does_Not_Clear_Related_Fields_If_Yes()
+        {
+            const DataOptions riskAssessment = DataOptions.YES;
+            var preRiskAssessment = A<RiskLevel>();
+            var riskAssessmentDate = A<DateTime>();
+            var url = A<string>();
+            var urlName = A<string>();
+            var notes = A<string>();
+
+            _sut.preriskAssessment = preRiskAssessment;
+            _sut.riskAssesmentDate = riskAssessmentDate;
+            _sut.RiskSupervisionDocumentationUrl = url;
+            _sut.RiskSupervisionDocumentationUrlName = urlName;
+            _sut.noteRisks = notes;
+
+            _sut.UpdateRiskAssessment(riskAssessment);
+
+            Assert.Equal(riskAssessment, _sut.riskAssessment);
+            Assert.Equal(preRiskAssessment, _sut.preriskAssessment);
+            Assert.Equal(riskAssessmentDate, _sut.riskAssesmentDate);
+            Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
+            Assert.Equal(urlName, _sut.RiskSupervisionDocumentationUrlName);
+        }
+
+        [Theory]
+        [InlineData(DataOptions.DONTKNOW)]
+        [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.UNDECIDED)]
         public void UpdateTechnicalPrecautionsInPlace_Clears_Related_Fields_If_Not_Yes(DataOptions precautionsInPlace)
         {
             var technicalPrecautions = A<List<TechnicalPrecaution>>();
