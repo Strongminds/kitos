@@ -1012,7 +1012,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateTechnicalPrecautionsDocumentation(string url, string name)
         {
-            return UpdateWithPrecondition(HasTechnicalPrecautions, () =>
+            return UpdateWithPrecondition(HasTechnicalPrecautions() || (url == null && name == null), () =>
             {
                 TechnicalSupervisionDocumentationUrl = url;
                 TechnicalSupervisionDocumentationUrlName = name;
@@ -1021,7 +1021,8 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
         {
-            return UpdateWithPrecondition(HasTechnicalPrecautions, () => InternalUpdateTechnicalPrecautions(technicalPrecautions));
+            var newPrecautions = technicalPrecautions.ToList();
+            return UpdateWithPrecondition(HasTechnicalPrecautions() || newPrecautions.Count == 0, () => InternalUpdateTechnicalPrecautions(newPrecautions));
         }
 
         private Maybe<OperationError> InternalUpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
@@ -1210,13 +1211,13 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
-        private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Func<Maybe<OperationError>> mutation)
+        private Maybe<OperationError> UpdateWithPrecondition(bool precondition, Func<Maybe<OperationError>> mutation)
         {
-            return precondition() ? mutation() : new OperationError(OperationFailure.BadInput);
+            return precondition ? mutation() : new OperationError(OperationFailure.BadInput);
         }
 
         //Overload to enable passing void functions.
-        private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Action mutation)
+        private Maybe<OperationError> UpdateWithPrecondition(bool precondition, Action mutation)
         {
             return UpdateWithPrecondition(precondition, () =>
             {
@@ -1244,19 +1245,18 @@ namespace Core.DomainModel.ItSystemUsage
             UserSupervisionDocumentationUrlName = null;
         }
 
-        private Maybe<OperationError> UpdateSupervisionDependentField(Action mutation)
-        {
-            return UpdateWithPrecondition(HasUserSupervision, mutation);
-        }
-
         public Maybe<OperationError> UpdateUserSupervisionDate(DateTime? userSupervisionDate)
         {
-            return UpdateSupervisionDependentField(() => UserSupervisionDate = userSupervisionDate);
+            return UpdateWithPrecondition(
+                HasUserSupervision() || userSupervisionDate == null,
+                () => UserSupervisionDate = userSupervisionDate);
         }
 
         public Maybe<OperationError> UpdateUserSupervisionDocumentation(string url, string name)
         {
-            return UpdateSupervisionDependentField(() =>
+            return UpdateWithPrecondition(
+                HasUserSupervision() || (url == null & name == null),
+                () =>
             {
                 UserSupervisionDocumentationUrl = url;
                 UserSupervisionDocumentationUrlName = name;
@@ -1284,24 +1284,21 @@ namespace Core.DomainModel.ItSystemUsage
             return riskAssessment == DataOptions.YES;
         }
 
-        private Maybe<OperationError> UpdateRiskAssessmentDependentField(Action mutation)
-        {
-            return UpdateWithPrecondition(HasRiskAssessment, mutation);
-        }
 
         public Maybe<OperationError> UpdateRiskAssessmentDate(DateTime? date)
         {
-            return UpdateRiskAssessmentDependentField(() => riskAssesmentDate = date);
+            return UpdateWithPrecondition(HasRiskAssessment() || date == null, () => riskAssesmentDate = date);
         }
 
         public Maybe<OperationError> UpdateRiskAssessmentLevel(RiskLevel? level)
         {
-            return UpdateRiskAssessmentDependentField(() => preriskAssessment = level);
+            return UpdateWithPrecondition(HasRiskAssessment() || level == null, () => preriskAssessment = level);
         }
 
         public Maybe<OperationError> UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            return UpdateRiskAssessmentDependentField(() =>
+            return UpdateWithPrecondition(HasUserSupervision() || url == null && name == null,
+                () =>
             {
                 RiskSupervisionDocumentationUrl = url;
                 RiskSupervisionDocumentationUrlName = name;
@@ -1310,7 +1307,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateRiskAssessmentNotes(string note)
         {
-            return UpdateRiskAssessmentDependentField(() => noteRisks = note);
+            return UpdateWithPrecondition(HasRiskAssessment() || note == null, () => noteRisks = note);
         }
 
         public void UpdatePlannedRiskAssessmentDate(DateTime? date)
@@ -1337,19 +1334,14 @@ namespace Core.DomainModel.ItSystemUsage
             return DPIA == DataOptions.YES;
         }
 
-        private Maybe<OperationError> UpdateDPIADependentField(Action mutation)
-        {
-            return UpdateWithPrecondition(HasDPIA, mutation);
-        }
-
         public Maybe<OperationError> UpdateDPIADate(DateTime? date)
         {
-            return UpdateDPIADependentField(() => DPIADateFor = date);
+            return UpdateWithPrecondition(HasDPIA() || date == null, () => DPIADateFor = date);
         }
 
         public Maybe<OperationError> UpdateDPIADocumentation(string url, string name)
         {
-            return UpdateDPIADependentField(() =>
+            return UpdateWithPrecondition(HasDPIA() || url == null && name == null, () =>
             {
                 DPIASupervisionDocumentationUrl = url;
                 DPIASupervisionDocumentationUrlName = name;
@@ -1374,19 +1366,14 @@ namespace Core.DomainModel.ItSystemUsage
             return answeringDataDPIA == DataOptions.YES;
         }
 
-        private Maybe<OperationError> UpdateDataRetentionDependentField(Action mutation)
-        {
-            return UpdateWithPrecondition(HasDataRetention, mutation);
-        }
-
         public Maybe<OperationError> UpdateNextDataRetentionEvaluationDate(DateTime? nextDataRetentionEvaluationDate)
         {
-            return UpdateDataRetentionDependentField(() => DPIAdeleteDate = nextDataRetentionEvaluationDate);
+            return UpdateWithPrecondition(HasDPIA() || nextDataRetentionEvaluationDate == null, () => DPIAdeleteDate = nextDataRetentionEvaluationDate);
         }
 
         public Maybe<OperationError> UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
         {
-            return UpdateDataRetentionDependentField(() => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
+            return UpdateWithPrecondition(HasDPIA() || dataRetentionEvaluationFrequencyInMonths == 0, () => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
         }
     }
 }
