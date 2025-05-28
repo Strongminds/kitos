@@ -1364,7 +1364,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateRetentionPeriodDefined(DataOptions? retentionPeriodDefined)
         {
             answeringDataDPIA = retentionPeriodDefined;
-            if (CanUpdateRetentionPeriodFields()) return;
+            if (HasDataRetention()) return;
             ResetRetentionPeriodFields();
         }
 
@@ -1374,21 +1374,24 @@ namespace Core.DomainModel.ItSystemUsage
             numberDPIA = 0;
         }
 
-        private bool CanUpdateRetentionPeriodFields()
+        private bool HasDataRetention()
         {
             return answeringDataDPIA == DataOptions.YES;
         }
 
-        public void UpdateNextDataRetentionEvaluationDate(DateTime? nextDataRetentionEvaluationDate)
+        private Maybe<OperationError> UpdateDataRetentionDependentField(Action mutation)
         {
-            if (!CanUpdateRetentionPeriodFields()) return;
-            DPIAdeleteDate = nextDataRetentionEvaluationDate;
+            return UpdateWithPrecondition(HasDataRetention, mutation);
         }
 
-        public void UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
+        public Maybe<OperationError> UpdateNextDataRetentionEvaluationDate(DateTime? nextDataRetentionEvaluationDate)
         {
-            if (!CanUpdateRetentionPeriodFields()) return;
-            numberDPIA = dataRetentionEvaluationFrequencyInMonths;
+            return UpdateDataRetentionDependentField(() => DPIAdeleteDate = nextDataRetentionEvaluationDate);
+        }
+
+        public Maybe<OperationError> UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
+        {
+            return UpdateDataRetentionDependentField(() => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
         }
     }
 }
