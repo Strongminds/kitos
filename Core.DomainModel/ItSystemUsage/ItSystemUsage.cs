@@ -1297,7 +1297,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            return UpdateWithPrecondition(HasUserSupervision() || url == null && name == null,
+            return UpdateWithPrecondition(HasRiskAssessment() || url == null && name == null,
                 () =>
             {
                 RiskSupervisionDocumentationUrl = url;
@@ -1368,12 +1368,12 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdateNextDataRetentionEvaluationDate(DateTime? nextDataRetentionEvaluationDate)
         {
-            return UpdateWithPrecondition(HasDPIA() || nextDataRetentionEvaluationDate == null, () => DPIAdeleteDate = nextDataRetentionEvaluationDate);
+            return UpdateWithPrecondition(HasDataRetention() || nextDataRetentionEvaluationDate == null, () => DPIAdeleteDate = nextDataRetentionEvaluationDate);
         }
 
         public Maybe<OperationError> UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
         {
-            return UpdateWithPrecondition(HasDPIA() || dataRetentionEvaluationFrequencyInMonths == 0, () => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
+            return UpdateWithPrecondition(HasDataRetention() || dataRetentionEvaluationFrequencyInMonths == 0, () => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
         }
     }
 }

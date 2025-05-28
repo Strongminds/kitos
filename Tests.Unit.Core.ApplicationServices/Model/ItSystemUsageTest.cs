@@ -90,15 +90,17 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateRetentionPeriodDefined(retentionPeriodDefined);
             var frequency = A<int>();
 
-            _sut.UpdateDataRetentionEvaluationFrequencyInMonths(frequency);
+            var result = _sut.UpdateDataRetentionEvaluationFrequencyInMonths(frequency);
 
             if (retentionPeriodDefined == DataOptions.YES)
             {
+                Assert.True(result.IsNone);
                 Assert.Equal(frequency, _sut.numberDPIA);
             }
             else
             {
-                Assert.Equal(0, _sut.numberDPIA);
+                Assert.True(result.HasValue);
+                Assert.Equal(result.Value.FailureType, OperationFailure.BadInput);
             }
         }
 
@@ -323,7 +325,7 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateRiskAssessmentLevel(level);
             _sut.UpdateRiskAssessmentDate(riskAssessmentDate);
             _sut.UpdateRiskAssessmentDocumentation(url, urlName);
-            _sut.noteRisks = notes;
+            _sut.UpdateRiskAssessmentNotes(notes);
 
             _sut.UpdateRiskAssessment(riskAssessment);
 
@@ -334,6 +336,7 @@ namespace Tests.Unit.Core.Model
                 Assert.Equal(riskAssessmentDate, _sut.riskAssesmentDate);
                 Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
                 Assert.Equal(urlName, _sut.RiskSupervisionDocumentationUrlName);
+                Assert.Equal(notes, _sut.noteRisks);
             }
             else
             {
@@ -341,6 +344,7 @@ namespace Tests.Unit.Core.Model
                 Assert.Null(_sut.riskAssesmentDate);
                 Assert.Null(_sut.RiskSupervisionDocumentationUrl);
                 Assert.Null(_sut.RiskSupervisionDocumentationUrlName);
+                Assert.Null(_sut.noteRisks);
             }
 
         }
