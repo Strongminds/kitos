@@ -987,7 +987,7 @@ namespace Core.DomainModel.ItSystemUsage
             return removedPersonalData;
         }
 
-        private bool CanUpdateTechnicalPrecautionsFields()
+        private bool HasTechnicalPrecautions()
         {
             return precautions == DataOptions.YES;
         }
@@ -995,7 +995,7 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateTechnicalPrecautionsInPlace(DataOptions? precautions)
         {
             this.precautions = precautions;
-            if (CanUpdateTechnicalPrecautionsFields()) return;
+            if (HasTechnicalPrecautions()) return;
             ResetTechnicalPrecautionsFields();
 
         }
@@ -1010,33 +1010,23 @@ namespace Core.DomainModel.ItSystemUsage
             TechnicalSupervisionDocumentationUrl = null;
         }
 
-        public void UpdateTechnicalPrecautionsDocumentation(string url, string name)
+        public Maybe<OperationError> UpdateTechnicalPrecautionsDocumentation(string url, string name)
         {
-            if (!CanUpdateTechnicalPrecautionsFields()) return;
-            TechnicalSupervisionDocumentationUrl = url;
-            TechnicalSupervisionDocumentationUrlName = name;
-        }
-
-        public Maybe<OperationError> UpdateTechnicalPrecautions(bool encryption,
-            bool pseudonymization, bool accessControl,
-            bool logging)
-        {
-            var precautions = new List<TechnicalPrecaution>();
-            if (encryption)
-                precautions.Add(TechnicalPrecaution.Encryption);
-            if (pseudonymization)
-                precautions.Add(TechnicalPrecaution.Pseudonymization);
-            if (accessControl)
-                precautions.Add(TechnicalPrecaution.AccessControl);
-            if (logging)
-                precautions.Add(TechnicalPrecaution.Logging);
-
-            return UpdateTechnicalPrecautions(precautions);
+            return UpdateWithPrecondition(HasTechnicalPrecautions, () =>
+            {
+                TechnicalSupervisionDocumentationUrl = url;
+                TechnicalSupervisionDocumentationUrlName = name;
+            });
         }
 
         public Maybe<OperationError> UpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
         {
-            if (!CanUpdateTechnicalPrecautionsFields()) return Maybe<OperationError>.None;
+            return UpdateWithPrecondition(HasTechnicalPrecautions, () => InternalUpdateTechnicalPrecautions(technicalPrecautions));
+        }
+
+        private Maybe<OperationError> InternalUpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
+        {
+            if (!HasTechnicalPrecautions()) return Maybe<OperationError>.None;
 
             if (technicalPrecautions == null)
                 throw new ArgumentNullException(nameof(technicalPrecautions));
@@ -1220,14 +1210,19 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
+        private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Func<Maybe<OperationError>> mutation)
+        {
+            return precondition() ? mutation() : new OperationError(OperationFailure.BadInput);
+        }
+
+        //Overload to enable passing void functions.
         private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Action mutation)
         {
-            if (!precondition())
+            return UpdateWithPrecondition(precondition, () =>
             {
-                return new OperationError(OperationFailure.BadInput);
-            }
-            mutation();
-            return Maybe<OperationError>.None;
+                mutation();
+                return Maybe<OperationError>.None;
+            });
         }
 
         private bool HasUserSupervision()

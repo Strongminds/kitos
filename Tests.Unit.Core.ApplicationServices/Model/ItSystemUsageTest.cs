@@ -342,7 +342,7 @@ namespace Tests.Unit.Core.Model
                 Assert.Null(_sut.RiskSupervisionDocumentationUrl);
                 Assert.Null(_sut.RiskSupervisionDocumentationUrlName);
             }
-              
+
         }
 
         [Theory]
@@ -418,7 +418,7 @@ namespace Tests.Unit.Core.Model
             var actual = _sut.GetTechnicalPrecautions().ToList();
             if (technicalPrecautionsInPlace == DataOptions.YES)
             {
-               AssertListsContainSameElements(technicalPrecautions, actual);
+                AssertListsContainSameElements(technicalPrecautions, actual);
             }
             else
             {
@@ -538,7 +538,7 @@ namespace Tests.Unit.Core.Model
         [Fact]
         public void Cannot_Add_Local_TaskRef_That_Is_Already_On_System()
         {
-            var someKle = new TaskRef(){ Uuid = A<Guid>()};
+            var someKle = new TaskRef() { Uuid = A<Guid>() };
             var kleAdditions = new List<TaskRef>() { someKle };
             _sut.ItSystem = new ItSystem()
             {
@@ -823,9 +823,9 @@ namespace Tests.Unit.Core.Model
             };
             _sut.SensitiveDataLevels.Add(preAddedSensitiveDataLevel);
 
-            _sut.PersonalDataOptions.Add(new ItSystemUsagePersonalData{PersonalData= GDPRPersonalDataOption.CprNumber});
-            _sut.PersonalDataOptions.Add(new ItSystemUsagePersonalData(){PersonalData=GDPRPersonalDataOption.OtherPrivateMatters});
-            _sut.PersonalDataOptions.Add(new ItSystemUsagePersonalData(){PersonalData = GDPRPersonalDataOption.SocialProblems});
+            _sut.PersonalDataOptions.Add(new ItSystemUsagePersonalData { PersonalData = GDPRPersonalDataOption.CprNumber });
+            _sut.PersonalDataOptions.Add(new ItSystemUsagePersonalData() { PersonalData = GDPRPersonalDataOption.OtherPrivateMatters });
+            _sut.PersonalDataOptions.Add(new ItSystemUsagePersonalData() { PersonalData = GDPRPersonalDataOption.SocialProblems });
 
             //Act
             var result = _sut.RemoveSensitiveDataLevel(sensitiveDataLevel);
@@ -852,10 +852,10 @@ namespace Tests.Unit.Core.Model
         public void Can_Remove_OrganizationalUsage()
         {
             var unitId = A<int>();
-            var responsibleUsage = new ItSystemUsageOrgUnitUsage() {OrganizationUnitId = unitId, OrganizationUnit = new OrganizationUnit{ Id = unitId }};
+            var responsibleUsage = new ItSystemUsageOrgUnitUsage() { OrganizationUnitId = unitId, OrganizationUnit = new OrganizationUnit { Id = unitId } };
             var usage = new ItSystemUsage()
             {
-                UsedBy = new List<ItSystemUsageOrgUnitUsage>{ responsibleUsage },
+                UsedBy = new List<ItSystemUsageOrgUnitUsage> { responsibleUsage },
                 ResponsibleUsage = responsibleUsage,
             };
 
@@ -869,13 +869,13 @@ namespace Tests.Unit.Core.Model
         public void Can_Remove_UsedByUnit()
         {
             var unitUuid = A<Guid>();
-            var unit = new OrganizationUnit {Uuid = unitUuid};
+            var unit = new OrganizationUnit { Uuid = unitUuid };
             var usage = new ItSystemUsage
             {
-                UsedBy = new List<ItSystemUsageOrgUnitUsage>{ new() { OrganizationUnit = unit } },
+                UsedBy = new List<ItSystemUsageOrgUnitUsage> { new() { OrganizationUnit = unit } },
                 Organization = new Organization
                 {
-                    OrgUnits = new List<OrganizationUnit>{ unit }
+                    OrgUnits = new List<OrganizationUnit> { unit }
                 }
             };
 
@@ -890,14 +890,14 @@ namespace Tests.Unit.Core.Model
         {
             var unitUuid = A<Guid>();
             var targetUnitUuid = A<Guid>();
-            var unit = new OrganizationUnit {Uuid = unitUuid};
-            var targetUnit = new OrganizationUnit {Uuid = targetUnitUuid};
+            var unit = new OrganizationUnit { Uuid = unitUuid };
+            var targetUnit = new OrganizationUnit { Uuid = targetUnitUuid };
             var responsibleUsage = new ItSystemUsageOrgUnitUsage { OrganizationUnit = unit };
             var usage = new ItSystemUsage
             {
                 UsedBy = new List<ItSystemUsageOrgUnitUsage> { responsibleUsage },
                 ResponsibleUsage = responsibleUsage,
-                Organization = new Organization {OrgUnits = new List<OrganizationUnit> { unit, targetUnit }}
+                Organization = new Organization { OrgUnits = new List<OrganizationUnit> { unit, targetUnit } }
             };
 
             var result = usage.TransferResponsibleOrganizationalUnit(targetUnitUuid);
@@ -911,13 +911,13 @@ namespace Tests.Unit.Core.Model
         {
             var unitUuid = A<Guid>();
             var targetUnitUuid = A<Guid>();
-            var unit = new OrganizationUnit { Uuid = unitUuid};
-            var targetUnit = new OrganizationUnit { Uuid = targetUnitUuid};
+            var unit = new OrganizationUnit { Uuid = unitUuid };
+            var targetUnit = new OrganizationUnit { Uuid = targetUnitUuid };
             var usage = new ItSystemUsage
             {
                 Organization = new Organization()
                 {
-                    OrgUnits = new List<OrganizationUnit>{unit, targetUnit} 
+                    OrgUnits = new List<OrganizationUnit> { unit, targetUnit }
                 },
                 UsedBy = new List<ItSystemUsageOrgUnitUsage> { new() { OrganizationUnit = unit } }
             };
@@ -979,7 +979,7 @@ namespace Tests.Unit.Core.Model
             Assert.False(validity.Result);
             Assert.Equal(expectedErrors, validity.ValidationErrors);
         }
-        
+
         [Theory]
         [MemberData(nameof(ValidationValidData))]
         public void Valid_When_All_Valid(LifeCycleStatusType lifeCycleStatus, DateTime concluded, DateTime expirationDate, ItContractItSystemUsage mainContract)
@@ -1129,7 +1129,7 @@ namespace Tests.Unit.Core.Model
             new object[] {null, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), new ItContractItSystemUsage{ ItContract = new ItContract{ Active = true} }},
             new object[] { LifeCycleStatusType.PhasingOut, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), new ItContractItSystemUsage{ ItContract = new ItContract{ Active = true} }},
         };
-        
+
         private static void AssertErrorResult<T>(Result<T, OperationError> result, string message, OperationFailure error)
         {
             Assert.False(result.Ok);
@@ -1151,7 +1151,7 @@ namespace Tests.Unit.Core.Model
 
             if (personalDataOption.HasValue)
             {
-                usage.PersonalDataOptions = new List<ItSystemUsagePersonalData>{ new (){PersonalData = personalDataOption.Value}};
+                usage.PersonalDataOptions = new List<ItSystemUsagePersonalData> { new() { PersonalData = personalDataOption.Value } };
             }
 
             return usage;

@@ -458,7 +458,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.SensitiveDataLevels = Many<SensitiveDataLevel>().Select(sensitiveDataLevel => new ItSystemUsageSensitiveDataLevel() { SensitivityDataLevel = sensitiveDataLevel }).ToList();
             itSystemUsage.PersonalDataOptions = Many<GDPRPersonalDataOption>().Select(x => new ItSystemUsagePersonalData() { PersonalData = x }).ToList();
             itSystemUsage.UpdateTechnicalPrecautionsInPlace(A<DataOptions>());
-            itSystemUsage.UpdateTechnicalPrecautions(A<bool>(), A<bool>(), A<bool>(), A<bool>());
             itSystemUsage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
             itSystemUsage.UpdateRetentionPeriodDefined(DataOptions.YES);
             itSystemUsage.UpdateNextDataRetentionEvaluationDate(A<DateTime>());
