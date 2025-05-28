@@ -11,7 +11,7 @@ namespace PubSub.Application.Api.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
-    [ApiVersion(1)]
+    [ApiVersion(Constants.ApiVersion.Version1)]
     [Authorize(Policy = Constants.Config.Validation.CanPublishPolicy)]
     [Route("publish")]
     public class PublishController : ControllerBase

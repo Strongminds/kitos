@@ -12,7 +12,7 @@ namespace PubSub.Application.Api.Controllers;
 
 [ApiController]
 [Authorize(Policy = Constants.Config.Validation.CanSubscribePolicy)]
-[ApiVersion(1)]
+[ApiVersion(Constants.ApiVersion.Version1)]
 [Route("subscription")]
 public class SubscriptionController : PubSubBaseController
 {
