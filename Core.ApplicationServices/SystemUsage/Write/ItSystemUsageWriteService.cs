@@ -251,18 +251,19 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(parameters.SensitivePersonDataUuids, UpdateSensitivePersonDataIds))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RegisteredDataCategoryUuids, UpdateRegisteredDataCategories))
 
+                //User supervision
+                .Bind(usage => usage.WithOptionalUpdate(parameters.UserSupervision, (systemUsage, supervision) => systemUsage.UpdateUserSupervision(supervision)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.UserSupervisionDate, (systemUsage, date) => systemUsage.UpdateUserSupervisionDate(date)))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.UserSupervisionDocumentation, (systemUsage, newLink) => systemUsage.UpdateUserSupervisionDocumentation(
+                    newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())
+                ))
+
                 //Technical precautions
                 .Bind(usage => usage.WithOptionalUpdate(parameters.TechnicalPrecautionsInPlace, (systemUsage, precautions) => systemUsage.UpdateTechnicalPrecautionsInPlace(precautions)))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.TechnicalPrecautionsApplied, UpdateAppliedTechnicalPrecautions))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.TechnicalPrecautionsDocumentation,
                     (systemUsage, newLink) => systemUsage.UpdateTechnicalPrecautionsDocumentation(newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())))
 
-                //User supervision
-                .Bind(usage => usage.WithOptionalUpdate(parameters.UserSupervision, (systemUsage, supervision) => systemUsage.UpdateUserSupervision(supervision)))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.UserSupervisionDate, (systemUsage, date) => systemUsage.UpdateUserSupervisionDate(date)))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.UserSupervisionDocumentation, (systemUsage, newLink) => systemUsage.UpdateUserSupervisionDocumentation(
-                    newLink.Select(x => x.Url).GetValueOrDefault(), newLink.Select(x => x.Name).GetValueOrDefault())
-                    ))
 
                 //Risk assessments
                 .Bind(usage => usage.WithOptionalUpdate(parameters.RiskAssessmentConducted, (systemUsage, conducted) => systemUsage.UpdateRiskAssessment(conducted)))

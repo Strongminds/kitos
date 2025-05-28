@@ -10,6 +10,7 @@ using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 using Core.DomainModel.Notification;
 using System;
+using System.Runtime.Remoting.Messaging;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel.Extensions;
@@ -285,13 +286,12 @@ namespace Core.DomainModel.ItSystemUsage
 
         public void UpdateUserSupervision(DataOptions? userSupervision)
         {
-            this.UserSupervision = userSupervision;
-            if (CanUpdateUserSupervisionFields()) return;
-
+            UserSupervision = userSupervision;
+            if (HasUserSupervision()) return;
             ResetUserSupervisionFields();
         }
 
-        private bool CanUpdateUserSupervisionFields()
+        private bool HasUserSupervision()
         {
             return UserSupervision == DataOptions.YES;
         }
@@ -303,31 +303,39 @@ namespace Core.DomainModel.ItSystemUsage
             UserSupervisionDocumentationUrlName = null;
         }
 
-        public void UpdateUserSupervisionDate(DateTime? userSupervisionDate)
+        private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Action mutation)
         {
-            if (!CanUpdateUserSupervisionFields())
+            if (!precondition())
             {
-                return;
+                return new OperationError(OperationFailure.BadInput);
             }
-
-            UserSupervisionDate = userSupervisionDate;
+            mutation();
+            return Maybe<OperationError>.None;
         }
 
-        public void UpdateUserSupervisionDocumentation(string url, string name)
+        private Maybe<OperationError> UpdateSupervisionDependentField(Action mutation)
         {
-            if (!CanUpdateUserSupervisionFields())
-            {
-                return;
-            }
+            return UpdateWithPrecondition(HasUserSupervision, mutation);
+        }
 
-            UserSupervisionDocumentationUrl = url;
-            UserSupervisionDocumentationUrlName = name;
+        public Maybe<OperationError> UpdateUserSupervisionDate(DateTime? userSupervisionDate)
+        {
+            return UpdateSupervisionDependentField(() => UserSupervisionDate = userSupervisionDate);
+        }
+
+        public Maybe<OperationError> UpdateUserSupervisionDocumentation(string url, string name)
+        {
+            return UpdateSupervisionDependentField(() =>
+            {
+                UserSupervisionDocumentationUrl = url;
+                UserSupervisionDocumentationUrlName = name;
+            });
         }
 
         public void UpdateRiskAssessment(DataOptions? riskAssessment)
         {
             this.riskAssessment = riskAssessment;
-            if (CanUpdateRiskAssessmentFields()) return;
+            if (HasRiskAssessment()) return;
             ResetRiskAssessmentFields();
         }
 
@@ -1276,31 +1284,35 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
-        public void UpdateRiskAssessmentDate(DateTime? date)
+        private Maybe<OperationError> UpdateRiskAssessmentDependentField(Action mutation)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
-            riskAssesmentDate = date;
+            return UpdateWithPrecondition(HasRiskAssessment, mutation);
+        }
+
+        public Maybe<OperationError> UpdateRiskAssessmentDate(DateTime? date)
+        {
+            return UpdateRiskAssessmentDependentField(() => riskAssesmentDate = date);
         }
 
         public void UpdateRiskAssessmentLevel(RiskLevel? level)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
+            if (!HasRiskAssessment()) return;
             preriskAssessment = level;
         }
 
         public void UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
+            if (!HasRiskAssessment()) return;
             RiskSupervisionDocumentationUrl = url;
             RiskSupervisionDocumentationUrlName = name;
         }
 
         public void UpdateRiskAssessmentNotes(string note)
         {
-            if (!CanUpdateRiskAssessmentFields()) return;
+            if (!HasRiskAssessment()) return;
             noteRisks = note;
         }
-        private bool CanUpdateRiskAssessmentFields()
+        private bool HasRiskAssessment()
         {
             return riskAssessment == DataOptions.YES;
         }
