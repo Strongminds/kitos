@@ -284,70 +284,6 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrlName { get; private set; }
         public string UserSupervisionDocumentationUrl { get; private set; }
 
-        public void UpdateUserSupervision(DataOptions? userSupervision)
-        {
-            UserSupervision = userSupervision;
-            if (HasUserSupervision()) return;
-            ResetUserSupervisionFields();
-        }
-
-        private bool HasUserSupervision()
-        {
-            return UserSupervision == DataOptions.YES;
-        }
-
-        private void ResetUserSupervisionFields()
-        {
-            UserSupervisionDate = null;
-            UserSupervisionDocumentationUrl = null;
-            UserSupervisionDocumentationUrlName = null;
-        }
-
-        private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Action mutation)
-        {
-            if (!precondition())
-            {
-                return new OperationError(OperationFailure.BadInput);
-            }
-            mutation();
-            return Maybe<OperationError>.None;
-        }
-
-        private Maybe<OperationError> UpdateSupervisionDependentField(Action mutation)
-        {
-            return UpdateWithPrecondition(HasUserSupervision, mutation);
-        }
-
-        public Maybe<OperationError> UpdateUserSupervisionDate(DateTime? userSupervisionDate)
-        {
-            return UpdateSupervisionDependentField(() => UserSupervisionDate = userSupervisionDate);
-        }
-
-        public Maybe<OperationError> UpdateUserSupervisionDocumentation(string url, string name)
-        {
-            return UpdateSupervisionDependentField(() =>
-            {
-                UserSupervisionDocumentationUrl = url;
-                UserSupervisionDocumentationUrlName = name;
-            });
-        }
-
-        public void UpdateRiskAssessment(DataOptions? riskAssessment)
-        {
-            this.riskAssessment = riskAssessment;
-            if (HasRiskAssessment()) return;
-            ResetRiskAssessmentFields();
-        }
-
-        private void ResetRiskAssessmentFields()
-        {
-            riskAssesmentDate = null;
-            preriskAssessment = null;
-            RiskSupervisionDocumentationUrl = null;
-            RiskSupervisionDocumentationUrlName = null;
-            noteRisks = null;
-        }
-
         public DataOptions? riskAssessment { get; private set; }
         public DateTime? riskAssesmentDate { get; private set; }
         public RiskLevel? preriskAssessment { get; private set; }
@@ -1284,6 +1220,75 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
+        private Maybe<OperationError> UpdateWithPrecondition(Func<bool> precondition, Action mutation)
+        {
+            if (!precondition())
+            {
+                return new OperationError(OperationFailure.BadInput);
+            }
+            mutation();
+            return Maybe<OperationError>.None;
+        }
+
+        private bool HasUserSupervision()
+        {
+            return UserSupervision == DataOptions.YES;
+        }
+
+        public void UpdateUserSupervision(DataOptions? userSupervision)
+        {
+            UserSupervision = userSupervision;
+            if (HasUserSupervision()) return;
+            ResetUserSupervisionFields();
+        }
+
+        private void ResetUserSupervisionFields()
+        {
+            UserSupervisionDate = null;
+            UserSupervisionDocumentationUrl = null;
+            UserSupervisionDocumentationUrlName = null;
+        }
+
+        private Maybe<OperationError> UpdateSupervisionDependentField(Action mutation)
+        {
+            return UpdateWithPrecondition(HasUserSupervision, mutation);
+        }
+
+        public Maybe<OperationError> UpdateUserSupervisionDate(DateTime? userSupervisionDate)
+        {
+            return UpdateSupervisionDependentField(() => UserSupervisionDate = userSupervisionDate);
+        }
+
+        public Maybe<OperationError> UpdateUserSupervisionDocumentation(string url, string name)
+        {
+            return UpdateSupervisionDependentField(() =>
+            {
+                UserSupervisionDocumentationUrl = url;
+                UserSupervisionDocumentationUrlName = name;
+            });
+        }
+
+        public void UpdateRiskAssessment(DataOptions? riskAssessment)
+        {
+            this.riskAssessment = riskAssessment;
+            if (HasRiskAssessment()) return;
+            ResetRiskAssessmentFields();
+        }
+
+        private void ResetRiskAssessmentFields()
+        {
+            riskAssesmentDate = null;
+            preriskAssessment = null;
+            RiskSupervisionDocumentationUrl = null;
+            RiskSupervisionDocumentationUrlName = null;
+            noteRisks = null;
+        }
+
+        private bool HasRiskAssessment()
+        {
+            return riskAssessment == DataOptions.YES;
+        }
+
         private Maybe<OperationError> UpdateRiskAssessmentDependentField(Action mutation)
         {
             return UpdateWithPrecondition(HasRiskAssessment, mutation);
@@ -1294,33 +1299,34 @@ namespace Core.DomainModel.ItSystemUsage
             return UpdateRiskAssessmentDependentField(() => riskAssesmentDate = date);
         }
 
-        public void UpdateRiskAssessmentLevel(RiskLevel? level)
+        public Maybe<OperationError> UpdateRiskAssessmentLevel(RiskLevel? level)
         {
-            if (!HasRiskAssessment()) return;
-            preriskAssessment = level;
+            return UpdateRiskAssessmentDependentField(() => preriskAssessment = level);
         }
 
-        public void UpdateRiskAssessmentDocumentation(string url, string name)
+        public Maybe<OperationError> UpdateRiskAssessmentDocumentation(string url, string name)
         {
-            if (!HasRiskAssessment()) return;
-            RiskSupervisionDocumentationUrl = url;
-            RiskSupervisionDocumentationUrlName = name;
+            return UpdateRiskAssessmentDependentField(() =>
+            {
+                RiskSupervisionDocumentationUrl = url;
+                RiskSupervisionDocumentationUrlName = name;
+            });
         }
 
-        public void UpdateRiskAssessmentNotes(string note)
+        public Maybe<OperationError> UpdateRiskAssessmentNotes(string note)
         {
-            if (!HasRiskAssessment()) return;
-            noteRisks = note;
+            return UpdateRiskAssessmentDependentField(() => noteRisks = note);
         }
-        private bool HasRiskAssessment()
+
+        public void UpdatePlannedRiskAssessmentDate(DateTime? date)
         {
-            return riskAssessment == DataOptions.YES;
+            PlannedRiskAssessmentDate = date;
         }
 
         public void UpdateDPIAConducted(DataOptions? dpia)
         {
             DPIA = dpia;
-            if (CanUpdateDPIAFields()) return;
+            if (HasDPIA()) return;
             ResetDPIAFields();
         }
 
@@ -1331,27 +1337,28 @@ namespace Core.DomainModel.ItSystemUsage
             DPIASupervisionDocumentationUrlName = null;
         }
 
-        private bool CanUpdateDPIAFields()
+        private bool HasDPIA()
         {
             return DPIA == DataOptions.YES;
         }
 
-        public void UpdatePlannedRiskAssessmentDate(DateTime? date)
+        private Maybe<OperationError> UpdateDPIADependentField(Action mutation)
         {
-            PlannedRiskAssessmentDate = date;
+            return UpdateWithPrecondition(HasDPIA, mutation);
         }
 
-        public void UpdateDPIADate(DateTime? date)
+        public Maybe<OperationError> UpdateDPIADate(DateTime? date)
         {
-            if (!CanUpdateDPIAFields()) return;
-            DPIADateFor = date;
+            return UpdateDPIADependentField(() => DPIADateFor = date);
         }
 
-        public void UpdateDPIADocumentation(string url, string name)
+        public Maybe<OperationError> UpdateDPIADocumentation(string url, string name)
         {
-            if (!CanUpdateDPIAFields()) return;
-            this.DPIASupervisionDocumentationUrl = url;
-            this.DPIASupervisionDocumentationUrlName = name;
+            return UpdateDPIADependentField(() =>
+            {
+                DPIASupervisionDocumentationUrl = url;
+                DPIASupervisionDocumentationUrlName = name;
+            });
         }
 
         public void UpdateRetentionPeriodDefined(DataOptions? retentionPeriodDefined)
