@@ -2259,7 +2259,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         [Theory]
         [MemberData(nameof(InvalidGdprRequests))]
-        public async Task PatchGdprAsync_ReturnsBadRequest_ForInvalidRequests(GDPRWriteRequestDTO invalidRequest)
+        public async Task Patch_Gdpr_Returns_Bad_Request_For_Invalid_Requests(GDPRWriteRequestDTO invalidRequest)
         {
             var organization = await CreateOrganizationAsync();
             var usage = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
@@ -2268,6 +2268,34 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var response = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, invalidRequest);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Patching_Risk_Assessment_To_Non_Yes_Value_Resets_Other_Fields()
+        {
+            var organization = await CreateOrganizationAsync();
+            var usage = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
+            var token = await GetGlobalToken();
+            var patchBefore = new GDPRWriteRequestDTO
+            {
+                RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
+                RiskAssessmentConductedDate = A<DateTime>(),
+                RiskAssessmentNotes = A<string>(),
+                RiskAssessmentDocumentation = A<SimpleLinkDTO>(),
+                RiskAssessmentResult = A<RiskLevelChoice>()
+            };
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, patchBefore).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            var resetRequest = new GDPRWriteRequestDTO { RiskAssessmentConducted = YesNoDontKnowChoice.No };
+
+            var response = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, resetRequest);
+
+            var system = await response.ReadResponseBodyAsAsync<ItSystemUsageResponseDTO>();
+            var gdpr = system.GDPR;
+            Assert.Null(gdpr.RiskAssessmentConductedDate);
+            Assert.Null(gdpr.RiskAssessmentNotes);
+            Assert.Null(gdpr.RiskAssessmentDocumentation.Name);
+            Assert.Null(gdpr.RiskAssessmentDocumentation.Url);
+            Assert.Null(gdpr.RiskAssessmentResult);
         }
 
         private static bool MatchExpectedAssignment(ExtendedRoleAssignmentResponseDTO assignment, ItSystemRole expectedRole, User expectedUser)
