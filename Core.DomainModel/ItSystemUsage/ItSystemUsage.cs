@@ -10,7 +10,6 @@ using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 using Core.DomainModel.Notification;
 using System;
-using System.Runtime.Remoting.Messaging;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel.Extensions;
@@ -1253,7 +1252,7 @@ namespace Core.DomainModel.ItSystemUsage
         public Maybe<OperationError> UpdateUserSupervisionDocumentation(string url, string name)
         {
             return UpdateWithPrecondition(
-                HasUserSupervision() || (url == null & name == null),
+                HasUserSupervision() || (url == null && name == null),
                 () =>
             {
                 UserSupervisionDocumentationUrl = url;
