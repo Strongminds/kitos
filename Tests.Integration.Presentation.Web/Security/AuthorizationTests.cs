@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.Model;
+using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Security
 {
+    [Collection(nameof(SequentialTestGroup))]
     public class AuthorizationTests : WithAutoFixture
     {
         private readonly KitosCredentials _regularApiUser, _globalAdmin;
@@ -93,7 +94,7 @@ namespace Tests.Integration.Presentation.Web.Security
         [Theory]
         [InlineData("api/authorize")]
         [InlineData("api/authorize/GetToken")]
-        public async Task Too_Many_Login_Or_Get_Token_Attempts_Should_Eventually_Return_429(string route)
+        public async Task Too_Many_Failed_Login_Or_Get_Token_Attempts_Should_Eventually_Return_429(string route)
         {
             const int maxAttempts = 20;
 

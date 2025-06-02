@@ -27,6 +27,20 @@ public class RateLimitAttribute : ActionFilterAttribute
         }
     }
 
+    public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+    {
+        var ip = GetClientIp(actionExecutedContext.ActionContext) ?? "unknown";
+        var response = actionExecutedContext.Response;
+        if (response == null) return;
+
+        // If the action produced any 4xx/5xx, record a failure for this IP:
+        if ((int)response.StatusCode == 429) return;
+        if ((int)response.StatusCode >= 400 && (int)response.StatusCode < 600)
+        {
+            Limiter.RecordFailure(ip);
+        }
+    }
+
     private string GetClientIp(HttpActionContext context)
     {
         if (context.Request.Properties

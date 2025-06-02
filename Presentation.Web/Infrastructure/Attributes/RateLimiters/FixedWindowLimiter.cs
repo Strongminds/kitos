@@ -21,16 +21,36 @@ public class FixedWindowLimiter : IRateLimiter
 
     public bool ShouldLimit(string key)
     {
+        if (!_store.TryGetValue(key, out var entry)) return false;
+        var (windowStart, count) = entry;
         var now = DateTime.UtcNow;
-        var tuple = _store.AddOrUpdate(key,
+
+        if (now - windowStart > _window)
+        {
+            return false;
+        }
+        return count >= _maxRequests;
+    }
+
+    public void RecordFailure(string key)
+    {
+        var now = DateTime.UtcNow;
+
+        _store.AddOrUpdate(
+            key,
             _ => (now, 1),
             (_, old) =>
             {
-                if (now - old.start > _window) return (now, 1);
-                return (old.start, old.count + 1);
+                var (windowStart, oldCount) = old;
+                if (now - windowStart > _window)
+                {
+                    return (now, 1);
+                }
+                else
+                {
+                    return (windowStart, oldCount + 1);
+                }
             });
-        var shouldBlock = tuple.count > _maxRequests;
-        return shouldBlock;
     }
 
     private void Cleanup()
