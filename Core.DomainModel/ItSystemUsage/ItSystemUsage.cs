@@ -1211,10 +1211,6 @@ namespace Core.DomainModel.ItSystemUsage
 
         private Maybe<OperationError> UpdateWithPrecondition(bool precondition, Func<Maybe<OperationError>> mutation)
         {
-            if (!precondition)
-            {
-                Console.Out.WriteLine("Didn't satisfy precondition");
-            }
             return precondition ? mutation() : new OperationError(OperationFailure.BadInput);
         }
 
