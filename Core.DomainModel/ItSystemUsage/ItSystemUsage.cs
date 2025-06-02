@@ -1027,8 +1027,6 @@ namespace Core.DomainModel.ItSystemUsage
 
         private Maybe<OperationError> InternalUpdateTechnicalPrecautions(IEnumerable<TechnicalPrecaution> technicalPrecautions)
         {
-            if (!HasTechnicalPrecautions()) return Maybe<OperationError>.None;
-
             if (technicalPrecautions == null)
                 throw new ArgumentNullException(nameof(technicalPrecautions));
 
@@ -1213,6 +1211,10 @@ namespace Core.DomainModel.ItSystemUsage
 
         private Maybe<OperationError> UpdateWithPrecondition(bool precondition, Func<Maybe<OperationError>> mutation)
         {
+            if (!precondition)
+            {
+                Console.Out.WriteLine("Didn't satisfy precondition");
+            }
             return precondition ? mutation() : new OperationError(OperationFailure.BadInput);
         }
 
@@ -1283,7 +1285,6 @@ namespace Core.DomainModel.ItSystemUsage
         {
             return riskAssessment == DataOptions.YES;
         }
-
 
         public Maybe<OperationError> UpdateRiskAssessmentDate(DateTime? date)
         {

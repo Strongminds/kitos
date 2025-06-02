@@ -230,7 +230,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
 
             //Act
-            var dtos = (await ItSystemV2Helper.GetManyInternalAsync(cookie, changedSinceGtEq: system3DTO.LastModified, page: 0, pageSize: 10)).ToList();
+            var dtos = (await ItSystemV2Helper.GetManyInternalAsync(cookie, changedSinceGtEq: system3DTO.LastModified, page: 0, pageSize: 30)).ToList();
 
             //Assert
             Assert.Equal(2, dtos.Count);

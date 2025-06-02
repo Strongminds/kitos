@@ -1091,15 +1091,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             //Arrange
             var (token, user, organization, system) = await CreatePrerequisitesAsync();
-
-            var gdprInput = A<GDPRWriteRequestDTO>(); //Start with random values and then correct the ones where values matter
-            gdprInput.DataSensitivityLevels = Many<DataSensitivityLevelChoice>().Distinct().ToList(); //Must be unique
-            var registerTypes = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageRegisterTypes, organization.Uuid, 10, 0);
-            var sensitiveTypes = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItSystemSensitivePersonalDataTypes, organization.Uuid, 10, 0);
-
-            gdprInput.SensitivePersonDataUuids = sensitiveTypes.Take(2).Select(x => x.Uuid).ToList();
-            gdprInput.RegisteredDataCategoryUuids = registerTypes.Take(2).Select(x => x.Uuid).ToList();
-            gdprInput.TechnicalPrecautionsApplied = Many<TechnicalPrecautionChoice>().Distinct().ToList(); //must be unique
+            var gdprInput = await CreateGDPRInputAsync(organization);
 
             //Act
             var createdDTO = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid, gdpr: gdprInput));
@@ -2495,6 +2487,39 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             gdprInput.RegisteredDataCategoryUuids = registerTypes.Take(2).Select(x => x.Uuid).ToList();
             gdprInput.TechnicalPrecautionsApplied = Many<TechnicalPrecautionChoice>().Distinct().ToList(); //must be unique
             gdprInput.PlannedRiskAssessmentDate = A<DateTime>();
+
+            if (gdprInput.RiskAssessmentConducted != YesNoDontKnowChoice.Yes)
+            {
+                gdprInput.RiskAssessmentConductedDate = null;
+                gdprInput.RiskAssessmentDocumentation = null;
+                gdprInput.RiskAssessmentNotes = null;
+                gdprInput.RiskAssessmentResult = null;
+            }
+
+            if (gdprInput.TechnicalPrecautionsInPlace != YesNoDontKnowChoice.Yes)
+            {
+                gdprInput.TechnicalPrecautionsApplied = null;
+                gdprInput.TechnicalPrecautionsDocumentation = null;
+            }
+
+            if (gdprInput.DPIAConducted != YesNoDontKnowChoice.Yes)
+            {
+                gdprInput.DPIADate = null;
+                gdprInput.DPIADocumentation = null;
+            }
+
+            if (gdprInput.UserSupervision != YesNoDontKnowChoice.Yes)
+            {
+                gdprInput.UserSupervisionDate = null;
+                gdprInput.UserSupervisionDocumentation = null;
+            }
+
+            if (gdprInput.RetentionPeriodDefined != YesNoDontKnowChoice.Yes)
+            {
+                gdprInput.NextDataRetentionEvaluationDate = null;
+                gdprInput.DataRetentionEvaluationFrequencyInMonths = null;
+            }
+
             return gdprInput;
         }
 
