@@ -28,7 +28,6 @@ using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Tests.Integration.Presentation.Web.ItSystem.V2;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Toolkit.Extensions;
@@ -2204,6 +2203,71 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(2, assignedRoles.Count);
             Assert.Contains(assignedRoles, assignment => MatchExpectedAssignment(assignment, role1, user1));
             Assert.Contains(assignedRoles, assignment => MatchExpectedAssignment(assignment, role2, user2));
+        }
+
+        public static IEnumerable<object[]> InvalidGdprRequests()
+        {
+            var fixture = new Fixture();
+
+            var nonYesValues = new List<YesNoDontKnowChoice?>
+                { YesNoDontKnowChoice.No, YesNoDontKnowChoice.Undecided, YesNoDontKnowChoice.DontKnow, null };
+
+            return new List<object[]>
+            {
+                new object[]
+                {
+                    new GDPRWriteRequestDTO
+                    {
+                        RiskAssessmentConducted = nonYesValues.RandomItem(),
+                        RiskAssessmentNotes     = fixture.Create<string>()
+                    }
+                },
+                new object[]
+                {
+                    new GDPRWriteRequestDTO
+                    {
+                        TechnicalPrecautionsInPlace       = nonYesValues.RandomItem(),
+                        TechnicalPrecautionsDocumentation = fixture.Create<SimpleLinkDTO>()
+                    }
+                },
+                new object[]
+                {
+                    new GDPRWriteRequestDTO
+                    {
+                        DPIAConducted = nonYesValues.RandomItem(),
+                        DPIADate = fixture.Create<DateTime>()
+                    }
+                },
+                new object[]
+                {
+                    new GDPRWriteRequestDTO
+                    {
+                        UserSupervision = nonYesValues.RandomItem(),
+                        UserSupervisionDocumentation = fixture.Create<SimpleLinkDTO>()
+                    }
+                },
+                new object[]
+                {
+                    new GDPRWriteRequestDTO
+                    {
+                        RetentionPeriodDefined = nonYesValues.RandomItem(),
+                        NextDataRetentionEvaluationDate = fixture.Create<DateTime>()
+                    }
+                }
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidGdprRequests))]
+        public async Task PatchGdprAsync_ReturnsBadRequest_ForInvalidRequests(GDPRWriteRequestDTO invalidRequest)
+        {
+            var organization = await CreateOrganizationAsync();
+            var usage = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
+            var token = await GetGlobalToken();
+
+            var response = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, invalidRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         private static bool MatchExpectedAssignment(ExtendedRoleAssignmentResponseDTO assignment, ItSystemRole expectedRole, User expectedUser)
