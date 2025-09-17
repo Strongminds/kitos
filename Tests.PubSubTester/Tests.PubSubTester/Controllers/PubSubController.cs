@@ -13,9 +13,13 @@ namespace Tests.PubSubTester.Controllers
     {
         //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging log server
         //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
-        private static readonly string PubSubTesterBaseUrl = "https://localhost:7118/";
-        private static readonly string PubSubApiUrl = "https://localhost/";
-        private static readonly string KitosApiUrl = "https://localhost:44300/";
+        private const string PubSubTesterBaseUrl = "https://localhost:7118/";
+        private const string PubSubApiUrl = "https://localhost/";
+        private const string KitosApiUrl = "https://localhost:44300/";
+
+        private const string ApiRoutePrefix = "api/v1";
+        private const string PublishRoute = $"{ApiRoutePrefix}/publish";
+        private const string SubscriptionRoute = $"{ApiRoutePrefix}/subscription";
 
         [HttpPost]
         [Route("subscribe")]
@@ -24,7 +28,7 @@ namespace Tests.PubSubTester.Controllers
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request.Subscription), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("api/subscribe", content);
+            var response = await client.PostAsync(SubscriptionRoute, content);
 
             return Ok(response);
         }
@@ -75,13 +79,31 @@ namespace Tests.PubSubTester.Controllers
         }
 
         [HttpPost]
+        [Route("subscribeToNonExistantUrl")]
+        public async Task<IActionResult> SubscribeToNonExistantUrl()
+        {
+            var token = await GetKitosToken();
+            var request = new SubscribeRequestWithTokenDTO
+            {
+                Token = token,
+                Subscription = new SubscriptionDTO
+                {
+                    Callback = new Uri(new Uri(PubSubTesterBaseUrl), "api/PubSub/NoUrlHere"),
+                    Topics = new List<string> { "KitosITSystemChangedEvent" }
+
+                }
+            };
+            return await Subscribe(request);
+        }
+
+        [HttpPost]
         [Route("deleteSystemChangeSubscription")]
         public async Task<IActionResult> DeleteSubscription(Guid uuid)
         {
             var token = await GetKitosToken();
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            var route = $"api/subscribe/{uuid}";
+            var route = $"{SubscriptionRoute}/{uuid}";
             var response = await client.DeleteAsync(route);
             return Ok(response);
         }
@@ -93,8 +115,7 @@ namespace Tests.PubSubTester.Controllers
             var token = await GetKitosToken();
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            const string route = "api/subscribe";
-            var response = await client.GetAsync(route);
+            var response = await client.GetAsync(SubscriptionRoute);
             var stringResponse = response.Content.ReadFromJsonAsync<IEnumerable<dynamic>>();
             return Ok(stringResponse);
         }
@@ -109,12 +130,12 @@ namespace Tests.PubSubTester.Controllers
         private static async Task<string> GetKitosToken()
         {
             var kitosClient = CreateClient(KitosApiUrl);
-            var body = new LoginDTO { Email = "local-api-global-admin-user@kitos.dk", Password = "localNoSecret" };
+            var body = new LoginDTO { Email = "local-api-system-integrator-user@kitos.dk", Password = "localNoSecret" };
             var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
             var tokenResponse = await kitosClient.PostAsync("api/authorize/GetToken", content);
             var jsonResponse = await tokenResponse.Content.ReadAsStringAsync();
             dynamic result = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
-            string token = result.response.token; 
+            string token = result.response.token;
             return token;
         }
 
@@ -132,7 +153,7 @@ namespace Tests.PubSubTester.Controllers
             var client = CreateClient(PubSubApiUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.Token}");
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("api/publish", content);
+            var response = await client.PostAsync(PublishRoute, content);
             return Ok(response);
         }
     }

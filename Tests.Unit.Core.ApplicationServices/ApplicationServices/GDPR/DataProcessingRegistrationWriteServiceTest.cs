@@ -15,7 +15,6 @@ using Core.ApplicationServices.References;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
-using Core.DomainModel.GDPR.Events;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
@@ -2157,37 +2156,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Act
             var createResult = _sut.AddRole(dpr.Uuid, newAssignment);
-
-            //Assert
-            Assert.True(createResult.Ok);
-            AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Can_Add_Role_Range()
-        {
-            //Arrange
-            var existingAssignment = CreateUpdatedDataProcessingRegistrationRoles(A<UserRolePair>().WrapAsEnumerable());
-            var (_, _, dpr, transaction) = SetupCreateScenarioPrerequisites(roles: existingAssignment);
-            var newRight = CreateRight(dpr, A<Guid>(), A<int>(), A<Guid>(), A<int>());
-            var newRight2 = CreateRight(dpr, A<Guid>(), A<int>(), A<Guid>(), A<int>());
-            var newAssignment = CreateUserRolePair(newRight.Role.Uuid, newRight.User.Uuid);
-            var newAssignment2 = CreateUserRolePair(newRight2.Role.Uuid, newRight2.User.Uuid);
-
-            var newAssignments = new List<UserRolePair> { newAssignment, newAssignment2 };
-
-            ExpectGetDataProcessingRegistrationReturns(dpr.Uuid, dpr);
-
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(newAssignment.UserUuid, newRight.UserId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(newAssignment2.UserUuid, newRight2.UserId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(newAssignment.RoleUuid, newRight.RoleId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(newAssignment2.RoleUuid, newRight2.RoleId);
-
-            ExpectRoleAssignmentReturns(dpr, newRight.RoleId, newRight.UserId, newRight);
-            ExpectRoleAssignmentReturns(dpr, newRight2.RoleId, newRight2.UserId, newRight2);
-
-            //Act
-            var createResult = _sut.AddRoleRange(dpr.Uuid, newAssignments);
 
             //Assert
             Assert.True(createResult.Ok);
