@@ -218,21 +218,60 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var orgUuid = A<Guid>();
             var orgId = A<int>();
             var org = new Organization { Id = orgId };
+            var user = new User
+            {
+                Uuid = A<Guid>()
+            };
 
             ExpectGetOrganizationReturns(orgUuid, org);
             ExpectCreatePermissionReturns(orgId, canCreate);
             ExpectModifyPermissionReturns(org, canEdit);
             ExpectDeletePermissionReturns(orgId, canDelete);
+            ExpectGetUserByUuid(user.Uuid, user);
 
             //Act
-            var result = _sut.GetCollectionPermissions(orgUuid);
+            var result = _sut.GetCollectionPermissions(orgUuid, user.Uuid);
 
             //Assert
             Assert.True(result.Ok);
             var permissions = result.Value;
             Assert.Equal(canCreate, permissions.Create);
-            Assert.Equal(canEdit, permissions.Edit);
+            Assert.Equal(canEdit, permissions.Edit.EditProperties);
             Assert.Equal(canDelete, permissions.Delete);
+        }
+
+        [Theory]
+        [InlineData(OrganizationRole.ContractModuleAdmin)]
+        [InlineData(OrganizationRole.SystemModuleAdmin)]
+        [InlineData(OrganizationRole.OrganizationModuleAdmin)]
+        public void Can_Get_User_Role_Edit_Permissions(OrganizationRole roleToEdit)
+        {
+            //Arrange
+            var orgUuid = A<Guid>();
+            var orgId = A<int>();
+            var org = new Organization { Id = orgId };
+            var user = new User
+            {
+                Uuid = A<Guid>(),
+                OrganizationRights = new List<OrganizationRight>
+                    { new () { Organization = org, Role = roleToEdit } }
+            };
+
+            ExpectGetOrganizationReturns(orgUuid, org);
+            ExpectCreatePermissionReturns(orgId, false);
+            ExpectModifyPermissionReturns(org, false);
+            ExpectDeletePermissionReturns(orgId, false);
+            ExpectGetUserByUuid(user.Uuid, user);
+
+            //Act
+            var result = _sut.GetCollectionPermissions(orgUuid, user.Uuid);
+
+            //Assert
+            Assert.True(result.Ok);
+            var permissions = result.Value;
+            Assert.Equal(roleToEdit == OrganizationRole.ContractModuleAdmin, permissions.Edit.EditContractRole);
+            Assert.Equal(roleToEdit == OrganizationRole.SystemModuleAdmin, permissions.Edit.EditSystemRole);
+            Assert.Equal(roleToEdit == OrganizationRole.OrganizationModuleAdmin, permissions.Edit.EditOrganizationRole);
         }
 
         [Fact]

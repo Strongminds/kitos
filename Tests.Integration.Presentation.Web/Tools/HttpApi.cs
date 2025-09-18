@@ -465,6 +465,8 @@ namespace Tests.Integration.Presentation.Web.Tools
                 using var crypto = new CryptoService();
                 var user = x.AsQueryable().ByUuid(userUuid);
                 user.Password = crypto.Encrypt(password + user.Salt);
+                if(role == OrganizationRole.GlobalAdmin)
+                    user.IsGlobalAdmin = true;
             });
 
             var cookie = await GetCookieAsync(new KitosCredentials(email, password));
