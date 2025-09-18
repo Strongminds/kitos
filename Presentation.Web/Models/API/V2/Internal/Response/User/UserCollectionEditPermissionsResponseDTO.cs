@@ -2,20 +2,20 @@
 {
     public class UserCollectionEditPermissionsResponseDTO
     {
-        public UserCollectionEditPermissionsResponseDTO(bool edit, bool editProperties, bool editContractRole, bool editSystemRole, bool editOrganizationRole)
+        public UserCollectionEditPermissionsResponseDTO(bool edit, bool modifyProperties, bool modifyContractRole, bool modifySystemRole, bool modifyOrganizationRole)
         {
-            EditProperties = editProperties;
-            EditContractRole = editContractRole;
-            EditSystemRole = editSystemRole;
-            EditOrganizationRole = editOrganizationRole;
+            ModifyProperties = modifyProperties;
+            ModifyContractRole = modifyContractRole;
+            ModifySystemRole = modifySystemRole;
+            ModifyOrganizationRole = modifyOrganizationRole;
 
-            Edit = editProperties || editContractRole || editSystemRole || editOrganizationRole;
+            CanModifyAny = modifyProperties || modifyContractRole || modifySystemRole || modifyOrganizationRole;
         }
 
-        public bool Edit { get; set; }
-        public bool EditProperties { get; set; }
-        public bool EditContractRole { get; set; }
-        public bool EditSystemRole { get; set; }
-        public bool EditOrganizationRole { get; set; }
+        public bool CanModifyAny { get; set; }
+        public bool ModifyProperties { get; set; }
+        public bool ModifyContractRole { get; set; }
+        public bool ModifySystemRole { get; set; }
+        public bool ModifyOrganizationRole { get; set; }
     }
 }

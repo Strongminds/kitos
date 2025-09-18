@@ -14,10 +14,10 @@ namespace Core.ApplicationServices.Model.Users
             EditSystemRole = editSystemRole;
             EditOrganizationRole = editOrganizationRole;
 
-            Edit = editProperties || editContractRole || editSystemRole || editOrganizationRole;
+            CanEditAny = editProperties || editContractRole || editSystemRole || editOrganizationRole;
         }
 
-        public bool Edit { get; }
+        public bool CanEditAny { get; }
         public bool EditProperties { get; }
         public bool EditContractRole { get; }
         public bool EditSystemRole { get; }

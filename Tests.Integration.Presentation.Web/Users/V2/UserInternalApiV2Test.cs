@@ -69,11 +69,11 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var isLocalOrGlobal = role is OrganizationRole.GlobalAdmin or OrganizationRole.LocalAdmin;
             var isOrgAdmin = role is OrganizationRole.OrganizationModuleAdmin;
             Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Create);
-            Assert.True(response.Modify.Edit);
-            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Modify.EditProperties);
-            Assert.Equal(isLocalOrGlobal || role is OrganizationRole.ContractModuleAdmin, response.Modify.EditContractRole);
-            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Modify.EditOrganizationRole);
-            Assert.Equal(isLocalOrGlobal || role is OrganizationRole.SystemModuleAdmin, response.Modify.EditSystemRole);
+            Assert.True(response.Modify.CanModifyAny);
+            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Modify.ModifyProperties);
+            Assert.Equal(isLocalOrGlobal || role is OrganizationRole.ContractModuleAdmin, response.Modify.ModifyContractRole);
+            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Modify.ModifyOrganizationRole);
+            Assert.Equal(isLocalOrGlobal || role is OrganizationRole.SystemModuleAdmin, response.Modify.ModifySystemRole);
             Assert.Equal(isLocalOrGlobal, response.Delete);
         }
 

@@ -205,7 +205,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         private static UserCollectionEditPermissionsResponseDTO MapUserCollectionEditPermissionsResponseDto(UserCollectionEditPermissionsResult permissions)
         {
-            return new UserCollectionEditPermissionsResponseDTO(permissions.Edit, permissions.EditProperties, permissions.EditContractRole, permissions.EditSystemRole, permissions.EditOrganizationRole);
+            return new UserCollectionEditPermissionsResponseDTO(permissions.CanEditAny, permissions.EditProperties, permissions.EditContractRole, permissions.EditSystemRole, permissions.EditOrganizationRole);
         }
 
         private UserRightsChangeParameters MapCopyRightsDTOToParameters(MutateUserRightsRequestDTO request)
