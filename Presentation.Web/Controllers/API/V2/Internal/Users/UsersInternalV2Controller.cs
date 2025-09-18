@@ -83,16 +83,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Match(FromOperationError, Ok);
         }
 
-        [Route("permissions")]
+        [Route("{userUuid}/permissions")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserCollectionPermissionsResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid)
+        public IHttpActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
-            return _userWriteService.GetCollectionPermissions(organizationUuid)
+            return _userWriteService.GetCollectionPermissions(organizationUuid, userUuid)
                 .Select(MapUserCollectionPermissionsResponseDto)
                 .Match(Ok, FromOperationError);
         }
@@ -196,11 +196,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
         }
 
-        private UserCollectionPermissionsResponseDTO MapUserCollectionPermissionsResponseDto(
+        private static UserCollectionPermissionsResponseDTO MapUserCollectionPermissionsResponseDto(
             UserCollectionPermissionsResult permissions)
         {
-            return new UserCollectionPermissionsResponseDTO(permissions.Create, permissions.Edit, permissions.Delete);
+            return new UserCollectionPermissionsResponseDTO(permissions.Create, MapUserCollectionEditPermissionsResponseDto(permissions.Edit), permissions.Delete);
 
+        }
+
+        private static UserCollectionEditPermissionsResponseDTO MapUserCollectionEditPermissionsResponseDto(UserCollectionEditPermissionsResult permissions)
+        {
+            return new UserCollectionEditPermissionsResponseDTO(permissions.Edit, permissions.EditProperties, permissions.EditContractRole, permissions.EditSystemRole, permissions.EditOrganizationRole);
         }
 
         private UserRightsChangeParameters MapCopyRightsDTOToParameters(MutateUserRightsRequestDTO request)

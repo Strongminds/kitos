@@ -344,6 +344,7 @@
     <Compile Include="Model\UiCustomization\UIModuleCustomizationParameters.cs" />
     <Compile Include="Model\UiCustomization\UIRootConfigUpdateParameters.cs" />
     <Compile Include="Model\Users\UserAdministrationPermissions.cs" />
+    <Compile Include="Model\Users\UserCollectionEditPermissionsResult.cs" />
     <Compile Include="Model\Users\UserCollectionPermissionsResult.cs" />
     <Compile Include="Model\Users\UserRightsAssignments.cs" />
     <Compile Include="Model\Users\UserRightsChangeParameters.cs" />

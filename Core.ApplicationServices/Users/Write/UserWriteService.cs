@@ -128,12 +128,13 @@ namespace Core.ApplicationServices.Users.Write
             _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value);
             return Maybe<OperationError>.None;
         }
-
-        public Result<UserCollectionPermissionsResult, OperationError> GetCollectionPermissions(
-            Guid organizationUuid)
+        
+        public Result<UserCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid, Guid userUuid)
         {
-            return _organizationService.GetOrganization(organizationUuid)
-                .Select(org => UserCollectionPermissionsResult.FromOrganization(org, _authorizationContext));
+            return _userService.GetUserByUuid(userUuid)
+                .Bind(user => _organizationService.GetOrganization(organizationUuid)
+                    .Select(org => (user, org)))
+                .Select(tuple => UserCollectionPermissionsResult.FromOrganization(tuple.org, tuple.user, _authorizationContext));
         }
 
         public Maybe<OperationError> CopyUserRights(Guid organizationUuid, Guid fromUserUuid, Guid toUserUuid,
@@ -419,20 +420,12 @@ namespace Core.ApplicationServices.Users.Write
             return Maybe<OperationError>.None;
         }
 
-        private Result<UserCollectionPermissionsResult, OperationError> GetCollectionPermissions(Organization organization)
-        {
-            return UserCollectionPermissionsResult.FromOrganization(organization, _authorizationContext);
-        }
-
         private Result<Organization, OperationError> ValidateIfCanCreateUser(Guid organizationUuid)
         {
             return _organizationService.GetOrganization(organizationUuid)
                 .Bind(organization =>
                 {
-                    var permissionsResult = GetCollectionPermissions(organization);
-                    if (permissionsResult.Failed)
-                        return permissionsResult.Error;
-                    if (permissionsResult.Value.Create == false)
+                    if (_authorizationContext.AllowCreate<User>(organization.Id) == false)
                         return new OperationError(
                             $"User is not allowed to create users for organization with uuid: {organizationUuid}",
                             OperationFailure.Forbidden);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
@@ -126,15 +127,20 @@ namespace Tests.Integration.Presentation.Web.Tools
             return await InterfaceV2Helper.CreateItInterfaceAsync(await GetGlobalToken(), request);
         }
 
-        public async Task<UserResponseDTO> CreateUserAsync(Guid organizationUuid, string email = null, bool apiAccess = false)
+        public async Task<UserResponseDTO> CreateUserAsync(Guid organizationUuid, string email = null, bool apiAccess = false, params OrganizationRoleChoice[] roles)
         {
+            var userRoles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User };
+            if (roles.Any())
+            {
+                userRoles.AddRange(roles);
+            }
             var request = new CreateUserRequestDTO
             {
                 FirstName = A<string>(),
                 LastName = A<string>(),
                 Email = email ?? CreateEmail(),
                 HasApiAccess = apiAccess,
-                Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.User }
+                Roles = userRoles
             };
             return await UsersV2Helper.CreateUser(organizationUuid, request);
         }

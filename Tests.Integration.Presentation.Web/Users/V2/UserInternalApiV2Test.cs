@@ -50,19 +50,31 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Fact]
-        public async Task Can_Get_User_Collection_Permissions()
+        [Theory]
+        [InlineData(OrganizationRole.ContractModuleAdmin)]
+        [InlineData(OrganizationRole.SystemModuleAdmin)]
+        [InlineData(OrganizationRole.OrganizationModuleAdmin)]
+        [InlineData(OrganizationRole.LocalAdmin)]
+        [InlineData(OrganizationRole.GlobalAdmin)]
+        public async Task Can_Get_User_Collection_Permissions(OrganizationRole role)
         {
             //Arrange
             var organization = await CreateOrganizationAsync();
-
+            var (userUuid, _, cookie)= await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Uuid);
+            
             //Act
-            var response = await UsersV2Helper.GetUserCollectionPermissions(organization.Uuid);
+            var response = await UsersV2Helper.GetUserCollectionPermissions(organization.Uuid, userUuid, cookie);
 
             //Assert
-            Assert.True(response.Create);
-            Assert.True(response.Modify);
-            Assert.True(response.Delete);
+            var isLocalOrGlobal = role is OrganizationRole.GlobalAdmin or OrganizationRole.LocalAdmin;
+            var isOrgAdmin = role is OrganizationRole.OrganizationModuleAdmin;
+            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Create);
+            Assert.True(response.Modify.Edit);
+            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Modify.EditProperties);
+            Assert.Equal(isLocalOrGlobal || role is OrganizationRole.ContractModuleAdmin, response.Modify.EditContractRole);
+            Assert.Equal(isLocalOrGlobal || isOrgAdmin, response.Modify.EditOrganizationRole);
+            Assert.Equal(isLocalOrGlobal || role is OrganizationRole.SystemModuleAdmin, response.Modify.EditSystemRole);
+            Assert.Equal(isLocalOrGlobal, response.Delete);
         }
 
         [Fact]
