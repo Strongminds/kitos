@@ -230,7 +230,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             ExpectGetUserByUuid(user.Uuid, user);
 
             //Act
-            var result = _sut.GetCollectionPermissions(orgUuid, user.Uuid);
+            var result = _sut.GetCollectionPermissions(orgUuid);
 
             //Assert
             Assert.True(result.Ok);
@@ -262,9 +262,10 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             ExpectModifyPermissionReturns(org, false);
             ExpectDeletePermissionReturns(orgId, false);
             ExpectGetUserByUuid(user.Uuid, user);
+            _organizationalUserContextMock.Setup(x => x.HasRole(orgId, roleToEdit)).Returns(true);
 
             //Act
-            var result = _sut.GetCollectionPermissions(orgUuid, user.Uuid);
+            var result = _sut.GetCollectionPermissions(orgUuid);
 
             //Assert
             Assert.True(result.Ok);

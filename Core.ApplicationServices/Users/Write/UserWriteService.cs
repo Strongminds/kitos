@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Users;
 using Core.ApplicationServices.Model.Users.Write;
 using Core.ApplicationServices.Organizations;
@@ -16,6 +14,9 @@ using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Infrastructure.Services.DataAccess;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Core.ApplicationServices.Users.Write
 {
@@ -112,6 +113,24 @@ namespace Core.ApplicationServices.Users.Write
             return user;
         }
 
+        private bool HasOnlyRoleChanges(UpdateUserParameters parameters)
+        {
+            var type = typeof(UpdateUserParameters);
+            return type.GetProperties()
+                .Where(prop => prop.Name != nameof(UpdateUserParameters.Roles) &&
+                               prop.PropertyType.IsGenericType &&
+                               prop.PropertyType.GetGenericTypeDefinition() == typeof(OptionalValueChange<>))
+                .Select(prop => prop.GetValue(parameters))
+                .All(val =>
+                {
+                    if (val == null) return true;
+                    var hasChangeProp = val.GetType().GetProperty(nameof(OptionalValueChange<object>.HasChange));
+                    if (hasChangeProp == null) return true;
+                    var hasChangeValue = hasChangeProp.GetValue(val);
+                    return hasChangeValue is bool b && !b;
+                }); ;
+        }
+
         public Maybe<OperationError> SendNotification(Guid organizationUuid, Guid userUuid)
         {
             var orgIdResult = ResolveUuidToId<Organization>(organizationUuid);
@@ -129,12 +148,10 @@ namespace Core.ApplicationServices.Users.Write
             return Maybe<OperationError>.None;
         }
         
-        public Result<UserCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid, Guid userUuid)
+        public Result<UserCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid)
         {
-            return _userService.GetUserByUuid(userUuid)
-                .Bind(user => _organizationService.GetOrganization(organizationUuid)
-                    .Select(org => (user, org)))
-                .Select(tuple => UserCollectionPermissionsResult.FromOrganization(tuple.org, tuple.user, _authorizationContext));
+            return _organizationService.GetOrganization(organizationUuid)
+                .Select(org => UserCollectionPermissionsResult.FromOrganization(org, _authorizationContext, _organizationalUserContext));
         }
 
         public Maybe<OperationError> CopyUserRights(Guid organizationUuid, Guid fromUserUuid, Guid toUserUuid,

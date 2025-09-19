@@ -92,7 +92,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         public IHttpActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
-            return _userWriteService.GetCollectionPermissions(organizationUuid, userUuid)
+            return _userWriteService.GetCollectionPermissions(organizationUuid)
                 .Select(MapUserCollectionPermissionsResponseDto)
                 .Match(Ok, FromOperationError);
         }
