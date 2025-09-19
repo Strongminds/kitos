@@ -74,12 +74,12 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Users
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        public static async Task<UserCollectionPermissionsResponseDTO> GetUserCollectionPermissions(Guid organizationUuid, Cookie cookie = null)
+        public static async Task<UserCollectionPermissionsResponseDTO> GetUserCollectionPermissions(Guid organizationUuid, Guid userUuid, Cookie cookie = null)
         {
             var requestCookie = cookie ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             using var response = await HttpApi.GetWithCookieAsync(
                 TestEnvironment.CreateUrl(
-                    $"{ControllerPrefix(organizationUuid)}/permissions"), requestCookie);
+                    $"{ControllerPrefix(organizationUuid)}/{userUuid}/permissions"), requestCookie);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
