@@ -83,7 +83,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Match(FromOperationError, Ok);
         }
 
-        [Route("/permissions")]
+        [Route("permissions")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserCollectionPermissionsResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
