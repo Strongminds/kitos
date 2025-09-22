@@ -25,7 +25,7 @@ namespace Core.ApplicationServices.Model.Users.Write
         public bool SendMailOnUpdate {get; set; }
         public OptionalValueChange<Guid> DefaultOrganizationUnitUuid { get; set; }
 
-        public bool HasAnyNonRoleChange()
+        public bool HasOnlyRoleChanges()
         {
             return (Email == null || Email.HasChange == false) &&
                    (FirstName == null || FirstName.HasChange == false) &&
