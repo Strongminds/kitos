@@ -10,7 +10,7 @@
             ModifyOrganizationRole = modifyOrganizationRole;
             ModifyLocalAdminRole = modifyLocalAdminRole;
 
-            CanModifyAny = modifyProperties || modifyContractRole || modifySystemRole || modifyOrganizationRole;
+            CanModifyAny = modifyProperties || modifyContractRole || modifySystemRole || modifyOrganizationRole || modifyLocalAdminRole;
         }
 
         public bool CanModifyAny { get; set; }
