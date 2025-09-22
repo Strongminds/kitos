@@ -428,7 +428,7 @@ namespace Core.ApplicationServices.Authorization
                 OrganizationRole.GlobalAdmin => HasPermission(new AdministerGlobalPermission(GlobalPermission.GlobalAdmin)),
                 OrganizationRole.RightsHolderAccess => isGlobalAdmin,
                 OrganizationRole.LocalAdmin => hasFullLocalAccess,
-                OrganizationRole.User => hasFullLocalAccess || IsOrganizationModuleAdmin(right.OrganizationId) || isContractModuleAdmin || isSystemModuleAdmin,
+                OrganizationRole.User => hasFullLocalAccess || IsOrganizationModuleAdmin(right.OrganizationId),
                 OrganizationRole.OrganizationModuleAdmin => hasFullLocalAccess || IsOrganizationModuleAdmin(right.OrganizationId),
                 OrganizationRole.ContractModuleAdmin => hasFullLocalAccess || isContractModuleAdmin,
                 OrganizationRole.SystemModuleAdmin => hasFullLocalAccess || isSystemModuleAdmin,
