@@ -372,19 +372,13 @@ namespace Core.ApplicationServices.Users.Write
                             $"User is not allowed to edit {OrganizationRole.SystemModuleAdmin} role",
                             OperationFailure.Forbidden);
                     }
-                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.OrganizationModuleAdmin, rolesToAddList, rolesToDeleteList))
+                    if (!editPermissions.EditOrganizationRole && CheckAnyRoleChangesContainRole(OrganizationRole.OrganizationModuleAdmin, rolesToAddList, rolesToDeleteList))
                     {
                         return new OperationError(
                             $"User is not allowed to edit {OrganizationRole.OrganizationModuleAdmin} role",
                             OperationFailure.Forbidden);
                     }
-                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.ContractModuleAdmin, rolesToAddList, rolesToDeleteList))
-                    {
-                        return new OperationError(
-                            $"User is not allowed to edit {OrganizationRole.ContractModuleAdmin} role",
-                            OperationFailure.Forbidden);
-                    }
-                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.SystemModuleAdmin, rolesToAddList, rolesToDeleteList))
+                    if (!editPermissions.EditContractRole && CheckAnyRoleChangesContainRole(OrganizationRole.ContractModuleAdmin, rolesToAddList, rolesToDeleteList))
                     {
                         return new OperationError(
                             $"User is not allowed to edit {OrganizationRole.ContractModuleAdmin} role",
