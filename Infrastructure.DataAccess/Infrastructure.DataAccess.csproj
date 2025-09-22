@@ -115,6 +115,7 @@
     <Compile Include="Mapping\ItSystemUsagePersonalDataOptionsMap.cs" />
     <Compile Include="Mapping\KendoOrganizationalConfigurationMap.cs" />
     <Compile Include="Mapping\LifeCycleTrackingEventMap.cs" />
+    <Compile Include="Mapping\OrganizationSupplierMap.cs" />
     <Compile Include="Mapping\PendingReadModelUpdateMap.cs" />
     <Compile Include="Mapping\PublicMessageMap.cs" />
     <Compile Include="Mapping\StsOrganizationChangeLogMap.cs" />

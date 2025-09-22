@@ -74,6 +74,7 @@ namespace Infrastructure.DataAccess
         public DbSet<OrganizationUnit> OrganizationUnits { get; set; }
         public DbSet<OrganizationUnitRight> OrganizationUnitRights { get; set; }
         public DbSet<OrganizationUnitRole> OrganizationUnitRoles { get; set; }
+        public DbSet<OrganizationSupplier> OrganizationSuppliers { get; set; }
         public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; }
         public DbSet<PaymentFreqencyType> PaymentFreqencyTypes { get; set; }
         public DbSet<PaymentModelType> PaymentModelTypes { get; set; }
@@ -209,6 +210,7 @@ namespace Infrastructure.DataAccess
             modelBuilder.Configurations.Add(new OrganizationUnitMap());
             modelBuilder.Configurations.Add(new OrganizationUnitRightMap());
             modelBuilder.Configurations.Add(new OrganizationUnitRoleMap());
+            modelBuilder.Configurations.Add(new OrganizationSupplierMap());
             modelBuilder.Configurations.Add(new PasswordResetRequestMap());
             modelBuilder.Configurations.Add(new ProcurementStrategyTypeMap());
             modelBuilder.Configurations.Add(new PurchaseFormTypeMap());

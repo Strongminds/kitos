@@ -142,6 +142,14 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<ItContractOverviewReadModel> ItContractOverviewReadModels { get; set; }
 
         /// <summary>
+        /// Determines if the Organization of type "Company" is a supplier
+        /// </summary>
+        public bool IsSupplier { get; set; }
+
+        public virtual ICollection<OrganizationSupplier> UsedAsSupplierByOrganizations { get; set; }
+        public virtual ICollection<OrganizationSupplier> Suppliers { get; set; }
+
+        /// <summary>
         /// Get the level-0 organization unit, which by convention is named represently
         /// </summary>
         /// <returns></returns>
