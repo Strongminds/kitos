@@ -41,7 +41,7 @@ namespace Core.ApplicationServices.Model.Users
             var hasSystemRole = organizationalUserContext.HasRole(organization.Id, OrganizationRole.SystemModuleAdmin);
             var hasOrganizationRole = organizationalUserContext.HasRole(organization.Id, OrganizationRole.OrganizationModuleAdmin);
 
-            return new UserCollectionEditPermissionsResult(modify, hasContractRole, hasSystemRole, hasOrganizationRole, false); //False passed as the local admin check is done above
+            return new UserCollectionEditPermissionsResult(modify, hasContractRole, hasSystemRole, hasOrganizationRole, false);
         }
     }
 }
