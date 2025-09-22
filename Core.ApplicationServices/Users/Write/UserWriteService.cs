@@ -99,7 +99,7 @@ namespace Core.ApplicationServices.Users.Write
 
             var getUserResult = _userService.GetUserByUuid(userUuid);
             Result<User, OperationError> updateUserResult;
-            if(parameters.HasAnyNonRoleChange())
+            if(parameters.HasOnlyRoleChanges())
             {
                 updateUserResult = getUserResult
                     .Bind(user => PerformRoleModify(organization, user, parameters));
