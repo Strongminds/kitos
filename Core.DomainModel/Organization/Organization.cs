@@ -568,6 +568,16 @@ namespace Core.DomainModel.Organization
             TypeId = typeId;
         }
 
+        public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
+        {
+            if ((OrganizationTypeKeys)TypeId != OrganizationTypeKeys.Virksomhed)
+            {
+                return new OperationError(
+                    $"Only organizations of {OrganizationTypeKeys.Virksomhed} type can be marked as a supplier", OperationFailure.BadInput);
+            }
+            IsSupplier = isSupplier;
+            return Maybe<OperationError>.None;
+        }
         public void UpdateShowDataProcessing(Maybe<bool> showDataProcessing)
         {
             HandleConfigPropertyUpdate(showDataProcessing, config => config.ShowDataProcessing = showDataProcessing.Value);

@@ -388,6 +388,7 @@
     <Compile Include="Controllers\API\V2\Internal\Messages\Mapping\PublicMessageIconTypeChoiceExtension.cs" />
     <Compile Include="Controllers\API\V2\Internal\Messages\Mapping\PublicMessageStatusChoiceExtension.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\AlertsV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\Internal\Organizations\OrganizationSupplierInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\QA\BrokenExternalReferencesReportInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRegularOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\BaseGlobalRoleOptionTypesInternalV2Controller.cs" />

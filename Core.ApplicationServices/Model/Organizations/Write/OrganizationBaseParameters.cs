@@ -9,5 +9,6 @@ namespace Core.ApplicationServices.Model.Organizations.Write
         public OptionalValueChange<Maybe<string>> Name { get; set; }
         public OptionalValueChange<int> TypeId { get; set; }
         public OptionalValueChange<Guid?> ForeignCountryCodeUuid { get; set; }
+        public OptionalValueChange<bool> IsSupplier { get; set; }
     }
 }

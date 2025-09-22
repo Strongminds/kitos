@@ -86,6 +86,8 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
             Name = rule.MustUpdate(x => x.Name) ? (dto.Name.FromNullable()).AsChangedValue()
                 : OptionalValueChange<Maybe<string>>.None,
             TypeId = rule.MustUpdate(x => x.Type) ? ((int)dto.Type).AsChangedValue() : OptionalValueChange<int>.None,
+            IsSupplier = rule.MustUpdate(x => x.IsSupplier) ? dto.IsSupplier.AsChangedValue()
+                : OptionalValueChange<bool>.None,
         };
 
         return WithForeignCountryCodeMapping(rule, dto, parameters);
