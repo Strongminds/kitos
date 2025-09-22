@@ -83,14 +83,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 .Match(FromOperationError, Ok);
         }
 
-        [Route("{userUuid}/permissions")]
+        [Route("/permissions")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserCollectionPermissionsResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
+        public IHttpActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             return _userWriteService.GetCollectionPermissions(organizationUuid)
                 .Select(MapUserCollectionPermissionsResponseDto)
@@ -205,7 +205,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         private static UserCollectionEditPermissionsResponseDTO MapUserCollectionEditPermissionsResponseDto(UserCollectionEditPermissionsResult permissions)
         {
-            return new UserCollectionEditPermissionsResponseDTO(permissions.CanEditAny, permissions.EditProperties, permissions.EditContractRole, permissions.EditSystemRole, permissions.EditOrganizationRole);
+            return new UserCollectionEditPermissionsResponseDTO(permissions.CanEditAny, permissions.EditProperties, permissions.EditContractRole, permissions.EditSystemRole, permissions.EditOrganizationRole, permissions.EditLocalAdminRole);
         }
 
         private UserRightsChangeParameters MapCopyRightsDTOToParameters(MutateUserRightsRequestDTO request)

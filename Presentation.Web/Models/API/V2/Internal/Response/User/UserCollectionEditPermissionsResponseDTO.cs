@@ -2,12 +2,13 @@
 {
     public class UserCollectionEditPermissionsResponseDTO
     {
-        public UserCollectionEditPermissionsResponseDTO(bool edit, bool modifyProperties, bool modifyContractRole, bool modifySystemRole, bool modifyOrganizationRole)
+        public UserCollectionEditPermissionsResponseDTO(bool edit, bool modifyProperties, bool modifyContractRole, bool modifySystemRole, bool modifyOrganizationRole, bool modifyLocalAdminRole)
         {
             ModifyProperties = modifyProperties;
             ModifyContractRole = modifyContractRole;
             ModifySystemRole = modifySystemRole;
             ModifyOrganizationRole = modifyOrganizationRole;
+            ModifyLocalAdminRole = modifyLocalAdminRole;
 
             CanModifyAny = modifyProperties || modifyContractRole || modifySystemRole || modifyOrganizationRole;
         }
@@ -17,5 +18,6 @@
         public bool ModifyContractRole { get; set; }
         public bool ModifySystemRole { get; set; }
         public bool ModifyOrganizationRole { get; set; }
+        public bool ModifyLocalAdminRole { get; set; }
     }
 }
