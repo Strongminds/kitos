@@ -1,5 +1,4 @@
-﻿using System;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Authorization.Policies;
 using Core.DomainModel;
@@ -9,6 +8,7 @@ using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
+using System;
 
 
 namespace Core.ApplicationServices.Authorization
@@ -277,7 +277,7 @@ namespace Core.ApplicationServices.Authorization
             return result;
         }
 
-        private bool AllowAdministerOrganizationRight(OrganizationRight right)
+        public bool AllowAdministerOrganizationRight(OrganizationRight right)
         {
             return HasPermission(new AdministerOrganizationRightPermission(right));
         }
@@ -418,14 +418,20 @@ namespace Core.ApplicationServices.Authorization
 
             var isGlobalAdmin = IsGlobalAdmin();
             var hasFullLocalAccess = isGlobalAdmin || IsLocalAdmin(right.OrganizationId);
+            var isContractModuleAdmin =
+                _activeUserContext.HasRole(right.OrganizationId, OrganizationRole.ContractModuleAdmin);
+            var isSystemModuleAdmin =
+                _activeUserContext.HasRole(right.OrganizationId, OrganizationRole.SystemModuleAdmin);
 
             return right.Role switch
             {
                 OrganizationRole.GlobalAdmin => HasPermission(new AdministerGlobalPermission(GlobalPermission.GlobalAdmin)),
                 OrganizationRole.RightsHolderAccess => isGlobalAdmin,
                 OrganizationRole.LocalAdmin => hasFullLocalAccess,
-                OrganizationRole.User => hasFullLocalAccess || IsOrganizationModuleAdmin(right.OrganizationId),
+                OrganizationRole.User => hasFullLocalAccess || IsOrganizationModuleAdmin(right.OrganizationId) || isContractModuleAdmin || isSystemModuleAdmin,
                 OrganizationRole.OrganizationModuleAdmin => hasFullLocalAccess || IsOrganizationModuleAdmin(right.OrganizationId),
+                OrganizationRole.ContractModuleAdmin => hasFullLocalAccess || isContractModuleAdmin,
+                OrganizationRole.SystemModuleAdmin => hasFullLocalAccess || isSystemModuleAdmin,
                 _ => hasFullLocalAccess
             };
         }
