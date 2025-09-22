@@ -134,7 +134,7 @@ namespace Core.ApplicationServices.Users.Write
             return _userService.GetUserByUuid(userUuid)
                 .Bind(user => _organizationService.GetOrganization(organizationUuid)
                     .Select(org => (user, org)))
-                .Select(tuple => UserCollectionPermissionsResult.FromOrganization(tuple.org, tuple.user, _authorizationContext));
+                .Select(tuple => UserCollectionPermissionsResult.FromOrganization(tuple.org, _authorizationContext, _organizationalUserContext));
         }
 
         public Maybe<OperationError> CopyUserRights(Guid organizationUuid, Guid fromUserUuid, Guid toUserUuid,
@@ -361,7 +361,6 @@ namespace Core.ApplicationServices.Users.Write
 
         private Result<User, OperationError> UpdateStakeholderAccess(User user, bool stakeholderAccess)
         {
-            //mock change
             if (stakeholderAccess &&
                 !_authorizationContext.HasPermission(
                     new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))

@@ -19,14 +19,14 @@ namespace Core.ApplicationServices.Model.Users
 
         public static UserCollectionPermissionsResult FromOrganization(
             Organization organization,
-            User user,
-            IAuthorizationContext authorizationContext)
+            IAuthorizationContext authorizationContext,
+            IOrganizationalUserContext organizationalUserContext)
         {
             var create = authorizationContext.AllowCreate<User>(organization.Id);
             var modify = authorizationContext.AllowModify(organization);
             var delete = authorizationContext.HasPermission(new DeleteAnyUserPermission(organization.Id));
 
-            return new UserCollectionPermissionsResult(create, UserCollectionEditPermissionsResult.FromOrganization(organization, user, authorizationContext), delete);
+            return new UserCollectionPermissionsResult(create, UserCollectionEditPermissionsResult.FromOrganization(organization, authorizationContext, organizationalUserContext), delete);
         }
     }
 }
