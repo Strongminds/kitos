@@ -99,7 +99,7 @@ namespace Core.ApplicationServices.Users.Write
 
             var getUserResult = _userService.GetUserByUuid(userUuid);
             Result<User, OperationError> updateUserResult;
-            if(HasOnlyRoleChanges(parameters))
+            if(parameters.HasAnyNonRoleChange())
             {
                 updateUserResult = getUserResult
                     .Bind(user => PerformRoleModify(organization, user, parameters));
@@ -363,7 +363,7 @@ namespace Core.ApplicationServices.Users.Write
                 .Bind(permissions =>
                 {
                     var editPermissions = permissions.Edit;
-                    var (rolesToAdd, rolesToDelete) = CalculateRoleChanges(organization, user, parameters.Roles.NewValue);
+                    var (rolesToAdd, rolesToDelete) = CalculateRoleChanges(organization, user, parameters.Roles.HasChange ? parameters.Roles.NewValue : user.GetRolesInOrganization(organization.Uuid));
                     var rolesToAddList = rolesToAdd.ToList();
                     var rolesToDeleteList = rolesToDelete.ToList();
                     if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.SystemModuleAdmin, rolesToAddList, rolesToDeleteList))
@@ -573,24 +573,6 @@ namespace Core.ApplicationServices.Users.Write
             }
 
             return user;
-        }
-
-        private static bool HasOnlyRoleChanges(UpdateUserParameters parameters)
-        {
-            var type = typeof(UpdateUserParameters);
-            return type.GetProperties()
-                .Where(prop => prop.Name != nameof(UpdateUserParameters.Roles) &&
-                               prop.PropertyType.IsGenericType &&
-                               prop.PropertyType.GetGenericTypeDefinition() == typeof(OptionalValueChange<>))
-                .Select(prop => prop.GetValue(parameters))
-                .All(val =>
-                {
-                    if (val == null) return true;
-                    var hasChangeProp = val.GetType().GetProperty(nameof(OptionalValueChange<object>.HasChange));
-                    if (hasChangeProp == null) return true;
-                    var hasChangeValue = hasChangeProp.GetValue(val);
-                    return hasChangeValue is false;
-                }); ;
         }
     }
 }
