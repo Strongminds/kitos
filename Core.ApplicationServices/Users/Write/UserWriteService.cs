@@ -361,6 +361,7 @@ namespace Core.ApplicationServices.Users.Write
 
         private Result<User, OperationError> UpdateStakeholderAccess(User user, bool stakeholderAccess)
         {
+            //mock change
             if (stakeholderAccess &&
                 !_authorizationContext.HasPermission(
                     new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))
