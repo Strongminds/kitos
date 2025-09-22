@@ -17,6 +17,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Organization = Core.DomainModel.Organization.Organization;
 
 namespace Core.ApplicationServices.Users.Write
 {
@@ -96,10 +97,17 @@ namespace Core.ApplicationServices.Users.Write
             }
             var organization = orgResult.Value;
 
-            var updateUserResult =
-                _userService.GetUserByUuid(userUuid)
-                    .Bind(CanModifyUser)
-                    .Bind(user => PerformUpdates(user, organization, parameters));
+            var getUserResult = _userService.GetUserByUuid(userUuid);
+            Result<User, OperationError> updateUserResult;
+            if(HasOnlyRoleChanges(parameters))
+            {
+                updateUserResult = getUserResult
+                    .Bind(user => PerformRoleModify(organization, user, parameters));
+            }
+            else
+            {
+                updateUserResult = getUserResult.Bind(user => PerformModify(organization, user, parameters));
+            }           
 
             if (updateUserResult.Failed)
             {
@@ -111,24 +119,6 @@ namespace Core.ApplicationServices.Users.Write
             _userService.UpdateUser(user, parameters.SendMailOnUpdate, organization.Id);
             transactionManager.Commit();
             return user;
-        }
-
-        private bool HasOnlyRoleChanges(UpdateUserParameters parameters)
-        {
-            var type = typeof(UpdateUserParameters);
-            return type.GetProperties()
-                .Where(prop => prop.Name != nameof(UpdateUserParameters.Roles) &&
-                               prop.PropertyType.IsGenericType &&
-                               prop.PropertyType.GetGenericTypeDefinition() == typeof(OptionalValueChange<>))
-                .Select(prop => prop.GetValue(parameters))
-                .All(val =>
-                {
-                    if (val == null) return true;
-                    var hasChangeProp = val.GetType().GetProperty(nameof(OptionalValueChange<object>.HasChange));
-                    if (hasChangeProp == null) return true;
-                    var hasChangeValue = hasChangeProp.GetValue(val);
-                    return hasChangeValue is bool b && !b;
-                }); ;
         }
 
         public Maybe<OperationError> SendNotification(Guid organizationUuid, Guid userUuid)
@@ -360,6 +350,66 @@ namespace Core.ApplicationServices.Users.Write
                 );
         }
 
+        private Result<User, OperationError> PerformModify(Organization organization, User user,
+            UpdateUserParameters parameters)
+        {
+            return CanModifyUser(user)
+                .Bind(validatedUser => PerformUpdates(validatedUser, organization, parameters));
+        }
+
+        private Result<User, OperationError> PerformRoleModify(Organization organization, User user, UpdateUserParameters parameters)
+        {
+            return GetCollectionPermissions(organization.Uuid)
+                .Bind(permissions =>
+                {
+                    var editPermissions = permissions.Edit;
+                    var (rolesToAdd, rolesToDelete) = CalculateRoleChanges(organization, user, parameters.Roles.NewValue);
+                    var rolesToAddList = rolesToAdd.ToList();
+                    var rolesToDeleteList = rolesToDelete.ToList();
+                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.SystemModuleAdmin, rolesToAddList, rolesToDeleteList))
+                    {
+                        return new OperationError(
+                            $"User is not allowed to edit {OrganizationRole.SystemModuleAdmin} role",
+                            OperationFailure.Forbidden);
+                    }
+                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.OrganizationModuleAdmin, rolesToAddList, rolesToDeleteList))
+                    {
+                        return new OperationError(
+                            $"User is not allowed to edit {OrganizationRole.OrganizationModuleAdmin} role",
+                            OperationFailure.Forbidden);
+                    }
+                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.ContractModuleAdmin, rolesToAddList, rolesToDeleteList))
+                    {
+                        return new OperationError(
+                            $"User is not allowed to edit {OrganizationRole.ContractModuleAdmin} role",
+                            OperationFailure.Forbidden);
+                    }
+                    if (!editPermissions.EditSystemRole && CheckAnyRoleChangesContainRole(OrganizationRole.SystemModuleAdmin, rolesToAddList, rolesToDeleteList))
+                    {
+                        return new OperationError(
+                            $"User is not allowed to edit {OrganizationRole.ContractModuleAdmin} role",
+                            OperationFailure.Forbidden);
+                    }
+                    if (!editPermissions.EditLocalAdminRole &&
+                        CheckAnyRoleChangesContainRole(OrganizationRole.LocalAdmin, rolesToAddList, rolesToDeleteList))
+                    {
+
+                        return new OperationError(
+                            $"User is not allowed to edit {OrganizationRole.LocalAdmin} role",
+                            OperationFailure.Forbidden);
+                    }
+                    if (!_organizationalUserContext.IsGlobalAdmin() &&
+                        CheckAnyRoleChangesContainRole(OrganizationRole.GlobalAdmin, rolesToAddList, rolesToDeleteList))
+                    {
+                        return new OperationError($"User is not allowed to edit {OrganizationRole.GlobalAdmin} role",
+                            OperationFailure.Forbidden);
+                    }
+
+                    return user.WithOptionalUpdate(parameters.Roles,
+                        (userToUpdate, roles) => UpdateRoles(organization, userToUpdate, roles));
+                });
+        }
+        
         private Result<User, OperationError> PerformUpdates(User orgUser, Organization organization, UpdateUserParameters parameters)
         {
             return orgUser.WithOptionalUpdate(parameters.FirstName, (user, firstName) => user.UpdateFirstName(firstName))
@@ -412,14 +462,26 @@ namespace Core.ApplicationServices.Users.Write
         private Result<User, OperationError> UpdateRoles(Organization organization, User user,
             IEnumerable<OrganizationRole> roles)
         {
+            var (rolesToAdd, rolesToDelete) = CalculateRoleChanges(organization, user, roles);
+            return RemoveRoles(user, organization, rolesToDelete)
+                .Match(error => error, () => AssignUserAdministrativeRoles(organization.Id, user.Id, rolesToAdd))
+                .Match(error => error, () => Result<User, OperationError>.Success(user));
+        }
+
+        private (IEnumerable<OrganizationRole> rolesToAdd, IEnumerable<OrganizationRole> rolesToDelete) CalculateRoleChanges(
+            Organization organization, User user,
+            IEnumerable<OrganizationRole> roles)
+        {
             var oldRoles = user.GetRolesInOrganization(organization.Uuid).ToHashSet();
             var newRoles = roles.ToHashSet();
             var rolesToAdd = newRoles.Except(oldRoles);
             var rolesToDelete = oldRoles.Except(newRoles);
-            return RemoveRoles(user, organization, rolesToDelete)
-                .Match(error => error, () => AssignUserAdministrativeRoles(organization.Id, user.Id, rolesToAdd))
-                .Match(error => error, () => Result<User, OperationError>.Success(user));
+            return (rolesToAdd, rolesToDelete);
+        }
 
+        private static bool CheckAnyRoleChangesContainRole(OrganizationRole role, IEnumerable<OrganizationRole> rolesToAdd, IEnumerable<OrganizationRole> rolesToDelete)
+        {
+            return rolesToAdd.Contains(role) || rolesToDelete.Contains(role);
         }
 
         private Maybe<OperationError> RemoveRoles(User user, Organization organization,
@@ -519,5 +581,22 @@ namespace Core.ApplicationServices.Users.Write
             return user;
         }
 
+        private static bool HasOnlyRoleChanges(UpdateUserParameters parameters)
+        {
+            var type = typeof(UpdateUserParameters);
+            return type.GetProperties()
+                .Where(prop => prop.Name != nameof(UpdateUserParameters.Roles) &&
+                               prop.PropertyType.IsGenericType &&
+                               prop.PropertyType.GetGenericTypeDefinition() == typeof(OptionalValueChange<>))
+                .Select(prop => prop.GetValue(parameters))
+                .All(val =>
+                {
+                    if (val == null) return true;
+                    var hasChangeProp = val.GetType().GetProperty(nameof(OptionalValueChange<object>.HasChange));
+                    if (hasChangeProp == null) return true;
+                    var hasChangeValue = hasChangeProp.GetValue(val);
+                    return hasChangeValue is false;
+                }); ;
+        }
     }
 }
