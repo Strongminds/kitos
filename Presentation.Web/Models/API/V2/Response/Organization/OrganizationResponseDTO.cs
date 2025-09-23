@@ -8,9 +8,11 @@ namespace Presentation.Web.Models.API.V2.Response.Organization
     {
         [Required]
         public OrganizationType OrganizationType { get; }
-        public OrganizationResponseDTO(Guid uuid, string name, string cvr, OrganizationType organizationType) : base(uuid, name, cvr)
+        public bool IsSupplier { get; }
+        public OrganizationResponseDTO(Guid uuid, string name, string cvr, OrganizationType organizationType, bool isSupplier) : base(uuid, name, cvr)
         {
             OrganizationType = organizationType;
+            IsSupplier = isSupplier;
         }
     }
 }

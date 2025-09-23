@@ -662,5 +662,14 @@ namespace Core.DomainModel.Organization
             });
             return Maybe<OperationError>.None;
         }
+
+        public Maybe<OperationError> CheckIfAlreadyHasSupplier(Guid supplierUuid)
+        {
+            var existingSupplier = Suppliers?.FirstOrDefault(x => x.Supplier?.Uuid == supplierUuid);
+            if (existingSupplier == null)
+                return Maybe<OperationError>.None;
+
+            return new OperationError($"Organization has the Supplier with uuid: {supplierUuid} already assigned", OperationFailure.BadState);
+        }
     }
 }
