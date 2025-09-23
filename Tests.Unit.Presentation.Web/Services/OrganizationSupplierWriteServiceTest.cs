@@ -234,5 +234,43 @@ namespace Tests.Unit.Presentation.Web.Services
             transaction.Verify(x => x.Commit(), Times.Once);
             _domainEvents.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<Organization>>()), Times.Exactly(2));
         }
+
+        [Fact]
+        public void Delete_Supplier_If_OrganizationUuid_Is_NotFound()
+        {
+            //Arrange
+            var organizationUuid = A<Guid>();
+            var supplierUuid = A<Guid>();
+            var organizationId = A<int>();
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(organizationUuid))
+                .Returns(organizationId);
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(supplierUuid))
+                .Returns(Maybe<int>.None);
+
+            //Act
+            var result = _sut.RemoveSupplierFromOrganization(organizationUuid, supplierUuid);
+
+            //Assert
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.NotFound, result.Value.FailureType);
+        }
+
+        [Fact]
+        public void Delete_Supplier_If_SupplierUuid_Is_NotFound()
+        {
+            //Arrange
+            var organizationUuid = A<Guid>();
+            var supplierUuid = A<Guid>();
+
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(organizationUuid))
+                .Returns(Maybe<int>.None);
+
+            //Act
+            var result = _sut.RemoveSupplierFromOrganization(organizationUuid, supplierUuid);
+
+            //Assert
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.NotFound, result.Value.FailureType);
+        }
     }
 }
