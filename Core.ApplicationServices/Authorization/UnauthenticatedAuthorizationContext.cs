@@ -1,5 +1,7 @@
 ﻿using Core.DomainModel;
+using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization
 {
@@ -46,6 +48,11 @@ namespace Core.ApplicationServices.Authorization
         }
 
         public bool HasPermission(Permission permission)
+        {
+            return false;
+        }
+
+        public bool AllowAdministerOrganizationRight(OrganizationRight right)
         {
             return false;
         }
