@@ -370,6 +370,21 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         }
 
         [Fact]
+        public async Task Can_Update_Supplier_Organization()
+        {
+            var organization = await CreateTestOrganization();
+            var requestDto = UpdateRequestDtoWithoutCountryCode();
+            requestDto.Type = OrganizationType.Company;
+            requestDto.IsSupplier = true;
+
+            using var response = await OrganizationInternalV2Helper.PatchOrganization(organization.Uuid, requestDto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var updatedOrganization = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), organization.Uuid);
+            Assert.True(updatedOrganization.IsSupplier);
+        }
+
+        [Fact]
         public async Task Can_Create_Organization()
         {
             var requestDto = CreateRequestDtoWithoutCountryCode();

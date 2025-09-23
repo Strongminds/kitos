@@ -570,7 +570,7 @@ namespace Core.DomainModel.Organization
 
         public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
         {
-            if ((OrganizationTypeKeys)TypeId != OrganizationTypeKeys.Virksomhed)
+            if ((OrganizationTypeKeys)TypeId != OrganizationTypeKeys.Virksomhed && isSupplier)
             {
                 return new OperationError(
                     $"Only organizations of {OrganizationTypeKeys.Virksomhed} type can be marked as a supplier", OperationFailure.BadInput);
