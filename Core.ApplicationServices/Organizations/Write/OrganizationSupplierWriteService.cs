@@ -68,8 +68,6 @@ namespace Core.ApplicationServices.Organizations.Write
                         using var transaction = _transactionManager.Begin();
                         _organizationSupplierRepository.Delete(supplier);
                         _organizationSupplierRepository.Save();
-                        _domainEvents.Raise(new EntityUpdatedEvent<Organization>(supplier.Organization));
-                        _domainEvents.Raise(new EntityUpdatedEvent<Organization>(supplier.Supplier));
                         transaction.Commit();
 
                         return Maybe<OperationError>.None;
