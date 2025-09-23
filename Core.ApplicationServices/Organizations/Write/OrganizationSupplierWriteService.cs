@@ -34,8 +34,8 @@ namespace Core.ApplicationServices.Organizations.Write
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
             Guid organizationUuid)
         {
-            return _organizationService.GetOrganization(organizationUuid)
-                .Select<IEnumerable<OrganizationSupplier>>(x => x.Suppliers.ToList());
+            return _organizationSupplierRepository.GetWithReferencePreload(x => x.Supplier)
+                .Where(x => x.Organization.Uuid == organizationUuid).ToList();
         }
 
         public Result<OrganizationSupplier, OperationError> AddSupplierToOrganization(Guid organizationUuid, Guid supplierUuid)

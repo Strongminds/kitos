@@ -551,7 +551,6 @@
     <Compile Include="Models\API\V2\Internal\Response\GdprReportResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\ItContract\AppliedProcurementPlanResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\Notifications\AlertResponseDTO.cs" />
-    <Compile Include="Models\API\V2\Internal\Response\Organizations\OrganizationSupplierResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\PasswordResetResponseDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Response\PublicMessageIconTypeChoice.cs" />
     <Compile Include="Models\API\V2\Internal\Response\PublicMessageStatusChoice.cs" />

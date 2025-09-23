@@ -1,13 +1,15 @@
-﻿using Presentation.Web.Infrastructure.Attributes;
-using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
+﻿using Core.ApplicationServices.Organizations.Write;
+using Core.DomainModel.Organization;
+using Presentation.Web.Controllers.API.V1.Mapping;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
-using Core.ApplicationServices.Organizations.Write;
-using Core.DomainModel.Organization;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
@@ -24,9 +26,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             _organizationSupplierService = organizationSupplierService;
         }
 
-        [HttpGet]
         [Route("{organizationUuid}/suppliers")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationSupplierResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
@@ -39,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationSupplierResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ShallowOrganizationResponseDTO))]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
@@ -52,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationSupplierResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
@@ -62,17 +63,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(FromOperationError, Ok);
         }
 
-        private static IEnumerable<OrganizationSupplierResponseDTO> MapToResponse(IEnumerable<OrganizationSupplier> suppliers)
+        private static IEnumerable<ShallowOrganizationResponseDTO> MapToResponse(IEnumerable<OrganizationSupplier> suppliers)
         {
             return suppliers.Select(MapSingleToResponse).ToList();
         }
-        private static OrganizationSupplierResponseDTO MapSingleToResponse(OrganizationSupplier supplier)
+        private static ShallowOrganizationResponseDTO MapSingleToResponse(OrganizationSupplier supplier)
         {
-            return new OrganizationSupplierResponseDTO
-            {
-                Name = supplier.Supplier.Name,
-                Cvr = supplier.Supplier.Cvr
-            };
+            return supplier.Supplier.MapShallowOrganizationResponseDTO();
         }
     }
 }

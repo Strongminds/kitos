@@ -52,9 +52,14 @@ namespace Tests.Unit.Presentation.Web.Services
                 Uuid = organizationUuid,
                 Suppliers = new List<OrganizationSupplier> { new OrganizationSupplier { Supplier = supplier } }
             };
+            var orgSupplier = new OrganizationSupplier
+            {
+                Organization = organization,
+                Supplier = supplier
+            };
 
-            _organizationService.Setup(x => x.GetOrganization(organizationUuid, null))
-                .Returns(organization);
+            _organizationSupplierRepository.Setup(x => x.GetWithReferencePreload(x => x.Supplier))
+                .Returns(new List<OrganizationSupplier> { orgSupplier }.AsQueryable());
 
             //Act
             var result = _sut.GetSuppliersForOrganization(organizationUuid);
@@ -63,24 +68,6 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.True(result.Ok);
             var supplierResult = Assert.Single(result.Value);
             Assert.Equal(supplierUuid, supplierResult.Supplier.Uuid);
-        }
-
-        [Fact]
-        public void Get_Suppliers_Returns_Error_On_Fail()
-        {
-            //Arrange
-            var organizationUuid = A<Guid>();
-            var error = A<OperationError>();
-
-            _organizationService.Setup(x => x.GetOrganization(organizationUuid, null))
-                .Returns(error);
-
-            //Act
-            var result = _sut.GetSuppliersForOrganization(organizationUuid);
-
-            //Assert
-            Assert.True(result.Failed);
-            Assert.Equal(error, result.Error);
         }
 
         [Fact]
