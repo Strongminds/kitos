@@ -577,6 +577,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var requestDto = A<OrganizationCreateRequestDTO>();
             requestDto.ForeignCountryCodeUuid = null;
+            requestDto.IsSupplier = false;
             return requestDto;
         }
 
