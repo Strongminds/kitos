@@ -151,6 +151,8 @@
     <Compile Include="Queries\Notifications\QueryByActiveAdvice.cs" />
     <Compile Include="Queries\Notifications\QueryByOwnerResourceType.cs" />
     <Compile Include="Queries\Notifications\QueryByOwnerResourceId.cs" />
+    <Compile Include="Queries\Organization\QueryByIsAvailableAsSupplierForOrganization.cs" />
+    <Compile Include="Queries\Organization\QueryByIsSupplier.cs" />
     <Compile Include="Queries\Organization\QueryByNameOrCvrContent.cs" />
     <Compile Include="Queries\Organization\QueryByCvrContent.cs" />
     <Compile Include="Queries\Organization\QueryOrganizationByIdsOrSharedAccess.cs" />

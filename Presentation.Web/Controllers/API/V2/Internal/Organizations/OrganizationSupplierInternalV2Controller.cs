@@ -1,6 +1,5 @@
 ﻿using Core.ApplicationServices.Organizations.Write;
 using Core.DomainModel.Organization;
-using Presentation.Web.Controllers.API.V1.Mapping;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Organization;
@@ -19,9 +18,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
     [RoutePrefix("api/v2/internal/organizations")]
     public class OrganizationSupplierInternalV2Controller : InternalApiV2Controller
     {
-        private readonly IOrganizationSupplierWriteService _organizationSupplierService;
+        private readonly IOrganizationSupplierService _organizationSupplierService;
 
-        public OrganizationSupplierInternalV2Controller(IOrganizationSupplierWriteService organizationSupplierService)
+        public OrganizationSupplierInternalV2Controller(IOrganizationSupplierService organizationSupplierService)
         {
             _organizationSupplierService = organizationSupplierService;
         }
@@ -34,7 +33,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IHttpActionResult GetSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationSupplierService.GetSuppliersForOrganization(organizationUuid)
-                .Select(MapToResponse)
+                .Select(MapSuppliersToResponse)
+                .Match(Ok, FromOperationError);
+        }
+
+        [Route("{organizationUuid}/suppliers/available")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        public IHttpActionResult GetAvailableSuppliers([NonEmptyGuid] Guid organizationUuid)
+        {
+            return _organizationSupplierService.GetAvailableSuppliers(organizationUuid)
+                .Select(MapOrganizations)
                 .Match(Ok, FromOperationError);
         }
 
@@ -63,10 +74,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(FromOperationError, Ok);
         }
 
-        private static IEnumerable<ShallowOrganizationResponseDTO> MapToResponse(IEnumerable<OrganizationSupplier> suppliers)
+        private static IEnumerable<ShallowOrganizationResponseDTO> MapOrganizations(IEnumerable<Organization> organizations)
+        {
+            return organizations.Select(x => x.MapShallowOrganizationResponseDTO()).ToList();
+        }
+
+        private static IEnumerable<ShallowOrganizationResponseDTO> MapSuppliersToResponse(IEnumerable<OrganizationSupplier> suppliers)
         {
             return suppliers.Select(MapSingleToResponse).ToList();
         }
+
         private static ShallowOrganizationResponseDTO MapSingleToResponse(OrganizationSupplier supplier)
         {
             return supplier.Supplier.MapShallowOrganizationResponseDTO();

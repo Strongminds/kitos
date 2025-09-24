@@ -3,14 +3,16 @@ using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
+using Core.DomainServices.Queries;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.DomainServices.Queries.Organization;
 
 namespace Core.ApplicationServices.Organizations.Write
 {
-    public class OrganizationSupplierWriteService : IOrganizationSupplierWriteService
+    public class OrganizationSupplierService : IOrganizationSupplierService
     {
         private readonly IGenericRepository<OrganizationSupplier> _organizationSupplierRepository;
         private readonly IOrganizationService _organizationService;
@@ -18,7 +20,7 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly IDomainEvents _domainEvents;
         private readonly ITransactionManager _transactionManager;
 
-        public OrganizationSupplierWriteService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
+        public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
             IDomainEvents domainEvents, 
@@ -36,6 +38,25 @@ namespace Core.ApplicationServices.Organizations.Write
         {
             return _organizationSupplierRepository.GetWithReferencePreload(x => x.Supplier)
                 .Where(x => x.Organization.Uuid == organizationUuid).ToList();
+        }
+
+        public Result<IEnumerable<Organization>, OperationError> GetAvailableSuppliers(Guid organizationUuid)
+        {
+            var orgIdResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
+            if (orgIdResult.IsNone)
+            {
+                return new OperationError($"Organization with uuid {organizationUuid} not found", OperationFailure.NotFound);
+            }
+
+            var refinements = new List<IDomainQuery<Organization>>
+            {
+                new QueryByIsSupplier(true),
+                new QueryByIsAvailableAsSupplierForOrganization(orgIdResult.Value)
+            };
+
+            return _organizationService
+                .SearchAccessibleOrganizations(false, refinements.ToArray())
+                .ToList();
         }
 
         public Result<OrganizationSupplier, OperationError> AddSupplierToOrganization(Guid organizationUuid, Guid supplierUuid)

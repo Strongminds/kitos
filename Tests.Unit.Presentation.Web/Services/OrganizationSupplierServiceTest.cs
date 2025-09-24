@@ -15,16 +15,16 @@ using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Services
 {
-    public class OrganizationSupplierWriteServiceTest : WithAutoFixture
+    public class OrganizationSupplierServiceTest : WithAutoFixture
     {
         private readonly Mock<IGenericRepository<OrganizationSupplier>> _organizationSupplierRepository;
         private readonly Mock<IOrganizationService> _organizationService;
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolver;
         private readonly Mock<IDomainEvents> _domainEvents;
         private readonly Mock<ITransactionManager> _transactionManager;
-        private readonly OrganizationSupplierWriteService _sut;
+        private readonly OrganizationSupplierService _sut;
 
-        public OrganizationSupplierWriteServiceTest()
+        public OrganizationSupplierServiceTest()
         {
             _organizationSupplierRepository = new Mock<IGenericRepository<OrganizationSupplier>>();
             _organizationService = new Mock<IOrganizationService>();
@@ -32,7 +32,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _domainEvents = new Mock<IDomainEvents>();
             _transactionManager = new Mock<ITransactionManager>();
 
-            _sut = new OrganizationSupplierWriteService(_organizationSupplierRepository.Object,
+            _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
                 _organizationService.Object, _entityIdentityResolver.Object, _domainEvents.Object,
                 _transactionManager.Object);
         }
