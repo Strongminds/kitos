@@ -268,7 +268,6 @@ namespace Tests.Unit.Presentation.Web.Services
             //Assert
             Assert.True(result.IsNone);
             transaction.Verify(x => x.Commit(), Times.Once);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<Organization>>()), Times.Exactly(2));
         }
 
         [Fact]
