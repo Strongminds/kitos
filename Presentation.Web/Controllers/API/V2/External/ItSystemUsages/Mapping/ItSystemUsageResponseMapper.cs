@@ -14,7 +14,6 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using GdprCriticality = Presentation.Web.Models.API.V2.Types.SystemUsage.GdprCriticality;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -109,15 +108,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             };
         }
 
-        private GdprCriticality? MapGdprCriticality(Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality? source)
+        private GdprCriticalityChoice? MapGdprCriticality(Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality? source)
         {
             return source switch
             {
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.NotCritical => GdprCriticality.NotCritical,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.Low => GdprCriticality.Low,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.Medium => GdprCriticality.Medium,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.High => GdprCriticality.High,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.VeryHigh => GdprCriticality.VeryHigh,
+                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.NotCritical => GdprCriticalityChoice.NotCritical,
+                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.Low => GdprCriticalityChoice.Low,
+                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.Medium => GdprCriticalityChoice.Medium,
+                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.High => GdprCriticalityChoice.High,
+                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.VeryHigh => GdprCriticalityChoice.VeryHigh,
                 null => null
             };
         }

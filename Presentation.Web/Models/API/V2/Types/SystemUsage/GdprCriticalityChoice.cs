@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Web.Models.API.V2.Types.SystemUsage
 {
-	public enum GdprCriticality
+	public enum GdprCriticalityChoice
 	{
         NotCritical = 0,
         Low = 1,
