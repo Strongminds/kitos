@@ -20,6 +20,7 @@ using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using GdprCriticality = Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -192,7 +193,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
                 DataRetentionEvaluationFrequencyInMonths = rule.MustUpdate(x => x.GDPR.DataRetentionEvaluationFrequencyInMonths)
                     ? source.DataRetentionEvaluationFrequencyInMonths.AsChangedValue()
-                    : OptionalValueChange<int?>.None
+                    : OptionalValueChange<int?>.None,
+                GdprCriticality = rule.MustUpdate(x => x.GDPR.GdprCriticality)
+                ? MapEnumChoice(source.GdprCriticality, GdprCriticalityChoiceMappingExtensions.ToGdprCriticality)
+                : OptionalValueChange<GdprCriticality?>.None,
             };
         }
 
