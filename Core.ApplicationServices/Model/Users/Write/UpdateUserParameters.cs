@@ -24,5 +24,17 @@ namespace Core.ApplicationServices.Model.Users.Write
 
         public bool SendMailOnUpdate {get; set; }
         public OptionalValueChange<Guid> DefaultOrganizationUnitUuid { get; set; }
+
+        public bool HasOnlyRoleChanges()
+        {
+            return (Email == null || Email.HasChange == false) &&
+                   (FirstName == null || FirstName.HasChange == false) &&
+                   (LastName == null || LastName.HasChange == false) &&
+                   (PhoneNumber == null || PhoneNumber.HasChange == false) &&
+                   (DefaultUserStartPreference == null || DefaultUserStartPreference.HasChange == false) &&
+                   (HasApiAccess == null || HasApiAccess.HasChange == false) &&
+                   (HasStakeHolderAccess == null || HasStakeHolderAccess.HasChange == false) &&
+                   (DefaultOrganizationUnitUuid == null || DefaultOrganizationUnitUuid.HasChange == false);
+        }
     }
 }
