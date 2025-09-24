@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Organizations.Write;
 using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
+using Core.DomainServices.Queries;
 using Infrastructure.Services.DataAccess;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -68,6 +69,54 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.True(result.Ok);
             var supplierResult = Assert.Single(result.Value);
             Assert.Equal(supplierUuid, supplierResult.Supplier.Uuid);
+        }
+
+        [Fact]
+        public void Can_Get_Available_Suppliers()
+        {
+            //Arrange
+            var organizationUuid = A<Guid>();
+            var organizationId = A<int>();
+
+            var supplierUuid = A<Guid>();
+
+
+            var suppliers = new List<Organization>
+            {
+                new Organization
+                {
+                    Uuid = supplierUuid
+                }
+            };
+
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(organizationUuid)).Returns(organizationId);
+            _organizationService
+                .Setup(x => x.SearchAccessibleOrganizations(false, It.IsAny<IDomainQuery<Organization>[]>()))
+                .Returns(suppliers.AsQueryable());
+
+            //Act
+            var result = _sut.GetAvailableSuppliers(organizationUuid);
+
+            //Assert
+            Assert.True(result.Ok);
+            var supplierResult = Assert.Single(result.Value);
+            Assert.Equal(supplierUuid, supplierResult.Uuid);
+        }
+
+        [Fact]
+        public void Get_Available_Suppliers_Fails_On_Error()
+        {
+            //Arrange
+            var organizationUuid = A<Guid>();
+
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(organizationUuid)).Returns(Maybe<int>.None);
+
+            //Act
+            var result = _sut.GetAvailableSuppliers(organizationUuid);
+
+            //Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
         }
 
         [Fact]
