@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Core.Abstractions.Types;
 
 namespace Core.DomainModel
@@ -17,6 +18,9 @@ namespace Core.DomainModel
         public int OptionId { get; set; }
 
         public bool IsActive { get; set; }
+
+        public bool IsExternallyUsed { get; set; }
+        public string ExternallyUsedDescription { get; set; }
 
         public void SetupNewLocalOption(int organizationId, int optionId)
         {
@@ -38,6 +42,25 @@ namespace Core.DomainModel
         public void UpdateDescription(Maybe<string> description)
         {
             if (description.HasValue) Description = description.Value;
+        }
+
+        public void UpdateIsExternallyUsed(bool isExternallyUsed)
+        {
+            IsExternallyUsed = isExternallyUsed;
+            if (!isExternallyUsed)
+            {
+                ExternallyUsedDescription = null;
+            }
+        }
+
+        public Maybe<OperationError> UpdateExternallyUsedDescription(string externallyUsedDescription)
+        {
+            if (!IsExternallyUsed)
+            {
+                return new OperationError("Cannot add externally used description if option is not used externally", OperationFailure.BadState);
+            }
+            ExternallyUsedDescription = externallyUsedDescription;
+            return Maybe<OperationError>.None;
         }
     }
 }

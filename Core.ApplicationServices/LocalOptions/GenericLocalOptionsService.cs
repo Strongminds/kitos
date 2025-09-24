@@ -125,6 +125,13 @@ namespace Core.ApplicationServices.LocalOptions
                         localOptionWithModifyRights =>
                         {
                             if (parameters.Description.HasChange) localOptionWithModifyRights.UpdateDescription(parameters.Description.NewValue);
+                            if(parameters.IsExternallyUsed.HasChange) localOptionWithModifyRights.UpdateIsExternallyUsed(parameters.IsExternallyUsed.NewValue);
+                            if (parameters.ExternallyUsedDescription.HasChange)
+                            {
+                                var externallyUsedDescriptionError = localOptionWithModifyRights.UpdateExternallyUsedDescription(parameters.ExternallyUsedDescription.NewValue);
+                                if (externallyUsedDescriptionError.HasValue)
+                                    return externallyUsedDescriptionError.Value;
+                            }
 
                             _domainEvents.Raise(new EntityCreatedEvent<TLocalOptionType>(localOptionWithModifyRights));
                             _localOptionRepository.Update(localOptionWithModifyRights);
@@ -142,6 +149,14 @@ namespace Core.ApplicationServices.LocalOptions
                             newLocalOption.SetupNewLocalOption(orgId, optionIdResult.Value);
                             if (parameters.Description.HasChange)
                                 newLocalOption.UpdateDescription(parameters.Description.NewValue);
+
+                            if (parameters.IsExternallyUsed.HasChange) newLocalOption.UpdateIsExternallyUsed(parameters.IsExternallyUsed.NewValue);
+                            if (parameters.ExternallyUsedDescription.HasChange)
+                            {
+                                var externallyUsedDescriptionError = newLocalOption.UpdateExternallyUsedDescription(parameters.ExternallyUsedDescription.NewValue);
+                                if (externallyUsedDescriptionError.HasValue)
+                                    return externallyUsedDescriptionError.Value;
+                            }
 
                             _domainEvents.Raise(new EntityUpdatedEvent<TLocalOptionType>(newLocalOption));
                             _localOptionRepository.Insert(newLocalOption);
