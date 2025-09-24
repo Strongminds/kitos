@@ -437,6 +437,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(true);
             _organizationService.Setup(_ => _.CanActiveUserModifyCvr(org.Uuid)).Returns(true);
             var updateParams = A<OrganizationBaseParameters>();
+            updateParams.IsSupplier = OptionalValueChange<bool>.None;
             SetupRepositoryReturnsCountryCode(updateParams.ForeignCountryCodeUuid.NewValue);
 
             var result = _sut.PatchOrganization(org.Uuid, updateParams);
@@ -501,6 +502,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(true);
             var updateParams = A<OrganizationBaseParameters>();
             updateParams.Cvr = OptionalValueChange<Maybe<string>>.None;
+            updateParams.IsSupplier = OptionalValueChange<bool>.None;
             SetupRepositoryReturnsCountryCode(updateParams.ForeignCountryCodeUuid.NewValue);
 
             var result = _sut.PatchOrganization(org.Uuid, updateParams);
@@ -601,6 +603,7 @@ namespace Tests.Unit.Presentation.Web.Services
         public void Can_Create_Organization()
         {
             var parameters = A<OrganizationBaseParameters>();
+            parameters.IsSupplier = false.AsChangedValue();
             _organizationService
                 .Setup(service => service.CreateNewOrganization(It.IsAny<Organization>()))
                 .Returns(Result<Organization, OperationFailure>.Success);
