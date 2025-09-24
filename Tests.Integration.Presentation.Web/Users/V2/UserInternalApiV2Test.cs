@@ -60,10 +60,10 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         {
             //Arrange
             var organization = await CreateOrganizationAsync();
-            var (userUuid, _, cookie)= await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Uuid);
+            var (_, _, cookie)= await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Uuid);
             
             //Act
-            var response = await UsersV2Helper.GetUserCollectionPermissions(organization.Uuid, userUuid, cookie);
+            var response = await UsersV2Helper.GetUserCollectionPermissions(organization.Uuid, cookie);
 
             //Assert
             var isLocalOrGlobal = role is OrganizationRole.GlobalAdmin or OrganizationRole.LocalAdmin;

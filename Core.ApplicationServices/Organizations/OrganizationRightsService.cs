@@ -52,7 +52,7 @@ namespace Core.ApplicationServices.Organizations
                 UserId = userId
             };
 
-            if (!_authorizationContext.AllowCreate<OrganizationRight>(organizationId, right))
+            if (!_authorizationContext.AllowAdministerOrganizationRight(right))
             {
                 return OperationFailure.Forbidden;
             }

@@ -1,4 +1,5 @@
 ﻿using Core.DomainModel;
+using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
 
 namespace Core.ApplicationServices.Authorization
@@ -60,5 +61,12 @@ namespace Core.ApplicationServices.Authorization
         /// <param name="permission"></param>
         /// <returns></returns>
         bool HasPermission(Permission permission);
+
+        /// <summary>
+        /// Determines if the user in the current context is allowed to administer the provided organization right
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        bool AllowAdministerOrganizationRight(OrganizationRight right);
     }
 }
