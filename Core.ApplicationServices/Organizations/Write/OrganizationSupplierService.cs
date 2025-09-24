@@ -105,18 +105,20 @@ namespace Core.ApplicationServices.Organizations.Write
 
         private Result<(int organizationId, int supplierId), OperationError> ResolveIds(Guid organizationUuid, Guid supplierUuid)
         {
+            return ResolveOrganizationId(organizationUuid)
+                .Bind(orgId => ResolveOrganizationId(supplierUuid)
+                    .Select(supId => (orgId, supId)));
+        }
+
+        private Result<int, OperationError> ResolveOrganizationId(Guid organizationUuid)
+        {
             var orgIdResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
             if (orgIdResult.IsNone)
             {
                 return new OperationError($"Organization with uuid {organizationUuid} not found", OperationFailure.NotFound);
             }
-            var supplierIdResult = _entityIdentityResolver.ResolveDbId<Organization>(supplierUuid);
-            if (supplierIdResult.IsNone)
-            {
-                return new OperationError($"Supplier organization with uuid {supplierUuid} not found", OperationFailure.NotFound);
-            }
 
-            return (orgIdResult.Value, supplierIdResult.Value);
+            return orgIdResult.Value;
         }
     }
 }
