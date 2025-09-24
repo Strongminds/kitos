@@ -174,6 +174,7 @@
     <Compile Include="Internal\GdprReport\GdprReportApiV2Test.cs" />
     <Compile Include="Internal\Messages\PublicMessagesApiV2Test.cs" />
     <Compile Include="ItSystem\V2\BaseItSystemsApiV2Test.cs" />
+    <Compile Include="Organizations\V2\OrganizationSupplierInternalApiV2Test.cs" />
     <Compile Include="SystemUsage\V2\BaseItSystemUsageApiV2Test.cs" />
     <Compile Include="ItSystem\V2\LegalPropertiesV2ApiTest.cs" />
     <Compile Include="ItSystem\V2\ItSystemLocalOptionTypesInternalV2ApiTest.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="Tools\Internal\Notifications\AlertsV2Helper.cs" />
     <Compile Include="Tools\Internal\Notifications\NotificationV2Helper.cs" />
     <Compile Include="Tools\Internal\Organizations\OrganizationInternalV2Helper.cs" />
+    <Compile Include="Tools\Internal\Organizations\OrganizationSupplierInternalV2Helper.cs" />
     <Compile Include="Tools\Internal\Organizations\OrganizationUnitRegistrationV2Helper.cs" />
     <Compile Include="Tools\Internal\References\ExternalReferencesInternalV2Helper.cs" />
     <Compile Include="Tools\Internal\References\ExternalReferencesV2Helper.cs" />

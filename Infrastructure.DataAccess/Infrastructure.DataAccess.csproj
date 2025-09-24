@@ -115,6 +115,7 @@
     <Compile Include="Mapping\ItSystemUsagePersonalDataOptionsMap.cs" />
     <Compile Include="Mapping\KendoOrganizationalConfigurationMap.cs" />
     <Compile Include="Mapping\LifeCycleTrackingEventMap.cs" />
+    <Compile Include="Mapping\OrganizationSupplierMap.cs" />
     <Compile Include="Mapping\PendingReadModelUpdateMap.cs" />
     <Compile Include="Mapping\PublicMessageMap.cs" />
     <Compile Include="Mapping\StsOrganizationChangeLogMap.cs" />
@@ -1164,6 +1165,10 @@
     <Compile Include="Migrations\202504140750401_IconTypeAndIsMainPublicMessage.Designer.cs">
       <DependentUpon>202504140750401_IconTypeAndIsMainPublicMessage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509230924307_IntroduceOrganizationSupplier.cs" />
+    <Compile Include="Migrations\202509230924307_IntroduceOrganizationSupplier.Designer.cs">
+      <DependentUpon>202509230924307_IntroduceOrganizationSupplier.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix prod DB\Add Country Codes.sql" />
@@ -1261,6 +1266,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504140750401_IconTypeAndIsMainPublicMessage.resx">
       <DependentUpon>202504140750401_IconTypeAndIsMainPublicMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509230924307_IntroduceOrganizationSupplier.resx">
+      <DependentUpon>202509230924307_IntroduceOrganizationSupplier.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">

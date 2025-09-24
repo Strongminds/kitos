@@ -142,6 +142,14 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<ItContractOverviewReadModel> ItContractOverviewReadModels { get; set; }
 
         /// <summary>
+        /// Determines if the Organization of type "Company" is a supplier
+        /// </summary>
+        public bool IsSupplier { get; set; }
+
+        public virtual ICollection<OrganizationSupplier> UsedAsSupplierByOrganizations { get; set; }
+        public virtual ICollection<OrganizationSupplier> Suppliers { get; set; }
+
+        /// <summary>
         /// Get the level-0 organization unit, which by convention is named represently
         /// </summary>
         /// <returns></returns>
@@ -560,6 +568,16 @@ namespace Core.DomainModel.Organization
             TypeId = typeId;
         }
 
+        public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
+        {
+            if ((OrganizationTypeKeys)TypeId != OrganizationTypeKeys.Virksomhed && isSupplier)
+            {
+                return new OperationError(
+                    $"Only organizations of {OrganizationTypeKeys.Virksomhed} type can be marked as a supplier", OperationFailure.BadInput);
+            }
+            IsSupplier = isSupplier;
+            return Maybe<OperationError>.None;
+        }
         public void UpdateShowDataProcessing(Maybe<bool> showDataProcessing)
         {
             HandleConfigPropertyUpdate(showDataProcessing, config => config.ShowDataProcessing = showDataProcessing.Value);
@@ -643,6 +661,15 @@ namespace Core.DomainModel.Organization
                 taskRef.OwnedByOrganizationUnit = newRoot;
             });
             return Maybe<OperationError>.None;
+        }
+
+        public Maybe<OperationError> CheckIfAlreadyHasSupplier(Guid supplierUuid)
+        {
+            var existingSupplier = Suppliers?.FirstOrDefault(x => x.Supplier?.Uuid == supplierUuid);
+            if (existingSupplier == null)
+                return Maybe<OperationError>.None;
+
+            return new OperationError($"Organization has the Supplier with uuid: {supplierUuid} already assigned", OperationFailure.BadState);
         }
     }
 }
