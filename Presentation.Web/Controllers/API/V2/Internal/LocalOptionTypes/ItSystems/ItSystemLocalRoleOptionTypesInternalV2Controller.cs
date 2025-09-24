@@ -69,7 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult PatchLocalItSystemRole([NonEmptyGuid][FromUri] Guid organizationUuid,
             [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

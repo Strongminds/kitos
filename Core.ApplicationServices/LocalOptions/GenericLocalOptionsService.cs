@@ -36,7 +36,6 @@ namespace Core.ApplicationServices.LocalOptions
             _domainEvents = domainEvents;
         }
 
-
         public IEnumerable<TOptionType> GetLocalOptions(Guid organizationUuid)
         {
             var globalOptions = GetEnabledGlobalOptionsAsQueryable()
@@ -49,7 +48,7 @@ namespace Core.ApplicationServices.LocalOptions
                      .OrderByDescending(x => x.Priority);
         }
 
-        private IEnumerable<TOptionType> IncludeLocalChangesToGlobalOptions(IEnumerable<TOptionType> globalOptions, IDictionary<int, TLocalOptionType> localOptions)
+        private static IEnumerable<TOptionType> IncludeLocalChangesToGlobalOptions(IEnumerable<TOptionType> globalOptions, IDictionary<int, TLocalOptionType> localOptions)
         {
             return globalOptions
                 .Select(optionToAdd =>

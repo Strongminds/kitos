@@ -53,11 +53,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
 
         public IHttpActionResult Patch([NonEmptyGuid][FromUri] Guid organizationUuid,
             [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            LocalRoleOptionUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            var updateParameters = _writeModelMapper.ToLocalOptionUpdateParameters(dto);
+            var updateParameters = _writeModelMapper.ToLocalRoleOptionUpdateParameters(dto);
 
             return _localRoleOptionTypeService.PatchLocalOption(organizationUuid, optionUuid, updateParameters)
                 .Select(_responseMapper.ToLocalRoleOptionDTO<TReferenceType, TOptionType>)

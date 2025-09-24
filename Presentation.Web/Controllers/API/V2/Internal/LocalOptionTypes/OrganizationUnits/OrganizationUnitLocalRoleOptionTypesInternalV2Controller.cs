@@ -70,7 +70,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult PatchLocalOrganizationUnitRole([NonEmptyGuid][FromUri] Guid organizationUuid,
             [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

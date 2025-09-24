@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Core.Abstractions.Types;
 
 namespace Core.DomainModel
@@ -39,6 +40,21 @@ namespace Core.DomainModel
         ///   <c>true</c> if this instance is active; otherwise, <c>false</c>.
         /// </value>
         public bool IsLocallyAvailable { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is used externally.
+        /// This value is not stored in the database, but is set by the services when loading the local option.
+        /// </summary>
+        [NotMapped]
+        public bool IsExternallyUsed { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the entity is used externally.
+        /// This value is not stored in the database, but is set by the services when loading the local option.
+        /// </summary>
+        [NotMapped]
+        public string ExternallyUsedDescription { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is obligatory.
         /// </summary>
@@ -66,6 +82,8 @@ namespace Core.DomainModel
             }
             UpdateIsLocallyAvailable(localOption.IsActive);
             UpdateDescription(localOption.Description);
+            UpdateIsExternallyUsed(localOption.IsExternallyUsed);
+            UpdateExternallyUsedDescription(localOption.ExternallyUsedDescription);
         }
 
         public void ResetLocalOptionAvailability()
@@ -82,6 +100,16 @@ namespace Core.DomainModel
         private void UpdateDescription(string description)
         {
            if (!string.IsNullOrEmpty(description)) Description = description;
+        }
+
+        private void UpdateIsExternallyUsed(bool isUsed)
+        {
+            IsExternallyUsed = isUsed;
+        }
+
+        private void UpdateExternallyUsedDescription(string description)
+        {
+            ExternallyUsedDescription = description;
         }
 
         public void UpdateDescription(Maybe<string> description)
