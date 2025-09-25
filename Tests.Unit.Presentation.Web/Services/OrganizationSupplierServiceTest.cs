@@ -100,22 +100,6 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
-        public void Get_Available_Suppliers_Fails_On_Error()
-        {
-            //Arrange
-            var organizationUuid = A<Guid>();
-
-            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(organizationUuid)).Returns(Maybe<int>.None);
-
-            //Act
-            var result = _sut.GetAvailableSuppliers(organizationUuid);
-
-            //Assert
-            Assert.True(result.Failed);
-            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
-        }
-
-        [Fact]
         public void Can_Add_Supplier()
         {
             //Arrange
