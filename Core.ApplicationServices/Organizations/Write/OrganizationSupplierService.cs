@@ -17,19 +17,16 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly IGenericRepository<OrganizationSupplier> _organizationSupplierRepository;
         private readonly IOrganizationService _organizationService;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
-        private readonly IDomainEvents _domainEvents;
         private readonly ITransactionManager _transactionManager;
 
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
-            IDomainEvents domainEvents, 
             ITransactionManager transactionManager)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
-            _domainEvents = domainEvents;
             _transactionManager = transactionManager;
         }
 
@@ -42,16 +39,10 @@ namespace Core.ApplicationServices.Organizations.Write
 
         public Result<IEnumerable<Organization>, OperationError> GetAvailableSuppliers(Guid organizationUuid)
         {
-            var orgIdResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
-            if (orgIdResult.IsNone)
-            {
-                return new OperationError($"Organization with uuid {organizationUuid} not found", OperationFailure.NotFound);
-            }
-
             var refinements = new List<IDomainQuery<Organization>>
             {
                 new QueryByIsSupplier(true),
-                new QueryByIsAvailableAsSupplierForOrganization(orgIdResult.Value)
+                new QueryByIsAvailableAsSupplierForOrganization(organizationUuid)
             };
 
             return _organizationService
@@ -73,8 +64,6 @@ namespace Core.ApplicationServices.Organizations.Write
                     using var transaction = _transactionManager.Begin();
                     var insertedSupplier = _organizationSupplierRepository.Insert(supplier);
                     _organizationSupplierRepository.Save();
-                    _domainEvents.Raise(new EntityUpdatedEvent<Organization>(insertedSupplier.Organization));
-                    _domainEvents.Raise(new EntityUpdatedEvent<Organization>(insertedSupplier.Supplier));
                     transaction.Commit();
 
                     return insertedSupplier;
