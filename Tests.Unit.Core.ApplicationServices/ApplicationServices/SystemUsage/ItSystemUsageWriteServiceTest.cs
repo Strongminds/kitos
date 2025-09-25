@@ -1490,6 +1490,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var nextEvaluationDate = A<DateTime?>();
             var evaluationFrequency = A<int?>();
             DataOptions? retentionPeriodDefined = DataOptions.YES;
+            GdprCriticality? gdprCriticality = GdprCriticality.NotCritical;
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
                 Purpose = purpose.AsChangedValue(),
@@ -1516,7 +1517,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 DPIADocumentation = dpiaDoc.FromNullable().AsChangedValue(),
                 RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                 NextDataRetentionEvaluationDate = nextEvaluationDate.AsChangedValue(),
-                DataRetentionEvaluationFrequencyInMonths = evaluationFrequency.AsChangedValue()
+                DataRetentionEvaluationFrequencyInMonths = evaluationFrequency.AsChangedValue(),
+                GdprCriticality = gdprCriticality.AsChangedValue()
             };
 
             //Act
@@ -1554,6 +1556,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(retentionPeriodDefined, itSystemUsage.answeringDataDPIA);
             Assert.Equal(nextEvaluationDate, itSystemUsage.DPIAdeleteDate);
             Assert.Equal(evaluationFrequency, itSystemUsage.numberDPIA);
+            Assert.Equal(gdprCriticality, itSystemUsage.GdprCriticality);
         }
 
         [Fact]

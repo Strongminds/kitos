@@ -297,6 +297,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.DataRetentionEvaluationFrequencyInMonths, AssertPropertyContainsDataChange(mappedGdpr.DataRetentionEvaluationFrequencyInMonths));
             AssertLinkMapping(input.DPIADocumentation, mappedGdpr.DPIADocumentation);
             Assert.Equal(input.SpecificPersonalData.ToList(), AssertPropertyContainsDataChange(mappedGdpr.PersonalDataOptions).Select(x => x.ToGDPRPersonalDataChoice()));
+            Assert.Equal(input.GdprCriticality, AssertPropertyContainsDataChange(mappedGdpr.GdprCriticality)?.ToGdprCriticalityChoice());
         }
 
         [Fact]
