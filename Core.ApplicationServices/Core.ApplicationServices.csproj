@@ -375,8 +375,10 @@
     <Compile Include="Organizations\IStsOrganizationSynchronizationService.cs" />
     <Compile Include="Organizations\OrganizationUnitService.cs" />
     <Compile Include="Organizations\StsOrganizationSynchronizationService.cs" />
+    <Compile Include="Organizations\Write\IOrganizationSupplierService.cs" />
     <Compile Include="Organizations\Write\IOrganizationUnitWriteService.cs" />
     <Compile Include="Organizations\Write\IOrganizationWriteService.cs" />
+    <Compile Include="Organizations\Write\OrganizationSupplierService.cs" />
     <Compile Include="Organizations\Write\OrganizationUnitWriteService.cs" />
     <Compile Include="Organizations\Write\OrganizationWriteService.cs" />
     <Compile Include="RightsHolders\BaseRightsHolderService.cs" />

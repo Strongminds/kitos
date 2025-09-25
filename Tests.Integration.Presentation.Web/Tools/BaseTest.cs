@@ -39,13 +39,14 @@ namespace Tests.Integration.Presentation.Web.Tools
             DatabaseAccess.GetEntityUuid<Organization>(TestEnvironment.SecondOrganizationId);
 
         public async Task<ShallowOrganizationResponseDTO> CreateOrganizationAsync(string name = null, string cvr = null,
-            OrganizationType type = OrganizationType.Municipality)
+            OrganizationType type = OrganizationType.Municipality, bool isSupplier = false)
         {
             var defaultRequest = new OrganizationCreateRequestDTO
             {
                 Name = name ?? A<string>(),
                 Cvr = cvr ?? CreateCvr(),
-                Type = type
+                Type = type,
+                IsSupplier = isSupplier
             };
             using var response = OrganizationInternalV2Helper.CreateOrganization(defaultRequest);
             return await response;

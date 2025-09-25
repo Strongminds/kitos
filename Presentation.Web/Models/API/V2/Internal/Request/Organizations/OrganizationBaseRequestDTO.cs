@@ -11,5 +11,6 @@ namespace Presentation.Web.Models.API.V2.Internal.Request.Organizations
         [MaxLength(10)]
         public string Cvr {  get; set; }
         public Guid? ForeignCountryCodeUuid { get; set; }
+        public bool IsSupplier { get; set; }
     }
 }
