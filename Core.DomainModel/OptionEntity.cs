@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Core.Abstractions.Types;
+using Core.DomainModel.LocalOptions;
 
 namespace Core.DomainModel
 {
@@ -46,14 +47,14 @@ namespace Core.DomainModel
         /// This value is not stored in the database, but is set by the services when loading the local option.
         /// </summary>
         [NotMapped]
-        public bool IsExternallyUsed { get; set; }
+        public bool RoleIsExternallyUsed { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity is used externally.
         /// This value is not stored in the database, but is set by the services when loading the local option.
         /// </summary>
         [NotMapped]
-        public string ExternallyUsedDescription { get; set; }
+        public string RoleExternallyUsedDescription { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is obligatory.
@@ -84,6 +85,18 @@ namespace Core.DomainModel
             UpdateDescription(localOption.Description);
         }
 
+        public void UpdateLocalRoleOptionValues<TLocal>(LocalRoleOptionEntity<TLocal> localRole)
+        {
+            UpdateLocalOptionValues(localRole);
+            if (localRole == null)
+            {
+                return;
+            }
+
+            UpdateIsExternallyUsed(localRole.IsExternallyUsed);
+            UpdateExternallyUsedDescription(localRole.ExternallyUsedDescription);
+        }
+
         public void ResetLocalOptionAvailability()
         {
             IsLocallyAvailable = false;
@@ -102,12 +115,12 @@ namespace Core.DomainModel
 
         private void UpdateIsExternallyUsed(bool isUsed)
         {
-            IsExternallyUsed = isUsed;
+            RoleIsExternallyUsed = isUsed;
         }
 
         private void UpdateExternallyUsedDescription(string description)
         {
-            ExternallyUsedDescription = description;
+            RoleExternallyUsedDescription = description;
         }
 
         public void UpdateDescription(Maybe<string> description)

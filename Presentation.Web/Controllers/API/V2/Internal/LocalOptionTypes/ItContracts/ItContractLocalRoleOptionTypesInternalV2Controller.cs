@@ -16,11 +16,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
     [RoutePrefix("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/it-contract-roles")]
     public class ItContractLocalRoleOptionTypesInternalV2Controller : BaseLocalRoleOptionTypesInternalV2Controller<LocalItContractRole, ItContractRight, ItContractRole>
     {
-        private readonly IGenericLocalOptionsService<LocalItContractRole, ItContractRight, ItContractRole> _localItContractRoleOptionTypeService;
+        private readonly IGenericLocalRoleOptionsService<LocalItContractRole, ItContractRight, ItContractRole> _localItContractRoleOptionTypeService;
         private readonly ILocalOptionTypeResponseMapper _responseMapper;
         private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
 
-        public ItContractLocalRoleOptionTypesInternalV2Controller(IGenericLocalOptionsService<LocalItContractRole, ItContractRight, ItContractRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
+        public ItContractLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalItContractRole, ItContractRight, ItContractRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
         {
         }
 

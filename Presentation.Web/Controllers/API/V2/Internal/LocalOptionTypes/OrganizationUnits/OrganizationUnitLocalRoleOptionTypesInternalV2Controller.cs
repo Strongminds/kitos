@@ -16,11 +16,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
     [RoutePrefix("api/v2/internal/organization-units/{organizationUuid}/local-option-types/organization-unit-roles")]
     public class OrganizationUnitLocalRoleOptionTypesInternalV2Controller: BaseLocalRoleOptionTypesInternalV2Controller<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>
     {
-        private readonly IGenericLocalOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> _localOrganizationUnitRoleOptionTypeService;
+        private readonly IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> _localOrganizationUnitRoleOptionTypeService;
         private readonly ILocalOptionTypeResponseMapper _responseMapper;
         private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
 
-        public OrganizationUnitLocalRoleOptionTypesInternalV2Controller(IGenericLocalOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
+        public OrganizationUnitLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
         {
         }
 

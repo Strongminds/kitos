@@ -1169,10 +1169,6 @@
     <Compile Include="Migrations\202509230924307_IntroduceOrganizationSupplier.Designer.cs">
       <DependentUpon>202509230924307_IntroduceOrganizationSupplier.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202509240926358_AddExternallyUsedFieldToLocalOptions.cs" />
-    <Compile Include="Migrations\202509240926358_AddExternallyUsedFieldToLocalOptions.Designer.cs">
-      <DependentUpon>202509240926358_AddExternallyUsedFieldToLocalOptions.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix prod DB\Add Country Codes.sql" />
@@ -1273,9 +1269,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509230924307_IntroduceOrganizationSupplier.resx">
       <DependentUpon>202509230924307_IntroduceOrganizationSupplier.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202509240926358_AddExternallyUsedFieldToLocalOptions.resx">
-      <DependentUpon>202509240926358_AddExternallyUsedFieldToLocalOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
