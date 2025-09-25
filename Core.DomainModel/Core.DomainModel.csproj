@@ -109,6 +109,7 @@
     <Compile Include="Events\IDomainEvents.cs" />
     <Compile Include="Events\NamedEntityChangedNameEvent.cs" />
     <Compile Include="Extensions\OrmTrackingExtensions.cs" />
+    <Compile Include="ItSystemUsage\GDPR\GdprCriticality.cs" />
     <Compile Include="ItSystemUsage\GDPR\ItSystemUsagePersonalData.cs" />
     <Compile Include="ItSystemUsage\GDPR\RemoveSensitiveDataLevelResultModel.cs" />
     <Compile Include="ItSystemUsage\ItSystemUsageValidationError.cs" />

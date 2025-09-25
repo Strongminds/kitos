@@ -238,6 +238,7 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ArchiveTestLocation ArchiveTestLocation { get; set; }
 
         public int? ItSystemCategoriesId { get; set; }
+        public GdprCriticality? GdprCriticality { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
