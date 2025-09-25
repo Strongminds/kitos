@@ -21,7 +21,6 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IGenericRepository<OrganizationSupplier>> _organizationSupplierRepository;
         private readonly Mock<IOrganizationService> _organizationService;
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolver;
-        private readonly Mock<IDomainEvents> _domainEvents;
         private readonly Mock<ITransactionManager> _transactionManager;
         private readonly OrganizationSupplierService _sut;
 
@@ -30,11 +29,10 @@ namespace Tests.Unit.Presentation.Web.Services
             _organizationSupplierRepository = new Mock<IGenericRepository<OrganizationSupplier>>();
             _organizationService = new Mock<IOrganizationService>();
             _entityIdentityResolver = new Mock<IEntityIdentityResolver>();
-            _domainEvents = new Mock<IDomainEvents>();
             _transactionManager = new Mock<ITransactionManager>();
 
             _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
-                _organizationService.Object, _entityIdentityResolver.Object, _domainEvents.Object,
+                _organizationService.Object, _entityIdentityResolver.Object, 
                 _transactionManager.Object);
         }
 
@@ -76,7 +74,6 @@ namespace Tests.Unit.Presentation.Web.Services
         {
             //Arrange
             var organizationUuid = A<Guid>();
-            var organizationId = A<int>();
 
             var supplierUuid = A<Guid>();
 
@@ -89,7 +86,6 @@ namespace Tests.Unit.Presentation.Web.Services
                 }
             };
 
-            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(organizationUuid)).Returns(organizationId);
             _organizationService
                 .Setup(x => x.SearchAccessibleOrganizations(false, It.IsAny<IDomainQuery<Organization>[]>()))
                 .Returns(suppliers.AsQueryable());
@@ -162,7 +158,6 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.Equal(organizationId, supplierResult.Organization.Id);
             Assert.Equal(supplierId, supplierResult.Supplier.Id);
             transaction.Verify(x => x.Commit(), Times.Once);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<Organization>>()), Times.Exactly(2));
         }
 
         [Fact]
