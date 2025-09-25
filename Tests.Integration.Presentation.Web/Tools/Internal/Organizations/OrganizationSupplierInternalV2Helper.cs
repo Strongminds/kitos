@@ -37,7 +37,7 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
         public static async Task<IEnumerable<ShallowOrganizationResponseDTO>> GetAvailableSuppliers(Guid organizationUuid)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/available"), cookie); ;
+            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/available"), cookie);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<IEnumerable<ShallowOrganizationResponseDTO>>();
         }
