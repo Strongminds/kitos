@@ -82,8 +82,6 @@ namespace Core.DomainModel
             }
             UpdateIsLocallyAvailable(localOption.IsActive);
             UpdateDescription(localOption.Description);
-            UpdateIsExternallyUsed(localOption.IsExternallyUsed);
-            UpdateExternallyUsedDescription(localOption.ExternallyUsedDescription);
         }
 
         public void ResetLocalOptionAvailability()
