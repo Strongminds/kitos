@@ -6,7 +6,8 @@ namespace Core.ApplicationServices.Model.LocalOptions
     public class LocalOptionUpdateParameters
     {
         public OptionalValueChange<Maybe<string>> Description { get; set; }
-        public OptionalValueChange<Maybe<bool>> IsExternallyUsed { get; set; }
-        public OptionalValueChange<Maybe<string>> ExternallyUsedDescription { get; set; }
+        public OptionalValueChange<Maybe<bool>> IsExternallyUsed { get; set; } = OptionalValueChange<Maybe<bool>>.None;
+
+        public OptionalValueChange<Maybe<string>> ExternallyUsedDescription { get; set; } = OptionalValueChange<Maybe<string>>.None;
     }
 }
