@@ -2,6 +2,7 @@
 using System.Web.Http;
 using Core.ApplicationServices.LocalOptions;
 using Core.DomainModel;
+using Core.DomainModel.LocalOptions;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
@@ -9,14 +10,14 @@ using Presentation.Web.Models.API.V2.Internal.Request.Options;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
 {
     public class BaseLocalRoleOptionTypesInternalV2Controller<TLocalOptionType, TReferenceType, TOptionType> : InternalApiV2Controller
-        where TLocalOptionType : LocalOptionEntity<TOptionType>, new()
+        where TLocalOptionType : LocalRoleOptionEntity<TOptionType>, new()
         where TOptionType : OptionEntity<TReferenceType>, IRoleEntity
     {
-        private readonly IGenericLocalOptionsService<TLocalOptionType, TReferenceType, TOptionType> _localRoleOptionTypeService;
+        private readonly IGenericLocalRoleOptionsService<TLocalOptionType, TReferenceType, TOptionType> _localRoleOptionTypeService;
         private readonly ILocalOptionTypeResponseMapper _responseMapper;
         private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
 
-        public BaseLocalRoleOptionTypesInternalV2Controller(IGenericLocalOptionsService<TLocalOptionType, TReferenceType, TOptionType> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
+        public BaseLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<TLocalOptionType, TReferenceType, TOptionType> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
         {
             _localRoleOptionTypeService = localRoleOptionTypeService;
             _responseMapper = responseMapper;
@@ -53,11 +54,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
 
         public IHttpActionResult Patch([NonEmptyGuid][FromUri] Guid organizationUuid,
             [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            LocalRoleOptionUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            var updateParameters = _writeModelMapper.ToLocalOptionUpdateParameters(dto);
+            var updateParameters = _writeModelMapper.ToLocalRoleOptionUpdateParameters(dto);
 
             return _localRoleOptionTypeService.PatchLocalOption(organizationUuid, optionUuid, updateParameters)
                 .Select(_responseMapper.ToLocalRoleOptionDTO<TReferenceType, TOptionType>)

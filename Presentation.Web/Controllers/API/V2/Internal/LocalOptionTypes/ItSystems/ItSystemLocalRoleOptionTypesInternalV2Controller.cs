@@ -16,11 +16,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
     [RoutePrefix("api/v2/internal/it-systems/{organizationUuid}/local-option-types/it-systems-roles")]
     public class ItSystemLocalRoleOptionTypesInternalV2Controller : BaseLocalRoleOptionTypesInternalV2Controller<LocalItSystemRole, ItSystemRight, ItSystemRole>
     {
-        private readonly IGenericLocalOptionsService<LocalItSystemRole, ItSystemRight, ItSystemRole> _localItSystemRoleOptionTypeService;
+        private readonly IGenericLocalRoleOptionsService<LocalItSystemRole, ItSystemRight, ItSystemRole> _localItSystemRoleOptionTypeService;
         private readonly ILocalOptionTypeResponseMapper _responseMapper;
         private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
 
-        public ItSystemLocalRoleOptionTypesInternalV2Controller(IGenericLocalOptionsService<LocalItSystemRole, ItSystemRight, ItSystemRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
+        public ItSystemLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalItSystemRole, ItSystemRight, ItSystemRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
         {
         }
 
@@ -69,7 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult PatchLocalItSystemRole([NonEmptyGuid][FromUri] Guid organizationUuid,
             [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

@@ -540,8 +540,7 @@ namespace Presentation.Web.Ninject
             RegisterLocalDprOptionTypes(kernel);
             RegisterLocalItContractOptionTypes(kernel);
 
-            kernel.Bind<IGenericLocalOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>>()
-                .To<GenericLocalOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>>().InCommandScope(Mode);
+            RegisterLocalRoleOptionService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>(kernel);
         }
 
         private void RegisterGlobalOptionTypes(IKernel kernel)
@@ -590,7 +589,7 @@ namespace Presentation.Web.Ninject
 
         private void RegisterLocalItContractOptionTypes(IKernel kernel)
         {
-            RegisterLocalOptionService<LocalItContractRole, ItContractRight, ItContractRole>(kernel);
+            RegisterLocalRoleOptionService<LocalItContractRole, ItContractRight, ItContractRole>(kernel);
             RegisterLocalOptionService<LocalItContractType, ItContract, ItContractType>(kernel);
             RegisterLocalOptionService<LocalItContractTemplateType, ItContract, ItContractTemplateType>(kernel);
             RegisterLocalOptionService<LocalPurchaseFormType, ItContract, PurchaseFormType>(kernel);
@@ -606,7 +605,7 @@ namespace Presentation.Web.Ninject
 
         private void RegisterLocalItSystemOptionTypes(IKernel kernel)
         {
-            RegisterLocalOptionService<LocalItSystemRole, ItSystemRight, ItSystemRole>(kernel);
+            RegisterLocalRoleOptionService<LocalItSystemRole, ItSystemRight, ItSystemRole>(kernel);
             RegisterLocalOptionService<LocalBusinessType, ItSystem, BusinessType>(kernel);
             RegisterLocalOptionService<LocalArchiveType, ItSystemUsage, ArchiveType>(kernel);
             RegisterLocalOptionService<LocalArchiveLocation, ItSystemUsage, ArchiveLocation>(kernel);
@@ -621,7 +620,7 @@ namespace Presentation.Web.Ninject
 
         private void RegisterLocalDprOptionTypes(IKernel kernel)
         {
-            RegisterLocalOptionService<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole>(kernel);
+            RegisterLocalRoleOptionService<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole>(kernel);
             RegisterLocalOptionService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption>(kernel);
             RegisterLocalOptionService<LocalDataProcessingOversightOption, DataProcessingRegistration, DataProcessingOversightOption>(kernel);
             RegisterLocalOptionService<LocalDataProcessingDataResponsibleOption, DataProcessingRegistration, DataProcessingDataResponsibleOption>(kernel);
@@ -634,6 +633,14 @@ namespace Presentation.Web.Ninject
         {
             kernel.Bind<IGenericLocalOptionsService<TLocalOptionType, TReferenceType, TOptionType>>()
                 .To<GenericLocalOptionsService<TLocalOptionType, TReferenceType, TOptionType>>().InCommandScope(Mode);
+        }
+
+        private void RegisterLocalRoleOptionService<TLocalOptionType, TReferenceType, TOptionType>(IKernel kernel)
+            where TLocalOptionType : LocalRoleOptionEntity<TOptionType>, new()
+            where TOptionType : OptionEntity<TReferenceType>
+        {
+            kernel.Bind<IGenericLocalRoleOptionsService<TLocalOptionType, TReferenceType, TOptionType>>()
+                .To<GenericLocalRoleOptionsService<TLocalOptionType, TReferenceType, TOptionType>>().InCommandScope(Mode);
         }
 
         private void RegisterGlobalRegularOptionService<TOptionType, TReferenceType>(IKernel kernel)
