@@ -58,6 +58,26 @@ namespace Core.DomainModel.Organization
         public string Email { get; set; }
         public int TypeId { get; set; }
         public virtual OrganizationType Type { get; set; }
+
+        public void UpdateTypeId(int typeId)
+        {
+            ToggleOffIsSupplierIfNotCompanyId(typeId);
+            TypeId = typeId;
+        }
+
+        public void UpdateOrganizationType(OrganizationType organizationType){
+            ToggleOffIsSupplierIfNotCompanyId(organizationType.Id);
+            Type = organizationType;
+        }
+
+        private void ToggleOffIsSupplierIfNotCompanyId(int typeId)
+        {
+            if ((OrganizationTypeKeys)typeId != OrganizationTypeKeys.Virksomhed)
+            {
+                IsSupplier = false;
+            }
+        }
+
         /// <summary>
         /// Cvr number
         /// </summary>
