@@ -59,7 +59,7 @@ namespace Core.DomainModel.Organization
         public int TypeId { get; set; }
         public virtual OrganizationType Type { get; set; }
 
-        public void UpdateTypeId(int typeId)
+        public void UpdateType(int typeId)
         {
             ToggleOffIsSupplierIfNotCompanyId(typeId);
             TypeId = typeId;
@@ -581,11 +581,6 @@ namespace Core.DomainModel.Organization
         public void UpdateForeignCvr(Maybe<string> foreignCvr)
         {
             ForeignCvr = foreignCvr.HasValue ? foreignCvr.Value : null;
-        }
-
-        public void UpdateType(int typeId)
-        {
-            TypeId = typeId;
         }
 
         public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
