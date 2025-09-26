@@ -59,7 +59,7 @@ namespace Core.DomainModel.Organization
         public int TypeId { get; set; }
         public virtual OrganizationType Type { get; set; }
 
-        public void UpdateType(int typeId)
+        public void UpdateOrganizationTypeId(int typeId)
         {
             ToggleOffIsSupplierIfNotCompanyId(typeId);
             TypeId = typeId;
