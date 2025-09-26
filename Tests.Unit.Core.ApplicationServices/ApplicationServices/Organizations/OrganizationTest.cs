@@ -26,6 +26,63 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
         }
 
         [Fact]
+        public void GivenCompanyTypeIdAndIsSupplierState_UpdateTypeToNonCompany_TogglesOffSupplierState()
+        {
+            const int companyTypeId = (int)OrganizationTypeKeys.Virksomhed;
+            _sut.UpdateOrganizationTypeId(companyTypeId);            
+            _sut.UpdateIsSupplier(true);
+            var nonCompanyOrgType = new OrganizationType() { Id = (int)OrganizationTypeKeys.Kommune };
+
+            _sut.UpdateOrganizationType(nonCompanyOrgType);
+
+            Assert.Equal(nonCompanyOrgType, _sut.Type);
+            Assert.False(_sut.IsSupplier);
+        }
+
+        [Fact]
+        public void GivenCompanyAndIsSupplierState_UpdateTypeIdToNonCompany_TogglesOffSupplierState()
+        {
+            const int companyTypeId = (int)OrganizationTypeKeys.Virksomhed;
+            _sut.UpdateOrganizationTypeId(companyTypeId);
+            _sut.UpdateIsSupplier(true);
+            const int nonCompanyId = (int)OrganizationTypeKeys.Kommune;
+
+            _sut.UpdateOrganizationTypeId(nonCompanyId);
+
+            Assert.Equal(nonCompanyId, _sut.TypeId);
+            Assert.False(_sut.IsSupplier);
+        }
+
+        [Fact]
+        public void GivenNonCompanyTypeId_UpdateTypeIdToCompanyAndUpdateSupplierToTrue_SetsSupplierToTrue()
+        {
+            const int nonCompanyTypeId = (int)OrganizationTypeKeys.Interessefællesskab;
+            _sut.UpdateOrganizationTypeId(nonCompanyTypeId);
+
+            var companyOrgTypeId = (int)OrganizationTypeKeys.Virksomhed;
+            _sut.UpdateOrganizationTypeId(companyOrgTypeId);
+            var result = _sut.UpdateIsSupplier(true);
+
+            Assert.Equal(_sut.TypeId, companyOrgTypeId);
+            Assert.True(_sut.IsSupplier);
+            Assert.True(result.IsNone);
+        }
+
+        [Fact]
+        public void GivenNonCompanyTypeId_UpdateSupplierToTrue_ReturnsOperationError()
+        {
+            const int nonCompanyTypeId = (int)OrganizationTypeKeys.Interessefællesskab;
+            _sut.UpdateOrganizationTypeId(nonCompanyTypeId);
+            
+            var result = _sut.UpdateIsSupplier(true);
+
+            Assert.Equal(nonCompanyTypeId, _sut.TypeId);
+            Assert.False(result.IsNone);
+            Assert.Equal(OperationFailure.BadInput, result.Value.FailureType);
+            Assert.False(_sut.IsSupplier);
+        }
+
+        [Fact]
         public void ImportNewExternalOrganizationOrgTree_Fails_Of_Already_Connected()
         {
             //Arrange
