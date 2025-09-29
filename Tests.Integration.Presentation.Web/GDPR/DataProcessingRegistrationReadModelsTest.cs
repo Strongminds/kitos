@@ -79,6 +79,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var oversightCompleted = YesNoUndecidedChoice.Yes;
             var oversightDate = A<DateTime>();
             var oversightRemark = A<string>();
+            var oversightReportLink = A<string>();
+            var oversightReportLinkName = A<string>();
             var transferToThirdCountries = A<YesNoUndecidedChoice>();
             var oversightScheduledInspectionDate = A<DateTime>();
 
@@ -186,6 +188,8 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(itSystemDto.Uuid.ToString(), readModel.SystemUuidsAsCsv);
             Assert.Equal(oversightDate, readModel.LatestOversightDate);
             Assert.Equal(oversightRemark, readModel.LatestOversightRemark);
+            Assert.Equal(oversightReportLink, readModel.LatestOversightReportLink);
+            Assert.Equal(oversightReportLinkName, readModel.LatestOversightReportLinkName);
             Assert.True(readModel.IsActive);
             Assert.True(readModel.ActiveAccordingToMainContract);
 
