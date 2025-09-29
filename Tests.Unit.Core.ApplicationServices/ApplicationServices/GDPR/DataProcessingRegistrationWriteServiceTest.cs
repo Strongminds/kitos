@@ -1759,6 +1759,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
+            var oversightReportLink = A<string>();
+            var oversightReportLinkName = A<string>();
             var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
             {
                 OversightDates = dates.FromNullable<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>().AsChangedValue()
@@ -1773,7 +1775,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             foreach (var oversightDate in dates)
             {
-                _dprServiceMock.Setup(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark)).Returns(oversightDatesMap[oversightDate]);
+                _dprServiceMock
+                    .Setup(x => x.AssignOversightDate(
+                        createdRegistration.Id, 
+                        oversightDate.CompletedAt, 
+                        oversightDate.Remark, 
+                        oversightDate.OversightReportLink, 
+                        oversightDate.OversightReportLinkName))
+                    .Returns(oversightDatesMap[oversightDate]);
             }
 
             //Act
@@ -1786,7 +1795,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             foreach (var oversightDate in dates)
             {
-                _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark), Times.Once);
+                _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark, oversightDate.OversightReportLink, oversightDate.OversightReportLinkName), Times.Once);
             }
 
             _dprServiceMock.Verify(x => x.RemoveOversightDate(createdRegistration.Id, It.IsAny<int>()), Times.Never);
@@ -1829,7 +1838,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 _dprServiceMock.Verify(x => x.RemoveOversightDate(createdRegistration.Id, oversightDatesMap[oversightDate].Id), Times.Once);
             }
 
-            _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
+            _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -1858,7 +1867,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             foreach (var oversightDate in dates)
             {
-                _dprServiceMock.Setup(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark)).Returns(oversightDatesMap[oversightDate]);
+                _dprServiceMock.Setup(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark, oversightDate.OversightReportLink, oversightDate.OversightReportLinkName)).Returns(oversightDatesMap[oversightDate]);
             }
 
             //Act
@@ -1876,7 +1885,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             foreach (var oversightDate in dates)
             {
-                _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark), Times.Once);
+                _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark, oversightDate.OversightReportLink, oversightDate.OversightReportLinkName), Times.Once);
             }
         }
 
@@ -1900,7 +1909,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
 
             _dprServiceMock.Verify(x => x.RemoveOversightDate(createdRegistration.Id, It.IsAny<int>()), Times.Never);
-            _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
+            _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 
         }
 
