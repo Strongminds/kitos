@@ -427,7 +427,7 @@ namespace Core.DomainModel.GDPR
                 : DataProcessingRegistrationValidationError.MainContractNotActive;
         }
 
-        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark)
+        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
         {
             if (IsOversightCompleted != YesNoUndecidedOption.Yes)
                 return new OperationError("Cannot assign oversight dates if 'IsOversightCompleted' is not set to 'Yes'", OperationFailure.BadState);
@@ -438,6 +438,8 @@ namespace Core.DomainModel.GDPR
             {
                 OversightDate = oversightDate,
                 OversightRemark = oversightRemark,
+                OversightReportLink = oversightReportLink,
+                OversightReportLinkName = oversightReportLinkName,
                 Parent = this
             };
 

@@ -588,6 +588,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             {
                 Assert.Equal(orderedExpected[i].CompletedAt, orderedActual[i].CompletedAt);
                 Assert.Equal(orderedExpected[i].Remark, orderedActual[i].Remark);
+                Assert.Equal(orderedExpected[i].OversightReportLink.Url, orderedActual[i].OversightReportLink);
+                Assert.Equal(orderedExpected[i].OversightReportLink.Name, orderedActual[i].OversightReportLinkName);
             }
         }
 

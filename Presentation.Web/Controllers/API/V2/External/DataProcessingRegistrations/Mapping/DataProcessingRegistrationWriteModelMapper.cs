@@ -199,7 +199,9 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                             .Select(y => new UpdatedDataProcessingRegistrationOversightDate()
                             {
                                 CompletedAt = y.CompletedAt,
-                                Remark = y.Remark
+                                Remark = y.Remark,
+                                OversightReportLink = y.OversightReportLink.Url,
+                                OversightReportLinkName = y.OversightReportLink.Name
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
             };
