@@ -86,8 +86,14 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             {
                 Uuid = oversightDate.Uuid,
                 CompletedAt = oversightDate.OversightDate,
-                Remark = oversightDate.OversightRemark
+                Remark = oversightDate.OversightRemark,
+                OversightReportLink = MapOversightReportLink(oversightDate.OversightReportLink, oversightDate.OversightReportLinkName)
             };
+        }
+
+        private static SimpleLinkDTO? MapOversightReportLink(string? url, string? name)
+        {
+            return new SimpleLinkDTO() { Name = name, Url = url };
         }
 
         private static IEnumerable<IdentityNamePairResponseDTO> MapSystemUsages(DataProcessingRegistration dataProcessingRegistration)

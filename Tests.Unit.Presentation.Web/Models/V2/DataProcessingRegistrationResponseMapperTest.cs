@@ -338,7 +338,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     ParentId = dpr.Id,
                     Id = A<int>(),
                     OversightDate = A<DateTime>(),
-                    OversightRemark = A<string>()
+                    OversightRemark = A<string>(),
+                    OversightReportLink = A<string>(),
+                    OversightReportLinkName = A<string>()
                 },
                 new()
                 {
@@ -346,7 +348,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     ParentId = dpr.Id,
                     Id = A<int>(),
                     OversightDate = A<DateTime>(),
-                    OversightRemark = A<string>()
+                    OversightRemark = A<string>(),
+                    OversightReportLink = A<string>(),
+                    OversightReportLinkName = A<string>()
                 }
             };
         }
@@ -437,6 +441,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal(comparison.expected.Uuid, comparison.actual.Uuid);
                 Assert.Equal(comparison.expected.OversightDate, comparison.actual.CompletedAt);
                 Assert.Equal(comparison.expected.OversightRemark, comparison.actual.Remark);
+                Assert.Equal(comparison.expected.OversightReportLink, comparison.actual.OversightReportLink.Url);
+                Assert.Equal(comparison.expected.OversightReportLinkName, comparison.actual.OversightReportLink.Name);
             }
         }
 
