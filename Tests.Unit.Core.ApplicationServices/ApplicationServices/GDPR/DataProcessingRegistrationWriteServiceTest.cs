@@ -1759,8 +1759,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
-            var oversightReportLink = A<string>();
-            var oversightReportLinkName = A<string>();
             var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
             {
                 OversightDates = dates.FromNullable<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>().AsChangedValue()
