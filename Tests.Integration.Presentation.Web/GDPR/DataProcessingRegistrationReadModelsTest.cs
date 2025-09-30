@@ -90,7 +90,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var regId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
 
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
-            var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark };
+            var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark, OversightReportLink = new SimpleLinkDTO(){ Url = oversightReportLink, Name = oversightReportLinkName }};
 
             var businessRoleDtos = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationRoles, organizationUuid, 25, 0);
             var role = businessRoleDtos.First();
