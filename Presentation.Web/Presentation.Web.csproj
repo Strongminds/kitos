@@ -527,6 +527,7 @@
     <Compile Include="Models\API\V2\Internal\Request\Options\GlobalRoleOptionCreateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Options\LocalOptionCreateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Options\LocalRegularOptionUpdateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\Options\LocalRoleOptionUpdateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\ColumnConfigurationRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\ContactPersonRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\CustomizedUINodeRequestDTO.cs" />
@@ -1134,10 +1135,6 @@
     <ProjectReference Include="..\Digst.OioIdws.Soap\Digst.OioIdws.Soap.csproj">
       <Project>{2bf23085-9552-4354-b070-7f1715ed5976}</Project>
       <Name>Digst.OioIdws.Soap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj">
-      <Project>{6CD15363-5401-43C5-9479-02FDDFA881DC}</Project>
-      <Name>Infrastructure.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\Infrastructure.Ninject\Infrastructure.Ninject.csproj">
       <Project>{c01c5f9e-6904-4b4c-94b1-12d7c83f8070}</Project>

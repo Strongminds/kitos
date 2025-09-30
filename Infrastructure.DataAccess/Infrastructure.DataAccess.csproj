@@ -1169,6 +1169,10 @@
     <Compile Include="Migrations\202509230924307_IntroduceOrganizationSupplier.Designer.cs">
       <DependentUpon>202509230924307_IntroduceOrganizationSupplier.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509250919596_AddExternallyUsedToLocalRoleOptions.cs" />
+    <Compile Include="Migrations\202509250919596_AddExternallyUsedToLocalRoleOptions.Designer.cs">
+      <DependentUpon>202509250919596_AddExternallyUsedToLocalRoleOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202509290929471_DPR_OversightReportLinks.cs" />
     <Compile Include="Migrations\202509290929471_DPR_OversightReportLinks.Designer.cs">
       <DependentUpon>202509290929471_DPR_OversightReportLinks.cs</DependentUpon>
@@ -1273,6 +1277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509230924307_IntroduceOrganizationSupplier.resx">
       <DependentUpon>202509230924307_IntroduceOrganizationSupplier.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509250919596_AddExternallyUsedToLocalRoleOptions.resx">
+      <DependentUpon>202509250919596_AddExternallyUsedToLocalRoleOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509290929471_DPR_OversightReportLinks.resx">
       <DependentUpon>202509290929471_DPR_OversightReportLinks.cs</DependentUpon>
