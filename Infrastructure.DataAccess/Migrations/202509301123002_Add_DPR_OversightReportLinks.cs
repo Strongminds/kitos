@@ -3,7 +3,7 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class DPR_OversightReportLinks : DbMigration
+    public partial class Add_DPR_OversightReportLinks : DbMigration
     {
         public override void Up()
         {

@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class DPR_OversightReportLinks : IMigrationMetadata
+    public sealed partial class Add_DPR_OversightReportLinks : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(DPR_OversightReportLinks));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_DPR_OversightReportLinks));
         
         string IMigrationMetadata.Id
         {
-            get { return "202509290929471_DPR_OversightReportLinks"; }
+            get { return "202509301123002_Add_DPR_OversightReportLinks"; }
         }
         
         string IMigrationMetadata.Source

@@ -1173,9 +1173,9 @@
     <Compile Include="Migrations\202509250919596_AddExternallyUsedToLocalRoleOptions.Designer.cs">
       <DependentUpon>202509250919596_AddExternallyUsedToLocalRoleOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202509290929471_DPR_OversightReportLinks.cs" />
-    <Compile Include="Migrations\202509290929471_DPR_OversightReportLinks.Designer.cs">
-      <DependentUpon>202509290929471_DPR_OversightReportLinks.cs</DependentUpon>
+    <Compile Include="Migrations\202509301123002_Add_DPR_OversightReportLinks.cs" />
+    <Compile Include="Migrations\202509301123002_Add_DPR_OversightReportLinks.Designer.cs">
+      <DependentUpon>202509301123002_Add_DPR_OversightReportLinks.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
@@ -1281,8 +1281,8 @@
     <EmbeddedResource Include="Migrations\202509250919596_AddExternallyUsedToLocalRoleOptions.resx">
       <DependentUpon>202509250919596_AddExternallyUsedToLocalRoleOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202509290929471_DPR_OversightReportLinks.resx">
-      <DependentUpon>202509290929471_DPR_OversightReportLinks.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202509301123002_Add_DPR_OversightReportLinks.resx">
+      <DependentUpon>202509301123002_Add_DPR_OversightReportLinks.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
