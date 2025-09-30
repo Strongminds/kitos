@@ -58,6 +58,26 @@ namespace Core.DomainModel.Organization
         public string Email { get; set; }
         public int TypeId { get; set; }
         public virtual OrganizationType Type { get; set; }
+
+        public void UpdateOrganizationTypeId(int typeId)
+        {
+            ToggleOffIsSupplierIfNotCompanyType(typeId);
+            TypeId = typeId;
+        }
+
+        public void UpdateOrganizationType(OrganizationType organizationType){
+            ToggleOffIsSupplierIfNotCompanyType(organizationType.Id);
+            Type = organizationType;
+        }
+
+        private void ToggleOffIsSupplierIfNotCompanyType(int typeId)
+        {
+            if ((OrganizationTypeKeys)typeId != OrganizationTypeKeys.Virksomhed)
+            {
+                IsSupplier = false;
+            }
+        }
+
         /// <summary>
         /// Cvr number
         /// </summary>
@@ -561,11 +581,6 @@ namespace Core.DomainModel.Organization
         public void UpdateForeignCvr(Maybe<string> foreignCvr)
         {
             ForeignCvr = foreignCvr.HasValue ? foreignCvr.Value : null;
-        }
-
-        public void UpdateType(int typeId)
-        {
-            TypeId = typeId;
         }
 
         public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
