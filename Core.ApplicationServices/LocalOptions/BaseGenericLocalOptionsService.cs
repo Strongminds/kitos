@@ -117,11 +117,11 @@ namespace Core.ApplicationServices.LocalOptions
                 });
         }
 
-        public Result<TOptionType, OperationError> BasePatchLocalOption(Guid organizationUuid,
+        public Result<TOptionType, OperationError> BasePatchLocalOption<TUpdateParameters>(Guid organizationUuid,
             Guid globalOptionUuid,
-            LocalOptionUpdateParameters parameters,
+            TUpdateParameters parameters,
             Action<TOptionType, TLocalOptionType> updateLocalOptionValues,
-            Func<TLocalOptionType, LocalOptionUpdateParameters, Maybe<OperationError>> updateExtraParameters = null)
+            Func<TLocalOptionType, TUpdateParameters, Maybe<OperationError>> updateExtraParameters = null) where TUpdateParameters : LocalOptionUpdateParameters
         {
             return GetLocalOptionMaybe(organizationUuid, globalOptionUuid)
                 .Match(localOption => ValidateModify(localOption)

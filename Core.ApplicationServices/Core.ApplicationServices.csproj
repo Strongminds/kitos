@@ -273,6 +273,7 @@
     <Compile Include="Model\KitosEvents\SystemChangeEventBodyModel.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
+    <Compile Include="Model\LocalOptions\LocalRoleOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />
     <Compile Include="Model\Notification\EmailRecipientModel.cs" />
     <Compile Include="Model\Notification\GlobalAdminNotification.cs" />

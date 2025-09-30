@@ -93,8 +93,8 @@ namespace Core.DomainModel
                 return;
             }
 
-            UpdateIsExternallyUsed(localRole.IsExternallyUsed);
-            UpdateExternallyUsedDescription(localRole.ExternallyUsedDescription);
+            UpdateIsExternallyUsedFromLocal(localRole.IsExternallyUsed);
+            UpdateExternallyUsedDescriptionFromLocal(localRole.ExternallyUsedDescription);
         }
 
         public void ResetLocalOptionAvailability()
@@ -113,12 +113,12 @@ namespace Core.DomainModel
            if (!string.IsNullOrEmpty(description)) Description = description;
         }
 
-        private void UpdateIsExternallyUsed(bool isUsed)
+        private void UpdateIsExternallyUsedFromLocal(bool isUsed)
         {
             RoleIsExternallyUsed = isUsed;
         }
 
-        private void UpdateExternallyUsedDescription(string description)
+        private void UpdateExternallyUsedDescriptionFromLocal(string description)
         {
             RoleExternallyUsedDescription = description;
         }

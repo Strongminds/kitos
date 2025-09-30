@@ -43,13 +43,13 @@ namespace Core.ApplicationServices.LocalOptions
             return BaseCreateLocalOption(organizationUuid, parameters, UpdateLocalRoleOptionValues);
         }
 
-        public Result<TOptionType, OperationError> PatchLocalOption(Guid organizationUuid, Guid globalOptionUuid, LocalOptionUpdateParameters parameters)
+        public Result<TOptionType, OperationError> PatchLocalOption(Guid organizationUuid, Guid globalOptionUuid, LocalRoleOptionUpdateParameters parameters)
         {
             return BasePatchLocalOption(organizationUuid, globalOptionUuid, parameters, UpdateLocalRoleOptionValues, UpdateExternallyUsedParameters);
         }
 
         private static Maybe<OperationError> UpdateExternallyUsedParameters(TLocalOptionType localOption,
-            LocalOptionUpdateParameters parameters)
+            LocalRoleOptionUpdateParameters parameters)
         {
             if (parameters.IsExternallyUsed.HasChange) localOption.UpdateIsExternallyUsed(parameters.IsExternallyUsed.NewValue);
             if (parameters.ExternallyUsedDescription.HasChange)

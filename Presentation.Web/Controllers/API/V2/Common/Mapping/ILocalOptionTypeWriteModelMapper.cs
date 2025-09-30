@@ -7,5 +7,5 @@ public interface ILocalOptionTypeWriteModelMapper
 {
     LocalOptionCreateParameters ToLocalOptionCreateParameters(LocalOptionCreateRequestDTO dto);
     LocalOptionUpdateParameters ToLocalOptionUpdateParameters(LocalRegularOptionUpdateRequestDTO dto);
-    LocalOptionUpdateParameters ToLocalRoleOptionUpdateParameters(LocalRoleOptionUpdateRequestDTO dto);
+    LocalRoleOptionUpdateParameters ToLocalRoleOptionUpdateParameters(LocalRoleOptionUpdateRequestDTO dto);
 }

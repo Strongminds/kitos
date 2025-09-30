@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
                     : OptionalValueChange<Maybe<string>>.None,
             };
         }
-        public LocalOptionUpdateParameters ToLocalRoleOptionUpdateParameters(LocalRoleOptionUpdateRequestDTO dto)
+        public LocalRoleOptionUpdateParameters ToLocalRoleOptionUpdateParameters(LocalRoleOptionUpdateRequestDTO dto)
         {
             var rule = CreateChangeRule<LocalRoleOptionUpdateRequestDTO>(false);
 

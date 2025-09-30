@@ -17,7 +17,7 @@ namespace Core.ApplicationServices.LocalOptions
             LocalOptionCreateParameters parameters);
 
         Result<TOptionType, OperationError> PatchLocalOption(Guid organizationUuid, Guid globalOptionUuid,
-            LocalOptionUpdateParameters parameters);
+            LocalRoleOptionUpdateParameters parameters);
 
         Result<TOptionType, OperationError> DeleteLocalOption(Guid organizationUuid, Guid globalOptionUuid);
     }
