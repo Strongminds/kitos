@@ -61,16 +61,16 @@ namespace Core.DomainModel.Organization
 
         public void UpdateOrganizationTypeId(int typeId)
         {
-            ToggleOffIsSupplierIfNotCompanyId(typeId);
+            ToggleOffIsSupplierIfNotCompanyType(typeId);
             TypeId = typeId;
         }
 
         public void UpdateOrganizationType(OrganizationType organizationType){
-            ToggleOffIsSupplierIfNotCompanyId(organizationType.Id);
+            ToggleOffIsSupplierIfNotCompanyType(organizationType.Id);
             Type = organizationType;
         }
 
-        private void ToggleOffIsSupplierIfNotCompanyId(int typeId)
+        private void ToggleOffIsSupplierIfNotCompanyType(int typeId)
         {
             if ((OrganizationTypeKeys)typeId != OrganizationTypeKeys.Virksomhed)
             {
