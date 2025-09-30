@@ -527,6 +527,7 @@
     <Compile Include="Models\API\V2\Internal\Request\Options\GlobalRoleOptionCreateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Options\LocalOptionCreateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Options\LocalRegularOptionUpdateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\Options\LocalRoleOptionUpdateRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\ColumnConfigurationRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\ContactPersonRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\CustomizedUINodeRequestDTO.cs" />

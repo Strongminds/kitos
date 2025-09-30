@@ -16,11 +16,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
     [RoutePrefix("api/v2/internal/data-processing/{organizationUuid}/local-option-types/dpr-roles")]
     public class DprLocalRoleOptionTypesInternalV2Controller : BaseLocalRoleOptionTypesInternalV2Controller<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole>
     {
-        private readonly IGenericLocalOptionsService<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole> _localDprRoleOptionTypeService;
+        private readonly IGenericLocalRoleOptionsService<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole> _localDprRoleOptionTypeService;
         private readonly ILocalOptionTypeResponseMapper _responseMapper;
         private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
 
-        public DprLocalRoleOptionTypesInternalV2Controller(IGenericLocalOptionsService<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
+        public DprLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalDataProcessingRegistrationRole, DataProcessingRegistrationRight, DataProcessingRegistrationRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
         {
         }
 
@@ -69,7 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
         [SwaggerResponse(HttpStatusCode.NotFound)]
         public IHttpActionResult PatchLocalDprRole([NonEmptyGuid][FromUri] Guid organizationUuid,
             [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }
