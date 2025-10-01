@@ -665,6 +665,7 @@ namespace Presentation.Web.Ninject
             RegisterOptionsService<DataRow, DataType, LocalDataType>(kernel);
 
             //Data processing registrations
+            RegisterOptionsService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, LocalDataProcessingRegistrationRole>(kernel);
             RegisterRoleOptionsService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, LocalDataProcessingRegistrationRole>(kernel);
 
             RegisterOptionsService<DataProcessingRegistration, DataProcessingCountryOption, LocalDataProcessingCountryOption>(kernel);
@@ -681,6 +682,7 @@ namespace Presentation.Web.Ninject
             RegisterOptionsService<ItSystem, SensitivePersonalDataType, LocalSensitivePersonalDataType>(kernel);
 
             //IT-System usages
+            RegisterOptionsService<ItSystemRight, ItSystemRole, LocalItSystemRole>(kernel);
             RegisterRoleOptionsService<ItSystemRight, ItSystemRole, LocalItSystemRole>(kernel);
 
             RegisterOptionsService<SystemRelation, RelationFrequencyType, LocalRelationFrequencyType>(kernel);
@@ -696,6 +698,7 @@ namespace Presentation.Web.Ninject
             RegisterOptionsService<ItSystemUsage, RegisterType, LocalRegisterType>(kernel);
 
             //IT-Contract
+            RegisterOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(kernel);
             RegisterRoleOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(kernel);
 
             RegisterOptionsService<ItContract, ItContractType, LocalItContractType>(kernel);
@@ -721,6 +724,7 @@ namespace Presentation.Web.Ninject
             RegisterOptionsService<ItContract, CriticalityType, LocalCriticalityType>(kernel);
 
             //OrganizationUnit
+            RegisterOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(kernel);
             RegisterRoleOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(kernel);
 
             //Attached options services

@@ -30,7 +30,6 @@ namespace Core.ApplicationServices.Organizations
         private readonly IOrgUnitService _orgUnitService;
         private readonly IOrganizationRightsService _organizationRightsService;
         private readonly IDomainEvents _domainEvents;
-        private readonly IEntityIdentityResolver _identityResolver;
         private readonly IGenericRepository<OrganizationRight> _orgRightRepository;
         private readonly IGenericRepository<ContactPerson> _contactPersonRepository;
         private readonly IGenericRepository<User> _userRepository;
@@ -54,7 +53,7 @@ namespace Core.ApplicationServices.Organizations
             IOrganizationRightsService organizationRightsService,
             IOrgUnitService orgUnitService,
             IDomainEvents domainEvents,
-            IEntityIdentityResolver identityResolver, IGenericRepository<DataResponsible> dataResponsibleRepository,
+            IGenericRepository<DataResponsible> dataResponsibleRepository,
             IGenericRepository<DataProtectionAdvisor> dataProtectionAdvisorRepository)
         {
             _orgRepository = orgRepository;
@@ -68,7 +67,6 @@ namespace Core.ApplicationServices.Organizations
             _repository = repository;
             _orgUnitService = orgUnitService;
             _domainEvents = domainEvents;
-            _identityResolver = identityResolver;
             _dataResponsibleRepository = dataResponsibleRepository;
             _dataProtectionAdvisorRepository = dataProtectionAdvisorRepository;
             _organizationRightsService = organizationRightsService;
