@@ -835,7 +835,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
         public async Task Can_POST_With_OversightData(bool withOversightOptions, bool withOversightDates)
         {
             //Arrange
-            var (token, user, organization) = await CreatePrerequisitesAsync();
+            var (token, _, organization) = await CreatePrerequisitesAsync();
 
             var oversightDate1 = CreateOversightDate();
             var oversightDate2 = CreateOversightDate();
@@ -1538,6 +1538,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             {
                 Assert.Equal(expectedOversightDates[i].CompletedAt, actualOversightDates[i].CompletedAt);
                 Assert.Equal(expectedOversightDates[i].Remark, actualOversightDates[i].Remark);
+                Assert.Equal(expectedOversightDates[i].OversightReportLink.Url, actualOversightDates[i].OversightReportLink.Url);
+                Assert.Equal(expectedOversightDates[i].OversightReportLink.Name, actualOversightDates[i].OversightReportLink.Name);
             }
         }
 
@@ -1704,7 +1706,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             return new OversightDateDTO()
             {
                 CompletedAt = A<DateTime>(),
-                Remark = A<string>()
+                Remark = A<string>(),
+                OversightReportLink = A<SimpleLinkDTO>()
             };
         }
 
