@@ -170,6 +170,10 @@ namespace Infrastructure.DataAccess.Mapping
                 .IsOptional()
                 .HasIndexAnnotation("IX_ExpirationDate");
 
+            Property(x => x.GdprCriticality)
+                .IsOptional()
+                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_GdprCriticality", 0);
+
             Property(x => x.SystemActive)
                .HasIndexAnnotation("ItSystemUsageOverviewReadModel_Index_SystemActive", 0);
 
