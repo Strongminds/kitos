@@ -2949,6 +2949,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(gdpr.DPIADate.NewValue, actual.DPIADateFor);
             Assert.Equal(gdpr.RetentionPeriodDefined.NewValue, actual.answeringDataDPIA);
             Assert.Equal(gdpr.NextDataRetentionEvaluationDate.NewValue, actual.DPIAdeleteDate);
+            Assert.Equal(gdpr.GdprCriticality.NewValue, actual.GdprCriticality);
 
             if (shouldBeEmpty)
             {
@@ -3026,7 +3027,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     DPIADocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                     NextDataRetentionEvaluationDate = A<DateTime?>().AsChangedValue(),
-                    DataRetentionEvaluationFrequencyInMonths = A<int?>().AsChangedValue()
+                    DataRetentionEvaluationFrequencyInMonths = A<int?>().AsChangedValue(),
+                    GdprCriticality = A<GdprCriticality?>().AsChangedValue()
                 }
             };
         }
@@ -3076,7 +3078,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     DPIADocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     RetentionPeriodDefined = new ChangedValue<DataOptions?>(null),
                     NextDataRetentionEvaluationDate = new ChangedValue<DateTime?>(null),
-                    DataRetentionEvaluationFrequencyInMonths = new ChangedValue<int?>(null)
+                    DataRetentionEvaluationFrequencyInMonths = new ChangedValue<int?>(null),
+                    GdprCriticality = new ChangedValue<GdprCriticality?>(null)
                 }
             };
         }
