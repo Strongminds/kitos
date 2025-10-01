@@ -27,13 +27,11 @@ namespace Core.DomainServices.Options
             var allOptions = GetAvailableOptionsFromOrganization(organizationId);
 
             return allOptions
-                .descriptors
                 .OrderBy(option => option.Option.Name)
                 .ToList();
         }
 
-        private (IEnumerable<OptionDescriptor<TOption>> descriptors, IQueryable<TOption> rawOptions)
-            GetAvailableOptionsFromOrganization(int organizationId)
+        private IEnumerable<OptionDescriptor<TOption>> GetAvailableOptionsFromOrganization(int organizationId)
         {
             var localOptions = _localOptionRepository
                 .AsQueryable()
@@ -45,9 +43,9 @@ namespace Core.DomainServices.Options
                 .ToList();
 
             // LINQ doesn't like IsNullOrWhiteSpace("")
-            var localDescriptions = localOptions
+            var localOptionsDictionary = localOptions
                 .Where(x => !(x.Description == null || x.Description.Trim() == string.Empty))
-                .ToDictionary(x => x.OptionId, x => x.Description);
+                .ToDictionary(x => x.OptionId, x =>(description: x.Description, isExternallyUsed: x.IsExternallyUsed, externallyUsedDescription: x.ExternallyUsedDescription));
 
             var allLocallyEnabled = _optionRepository
                 .AsQueryable()
@@ -61,10 +59,16 @@ namespace Core.DomainServices.Options
                 .Where(x => x.IsObligatory); //Add enabled global options which are obligatory as well
 
             var allOptions = allObligatory.Concat(allLocallyEnabled);
-            return (allOptions
+            return allOptions
                 .AsEnumerable()
+                .Select(x =>
+                {
+                    var localOption = localOptionsDictionary[x.Id];
+                    x.UpdateLocalExternalUsedValues(localOption.isExternallyUsed, localOption.externallyUsedDescription);
+                    return x;
+                })
                 .Select(x => new OptionDescriptor<TOption>(x,
-                    localDescriptions.ContainsKey(x.Id) ? localDescriptions[x.Id] : x.Description)), allOptions);
+                    localOptionsDictionary.ContainsKey(x.Id) ? localOptionsDictionary[x.Id].description : x.Description));
         }
     }
 }
