@@ -104,20 +104,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
                 UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
-                GdprCriticality = MapGdprCriticality(systemUsage.GdprCriticality)
-            };
-        }
-
-        private GdprCriticalityChoice? MapGdprCriticality(Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality? source)
-        {
-            return source switch
-            {
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.NotCritical => GdprCriticalityChoice.NotCritical,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.Low => GdprCriticalityChoice.Low,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.Medium => GdprCriticalityChoice.Medium,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.High => GdprCriticalityChoice.High,
-                Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality.VeryHigh => GdprCriticalityChoice.VeryHigh,
-                null => null
+                GdprCriticality = systemUsage.GdprCriticality?.ToGdprCriticalityChoice()
             };
         }
 
