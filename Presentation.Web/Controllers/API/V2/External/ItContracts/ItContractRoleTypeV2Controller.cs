@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Web.Http;
-using Core.ApplicationServices.OptionTypes;
+﻿using Core.ApplicationServices.OptionTypes;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
 using Swashbuckle.Swagger.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts
 {
     [RoutePrefix("api/v2/it-contract-role-types")]
     public class ItContractRoleTypeV2Controller : BaseRoleOptionTypeV2Controller<ItContractRight, ItContractRole>
     {
-        public ItContractRoleTypeV2Controller(IOptionsApplicationService<ItContractRight, ItContractRole> optionService)
-            : base(optionService)
+        public ItContractRoleTypeV2Controller(IOptionsApplicationService<ItContractRight, ItContractRole> optionService, IRoleOptionsApplicationService<ItContractRight, ItContractRole> roleOptionsApplicationService)
+            : base(optionService, roleOptionsApplicationService)
         {
         }
 
