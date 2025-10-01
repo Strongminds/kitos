@@ -10,12 +10,12 @@ namespace Presentation.Web.Controllers.API.V2.External
     {
         protected override RoleOptionResponseDTO ToDTO(OptionDescriptor<TOption> option)
         {
-            return new RoleOptionResponseDTO(option.Option.Uuid, option.Option.Name, option.Option.HasWriteAccess, option.Description);
+            return new RoleOptionResponseDTO(option.Option.Uuid, option.Option.Name, option.Option.HasWriteAccess, option.Description, option.Option.RoleIsExternallyUsed, option.Option.RoleExternallyUsedDescription);
         }
 
         protected override RoleOptionExtendedResponseDTO ToExtendedDTO(OptionDescriptor<TOption> option, bool isAvailable)
         {
-            return new RoleOptionExtendedResponseDTO(option.Option.Uuid, option.Option.Name, option.Option.HasWriteAccess, isAvailable, option.Description);
+            return new RoleOptionExtendedResponseDTO(option.Option.Uuid, option.Option.Name, option.Option.HasWriteAccess, isAvailable, option.Description, option.Option.RoleIsExternallyUsed, option.Option.RoleExternallyUsedDescription);
         }
 
         protected BaseRoleOptionTypeV2Controller(IOptionsApplicationService<TParent, TOption> optionApplicationService)
