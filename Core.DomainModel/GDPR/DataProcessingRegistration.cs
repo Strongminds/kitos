@@ -431,7 +431,6 @@ namespace Core.DomainModel.GDPR
         {
             if (IsOversightCompleted != YesNoUndecidedOption.Yes)
                 return new OperationError("Cannot assign oversight dates if 'IsOversightCompleted' is not set to 'Yes'", OperationFailure.BadState);
-            if (oversightDate == null) throw new ArgumentNullException(nameof(oversightDate));
             if (oversightRemark == null) throw new ArgumentNullException(nameof(oversightRemark));
 
             var newOversightDate = new DataProcessingRegistrationOversightDate
@@ -450,7 +449,6 @@ namespace Core.DomainModel.GDPR
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDate(int oversightId, DateTime oversightDate, string oversightRemark)
         {
-            if (oversightDate == null) throw new ArgumentNullException(nameof(oversightDate));
             if (oversightRemark == null) throw new ArgumentNullException(nameof(oversightRemark));
             var existingDate = GetOversightDate(oversightId);
             if (existingDate.IsNone)
