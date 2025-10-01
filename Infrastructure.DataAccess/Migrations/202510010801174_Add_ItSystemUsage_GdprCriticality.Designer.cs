@@ -13,7 +13,7 @@ namespace Infrastructure.DataAccess.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202510010539446_Add_ItSystemUsage_GdprCriticality"; }
+            get { return "202510010801174_Add_ItSystemUsage_GdprCriticality"; }
         }
         
         string IMigrationMetadata.Source
