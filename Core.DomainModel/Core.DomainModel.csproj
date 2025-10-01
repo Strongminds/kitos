@@ -122,6 +122,7 @@
     <Compile Include="ItSystem\ItSystemSnapshot.cs" />
     <Compile Include="KendoConfig\KendoColumnConfiguration.cs" />
     <Compile Include="LocalOptions\LocalCriticalityType.cs" />
+    <Compile Include="LocalOptions\LocalRoleOptionEntity.cs" />
     <Compile Include="Notification\IEntityWithUserNotification.cs" />
     <Compile Include="Notification\IHasToDate.cs" />
     <Compile Include="Notification\NotificationType.cs" />

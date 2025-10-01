@@ -160,8 +160,11 @@
     <Compile Include="KitosEvents\KitosEventPublisherService.cs" />
     <Compile Include="KitosEvents\KitosQueueTopics.cs" />
     <Compile Include="KitosEvents\PublishSystemChangeEventHandler.cs" />
+    <Compile Include="LocalOptions\BaseGenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\GenericLocalOptionsService.cs" />
+    <Compile Include="LocalOptions\GenericLocalRoleOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
+    <Compile Include="LocalOptions\IGenericLocalRoleOptionsService.cs" />
     <Compile Include="Model\Authentication\BearerTokenConfig.cs" />
     <Compile Include="Model\Authentication\ClaimResponse.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />
@@ -270,6 +273,7 @@
     <Compile Include="Model\KitosEvents\SystemChangeEventBodyModel.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionCreateParameters.cs" />
     <Compile Include="Model\LocalOptions\LocalOptionUpdateParameters.cs" />
+    <Compile Include="Model\LocalOptions\LocalRoleOptionUpdateParameters.cs" />
     <Compile Include="Model\Messages\WritePublicMessagesParams.cs" />
     <Compile Include="Model\Notification\EmailRecipientModel.cs" />
     <Compile Include="Model\Notification\GlobalAdminNotification.cs" />

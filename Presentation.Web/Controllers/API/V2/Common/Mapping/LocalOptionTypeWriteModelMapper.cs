@@ -29,6 +29,23 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
                     : OptionalValueChange<Maybe<string>>.None,
             };
         }
+        public LocalRoleOptionUpdateParameters ToLocalRoleOptionUpdateParameters(LocalRoleOptionUpdateRequestDTO dto)
+        {
+            var rule = CreateChangeRule<LocalRoleOptionUpdateRequestDTO>(false);
+
+            return new()
+            {
+                Description = rule.MustUpdate(x => x.Description)
+                    ? (dto.Description.FromNullable() ?? Maybe<string>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<string>>.None,
+                IsExternallyUsed = rule.MustUpdate(x => x.IsExternallyUsed)
+                    ? (dto.IsExternallyUsed.FromNullable() ?? Maybe<bool>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<bool>>.None,
+                ExternallyUsedDescription = rule.MustUpdate(x => x.ExternallyUsedDescription)
+                    ? (dto.ExternallyUsedDescription.FromNullable() ?? Maybe<string>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<string>>.None,
+            };
+        }
 
         public LocalOptionTypeWriteModelMapper(ICurrentHttpRequest currentHttpRequest) : base(currentHttpRequest)
         {
