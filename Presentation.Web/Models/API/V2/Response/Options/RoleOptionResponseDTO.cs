@@ -9,12 +9,17 @@ namespace Presentation.Web.Models.API.V2.Response.Options
         /// </summary>
         public bool WriteAccess { get; set; }
 
+        public bool IsExternallyAvailable { get; set; }
+        public string ExternallyAvailableDescription { get; set; }
+
         public RoleOptionResponseDTO() { }
 
-        public RoleOptionResponseDTO(Guid uuid, string name, bool writeAccess, string description)
-            : base(uuid, name,description)
+        public RoleOptionResponseDTO(Guid uuid, string name, bool writeAccess, string description, bool isExternallyAvailable, string externallyAvailableDescription)
+            : base(uuid, name, description)
         {
             WriteAccess = writeAccess;
+            IsExternallyAvailable = isExternallyAvailable;
+            ExternallyAvailableDescription = externallyAvailableDescription;
         }
     }
 }
