@@ -96,6 +96,10 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.LifeCycleStatus)
                 .HasIndexAnnotation("ItSystemUsage_Index_LifeCycleStatus", 0);
 
+            Property(x => x.GdprCriticality)
+                .IsOptional()
+                .HasIndexAnnotation("ItSystemUsage_Index_GdprCriticality", 0);
+
             Property(x => x.Uuid)
                 .IsRequired()
                 .HasUniqueIndexAnnotation("UX_ItSystemUsage_Uuid", 0);

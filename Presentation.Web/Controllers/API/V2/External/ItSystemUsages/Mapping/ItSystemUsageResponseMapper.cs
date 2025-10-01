@@ -103,7 +103,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 PlannedRiskAssessmentDate = systemUsage.PlannedRiskAssessmentDate,
                 UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
-                UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl)
+                UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
+                GdprCriticality = systemUsage.GdprCriticality?.ToGdprCriticalityChoice()
             };
         }
 

@@ -297,6 +297,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.DataRetentionEvaluationFrequencyInMonths, AssertPropertyContainsDataChange(mappedGdpr.DataRetentionEvaluationFrequencyInMonths));
             AssertLinkMapping(input.DPIADocumentation, mappedGdpr.DPIADocumentation);
             Assert.Equal(input.SpecificPersonalData.ToList(), AssertPropertyContainsDataChange(mappedGdpr.PersonalDataOptions).Select(x => x.ToGDPRPersonalDataChoice()));
+            Assert.Equal(input.GdprCriticality, AssertPropertyContainsDataChange(mappedGdpr.GdprCriticality)?.ToGdprCriticalityChoice());
         }
 
         [Fact]
@@ -944,7 +945,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRetentionPeriodDefined,
             bool noNextDataRetentionEvaluationDate,
             bool noDataRetentionEvaluationFrequencyInMonths,
-            bool noPersonalData)
+            bool noPersonalData,
+            bool noGdprCriticality)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -974,7 +976,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noRetentionPeriodDefined,
                 noNextDataRetentionEvaluationDate,
                 noDataRetentionEvaluationFrequencyInMonths,
-                noPersonalData);
+                noPersonalData,
+                noGdprCriticality);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
@@ -1007,6 +1010,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noNextDataRetentionEvaluationDate, gdprSection.NextDataRetentionEvaluationDate.IsUnchanged);
             Assert.Equal(noDataRetentionEvaluationFrequencyInMonths, gdprSection.DataRetentionEvaluationFrequencyInMonths.IsUnchanged);
             Assert.Equal(noPersonalData, gdprSection.PersonalDataOptions.IsUnchanged);
+            Assert.Equal(noGdprCriticality, gdprSection.GdprCriticality.IsUnchanged);
         }
 
         [Theory]
@@ -1037,7 +1041,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRetentionPeriodDefined,
             bool noNextDataRetentionEvaluationDate,
             bool noDataRetentionEvaluationFrequencyInMonths,
-            bool noPersonalData)
+            bool noPersonalData,
+            bool noGdprCriticality)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -1067,7 +1072,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noRetentionPeriodDefined,
                 noNextDataRetentionEvaluationDate,
                 noDataRetentionEvaluationFrequencyInMonths,
-                noPersonalData);
+                noPersonalData,
+                noGdprCriticality);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
@@ -1100,6 +1106,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(gdprSection.NextDataRetentionEvaluationDate.HasChange);
             Assert.True(gdprSection.DataRetentionEvaluationFrequencyInMonths.HasChange);
             Assert.True(gdprSection.PersonalDataOptions.HasChange);
+            Assert.True(gdprSection.GdprCriticality.HasChange);
         }
 
         public static IEnumerable<object[]> GetUndefinedSectionsInput()
@@ -1129,7 +1136,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGDPRSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(26);
+            return CreateGetUndefinedSectionsInput(27);
         }
 
         private void ConfigureGDPRDataProperties(
@@ -1158,7 +1165,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRetentionPeriodDefined,
             bool noNextDataRetentionEvaluationDate,
             bool noDataRetentionEvaluationFrequencyInMonths,
-            bool noPersonalData)
+            bool noPersonalData,
+            bool noGdprCriticality)
         {
             var GDPRProperties = GetAllInputPropertyNames<GDPRWriteRequestDTO>();
             if (noPurpose) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.Purpose));
@@ -1187,6 +1195,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noNextDataRetentionEvaluationDate) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.NextDataRetentionEvaluationDate));
             if (noDataRetentionEvaluationFrequencyInMonths) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DataRetentionEvaluationFrequencyInMonths));
             if (noPersonalData) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.SpecificPersonalData));
+            if (noGdprCriticality) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.GdprCriticality));
 
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.GDPR).WrapAsEnumerable().AsParameterMatch())).Returns(GDPRProperties);
         }

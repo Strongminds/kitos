@@ -244,6 +244,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
                        systemUsage.LinkToDirectoryUrl = newLink.Select(x => x.Url).GetValueOrDefault();
                    }))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.GdprCriticality, (systemUsage, gdprCriticality) => systemUsage.GdprCriticality = gdprCriticality))
 
                 //Registered data sensitivity
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DataSensitivityLevels, (systemUsage, levels) => UpdateSensitivityLevels(levels, systemUsage)))
