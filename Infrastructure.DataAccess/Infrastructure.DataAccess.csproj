@@ -1177,6 +1177,10 @@
     <Compile Include="Migrations\202510010801174_Add_ItSystemUsage_GdprCriticality.Designer.cs">
       <DependentUpon>202510010801174_Add_ItSystemUsage_GdprCriticality.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510011108473_Add_DPR_OversightReportLinks.cs" />
+    <Compile Include="Migrations\202510011108473_Add_DPR_OversightReportLinks.Designer.cs">
+      <DependentUpon>202510011108473_Add_DPR_OversightReportLinks.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix prod DB\Add Country Codes.sql" />
@@ -1283,6 +1287,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510010801174_Add_ItSystemUsage_GdprCriticality.resx">
       <DependentUpon>202510010801174_Add_ItSystemUsage_GdprCriticality.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510011108473_Add_DPR_OversightReportLinks.resx">
+      <DependentUpon>202510011108473_Add_DPR_OversightReportLinks.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">

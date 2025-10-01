@@ -75,6 +75,8 @@ namespace Core.DomainServices.GDPR
             PatchIsOversightCompleted(source, destination);
             PatchOversightOptions(source, destination);
             PatchLatestOversightRemark(source, destination);
+            PatchLatestOversightReportLink(source, destination);
+            PatchLatestOversightReportLinkName(source, destination);
         }
 
         private void PatchOversightOptions(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
@@ -232,6 +234,20 @@ namespace Core.DomainServices.GDPR
         {
             var latestOversight = source.GetLatestOversight();
             destination.LatestOversightRemark = latestOversight.Select(x => x.OversightRemark).GetValueOrDefault();
+        }
+
+        private static void PatchLatestOversightReportLink(DataProcessingRegistration source,
+            DataProcessingRegistrationReadModel destination)
+        {
+            var latestOversight = source.GetLatestOversight();
+            destination.LatestOversightReportLink = latestOversight.Select(x => x.OversightReportLink).GetValueOrDefault();
+        }
+
+        private static void PatchLatestOversightReportLinkName(DataProcessingRegistration source,
+            DataProcessingRegistrationReadModel destination)
+        {
+            var latestOversight = source.GetLatestOversight();
+            destination.LatestOversightReportLinkName = latestOversight.Select(x => x.OversightReportLinkName).GetValueOrDefault();
         }
 
         private static void PatchLastUpdateBy(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)

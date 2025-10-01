@@ -737,7 +737,7 @@ namespace Presentation.Web.Controllers.API.V1
                 return BadRequest(nameof(createOversightDateDTO) + " must be provided");
 
             return _dataProcessingRegistrationApplicationService
-                .AssignOversightDate(id, createOversightDateDTO.OversightDate, createOversightDateDTO.OversightRemark)
+                .AssignOversightDate(id, createOversightDateDTO.OversightDate, createOversightDateDTO.OversightRemark, createOversightDateDTO.OversightReportLink.Url, createOversightDateDTO.OversightReportLink.Name)
                 .Select(ToDTO)
                 .Match(Ok, FromOperationError);
         }

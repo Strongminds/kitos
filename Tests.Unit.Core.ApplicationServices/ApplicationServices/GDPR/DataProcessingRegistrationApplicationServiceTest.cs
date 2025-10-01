@@ -1625,14 +1625,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var registration = new DataProcessingRegistration();
             var oversightDate = A<DateTime>();
             var oversightRemark = A<string>();
+            var oversightReportLink = A<string>();
+            var oversightReportLinkName = A<string>();
             ExpectRepositoryGetToReturn(id, registration);
             ExpectAllowModifyReturns(registration, true);
 
             var transaction = ExpectTransaction();
-            _oversightDateAssignmentServiceMock.Setup(x => x.Assign(registration, oversightDate, oversightRemark)).Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(new DataProcessingRegistrationOversightDate()));
+            _oversightDateAssignmentServiceMock.Setup(x => x.Assign(registration, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName)).Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(new DataProcessingRegistrationOversightDate()));
 
             //Act
-            var result = _sut.AssignOversightDate(id, oversightDate, oversightRemark);
+            var result = _sut.AssignOversightDate(id, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName);
 
             //Assert
             Assert.True(result.Ok);
@@ -1643,13 +1645,17 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         [Fact]
         public void Cannot_AssignOversightDate_If_Dpr_Is_Not_Found()
         {
-            Test_Command_Which_Fails_With_Dpr_NotFound(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>()));
+            var oversightReportLink = A<string>();
+            var oversightReportLinkName = A<string>();
+            Test_Command_Which_Fails_With_Dpr_NotFound(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>(), oversightReportLink, oversightReportLinkName));
         }
 
         [Fact]
         public void Cannot_AssignOversightDate_If_Write_Access_Is_Denied()
         {
-            Test_Command_Which_Fails_With_Dpr_Insufficient_WriteAccess(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>()));
+            var oversightReportLink = A<string>();
+            var oversightReportLinkName = A<string>();
+            Test_Command_Which_Fails_With_Dpr_Insufficient_WriteAccess(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>(), oversightReportLink, oversightReportLinkName));
         }
 
         [Fact]

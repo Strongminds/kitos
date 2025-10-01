@@ -13,9 +13,9 @@ namespace Core.DomainServices.GDPR
             _repository = repository;
         }
 
-        public Result<DataProcessingRegistrationOversightDate, OperationError> Assign(DataProcessingRegistration registration, DateTime oversightDate, string oversightRemark)
+        public Result<DataProcessingRegistrationOversightDate, OperationError> Assign(DataProcessingRegistration registration, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
         {
-            return registration.AssignOversightDate(oversightDate, oversightRemark);
+            return registration.AssignOversightDate(oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName);
         }
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> Modify(DataProcessingRegistration registration, int oversightId, DateTime oversightDate, string oversightRemark)

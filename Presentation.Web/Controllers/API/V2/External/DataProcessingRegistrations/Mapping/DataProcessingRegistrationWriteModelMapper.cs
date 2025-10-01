@@ -16,6 +16,7 @@ using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.SharedProperties;
+using Presentation.Web.Models.API.V2.Types.DataProcessing;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {
@@ -199,7 +200,9 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                             .Select(y => new UpdatedDataProcessingRegistrationOversightDate()
                             {
                                 CompletedAt = y.CompletedAt,
-                                Remark = y.Remark
+                                Remark = y.Remark,
+                                OversightReportLink = y.OversightReportLink?.Url,
+                                OversightReportLinkName = y.OversightReportLink?.Name
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
             };
