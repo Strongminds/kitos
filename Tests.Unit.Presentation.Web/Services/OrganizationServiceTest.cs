@@ -44,7 +44,6 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IOrganizationRightsService> _organizationRightsServiceMock;
         private readonly Mock<IGenericRepository<ContactPerson>> _contactPersonRepository;
-        private readonly Mock<IEntityIdentityResolver> _identityResolver;
         private readonly Mock<IGenericRepository<DataResponsible>> _dataResponsibleRepository;
         private readonly Mock<IGenericRepository<DataProtectionAdvisor>> _dataProtectionAdvisorRepository;
 
@@ -64,7 +63,6 @@ namespace Tests.Unit.Presentation.Web.Services
             _domainEventsMock = new Mock<IDomainEvents>();
             _organizationRightsServiceMock = new Mock<IOrganizationRightsService>();
             _contactPersonRepository = new Mock<IGenericRepository<ContactPerson>>();
-            _identityResolver = new Mock<IEntityIdentityResolver>();
             _dataResponsibleRepository = new Mock<IGenericRepository<DataResponsible>>();
             _dataProtectionAdvisorRepository = new Mock<IGenericRepository<DataProtectionAdvisor>>();
 
@@ -81,7 +79,6 @@ namespace Tests.Unit.Presentation.Web.Services
                 _organizationRightsServiceMock.Object,
                 _orgUnitServiceMock.Object,
                 _domainEventsMock.Object,
-                _identityResolver.Object,
                 _dataResponsibleRepository.Object,
                 _dataProtectionAdvisorRepository.Object);
         }

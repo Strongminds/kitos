@@ -114,6 +114,8 @@
     <Compile Include="Model\StsOrganization\ResolveOrganizationTreeError.cs" />
     <Compile Include="Notifications\IUserNotificationService.cs" />
     <Compile Include="Notifications\UserNotificationService.cs" />
+    <Compile Include="Options\IRoleOptionsService.cs" />
+    <Compile Include="Options\RoleOptionsService.cs" />
     <Compile Include="Organizations\IStsOrganizationCompanyLookupService.cs" />
     <Compile Include="Organizations\IStsOrganizationService.cs" />
     <Compile Include="Organizations\IStsOrganizationSystemService.cs" />

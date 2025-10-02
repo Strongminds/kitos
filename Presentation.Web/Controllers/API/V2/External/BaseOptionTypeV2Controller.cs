@@ -24,11 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.External
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _optionApplicationService
-                .GetOptionTypes(organizationUuid)
-                .Select(x => x.Page(pagination))
-                .Select(ToDTOs)
-                .Match(Ok, FromOperationError);
+            return GetAvailableOptions(organizationUuid, pagination);
         }
 
         protected IHttpActionResult GetSingle(Guid optionUuid, Guid organizationUuid)
@@ -42,10 +38,7 @@ namespace Presentation.Web.Controllers.API.V2.External
                 .Match(Ok, FromOperationError);
         }
 
-        private List<TCollectionEntryDTO> ToDTOs(IEnumerable<OptionDescriptor<TOption>> options)
-        {
-            return options.Select(ToDTO).ToList();
-        }
+        protected abstract IHttpActionResult GetAvailableOptions(Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null);
 
         protected abstract TCollectionEntryDTO ToDTO(OptionDescriptor<TOption> option);
 

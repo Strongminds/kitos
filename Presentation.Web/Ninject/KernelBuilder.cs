@@ -666,6 +666,7 @@ namespace Presentation.Web.Ninject
 
             //Data processing registrations
             RegisterOptionsService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, LocalDataProcessingRegistrationRole>(kernel);
+            RegisterRoleOptionsService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, LocalDataProcessingRegistrationRole>(kernel);
 
             RegisterOptionsService<DataProcessingRegistration, DataProcessingCountryOption, LocalDataProcessingCountryOption>(kernel);
 
@@ -682,6 +683,7 @@ namespace Presentation.Web.Ninject
 
             //IT-System usages
             RegisterOptionsService<ItSystemRight, ItSystemRole, LocalItSystemRole>(kernel);
+            RegisterRoleOptionsService<ItSystemRight, ItSystemRole, LocalItSystemRole>(kernel);
 
             RegisterOptionsService<SystemRelation, RelationFrequencyType, LocalRelationFrequencyType>(kernel);
 
@@ -697,6 +699,7 @@ namespace Presentation.Web.Ninject
 
             //IT-Contract
             RegisterOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(kernel);
+            RegisterRoleOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(kernel);
 
             RegisterOptionsService<ItContract, ItContractType, LocalItContractType>(kernel);
 
@@ -722,6 +725,7 @@ namespace Presentation.Web.Ninject
 
             //OrganizationUnit
             RegisterOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(kernel);
+            RegisterRoleOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(kernel);
 
             //Attached options services
             kernel.Bind<IAttachedOptionsAssignmentService<RegisterType, ItSystemUsage>>().ToMethod(ctx =>
@@ -746,6 +750,18 @@ namespace Presentation.Web.Ninject
             //Application service
             kernel.Bind<IOptionsApplicationService<TParent, TOption>>()
                 .To<OptionsApplicationService<TParent, TOption>>().InCommandScope(Mode);
+        }
+
+        private void RegisterRoleOptionsService<TParent, TOption, TLocalOption>(IKernel kernel)
+            where TOption : OptionEntity<TParent>
+            where TLocalOption : LocalRoleOptionEntity<TOption>
+        {
+            kernel.Bind<IRoleOptionsService<TParent, TOption>>()
+                .To<RoleOptionsService<TParent, TOption, TLocalOption>>().InCommandScope(Mode);
+
+            //Application service
+            kernel.Bind<IRoleOptionsApplicationService<TParent, TOption>>()
+                .To<RoleOptionsApplicationService<TParent, TOption>>().InCommandScope(Mode);
         }
 
         private void RegisterRoleAssignmentService<TRight, TRole, TModel>(IKernel kernel)

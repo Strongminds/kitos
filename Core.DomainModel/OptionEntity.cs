@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
+using System.Threading;
 using Core.Abstractions.Types;
 using Core.DomainModel.LocalOptions;
 
@@ -93,8 +95,13 @@ namespace Core.DomainModel
                 return;
             }
 
-            UpdateIsExternallyUsedFromLocal(localRole.IsExternallyUsed);
-            UpdateExternallyUsedDescriptionFromLocal(localRole.ExternallyUsedDescription);
+            UpdateLocalExternalUsedValues(localRole.IsExternallyUsed, localRole.ExternallyUsedDescription);
+        }
+
+        public void UpdateLocalExternalUsedValues(bool isExternallyUsed, string description)
+        {
+            UpdateIsExternallyUsedFromLocal(isExternallyUsed);
+            UpdateExternallyUsedDescriptionFromLocal(description);
         }
 
         public void ResetLocalOptionAvailability()
