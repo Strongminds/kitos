@@ -257,7 +257,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
             foreach (var newDate in oversightDates.Value)
             {
-                var assignResult = _applicationService.AssignOversightDate(dpr.Id, newDate.CompletedAt, newDate.Remark);
+                var assignResult = _applicationService.AssignOversightDate(dpr.Id, newDate.CompletedAt, newDate.Remark, newDate.OversightReportLink, newDate.OversightReportLinkName);
 
                 if (assignResult.Failed)
                     return new OperationError($"Failed to assign new oversight date with Date: {newDate.CompletedAt} and Remark: {newDate.Remark}. Error message: {assignResult.Error.Message.GetValueOrEmptyString()}", assignResult.Error.FailureType);
