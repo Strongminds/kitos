@@ -23,7 +23,6 @@ namespace Core.ApplicationServices.OptionTypes
             _authorizationContext = authorizationContext;
         }
 
-
         protected static IEnumerable<OptionDescriptor<TOption>> SortOptionsByPriority(IEnumerable<OptionDescriptor<TOption>> options)
         {
             return options.OrderByDescending(x => x.Option.Priority);
