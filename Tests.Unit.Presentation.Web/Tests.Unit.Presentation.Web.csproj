@@ -219,6 +219,7 @@
     <Compile Include="Authorization\OrganizationAuthorizationContextTest.cs" />
     <Compile Include="Authorization\OrganizationalUserContextTest.cs" />
     <Compile Include="Authorization\RootEntityCrudAuthorizationTest.cs" />
+    <Compile Include="Authorization\SupplierAssociatedFieldsServiceTest.cs" />
     <Compile Include="Context\OwinAuthenticationContextFactoryTest.cs" />
     <Compile Include="Controllers\CronStringHelperTests.cs" />
     <Compile Include="DomainServices\Advices\QueryByActiveAdviceTest.cs" />
