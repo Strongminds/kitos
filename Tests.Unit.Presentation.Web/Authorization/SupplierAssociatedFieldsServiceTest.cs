@@ -63,7 +63,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
             var dprUuid = A<Guid>();
-            var existingDpr = new DataProcessingRegistration(){ Uuid = dprUuid };
+            var existingDpr = new DataProcessingRegistration(){ Uuid = dprUuid, SystemUsages = new List<ItSystemUsage>()};
             if (addChangeToName)
             {
                 parameters.Name = A<string>().AsChangedValue();
@@ -78,8 +78,6 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 var existingSystemUsages = Many<ItSystemUsage>().ToList();
                 existingDpr.SystemUsages = existingSystemUsages;
-                _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
-                    .Returns(existingDpr);
                 parameters.SystemUsageUuids = Maybe<IEnumerable<Guid>>.Some(Many<Guid>());
             }
             if (addChangeToRoles)
@@ -88,7 +86,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.Roles.Value.UserRolePairs =
                     Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue();
             }
-            
+            _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
+                .Returns(Result<DataProcessingRegistration, OperationError>.Success(existingDpr));
+
             var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, dprUuid);
 
             Assert.True(result);

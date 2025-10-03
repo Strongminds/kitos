@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
 
@@ -8,6 +11,7 @@ namespace Core.ApplicationServices.Authorization;
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
     private readonly IDataProcessingRegistrationApplicationService _dataProcessingRegistrationApplicationService;
+    private readonly string _hasChangePropertyName = "HasChange";
 
     public SupplierAssociatedFieldsService(IDataProcessingRegistrationApplicationService dataProcessingRegistrationApplicationService)
     {
@@ -25,7 +29,24 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var nameHasChange = parameters.Name.HasChange;
         var generalHasChange = parameters.General.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.General.Value);
         var rolesHasChange = parameters.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.Roles.Value);
-        return nameHasChange || generalHasChange || rolesHasChange;
+        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(parameters.SystemUsageUuids, dataProcessingUuid);
+        return nameHasChange || generalHasChange || rolesHasChange || systemUsageUuidsHasChange;
+    }
+
+    private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, Guid dataProcessingUuid)
+    {
+        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.GetByUuid(dataProcessingUuid);
+        return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
+        {
+            if (updatedSystemUsageUuids.IsNone && dataProcessingRegistration.SystemUsages == null) return false;
+            if (updatedSystemUsageUuids.HasValue && dataProcessingRegistration.SystemUsages != null)
+            {
+                var existingSystemUsageUuids = dataProcessingRegistration.SystemUsages.Select(su => su.Uuid).ToHashSet();
+                var updatedSystemUsageUuidsHashSet = updatedSystemUsageUuids.Value.ToHashSet();
+                return !existingSystemUsageUuids.SetEquals(updatedSystemUsageUuidsHashSet);
+            }
+            return true;
+            }, _ => false);
     }
 
     private bool AnyOptionalValueChangeFieldHasChange(object obj)
@@ -38,14 +59,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         foreach (var property in properties)
         {
             var optionalValueChange = property.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty("HasChange")?.GetValue(optionalValueChange);
+            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
         }
 
         foreach (var field in fields)
         {
             var optionalValueChange = field.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty("HasChange")?.GetValue(optionalValueChange);
+            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
         }
 
