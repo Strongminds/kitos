@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
+using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -15,10 +20,14 @@ namespace Tests.Unit.Presentation.Web.Authorization
     public class SupplierAssociatedFieldsServiceTest: WithAutoFixture
     {
         private readonly SupplierAssociatedFieldsService _sut;
+        private readonly Mock<IDataProcessingRegistrationApplicationService> _dataProcessingRegistrationApplicationService;
 
         public SupplierAssociatedFieldsServiceTest()
         {
-            _sut = new SupplierAssociatedFieldsService();
+            _dataProcessingRegistrationApplicationService =
+                new Mock<IDataProcessingRegistrationApplicationService>();
+            
+            _sut = new SupplierAssociatedFieldsService(_dataProcessingRegistrationApplicationService.Object);
         }
         
         [Theory]
@@ -53,6 +62,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
+            var dprUuid = A<Guid>();
+            var existingDpr = new DataProcessingRegistration(){ Uuid = dprUuid };
             if (addChangeToName)
             {
                 parameters.Name = A<string>().AsChangedValue();
@@ -63,15 +74,22 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.General.Value.AgreementConcludedAt = A<DateTime?>().AsChangedValue();
             }
 
+            if (addChangeToSystemUsageUuids)
+            {
+                var existingSystemUsages = Many<ItSystemUsage>().ToList();
+                existingDpr.SystemUsages = existingSystemUsages;
+                _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
+                    .Returns(existingDpr);
+                parameters.SystemUsageUuids = Maybe<IEnumerable<Guid>>.Some(Many<Guid>());
+            }
             if (addChangeToRoles)
             {
                 parameters.Roles = Maybe<UpdatedDataProcessingRegistrationRoles>.Some(new UpdatedDataProcessingRegistrationRoles());
                 parameters.Roles.Value.UserRolePairs =
                     Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue();
             }
-
-
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters);
+            
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, dprUuid);
 
             Assert.True(result);
 
