@@ -73,12 +73,17 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.General = Maybe<UpdatedDataProcessingRegistrationGeneralDataParameters>.Some(new UpdatedDataProcessingRegistrationGeneralDataParameters());
                 parameters.General.Value.AgreementConcludedAt = A<DateTime?>().AsChangedValue();
             }
-            
             if (addChangeToSystemUsageUuids)
             {
                 var existingSystemUsages = new List<ItSystemUsage>(){ new(){ Uuid = A<Guid>() }, new(){Uuid = A<Guid>() } };
                 existingDpr.SystemUsages = existingSystemUsages;
                 parameters.SystemUsageUuids = Maybe<IEnumerable<Guid>>.Some(Many<Guid>());
+            }
+
+            if (addNonSupplierChangeToOversight)
+            {
+                parameters.Oversight = Maybe<UpdatedDataProcessingRegistrationOversightDataParameters>.Some(new UpdatedDataProcessingRegistrationOversightDataParameters());
+                parameters.Oversight.Value.OversightCompletedRemark = A<string>().AsChangedValue();
             }
             if (addChangeToRoles)
             {
@@ -86,6 +91,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.Roles.Value.UserRolePairs =
                     Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue();
             }
+
+            if (addChangeToExternalReferences)
+            {
+                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
+            }
+
             _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
                 .Returns(Result<DataProcessingRegistration, OperationError>.Success(existingDpr));
 
