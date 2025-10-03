@@ -19,7 +19,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     }
     public bool RequestsChangesToSupplierAssociatedFields(DataProcessingRegistrationModificationParameters parameters)
     {
-        //todo add remaining target fields when miol responds
+        //todo add remaining target fields when miol responds. Then also update the inverse check below to ignore those fields
         var oversight = parameters.Oversight;
         return oversight.HasValue && oversight.Value.IsOversightCompleted.HasChange;
     }
@@ -28,9 +28,25 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     {
         var nameHasChange = parameters.Name.HasChange;
         var generalHasChange = parameters.General.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.General.Value);
+        var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(parameters.Oversight);
         var rolesHasChange = parameters.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.Roles.Value);
         var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(parameters.SystemUsageUuids, dataProcessingUuid);
-        return nameHasChange || generalHasChange || rolesHasChange || systemUsageUuidsHasChange;
+         
+        return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange;
+    }
+
+    private bool OversightHasNonSupplierAssociatedChange(
+        Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
+    {
+        if (parameters.IsNone) return true; //todo expand to accept None if no oversight fields on dpr have value
+        var value = parameters.Value;
+        return value.OversightOptionUuids.HasChange ||
+               value.OversightOptionsRemark.HasChange ||
+               value.OversightInterval.HasChange ||
+               value.OversightIntervalRemark.HasChange ||
+               value.OversightCompletedRemark.HasChange ||
+               value.OversightScheduledInspectionDate.HasChange ||
+               value.OversightDates.HasChange;
     }
 
     private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, Guid dataProcessingUuid)
