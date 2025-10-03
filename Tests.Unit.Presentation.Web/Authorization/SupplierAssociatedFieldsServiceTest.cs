@@ -8,6 +8,7 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
@@ -91,9 +92,10 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.Roles.Value.UserRolePairs =
                     Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue();
             }
-
             if (addChangeToExternalReferences)
             {
+                var existingReferences = new List<ExternalReference>(){new ExternalReference(), new ExternalReference()};
+                existingDpr.ExternalReferences = existingReferences;
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 

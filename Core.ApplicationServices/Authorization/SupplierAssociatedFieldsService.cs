@@ -5,6 +5,7 @@ using System.Reflection;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
+using Core.ApplicationServices.Model.Shared.Write;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -31,8 +32,27 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(parameters.Oversight);
         var rolesHasChange = parameters.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.Roles.Value);
         var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(parameters.SystemUsageUuids, dataProcessingUuid);
-         
-        return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange;
+        var externalReferencesHasChange = ExternalReferencesHasChange(parameters.ExternalReferences, dataProcessingUuid);
+        return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange || externalReferencesHasChange;
+    }
+
+    private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, Guid dprUuid)
+    {
+        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.GetByUuid(dprUuid);
+        return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
+            {
+                if (updatedReferencesMaybe.IsNone && dataProcessingRegistration.ExternalReferences == null) return false;
+                if (updatedReferencesMaybe.HasValue && dataProcessingRegistration.ExternalReferences != null)
+                {
+                    var existingReferences = dataProcessingRegistration.ExternalReferences;
+                    var updatedReferences = updatedReferencesMaybe.Value.ToList();
+                    return existingReferences.Count != updatedReferences.Count() || updatedReferences.Any(u =>
+                        existingReferences.FirstOrDefault(e => e.Uuid == u.Uuid) == null);
+                }
+                return true;
+
+            }, _ => false
+        );
     }
 
     private bool OversightHasNonSupplierAssociatedChange(
