@@ -73,10 +73,10 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.General = Maybe<UpdatedDataProcessingRegistrationGeneralDataParameters>.Some(new UpdatedDataProcessingRegistrationGeneralDataParameters());
                 parameters.General.Value.AgreementConcludedAt = A<DateTime?>().AsChangedValue();
             }
-
+            
             if (addChangeToSystemUsageUuids)
             {
-                var existingSystemUsages = Many<ItSystemUsage>().ToList();
+                var existingSystemUsages = new List<ItSystemUsage>(){ new(){ Uuid = A<Guid>() }, new(){Uuid = A<Guid>() } };
                 existingDpr.SystemUsages = existingSystemUsages;
                 parameters.SystemUsageUuids = Maybe<IEnumerable<Guid>>.Some(Many<Guid>());
             }
