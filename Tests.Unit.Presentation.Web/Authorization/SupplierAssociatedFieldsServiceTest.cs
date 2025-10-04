@@ -9,6 +9,7 @@ using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Moq;
 using Tests.Toolkit.Patterns;
@@ -109,30 +110,13 @@ namespace Tests.Unit.Presentation.Web.Authorization
             GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse()
         {
             var noChangesParameters = new DataProcessingRegistrationModificationParameters();
-            var dprUuid = A<Guid>();
-            var existingDpr = new DataProcessingRegistration() { Uuid = dprUuid };
-            _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
-                .Returns(Result<DataProcessingRegistration, OperationError>.Success(existingDpr));
 
             var requestsChangesToSupplierAssociatedFields =
                 _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-            var requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, dprUuid);
+            var requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprUuid);
 
             Assert.False(requestsChangesToSupplierAssociatedFields);
             Assert.False(requestsChangesToNonSupplierAssociatedFields);
         }
-
-        [Fact]
-        public void
-            GivenEmptyPrimarySectionInParametersAndExistingSectionData_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
-        {
-            var parametersWithEmptyPrimarySection = new DataProcessingRegistrationModificationParameters()
-            {
-                General = Maybe<UpdatedDataProcessingRegistrationGeneralDataParameters>.None
-            };
-            var dprUuid = A<Guid>();
-            var existingDpr = new DataProcessingRegistration() { Uuid = dprUuid };
-        }
-
     }
 }

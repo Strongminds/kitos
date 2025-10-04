@@ -55,11 +55,6 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         );
     }
 
-    private bool IsNullOrEmpty<T>(ICollection<T> collection)
-    {
-        return collection == null || !collection.Any();
-    }
-
     private bool OversightHasNonSupplierAssociatedChange(
         Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
     {
@@ -113,6 +108,10 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         }
 
         return false;
+    }
+    private bool IsNullOrEmpty<T>(ICollection<T> collection)
+    {
+        return collection == null || !collection.Any();
     }
 }
 
