@@ -5,7 +5,6 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
-using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
@@ -21,12 +20,18 @@ namespace Tests.Unit.Presentation.Web.Authorization
     {
         private readonly SupplierAssociatedFieldsService _sut;
         private readonly Mock<IDataProcessingRegistrationApplicationService> _dataProcessingRegistrationApplicationService;
+        private readonly Guid _dprUuid;
+        private readonly DataProcessingRegistration _existingDpr;
 
         public SupplierAssociatedFieldsServiceTest()
         {
             _dataProcessingRegistrationApplicationService =
                 new Mock<IDataProcessingRegistrationApplicationService>();
-            
+            _dprUuid = A<Guid>();
+            _existingDpr = new DataProcessingRegistration() { Uuid = _dprUuid };
+            _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(_dprUuid))
+                .Returns(Result<DataProcessingRegistration, OperationError>.Success(_existingDpr));
+
             _sut = new SupplierAssociatedFieldsService(_dataProcessingRegistrationApplicationService.Object);
         }
         
@@ -60,8 +65,6 @@ namespace Tests.Unit.Presentation.Web.Authorization
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
-            var dprUuid = A<Guid>();
-            var existingDpr = new DataProcessingRegistration(){ Uuid = dprUuid, SystemUsages = new List<ItSystemUsage>()};
             if (addChangeToName)
             {
                 parameters.Name = A<string>().AsChangedValue();
@@ -74,7 +77,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (addChangeToSystemUsageUuids)
             {
                 var existingSystemUsages = new List<ItSystemUsage>(){ new(){ Uuid = A<Guid>() }, new(){Uuid = A<Guid>() } };
-                existingDpr.SystemUsages = existingSystemUsages;
+                _existingDpr.SystemUsages = existingSystemUsages;
                 parameters.SystemUsageUuids = Maybe<IEnumerable<Guid>>.Some(Many<Guid>());
             }
 
@@ -92,21 +95,18 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (addChangeToExternalReferences)
             {
                 var existingReferences = new List<ExternalReference>(){new ExternalReference(), new ExternalReference()};
-                existingDpr.ExternalReferences = existingReferences;
+                _existingDpr.ExternalReferences = existingReferences;
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
-                .Returns(Result<DataProcessingRegistration, OperationError>.Success(existingDpr));
-
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, dprUuid);
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprUuid);
 
             Assert.True(result);
             }
 
         [Fact]
         public void
-            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_ReturnFalse()
+            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse()
         {
             var noChangesParameters = new DataProcessingRegistrationModificationParameters();
             var dprUuid = A<Guid>();
@@ -123,7 +123,16 @@ namespace Tests.Unit.Presentation.Web.Authorization
         }
 
         [Fact]
-        public void GivenEmptyPrimarySectionInParametersAndExistingSectionData_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(){}
+        public void
+            GivenEmptyPrimarySectionInParametersAndExistingSectionData_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
+        {
+            var parametersWithEmptyPrimarySection = new DataProcessingRegistrationModificationParameters()
+            {
+                General = Maybe<UpdatedDataProcessingRegistrationGeneralDataParameters>.None
+            };
+            var dprUuid = A<Guid>();
+            var existingDpr = new DataProcessingRegistration() { Uuid = dprUuid };
+        }
 
     }
 }
