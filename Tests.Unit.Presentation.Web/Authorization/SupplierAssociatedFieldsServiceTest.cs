@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
@@ -40,9 +39,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (checkIsOversightCompleted)
                 oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
             //TODO awaiting response from MIOL about what fields to target
-            //if (checkOversightDate)
-            //    parameters.Oversight.Value. = A<DateTime?>().AsChangedValue();
-            
+    
             var parameters = new DataProcessingRegistrationModificationParameters()
             {
                 Oversight = oversight
@@ -105,8 +102,28 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, dprUuid);
 
             Assert.True(result);
+            }
 
+        [Fact]
+        public void
+            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_ReturnFalse()
+        {
+            var noChangesParameters = new DataProcessingRegistrationModificationParameters();
+            var dprUuid = A<Guid>();
+            var existingDpr = new DataProcessingRegistration() { Uuid = dprUuid };
+            _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(dprUuid))
+                .Returns(Result<DataProcessingRegistration, OperationError>.Success(existingDpr));
+
+            var requestsChangesToSupplierAssociatedFields =
+                _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
+            var requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, dprUuid);
+
+            Assert.False(requestsChangesToSupplierAssociatedFields);
+            Assert.False(requestsChangesToNonSupplierAssociatedFields);
         }
+
+        [Fact]
+        public void GivenEmptyPrimarySectionInParametersAndExistingSectionData_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(){}
 
     }
 }

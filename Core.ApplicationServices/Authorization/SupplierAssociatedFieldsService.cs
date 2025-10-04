@@ -41,10 +41,10 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.GetByUuid(dprUuid);
         return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
             {
-                if (updatedReferencesMaybe.IsNone && dataProcessingRegistration.ExternalReferences == null) return false;
-                if (updatedReferencesMaybe.HasValue && dataProcessingRegistration.ExternalReferences != null)
+                var existingReferences = dataProcessingRegistration.ExternalReferences;
+                if (updatedReferencesMaybe.IsNone && IsNullOrEmpty(existingReferences)) return false;
+                if (updatedReferencesMaybe.HasValue && existingReferences != null)
                 {
-                    var existingReferences = dataProcessingRegistration.ExternalReferences;
                     var updatedReferences = updatedReferencesMaybe.Value.ToList();
                     return existingReferences.Count != updatedReferences.Count() || updatedReferences.Any(u =>
                         existingReferences.FirstOrDefault(e => e.Uuid == u.Uuid) == null);
@@ -55,10 +55,15 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         );
     }
 
+    private bool IsNullOrEmpty<T>(ICollection<T> collection)
+    {
+        return collection == null || !collection.Any();
+    }
+
     private bool OversightHasNonSupplierAssociatedChange(
         Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
     {
-        if (parameters.IsNone) return true; //todo expand to accept None if no oversight fields on dpr have value
+        if (parameters.IsNone) return false; //todo expand to ONLY accept None if no oversight fields on dpr have value
         var value = parameters.Value;
         return value.OversightOptionUuids.HasChange ||
                value.OversightOptionsRemark.HasChange ||
@@ -74,7 +79,8 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.GetByUuid(dataProcessingUuid);
         return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
         {
-            if (updatedSystemUsageUuids.IsNone && dataProcessingRegistration.SystemUsages == null) return false;
+            var existingSystemUsages = dataProcessingRegistration.SystemUsages;
+            if (updatedSystemUsageUuids.IsNone && IsNullOrEmpty(existingSystemUsages)) return false;
             if (updatedSystemUsageUuids.HasValue && dataProcessingRegistration.SystemUsages != null)
             {
                 var existingSystemUsageUuids = dataProcessingRegistration.SystemUsages.Select(su => su.Uuid).ToHashSet();
