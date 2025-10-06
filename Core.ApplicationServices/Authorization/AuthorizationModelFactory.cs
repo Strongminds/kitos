@@ -6,11 +6,11 @@ public class AuthorizationModelFactory : IAuthorizationModelFactory
 {
     public CrudAuthorizationModel CreateCrudAuthorizationModel()
     {
-        throw new NotImplementedException();
+        return new CrudAuthorizationModel();
     }
 
     public FieldAuthorizationModel CreateFieldAuthorizationModel()
     {
-        throw new NotImplementedException();
+        return new FieldAuthorizationModel();
     }
 }

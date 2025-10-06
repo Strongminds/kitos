@@ -587,20 +587,21 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var crudAuthorizationModel = new CrudAuthorizationModel();
             _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
-
-            var result = _sut.GetAuthorizationModel();
+            var orgUuid = A<Guid>();
+            var result = _sut.GetAuthorizationModel(orgUuid);
 
             Assert.IsType<CrudAuthorizationModel>(result);
         }
 
         [Fact]
-        public void GivenSuppliersInOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
+        public void GivenThatUserIsSupplierUserForOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
         {
             var fieldAuthorizationModel = new FieldAuthorizationModel();
             _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
-            //TODO setup organization with suppliers
+            var orgUuid = A<Guid>();
+            _userContextMock.Setup(_ => _.IsSupplierUserFor(orgUuid)).Returns(true);
 
-            var result = _sut.GetAuthorizationModel();
+            var result = _sut.GetAuthorizationModel(orgUuid);
 
             Assert.IsType<FieldAuthorizationModel>(result);
         }

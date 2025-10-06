@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
@@ -95,6 +96,11 @@ namespace Core.ApplicationServices.Authorization
         public bool IsSystemIntegrator()
         {
             return _isSystemIntegrator;
+        }
+
+        public bool IsSupplierUserFor(Guid organizationUuid)
+        {
+            throw new NotImplementedException();
         }
     }
 }

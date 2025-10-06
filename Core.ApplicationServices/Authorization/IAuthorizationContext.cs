@@ -1,4 +1,5 @@
-﻿using Core.DomainModel;
+﻿using System;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
 
@@ -9,7 +10,7 @@ namespace Core.ApplicationServices.Authorization
         /// <summary>
         /// Gets the authorization model fitting for the current context
         /// </summary>
-        IAuthorizationModel GetAuthorizationModel();
+        IAuthorizationModel GetAuthorizationModel(Guid organizationId);
         /// <summary>
         /// Determine the granularity of cross organization read access supported by the current authorization context
         /// </summary>

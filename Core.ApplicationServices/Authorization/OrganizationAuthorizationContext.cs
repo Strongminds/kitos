@@ -41,8 +41,12 @@ namespace Core.ApplicationServices.Authorization
             _authorizationModelFactory = authorizationModelFactory;
         }
 
-        public IAuthorizationModel GetAuthorizationModel()
+        public IAuthorizationModel GetAuthorizationModel(Guid organizationUuid)
         {
+            if (_activeUserContext.IsSupplierUserFor(organizationUuid))
+            {
+                return _authorizationModelFactory.CreateFieldAuthorizationModel();
+            }
             return _authorizationModelFactory.CreateCrudAuthorizationModel();
         }
 
