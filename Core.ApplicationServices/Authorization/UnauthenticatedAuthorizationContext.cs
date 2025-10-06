@@ -10,7 +10,7 @@ namespace Core.ApplicationServices.Authorization
     {
         public IAuthorizationModel GetAuthorizationModel(Guid organizationId)
         {
-            throw new NotImplementedException();
+            return new CrudAuthorizationModel();
         }
 
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()
