@@ -9,7 +9,6 @@ using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
-using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Moq;
 using Tests.Toolkit.Patterns;

@@ -12,7 +12,7 @@ namespace Core.ApplicationServices.Authorization;
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
     private readonly IDataProcessingRegistrationApplicationService _dataProcessingRegistrationApplicationService;
-    private readonly string _hasChangePropertyName = "HasChange";
+    private const string _hasChangePropertyName = "HasChange";
 
     public SupplierAssociatedFieldsService(IDataProcessingRegistrationApplicationService dataProcessingRegistrationApplicationService)
     {
@@ -58,7 +58,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     private bool OversightHasNonSupplierAssociatedChange(
         Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
     {
-        if (parameters.IsNone) return false; //todo expand to ONLY accept None if no oversight fields on dpr have value
+        if (parameters.IsNone) return false;
         var value = parameters.Value;
         return value.OversightOptionUuids.HasChange ||
                value.OversightOptionsRemark.HasChange ||
