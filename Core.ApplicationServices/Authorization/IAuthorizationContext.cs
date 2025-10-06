@@ -7,6 +7,10 @@ namespace Core.ApplicationServices.Authorization
     public interface IAuthorizationContext
     {
         /// <summary>
+        /// Gets the authorization model fitting for the current context
+        /// </summary>
+        IAuthorizationModel GetAuthorizationModel();
+        /// <summary>
         /// Determine the granularity of cross organization read access supported by the current authorization context
         /// </summary>
         /// <returns></returns>

@@ -21,6 +21,7 @@ namespace Core.ApplicationServices.Authorization
         private readonly IGlobalReadAccessPolicy _globalReadAccessPolicy;
         private readonly IModuleCreationPolicy _typeCreationPolicy;
         private readonly IUserRepository _userRepository;
+        private readonly IAuthorizationModelFactory _authorizationModelFactory;
 
         public OrganizationAuthorizationContext(
             IOrganizationalUserContext activeUserContext,
@@ -28,7 +29,8 @@ namespace Core.ApplicationServices.Authorization
             IModuleModificationPolicy moduleLevelAccessPolicy,
             IGlobalReadAccessPolicy globalReadAccessPolicy,
             IModuleCreationPolicy typeCreationPolicy,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IAuthorizationModelFactory authorizationModelFactory)
         {
             _activeUserContext = activeUserContext;
             _typeResolver = typeResolver;
@@ -36,6 +38,12 @@ namespace Core.ApplicationServices.Authorization
             _globalReadAccessPolicy = globalReadAccessPolicy;
             _typeCreationPolicy = typeCreationPolicy;
             _userRepository = userRepository;
+            _authorizationModelFactory = authorizationModelFactory;
+        }
+
+        public IAuthorizationModel GetAuthorizationModel()
+        {
+            return _authorizationModelFactory.CreateCrudAuthorizationModel();
         }
 
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()

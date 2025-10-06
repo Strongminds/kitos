@@ -30,6 +30,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private readonly Mock<IGlobalReadAccessPolicy> _globalAccessPolicy;
         private readonly Mock<IModuleCreationPolicy> _creationPolicy;
         private readonly Mock<IUserRepository> _userRepository;
+        private readonly Mock<IAuthorizationModelFactory> _authorizationModelFactory;
         private readonly int _userId;
 
         public OrganizationAuthorizationContextTest()
@@ -45,7 +46,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             _creationPolicy.Setup(x => x.AllowCreation(It.IsAny<int>(), It.IsAny<Type>())).Returns(true);
             _userRepository = new Mock<IUserRepository>();
             _userRepository.Setup(x => x.GetById(_userId)).Returns(new User { Id = _userId });
-            _sut = new OrganizationAuthorizationContext(_userContextMock.Object, typeResolver.Object, _moduleLevelAccessPolicy.Object, _globalAccessPolicy.Object, _creationPolicy.Object, _userRepository.Object);
+            _authorizationModelFactory = new Mock<IAuthorizationModelFactory>();
+            _sut = new OrganizationAuthorizationContext(_userContextMock.Object, typeResolver.Object, _moduleLevelAccessPolicy.Object, _globalAccessPolicy.Object, _creationPolicy.Object, _userRepository.Object, _authorizationModelFactory.Object);
         }
 
         [Theory]
@@ -578,6 +580,29 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void Allow_Create_User_Returns(bool expectedResult)
         {
             Allow_Create_Returns<User>(expectedResult);
+        }
+
+        [Fact]
+        public void GivenNoSuppliersInOrganization_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
+        {
+            var crudAuthorizationModel = new CrudAuthorizationModel();
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+
+            var result = _sut.GetAuthorizationModel();
+
+            Assert.IsType<CrudAuthorizationModel>(result);
+        }
+
+        [Fact]
+        public void GivenSuppliersInOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
+        {
+            var fieldAuthorizationModel = new FieldAuthorizationModel();
+            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
+            //TODO setup organization with suppliers
+
+            var result = _sut.GetAuthorizationModel();
+
+            Assert.IsType<FieldAuthorizationModel>(result);
         }
 
         [Theory]

@@ -136,7 +136,12 @@
     <Compile Include="Authentication\ITokenValidator.cs" />
     <Compile Include="Authentication\KitosInternalTokenIssuer.cs" />
     <Compile Include="Authentication\TokenValidator.cs" />
+    <Compile Include="Authorization\AuthorizationModelFactory.cs" />
     <Compile Include="Authorization\CommandPermissionResult.cs" />
+    <Compile Include="Authorization\CrudAuthorizationModel.cs" />
+    <Compile Include="Authorization\FieldAuthorizationModel.cs" />
+    <Compile Include="Authorization\IAuthorizationModel.cs" />
+    <Compile Include="Authorization\IAuthorizationModelFactory.cs" />
     <Compile Include="Authorization\ISupplierAssociatedFieldsService.cs" />
     <Compile Include="Authorization\Permissions\ChangeLegalSystemPropertiesPermission.cs" />
     <Compile Include="Authorization\SupplierAssociatedFieldsService.cs" />
