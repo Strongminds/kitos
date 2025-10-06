@@ -874,6 +874,7 @@ namespace Presentation.Web.Ninject
                     return ctx.Kernel.Get<IAuthorizationContextFactory>().Create(context);
                 })
                 .InCommandScope(Mode);
+            kernel.Bind<IAuthorizationModelFactory>().To<AuthorizationModelFactory>().InCommandScope(Mode);
         }
 
         private void RegisterBackgroundJobs(IKernel kernel)
