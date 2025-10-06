@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Web.Http;
-using Core.ApplicationServices.OptionTypes;
+﻿using Core.ApplicationServices.OptionTypes;
+using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
 using Swashbuckle.Swagger.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
     [RoutePrefix("api/v2/it-system-usage-role-types")]
     public class ItSystemUsageRoleTypeV2Controller : BaseRoleOptionTypeV2Controller<ItSystemRight, ItSystemRole>
     {
-        public ItSystemUsageRoleTypeV2Controller(IOptionsApplicationService<ItSystemRight, ItSystemRole> optionApplicationService)
-            : base(optionApplicationService)
+        public ItSystemUsageRoleTypeV2Controller(IOptionsApplicationService<ItSystemRight, ItSystemRole> optionApplicationService, IRoleOptionsApplicationService<ItSystemRight, ItSystemRole> roleOptionsApplicationService)
+            : base(optionApplicationService, roleOptionsApplicationService)
         {
             
         }

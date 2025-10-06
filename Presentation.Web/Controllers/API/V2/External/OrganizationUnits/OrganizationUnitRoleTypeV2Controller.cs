@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Web.Http;
-using Core.ApplicationServices.OptionTypes;
+﻿using Core.ApplicationServices.OptionTypes;
+using Core.DomainModel.ItSystem;
 using Core.DomainModel.Organization;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
 using Swashbuckle.Swagger.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.External.OrganizationUnits
 {
     [RoutePrefix("api/v2/organization-unit-role-types")]
     public class OrganizationUnitRoleTypeV2Controller : BaseRoleOptionTypeV2Controller<OrganizationUnitRight, OrganizationUnitRole>
     {
-        public OrganizationUnitRoleTypeV2Controller(IOptionsApplicationService<OrganizationUnitRight, OrganizationUnitRole> optionApplicationService)
-            : base(optionApplicationService)
+        public OrganizationUnitRoleTypeV2Controller(IOptionsApplicationService<OrganizationUnitRight, OrganizationUnitRole> optionApplicationService, IRoleOptionsApplicationService<OrganizationUnitRight, OrganizationUnitRole> roleOptionsApplicationService)
+            : base(optionApplicationService, roleOptionsApplicationService)
         {
 
         }

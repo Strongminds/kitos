@@ -14,8 +14,9 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
     [RoutePrefix("api/v2/data-processing-registration-role-types")]
     public class DataProcessingRegistrationRoleTypeV2Controller : BaseRoleOptionTypeV2Controller<DataProcessingRegistrationRight, DataProcessingRegistrationRole>
     {
-        public DataProcessingRegistrationRoleTypeV2Controller(IOptionsApplicationService<DataProcessingRegistrationRight, DataProcessingRegistrationRole> optionApplicationService)
-            : base(optionApplicationService)
+        public DataProcessingRegistrationRoleTypeV2Controller(IOptionsApplicationService<DataProcessingRegistrationRight, DataProcessingRegistrationRole> optionApplicationService, 
+            IRoleOptionsApplicationService<DataProcessingRegistrationRight, DataProcessingRegistrationRole> roleOptionsApplicationService)
+            : base(optionApplicationService, roleOptionsApplicationService)
         {
             
         }
