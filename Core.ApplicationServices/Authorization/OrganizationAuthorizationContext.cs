@@ -49,17 +49,14 @@ namespace Core.ApplicationServices.Authorization
             var targetOrganizationSuppliers = targetObjectOrganization?.Suppliers;
             if (targetOrganizationSuppliers is { Count: > 0 })
             {
-                var allSupplierUsers = new HashSet<User>();
                 foreach (var supplier in targetOrganizationSuppliers)
                 {
                     var supplierUsers = _userRepository.GetUsersInOrganization(supplier.SupplierId)
                         .Where(u => u.HasApiAccess ?? false);
-                    allSupplierUsers.UnionWith(supplierUsers);
-                }
-
-                if (allSupplierUsers.Any(u => u.Id == _activeUserContext.UserId))
-                {
-                    return _authorizationModelFactory.CreateFieldAuthorizationModel();
+                    if (supplierUsers.Any(u => u.Id == _activeUserContext.UserId))
+                    {
+                        return _authorizationModelFactory.CreateFieldAuthorizationModel();
+                    }
                 }
             }
             return _authorizationModelFactory.CreateCrudAuthorizationModel();
