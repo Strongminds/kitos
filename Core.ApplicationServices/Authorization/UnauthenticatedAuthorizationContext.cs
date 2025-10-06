@@ -1,14 +1,12 @@
-﻿using System;
-using Core.DomainModel;
+﻿using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization
 {
     public class UnauthenticatedAuthorizationContext : IAuthorizationContext
     {
-        public IAuthorizationModel GetAuthorizationModel(Guid organizationId)
+   public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
         {
             return new CrudAuthorizationModel();
         }

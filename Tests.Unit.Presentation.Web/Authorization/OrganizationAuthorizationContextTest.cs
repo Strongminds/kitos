@@ -15,7 +15,6 @@ using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
-
 using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -587,8 +586,11 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var crudAuthorizationModel = new CrudAuthorizationModel();
             _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
-            var orgUuid = A<Guid>();
-            var result = _sut.GetAuthorizationModel(orgUuid);
+            var organization = new Organization();
+            var entity = new Mock<IOwnedByOrganization>();
+            entity.Setup(_ => _.Organization).Returns(organization);
+
+            var result = _sut.GetAuthorizationModel(entity.Object);
 
             Assert.IsType<CrudAuthorizationModel>(result);
         }
@@ -598,12 +600,44 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var fieldAuthorizationModel = new FieldAuthorizationModel();
             _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
-            var orgUuid = A<Guid>();
-            _userContextMock.Setup(_ => _.IsSupplierUserFor(orgUuid)).Returns(true);
+            var supplierId = A<int>();
+            var supplierApiUser = new User
+            {
+                Id = A<int>(),
+                HasApiAccess = true,
+            };
+            _userRepository.Setup(_ => _.GetUsersInOrganization(supplierId)).Returns(new List<User>() { supplierApiUser }.AsQueryable());
+            _userContextMock.Setup(_ => _.UserId).Returns(supplierApiUser.Id);
+            var organization = new Organization()
+            {
+                Suppliers = new List<OrganizationSupplier>(){ new OrganizationSupplier(){ SupplierId = supplierId} }
+            };
+            var entity = new Mock<IOwnedByOrganization>();
+            entity.Setup(_ => _.Organization).Returns(organization);
 
-            var result = _sut.GetAuthorizationModel(orgUuid);
+            var result = _sut.GetAuthorizationModel(entity.Object);
 
             Assert.IsType<FieldAuthorizationModel>(result);
+        }
+
+        [Fact]
+        public void GivenSuppliersWhereUserDoesNotHaveApiAccess_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
+        {
+            var crudAuthorizationModel = new CrudAuthorizationModel();
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+            var organization = new Organization()
+            {
+                Suppliers = new List<OrganizationSupplier>()
+                {
+                    new OrganizationSupplier(), new OrganizationSupplier()
+                }
+            };
+            var entity = new Mock<IOwnedByOrganization>();
+            entity.Setup(_ => _.Organization).Returns(organization);
+
+            var result = _sut.GetAuthorizationModel(entity.Object);
+
+            Assert.IsType<CrudAuthorizationModel>(result);
         }
 
         [Theory]

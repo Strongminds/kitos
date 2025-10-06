@@ -97,10 +97,5 @@ namespace Core.ApplicationServices.Authorization
         {
             return _isSystemIntegrator;
         }
-
-        public bool IsSupplierUserFor(Guid organizationUuid)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 
@@ -18,6 +17,5 @@ namespace Core.ApplicationServices.Authorization
         bool HasRoleIn(int organizationId);
         bool HasRoleInSameOrganizationAs(IEntity entity);
         bool IsSystemIntegrator();
-        bool IsSupplierUserFor(Guid organizationUuid);
     }
 }

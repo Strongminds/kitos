@@ -9,6 +9,8 @@ using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Core.ApplicationServices.Authorization
@@ -41,11 +43,24 @@ namespace Core.ApplicationServices.Authorization
             _authorizationModelFactory = authorizationModelFactory;
         }
 
-        public IAuthorizationModel GetAuthorizationModel(Guid organizationUuid)
+        public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
         {
-            if (_activeUserContext.IsSupplierUserFor(organizationUuid))
+            var targetObjectOrganization = targetObject.Organization;
+            var targetOrganizationSuppliers = targetObjectOrganization?.Suppliers;
+            if (targetOrganizationSuppliers is { Count: > 0 })
             {
-                return _authorizationModelFactory.CreateFieldAuthorizationModel();
+                var allSupplierUsers = new HashSet<User>();
+                foreach (var supplier in targetOrganizationSuppliers)
+                {
+                    var supplierUsers = _userRepository.GetUsersInOrganization(supplier.SupplierId)
+                        .Where(u => u.HasApiAccess ?? false);
+                    allSupplierUsers.UnionWith(supplierUsers);
+                }
+
+                if (allSupplierUsers.Any(u => u.Id == _activeUserContext.UserId))
+                {
+                    return _authorizationModelFactory.CreateFieldAuthorizationModel();
+                }
             }
             return _authorizationModelFactory.CreateCrudAuthorizationModel();
         }

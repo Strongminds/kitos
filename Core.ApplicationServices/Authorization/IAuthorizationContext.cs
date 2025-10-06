@@ -10,7 +10,7 @@ namespace Core.ApplicationServices.Authorization
         /// <summary>
         /// Gets the authorization model fitting for the current context
         /// </summary>
-        IAuthorizationModel GetAuthorizationModel(Guid organizationId);
+        IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject);
         /// <summary>
         /// Determine the granularity of cross organization read access supported by the current authorization context
         /// </summary>
