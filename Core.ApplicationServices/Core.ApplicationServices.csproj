@@ -369,7 +369,9 @@
     <Compile Include="Notification\NotificationService.cs" />
     <Compile Include="Notification\RegistrationNotificationService.cs" />
     <Compile Include="Notification\RegistrationNotificationUserRelationsService.cs" />
+    <Compile Include="OptionTypes\BaseOptionsApplicationService.cs" />
     <Compile Include="OptionTypes\IOptionResolver.cs" />
+    <Compile Include="OptionTypes\IRoleOptionsApplicationService.cs" />
     <Compile Include="OptionTypes\OptionsApplicationService.cs" />
     <Compile Include="OptionTypes\IOptionsApplicationService.cs" />
     <Compile Include="Model\EventHandler\DataProcessingRegistrationDeletedUserNotificationsHandler.cs" />
@@ -377,6 +379,7 @@
     <Compile Include="Model\EventHandler\ContractDeletedUserNotificationsHandler.cs" />
     <Compile Include="Notification\IUserNotificationApplicationService.cs" />
     <Compile Include="Notification\UserNotificationApplicationService.cs" />
+    <Compile Include="OptionTypes\RoleOptionsApplicationService.cs" />
     <Compile Include="Organizations\Handlers\HandleOrganizationBeingDeleted.cs" />
     <Compile Include="Organizations\Handlers\RemoveOrganizationUnitRegistrationsCommandHandler.cs" />
     <Compile Include="Organizations\Handlers\AuthorizedUpdateOrganizationFromFKOrganisationCommandHandler.cs" />
