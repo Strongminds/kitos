@@ -584,7 +584,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Fact]
         public void GivenNoSuppliersInOrganization_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
         {
-            var crudAuthorizationModel = new CrudAuthorizationModel();
+            var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
             _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
             var organization = new Organization();
             var entity = new Mock<IOwnedByOrganization>();
@@ -623,7 +623,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Fact]
         public void GivenSuppliersWhereUserDoesNotHaveApiAccess_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
         {
-            var crudAuthorizationModel = new CrudAuthorizationModel();
+            var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
             _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
             var organization = new Organization()
             {

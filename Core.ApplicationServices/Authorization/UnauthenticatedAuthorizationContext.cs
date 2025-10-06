@@ -1,4 +1,5 @@
-﻿using Core.DomainModel;
+﻿using System;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
 
@@ -6,10 +7,11 @@ namespace Core.ApplicationServices.Authorization
 {
     public class UnauthenticatedAuthorizationContext : IAuthorizationContext
     {
+
    public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
-        {
-            return new CrudAuthorizationModel();
-        }
+   {
+       throw new NotImplementedException();
+   }
 
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()
         {

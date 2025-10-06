@@ -214,6 +214,7 @@
   <ItemGroup>
     <Compile Include="Authorization\ChildEntityCrudAuthorizationTest.cs" />
     <Compile Include="Authorization\ContextBasedAuthorizationStrategyTest.cs" />
+    <Compile Include="Authorization\CrudAuthorizationModelTest.cs" />
     <Compile Include="Authorization\GlobalReadAccessPolicyTest.cs" />
     <Compile Include="Authorization\ModuleModificationPolicyTest.cs" />
     <Compile Include="Authorization\OrganizationAuthorizationContextTest.cs" />

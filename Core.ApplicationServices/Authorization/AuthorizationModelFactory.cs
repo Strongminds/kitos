@@ -1,12 +1,10 @@
-﻿using System;
+﻿namespace Core.ApplicationServices.Authorization;
 
-namespace Core.ApplicationServices.Authorization;
-
-public class AuthorizationModelFactory : IAuthorizationModelFactory
+public class AuthorizationModelFactory(IAuthorizationContext authorizationContext) : IAuthorizationModelFactory
 {
     public CrudAuthorizationModel CreateCrudAuthorizationModel()
     {
-        return new CrudAuthorizationModel();
+        return new CrudAuthorizationModel(authorizationContext);
     }
 
     public FieldAuthorizationModel CreateFieldAuthorizationModel()
