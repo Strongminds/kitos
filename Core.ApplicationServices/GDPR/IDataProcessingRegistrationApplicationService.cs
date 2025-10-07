@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model.GDPR;
+using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
@@ -11,6 +9,9 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Core.DomainServices.Queries;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Core.ApplicationServices.GDPR
@@ -62,7 +63,6 @@ namespace Core.ApplicationServices.GDPR
         Result<DataProcessingRegistration, OperationError> UpdateOversightScheduledInspectionDate(int id, DateTime? oversightScheduledInspectionDate);
         Result<DataProcessingRegistration, OperationError> UpdateOversightCompletedRemark(int id, string remark);
         Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName);
-        Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDate(int id, int oversightDateId, DateTime oversightDate, string oversightRemark);
         Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int id, int oversightDateId);
         Result<DataProcessingRegistration, OperationError> UpdateMainContract(int id, int contractId);
         Result<DataProcessingRegistration, OperationError> RemoveMainContract(int id);

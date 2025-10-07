@@ -1,6 +1,7 @@
 ﻿using Core.ApplicationServices.Model.GDPR;
 using Core.DomainModel.GDPR;
 using Presentation.Web.Models.API.V2.Response.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.DataProcessing;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {
@@ -10,5 +11,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
 
         DataProcessingRegistrationPermissionsResponseDTO MapPermissions(
             DataProcessingRegistrationPermissions permissions);
+
+        OversightDateDTO MapOversightDate(DataProcessingRegistrationOversightDate oversightDate);
     }
 }

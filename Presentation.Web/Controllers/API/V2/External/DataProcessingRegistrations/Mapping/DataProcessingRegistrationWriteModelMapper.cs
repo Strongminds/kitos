@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.GDPR.Write;
@@ -17,6 +13,11 @@ using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.SharedProperties;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.OData.Edm;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {
@@ -40,6 +41,16 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         public DataProcessingRegistrationModificationParameters FromPATCH(UpdateDataProcessingRegistrationRequestDTO dto)
         {
             return MapUpdate(dto, false);
+        }
+
+        public UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPOST(ModifyOversightDateDTO dto)
+        {
+            return UpdateOversightDate(dto, true);
+        }
+
+        public UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPATCH(ModifyOversightDateDTO dto)
+        {
+            return UpdateOversightDate(dto, false);
         }
 
         private DataProcessingRegistrationModificationParameters MapCreate(
@@ -197,7 +208,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     ? dto.OversightDates
                         .FromNullable()
                         .Select(x => x
-                            .Select(y => new UpdatedDataProcessingRegistrationOversightDate()
+                            .Select(y => new UpdatedDataProcessingRegistrationOversightDate
                             {
                                 CompletedAt = y.CompletedAt,
                                 Remark = y.Remark,
@@ -205,6 +216,26 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                                 OversightReportLinkName = y.OversightReportLink?.Name
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
+            };
+        }
+
+        private UpdatedDataProcessingRegistrationOversightDateParameters UpdateOversightDate(ModifyOversightDateDTO dto, bool enforceFallback)
+        {
+            var rule = CreateChangeRule<ModifyOversightDateDTO>(enforceFallback);
+            return new UpdatedDataProcessingRegistrationOversightDateParameters
+            {
+                CompletedAt = rule.MustUpdate(x => x.CompletedAt)
+                    ? dto.CompletedAt.AsChangedValue()
+                    : OptionalValueChange<DateTime>.None,
+                Remark = rule.MustUpdate(x => x.Remark)
+                    ? dto.Remark.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+                OversightReportLink = rule.MustUpdate(x => x.OversightReportLink.Url)
+                    ? dto.OversightReportLink?.Url.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+                OversightReportLinkName = rule.MustUpdate(x => x.OversightReportLink.Name)
+                    ? dto.OversightReportLink?.Name.AsChangedValue()
+                    : OptionalValueChange<string>.None
             };
         }
 

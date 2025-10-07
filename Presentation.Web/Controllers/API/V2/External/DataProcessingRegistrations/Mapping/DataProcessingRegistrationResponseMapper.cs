@@ -80,7 +80,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             return oversightDates.Select(MapOversightDate);
         }
 
-        private static OversightDateDTO MapOversightDate(DataProcessingRegistrationOversightDate oversightDate)
+        public OversightDateDTO MapOversightDate(DataProcessingRegistrationOversightDate oversightDate)
         {
             return new OversightDateDTO
             {
