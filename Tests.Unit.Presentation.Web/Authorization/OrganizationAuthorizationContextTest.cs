@@ -601,8 +601,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Fact]
         public void GivenThatUserIsSupplierUserForOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
         {
-            var fieldAuthorizationModel = new FieldAuthorizationModel(_userContextMock.Object);
-            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
+            var fieldAuthorizationModel = new Mock<FieldAuthorizationModel>();
+            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel.Object);
             var supplierId = A<int>();
             var supplierApiUser = new User
             {

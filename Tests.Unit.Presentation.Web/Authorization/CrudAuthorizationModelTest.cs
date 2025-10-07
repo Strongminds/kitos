@@ -23,6 +23,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var result = sut.AuthorizeUpdate(entity.Object, parameters);
 
             Assert.Equal(expected, result);
+            authorizationContext.Verify(_ => _.AllowModify(entity.Object));
 
         }
     }

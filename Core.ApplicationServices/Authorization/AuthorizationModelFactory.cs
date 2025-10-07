@@ -1,6 +1,6 @@
 ﻿namespace Core.ApplicationServices.Authorization;
 
-public class AuthorizationModelFactory(IAuthorizationContext authorizationContext, IOrganizationalUserContext userContext) : IAuthorizationModelFactory
+public class AuthorizationModelFactory(IAuthorizationContext authorizationContext, IOrganizationalUserContext userContext, ISupplierAssociatedFieldsService supplierAssociatedFieldsService) : IAuthorizationModelFactory
 {
     public CrudAuthorizationModel CreateCrudAuthorizationModel()
     {
@@ -9,6 +9,6 @@ public class AuthorizationModelFactory(IAuthorizationContext authorizationContex
 
     public FieldAuthorizationModel CreateFieldAuthorizationModel()
     {
-        return new FieldAuthorizationModel(userContext);
+        return new FieldAuthorizationModel(userContext, supplierAssociatedFieldsService, authorizationContext);
     }
 }
