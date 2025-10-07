@@ -9,7 +9,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         DataProcessingRegistrationModificationParameters FromPOST(CreateDataProcessingRegistrationRequestDTO dto);
         DataProcessingRegistrationModificationParameters FromPUT(UpdateDataProcessingRegistrationRequestDTO dto);
         DataProcessingRegistrationModificationParameters FromPATCH(UpdateDataProcessingRegistrationRequestDTO dto);
-        UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPOST(ModifyOversightDateDTO dto);
+        UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPOST(CreateOversightDateDTO dto);
         UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPATCH(ModifyOversightDateDTO dto);
     }
 }

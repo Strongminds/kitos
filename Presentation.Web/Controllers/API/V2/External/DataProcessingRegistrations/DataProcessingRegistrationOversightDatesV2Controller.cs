@@ -1,7 +1,6 @@
 ﻿using Core.ApplicationServices.GDPR.Write;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
-using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Net;
@@ -11,7 +10,7 @@ using Presentation.Web.Models.API.V2.Types.DataProcessing;
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations
 {
     /// <summary>
-    /// API for the data processing registrations in KITOS
+    /// API controller exclusively for managing CRUD operations on oversight dates for Data Processing Registrations in KITOS.
     /// </summary>
     [RoutePrefix("api/v2/data-processing-registrations/{uuid}/oversight-dates")]
     public class DataProcessingRegistrationOversightDatesV2Controller : ExternalBaseController
@@ -44,7 +43,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PostDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [FromBody] ModifyOversightDateDTO request)
+        public IHttpActionResult PostDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [FromBody] CreateOversightDateDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -59,6 +58,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// Partially updates an existing oversight date in a data processing registration.
         /// </summary>
         /// <param name="uuid">UUID of the data processing registration</param>
+        /// <param name="oversightDateUuid">UUID of the oversight date</param>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPatch]
@@ -84,7 +84,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// Deletes an oversight date from a data processing registration.
         /// </summary>
         /// <param name="uuid">UUID of the data processing registration</param>
-        /// <param name="request"></param>
+        /// <param name="oversightDateUuid">UUID of the oversight date</param>
         /// <returns></returns>
         [HttpDelete]
         [Route("{oversightDateUuid}")]
@@ -94,11 +94,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid, [FromBody] ModifyOversightDateDTO request)
+        public IHttpActionResult DeleteDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             return _writeService
                 .DeleteOversight(uuid, oversightDateUuid)
                 .Match(FromOperationError, NoContent);

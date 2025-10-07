@@ -43,14 +43,14 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             return MapUpdate(dto, false);
         }
 
-        public UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPOST(ModifyOversightDateDTO dto)
+        public UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPOST(CreateOversightDateDTO dto)
         {
-            return UpdateOversightDate(dto, true);
+            return MapOversightDate(dto, true);
         }
 
         public UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPATCH(ModifyOversightDateDTO dto)
         {
-            return UpdateOversightDate(dto, false);
+            return MapOversightDate(dto, false);
         }
 
         private DataProcessingRegistrationModificationParameters MapCreate(
@@ -219,9 +219,10 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             };
         }
 
-        private UpdatedDataProcessingRegistrationOversightDateParameters UpdateOversightDate(ModifyOversightDateDTO dto, bool enforceFallback)
+        private UpdatedDataProcessingRegistrationOversightDateParameters MapOversightDate<TDto>(TDto dto, bool enforceFallback)
+            where TDto : class, IOversightDateDTO
         {
-            var rule = CreateChangeRule<ModifyOversightDateDTO>(enforceFallback);
+            var rule = CreateChangeRule<TDto>(enforceFallback);
             return new UpdatedDataProcessingRegistrationOversightDateParameters
             {
                 CompletedAt = rule.MustUpdate(x => x.CompletedAt)
