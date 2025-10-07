@@ -2331,15 +2331,19 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var registrationId = A<int>();
             var oversightDateId = A<int>();
             var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
-            var dpr = new DataProcessingRegistration
-            {
-                Id = registrationId
-            };
             var oversightDate = new DataProcessingRegistrationOversightDate
             {
-                Id = oversightDateId
+                Id = oversightDateId,
+                Uuid = oversightDateUuid
+            };
+            var dpr = new DataProcessingRegistration
+            {
+                Id = registrationId,
+                OversightDates = new List<DataProcessingRegistrationOversightDate>{oversightDate},
+                IsOversightCompleted = YesNoUndecidedOption.Yes
             };
 
+            var transaction = ExpectTransaction();
             _dprServiceMock
                 .Setup(x => x.GetByUuid(registrationUuid))
                 .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
@@ -2350,6 +2354,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             // Assert
             Assert.True(result.Ok);
             Assert.NotNull(result.Value);
+            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -2360,23 +2365,22 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var oversightDateUuid = A<Guid>();
             var registrationId = A<int>();
             var oversightDateId = A<int>();
-            var dpr = new DataProcessingRegistration
-            {
-                Id = registrationId
-            };
             var oversightDate = new DataProcessingRegistrationOversightDate
             {
-                Id = oversightDateId
+                Id = oversightDateId,
+                Uuid = oversightDateUuid
+            };
+            var dpr = new DataProcessingRegistration
+            {
+                Id = registrationId,
+                OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
+                IsOversightCompleted = YesNoUndecidedOption.Yes
             };
 
             _dprServiceMock
                 .Setup(x => x.GetByUuid(registrationUuid))
                 .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
-
-            Mock.Get(dpr)
-                .Setup(x => x.GetOversightDate(oversightDateUuid))
-                .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(oversightDate));
-
+            
             _dprServiceMock
                 .Setup(x => x.RemoveOversightDate(registrationId, oversightDateId))
                 .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(oversightDate));

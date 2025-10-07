@@ -1,7 +1,6 @@
 ﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model.GDPR;
-using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
