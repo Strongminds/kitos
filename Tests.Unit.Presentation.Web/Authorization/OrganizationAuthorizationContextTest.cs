@@ -588,7 +588,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
             _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
             var organization = new Organization();
-            var entity = new ItSystem()
+            var entity = new ItContract()
             {
                 Organization = organization
             };
@@ -653,7 +653,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 Suppliers = new List<OrganizationSupplier>() { new(){ SupplierId = supplierId } }
             };
-            var entity = new ItSystem()
+            var entity = new ItContract()
             {
                 Organization = organization
             };

@@ -43,13 +43,13 @@ namespace Core.ApplicationServices.Authorization
             _authorizationModelFactory = authorizationModelFactory;
         }
 
-        public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
+        public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
         {
-            if (targetObject is not DataProcessingRegistration) return _authorizationModelFactory.CreateCrudAuthorizationModel();
+            if (entity is not DataProcessingRegistration) return _authorizationModelFactory.CreateCrudAuthorizationModel();
 
-            var targetObjectOrganization = targetObject.Organization;
-            var targetOrganizationSuppliers = targetObjectOrganization?.Suppliers;
-            if (targetOrganizationSuppliers is { Count: > 0 })
+            var entityOrganization = entity.Organization;
+            var entityOrganizationSuppliers = entityOrganization?.Suppliers;
+            if (entityOrganizationSuppliers is { Count: > 0 })
             {
                 return _authorizationModelFactory.CreateFieldAuthorizationModel();
             }

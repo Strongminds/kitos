@@ -7,11 +7,10 @@ namespace Core.ApplicationServices.Authorization
 {
     public class UnauthenticatedAuthorizationContext : IAuthorizationContext
     {
-
-   public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
-   {
-       throw new NotImplementedException();
-   }
+       public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
+       {
+           throw new NotImplementedException();
+       }
 
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()
         {
