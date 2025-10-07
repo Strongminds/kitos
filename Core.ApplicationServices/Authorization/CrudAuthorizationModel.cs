@@ -5,7 +5,7 @@ namespace Core.ApplicationServices.Authorization;
 
 public class CrudAuthorizationModel(IAuthorizationContext authorizationContext) : IAuthorizationModel
 {
-    public bool AuthorizeUpdate(IEntity entity,
+    public bool AuthorizeUpdate(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
         return authorizationContext.AllowModify(entity);

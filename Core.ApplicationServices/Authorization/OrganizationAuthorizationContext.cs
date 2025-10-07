@@ -45,7 +45,7 @@ namespace Core.ApplicationServices.Authorization
 
         public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
         {
-            if (targetObject.GetType() != typeof(DataProcessingRegistration)) return _authorizationModelFactory.CreateCrudAuthorizationModel();
+            if (targetObject is not DataProcessingRegistration) return _authorizationModelFactory.CreateCrudAuthorizationModel();
 
             var targetObjectOrganization = targetObject.Organization;
             var targetOrganizationSuppliers = targetObjectOrganization?.Suppliers;

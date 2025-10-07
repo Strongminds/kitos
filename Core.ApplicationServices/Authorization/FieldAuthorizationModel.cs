@@ -10,15 +10,16 @@ namespace Core.ApplicationServices.Authorization;
 public class FieldAuthorizationModel(IOrganizationalUserContext activeUserContext, ISupplierAssociatedFieldsService supplierAssociatedFieldsService, IAuthorizationContext authorizationContext, IUserRepository userRepository) : IAuthorizationModel
 {
     public bool AuthorizeUpdate(
-        IEntity entity,
+        IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
         if (activeUserContext.IsGlobalAdmin()) return true;
         var requestsSupplierFieldChanges = supplierAssociatedFieldsService.RequestsChangesToSupplierAssociatedFields(parameters);
         if (!requestsSupplierFieldChanges) return authorizationContext.AllowModify(entity);
 
-       // var userHasSupplierApiAccess = UserHasSupplierApiAccess(entity.Organization?.Suppliers);
-       // if (!userHasSupplierApiAccess) return false;
+        
+        var userHasSupplierApiAccess = UserHasSupplierApiAccess(entity.Organization.Suppliers);
+        if (!userHasSupplierApiAccess) return false;
 
 
         return false;

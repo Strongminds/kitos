@@ -1,14 +1,18 @@
-﻿using Core.ApplicationServices.Authorization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.DomainModel;
+using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Moq;
+using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Authorization
 {
-    public class FieldAuthorizationModelTest
+    public class FieldAuthorizationModelTest: WithAutoFixture
     {
         private readonly Mock<IOrganizationalUserContext> _activeUserContext;
         private readonly FieldAuthorizationModel _sut;
@@ -40,7 +44,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(false)]
         public void GivenRequestsNoChangesToSupplierFields_AuthorizeUpdate_Returns_Result_Of_AllowModify(bool expected)
         {
-            var entity = new Mock<IEntity>();
+            var entity = new Mock<IEntityOwnedByOrganization>();
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(It.IsAny<DataProcessingRegistrationModificationParameters>())).Returns(false);
             _authorizationContext.Setup(_ => _.AllowModify(entity.Object)).Returns(expected);
 
@@ -53,14 +57,31 @@ namespace Tests.Unit.Presentation.Web.Authorization
         }
 
         [Fact]
-        public void GivenRequestsChangesOnlyToSupplierFields_AuthorizeUpdate_Returns_True()
+        public void GivenRequestsChangesToSupplierFieldsAndUserDoesNotHaveSupplierApiAccess_AuthorizeUpdate_Returns_False()
         {
             _activeUserContext.Setup(x => x.IsGlobalAdmin()).Returns(false);
-            var entity = new Mock<IEntity>();
+            var entity = new Mock<IEntityOwnedByOrganization>();
             var dprParams = new DataProcessingRegistrationModificationParameters();
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(dprParams)).Returns(true);
-            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(dprParams, It.IsAny<int>())).Returns(false);
-            
+            var supplierId = A<int>();
+            var userId = A<int>();
+            entity.SetupGet(e => e.Organization).Returns(new Organization
+            {
+                Suppliers = new List<OrganizationSupplier>
+                {
+                    new() { SupplierId = supplierId }
+                }
+            });
+            _activeUserContext.Setup(_ => _.UserId).Returns(userId);
+            _userRepository.Setup(_ => _.GetUsersInOrganization(supplierId)).Returns(new List<User>()
+            {
+                new()
+                {
+                    Id = userId,
+                    HasApiAccess = false
+                }
+            }.AsQueryable());
+
             var result = _sut.AuthorizeUpdate(entity.Object, dprParams);
             
             Assert.False(result);

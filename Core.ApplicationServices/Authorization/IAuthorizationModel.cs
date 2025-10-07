@@ -5,7 +5,7 @@ namespace Core.ApplicationServices.Authorization
 {
     public interface IAuthorizationModel
     {
-        bool AuthorizeUpdate(IEntity entity,
+        bool AuthorizeUpdate(IEntityOwnedByOrganization entity,
             ISupplierAssociatedEntityUpdateParameters parameters);
     }
 }
