@@ -14,5 +14,14 @@ namespace Core.ApplicationServices.GDPR.Write
         Maybe<OperationError> Delete(Guid dataProcessingRegistrationUuid);
         Result<DataProcessingRegistration, OperationError> AddRole(Guid dprUuid, UserRolePair assignment);
         Result<DataProcessingRegistration, OperationError> RemoveRole(Guid dprUuid, UserRolePair assignment);
+
+        Result<DataProcessingRegistrationOversightDate, OperationError> AddOversight(
+            Guid dataProcessingRegistrationUuid, UpdatedDataProcessingRegistrationOversightDateParameters parameters);
+
+        Result<DataProcessingRegistrationOversightDate, OperationError> UpdateOversight(
+            Guid dataProcessingRegistrationUuid, Guid oversightDateUuid,
+            UpdatedDataProcessingRegistrationOversightDateParameters parameters);
+
+        Maybe<OperationError> DeleteOversight(Guid dataProcessingRegistrationUuid, Guid oversightDateUuid);
     }
 }

@@ -426,7 +426,7 @@ namespace Core.DomainModel.GDPR
                 ? Maybe<DataProcessingRegistrationValidationError>.None
                 : DataProcessingRegistrationValidationError.MainContractNotActive;
         }
-
+        
         public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
         {
             if (IsOversightCompleted != YesNoUndecidedOption.Yes)
@@ -447,19 +447,37 @@ namespace Core.DomainModel.GDPR
             return newOversightDate;
         }
 
-        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDate(int oversightId, DateTime oversightDate, string oversightRemark)
+        private Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDate(int oversightId, Action<DataProcessingRegistrationOversightDate> mutation)
         {
-            if (oversightRemark == null) throw new ArgumentNullException(nameof(oversightRemark));
             var existingDate = GetOversightDate(oversightId);
             if (existingDate.IsNone)
                 return new OperationError("Oversight date not assigned", OperationFailure.BadInput);
 
             var oversightDateToModify = existingDate.Value;
 
-            oversightDateToModify.OversightDate = oversightDate;
-            oversightDateToModify.OversightRemark = oversightRemark;
+            mutation(oversightDateToModify);
 
             return oversightDateToModify;
+        }
+
+        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateDate(int oversightId, DateTime oversightDate)
+        {
+            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightDate = oversightDate);
+        }
+
+        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateRemark(int oversightId, string oversightRemark)
+        {
+            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightRemark = oversightRemark);
+        }
+
+        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateReportLink(int oversightId, string oversightReportLink)
+        {
+            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightReportLink = oversightReportLink);
+        }
+
+        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateReportLinkName(int oversightId, string oversightReportLinkName)
+        {
+            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightReportLinkName = oversightReportLinkName);
         }
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int oversightId)
@@ -478,9 +496,19 @@ namespace Core.DomainModel.GDPR
             return OversightDates.OrderByDescending(x => x.OversightDate).FirstOrNone();
         }
 
-        private Maybe<DataProcessingRegistrationOversightDate> GetOversightDate(int oversightId)
+        public Maybe<DataProcessingRegistrationOversightDate> GetOversightDate(int oversightId)
         {
             return OversightDates.FirstOrDefault(x => x.Id == oversightId).FromNullable();
+        }
+
+        public Result<DataProcessingRegistrationOversightDate, OperationError> GetOversightDate(Guid oversightDateUuid)
+        {
+            var oversightDate = OversightDates.FirstOrDefault(x => x.Uuid == oversightDateUuid);
+            if (oversightDate == null)
+                return new OperationError($"Oversight date with uuid: {oversightDateUuid} was not found",
+                    OperationFailure.NotFound);
+
+            return oversightDate;
         }
 
         public Maybe<OperationError> SetResponsibleOrganizationUnit(Guid organizationUnitUuid)

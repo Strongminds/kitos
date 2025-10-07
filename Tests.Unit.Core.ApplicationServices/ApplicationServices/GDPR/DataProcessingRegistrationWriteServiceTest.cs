@@ -2291,6 +2291,107 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionNotCommitted(transaction);
         }
 
+
+        [Fact]
+        public void Can_AddOversight()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var registrationId = A<int>();
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            var expectedOversightDate = new DataProcessingRegistrationOversightDate();
+
+            _identityResolverMock
+                .Setup(x => x.ResolveDbId<DataProcessingRegistration>(registrationUuid))
+                .Returns(registrationId);
+
+            _dprServiceMock
+                .Setup(x => x.AssignOversightDate(
+                    registrationId,
+                    parameters.CompletedAt.NewValue,
+                    parameters.Remark.NewValue,
+                    parameters.OversightReportLink.NewValue,
+                    parameters.OversightReportLinkName.NewValue))
+                .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(expectedOversightDate));
+
+            // Act
+            var result = _sut.AddOversight(registrationUuid, parameters);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.Same(expectedOversightDate, result.Value);
+        }
+
+        [Fact]
+        public void Can_UpdateOversight()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var oversightDateUuid = A<Guid>();
+            var registrationId = A<int>();
+            var oversightDateId = A<int>();
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            var oversightDate = new DataProcessingRegistrationOversightDate
+            {
+                Id = oversightDateId,
+                Uuid = oversightDateUuid
+            };
+            var dpr = new DataProcessingRegistration
+            {
+                Id = registrationId,
+                OversightDates = new List<DataProcessingRegistrationOversightDate>{oversightDate},
+                IsOversightCompleted = YesNoUndecidedOption.Yes
+            };
+
+            var transaction = ExpectTransaction();
+            _dprServiceMock
+                .Setup(x => x.GetByUuid(registrationUuid))
+                .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
+
+            // Act
+            var result = _sut.UpdateOversight(registrationUuid, oversightDateUuid, parameters);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.NotNull(result.Value);
+            AssertTransactionCommitted(transaction);
+        }
+
+        [Fact]
+        public void Can_DeleteOversight()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var oversightDateUuid = A<Guid>();
+            var registrationId = A<int>();
+            var oversightDateId = A<int>();
+            var oversightDate = new DataProcessingRegistrationOversightDate
+            {
+                Id = oversightDateId,
+                Uuid = oversightDateUuid
+            };
+            var dpr = new DataProcessingRegistration
+            {
+                Id = registrationId,
+                OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
+                IsOversightCompleted = YesNoUndecidedOption.Yes
+            };
+
+            _dprServiceMock
+                .Setup(x => x.GetByUuid(registrationUuid))
+                .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
+            
+            _dprServiceMock
+                .Setup(x => x.RemoveOversightDate(registrationId, oversightDateId))
+                .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(oversightDate));
+
+            // Act
+            var result = _sut.DeleteOversight(registrationUuid, oversightDateUuid);
+
+            // Assert
+            Assert.True(result.IsNone);
+        }
+
         private void ExpectBatchUpdateExternalReferencesReturns(DataProcessingRegistration dpr, IEnumerable<UpdatedExternalReferenceProperties> externalReferences, Maybe<OperationError> value)
         {
             _referenceServiceMock

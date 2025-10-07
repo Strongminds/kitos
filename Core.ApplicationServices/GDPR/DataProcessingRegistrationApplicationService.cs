@@ -38,12 +38,12 @@ namespace Core.ApplicationServices.GDPR
         private readonly IDataProcessingRegistrationInsecureCountriesAssignmentService _countryAssignmentService;
         private readonly IDataProcessingRegistrationBasisForTransferAssignmentService _basisForTransferAssignmentService;
         private readonly IDataProcessingRegistrationOversightOptionsAssignmentService _oversightOptionAssignmentService;
-        private readonly IDataProcessingRegistrationOversightDateAssignmentService _oversightDateAssignmentService;
         private readonly ITransactionManager _transactionManager;
         private readonly IOrganizationalUserContext _userContext;
         private readonly IGenericRepository<DataProcessingRegistrationOversightDate> _dataProcessingRegistrationOversightDateRepository;
         private readonly IGenericRepository<SubDataProcessor> _sdpRepository;
         private readonly IOrganizationService _organizationService;
+        private readonly IGenericRepository<DataProcessingRegistrationOversightDate> _oversightDateRepository;
 
         public DataProcessingRegistrationApplicationService(
             IAuthorizationContext authorizationContext,
@@ -57,12 +57,11 @@ namespace Core.ApplicationServices.GDPR
             IDataProcessingRegistrationInsecureCountriesAssignmentService countryAssignmentService,
             IDataProcessingRegistrationBasisForTransferAssignmentService basisForTransferAssignmentService,
             IDataProcessingRegistrationOversightOptionsAssignmentService oversightOptionAssignmentService,
-            IDataProcessingRegistrationOversightDateAssignmentService oversightDateAssignmentService,
             ITransactionManager transactionManager,
             IOrganizationalUserContext userContext,
             IGenericRepository<DataProcessingRegistrationOversightDate> dataProcessingRegistrationOversightDateRepository,
             IGenericRepository<SubDataProcessor> sdpRepository, 
-            IOrganizationService organizationService)
+            IOrganizationService organizationService, IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository)
         {
             _authorizationContext = authorizationContext;
             _repository = repository;
@@ -75,12 +74,12 @@ namespace Core.ApplicationServices.GDPR
             _countryAssignmentService = countryAssignmentService;
             _basisForTransferAssignmentService = basisForTransferAssignmentService;
             _oversightOptionAssignmentService = oversightOptionAssignmentService;
-            _oversightDateAssignmentService = oversightDateAssignmentService;
             _transactionManager = transactionManager;
             _userContext = userContext;
             _dataProcessingRegistrationOversightDateRepository = dataProcessingRegistrationOversightDateRepository;
             _sdpRepository = sdpRepository;
             _organizationService = organizationService;
+            _oversightDateRepository = oversightDateRepository;
         }
 
         public Result<DataProcessingRegistration, OperationError> Create(int organizationId, string name)
@@ -538,17 +537,12 @@ namespace Core.ApplicationServices.GDPR
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
         {
-            return Modify(id, registration => _oversightDateAssignmentService.Assign(registration, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName));
+            return Modify(id, registration => registration.AssignOversightDate(oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName));
         }
-
-        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDate(int id, int oversightDateId, DateTime oversightDate, string oversightRemark)
-        {
-            return Modify(id, registration => _oversightDateAssignmentService.Modify(registration, oversightDateId, oversightDate, oversightRemark));
-        }
-
+        
         public Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int id, int oversightDateId)
         {
-            return Modify(id, registration => _oversightDateAssignmentService.Remove(registration, oversightDateId));
+            return Modify(id, registration => Remove(registration, oversightDateId));
         }
 
         public Result<DataProcessingRegistration, OperationError> UpdateOversightCompletedRemark(int id, string remark)
@@ -628,6 +622,15 @@ namespace Core.ApplicationServices.GDPR
                             .Select(permissions =>
                                 new DataProcessingRegistrationPermissions(permissions));
                     });
+        }
+        private Result<DataProcessingRegistrationOversightDate, OperationError> Remove(DataProcessingRegistration registration, int oversightId)
+        {
+            var removedRegistration = registration.RemoveOversightDate(oversightId);
+            if (removedRegistration.Ok)
+            {
+                _oversightDateRepository.Delete(removedRegistration.Value);
+            }
+            return removedRegistration;
         }
     }
 }

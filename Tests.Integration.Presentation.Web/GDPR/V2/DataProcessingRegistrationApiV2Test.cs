@@ -1478,8 +1478,83 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var response = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, createdDpr.Uuid, generalData);
 
             Assert.False(response.IsSuccessStatusCode);
+        }
 
+        [Fact]
+        public async Task Can_Add_OversightDate()
+        {
+            var (token, _, org) = await CreatePrerequisitesAsync();
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(token,
+                new CreateDataProcessingRegistrationRequestDTO
+                {
+                    Name = CreateName(),
+                    OrganizationUuid = org.Uuid,
+                    Oversight = new DataProcessingRegistrationOversightWriteRequestDTO
+                    {
+                        IsOversightCompleted = YesNoUndecidedChoice.Yes
+                    }
+                });
 
+            var request = A<ModifyOversightDateDTO>();
+
+            var response = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, request, token);
+
+            Assert.Equal(request.CompletedAt, response.CompletedAt);
+            Assert.Equal(request.Remark, response.Remark);
+            Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
+            Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
+        }
+
+        [Fact]
+        public async Task Can_Modify_OversightDate()
+        {
+            var (token, _, org) = await CreatePrerequisitesAsync();
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(token,
+                new CreateDataProcessingRegistrationRequestDTO
+                {
+                    Name = CreateName(),
+                    OrganizationUuid = org.Uuid,
+                    Oversight = new DataProcessingRegistrationOversightWriteRequestDTO
+                    {
+                        IsOversightCompleted = YesNoUndecidedChoice.Yes
+                    }
+                });
+
+            var createRequest = A<ModifyOversightDateDTO>();
+            var createResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, createRequest, token);
+
+            var request = A<ModifyOversightDateDTO>();
+            var response = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, createResponse.Uuid, request, token);
+
+            Assert.Equal(request.CompletedAt, response.CompletedAt);
+            Assert.Equal(request.Remark, response.Remark);
+            Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
+            Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
+        }
+
+        [Fact]
+        public async Task Can_Delete_OversightDate()
+        {
+            var (token, _, org) = await CreatePrerequisitesAsync();
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(token,
+                new CreateDataProcessingRegistrationRequestDTO
+                {
+                    Name = CreateName(),
+                    OrganizationUuid = org.Uuid,
+                    Oversight = new DataProcessingRegistrationOversightWriteRequestDTO
+                    {
+                        IsOversightCompleted = YesNoUndecidedChoice.Yes
+                    }
+                });
+
+            var createRequest = A<ModifyOversightDateDTO>();
+            var createResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, createRequest, token);
+
+            await DataProcessingRegistrationV2Helper.DeleteOversightDate(dpr.Uuid, createResponse.Uuid, token);
+
+            var response = await DataProcessingRegistrationV2Helper.GetDPRAsync(token, dpr.Uuid);
+
+            Assert.Empty(response.Oversight.OversightDates);
         }
 
         #region Asserters

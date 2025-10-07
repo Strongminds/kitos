@@ -743,23 +743,6 @@ namespace Presentation.Web.Controllers.API.V1
         }
 
         [HttpPatch]
-        [Route("{id}/oversight-date/modify")]
-        [SwaggerResponse(HttpStatusCode.OK)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public HttpResponseMessage ModifyOversightDate(int id, [FromBody] DataProcessingRegistrationOversightDateDTO oversightDateDTO)
-        {
-            if (oversightDateDTO == null)
-                return BadRequest(nameof(oversightDateDTO) + " must be provided");
-
-            return _dataProcessingRegistrationApplicationService
-                .ModifyOversightDate(id, oversightDateDTO.Id, oversightDateDTO.OversightDate, oversightDateDTO.OversightRemark)
-                .Select(ToDTO)
-                .Match(Ok, FromOperationError);
-        }
-
-        [HttpPatch]
         [Route("{id}/oversight-date/remove")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
