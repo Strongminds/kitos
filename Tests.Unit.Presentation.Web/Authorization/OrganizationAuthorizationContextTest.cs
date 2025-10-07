@@ -8,6 +8,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Authorization.Policies;
 using Core.DomainModel;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
@@ -587,10 +588,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
             _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
             var organization = new Organization();
-            var entity = new Mock<IOwnedByOrganization>();
-            entity.Setup(_ => _.Organization).Returns(organization);
+            var entity = new DataProcessingRegistration()
+            {
+                Organization = organization
+            };
 
-            var result = _sut.GetAuthorizationModel(entity.Object);
+            var result = _sut.GetAuthorizationModel(entity);
 
             Assert.IsType<CrudAuthorizationModel>(result);
         }
@@ -612,10 +615,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 Suppliers = new List<OrganizationSupplier>(){ new OrganizationSupplier(){ SupplierId = supplierId} }
             };
-            var entity = new Mock<IOwnedByOrganization>();
-            entity.Setup(_ => _.Organization).Returns(organization);
+            var entity = new DataProcessingRegistration()
+            {
+                Organization = organization
+            };
 
-            var result = _sut.GetAuthorizationModel(entity.Object);
+            var result = _sut.GetAuthorizationModel(entity);
 
             Assert.IsType<FieldAuthorizationModel>(result);
         }
@@ -629,13 +634,43 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 Suppliers = new List<OrganizationSupplier>()
                 {
-                    new OrganizationSupplier(), new OrganizationSupplier()
+                    new OrganizationSupplier()
                 }
             };
-            var entity = new Mock<IOwnedByOrganization>();
-            entity.Setup(_ => _.Organization).Returns(organization);
+            var entity = new DataProcessingRegistration()
+            {
+                Organization = organization
+            }; ;
 
-            var result = _sut.GetAuthorizationModel(entity.Object);
+            var result = _sut.GetAuthorizationModel(entity);
+
+            Assert.IsType<CrudAuthorizationModel>(result);
+        }
+
+        [Fact]
+        public void
+            GivenTargetObjectIsNotOfTypeThatSuppliersCanEdit_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
+        {
+            var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+            var supplierId = A<int>();
+            var supplierApiUser = new User
+            {
+                Id = A<int>(),
+                HasApiAccess = true,
+            };
+            _userRepository.Setup(_ => _.GetUsersInOrganization(supplierId)).Returns(new List<User>() { supplierApiUser }.AsQueryable());
+            _userContextMock.Setup(_ => _.UserId).Returns(supplierApiUser.Id);
+            var organization = new Organization()
+            {
+                Suppliers = new List<OrganizationSupplier>() { new(){ SupplierId = supplierId } }
+            };
+            var entity = new ItSystem()
+            {
+                Organization = organization
+            };
+
+            var result = _sut.GetAuthorizationModel(entity);
 
             Assert.IsType<CrudAuthorizationModel>(result);
         }

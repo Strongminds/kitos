@@ -11,6 +11,7 @@ using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.DomainModel.GDPR;
 
 
 namespace Core.ApplicationServices.Authorization
@@ -45,6 +46,8 @@ namespace Core.ApplicationServices.Authorization
 
         public IAuthorizationModel GetAuthorizationModel(IOwnedByOrganization targetObject)
         {
+            if (targetObject.GetType() != typeof(DataProcessingRegistration)) return _authorizationModelFactory.CreateCrudAuthorizationModel();
+
             var targetObjectOrganization = targetObject.Organization;
             var targetOrganizationSuppliers = targetObjectOrganization?.Suppliers;
             if (targetOrganizationSuppliers is { Count: > 0 })
