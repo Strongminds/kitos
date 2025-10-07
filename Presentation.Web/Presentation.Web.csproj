@@ -374,7 +374,7 @@
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationResponseMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationTypeMapper.cs" />
     <Compile Include="Controllers\API\V2\Common\Mapping\OrganizationWriteModelMapper.cs" />
-    <Compile Include="Controllers\API\V2\External\DataProcessingRegistrations\DataProcessingRegistrationOversightV2Controller.cs" />
+    <Compile Include="Controllers\API\V2\External\DataProcessingRegistrations\DataProcessingRegistrationOversightDatesV2Controller.cs" />
     <Compile Include="Controllers\API\V2\External\Generic\YesNoPartiallyMappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\External\ItSystems\ItSystemDBSV2Controller.cs" />
     <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\LegalPropertyWriteModelMapper.cs" />
