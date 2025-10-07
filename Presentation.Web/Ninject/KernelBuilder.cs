@@ -269,7 +269,6 @@ namespace Presentation.Web.Ninject
             kernel.Bind<IItsystemUsageOverviewReadModelsService>().To<ItsystemUsageOverviewReadModelsService>().InCommandScope(Mode);
             kernel.Bind<IReadModelUpdate<ItSystemUsage, ItSystemUsageOverviewReadModel>>().To<ItSystemUsageOverviewReadModelUpdate>().InCommandScope(Mode);
             kernel.Bind<IKendoOrganizationalConfigurationService>().To<KendoOrganizationalConfigurationService>().InCommandScope(Mode);
-            kernel.Bind<IDataProcessingRegistrationOversightDateAssignmentService>().To<DataProcessingRegistrationOversightDateAssignmentService>().InCommandScope(Mode);
             kernel.Bind<IHangfireApi>().To<HangfireApi>().InCommandScope(Mode);
             kernel.Bind<IOperationClock>().To<OperationClock>().InCommandScope(Mode);
             kernel.Bind<IUserNotificationService>().To<UserNotificationService>().InCommandScope(Mode);

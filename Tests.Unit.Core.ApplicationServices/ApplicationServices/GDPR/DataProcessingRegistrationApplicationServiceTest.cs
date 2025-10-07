@@ -44,11 +44,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<IDataProcessingRegistrationInsecureCountriesAssignmentService> _insecureThirdCountryAssignmentMock;
         private readonly Mock<IDataProcessingRegistrationBasisForTransferAssignmentService> _basisForTransferAssignmentServiceMock;
         private readonly Mock<IDataProcessingRegistrationOversightOptionsAssignmentService> _oversightOptionAssignmentServiceMock;
-        private readonly Mock<IDataProcessingRegistrationOversightDateAssignmentService> _oversightDateAssignmentServiceMock;
         private readonly Mock<IOrganizationalUserContext> _userContextMock;
         private readonly Mock<IGenericRepository<DataProcessingRegistrationOversightDate>> _dprOversightDaterepositoryMock;
         private readonly Mock<IGenericRepository<SubDataProcessor>> _sdpRepositoryMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
+        private readonly Mock<IGenericRepository<DataProcessingRegistrationOversightDate>> _oversightDateRepositoryMock;
 
         public DataProcessingRegistrationApplicationServiceTest()
         {
@@ -64,11 +64,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _insecureThirdCountryAssignmentMock = new Mock<IDataProcessingRegistrationInsecureCountriesAssignmentService>();
             _basisForTransferAssignmentServiceMock = new Mock<IDataProcessingRegistrationBasisForTransferAssignmentService>();
             _oversightOptionAssignmentServiceMock = new Mock<IDataProcessingRegistrationOversightOptionsAssignmentService>();
-            _oversightDateAssignmentServiceMock = new Mock<IDataProcessingRegistrationOversightDateAssignmentService>();
             _userContextMock = new Mock<IOrganizationalUserContext>();
             _dprOversightDaterepositoryMock = new Mock<IGenericRepository<DataProcessingRegistrationOversightDate>>();
             _sdpRepositoryMock = new Mock<IGenericRepository<SubDataProcessor>>();
             _organizationServiceMock = new Mock<IOrganizationService>();
+            _oversightDateRepositoryMock = new Mock<IGenericRepository<DataProcessingRegistrationOversightDate>>();
             _sut = new DataProcessingRegistrationApplicationService(
                 _authorizationContextMock.Object,
                 _repositoryMock.Object,
@@ -81,12 +81,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 _insecureThirdCountryAssignmentMock.Object,
                 _basisForTransferAssignmentServiceMock.Object,
                 _oversightOptionAssignmentServiceMock.Object,
-                _oversightDateAssignmentServiceMock.Object,
                 _transactionManagerMock.Object,
                 _userContextMock.Object,
                 _dprOversightDaterepositoryMock.Object,
                 _sdpRepositoryMock.Object,
-                _organizationServiceMock.Object);
+                _organizationServiceMock.Object,
+                _oversightDateRepositoryMock.Object);
         }
 
         [Fact]
@@ -1622,7 +1622,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var id = A<int>();
-            var registration = new DataProcessingRegistration();
+            var registration = new DataProcessingRegistration{ IsOversightCompleted = YesNoUndecidedOption.Yes};
             var oversightDate = A<DateTime>();
             var oversightRemark = A<string>();
             var oversightReportLink = A<string>();
@@ -1631,7 +1631,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             ExpectAllowModifyReturns(registration, true);
 
             var transaction = ExpectTransaction();
-            _oversightDateAssignmentServiceMock.Setup(x => x.Assign(registration, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName)).Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(new DataProcessingRegistrationOversightDate()));
 
             //Act
             var result = _sut.AssignOversightDate(id, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName);
@@ -1659,53 +1658,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
         [Fact]
-        public void Can_ModifyOversightDate()
-        {
-            //Arrange
-            var id = A<int>();
-            var registration = new DataProcessingRegistration();
-            var oversightDateId = A<int>();
-            var oversightDate = A<DateTime>();
-            var oversightRemark = A<string>();
-            ExpectRepositoryGetToReturn(id, registration);
-            ExpectAllowModifyReturns(registration, true);
-
-            var transaction = ExpectTransaction();
-            _oversightDateAssignmentServiceMock.Setup(x => x.Modify(registration, oversightDateId, oversightDate, oversightRemark)).Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(new DataProcessingRegistrationOversightDate()));
-
-            //Act
-            var result = _sut.ModifyOversightDate(id, oversightDateId, oversightDate, oversightRemark);
-
-            //Assert
-            Assert.True(result.Ok);
-
-            transaction.Verify(x => x.Commit());
-        }
-
-        [Fact]
-        public void Cannot_ModifyOversightDate_If_Dpr_Is_Not_Found()
-        {
-            Test_Command_Which_Fails_With_Dpr_NotFound(id => _sut.ModifyOversightDate(id, A<int>(), A<DateTime>(), A<string>()));
-        }
-
-        [Fact]
-        public void Cannot_ModifyOversightDate_If_Write_Access_Is_Denied()
-        {
-            Test_Command_Which_Fails_With_Dpr_Insufficient_WriteAccess(id => _sut.ModifyOversightDate(id, A<int>(), A<DateTime>(), A<string>()));
-        }
-
-        [Fact]
         public void Can_RemoveOversightDate()
         {
             //Arrange
             var id = A<int>();
-            var registration = new DataProcessingRegistration();
             var oversightDateId = A<int>();
+            var registration = new DataProcessingRegistration{ OversightDates = { new DataProcessingRegistrationOversightDate{ Id = oversightDateId }}};
             ExpectRepositoryGetToReturn(id, registration);
             ExpectAllowModifyReturns(registration, true);
 
             var transaction = ExpectTransaction();
-            _oversightDateAssignmentServiceMock.Setup(x => x.Remove(registration, oversightDateId)).Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(new DataProcessingRegistrationOversightDate()));
 
             //Act
             var result = _sut.RemoveOversightDate(id, oversightDateId);

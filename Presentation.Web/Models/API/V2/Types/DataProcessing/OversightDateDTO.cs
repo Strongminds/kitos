@@ -1,22 +1,9 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Presentation.Web.Models.API.V2.Types.Shared;
 
 namespace Presentation.Web.Models.API.V2.Types.DataProcessing
 {
-    public class OversightDateDTO
+    public class OversightDateDTO : ModifyOversightDateDTO
     {
         public Guid Uuid { get; set; }
-        /// <summary>
-        /// Date of oversight completion
-        /// </summary>
-        [Required]
-        public DateTime CompletedAt { get; set; }
-        /// <summary>
-        /// Optional remark related to the oversight
-        /// </summary>
-        public string Remark { get; set; }
-
-        public SimpleLinkDTO OversightReportLink { get; set; }
     }
 }

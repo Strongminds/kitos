@@ -286,7 +286,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 .Select(_permissionResponseMapper.Map)
                 .Match(Ok, FromOperationError);
         }
-
+        
         private CreatedNegotiatedContentResult<DataProcessingRegistrationResponseDTO> MapCreatedResponse(DataProcessingRegistrationResponseDTO dto)
         {
             return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
