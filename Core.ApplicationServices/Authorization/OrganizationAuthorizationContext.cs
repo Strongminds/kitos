@@ -45,14 +45,9 @@ namespace Core.ApplicationServices.Authorization
         public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
         {
             if (!EntityHasSupplierAssociatedFields(entity)) return _authorizationModelFactory.CreateCrudAuthorizationModel();
-
-            var entityOrganization = entity.Organization;
-            var entityOrganizationSuppliers = entityOrganization?.Suppliers;
-            if (entityOrganizationSuppliers is { Count: > 0 })
-            {
-                return _authorizationModelFactory.CreateFieldAuthorizationModel();
-            }
-            return _authorizationModelFactory.CreateCrudAuthorizationModel();
+            return (entity.Organization?.Suppliers is { Count: > 0})
+                ? _authorizationModelFactory.CreateFieldAuthorizationModel()
+                : _authorizationModelFactory.CreateCrudAuthorizationModel();
         }
 
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()

@@ -1,8 +1,6 @@
 ﻿using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model;
-using Core.ApplicationServices.Model.GDPR.Write;
 using Core.DomainModel;
-using Core.DomainModel.GDPR;
 using Moq;
 using Xunit;
 
