@@ -1,14 +1,13 @@
-﻿using Core.ApplicationServices.Model.GDPR.Write;
-using Core.DomainModel.GDPR;
+﻿using Core.ApplicationServices.Model;
+using Core.DomainModel;
 
 namespace Core.ApplicationServices.Authorization;
 
 public class CrudAuthorizationModel(IAuthorizationContext authorizationContext) : IAuthorizationModel
 {
-    private IAuthorizationContext _authorizationContext = authorizationContext;
-
-    public bool AuthorizeUpdate(DataProcessingRegistration entity, DataProcessingRegistrationModificationParameters parameters)
+    public bool AuthorizeUpdate(IEntity entity,
+        ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        return _authorizationContext.AllowModify(entity);
+        return authorizationContext.AllowModify(entity);
     }
 }

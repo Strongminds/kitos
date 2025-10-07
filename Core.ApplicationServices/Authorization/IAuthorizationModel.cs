@@ -1,11 +1,11 @@
-﻿using Core.ApplicationServices.Model.GDPR.Write;
-using Core.DomainModel.GDPR;
+﻿using Core.ApplicationServices.Model;
+using Core.DomainModel;
 
 namespace Core.ApplicationServices.Authorization
 {
     public interface IAuthorizationModel
     {
-        bool AuthorizeUpdate(DataProcessingRegistration entity,
-            DataProcessingRegistrationModificationParameters parameters);
+        bool AuthorizeUpdate(IEntity entity,
+            ISupplierAssociatedEntityUpdateParameters parameters);
     }
 }
