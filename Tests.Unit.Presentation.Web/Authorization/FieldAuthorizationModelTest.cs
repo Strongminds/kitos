@@ -56,7 +56,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var entity = new Mock<IEntity>();
             var dprParams = new DataProcessingRegistrationModificationParameters();
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(dprParams)).Returns(true);
-            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(dprParams, It.IsAny<System.Guid>())).Returns(false);
+            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(dprParams, It.IsAny<int>())).Returns(false);
             
             var result = _sut.AuthorizeUpdate(entity.Object, dprParams);
             

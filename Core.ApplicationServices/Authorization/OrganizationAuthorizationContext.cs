@@ -9,7 +9,6 @@ using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel.GDPR;
 

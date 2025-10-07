@@ -20,16 +20,16 @@ namespace Tests.Unit.Presentation.Web.Authorization
     {
         private readonly SupplierAssociatedFieldsService _sut;
         private readonly Mock<IDataProcessingRegistrationApplicationService> _dataProcessingRegistrationApplicationService;
-        private readonly Guid _dprUuid;
+        private readonly int _dprId;
         private readonly DataProcessingRegistration _existingDpr;
 
         public SupplierAssociatedFieldsServiceTest()
         {
             _dataProcessingRegistrationApplicationService =
                 new Mock<IDataProcessingRegistrationApplicationService>();
-            _dprUuid = A<Guid>();
-            _existingDpr = new DataProcessingRegistration() { Uuid = _dprUuid };
-            _dataProcessingRegistrationApplicationService.Setup(_ => _.GetByUuid(_dprUuid))
+            _dprId = A<int>();
+            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
+            _dataProcessingRegistrationApplicationService.Setup(_ => _.Get(_dprId))
                 .Returns(Result<DataProcessingRegistration, OperationError>.Success(_existingDpr));
 
             _sut = new SupplierAssociatedFieldsService(_dataProcessingRegistrationApplicationService.Object);
@@ -68,7 +68,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 Oversight = oversight
             };
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprUuid);
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprId);
 
             Assert.False(result);
         }
@@ -118,7 +118,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprUuid);
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprId);
 
             Assert.True(result);
         }
@@ -181,7 +181,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var requestsChangesToSupplierAssociatedFields =
                 _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-            var requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprUuid);
+            var requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
 
             Assert.False(requestsChangesToSupplierAssociatedFields);
             Assert.False(requestsChangesToNonSupplierAssociatedFields);

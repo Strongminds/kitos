@@ -29,7 +29,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return oversight.HasValue && oversight.Value.IsOversightCompleted.HasChange;
     }
 
-    public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, Guid dataProcessingUuid)
+    public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, int entityId)
     {
         if (parameters.GetType() != typeof(DataProcessingRegistrationModificationParameters)) return false;
         var dprParams = (DataProcessingRegistrationModificationParameters)parameters;
@@ -38,14 +38,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var generalHasChange = dprParams.General.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.General.Value);
         var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(dprParams.Oversight);
         var rolesHasChange = dprParams.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.Roles.Value);
-        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, dataProcessingUuid);
-        var externalReferencesHasChange = ExternalReferencesHasChange(dprParams.ExternalReferences, dataProcessingUuid);
+        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, entityId);
+        var externalReferencesHasChange = ExternalReferencesHasChange(dprParams.ExternalReferences, entityId);
         return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange || externalReferencesHasChange;
     }
 
-    private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, Guid dprUuid)
+    private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, int entityId)
     {
-        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.GetByUuid(dprUuid);
+        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.Get(entityId);
         return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
             {
                 var existingReferences = dataProcessingRegistration.ExternalReferences;
@@ -76,9 +76,9 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                value.OversightDates.HasChange;
     }
 
-    private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, Guid dataProcessingUuid)
+    private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, int entityId)
     {
-        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.GetByUuid(dataProcessingUuid);
+        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.Get(entityId);
         return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
         {
             var existingSystemUsages = dataProcessingRegistration.SystemUsages;
