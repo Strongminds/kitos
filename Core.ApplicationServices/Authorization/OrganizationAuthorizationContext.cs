@@ -9,7 +9,6 @@ using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
 using System;
-using System.Linq;
 using Core.DomainModel.GDPR;
 
 
@@ -45,7 +44,7 @@ namespace Core.ApplicationServices.Authorization
 
         public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
         {
-            if (entity is not DataProcessingRegistration) return _authorizationModelFactory.CreateCrudAuthorizationModel();
+            if (!EntityHasSupplierAssociatedFields(entity)) return _authorizationModelFactory.CreateCrudAuthorizationModel();
 
             var entityOrganization = entity.Organization;
             var entityOrganizationSuppliers = entityOrganization?.Suppliers;
@@ -395,6 +394,10 @@ namespace Core.ApplicationServices.Authorization
         private bool IsContractModuleAdmin(int organizationId)
         {
             return _activeUserContext.HasRole(organizationId, OrganizationRole.ContractModuleAdmin);
+        }
+        private bool EntityHasSupplierAssociatedFields(IEntity entity)
+        {
+            return entity is DataProcessingRegistration;
         }
 
         #region PERMISSIONS
