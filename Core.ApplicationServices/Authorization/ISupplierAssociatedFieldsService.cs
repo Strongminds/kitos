@@ -1,11 +1,11 @@
 ﻿using System;
-using Core.ApplicationServices.Model.GDPR.Write;
+using Core.ApplicationServices.Model;
 
 namespace Core.ApplicationServices.Authorization
 {
     public interface ISupplierAssociatedFieldsService
     {
-        bool RequestsChangesToSupplierAssociatedFields(DataProcessingRegistrationModificationParameters parameters);
-        bool RequestsChangesToNonSupplierAssociatedFields(DataProcessingRegistrationModificationParameters parameters, Guid dataProcessingUuid);
+        bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters);
+        bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, Guid entityUuid);
     }
 }

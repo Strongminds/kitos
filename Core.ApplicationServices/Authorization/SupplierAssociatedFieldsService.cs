@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.GDPR;
+using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
 
@@ -18,21 +19,27 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     {
         _dataProcessingRegistrationApplicationService = dataProcessingRegistrationApplicationService;
     }
-    public bool RequestsChangesToSupplierAssociatedFields(DataProcessingRegistrationModificationParameters parameters)
+    public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
+        if (parameters.GetType() != typeof(DataProcessingRegistrationModificationParameters)) return false;
         //todo add remaining target fields when miol responds. Then also update the inverse check below to ignore those fields
-        var oversight = parameters.Oversight;
+        var dprParams = (DataProcessingRegistrationModificationParameters)parameters;
+       
+        var oversight = dprParams.Oversight;
         return oversight.HasValue && oversight.Value.IsOversightCompleted.HasChange;
     }
 
-    public bool RequestsChangesToNonSupplierAssociatedFields(DataProcessingRegistrationModificationParameters parameters, Guid dataProcessingUuid)
+    public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, Guid dataProcessingUuid)
     {
-        var nameHasChange = parameters.Name.HasChange;
-        var generalHasChange = parameters.General.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.General.Value);
-        var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(parameters.Oversight);
-        var rolesHasChange = parameters.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(parameters.Roles.Value);
-        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(parameters.SystemUsageUuids, dataProcessingUuid);
-        var externalReferencesHasChange = ExternalReferencesHasChange(parameters.ExternalReferences, dataProcessingUuid);
+        if (parameters.GetType() != typeof(DataProcessingRegistrationModificationParameters)) return false;
+        var dprParams = (DataProcessingRegistrationModificationParameters)parameters;
+
+        var nameHasChange = dprParams.Name.HasChange;
+        var generalHasChange = dprParams.General.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.General.Value);
+        var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(dprParams.Oversight);
+        var rolesHasChange = dprParams.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.Roles.Value);
+        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, dataProcessingUuid);
+        var externalReferencesHasChange = ExternalReferencesHasChange(dprParams.ExternalReferences, dataProcessingUuid);
         return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange || externalReferencesHasChange;
     }
 
