@@ -51,15 +51,7 @@ namespace Core.ApplicationServices.Authorization
             var targetOrganizationSuppliers = targetObjectOrganization?.Suppliers;
             if (targetOrganizationSuppliers is { Count: > 0 })
             {
-                foreach (var supplier in targetOrganizationSuppliers)
-                {
-                    var supplierUsers = _userRepository.GetUsersInOrganization(supplier.SupplierId)
-                        .Where(u => u.HasApiAccess ?? false);
-                    if (supplierUsers.Any(u => u.Id == _activeUserContext.UserId))
-                    {
-                        return _authorizationModelFactory.CreateFieldAuthorizationModel();
-                    }
-                }
+                return _authorizationModelFactory.CreateFieldAuthorizationModel();
             }
             return _authorizationModelFactory.CreateCrudAuthorizationModel();
         }

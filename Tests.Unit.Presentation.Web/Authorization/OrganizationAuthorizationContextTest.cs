@@ -583,6 +583,22 @@ namespace Tests.Unit.Presentation.Web.Authorization
         }
 
         [Fact]
+        public void GivenNonSupplierAssociatedEntityType_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
+        {
+            var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+            var organization = new Organization();
+            var entity = new ItSystem()
+            {
+                Organization = organization
+            };
+
+            var result = _sut.GetAuthorizationModel(entity);
+
+            Assert.IsType<CrudAuthorizationModel>(result);
+        }
+
+        [Fact]
         public void GivenNoSuppliersInOrganization_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
         {
             var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
@@ -599,18 +615,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
         }
 
         [Fact]
-        public void GivenThatUserIsSupplierUserForOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
+        public void GivenSuppliesForOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
         {
-            var fieldAuthorizationModel = new Mock<FieldAuthorizationModel>();
-            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel.Object);
+            var fieldAuthorizationModel = new FieldAuthorizationModel(_userContextMock.Object,
+                new Mock<ISupplierAssociatedFieldsService>().Object, _sut, _userRepository.Object);
+            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
             var supplierId = A<int>();
-            var supplierApiUser = new User
-            {
-                Id = A<int>(),
-                HasApiAccess = true,
-            };
-            _userRepository.Setup(_ => _.GetUsersInOrganization(supplierId)).Returns(new List<User>() { supplierApiUser }.AsQueryable());
-            _userContextMock.Setup(_ => _.UserId).Returns(supplierApiUser.Id);
             var organization = new Organization()
             {
                 Suppliers = new List<OrganizationSupplier>(){ new OrganizationSupplier(){ SupplierId = supplierId} }
@@ -623,28 +633,6 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var result = _sut.GetAuthorizationModel(entity);
 
             Assert.IsType<FieldAuthorizationModel>(result);
-        }
-
-        [Fact]
-        public void GivenSuppliersWhereUserDoesNotHaveApiAccess_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
-        {
-            var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
-            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
-            var organization = new Organization()
-            {
-                Suppliers = new List<OrganizationSupplier>()
-                {
-                    new OrganizationSupplier()
-                }
-            };
-            var entity = new DataProcessingRegistration()
-            {
-                Organization = organization
-            }; ;
-
-            var result = _sut.GetAuthorizationModel(entity);
-
-            Assert.IsType<CrudAuthorizationModel>(result);
         }
 
         [Fact]

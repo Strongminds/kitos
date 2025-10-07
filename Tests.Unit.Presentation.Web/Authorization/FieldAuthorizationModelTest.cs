@@ -2,6 +2,7 @@
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.DomainModel;
+using Core.DomainServices;
 using Moq;
 using Xunit;
 
@@ -13,13 +14,15 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private readonly FieldAuthorizationModel _sut;
         private readonly Mock<ISupplierAssociatedFieldsService> _supplierAssociatedFieldsService;
         private readonly Mock<IAuthorizationContext> _authorizationContext;
+        private readonly Mock<IUserRepository> _userRepository;
 
         public FieldAuthorizationModelTest()
         {
             _activeUserContext = new Mock<IOrganizationalUserContext>();
             _supplierAssociatedFieldsService = new Mock<ISupplierAssociatedFieldsService>();
             _authorizationContext = new Mock<IAuthorizationContext>();
-            _sut = new FieldAuthorizationModel(_activeUserContext.Object, _supplierAssociatedFieldsService.Object, _authorizationContext.Object);
+            _userRepository = new Mock<IUserRepository>();
+            _sut = new FieldAuthorizationModel(_activeUserContext.Object, _supplierAssociatedFieldsService.Object, _authorizationContext.Object, _userRepository.Object);
         }
 
         [Fact]
