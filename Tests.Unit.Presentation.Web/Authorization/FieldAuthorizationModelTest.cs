@@ -42,7 +42,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void GivenRequestsNoChangesToSupplierFields_AuthorizeUpdate_Returns_Result_Of_AllowModify(bool expected)
+        public void GivenRequestsNoChangesToSupplierFields_AuthorizeUpdate_Returns_AllowModify(bool expected)
         {
             var entity = new Mock<IEntityOwnedByOrganization>();
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(It.IsAny<DataProcessingRegistrationModificationParameters>())).Returns(false);
@@ -85,6 +85,40 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var result = _sut.AuthorizeUpdate(entity.Object, dprParams);
             
             Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void GivenApiAccess_AuthorizeUpdate_ReturnValue_Depends_On_RequestsChangesToNonSupplierFields(bool requestsNonSupplierChanges)
+        {
+            _activeUserContext.Setup(x => x.IsGlobalAdmin()).Returns(false);
+            var entity = new Mock<IEntityOwnedByOrganization>();
+            var dprParams = new DataProcessingRegistrationModificationParameters();
+            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(dprParams)).Returns(true);
+            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(dprParams, It.IsAny<int>())).Returns(requestsNonSupplierChanges);
+            var supplierId = A<int>();
+            var userId = A<int>();
+            entity.SetupGet(e => e.Organization).Returns(new Organization
+            {
+                Suppliers = new List<OrganizationSupplier>
+                {
+                    new() { SupplierId = supplierId }
+                }
+            });
+            _activeUserContext.Setup(_ => _.UserId).Returns(userId);
+            _userRepository.Setup(_ => _.GetUsersInOrganization(supplierId)).Returns(new List<User>()
+            {
+                new()
+                {
+                    Id = userId,
+                    HasApiAccess = true
+                }
+            }.AsQueryable());
+
+            var result = _sut.AuthorizeUpdate(entity.Object, dprParams);
+
+            Assert.NotEqual(requestsNonSupplierChanges, result);
         }
     }
 }

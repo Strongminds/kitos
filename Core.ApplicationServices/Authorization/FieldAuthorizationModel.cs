@@ -17,12 +17,11 @@ public class FieldAuthorizationModel(IOrganizationalUserContext activeUserContex
         var requestsSupplierFieldChanges = supplierAssociatedFieldsService.RequestsChangesToSupplierAssociatedFields(parameters);
         if (!requestsSupplierFieldChanges) return authorizationContext.AllowModify(entity);
 
-        
         var userHasSupplierApiAccess = UserHasSupplierApiAccess(entity.Organization.Suppliers);
         if (!userHasSupplierApiAccess) return false;
 
-
-        return false;
+        var requestsNonSupplierFieldChanges = supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity.Id);
+        return !requestsNonSupplierFieldChanges;
     }
 
     private bool UserHasSupplierApiAccess(IEnumerable<OrganizationSupplier> suppliers)
