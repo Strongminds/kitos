@@ -1,15 +1,15 @@
-﻿using System;
-using Core.ApplicationServices.Model;
+﻿using Core.ApplicationServices.Model;
 using Core.DomainModel;
 
 namespace Core.ApplicationServices.Authorization;
 
-public class FieldAuthorizationModel : IAuthorizationModel
+public class FieldAuthorizationModel(IOrganizationalUserContext activeUserContext) : IAuthorizationModel
 {
     public bool AuthorizeUpdate(
         IEntity entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        throw new NotImplementedException();
+        if (activeUserContext.IsGlobalAdmin()) return true;
+        return false;
     }
 }
