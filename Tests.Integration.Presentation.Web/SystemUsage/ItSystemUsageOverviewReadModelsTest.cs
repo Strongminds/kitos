@@ -1095,8 +1095,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                     lower = 50;
                     upper = 100;
                     break;
-                case UserCount.HUNDREDPLUS:
+                case UserCount.HUNDREDTOFIVEHUNDRED:
                     lower = 100;
+                    upper = 500;
+                    break;
+                case UserCount.FIVEHUNDREDPLUS:
+                    lower = 500;
                     break;
                 case UserCount.UNDECIDED:
                     return null;
