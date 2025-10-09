@@ -190,10 +190,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
             }
             else
             {
-                var noChangesParameters = new UpdatedDataProcessingRegistrationOversightDateParameters();
-                noChangesParameters.CompletedAt = OptionalValueChange<DateTime>.None;
-                noChangesParameters.Remark = OptionalValueChange<string>.None;
-                noChangesParameters.OversightReportLink = OptionalValueChange<string>.None;
+                var noChangesParameters = new UpdatedDataProcessingRegistrationOversightDateParameters
+                    {
+                        CompletedAt = OptionalValueChange<DateTime>.None,
+                        Remark = OptionalValueChange<string>.None,
+                        OversightReportLink = OptionalValueChange<string>.None
+                    };
                 requestsChangesToSupplierAssociatedFields =
                     _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
                 requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
@@ -210,10 +212,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void
             DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True(bool completedAt, bool remark, bool oversightReportLink)
         {
-            var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters();
-            parameters.CompletedAt = OptionalValueChange<DateTime>.None;
-            parameters.Remark = OptionalValueChange<string>.None;
-            parameters.OversightReportLink = OptionalValueChange<string>.None;
+            var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters
+            {
+                CompletedAt = OptionalValueChange<DateTime>.None,
+                Remark = OptionalValueChange<string>.None,
+                OversightReportLink = OptionalValueChange<string>.None
+            };
             if (completedAt)
                 parameters.CompletedAt = A<DateTime>().AsChangedValue();
             if (remark)

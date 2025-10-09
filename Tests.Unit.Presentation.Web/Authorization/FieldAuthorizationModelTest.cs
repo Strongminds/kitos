@@ -72,7 +72,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void GivenUserHasSupplierApiAccess_AuthorizeUpdate_ReturnValue_Depends_On_RequestsChangesToNonSupplierFields(bool requestsNonSupplierChanges)
+        public void GivenUserHasSupplierApiAccess_AuthorizeUpdate_ReturnValue_Depends_On_RequestsChangesToNonSupplierFields_And_AllowModify(bool requestsNonSupplierChanges)
         {
             IsUserGlobalAdmin(false);
             var entity = new Mock<IEntityOwnedByOrganization>();
@@ -80,10 +80,20 @@ namespace Tests.Unit.Presentation.Web.Authorization
             RequestsChangesToSupplierAssociatedFieldsReturns(true, parameters);
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(parameters.Object, It.IsAny<int>())).Returns(requestsNonSupplierChanges);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
+            var allowModify = A<bool>();
+            _authorizationContext.Setup(_ => _.AllowModify(entity.Object)).Returns(allowModify);
 
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.NotEqual(requestsNonSupplierChanges, result);
+            if (requestsNonSupplierChanges)
+            {
+                Assert.False(result);
+                }
+            else
+            {
+                Assert.Equal(allowModify, result);
+                _authorizationContext.Verify(_ => _.AllowModify(entity.Object));
+            }
         }
 
         private void IsUserGlobalAdmin(bool value)

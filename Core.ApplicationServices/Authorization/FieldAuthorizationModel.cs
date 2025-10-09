@@ -19,9 +19,11 @@ public class FieldAuthorizationModel(IOrganizationalUserContext activeUserContex
 
         var userHasSupplierApiAccess = UserHasSupplierApiAccess(entity.Organization.Suppliers);
         if (!userHasSupplierApiAccess) return false;
-
+        
         var requestsNonSupplierFieldChanges = supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity.Id);
-        return !requestsNonSupplierFieldChanges;
+        if (requestsNonSupplierFieldChanges) return false;
+
+        return authorizationContext.AllowModify(entity);
     }
 
     private bool UserHasSupplierApiAccess(IEnumerable<OrganizationSupplier> suppliers)
