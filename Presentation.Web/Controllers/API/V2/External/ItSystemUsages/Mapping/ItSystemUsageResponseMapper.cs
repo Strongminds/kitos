@@ -293,7 +293,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserCount.BELOWTEN => new ExpectedUsersIntervalDTO { LowerBound = 0, UpperBound = 9 },
                 UserCount.TENTOFIFTY => new ExpectedUsersIntervalDTO { LowerBound = 10, UpperBound = 50 },
                 UserCount.FIFTYTOHUNDRED => new ExpectedUsersIntervalDTO { LowerBound = 50, UpperBound = 100 },
-                UserCount.HUNDREDPLUS => new ExpectedUsersIntervalDTO { LowerBound = 100 },
+                UserCount.HUNDREDTOFIVEHUNDRED => new ExpectedUsersIntervalDTO { LowerBound = 100, UpperBound = 500},
+                UserCount.FIVEHUNDREDPLUS => new ExpectedUsersIntervalDTO { LowerBound = 500},
                 _ => throw new ArgumentOutOfRangeException(nameof(systemUsage.UserCount))
             };
         }
