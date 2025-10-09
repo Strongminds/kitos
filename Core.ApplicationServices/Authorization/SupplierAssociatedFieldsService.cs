@@ -22,7 +22,6 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
         if (parameters.GetType() != typeof(DataProcessingRegistrationModificationParameters)) return false;
-        //todo add remaining target fields when miol responds. Then also update the inverse check below to ignore those fields
         var dprParams = (DataProcessingRegistrationModificationParameters)parameters;
        
         var oversight = dprParams.Oversight;
@@ -72,8 +71,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                value.OversightInterval.HasChange ||
                value.OversightIntervalRemark.HasChange ||
                value.OversightCompletedRemark.HasChange ||
-               value.OversightScheduledInspectionDate.HasChange ||
-               value.OversightDates.HasChange;
+               value.OversightScheduledInspectionDate.HasChange;
     }
 
     private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, int entityId)
