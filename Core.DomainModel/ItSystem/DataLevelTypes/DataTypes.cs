@@ -21,7 +21,8 @@
         BELOWTEN = 0,
         TENTOFIFTY = 1,
         FIFTYTOHUNDRED = 2,
-        HUNDREDPLUS = 3,
+        HUNDREDTOFIVEHUNDRED = 3,
+        FIVEHUNDREDPLUS = 5,
         UNDECIDED = 4
     }
 

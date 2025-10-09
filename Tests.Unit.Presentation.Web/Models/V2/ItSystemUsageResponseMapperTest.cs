@@ -655,7 +655,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     UserCount.BELOWTEN => (0, 9),
                     UserCount.TENTOFIFTY => (10, 50),
                     UserCount.FIFTYTOHUNDRED => (50, 100),
-                    UserCount.HUNDREDPLUS => (100, null),
+                    UserCount.HUNDREDTOFIVEHUNDRED => (100, null),
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 Assert.Equal(expected, (generalNumberOfExpectedUsers.LowerBound, generalNumberOfExpectedUsers.UpperBound));
