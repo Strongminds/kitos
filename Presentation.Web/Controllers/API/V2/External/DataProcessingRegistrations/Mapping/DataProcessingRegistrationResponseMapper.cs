@@ -51,7 +51,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 Read = permissions.BasePermissions.Read,
                 FieldPermissions = new ModuleFieldPermissionsResponseDTO
                 {
-                    Fields = permissions.FieldPermissions.Fields.Select(MapPermissions)
+                    Fields = permissions.FieldPermissions.Fields.Select(MapPermissions).ToList()
                 }
             };
         }
