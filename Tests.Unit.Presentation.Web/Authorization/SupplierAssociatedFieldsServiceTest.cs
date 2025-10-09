@@ -172,18 +172,38 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.False(result);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public void
-            DprParams_GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse()
+            DprParams_GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse(bool dprParams)
         {
-            var noChangesParameters = new DataProcessingRegistrationModificationParameters();
-
-            var requestsChangesToSupplierAssociatedFields =
-                _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-            var requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
+            bool requestsChangesToSupplierAssociatedFields;
+            bool requestsChangesToNonSupplierAssociatedFields;
+            if (dprParams)
+            {
+                var noChangesParameters = new DataProcessingRegistrationModificationParameters();
+                requestsChangesToSupplierAssociatedFields =
+                    _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
+                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
+            }
+            else
+            {
+                var noChangesParameters = new UpdatedDataProcessingRegistrationOversightDateParameters();
+                requestsChangesToSupplierAssociatedFields =
+                    _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
+                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
+            }
 
             Assert.False(requestsChangesToSupplierAssociatedFields);
             Assert.False(requestsChangesToNonSupplierAssociatedFields);
+        }
+
+        [Fact]
+        public void
+            DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True()
+        {
+
         }
     }
 }

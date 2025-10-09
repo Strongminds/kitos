@@ -23,8 +23,15 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     {
         var parametersType = parameters.GetType();
         if (parametersType == typeof(DataProcessingRegistrationModificationParameters)) return CheckSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters);
-       
+        if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDataParameters)) return
+            CheckSupplierChangesToDprOversightDateParams(
+                (UpdatedDataProcessingRegistrationOversightDataParameters)parameters);
         return false; //todo make default return an error?
+    }
+
+    private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDataParameters parameters)
+    {
+        return false;
     }
 
     private bool CheckSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams)
@@ -38,7 +45,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var parametersType = parameters.GetType();
         if (parametersType == typeof(DataProcessingRegistrationModificationParameters))
             return CheckNonSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters, entityId);
+        if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDataParameters))
+            return CheckNonSupplierChangesToDprOversightDateParams((UpdatedDataProcessingRegistrationOversightDataParameters)parameters);
         return false; //todo make default return an error?
+    }
+
+    private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDataParameters parameters)
+    {
+        return false;
     }
 
     private bool CheckNonSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams, int entityId)
