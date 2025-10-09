@@ -88,7 +88,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (requestsNonSupplierChanges)
             {
                 Assert.False(result);
-                }
+            }
             else
             {
                 Assert.Equal(allowModify, result);

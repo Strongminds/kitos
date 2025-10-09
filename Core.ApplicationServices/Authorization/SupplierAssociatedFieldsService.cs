@@ -26,7 +26,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDateParameters)) return
             CheckSupplierChangesToDprOversightDateParams(
                 (UpdatedDataProcessingRegistrationOversightDateParameters)parameters);
-        return false; //todo make default return an error?
+        return false;
     }
 
     private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
@@ -47,7 +47,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
             return CheckNonSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters, entityId);
         if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDataParameters))
             return CheckNonSupplierChangesToDprOversightDateParams((UpdatedDataProcessingRegistrationOversightDateParameters)parameters);
-        return false; //todo make default return an error?
+        return false;
     }
 
     private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
