@@ -620,7 +620,15 @@ namespace Core.ApplicationServices.GDPR
                         return ResourcePermissionsResult
                             .FromResolutionResult(system, _authorizationContext)
                             .Select(permissions =>
-                                new DataProcessingRegistrationPermissions(permissions));
+                                new DataProcessingRegistrationPermissions(permissions,
+                                    ModuleFieldsPermissionsResult.Create(new List<FieldPermissionsResult>
+                                    {
+                                        new() { Enabled = false, Key = "Oversight.OversightDates" },
+                                        new() { Enabled = false, Key = "Oversight.OversightDates.ConcludedAt" },
+                                        new() { Enabled = false, Key = "Oversight.OversightDates.Remark" },
+                                        new() { Enabled = false, Key = "Oversight.OversightDates.OversightReportLink.Name" },
+                                        new() { Enabled = false, Key = "Oversight.OversightDates.OversightReportLink.Url" }
+                                    })));
                     });
         }
         private Result<DataProcessingRegistrationOversightDate, OperationError> Remove(DataProcessingRegistration registration, int oversightId)
