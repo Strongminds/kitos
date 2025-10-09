@@ -1909,11 +1909,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Fields = new List<FieldPermissionsResult>
                 {
-                    new() { Enabled = false, Key = "Oversight.OversightDates" },
-                    new() { Enabled = false, Key = "Oversight.OversightDates.ConcludedAt" },
-                    new() { Enabled = false, Key = "Oversight.OversightDates.Remark" },
-                    new() { Enabled = true, Key = "Oversight.OversightDates.OversightReportLink.Name" },
-                    new() { Enabled = false, Key = "Oversight.OversightDates.OversightReportLink.Url" }
+                    new() { Enabled = false, Key = "OversightDates.Collection" },
+                    new() { Enabled = false, Key = "OversightDates.OversightDate" },
+                    new() { Enabled = false, Key = "OversightDates.OversightRemark" },
+                    new() { Enabled = true, Key = "OversightDates.OversightReportLink.Name" },
+                    new() { Enabled = false, Key = "OversightDates.OversightReportLink.Url" }
                 }
             }), permissions);
         }
