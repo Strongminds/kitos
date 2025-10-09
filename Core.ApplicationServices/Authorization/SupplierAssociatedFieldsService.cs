@@ -23,15 +23,15 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     {
         var parametersType = parameters.GetType();
         if (parametersType == typeof(DataProcessingRegistrationModificationParameters)) return CheckSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters);
-        if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDataParameters)) return
+        if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDateParameters)) return
             CheckSupplierChangesToDprOversightDateParams(
-                (UpdatedDataProcessingRegistrationOversightDataParameters)parameters);
+                (UpdatedDataProcessingRegistrationOversightDateParameters)parameters);
         return false; //todo make default return an error?
     }
 
-    private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDataParameters parameters)
+    private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
-        return false;
+        return parameters.CompletedAt.HasChange || parameters.Remark.HasChange || parameters.OversightReportLink.HasChange;
     }
 
     private bool CheckSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams)
@@ -46,11 +46,11 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         if (parametersType == typeof(DataProcessingRegistrationModificationParameters))
             return CheckNonSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters, entityId);
         if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDataParameters))
-            return CheckNonSupplierChangesToDprOversightDateParams((UpdatedDataProcessingRegistrationOversightDataParameters)parameters);
+            return CheckNonSupplierChangesToDprOversightDateParams((UpdatedDataProcessingRegistrationOversightDateParameters)parameters);
         return false; //todo make default return an error?
     }
 
-    private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDataParameters parameters)
+    private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
         return false;
     }

@@ -5,6 +5,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
@@ -176,7 +177,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(true)]
         [InlineData(false)]
         public void
-            DprParams_GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse(bool dprParams)
+            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse(bool dprParams)
         {
             bool requestsChangesToSupplierAssociatedFields;
             bool requestsChangesToNonSupplierAssociatedFields;
@@ -190,6 +191,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             else
             {
                 var noChangesParameters = new UpdatedDataProcessingRegistrationOversightDateParameters();
+                noChangesParameters.CompletedAt = OptionalValueChange<DateTime>.None;
+                noChangesParameters.Remark = OptionalValueChange<string>.None;
+                noChangesParameters.OversightReportLink = OptionalValueChange<string>.None;
                 requestsChangesToSupplierAssociatedFields =
                     _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
                 requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
@@ -199,11 +203,27 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.False(requestsChangesToNonSupplierAssociatedFields);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
         public void
-            DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True()
+            DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True(bool completedAt, bool remark, bool oversightReportLink)
         {
+            var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters();
+            parameters.CompletedAt = OptionalValueChange<DateTime>.None;
+            parameters.Remark = OptionalValueChange<string>.None;
+            parameters.OversightReportLink = OptionalValueChange<string>.None;
+            if (completedAt)
+                parameters.CompletedAt = A<DateTime>().AsChangedValue();
+            if (remark)
+                parameters.Remark = A<string>().AsChangedValue();
+            if (oversightReportLink)
+                parameters.OversightReportLink = A<string>().AsChangedValue();
 
+            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+
+            Assert.True(result);
         }
     }
 }
