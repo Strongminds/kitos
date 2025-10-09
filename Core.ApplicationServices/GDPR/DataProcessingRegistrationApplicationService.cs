@@ -626,7 +626,7 @@ namespace Core.ApplicationServices.GDPR
                                         new() { Enabled = false, Key = "Oversight.OversightDates" },
                                         new() { Enabled = false, Key = "Oversight.OversightDates.ConcludedAt" },
                                         new() { Enabled = false, Key = "Oversight.OversightDates.Remark" },
-                                        new() { Enabled = false, Key = "Oversight.OversightDates.OversightReportLink.Name" },
+                                        new() { Enabled = true, Key = "Oversight.OversightDates.OversightReportLink.Name" },
                                         new() { Enabled = false, Key = "Oversight.OversightDates.OversightReportLink.Url" }
                                     })));
                     });
