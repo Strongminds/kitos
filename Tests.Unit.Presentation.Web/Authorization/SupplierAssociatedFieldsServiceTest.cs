@@ -212,6 +212,51 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void
             DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True(bool completedAt, bool remark, bool oversightReportLink)
         {
+            var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
+
+            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void GivenNoChanges_RequestsChangesToSupplierAssociatedFieldsInEnumerable_Returns_False()
+        {
+            var parametersEnumerable = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            {
+                new()
+                {
+                    CompletedAt = OptionalValueChange<DateTime>.None,
+                    OversightReportLink = OptionalValueChange<string>.None,
+                    Remark = OptionalValueChange<string>.None
+                }
+            };
+
+            var requestsChangesToSupplierAssociatedFields = _sut.RequestsChangesToSupplierAssociatedFieldsInEnumerable(parametersEnumerable);
+
+            Assert.False(requestsChangesToSupplierAssociatedFields);
+        }
+
+        [Theory]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        public void GivenChangeToSupplierField_RequestsChangesToSupplierAssociatedFieldsInEnumerable_Returns_True(
+            bool completedAt, bool remark, bool oversightReportLink)
+        {
+            var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
+            var parametersEnumerable = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            {
+                parameters
+            };
+            
+            var result = _sut.RequestsChangesToSupplierAssociatedFieldsInEnumerable(parametersEnumerable);
+
+            Assert.True(result);
+        }
+
+        private UpdatedDataProcessingRegistrationOversightDateParameters GetOversightDateParametersWithChange(bool completedAt, bool remark, bool oversightReportLink)
+        {
             var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters
             {
                 CompletedAt = OptionalValueChange<DateTime>.None,
@@ -225,9 +270,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (oversightReportLink)
                 parameters.OversightReportLink = A<string>().AsChangedValue();
 
-            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
-
-            Assert.True(result);
+            return parameters;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Core.ApplicationServices.Model;
+﻿using System.Collections.Generic;
+using Core.ApplicationServices.Model;
 
 namespace Core.ApplicationServices.Authorization
 {
@@ -6,5 +7,6 @@ namespace Core.ApplicationServices.Authorization
     {
         bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters);
         bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, int entityId);
+        bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable);
     }
 }

@@ -50,6 +50,12 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return false;
     }
 
+    public bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable)
+    {
+        var results = parametersEnumerable.Select(RequestsChangesToSupplierAssociatedFields);
+        return results.Any(r => r);
+    }
+
     private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
         return false;
