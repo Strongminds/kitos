@@ -612,6 +612,7 @@ namespace Core.ApplicationServices.GDPR
 
         private Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> systemResult)
         {
+            //TODO: Extend with isSupplier used logic when implemented
             return systemResult
                 .Transform
                 (
@@ -623,11 +624,11 @@ namespace Core.ApplicationServices.GDPR
                                 new DataProcessingRegistrationPermissions(permissions,
                                     ModuleFieldsPermissionsResult.Create(new List<FieldPermissionsResult>
                                     {
-                                        new() { Enabled = false, Key = "Oversight.OversightDates" },
-                                        new() { Enabled = false, Key = "Oversight.OversightDates.ConcludedAt" },
-                                        new() { Enabled = false, Key = "Oversight.OversightDates.Remark" },
-                                        new() { Enabled = true, Key = "Oversight.OversightDates.OversightReportLink.Name" },
-                                        new() { Enabled = false, Key = "Oversight.OversightDates.OversightReportLink.Url" }
+                                        new() { Enabled = false, Key = "OversightDates.Collection" },
+                                        new() { Enabled = false, Key = "OversightDates.OversightDate" },
+                                        new() { Enabled = false, Key = "OversightDates.OversightRemark" },
+                                        new() { Enabled = true, Key = "OversightDates.OversightReportLink.Name" },
+                                        new() { Enabled = false, Key = "OversightDates.OversightReportLink.Url" }
                                     })));
                     });
         }
