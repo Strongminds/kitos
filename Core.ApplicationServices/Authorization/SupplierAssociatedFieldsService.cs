@@ -21,18 +21,28 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     }
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        if (parameters.GetType() != typeof(DataProcessingRegistrationModificationParameters)) return false;
-        var dprParams = (DataProcessingRegistrationModificationParameters)parameters;
+        var parametersType = parameters.GetType();
+        if (parametersType == typeof(DataProcessingRegistrationModificationParameters)) return CheckSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters);
        
+        return false; //todo make default return an error?
+    }
+
+    private bool CheckSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams)
+    {
         var oversight = dprParams.Oversight;
         return oversight.HasValue && oversight.Value.IsOversightCompleted.HasChange;
     }
 
     public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, int entityId)
     {
-        if (parameters.GetType() != typeof(DataProcessingRegistrationModificationParameters)) return false;
-        var dprParams = (DataProcessingRegistrationModificationParameters)parameters;
+        var parametersType = parameters.GetType();
+        if (parametersType == typeof(DataProcessingRegistrationModificationParameters))
+            return CheckNonSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters, entityId);
+        return false; //todo make default return an error?
+    }
 
+    private bool CheckNonSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams, int entityId)
+    {
         var nameHasChange = dprParams.Name.HasChange;
         var generalHasChange = dprParams.General.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.General.Value);
         var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(dprParams.Oversight);

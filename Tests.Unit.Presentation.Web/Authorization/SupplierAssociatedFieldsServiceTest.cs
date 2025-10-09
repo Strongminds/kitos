@@ -37,13 +37,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
         
         [Theory]
         [InlineData(true, false, false, false)]
-        public void GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
+        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
         {
             var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
             
             if (checkIsOversightCompleted)
                 oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
-            //TODO awaiting response from MIOL about what fields to target
     
             var parameters = new DataProcessingRegistrationModificationParameters()
             {
@@ -56,7 +55,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         [Theory]
         [InlineData(true, false, false, false)]
-        public void GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
+        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
         {
             var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
 
@@ -80,7 +79,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(false, false, false, true, false, false)]
         [InlineData(false, false, false, false, true, false)]
         [InlineData(false, false, false, false, false, true)] 
-        public void GivenChangesToANonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(bool addChangeToName, bool addChangeToGeneral,
+        public void DprParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(bool addChangeToName, bool addChangeToGeneral,
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
@@ -130,7 +129,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(false, false, false, true, false, false)]
         [InlineData(false, false, false, false, true, false)]
         [InlineData(false, false, false, false, false, true)]
-        public void GivenChangesToANonSupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsFalse(bool addChangeToName, bool addChangeToGeneral,
+        public void DprParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsFalse(bool addChangeToName, bool addChangeToGeneral,
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
@@ -175,7 +174,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         [Fact]
         public void
-            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse()
+            DprParams_GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse()
         {
             var noChangesParameters = new DataProcessingRegistrationModificationParameters();
 
