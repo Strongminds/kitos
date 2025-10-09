@@ -937,8 +937,9 @@ namespace Tests.Unit.Core.Model
         [InlineData(0, 9, UserCount.BELOWTEN)]
         [InlineData(10, 50, UserCount.TENTOFIFTY)]
         [InlineData(50, 100, UserCount.FIFTYTOHUNDRED)]
-        [InlineData(100, null, UserCount.HUNDREDPLUS)]
-        [InlineData(100, int.MaxValue, UserCount.HUNDREDPLUS)]
+        [InlineData(100, 500, UserCount.HUNDREDTOFIVEHUNDRED)]
+        [InlineData(500, null, UserCount.FIVEHUNDREDPLUS)]
+        [InlineData(500, int.MaxValue, UserCount.FIVEHUNDREDPLUS)]
         public void Can_Change_UserCount(int lower, int? upper, UserCount expectedResult)
         {
             //Arrange

@@ -558,9 +558,12 @@ namespace Core.DomainModel.ItSystemUsage
                 case (50, 100):
                     UserCount = DomainModel.ItSystem.DataTypes.UserCount.FIFTYTOHUNDRED;
                     break;
-                case (100, null):
-                case (100, int.MaxValue):
-                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.HUNDREDPLUS;
+                case (100, 500):
+                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.HUNDREDTOFIVEHUNDRED;
+                    break;
+                case (500, null):
+                case (500, int.MaxValue):
+                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.FIVEHUNDREDPLUS;
                     break;
                 default:
                     return new OperationError("Invalid user count. Please refer to input documentation", OperationFailure.BadInput);
