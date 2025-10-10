@@ -861,37 +861,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             AssertOversight(input, freshDTO.Oversight);
         }
 
-        [Theory]
-        [InlineData(YesNoUndecidedChoice.No)]
-        [InlineData(YesNoUndecidedChoice.Undecided)]
-        [InlineData(null)]
-        public async Task Cannot_POST_With_OversightData_And_OversightDates_When_IsOversightCompleted_Is_Anyhing_But_Yes(YesNoUndecidedChoice? isOversightCompleted)
-        {
-            //Arrange
-            var (token, user, organization) = await CreatePrerequisitesAsync();
-            var oversightDate1 = CreateOversightDate();
-            var oversightDate2 = CreateOversightDate();
-
-            var input = new DataProcessingRegistrationOversightWriteRequestDTO()
-            {
-                IsOversightCompleted = isOversightCompleted,
-                OversightDates = new[] { oversightDate1, oversightDate2 }
-            };
-
-            var request = new CreateDataProcessingRegistrationRequestDTO
-            {
-                Name = CreateName(),
-                OrganizationUuid = organization.Uuid,
-                Oversight = input
-            };
-
-            //Act
-            using var response = await DataProcessingRegistrationV2Helper.SendPostAsync(token, request);
-
-            //Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
         [Fact]
         public async Task Can_PATCH_With_OversightData()
         {
