@@ -87,6 +87,7 @@
     <Compile Include="GDPR\DataProcessingRegistrationValidationError.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationValidationResult.cs" />
     <Compile Include="GDPR\Events\DataProcessingRegistrationRemovedFromItContractEvent.cs" />
+    <Compile Include="IEntityOwnedByOrganization.cs" />
     <Compile Include="IHasDirtyMarking.cs" />
     <Compile Include="IHasReadonlyName.cs" />
     <Compile Include="ISnapshot.cs" />

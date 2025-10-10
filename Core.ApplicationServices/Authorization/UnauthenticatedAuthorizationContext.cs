@@ -1,12 +1,17 @@
-﻿using Core.DomainModel;
+﻿using System;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization
 {
     public class UnauthenticatedAuthorizationContext : IAuthorizationContext
     {
+       public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
+       {
+           throw new NotImplementedException();
+       }
+
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()
         {
             return CrossOrganizationDataReadAccessLevel.None;

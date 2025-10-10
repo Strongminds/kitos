@@ -23,7 +23,8 @@ namespace Core.DomainModel.GDPR
         IEntityWithAdvices,
         IEntityWithUserNotification,
         IHasUuid,
-        IHasDirtyMarking
+        IHasDirtyMarking,
+        IEntityOwnedByOrganization
     {
         public DataProcessingRegistration()
         {
