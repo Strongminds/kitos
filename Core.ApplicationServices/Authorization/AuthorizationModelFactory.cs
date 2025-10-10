@@ -1,6 +1,4 @@
-﻿using Core.DomainServices;
-
-namespace Core.ApplicationServices.Authorization;
+﻿namespace Core.ApplicationServices.Authorization;
 
 public class AuthorizationModelFactory(IAuthorizationContext authorizationContext, IOrganizationalUserContext userContext, ISupplierAssociatedFieldsService supplierAssociatedFieldsService) : IAuthorizationModelFactory
 {

@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
-using Core.DomainModel.Organization;
-using Core.DomainServices;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -13,8 +10,9 @@ public class FieldAuthorizationModel(IOrganizationalUserContext activeUserContex
         IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        // to be safe check if suppliers exist again here to make it safe to use outside orgAuthContext? if none exist, we just go to allowModify(e)
         if (activeUserContext.IsGlobalAdmin()) return true;
+        var organizationHasSuppliers = entity.Organization?.HasSuppliers() ?? false;
+        if (!organizationHasSuppliers) return authorizationContext.AllowModify(entity);
 
         var supplierIds = entity.Organization.Suppliers.Select(x => x.SupplierId);
         var userHasSupplierApiAccess = activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);

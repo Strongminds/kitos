@@ -45,7 +45,7 @@ namespace Core.ApplicationServices.Authorization
         public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
         {
             if (!EntityHasSupplierAssociatedFields(entity)) return _authorizationModelFactory.CreateCrudAuthorizationModel();
-            return (entity.Organization?.Suppliers is { Count: > 0}) //todo make a method on the entity
+            return (entity.Organization?.HasSuppliers() ?? false)
                 ? _authorizationModelFactory.CreateFieldAuthorizationModel()
                 : _authorizationModelFactory.CreateCrudAuthorizationModel();
         }

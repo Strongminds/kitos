@@ -26,6 +26,33 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
         }
 
         [Fact]
+        public void GivenNullSuppliers_HasSuppliers_Returns_False()
+        {
+            _sut.Suppliers = null;
+            var result = _sut.HasSuppliers();
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void GivenEmptySuppliersCollection_HasSuppliers_Returns_False()
+        {
+            _sut.Suppliers = new List<OrganizationSupplier>();
+            var result = _sut.HasSuppliers();
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void GivenSuppliers_HasSuppliers_Returns_True()
+        {
+            _sut.Suppliers = new List<OrganizationSupplier>(){new()};
+            var result = _sut.HasSuppliers();
+
+            Assert.True(result);
+        }
+
+        [Fact]
         public void GivenCompanyTypeIdAndIsSupplierState_UpdateTypeToNonCompany_TogglesOffSupplierState()
         {
             const int companyTypeId = (int)OrganizationTypeKeys.Virksomhed;
