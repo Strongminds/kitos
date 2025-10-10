@@ -25,10 +25,26 @@ namespace Tests.Unit.Presentation.Web.Authorization
         }
 
         [Fact]
+        public void GivenEntityOrParametersIsNull_AuthorizeUpdate_Returns_False()
+        {
+            IsUserGlobalAdmin(false);
+            var entity = SetupEntityWithIdAndSuppliers();
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+
+            var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object);
+            var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null);
+
+            Assert.False(withNullEntity);
+            Assert.False(withNullParameters);
+        }
+
+        [Fact]
         public void GivenUserIsGlobalAdmin_AuthorizeUpdate_Returns_True()
         {
             IsUserGlobalAdmin(true);
-            var result = _sut.AuthorizeUpdate(null, null);
+            var entity = SetupEntityWithIdAndSuppliers();
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
             Assert.True(result);
         }

@@ -10,6 +10,8 @@ public class FieldAuthorizationModel(IOrganizationalUserContext activeUserContex
         IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
+        if (entity == null || parameters == null) return false;
+
         if (activeUserContext.IsGlobalAdmin()) return true;
         var organizationHasSuppliers = entity.Organization?.HasSuppliers() ?? false;
         if (!organizationHasSuppliers) return authorizationContext.AllowModify(entity);
