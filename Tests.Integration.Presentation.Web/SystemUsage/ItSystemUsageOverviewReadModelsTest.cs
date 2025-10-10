@@ -1087,17 +1087,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                     lower = 0;
                     upper = 9;
                     break;
-                case UserCount.TENTOFIFTY:
+                case UserCount.TENTOFORTYNINE:
                     lower = 10;
-                    upper = 50;
+                    upper = 49;
                     break;
-                case UserCount.FIFTYTOHUNDRED:
+                case UserCount.FIFTYTONINETYNINE:
                     lower = 50;
-                    upper = 100;
+                    upper = 99;
                     break;
-                case UserCount.HUNDREDTOFIVEHUNDRED:
+                case UserCount.HUNDREDTOFOURHUNDREDNINETYNINE:
                     lower = 100;
-                    upper = 500;
+                    upper = 499;
                     break;
                 case UserCount.FIVEHUNDREDPLUS:
                     lower = 500;

@@ -552,14 +552,14 @@ namespace Core.DomainModel.ItSystemUsage
                 case (0, 9):
                     UserCount = DomainModel.ItSystem.DataTypes.UserCount.BELOWTEN;
                     break;
-                case (10, 50):
-                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.TENTOFIFTY;
+                case (10, 49):
+                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.TENTOFORTYNINE;
                     break;
-                case (50, 100):
-                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.FIFTYTOHUNDRED;
+                case (50, 99):
+                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.FIFTYTONINETYNINE;
                     break;
-                case (100, 500):
-                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.HUNDREDTOFIVEHUNDRED;
+                case (100, 499):
+                    UserCount = DomainModel.ItSystem.DataTypes.UserCount.HUNDREDTOFOURHUNDREDNINETYNINE;
                     break;
                 case (500, null):
                 case (500, int.MaxValue):
