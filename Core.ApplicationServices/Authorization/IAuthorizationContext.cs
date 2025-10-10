@@ -1,5 +1,4 @@
-﻿using System;
-using Core.DomainModel;
+﻿using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Authorization;
 

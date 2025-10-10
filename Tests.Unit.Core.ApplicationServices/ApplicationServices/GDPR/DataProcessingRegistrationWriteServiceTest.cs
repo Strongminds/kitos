@@ -4,6 +4,7 @@ using System.Linq;
 using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.GDPR.Write;
@@ -40,6 +41,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<ITransactionManager> _transactionManagerMock;
         private readonly Mock<IDatabaseControl> _databaseControlMock;
         private readonly Mock<IAssignmentUpdateService> _assignmentUpdateServiceMock;
+        private readonly Mock<IAuthorizationContext> _authorizationContext;
 
         public DataProcessingRegistrationWriteServiceTest()
         {
@@ -50,6 +52,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _transactionManagerMock = new Mock<ITransactionManager>();
             _databaseControlMock = new Mock<IDatabaseControl>();
             _assignmentUpdateServiceMock = new Mock<IAssignmentUpdateService>();
+            _authorizationContext = new Mock<IAuthorizationContext>();
             _sut = new DataProcessingRegistrationWriteService(
                 _dprServiceMock.Object,
                 _identityResolverMock.Object,
@@ -58,7 +61,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 _domainEventsMock.Object,
                 _transactionManagerMock.Object,
                 _databaseControlMock.Object,
-                _assignmentUpdateServiceMock.Object);
+                _assignmentUpdateServiceMock.Object,
+                _authorizationContext.Object);
         }
         protected override void OnFixtureCreated(Fixture fixture)
         {
@@ -2293,7 +2297,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
 
         [Fact]
-        public void Can_AddOversight()
+        public void Can_AddOversightDate()
         {
             // Arrange
             var registrationUuid = A<Guid>();
@@ -2315,7 +2319,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(expectedOversightDate));
 
             // Act
-            var result = _sut.AddOversight(registrationUuid, parameters);
+            var result = _sut.AddOversightDate(registrationUuid, parameters);
 
             // Assert
             Assert.True(result.Ok);
@@ -2323,7 +2327,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
         [Fact]
-        public void Can_UpdateOversight()
+        public void Can_UpdateOversightDate()
         {
             // Arrange
             var registrationUuid = A<Guid>();
@@ -2347,9 +2351,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _dprServiceMock
                 .Setup(x => x.GetByUuid(registrationUuid))
                 .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
+            SetupAuthorizationModelReturns(true, dpr, parameters);
 
             // Act
-            var result = _sut.UpdateOversight(registrationUuid, oversightDateUuid, parameters);
+            var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
 
             // Assert
             Assert.True(result.Ok);
@@ -2358,7 +2363,40 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
         [Fact]
-        public void Can_DeleteOversight()
+        public void Given_NegativeResponseFromAuthorizationModel_UpdateOversightDate_Returns_ForbiddenError()
+        {
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            var registrationUuid = A<Guid>();
+            var oversightDateUuid = A<Guid>();
+            var dpr = new DataProcessingRegistration()
+            {
+                OversightDates = new List<DataProcessingRegistrationOversightDate>()
+                {
+                    new()
+                    {
+                        Uuid = oversightDateUuid,
+                        Id = A<int>()
+                    }
+                }
+            };
+            _dprServiceMock.Setup(_ => _.GetByUuid(registrationUuid)).Returns(dpr);
+            SetupAuthorizationModelReturns(false, dpr, parameters);
+
+            var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error);
+        }
+
+        private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+        {
+            var authorizationModel = new Mock<IAuthorizationModel>();
+            _authorizationContext.Setup(_ => _.GetAuthorizationModel(dpr)).Returns(authorizationModel.Object);
+            authorizationModel.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns(value);
+        }
+
+        [Fact]
+        public void Can_DeleteOversightDate()
         {
             // Arrange
             var registrationUuid = A<Guid>();
@@ -2386,7 +2424,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(oversightDate));
 
             // Act
-            var result = _sut.DeleteOversight(registrationUuid, oversightDateUuid);
+            var result = _sut.DeleteOversightDate(registrationUuid, oversightDateUuid);
 
             // Assert
             Assert.True(result.IsNone);

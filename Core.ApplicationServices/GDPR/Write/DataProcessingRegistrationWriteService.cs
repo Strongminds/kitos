@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Generic.Write;
 using Core.ApplicationServices.Helpers;
@@ -36,6 +37,7 @@ namespace Core.ApplicationServices.GDPR.Write
         private readonly ITransactionManager _transactionManager;
         private readonly IDatabaseControl _databaseControl;
         private readonly IAssignmentUpdateService _assignmentUpdateService;
+        private readonly IAuthorizationContext authorizationContext;
 
         public DataProcessingRegistrationWriteService(
             IDataProcessingRegistrationApplicationService applicationService,
@@ -45,7 +47,8 @@ namespace Core.ApplicationServices.GDPR.Write
             IDomainEvents domainEvents,
             ITransactionManager transactionManager,
             IDatabaseControl databaseControl,
-            IAssignmentUpdateService assignmentUpdateService)
+            IAssignmentUpdateService assignmentUpdateService, 
+            IAuthorizationContext authorizationContext)
         {
             _applicationService = applicationService;
             _entityIdentityResolver = entityIdentityResolver;
@@ -55,6 +58,7 @@ namespace Core.ApplicationServices.GDPR.Write
             _transactionManager = transactionManager;
             _databaseControl = databaseControl;
             _assignmentUpdateService = assignmentUpdateService;
+            this.authorizationContext = authorizationContext;
         }
 
         public Result<DataProcessingRegistration, OperationError> Create(Guid organizationUuid, DataProcessingRegistrationModificationParameters parameters)
@@ -194,10 +198,14 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Bind(registration => registration.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate));
         }
 
-        private static Result<DataProcessingRegistration, OperationError> PerformOversightDateUpdates(
+        private Result<DataProcessingRegistration, OperationError> PerformOversightDateUpdates(
             DataProcessingRegistration registration, (int id, UpdatedDataProcessingRegistrationOversightDateParameters parameters) methodParameters)
         {
+            var authorizationModel = authorizationContext.GetAuthorizationModel(registration);
             var parameters = methodParameters.parameters;
+            var authorizeUpdate = authorizationModel.AuthorizeUpdate(registration, parameters);
+            if (!authorizeUpdate) return new OperationError($"User is unauthorized to update oversight date on Data Processing Registration with uuid: {registration.Uuid}", OperationFailure.Forbidden);
+            
             var oversightDateId = methodParameters.id;
             return registration.WithOptionalUpdate(parameters.CompletedAt,
                     (dpr, changedDate) => dpr.ModifyOversightDateDate(oversightDateId, changedDate))
