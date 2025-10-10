@@ -5,9 +5,12 @@ namespace Core.ApplicationServices.Model.GDPR
     public class DataProcessingRegistrationPermissions
     {
         public ResourcePermissionsResult BasePermissions { get; }
-        public DataProcessingRegistrationPermissions(ResourcePermissionsResult basePermissions)
+        public ModuleFieldsPermissionsResult FieldPermissions { get; set; }
+        
+        public DataProcessingRegistrationPermissions(ResourcePermissionsResult basePermissions, ModuleFieldsPermissionsResult fieldPermissions)
         {
             BasePermissions = basePermissions;
+            FieldPermissions = fieldPermissions;
         }
 
     }

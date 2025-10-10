@@ -1905,7 +1905,17 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             var permissions = result.Value;
-            Assert.Equivalent(new DataProcessingRegistrationPermissions(new ResourcePermissionsResult(read, modify, delete)), permissions);
+            Assert.Equivalent(new DataProcessingRegistrationPermissions(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
+            {
+                Fields = new List<FieldPermissionsResult>
+                {
+                    new() { Enabled = false, Key = "OversightDates.Collection" },
+                    new() { Enabled = false, Key = "OversightDates.OversightDate" },
+                    new() { Enabled = false, Key = "OversightDates.OversightRemark" },
+                    new() { Enabled = true, Key = "OversightDates.OversightReportLink.Name" },
+                    new() { Enabled = false, Key = "OversightDates.OversightReportLink.Url" }
+                }
+            }), permissions);
         }
         
         [Theory]

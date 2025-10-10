@@ -635,6 +635,8 @@
     <Compile Include="Models\API\V2\Request\User\OrganizationRoleChoice.cs" />
     <Compile Include="Models\API\V2\Request\User\UpdateUserRequestDTO.cs" />
     <Compile Include="Models\API\V2\Response\Contract\ItContractHierarchyNodeResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Response\Shared\FieldPermissionsResponseDTO.cs" />
+    <Compile Include="Models\API\V2\Response\Shared\ModuleFieldPermissionsResponseDTO.cs" />
     <Compile Include="Models\API\V2\Response\System\ItSystemHierarchyNodeResponseDTO.cs" />
     <Compile Include="Models\API\V2\Types\DataProcessing\CreateOversightDateDTO.cs" />
     <Compile Include="Models\API\V2\Types\DataProcessing\IOversightDateDTO.cs" />

@@ -4,5 +4,6 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
 {
     public class DataProcessingRegistrationPermissionsResponseDTO : ResourcePermissionsResponseDTO
     {
+        public ModuleFieldPermissionsResponseDTO FieldPermissions { get; set; }
     }
 }

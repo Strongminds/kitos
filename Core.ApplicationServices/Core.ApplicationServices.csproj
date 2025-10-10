@@ -137,6 +137,8 @@
     <Compile Include="Authentication\KitosInternalTokenIssuer.cs" />
     <Compile Include="Authentication\TokenValidator.cs" />
     <Compile Include="Authorization\CommandPermissionResult.cs" />
+    <Compile Include="Authorization\FieldPermissionsResult.cs" />
+    <Compile Include="Authorization\ModuleFieldsPermissionsResult.cs" />
     <Compile Include="Authorization\Permissions\ChangeLegalSystemPropertiesPermission.cs" />
     <Compile Include="Generic\EntityTreeUuidCollector.cs" />
     <Compile Include="Generic\ExtendedExtendedEntityIdentityResolverService.cs" />
