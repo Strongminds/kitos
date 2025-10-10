@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
-using Core.DomainServices;
 using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -17,15 +15,13 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private readonly FieldAuthorizationModel _sut;
         private readonly Mock<ISupplierAssociatedFieldsService> _supplierAssociatedFieldsService;
         private readonly Mock<IAuthorizationContext> _authorizationContext;
-        private readonly Mock<IUserRepository> _userRepository;
 
         public FieldAuthorizationModelTest()
         {
             _activeUserContext = new Mock<IOrganizationalUserContext>();
             _supplierAssociatedFieldsService = new Mock<ISupplierAssociatedFieldsService>();
             _authorizationContext = new Mock<IAuthorizationContext>();
-            _userRepository = new Mock<IUserRepository>();
-            _sut = new FieldAuthorizationModel(_activeUserContext.Object, _supplierAssociatedFieldsService.Object, _authorizationContext.Object, _userRepository.Object);
+            _sut = new FieldAuthorizationModel(_activeUserContext.Object, _supplierAssociatedFieldsService.Object, _authorizationContext.Object);
         }
 
         [Fact]
@@ -131,7 +127,6 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private void SetupDoesUserHaveSupplierApiAccess(bool value, Mock<IEntityOwnedByOrganization> entity)
         {
             var supplierId = A<int>();
-            var userId = A<int>();
             entity.SetupGet(e => e.Organization).Returns(new Organization
             {
                 Suppliers = new List<OrganizationSupplier>
@@ -139,15 +134,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
                     new() { SupplierId = supplierId }
                 }
             });
-            _activeUserContext.Setup(_ => _.UserId).Returns(userId);
-            _userRepository.Setup(_ => _.GetUsersInOrganization(supplierId)).Returns(new List<User>()
-            {
-                new()
-                {
-                    Id = userId,
-                    HasApiAccess = value
-                }
-            }.AsQueryable());
-        }
+            _activeUserContext.Setup(_ => _.OrganizationIds).Returns(new List<int>(){A<int>()});
+            _activeUserContext.Setup(_ => _.IsSupplierApiUserForOrganizationWithSuppliers(It.IsAny<IEnumerable<int>>()))
+                .Returns(value);
+       }
     }
 }

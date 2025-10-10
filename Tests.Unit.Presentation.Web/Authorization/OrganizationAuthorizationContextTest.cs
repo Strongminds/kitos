@@ -618,7 +618,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void GivenSuppliesForOrganization_GetAuthorizationModel_ReturnsFieldAuthorizationModel()
         {
             var fieldAuthorizationModel = new FieldAuthorizationModel(_userContextMock.Object,
-                new Mock<ISupplierAssociatedFieldsService>().Object, _sut, _userRepository.Object);
+                new Mock<ISupplierAssociatedFieldsService>().Object, _sut);
             _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
             var supplierId = A<int>();
             var organization = new Organization()

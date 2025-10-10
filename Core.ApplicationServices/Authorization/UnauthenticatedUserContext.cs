@@ -58,6 +58,11 @@ namespace Core.ApplicationServices.Authorization
             return false;
         }
 
+        public bool IsSupplierApiUserForOrganizationWithSuppliers(IEnumerable<int> supplierIds)
+        {
+            return false;
+        }
+
         public bool IsSupplierUserFor(Guid organizationUuid)
         {
             return false;
