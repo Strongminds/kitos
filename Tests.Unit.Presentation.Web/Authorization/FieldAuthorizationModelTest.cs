@@ -36,11 +36,27 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        public void GivenOrgHasNoSuppliers_AuthorizeUpdate_Returns_AllowModifyResult(bool allowModifyResult)
+        {
+            IsUserGlobalAdmin(false);
+            var entity = SetupEntityWithIdAndSuppliers(false);
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+
+            SetupAllowModifyReturns(allowModifyResult, entity.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.Equal(allowModifyResult, result);
+            VerifyAllowModify(entity.Object);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public void GivenSupplierApiUser_RequestsChangesToNonSupplierFields_AuthorizeUpdate_Returns_AllowModifyResult(bool allowModifyResult)
         {
             IsUserGlobalAdmin(false);
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
-            var entity = SetupEntityWithId();
+            var entity = SetupEntityWithIdAndSuppliers();
 
             RequestsChangesToNonSupplierAssociatedFieldsReturns(true, parameters, entity.Object.Id);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
@@ -49,6 +65,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
             Assert.Equal(allowModifyResult, result);
+            VerifyAllowModify(entity.Object);
         }
 
         [Fact]
@@ -56,7 +73,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             IsUserGlobalAdmin(false);
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
-            var entity = SetupEntityWithId();
+            var entity = SetupEntityWithIdAndSuppliers();
             RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object.Id);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
 
@@ -70,7 +87,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             IsUserGlobalAdmin(false);
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
-            var entity = SetupEntityWithId();
+            var entity = SetupEntityWithIdAndSuppliers();
 
             RequestsChangesToSupplierAssociatedFieldsReturns(true, parameters);
             SetupDoesUserHaveSupplierApiAccess(false, entity);
@@ -87,7 +104,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             IsUserGlobalAdmin(false);
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
-            var entity = SetupEntityWithId();
+            var entity = SetupEntityWithIdAndSuppliers();
             RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object.Id);
             SetupDoesUserHaveSupplierApiAccess(false, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
@@ -95,13 +112,30 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
             Assert.Equal(allowModifyResult, result);
+            VerifyAllowModify(entity.Object);
         }
 
-        private Mock<IEntityOwnedByOrganization> SetupEntityWithId()
+        private void VerifyAllowModify(IEntityOwnedByOrganization entity)
+        {
+            _authorizationContext.Verify(_ => _.AllowModify(entity), Times.Once);
+        }
+
+        private Mock<IEntityOwnedByOrganization> SetupEntityWithIdAndSuppliers(bool hasSuppliers = true)
         {
             var entityId = A<int>();
             var entity = new Mock<IEntityOwnedByOrganization>();
             entity.Setup(_ => _.Id).Returns(entityId);
+            
+            var suppliers = new List<OrganizationSupplier>();
+            if (hasSuppliers)
+            {
+                suppliers.Add(new OrganizationSupplier());
+            }
+            entity.Setup(e => e.Organization).Returns(new Organization
+            {
+                Suppliers = suppliers
+            });
+            
             return entity;
         }
 

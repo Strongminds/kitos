@@ -171,8 +171,7 @@ namespace Core.DomainModel.Organization
 
         public bool HasSuppliers()
         {
-            var x = Suppliers is { Count: > 0 };
-            return x;
+            return Suppliers is { Count: > 0 };
         }
 
         /// <summary>
