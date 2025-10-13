@@ -379,8 +379,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingDataResponsibleOption>(generalData.DataResponsibleUuid.NewValue, responsibleId);
             SetupGetFromRepository(createdRegistration);
-            _dataResponsibleAssignmentServiceMock.Setup(_ => _.Clear(createdRegistration)).Returns(new DataProcessingDataResponsibleOption());
-            _dataResponsibleAssignmentServiceMock.Setup(_ => _.Assign(createdRegistration, responsibleId)).Returns(new DataProcessingDataResponsibleOption());
+            SetupDataResponsibleAssignmentClearAndAssign(createdRegistration, responsibleId);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -398,9 +397,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<DataProcessingRegistration>()))
                 .Returns(_authorizationModelMock.Object);
             _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(value);
-            }
+        }
 
-        /*
+        
+
         [Fact]
         public void Can_Create_With_GeneralData_With_Null_DataResponsible()
         {
@@ -413,7 +413,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingDataResponsibleOption>(generalData.DataResponsibleUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.ClearDataResponsible(createdRegistration.Id)).Returns(new DataProcessingDataResponsibleOption());
+            SetupGetFromRepository(createdRegistration);
+            SetupDataResponsibleAssignmentClearAndAssign(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -424,8 +425,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
         }
 
+        
         [Fact]
-        public void Can_Create_With_GeneralData_With_Null_DataResponsible_If_DprService_Responds_With_BadState()
+        public void Can_Create_With_GeneralData_With_Null_DataResponsible_If_DprAssignmentService_Responds_With_BadState()
         {
             //Arrange
             var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
@@ -436,7 +438,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingDataResponsibleOption>(generalData.DataResponsibleUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.ClearDataResponsible(createdRegistration.Id)).Returns(new OperationError(OperationFailure.BadState));
+            SetupGetFromRepository(createdRegistration);
+            SetupDataResponsibleAssignmentClearAndAssign(createdRegistration, 0, new OperationError(OperationFailure.BadState));
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -446,6 +449,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
         }
+        
 
         [Fact]
         public void Cannot_Create_With_GeneralData_With_Null_DataResponsible_If_DprService_Fails_With_AnythingBut_BadState()
@@ -460,7 +464,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var clearError = new OperationError(EnumRange.AllExcept(OperationFailure.BadState).RandomItem());
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingDataResponsibleOption>(generalData.DataResponsibleUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.ClearDataResponsible(createdRegistration.Id)).Returns(clearError);
+            SetupGetFromRepository(createdRegistration);
+            SetupDataResponsibleAssignmentClearAndAssign(createdRegistration, 0, clearError);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -469,6 +474,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertFailureWithKnownError(result, clearError, transaction);
         }
 
+        
         [Fact]
         public void Cannot_Create_With_GeneralData_DataResponsible_If_DataResponsible_Id_Cannot_Be_Resolved()
         {
@@ -487,7 +493,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(result, "Data responsible option with uuid", OperationFailure.BadInput, transaction);
         }
-
+        
         [Fact]
         public void Create_With_GeneralData_DataResponsible_Set_To_NoChanges()
         {
@@ -496,16 +502,17 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 DataResponsibleUuid = OptionalValueChange<Guid?>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
+            SetupGetFromRepository(dpr);
+            SetupDataResponsibleAssignmentClearAndAssign(dpr);
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.AssignDataResponsible(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _dataResponsibleAssignmentServiceMock.Verify(_ => _.Assign(dpr, It.IsAny<int>()), Times.Never);
         }
-
+        /*
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -2648,6 +2655,19 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
      */
+        private void SetupDataResponsibleAssignmentClearAndAssign(DataProcessingRegistration dpr, int responsibleId = 0, OperationError clearOperationError = null)
+        {
+            if (clearOperationError != null)
+            {
+                _dataResponsibleAssignmentServiceMock.Setup(_ => _.Clear(dpr)).Returns(Result<DataProcessingDataResponsibleOption, OperationError>.Failure(clearOperationError));
+            }
+            else
+            {
+                _dataResponsibleAssignmentServiceMock.Setup(_ => _.Clear(dpr)).Returns(new DataProcessingDataResponsibleOption());
+
+            }
+            _dataResponsibleAssignmentServiceMock.Setup(_ => _.Assign(dpr, responsibleId)).Returns(new DataProcessingDataResponsibleOption());
+        }
 
         private void ExpectUpdateMultiAssignmentReturns<TAssignmentInput, TAssignmentState>(DataProcessingRegistration registration, Maybe<IEnumerable<Guid>> assignmentUuids, Maybe<OperationError> result)
             where TAssignmentState : class, IHasId, IHasUuid
