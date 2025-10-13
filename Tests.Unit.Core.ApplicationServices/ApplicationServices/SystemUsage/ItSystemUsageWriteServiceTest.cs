@@ -195,9 +195,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         [Theory]
         [InlineData(null, null, UserCount.UNDECIDED)]
         [InlineData(0, 9, UserCount.BELOWTEN)]
-        [InlineData(10, 50, UserCount.TENTOFIFTY)]
-        [InlineData(50, 100, UserCount.FIFTYTOHUNDRED)]
-        [InlineData(100, 500, UserCount.HUNDREDTOFIVEHUNDRED)]
+        [InlineData(10, 49, UserCount.TENTOFORTYNINE)]
+        [InlineData(50, 99, UserCount.FIFTYTONINETYNINE)]
+        [InlineData(100, 499, UserCount.HUNDREDTOFOURHUNDREDNINETYNINE)]
         [InlineData(500, null, UserCount.FIVEHUNDREDPLUS)]
         public void Can_Create_With_General_Data_With_All_Data_Defined(int? minimumNumberOfUsers, int? maxNumberOfUsers, UserCount expectedNumberOfUsers)
         {
