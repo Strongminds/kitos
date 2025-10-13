@@ -85,7 +85,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var creationResult = _applicationService
                 .Create(orgId.Value, name)
-                .Bind(createdDpr => Update(() => createdDpr, PerformUpdates, parameters));
+                .Bind(createdDpr => CreateDataProcessingRegistration(() => createdDpr, PerformUpdates, parameters));
 
             if (creationResult.Ok)
             {
@@ -162,6 +162,40 @@ namespace Core.ApplicationServices.GDPR.Write
         }
 
         private Result<DataProcessingRegistration, OperationError> Update<TParameters>(Func<Result<DataProcessingRegistration, OperationError>> getDpr, Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>> performUpdates, TParameters parameters)
+        {
+            using var transaction = _transactionManager.Begin();
+
+            var dprResult = getDpr();
+
+            if (dprResult.Failed)
+            {
+                return dprResult.Error;
+            }
+
+            var dpr = dprResult.Value;
+
+            if (parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
+            {
+                var authorizationModel = authorizationContext.GetAuthorizationModel(dpr);
+                var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
+                if (!authorizeUpdate) return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
+            }
+
+            var snapshot = dpr.Snapshot();
+
+            var result = performUpdates(dpr, parameters);
+
+            if (result.Ok)
+            {
+                _domainEvents.Raise(new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(result.Value, snapshot.FromNullable()));
+                _databaseControl.SaveChanges();
+                transaction.Commit();
+            }
+
+            return result;
+        }
+
+        private Result<DataProcessingRegistration, OperationError> CreateDataProcessingRegistration<TParameters>(Func<Result<DataProcessingRegistration, OperationError>> getDpr, Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>> performUpdates, TParameters parameters)
         {
             using var transaction = _transactionManager.Begin();
 
