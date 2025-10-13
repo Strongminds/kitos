@@ -95,8 +95,6 @@ namespace Core.ApplicationServices.GDPR.Write
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            using var transaction = _transactionManager.Begin();
-
             var orgId = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
 
             if (orgId.IsNone)
@@ -117,7 +115,6 @@ namespace Core.ApplicationServices.GDPR.Write
             if (creationResult.Ok)
             {
                 _databaseControl.SaveChanges();
-                transaction.Commit();
             }
 
             return creationResult;
@@ -128,7 +125,6 @@ namespace Core.ApplicationServices.GDPR.Write
             if (!_authorizationContext.AllowCreate<DataProcessingRegistration>(organizationId))
                 return new OperationError(OperationFailure.Forbidden);
 
-            using var transaction = _transactionManager.Begin();
             var error = namingService.ValidateSuggestedNewRegistrationName(organizationId, name);
 
             if (error.HasValue)
@@ -142,7 +138,6 @@ namespace Core.ApplicationServices.GDPR.Write
             };
 
             var dataProcessingRegistration = _repository.Add(registration);
-            transaction.Commit();
             return dataProcessingRegistration;
         }
 
@@ -181,8 +176,6 @@ namespace Core.ApplicationServices.GDPR.Write
 
         private Result<TSuccess, OperationError> Modify<TSuccess>(int id, Func<DataProcessingRegistration, Result<TSuccess, OperationError>> mutation)
         {
-            using var transaction = _transactionManager.Begin();
-
             var result = _repository.GetById(id);
 
             if (result.IsNone)
@@ -190,12 +183,12 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var registration = result.Value;
 
+
             var mutationResult = mutation(registration);
 
             if (mutationResult.Ok)
             {
                 _repository.Update(registration);
-                transaction.Commit();
             }
 
             return mutationResult;
@@ -340,7 +333,8 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Bind(registration => registration.WithOptionalUpdate(parameters.SystemUsageUuids, UpdateSystemAssignments))
                 .Bind(registration => registration.WithOptionalUpdate(parameters.Oversight, UpdateOversightData))
                 .Bind(registration => registration.WithOptionalUpdate(parameters.Roles, UpdateRolesData))
-                .Bind(registration => registration.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate));
+                .Bind(registration => registration.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate))
+                ;
         }
 
         private Result<DataProcessingRegistration, OperationError> UpdateName(int id, string name)
