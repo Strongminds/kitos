@@ -172,7 +172,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         public IHttpActionResult ChangeDisabledStatus([FromUri][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationDisabledStatusRequestDTO request)
         {
-            return _organizationService.ChangeOrganizationDisabledStatus(organizationUuid, request.Disabled)
+            return _organizationService.DisableOrEnableOrganization(organizationUuid, request.Disabled)
                     .Match(FromOperationError, NoContent);
         }
 

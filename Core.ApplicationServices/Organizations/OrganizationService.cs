@@ -371,21 +371,21 @@ namespace Core.ApplicationServices.Organizations
             return Maybe<OperationError>.None;
         }
 
-        public Maybe<OperationError> ChangeOrganizationDisabledStatus(Guid organizationUuid, bool disabled)
+        public Maybe<OperationError> DisableOrEnableOrganization(Guid organizationUuid, bool isDisabled)
         {
             using var transaction = _transactionManager.Begin();
-            var organizationWhichCanBeDisabled = GetOrganization(organizationUuid).Bind(WithDeletionAccess);
-            if (organizationWhichCanBeDisabled.Failed)
+            var organizationWhichCanBeDisabledOrActivated = GetOrganization(organizationUuid).Bind(WithDeletionAccess);
+            if (organizationWhichCanBeDisabledOrActivated.Failed)
             {
-                return organizationWhichCanBeDisabled.Error;
+                return organizationWhichCanBeDisabledOrActivated.Error;
             }
 
-            var organization = organizationWhichCanBeDisabled.Value;
+            var organization = organizationWhichCanBeDisabledOrActivated.Value;
 
             try
             {
                 _domainEvents.Raise(new EntityUpdatedEvent<Organization>(organization));
-                organization.UpdateDisabledStatus(disabled);
+                organization.UpdateDisabledStatus(isDisabled);
                 _orgRepository.Update(organization);
                 _orgRepository.Save();
                 transaction.Commit();

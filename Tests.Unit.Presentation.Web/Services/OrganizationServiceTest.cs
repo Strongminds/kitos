@@ -823,11 +823,12 @@ namespace Tests.Unit.Presentation.Web.Services
             //Assert
             VerifyOrganizationDeleted(result, transaction, organization);
         }
+
         [Fact]
         public void Delete_Fails_If_Organization_Is_Enabled()
         {
             //Arrange
-            var organization = SetupConflictCalculationPrerequisites(true, true, false);
+            var organization = SetupConflictCalculationPrerequisites(true, true);
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
@@ -874,18 +875,19 @@ namespace Tests.Unit.Presentation.Web.Services
             VerifyOrganizationDeleted(result, transaction, organization);
         }
 
-        [Fact]
-        public void Can_Change_Disabled_Status_Organization()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Can_Change_Disabled_Status_Organization(bool disable)
         {
             //Arrange
-            var disable = A<bool>();
             var organization = SetupConflictCalculationPrerequisites(true, true);
             organization.Disabled = !disable;
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
             //Act
-            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, disable);
+            var result = _sut.DisableOrEnableOrganization(organization.Uuid, disable);
 
             //Assert
             Assert.True(result.IsNone);
@@ -905,7 +907,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
             //Act
-            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, A<bool>());
+            var result = _sut.DisableOrEnableOrganization(organization.Uuid, A<bool>());
 
             //Assert
             Assert.True(result.HasValue);
