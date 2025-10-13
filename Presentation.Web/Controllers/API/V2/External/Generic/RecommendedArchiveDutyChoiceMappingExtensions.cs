@@ -14,6 +14,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Generic
             (
                 (RecommendedArchiveDutyChoice.B, ArchiveDutyRecommendationTypes.B),
                 (RecommendedArchiveDutyChoice.K, ArchiveDutyRecommendationTypes.K),
+                (RecommendedArchiveDutyChoice.BK, ArchiveDutyRecommendationTypes.BK),
+                (RecommendedArchiveDutyChoice.KB, ArchiveDutyRecommendationTypes.KB),
+                (RecommendedArchiveDutyChoice.KD, ArchiveDutyRecommendationTypes.KD),
                 (RecommendedArchiveDutyChoice.NoRecommendation, ArchiveDutyRecommendationTypes.NoRecommendation),
                 (RecommendedArchiveDutyChoice.Undecided, ArchiveDutyRecommendationTypes.Undecided),
                 (RecommendedArchiveDutyChoice.PreserveDataCanDiscardDocuments, ArchiveDutyRecommendationTypes.PreserveDataCanDiscardDocuments)
