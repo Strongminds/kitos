@@ -190,9 +190,6 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var registration = result.Value;
 
-            if (!_authorizationContext.AllowModify(registration))
-                return new OperationError(OperationFailure.Forbidden);
-
             var mutationResult = mutation(registration);
 
             if (mutationResult.Ok)

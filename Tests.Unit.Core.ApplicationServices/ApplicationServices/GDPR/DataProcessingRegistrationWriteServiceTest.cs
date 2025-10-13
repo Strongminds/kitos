@@ -257,7 +257,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(result, "Unable to resolve Organization with uuid", OperationFailure.BadInput, transaction);
         }
-        /*
+        
 
         [Fact]
         public void Can_Update_Name()
@@ -267,16 +267,17 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Name = A<string>().AsChangedValue()
             };
+            var dprUuid = A<Guid>();
+            var dprId = A<int>();
             var dataProcessingRegistration = new DataProcessingRegistration
             {
-                Id = A<int>()
+                Id = dprId,
+                Uuid = dprUuid,
             };
             var transaction = ExpectTransaction();
-            var dprUuid = A<Guid>();
-
-            ExpectGetDataProcessingRegistrationReturns(dprUuid, dataProcessingRegistration);
-            ExpectUpdateNameReturns(dataProcessingRegistration.Id, parameters.Name.NewValue, dataProcessingRegistration);
-
+            SetupUpdateSuccess(dataProcessingRegistration);
+            _namingServiceMock.Setup(_ => _.ChangeName(dataProcessingRegistration, It.IsAny<string>()))
+                .Returns(Maybe<OperationError>.None);
             //Act
             var result = _sut.Update(dprUuid, parameters);
 
@@ -285,6 +286,15 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(dataProcessingRegistration, result.Value);
             AssertTransactionCommitted(transaction);
             _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>()), Times.Once);
+        }
+
+        private void SetupUpdateSuccess(DataProcessingRegistration dataProcessingRegistration)
+        {
+            var dprsQueryable = new List<DataProcessingRegistration>() { dataProcessingRegistration }.AsQueryable();
+            _repositoryMock.Setup(_ => _.AsQueryable())
+                .Returns(dprsQueryable);
+            _repositoryMock.Setup(_ => _.GetById(dataProcessingRegistration.Id)).Returns(dataProcessingRegistration);
+            AllowReadsReturns();
         }
 
         /*
@@ -2722,7 +2732,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private void AllowCreateReturns(bool value = true)
         {
             _authorizationContextMock.Setup(_ => _.AllowCreate<DataProcessingRegistration>(It.IsAny<int>())).Returns(value);
+        }
 
+        private void AllowReadsReturns(bool value = true)
+        {
+            _authorizationContextMock.Setup(_ => _.AllowReads(It.IsAny<DataProcessingRegistration>())).Returns(value);
         }
 
         private void ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<T>(Guid? uuid, Maybe<int> dbId) where T : class, IHasUuid, IHasId
