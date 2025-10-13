@@ -214,7 +214,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithUnknownError(result, new OperationError(OperationFailure.Forbidden), transaction);
         }
-        /*
+        
 
         [Fact]
         public void Cannot_Create_If_Name_Is_Not_Provided()
@@ -237,6 +237,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertFailureWithKnownErrorDetails(result, "Name must be provided", OperationFailure.BadInput, transaction);
         }
 
+        
+
         [Fact]
         public void Cannot_Create_If_Organization_Id_Resolution_Fails()
         {
@@ -255,6 +257,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(result, "Unable to resolve Organization with uuid", OperationFailure.BadInput, transaction);
         }
+        /*
 
         [Fact]
         public void Can_Update_Name()
@@ -283,6 +286,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
             _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>()), Times.Once);
         }
+
+        /*
 
         [Fact]
         public void Update_Name_Does_Not_Change_Anything_If_No_NameChange_Is_Defined()
@@ -2599,25 +2604,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
         }
 
-        private void ExpectUpdateNameReturns(int dprId, string nameNewValue, Result<DataProcessingRegistration, OperationError> result)
-        {
-            _dprServiceMock.Setup(x => x.UpdateName(dprId, nameNewValue)).Returns(result);
-        }
-
-        private void ExpectGetDataProcessingRegistrationReturns(Guid dprUuid, Result<DataProcessingRegistration, OperationError> result)
-        {
-            _dprServiceMock.Setup(x => x.GetByUuid(dprUuid)).Returns(result);
-        }
+        
 
  
 
-        private void AssertFailureWithKnownErrorDetails(Result<DataProcessingRegistration, OperationError> result, string errorMessageContent, OperationFailure failure, Mock<IDatabaseTransaction> transaction)
-        {
-            Assert.True(result.Failed);
-            Assert.Contains(errorMessageContent, result.Error.Message.GetValueOrEmptyString());
-            Assert.Equal(failure, result.Error.FailureType);
-            AssertTransactionNotCommitted(transaction);
-        }
+        
 
         
 
@@ -2739,6 +2730,24 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             if (uuid.HasValue)
                 _identityResolverMock.Setup(x => x.ResolveDbId<T>(uuid.Value)).Returns(dbId);
         }
+
+        private void AssertFailureWithKnownErrorDetails(Result<DataProcessingRegistration, OperationError> result, string errorMessageContent, OperationFailure failure, Mock<IDatabaseTransaction> transaction)
+        {
+            Assert.True(result.Failed);
+            Assert.Contains(errorMessageContent, result.Error.Message.GetValueOrEmptyString());
+            Assert.Equal(failure, result.Error.FailureType);
+            AssertTransactionNotCommitted(transaction);
+        }
+
+        //private void ExpectUpdateNameReturns(int dprId, string nameNewValue, Result<DataProcessingRegistration, OperationError> result)
+        //{
+        //    _dprServiceMock.Setup(x => x.UpdateName(dprId, nameNewValue)).Returns(result);
+        //}
+
+        //private void ExpectGetDataProcessingRegistrationReturns(Guid dprUuid, Result<DataProcessingRegistration, OperationError> result)
+        //{
+        //    _dprServiceMock.Setup(x => x.GetByUuid(dprUuid)).Returns(result);
+        //}
 
         //private void ExpectCreateDataProcessingRegistrationReturns(int orgDbId, DataProcessingRegistrationModificationParameters parameters, string name, Result<DataProcessingRegistration, OperationError> result)
         //{
