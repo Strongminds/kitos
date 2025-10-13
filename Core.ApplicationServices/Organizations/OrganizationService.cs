@@ -12,7 +12,6 @@ using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Core.DomainServices.Extensions;
-using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Queries.Organization;
 using Core.DomainServices.Repositories.Organization;
@@ -343,10 +342,10 @@ namespace Core.ApplicationServices.Organizations
                 return organizationWhichCanBeDeleted.Error;
             }
 
-            if (organizationWhichCanBeDeleted.Value.IsDefaultOrganization == true)
-            {
-                return new OperationError("Cannot delete default organization", OperationFailure.BadInput);
-            }
+            var organization = organizationWhichCanBeDeleted.Value;
+            var canDeleteError = organization.CheckCanBeDeleted();
+            if (canDeleteError.HasValue)
+                return canDeleteError.Value;
 
             var conflicts = ComputeOrganizationRemovalConflicts(uuid);
             if (conflicts.Failed)
@@ -358,7 +357,6 @@ namespace Core.ApplicationServices.Organizations
 
             try
             {
-                var organization = organizationWhichCanBeDeleted.Value;
                 _domainEvents.Raise(new EntityBeingDeletedEvent<Organization>(organization));
                 _orgRepository.DeleteWithReferencePreload(organization);
                 _orgRepository.Save();
@@ -369,6 +367,34 @@ namespace Core.ApplicationServices.Organizations
                 _logger.Error(error, "Failed while deleting organization with uuid: {uuid}", uuid);
                 transaction.Rollback();
                 return new OperationError("Exception during deletion", OperationFailure.UnknownError);
+            }
+            return Maybe<OperationError>.None;
+        }
+
+        public Maybe<OperationError> ChangeOrganizationDisabledStatus(Guid organizationUuid, bool disabled)
+        {
+            using var transaction = _transactionManager.Begin();
+            var organizationWhichCanBeDisabled = GetOrganization(organizationUuid).Bind(WithDeletionAccess);
+            if (organizationWhichCanBeDisabled.Failed)
+            {
+                return organizationWhichCanBeDisabled.Error;
+            }
+
+            var organization = organizationWhichCanBeDisabled.Value;
+
+            try
+            {
+                _domainEvents.Raise(new EntityUpdatedEvent<Organization>(organization));
+                organization.UpdateDisabledStatus(disabled);
+                _orgRepository.Update(organization);
+                _orgRepository.Save();
+                transaction.Commit();
+            }
+            catch (Exception error)
+            {
+                _logger.Error(error, "Failed while disabling organization with uuid: {uuid}", organizationUuid);
+                transaction.Rollback();
+                return new OperationError("Exception during disabling", OperationFailure.UnknownError);
             }
             return Maybe<OperationError>.None;
         }

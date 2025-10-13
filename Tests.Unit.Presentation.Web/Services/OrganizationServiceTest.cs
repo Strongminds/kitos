@@ -859,6 +859,44 @@ namespace Tests.Unit.Presentation.Web.Services
             VerifyOrganizationDeleted(result, transaction, organization);
         }
 
+        [Fact]
+        public void Can_Change_Disabled_Status_Organization()
+        {
+            //Arrange
+            var disable = A<bool>();
+            var organization = SetupConflictCalculationPrerequisites(true, true);
+            organization.Disabled = !disable;
+            var transaction = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+
+            //Act
+            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, disable);
+
+            //Assert
+            Assert.True(result.IsNone);
+            _organizationRepository.Verify(x => x.Save(), Times.Once());
+            _organizationRepository.Verify(x => x.Update(organization), Times.Once());
+            transaction.Verify(x => x.Commit(), Times.Once());
+            _domainEventsMock.Verify(
+                x => x.Raise(It.Is<EntityUpdatedEvent<Organization>>(org => org.Entity == organization)), Times.Once());
+        }
+
+        [Fact]
+        public void Change_Disable_Returns_Error_If_Forbidden()
+        {
+            //Arrange
+            var organization = SetupConflictCalculationPrerequisites(true, false);
+            var transaction = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+
+            //Act
+            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, A<bool>());
+
+            //Assert
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Forbidden, result.Value.FailureType);
+        }
+
         [Theory]
         [InlineData(true, true, true, true)]
         [InlineData(true, true, true, false)]
