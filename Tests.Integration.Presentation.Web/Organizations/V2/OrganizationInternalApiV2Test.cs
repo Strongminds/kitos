@@ -421,6 +421,9 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var orgToDelete = await CreateTestOrganization();
 
+            using var statusResponse = await OrganizationInternalV2Helper.ChangeOrganizationDisabledState(orgToDelete.Uuid, true);
+            Assert.True(statusResponse.IsSuccessStatusCode);
+
             using var response = await OrganizationInternalV2Helper.DeleteOrganization(orgToDelete.Uuid, true, role);
 
             var wasAllowed = response.StatusCode == HttpStatusCode.NoContent;
