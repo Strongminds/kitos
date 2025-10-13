@@ -168,10 +168,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
         }
 
-        /*
 
         [Fact]
-        public void Cannot_Create_If_Dpr_Creation_Fails()
+        public void Cannot_Create_If_Dpr_Creation_Forbidden()
         {
             //Arrange
             var organizationUuid = A<Guid>();
@@ -181,17 +180,41 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var transaction = ExpectTransaction();
             var orgDbId = A<int>();
-            var operationError = A<OperationError>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<Organization>(organizationUuid, orgDbId);
-            ExpectCreateDataProcessingRegistrationReturns(orgDbId, parameters, parameters.Name.NewValue, operationError);
+            AllowCreateReturns(false);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
+            AssertFailureWithKnownError(result, new OperationError(OperationFailure.Forbidden), transaction);
         }
+
+        [Fact]
+        public void Cannot_Create_If_Dpr_Name_Invalid()
+        {
+            //Arrange
+            var organizationUuid = A<Guid>();
+            var parameters = new DataProcessingRegistrationModificationParameters
+            {
+                Name = A<string>().AsChangedValue()
+            };
+            var transaction = ExpectTransaction();
+            var orgDbId = A<int>();
+
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<Organization>(organizationUuid, orgDbId);
+            AllowCreateReturns();
+            _namingServiceMock.Setup(x => x.ValidateSuggestedNewRegistrationName(It.IsAny<int>(), parameters.Name.NewValue))
+                .Returns(Maybe<OperationError>.Some(A<OperationError>()));
+
+            //Act
+            var result = _sut.Create(organizationUuid, parameters);
+
+            //Assert
+            AssertFailureWithUnknownError(result, new OperationError(OperationFailure.Forbidden), transaction);
+        }
+        /*
 
         [Fact]
         public void Cannot_Create_If_Name_Is_Not_Provided()
@@ -2586,12 +2609,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _dprServiceMock.Setup(x => x.GetByUuid(dprUuid)).Returns(result);
         }
 
-        private static void AssertFailureWithKnownError(Result<DataProcessingRegistration, OperationError> result, OperationError operationError, Mock<IDatabaseTransaction> transaction)
-        {
-            Assert.True(result.Failed);
-            Assert.Equal(operationError, result.Error);
-            AssertTransactionNotCommitted(transaction);
-        }
+ 
 
         private void AssertFailureWithKnownErrorDetails(Result<DataProcessingRegistration, OperationError> result, string errorMessageContent, OperationFailure failure, Mock<IDatabaseTransaction> transaction)
         {
@@ -2604,11 +2622,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         
 
 
-        private static void AssertTransactionNotCommitted(Mock<IDatabaseTransaction> transactionMock)
-        {
-            transactionMock.Verify(x => x.Commit(), Times.Never);
-        }
-
+     
         
 
         
@@ -2644,6 +2658,25 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
      */
+
+        private static void AssertFailureWithKnownError(Result<DataProcessingRegistration, OperationError> result, OperationError operationError, Mock<IDatabaseTransaction> transaction)
+        {
+            Assert.True(result.Failed);
+            Assert.Equal(operationError, result.Error);
+            AssertTransactionNotCommitted(transaction);
+        }
+
+        private static void AssertFailureWithUnknownError(Result<DataProcessingRegistration, OperationError> result, OperationError operationError, Mock<IDatabaseTransaction> transaction)
+        {
+            Assert.True(result.Failed);
+            AssertTransactionNotCommitted(transaction);
+        }
+
+        private static void AssertTransactionNotCommitted(Mock<IDatabaseTransaction> transactionMock)
+        {
+            transactionMock.Verify(x => x.Commit(), Times.Never);
+        }
+
         private void AssertTransactionCommitted(Mock<IDatabaseTransaction> transactionMock)
         {
             _databaseControlMock.Verify(x => x.SaveChanges(), Times.AtLeastOnce);
@@ -2687,12 +2720,18 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<Organization>(organizationUuid, orgDbId);
             // ExpectCreateDataProcessingRegistrationReturns(orgDbId, parameters, parameters.Name.NewValue,
-            // createdRegistration);
-            _authorizationContextMock.Setup(_ => _.AllowCreate<DataProcessingRegistration>(It.IsAny<int>())).Returns(true);
+            // createdRegistration)
             _namingServiceMock.Setup(_ => _.ValidateSuggestedNewRegistrationName(It.IsAny<int>(), It.IsAny<string>())).Returns(Maybe<OperationError>.None);
             _repositoryMock.Setup(_ => _.Add(It.IsAny<DataProcessingRegistration>())).Returns(createdRegistration);
+            AllowCreateReturns();
 
             return (organizationUuid, parameters, createdRegistration, transaction);
+        }
+
+        private void AllowCreateReturns(bool value = true)
+        {
+            _authorizationContextMock.Setup(_ => _.AllowCreate<DataProcessingRegistration>(It.IsAny<int>())).Returns(value);
+
         }
 
         private void ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<T>(Guid? uuid, Maybe<int> dbId) where T : class, IHasUuid, IHasId
