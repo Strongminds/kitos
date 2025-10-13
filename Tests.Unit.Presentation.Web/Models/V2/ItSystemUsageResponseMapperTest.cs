@@ -653,9 +653,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 (int from, int? to) expected = itSystemUsage.UserCount switch
                 {
                     UserCount.BELOWTEN => (0, 9),
-                    UserCount.TENTOFIFTY => (10, 50),
-                    UserCount.FIFTYTOHUNDRED => (50, 100),
-                    UserCount.HUNDREDTOFIVEHUNDRED => (100, null),
+                    UserCount.TENTOFORTYNINE => (10, 49),
+                    UserCount.FIFTYTONINETYNINE => (50, 99),
+                    UserCount.HUNDREDTOFOURHUNDREDNINETYNINE => (100, 499),
+                    UserCount.FIVEHUNDREDPLUS => (500, null),
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 Assert.Equal(expected, (generalNumberOfExpectedUsers.LowerBound, generalNumberOfExpectedUsers.UpperBound));
