@@ -377,7 +377,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
             var responsibleId = A<int>();
-            SetupCreateScenarioPrerequisites(); 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingDataResponsibleOption>(generalData.DataResponsibleUuid.NewValue, responsibleId);
             SetupGetFromRepository(createdRegistration);
             _dataResponsibleAssignmentServiceMock.Setup(_ => _.Clear(createdRegistration)).Returns(new DataProcessingDataResponsibleOption());
@@ -391,8 +390,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Equal(createdRegistration.OrganizationId, result.Value.OrganizationId);
             Assert.Same(createdRegistration.Name, result.Value.Name);
 
-            //TODO fix this transaction now being committed, eg by fixing double transaction issue right away
-            //AssertTransactionCommitted(transaction);
+            AssertTransactionCommitted(transaction);
         }
 
         private void SetupAuthorizeUpdateReturns(bool value = true)
