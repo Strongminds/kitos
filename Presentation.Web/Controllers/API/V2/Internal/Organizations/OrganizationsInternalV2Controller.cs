@@ -169,7 +169,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]//mock change for api fix
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
         public IHttpActionResult ChangeDisabledStatus([FromUri][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationDisabledStatusRequestDTO request)
         {
             return _organizationService.DisableOrEnableOrganization(organizationUuid, request.Disabled)
