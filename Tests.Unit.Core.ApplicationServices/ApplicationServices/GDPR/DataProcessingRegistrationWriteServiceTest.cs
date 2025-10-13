@@ -9,6 +9,7 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.GDPR.Write;
 using Core.ApplicationServices.Generic.Write;
+using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
@@ -42,6 +43,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<IDatabaseControl> _databaseControlMock;
         private readonly Mock<IAssignmentUpdateService> _assignmentUpdateServiceMock;
         private readonly Mock<IAuthorizationContext> _authorizationContext;
+        private readonly Mock<IAuthorizationModel> _authorizationModel;
 
         public DataProcessingRegistrationWriteServiceTest()
         {
@@ -53,6 +55,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _databaseControlMock = new Mock<IDatabaseControl>();
             _assignmentUpdateServiceMock = new Mock<IAssignmentUpdateService>();
             _authorizationContext = new Mock<IAuthorizationContext>();
+            _authorizationModel = new Mock<IAuthorizationModel>();
+            _authorizationContext.Setup(_ => _.GetAuthorizationModel(It.IsAny<IEntityOwnedByOrganization>()))
+                .Returns(_authorizationModel.Object);
+            _authorizationModel.Setup(x => x.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(true);
             _sut = new DataProcessingRegistrationWriteService(
                 _dprServiceMock.Object,
                 _identityResolverMock.Object,
@@ -2351,7 +2357,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _dprServiceMock
                 .Setup(x => x.GetByUuid(registrationUuid))
                 .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
-            SetupAuthorizationModelReturns(true, dpr, parameters);
 
             // Act
             var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
@@ -2385,14 +2390,30 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
 
             Assert.True(result.Failed);
-            Assert.Equal(OperationFailure.Forbidden, result.Error);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
         }
 
-        private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+        [Fact]
+        public void Given_NegativeResponseFromAuthorizationModel_Update_Returns_ForbiddenError()
         {
-            var authorizationModel = new Mock<IAuthorizationModel>();
-            _authorizationContext.Setup(_ => _.GetAuthorizationModel(dpr)).Returns(authorizationModel.Object);
-            authorizationModel.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns(value);
+            var parameters = A<DataProcessingRegistrationModificationParameters>();
+            var registrationUuid = A<Guid>();
+            var dpr = new DataProcessingRegistration()
+            {
+                Uuid = registrationUuid
+            };
+            _dprServiceMock.Setup(_ => _.GetByUuid(registrationUuid)).Returns(dpr);
+            SetupAuthorizationModelReturns(false, dpr, parameters);
+
+            var result = _sut.Update(registrationUuid, parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
+        {
+            _authorizationModel.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns(value);
         }
 
         [Fact]

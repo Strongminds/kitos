@@ -7,6 +7,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Generic.Write;
 using Core.ApplicationServices.Helpers;
+using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
 using Core.ApplicationServices.Model.Shared;
@@ -172,6 +173,14 @@ namespace Core.ApplicationServices.GDPR.Write
             }
 
             var dpr = dprResult.Value;
+
+            if (parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
+            {
+                var authorizationModel = authorizationContext.GetAuthorizationModel(dpr);
+                var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
+                if (!authorizeUpdate) return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
+            }
+
             var snapshot = dpr.Snapshot();
 
             var result = performUpdates(dpr, parameters);
