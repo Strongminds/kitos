@@ -629,7 +629,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 SystemVersion = A<string>(),
                 Notes = A<string>(),
                 DataClassificationUuid = dataClassification.Uuid,
-                NumberOfExpectedUsers = new ExpectedUsersIntervalDTO { LowerBound = 10, UpperBound = 50 },
+                NumberOfExpectedUsers = new ExpectedUsersIntervalDTO { LowerBound = 10, UpperBound = 49 },
                 Validity = new ItSystemUsageValidityWriteRequestDTO
                 {
                     LifeCycleStatus = A<LifeCycleStatusChoice?>(),
@@ -2529,9 +2529,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static IEnumerable<Maybe<(int lower, int? upper)>> GetValidIntervals()
         {
             yield return (0, 9);
-            yield return (10, 50);
-            yield return (50, 100);
-            yield return (100, null);
+            yield return (10, 49);
+            yield return (50, 99);
+            yield return (100, 499);
+            yield return (500, null);
         }
 
         private GeneralDataWriteRequestDTO CreateGeneralDataWriteRequestDTO(Guid dataClassificationUuid)
