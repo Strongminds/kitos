@@ -101,5 +101,12 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
             var url = TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/delete?enforceDeletion={enforceDeletion}");
             return await HttpApi.DeleteWithCookieAsync(url, cookie);
         }
+
+        public static async Task<HttpResponseMessage> ChangeOrganizationDisabledState(Guid organizationUuid, bool disabled)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var url = TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/disabled-status");
+            return await HttpApi.PatchWithCookieAsync(url, cookie, new OrganizationDisabledStatusRequestDTO{ Disabled = disabled});
+        }
     }
 }

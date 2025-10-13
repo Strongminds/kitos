@@ -471,6 +471,26 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Can_Disable_And_Enable_Organization()
+        {
+            var org = await CreateTestOrganization();
+
+            using var response = await OrganizationInternalV2Helper.ChangeOrganizationDisabledState(org.Uuid, true);
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            var updatedOrg = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), org.Uuid);
+            Assert.True(updatedOrg.Disabled);
+
+            using var response2 = await OrganizationInternalV2Helper.ChangeOrganizationDisabledState(org.Uuid, false);
+
+            Assert.Equal(HttpStatusCode.NoContent, response2.StatusCode);
+
+            var updatedOrg2 = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), org.Uuid);
+            Assert.False(updatedOrg2.Disabled);
+        }
+
         private async Task CreateConflictsForOrg(Guid organizationUuid)
         {
             var otherOrganization = await CreateTestOrganization();
