@@ -762,7 +762,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
             var clearError = new OperationError(EnumRange.AllExcept(OperationFailure.BadState).RandomItem());
 
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingBasisForTransferOption>(generalData.BasisForTransferUuid.NewValue, responsibleId);
+            _identityResolverMock.Setup(_ => _.ResolveDbId<ItContract>(It.IsAny<Guid>())).Returns(Maybe<int>.None);
             SetupGetFromRepository(createdRegistration);
             SetupBasisForTransferAssignmentClearAndAssign(createdRegistration, 0, clearError);
 
@@ -1132,7 +1132,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
-        /*
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -1148,68 +1148,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             var contract = createdRegistration.AssociatedContracts.FirstOrDefault();
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(generalData.MainContractUuid.NewValue, contract.Id);
-            if (hasMainContract)
-            {
-                ExpectUpdateMainContractReturns(createdRegistration.Id, contract.Id, createdRegistration);
-            }
-            else
-            {
-                ExpectRemoveMainContractReturns(createdRegistration.Id, createdRegistration);
-            }
-
+            SetupGetFromRepository(createdRegistration);
+      
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
             AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Create_With_GeneralData_MainContract_Returns_OperationError_When_UpdateMainContract_Fails()
-        {
-            //Arrange
-            var inputUuids = A<Guid?>();
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                MainContractUuid = inputUuids.AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var contract = createdRegistration.AssociatedContracts.First();
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(generalData.MainContractUuid.NewValue, contract.Id);
-            var expectedError = A<OperationError>();
-            ExpectUpdateMainContractReturns(createdRegistration.Id, contract.Id, expectedError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            Assert.True(result.Failed);
-            Assert.Equal(expectedError.FailureType, result.Error.FailureType);
-            Assert.Equal(expectedError, result.Error);
-        }
-
-        [Fact]
-        public void Create_With_GeneralData_MainContract_Returns_OperationError_When_RemoveMainContract_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                MainContractUuid = OptionalValueChange<Guid?>.With(null),
-            };
-            var (organizationUuid, parameters, createdRegistration, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var expectedError = A<OperationError>();
-            ExpectRemoveMainContractReturns(createdRegistration.Id, expectedError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            Assert.True(result.Failed);
-            Assert.Equal(expectedError.FailureType, result.Error.FailureType);
-            Assert.Equal(expectedError, result.Error);
         }
 
         [Fact]
@@ -1269,6 +1215,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
+        /*
 
         [Fact]
         public void Can_Update_With_SystemUsages_If_Usage_Already_Assigned()
@@ -2528,19 +2475,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
         
 
-        private void ExpectUpdateMainContractReturns(int dprId, int contractId,
-            Result<DataProcessingRegistration, OperationError> result)
-        {
-            _dprServiceMock.Setup(x => x.UpdateMainContract(dprId, contractId)).Returns(result);
-        }
-
-        private void ExpectRemoveMainContractReturns(int dprId,
-            Result<DataProcessingRegistration, OperationError> result)
-        {
-            _dprServiceMock.Setup(x => x.RemoveMainContract(dprId)).Returns(result);
-        }
+        
 
      */
+
         private void RepositoryAssertAnyDprAdded()
         {
             _repositoryMock.Verify(_ => _.Add(It.IsAny<DataProcessingRegistration>()));
