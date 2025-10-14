@@ -1521,27 +1521,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
         }
-        /*
-
-        [Fact]
-        public void Cannot_Create_With_OversightData_IsOversightCompleted_If_Update_Fails()
-        {
-            //Arrange
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateIsOversightCompleted(createdRegistration.Id, oversightData.IsOversightCompleted.NewValue.GetValueOrDefault(YesNoUndecidedOption.Undecided))).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
 
         [Fact]
         public void Can_Create_With_OversightData_IsOversightCompleted_Set_To_NoChanges()
@@ -1551,14 +1530,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 IsOversightCompleted = OptionalValueChange<YesNoUndecidedOption?>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            SetupGetFromRepository(dpr);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateIsOversightCompleted(It.IsAny<int>(), It.IsAny<YesNoUndecidedOption>()), Times.Never);
         }
 
         [Theory]
@@ -1572,36 +1551,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 OversightCompletedRemark = (inputIsNull ? null : A<string>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            _dprServiceMock.Setup(x => x.UpdateOversightCompletedRemark(createdRegistration.Id, oversightData.OversightCompletedRemark.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Cannot_Create_With_OversightData_OversightCompletedRemark_If_Update_Fails()
-        {
-            //Arrange
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightCompletedRemark = A<string>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateOversightCompletedRemark(createdRegistration.Id, oversightData.OversightCompletedRemark.NewValue)).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
         }
 
         [Fact]
@@ -1612,16 +1569,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightCompletedRemark = OptionalValueChange<string>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            SetupGetFromRepository(dpr);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateOversightCompletedRemark(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
-
+        /*
         [Fact]
         public void Can_Create_With_OversightData_OversightDates()
         {
