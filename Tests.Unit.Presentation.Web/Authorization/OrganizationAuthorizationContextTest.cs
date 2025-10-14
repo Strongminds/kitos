@@ -586,7 +586,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void GivenNonSupplierAssociatedEntityType_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
         {
             var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
-            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel(It.IsAny<IAuthorizationContext>())).Returns(crudAuthorizationModel);
             var organization = new Organization();
             var entity = new ItContract()
             {
@@ -602,7 +602,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void GivenNoSuppliersInOrganization_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
         {
             var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
-            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel(It.IsAny<IAuthorizationContext>())).Returns(crudAuthorizationModel);
             var organization = new Organization();
             var entity = new DataProcessingRegistration()
             {
@@ -619,7 +619,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var fieldAuthorizationModel = new FieldAuthorizationModel(_userContextMock.Object,
                 new Mock<ISupplierAssociatedFieldsService>().Object, _sut);
-            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel()).Returns(fieldAuthorizationModel);
+            _authorizationModelFactory.Setup(_ => _.CreateFieldAuthorizationModel(It.IsAny<IAuthorizationContext>())).Returns(fieldAuthorizationModel);
             var supplierId = A<int>();
             var organization = new Organization()
             {
@@ -640,7 +640,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             GivenTargetObjectIsNotOfTypeThatSuppliersCanEdit_GetAuthorizationModel_ReturnsCrudAuthorizationModel()
         {
             var crudAuthorizationModel = new CrudAuthorizationModel(_sut);
-            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel()).Returns(crudAuthorizationModel);
+            _authorizationModelFactory.Setup(_ => _.CreateCrudAuthorizationModel(It.IsAny<IAuthorizationContext>())).Returns(crudAuthorizationModel);
             var supplierId = A<int>();
             var supplierApiUser = new User
             {
