@@ -21,12 +21,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     }
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var parametersType = parameters.GetType();
-        if (parametersType == typeof(DataProcessingRegistrationModificationParameters)) return CheckSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters);
-        if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDateParameters)) return
-            CheckSupplierChangesToDprOversightDateParams(
-                (UpdatedDataProcessingRegistrationOversightDateParameters)parameters);
-        return false;
+        return parameters switch
+        {
+            DataProcessingRegistrationModificationParameters dprParameters => CheckSupplierChangesToDprParams(
+                dprParameters),
+            UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
+                CheckSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            _ => false
+        };
     }
 
     private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
@@ -42,12 +44,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, int entityId)
     {
-        var parametersType = parameters.GetType();
-        if (parametersType == typeof(DataProcessingRegistrationModificationParameters))
-            return CheckNonSupplierChangesToDprParams((DataProcessingRegistrationModificationParameters)parameters, entityId);
-        if (parametersType == typeof(UpdatedDataProcessingRegistrationOversightDataParameters))
-            return CheckNonSupplierChangesToDprOversightDateParams((UpdatedDataProcessingRegistrationOversightDateParameters)parameters);
-        return false;
+        return parameters switch
+        {
+            DataProcessingRegistrationModificationParameters dprParameters => CheckNonSupplierChangesToDprParams(
+                dprParameters, entityId),
+            UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
+                CheckNonSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            _ => false
+        };
     }
 
     public bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable)
