@@ -330,7 +330,7 @@ namespace Core.ApplicationServices.GDPR.Write
             return dpr
                 .WithOptionalUpdate(parameters.Name, (registration, changedName) => UpdateName(registration.Id, changedName))
                 .Bind(registration => registration.WithOptionalUpdate(parameters.General, UpdateGeneralData))
-                .Bind(registration => registration.WithOptionalUpdate(parameters.SystemUsageUuids, UpdateSystemAssignments))
+                .Bind(registration => registration.WithOptionalUpdate(parameters.SystemUsageUuids, UpdateSystemUsageAssignments))
                 .Bind(registration => registration.WithOptionalUpdate(parameters.Oversight, UpdateOversightData))
                 .Bind(registration => registration.WithOptionalUpdate(parameters.Roles, UpdateRolesData))
                 .Bind(registration => registration.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate))
@@ -650,7 +650,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
         }
 
-        private Result<DataProcessingRegistration, OperationError> UpdateSystemAssignments(DataProcessingRegistration dpr, IEnumerable<Guid> systemUsageUuids)
+        private Result<DataProcessingRegistration, OperationError> UpdateSystemUsageAssignments(DataProcessingRegistration dpr, IEnumerable<Guid> systemUsageUuids)
         {
             return _assignmentUpdateService.UpdateUniqueMultiAssignment
             (

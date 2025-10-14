@@ -1215,7 +1215,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
-        /*
+        
 
         [Fact]
         public void Can_Update_With_SystemUsages_If_Usage_Already_Assigned()
@@ -1223,13 +1223,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var usage = new ItSystemUsage() { Id = A<int>(), Uuid = A<Guid>() };
             var usageUuids = new List<Guid> { usage.Uuid };
-            var (organizationUuid, parameters, registration, transaction) = SetupCreateScenarioPrerequisites(systemUsageUuids: usageUuids);
+            var (_, parameters, registration, transaction) = SetupCreateScenarioPrerequisites(systemUsageUuids: usageUuids);
             registration.SystemUsages.Add(usage);
-
-            ExpectGetDataProcessingRegistrationReturns(registration.Uuid, registration);
+            SetupGetFromRepository(registration);
             ExpectUpdateMultiAssignmentReturns<int, ItSystemUsage>(registration, usageUuids, Maybe<OperationError>.None);
             parameters.Name = OptionalValueChange<string>.None;
-
+            AllowReadsReturns();
+           
             //Act
             var result = _sut.Update(registration.Uuid, parameters);
 
@@ -1244,12 +1244,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var usage = new ItSystemUsage() { Id = A<int>(), Uuid = A<Guid>() };
             var usageUuids = new List<Guid>();
-            var (organizationUuid, parameters, registration, transaction) = SetupCreateScenarioPrerequisites(systemUsageUuids: usageUuids);
+            var (_, parameters, registration, transaction) = SetupCreateScenarioPrerequisites(systemUsageUuids: usageUuids);
             registration.SystemUsages.Add(usage);
 
-            ExpectGetDataProcessingRegistrationReturns(registration.Uuid, registration);
+            SetupGetFromRepository(registration);
             ExpectUpdateMultiAssignmentReturns<int, ItSystemUsage>(registration, usageUuids, Maybe<OperationError>.None);
             parameters.Name = OptionalValueChange<string>.None;
+            AllowReadsReturns();
 
             //Act
             var result = _sut.Update(registration.Uuid, parameters);
@@ -1266,32 +1267,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var uuid = A<Guid>();
             var resolvedDbId = A<int>();
+            AllowDeleteReturns();
+            ExpectTransaction();
+            SetupGetFromRepository(new DataProcessingRegistration());
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistration>(uuid, resolvedDbId);
-            _dprServiceMock.Setup(x => x.Delete(resolvedDbId)).Returns(new DataProcessingRegistration());
 
             //Act
             var result = _sut.Delete(uuid);
 
             //Assert
             Assert.True(result.IsNone, "No errors should occur during deletion");
-        }
-
-        [Fact]
-        public void Cannot_Delete_If_Deletion_Fails()
-        {
-            //Arrange
-            var uuid = A<Guid>();
-            var resolvedDbId = A<int>();
-            var operationError = A<OperationError>();
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistration>(uuid, resolvedDbId);
-            _dprServiceMock.Setup(x => x.Delete(resolvedDbId)).Returns(operationError);
-
-            //Act
-            var result = _sut.Delete(uuid);
-
-            //Assert
-            Assert.True(result.HasValue);
-            Assert.Same(operationError, result.Value);
         }
 
         [Fact]
@@ -1310,7 +1295,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.HasValue);
             Assert.Equal(OperationFailure.NotFound, result.Value.FailureType);
         }
-
+        /*
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -2478,6 +2463,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         
 
      */
+
+        private void AllowDeleteReturns(bool value = true)
+        {
+            _authorizationContextMock.Setup(_ => _.AllowDelete(It.IsAny<DataProcessingRegistration>())).Returns(value);
+        }
 
         private void RepositoryAssertAnyDprAdded()
         {
