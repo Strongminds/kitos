@@ -1363,26 +1363,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Equal(createdRegistration.Id, result.Value.Id);
             AssertTransactionCommitted(transaction);
         }
-        /*
-        [Fact]
-        public void Cannot_Create_With_OversightData_OversightOptionsRemark_If_Update_Fails()
-        {
-            //Arrange
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightOptionsRemark = A<string>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateOversightOptionRemark(createdRegistration.Id, oversightData.OversightOptionsRemark.NewValue)).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
 
         [Fact]
         public void Can_Create_With_OversightData_OversightOptionsRemark_Set_To_NoChanges()
@@ -1392,14 +1372,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightOptionsRemark = OptionalValueChange<string>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            SetupGetFromRepository(dpr);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateOversightOptionRemark(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         [Theory]
@@ -1413,36 +1393,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 OversightInterval = (inputIsNull ? (YearMonthIntervalOption?)null : A<YearMonthIntervalOption>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            _dprServiceMock.Setup(x => x.UpdateOversightInterval(createdRegistration.Id, oversightData.OversightInterval.NewValue.GetValueOrDefault(YearMonthIntervalOption.Undecided))).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            Assert.Same(createdRegistration.Name, result.Value.Name);
+            Assert.Equal(createdRegistration.Id, result.Value.Id);
             AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Cannot_Create_With_OversightData_OversightInterval_If_Update_Fails()
-        {
-            //Arrange
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightInterval = A<YearMonthIntervalOption?>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateOversightInterval(createdRegistration.Id, oversightData.OversightInterval.NewValue.GetValueOrDefault(YearMonthIntervalOption.Undecided))).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
         }
 
         [Fact]
@@ -1460,8 +1420,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateOversightInterval(It.IsAny<int>(), It.IsAny<YearMonthIntervalOption>()), Times.Never);
         }
+
+        /*
 
         [Theory]
         [InlineData(true)]

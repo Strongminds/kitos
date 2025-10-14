@@ -183,7 +183,6 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var registration = result.Value;
 
-
             var mutationResult = mutation(registration);
 
             if (mutationResult.Ok)
