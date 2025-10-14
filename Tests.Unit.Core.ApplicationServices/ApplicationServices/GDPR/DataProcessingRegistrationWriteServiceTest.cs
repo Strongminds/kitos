@@ -810,7 +810,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             _basisForTransferAssignmentServiceMock.Verify(_ => _.Assign(dpr, A<int>()), Times.Never);
         }
-        /*
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -822,8 +822,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 TransferToInsecureThirdCountries = (inputIsNull ? (YesNoUndecidedOption?)null : A<YesNoUndecidedOption>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            _dprServiceMock.Setup(x => x.UpdateTransferToInsecureThirdCountries(createdRegistration.Id, generalData.TransferToInsecureThirdCountries.NewValue.GetValueOrDefault(YesNoUndecidedOption.Undecided))).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -834,26 +833,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
         }
 
-        [Fact]
-        public void Cannot_Create_With_GeneralData_TransferToInsecureThirdCountries_If_Update_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                TransferToInsecureThirdCountries = A<YesNoUndecidedOption?>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateTransferToInsecureThirdCountries(createdRegistration.Id, generalData.TransferToInsecureThirdCountries.NewValue.GetValueOrDefault(YesNoUndecidedOption.Undecided))).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
-
+        
         [Fact]
         public void Create_With_GeneralData_TransferToInsecureThirdCountries_Set_To_NoChanges()
         {
@@ -869,9 +849,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateTransferToInsecureThirdCountries(It.IsAny<int>(), It.IsAny<YesNoUndecidedOption>()), Times.Never);
         }
-
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -883,38 +862,20 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 HasSubDataProcessors = (inputIsNull ? (YesNoUndecidedOption?)null : A<YesNoUndecidedOption>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            _dprServiceMock.Setup(x => x.SetSubDataProcessorsState(createdRegistration.Id, generalData.HasSubDataProcessors.NewValue.GetValueOrDefault(YesNoUndecidedOption.Undecided))).Returns(createdRegistration);
-
+            SetupGetFromRepository(createdRegistration);
+            
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            Assert.Same(createdRegistration.Name, result.Value.Name);
+            Assert.Equal(createdRegistration.Id, result.Value.Id);
             AssertTransactionCommitted(transaction);
+            _sdpRepositoryMock.Verify(_ => _.RemoveRange(It.IsAny<IEnumerable<SubDataProcessor>>()));
         }
-
-        [Fact]
-        public void Cannot_Create_With_GeneralData_HasSubDataProcessors_If_Update_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                HasSubDataProcessors = A<YesNoUndecidedOption?>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.SetSubDataProcessorsState(createdRegistration.Id, generalData.HasSubDataProcessors.NewValue.GetValueOrDefault(YesNoUndecidedOption.Undecided))).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
-
+        
+        
         [Fact]
         public void Create_With_GeneralData_HasSubDataProcessors_Set_To_NoChanges()
         {
@@ -930,9 +891,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.SetSubDataProcessorsState(It.IsAny<int>(), It.IsAny<YesNoUndecidedOption>()), Times.Never);
         }
-
+        /*
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
