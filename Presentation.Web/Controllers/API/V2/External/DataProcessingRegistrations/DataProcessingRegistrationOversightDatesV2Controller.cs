@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 return BadRequest(ModelState);
 
             return _writeService
-                .AddOversight(uuid, _writeModelMapper.FromOversightPOST(request))
+                .AddOversightDate(uuid, _writeModelMapper.FromOversightPOST(request))
                 .Select(_responseMapper.MapOversightDate)
                 .Match(Ok, FromOperationError);
         }
@@ -75,7 +75,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 return BadRequest(ModelState);
 
             return _writeService
-                .UpdateOversight(uuid, oversightDateUuid, _writeModelMapper.FromOversightPATCH(request))
+                .UpdateOversightDate(uuid, oversightDateUuid, _writeModelMapper.FromOversightPATCH(request))
                 .Select(_responseMapper.MapOversightDate)
                 .Match(Ok, FromOperationError);
         }
@@ -97,7 +97,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         public IHttpActionResult DeleteDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid)
         {
             return _writeService
-                .DeleteOversight(uuid, oversightDateUuid)
+                .DeleteOversightDate(uuid, oversightDateUuid)
                 .Match(FromOperationError, NoContent);
         }
     }

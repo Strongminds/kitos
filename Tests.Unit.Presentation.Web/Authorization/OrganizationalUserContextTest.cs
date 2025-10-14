@@ -32,7 +32,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private void SetupSut(
             IReadOnlyDictionary<int, IEnumerable<OrganizationRole>> roleMap = null,
             IReadOnlyDictionary<int, OrganizationCategory> categoryMap = null,
-            bool isStakeHolder = true, bool isSystemIntegrator = true)
+            bool isStakeHolder = true, bool isSystemIntegrator = true, bool apiAccess = true)
         {
             _userId = A<int>();
             _municipalityOrganizationId = A<int>();
@@ -55,8 +55,49 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 _rolesPerOrganizationId,
                 _categoryPerOrganizationId,
                 isStakeHolder,
-                isSystemIntegrator
+                isSystemIntegrator,
+                apiAccess
             );
+        }
+
+        [Fact]
+        public void GivenNoApiAccess_IsSupplierApiUserForOrganizationWithSuppliers_Returns_False()
+        {
+            SetupSut(null, null, true, true, false);
+            var result = _sut.IsSupplierApiUserForOrganizationWithSuppliers(new[] { 1, 2, 3 });
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void
+            GivenApiAccessAndMatchBetweenOrganizationIdsAndSupplierIds_IsSupplierApiUserForOrganizationWithSuppliers_Returns_True()
+        {
+            var id = A<int>();
+            SetupSut(new Dictionary<int, IEnumerable<OrganizationRole>>()
+            {
+                { id, new List<OrganizationRole>() }
+            });
+            var matchingIds = new[] { id };
+            var result = _sut.IsSupplierApiUserForOrganizationWithSuppliers(matchingIds);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void
+            GivenApiAccessAndNoMatchBetweenOrganizationIdsAndSupplierIds_IsSupplierApiUserForOrganizationWithSuppliers_Returns_False()
+        {
+            var id1 = A<int>();
+            var id2 = id1 + 1;
+            SetupSut(new Dictionary<int, IEnumerable<OrganizationRole>>()
+            {
+                { id1, new List<OrganizationRole>() }
+            });
+            var matchingIds = new[] { id2 };
+            var result = _sut.IsSupplierApiUserForOrganizationWithSuppliers(matchingIds);
+
+            Assert.False(result);
         }
 
         [Theory]

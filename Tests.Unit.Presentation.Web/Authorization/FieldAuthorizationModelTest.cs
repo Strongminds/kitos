@@ -1,0 +1,192 @@
+﻿using System.Collections.Generic;
+using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Model;
+using Core.DomainModel;
+using Core.DomainModel.Organization;
+using Moq;
+using Tests.Toolkit.Patterns;
+using Xunit;
+
+namespace Tests.Unit.Presentation.Web.Authorization
+{
+    public class FieldAuthorizationModelTest: WithAutoFixture
+    {
+        private readonly Mock<IOrganizationalUserContext> _activeUserContext;
+        private readonly FieldAuthorizationModel _sut;
+        private readonly Mock<ISupplierAssociatedFieldsService> _supplierAssociatedFieldsService;
+        private readonly Mock<IAuthorizationContext> _authorizationContext;
+
+        public FieldAuthorizationModelTest()
+        {
+            _activeUserContext = new Mock<IOrganizationalUserContext>();
+            _supplierAssociatedFieldsService = new Mock<ISupplierAssociatedFieldsService>();
+            _authorizationContext = new Mock<IAuthorizationContext>();
+            _sut = new FieldAuthorizationModel(_activeUserContext.Object, _supplierAssociatedFieldsService.Object, _authorizationContext.Object);
+        }
+
+        [Fact]
+        public void GivenEntityOrParametersIsNull_AuthorizeUpdate_Returns_False()
+        {
+            IsUserGlobalAdmin(false);
+            var entity = SetupEntityWithIdAndSuppliers();
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+
+            var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object);
+            var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null);
+
+            Assert.False(withNullEntity);
+            Assert.False(withNullParameters);
+        }
+
+        [Fact]
+        public void GivenUserIsGlobalAdmin_AuthorizeUpdate_Returns_True()
+        {
+            IsUserGlobalAdmin(true);
+            var entity = SetupEntityWithIdAndSuppliers();
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void GivenOrgHasNoSuppliers_AuthorizeUpdate_Returns_AllowModifyResult(bool allowModifyResult)
+        {
+            IsUserGlobalAdmin(false);
+            var entity = SetupEntityWithIdAndSuppliers(false);
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+
+            SetupAllowModifyReturns(allowModifyResult, entity.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.Equal(allowModifyResult, result);
+            VerifyAllowModify(entity.Object);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void GivenSupplierApiUser_RequestsChangesToNonSupplierFields_AuthorizeUpdate_Returns_AllowModifyResult(bool allowModifyResult)
+        {
+            IsUserGlobalAdmin(false);
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+            var entity = SetupEntityWithIdAndSuppliers();
+
+            RequestsChangesToNonSupplierAssociatedFieldsReturns(true, parameters, entity.Object.Id);
+            SetupDoesUserHaveSupplierApiAccess(true, entity);
+            SetupAllowModifyReturns(allowModifyResult, entity.Object);
+
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.Equal(allowModifyResult, result);
+            VerifyAllowModify(entity.Object);
+        }
+
+        [Fact]
+        public void GivenSupplierApiUser_DoesNotRequestChangesToNonSupplierFields_AuthorizeUpdate_Returns_True()
+        {
+            IsUserGlobalAdmin(false);
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+            var entity = SetupEntityWithIdAndSuppliers();
+            RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object.Id);
+            SetupDoesUserHaveSupplierApiAccess(true, entity);
+
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void GivenNonSupplierApiUser_RequestsChangesToSupplierFields_AuthorizeUpdate_Returns_False()
+        {
+            IsUserGlobalAdmin(false);
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+            var entity = SetupEntityWithIdAndSuppliers();
+
+            RequestsChangesToSupplierAssociatedFieldsReturns(true, parameters);
+            SetupDoesUserHaveSupplierApiAccess(false, entity);
+
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void GivenNonSupplierApiUser_DoesNotRequestChangesToSupplierFields_AuthorizeUpdate_Returns_AllowModifyResult(bool allowModifyResult)
+        {
+            IsUserGlobalAdmin(false);
+            var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
+            var entity = SetupEntityWithIdAndSuppliers();
+            RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object.Id);
+            SetupDoesUserHaveSupplierApiAccess(false, entity);
+            SetupAllowModifyReturns(allowModifyResult, entity.Object);
+
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+
+            Assert.Equal(allowModifyResult, result);
+            VerifyAllowModify(entity.Object);
+        }
+
+        private void VerifyAllowModify(IEntityOwnedByOrganization entity)
+        {
+            _authorizationContext.Verify(_ => _.AllowModify(entity), Times.Once);
+        }
+
+        private Mock<IEntityOwnedByOrganization> SetupEntityWithIdAndSuppliers(bool hasSuppliers = true)
+        {
+            var entityId = A<int>();
+            var entity = new Mock<IEntityOwnedByOrganization>();
+            entity.Setup(_ => _.Id).Returns(entityId);
+            
+            var suppliers = new List<OrganizationSupplier>();
+            if (hasSuppliers)
+            {
+                suppliers.Add(new OrganizationSupplier());
+            }
+            entity.Setup(e => e.Organization).Returns(new Organization
+            {
+                Suppliers = suppliers
+            });
+            
+            return entity;
+        }
+
+        private void SetupAllowModifyReturns(bool result, IEntityOwnedByOrganization entity)
+        {
+            _authorizationContext.Setup(_ => _.AllowModify(entity)).Returns(result);
+        }
+
+        private void IsUserGlobalAdmin(bool value)
+        {
+            _activeUserContext.Setup(x => x.IsGlobalAdmin()).Returns(value);
+        }
+
+        private void RequestsChangesToSupplierAssociatedFieldsReturns(bool value, Mock<ISupplierAssociatedEntityUpdateParameters> parameters)
+        {
+            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(parameters.Object)).Returns(true);
+        }
+
+        private void RequestsChangesToNonSupplierAssociatedFieldsReturns(bool value, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, int entityId)
+        {
+            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(parameters.Object, entityId)).Returns(value);
+        }
+        private void SetupDoesUserHaveSupplierApiAccess(bool value, Mock<IEntityOwnedByOrganization> entity)
+        {
+            var supplierId = A<int>();
+            entity.SetupGet(e => e.Organization).Returns(new Organization
+            {
+                Suppliers = new List<OrganizationSupplier>
+                {
+                    new() { SupplierId = supplierId }
+                }
+            });
+            _activeUserContext.Setup(_ => _.OrganizationIds).Returns(new List<int>(){A<int>()});
+            _activeUserContext.Setup(_ => _.IsSupplierApiUserForOrganizationWithSuppliers(It.IsAny<IEnumerable<int>>()))
+                .Returns(value);
+       }
+    }
+}
