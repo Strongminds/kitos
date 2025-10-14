@@ -892,7 +892,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
         }
-        /*
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -915,7 +915,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_GeneralData_InsecureCountriesSubjectToDataTransfer_If_UpdateMultiAssignment_Fails()
         {
@@ -937,7 +937,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
-
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -960,7 +960,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_GeneralData_DataProcessor_If_UpdateMultiAssignment_Fails()
         {
@@ -982,7 +982,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
-
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -1011,7 +1011,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_GeneralData_SubDataProcessor_If_UpdateMultiAssignment_Fails()
         {
@@ -1132,7 +1132,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
-
+        /*
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
