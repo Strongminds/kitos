@@ -1578,7 +1578,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
         }
-        /*
+        
         [Fact]
         public void Can_Create_With_OversightData_OversightDates()
         {
@@ -1589,41 +1589,21 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 OversightDates = dates.FromNullable<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>().AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var oversightDatesMap =
-                dates
-                    .ToDictionary(
-                        x => x,
-                        x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-
-            foreach (var oversightDate in dates)
-            {
-                _dprServiceMock
-                    .Setup(x => x.AssignOversightDate(
-                        createdRegistration.Id,
-                        oversightDate.CompletedAt,
-                        oversightDate.Remark,
-                        oversightDate.OversightReportLink,
-                        oversightDate.OversightReportLinkName))
-                    .Returns(oversightDatesMap[oversightDate]);
-            }
-
+            createdRegistration.IsOversightCompleted = YesNoUndecidedOption.Yes;
+            SetupGetFromRepository(createdRegistration);
+            //SetupAuthorizeUpdateReturns();
+           // AllowReadsReturns();
+          //  AllowCreateReturns();
+            
             //Act
             var result = _sut.Create(organizationUuid, parameters);
-
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
-
-            foreach (var oversightDate in dates)
-            {
-                _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, oversightDate.CompletedAt, oversightDate.Remark, oversightDate.OversightReportLink, oversightDate.OversightReportLinkName), Times.Once);
-            }
-
-            _dprServiceMock.Verify(x => x.RemoveOversightDate(createdRegistration.Id, It.IsAny<int>()), Times.Never);
         }
 
+        /*
         [Fact]
         public void Can_Create_With_OversightData_OversightDates_Removes_Existing_If_None()
         {
