@@ -512,7 +512,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             _dataResponsibleAssignmentServiceMock.Verify(_ => _.Assign(dpr, It.IsAny<int>()), Times.Never);
         }
-        /*
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -524,8 +524,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 DataResponsibleRemark = (inputIsNull ? null : A<string>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            _dprServiceMock.Setup(x => x.UpdateDataResponsibleRemark(createdRegistration.Id, generalData.DataResponsibleRemark.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -534,26 +533,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Cannot_Create_With_GeneralData_DataResponsibleRemark_If_Update_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                DataResponsibleRemark = A<string>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateDataResponsibleRemark(createdRegistration.Id, generalData.DataResponsibleRemark.NewValue)).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
         }
 
         [Fact]
@@ -571,9 +550,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateDataResponsibleRemark(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
-
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -585,8 +563,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 IsAgreementConcluded = (inputIsNull ? (YesNoIrrelevantOption?)null : A<YesNoIrrelevantOption>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            _dprServiceMock.Setup(x => x.UpdateIsAgreementConcluded(createdRegistration.Id, generalData.IsAgreementConcluded.NewValue.GetValueOrDefault(YesNoIrrelevantOption.UNDECIDED))).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -596,27 +573,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
         }
-
-        [Fact]
-        public void Cannot_Create_With_GeneralData_IsAgreementConcluded_If_Update_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                IsAgreementConcluded = A<YesNoIrrelevantOption?>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateIsAgreementConcluded(createdRegistration.Id, generalData.IsAgreementConcluded.NewValue.GetValueOrDefault(YesNoIrrelevantOption.UNDECIDED))).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
-
+        
+        
         [Fact]
         public void Create_With_GeneralData_IsAgreementConcluded_Set_To_NoChanges()
         {
@@ -632,8 +590,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateIsAgreementConcluded(It.IsAny<int>(), It.IsAny<YesNoIrrelevantOption>()), Times.Never);
         }
+        
 
         [Theory]
         [InlineData(true)]
@@ -646,8 +604,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 IsAgreementConcludedRemark = (inputIsNull ? null : A<string>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            _dprServiceMock.Setup(x => x.UpdateAgreementConcludedRemark(createdRegistration.Id, generalData.IsAgreementConcludedRemark.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -657,27 +614,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
         }
-
-        [Fact]
-        public void Cannot_Create_With_GeneralData_IsAgreementConcludedRemark_If_Update_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                IsAgreementConcludedRemark = A<string>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateAgreementConcludedRemark(createdRegistration.Id, generalData.IsAgreementConcludedRemark.NewValue)).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
-
+        
         [Fact]
         public void Create_With_GeneralData_IsAgreementConcludedRemark_Set_To_NoChanges()
         {
@@ -693,9 +630,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateAgreementConcludedRemark(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            RepositoryAssertAnyDprAdded();
         }
-
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -707,8 +644,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 AgreementConcludedAt = (inputIsNull ? (DateTime?)null : A<DateTime>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            _dprServiceMock.Setup(x => x.UpdateAgreementConcludedAt(createdRegistration.Id, generalData.AgreementConcludedAt.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -719,25 +655,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
         }
 
-        [Fact]
-        public void Cannot_Create_With_GeneralData_AgreementConcludedAt_If_Update_Fails()
-        {
-            //Arrange
-            var generalData = new UpdatedDataProcessingRegistrationGeneralDataParameters
-            {
-                AgreementConcludedAt = ((DateTime?)A<DateTime>()).AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateAgreementConcludedAt(createdRegistration.Id, generalData.AgreementConcludedAt.NewValue)).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
-        }
+     
 
         [Fact]
         public void Create_With_GeneralData_AgreementConcludedAt_Set_To_NoChanges()
@@ -747,16 +665,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 AgreementConcludedAt = OptionalValueChange<DateTime?>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateAgreementConcludedAt(It.IsAny<int>(), It.IsAny<DateTime?>()), Times.Never);
+            RepositoryAssertAnyDprAdded();
         }
-
+        
         [Fact]
         public void Can_Create_With_GeneralData_BasisForTransfer()
         {
@@ -769,7 +687,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingBasisForTransferOption>(generalData.BasisForTransferUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.AssignBasisForTransfer(createdRegistration.Id, responsibleId)).Returns(new DataProcessingBasisForTransferOption());
+            SetupGetFromRepository(createdRegistration);
+            _basisForTransferAssignmentServiceMock.Setup(_ => _.Assign(createdRegistration, It.IsAny<int>()))
+                .Returns(new DataProcessingBasisForTransferOption());
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -779,7 +699,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Can_Create_With_GeneralData_With_Null_BasisForTransfer()
         {
@@ -792,7 +712,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingBasisForTransferOption>(generalData.BasisForTransferUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.ClearBasisForTransfer(createdRegistration.Id)).Returns(new DataProcessingBasisForTransferOption());
+            _basisForTransferAssignmentServiceMock.Setup(_ => _.Clear(createdRegistration))
+                .Returns(new DataProcessingBasisForTransferOption());
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -802,7 +724,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Can_Create_With_GeneralData_With_Null_BasisForTransfer_If_DprService_Responds_With_BadState()
         {
@@ -815,17 +737,19 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var responsibleId = A<int>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingBasisForTransferOption>(generalData.BasisForTransferUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.ClearBasisForTransfer(createdRegistration.Id)).Returns(new OperationError(OperationFailure.BadState));
+            SetupGetFromRepository(createdRegistration);
+            SetupBasisForTransferAssignmentClearAndAssign(createdRegistration, 0, new OperationError(OperationFailure.BadState));
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            Assert.Equal(createdRegistration.Id, result.Value.Id);
+            Assert.Same(createdRegistration.Name, result.Value.Name);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_GeneralData_With_Null_BasisForTransfer_If_DprService_Fails_With_AnythingBut_BadState()
         {
@@ -839,7 +763,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var clearError = new OperationError(EnumRange.AllExcept(OperationFailure.BadState).RandomItem());
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingBasisForTransferOption>(generalData.BasisForTransferUuid.NewValue, responsibleId);
-            _dprServiceMock.Setup(x => x.ClearBasisForTransfer(createdRegistration.Id)).Returns(clearError);
+            SetupGetFromRepository(createdRegistration);
+            SetupBasisForTransferAssignmentClearAndAssign(createdRegistration, 0, clearError);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -847,7 +772,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownError(result, clearError, transaction);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_GeneralData_BasisForTransfer_If_BasisForTransfer_Id_Cannot_Be_Resolved()
         {
@@ -856,9 +781,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 BasisForTransferUuid = new Guid?(A<Guid>()).AsChangedValue()
             };
-            var (organizationUuid, parameters, _, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
+            var (organizationUuid, parameters, dpr, transaction) = SetupCreateScenarioPrerequisites(generalData: generalData);
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingBasisForTransferOption>(generalData.BasisForTransferUuid.NewValue, Maybe<int>.None);
+            SetupGetFromRepository(dpr);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
@@ -866,7 +792,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(result, "Basis for transfer option with uuid", OperationFailure.BadInput, transaction);
         }
-
+        
         [Fact]
         public void Create_With_GeneralData_BasisForTransfer_Set_To_NoChanges()
         {
@@ -875,16 +801,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 BasisForTransferUuid = OptionalValueChange<Guid?>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(generalData: generalData);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.AssignBasisForTransfer(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _basisForTransferAssignmentServiceMock.Verify(_ => _.Assign(dpr, A<int>()), Times.Never);
         }
-
+        /*
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -2655,6 +2581,25 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         }
 
      */
+        private void RepositoryAssertAnyDprAdded()
+        {
+            _repositoryMock.Verify(_ => _.Add(It.IsAny<DataProcessingRegistration>()));
+        }
+
+        private void SetupBasisForTransferAssignmentClearAndAssign(DataProcessingRegistration dpr, int responsibleId = 0, OperationError clearOperationError = null)
+        {
+            if (clearOperationError != null)
+            {
+                _basisForTransferAssignmentServiceMock.Setup(_ => _.Clear(dpr)).Returns(Result<DataProcessingBasisForTransferOption, OperationError>.Failure(clearOperationError));
+            }
+            else
+            {
+                _basisForTransferAssignmentServiceMock.Setup(_ => _.Clear(dpr)).Returns(new DataProcessingBasisForTransferOption());
+
+            }
+            _basisForTransferAssignmentServiceMock.Setup(_ => _.Assign(dpr, responsibleId)).Returns(new DataProcessingBasisForTransferOption());
+        }
+
         private void SetupDataResponsibleAssignmentClearAndAssign(DataProcessingRegistration dpr, int responsibleId = 0, OperationError clearOperationError = null)
         {
             if (clearOperationError != null)
