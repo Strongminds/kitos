@@ -163,6 +163,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                     .Match(FromOperationError, NoContent);
         }
 
+        [HttpPatch]
+        [Route("{organizationUuid}/disabled-status")]
+        [SwaggerResponse(HttpStatusCode.NoContent)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        public IHttpActionResult ChangeDisabledStatus([FromUri][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationDisabledStatusRequestDTO request)
+        {
+            return _organizationService.ChangeOrganizationDisabledStatus(organizationUuid, request.Disabled)
+                    .Match(FromOperationError, NoContent);
+        }
+
         [HttpGet]
         [Route("{organizationUuid}/conflicts")]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationRemovalConflictsResponseDTO))]

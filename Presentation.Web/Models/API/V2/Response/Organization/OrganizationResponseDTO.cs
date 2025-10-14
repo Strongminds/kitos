@@ -9,10 +9,12 @@ namespace Presentation.Web.Models.API.V2.Response.Organization
         [Required]
         public OrganizationType OrganizationType { get; }
         public bool IsSupplier { get; }
-        public OrganizationResponseDTO(Guid uuid, string name, string cvr, OrganizationType organizationType, bool isSupplier) : base(uuid, name, cvr)
+        public bool Disabled { get; set; }
+        public OrganizationResponseDTO(Guid uuid, string name, string cvr, OrganizationType organizationType, bool isSupplier, bool disabled) : base(uuid, name, cvr)
         {
             OrganizationType = organizationType;
             IsSupplier = isSupplier;
+            Disabled = disabled;
         }
     }
 }

@@ -537,6 +537,7 @@
     <Compile Include="Models\API\V2\Internal\Request\Organizations\DataResponsibleRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationBaseRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationCreateRequestDTO.cs" />
+    <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationDisabledStatusRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationGridConfigurationRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationMasterDataRoleRequestDTO.cs" />
     <Compile Include="Models\API\V2\Internal\Request\Organizations\OrganizationMasterDataRolesRequestDTO.cs" />
