@@ -24,12 +24,13 @@ public class FieldAuthorizationModel : IAuthorizationModel
         if (entity == null || parameters == null) return false;
 
         if (_activeUserContext.IsGlobalAdmin()) return true;
-        var organizationHasSuppliers = entity.Organization?.HasSuppliers() ?? false;
-        if (!organizationHasSuppliers) return _authorizationContext.AllowModify(entity);
+       var entityOrganization = entity.Organization;
+        var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
+        if (!organizationHasSuppliers) return authorizationContext.AllowModify(entity);
 
-        var supplierIds = entity.Organization.Suppliers.Select(x => x.SupplierId);
-        var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
-        return userHasSupplierApiAccess
+        var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
+        var userHasSupplierApiAccess = activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
+         return userHasSupplierApiAccess
             ? CheckForSupplierApiUser(entity, parameters)
             : CheckForNonSupplierApiUser(entity, parameters);
     }
