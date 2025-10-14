@@ -1358,9 +1358,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration.Name, result.Value.Name);
-            Assert.Equal(createdRegistration.Id, result.Value.Id);
+            AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
         }
 
@@ -1399,9 +1397,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration.Name, result.Value.Name);
-            Assert.Equal(createdRegistration.Id, result.Value.Id);
+            AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
         }
 
@@ -1422,7 +1418,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
         }
 
-        /*
+        
 
         [Theory]
         [InlineData(true)]
@@ -1436,35 +1432,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
 
-            _dprServiceMock.Setup(x => x.UpdateOversightIntervalRemark(createdRegistration.Id, oversightData.OversightIntervalRemark.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Cannot_Create_With_OversightData_OversightIntervalRemark_If_Update_Fails()
-        {
-            //Arrange
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightIntervalRemark = A<string>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateOversightIntervalRemark(createdRegistration.Id, oversightData.OversightIntervalRemark.NewValue)).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
         }
 
         [Fact]
@@ -1475,15 +1450,17 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightIntervalRemark = OptionalValueChange<string>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            SetupGetFromRepository(dpr);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateOversightIntervalRemark(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
+
+        
 
         [Theory]
         [InlineData(true)]
@@ -1496,36 +1473,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 OversightScheduledInspectionDate = (inputIsNull ? null : A<DateTime?>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            _dprServiceMock.Setup(x => x.UpdateOversightScheduledInspectionDate(createdRegistration.Id, oversightData.OversightScheduledInspectionDate.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
-        }
-
-        [Fact]
-        public void Cannot_Create_OversightIntervalRemark_If_Update_Fails()
-        {
-            //Arrange
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightScheduledInspectionDate = A<DateTime?>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var operationError = A<OperationError>();
-            _dprServiceMock.Setup(x => x.UpdateOversightScheduledInspectionDate(createdRegistration.Id, oversightData.OversightScheduledInspectionDate.NewValue.GetValueOrDefault())).Returns(operationError);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            AssertFailureWithKnownError(result, operationError, transaction);
         }
 
         [Fact]
@@ -1536,14 +1491,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightScheduledInspectionDate = OptionalValueChange<DateTime?>.None
             };
-            var (organizationUuid, parameters, _, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            var (organizationUuid, parameters, dpr, _) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
+            SetupGetFromRepository(dpr);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            _dprServiceMock.Verify(x => x.UpdateOversightScheduledInspectionDate(It.IsAny<int>(), It.IsAny<DateTime?>()), Times.Never);
         }
 
         [Theory]
@@ -1557,17 +1512,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 IsOversightCompleted = (inputIsNull ? (YesNoUndecidedOption?)null : A<YesNoUndecidedOption>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            _dprServiceMock.Setup(x => x.UpdateIsOversightCompleted(createdRegistration.Id, oversightData.IsOversightCompleted.NewValue.GetValueOrDefault(YesNoUndecidedOption.Undecided))).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            AssertCreatedRegistrationNameAndId(createdRegistration, result);
             AssertTransactionCommitted(transaction);
         }
+        /*
 
         [Fact]
         public void Cannot_Create_With_OversightData_IsOversightCompleted_If_Update_Fails()
@@ -2380,6 +2334,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
         }
 
+       
+
         private static UserRolePair CreateUserRolePair(Guid roleUuid, Guid userUuid)
         {
             return new UserRolePair(userUuid, roleUuid);
@@ -2424,6 +2380,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         
 
      */
+        private void AssertCreatedRegistrationNameAndId(DataProcessingRegistration createdRegistration, Result<DataProcessingRegistration, OperationError> result)
+        {
+            Assert.True(result.Ok);
+            Assert.Same(createdRegistration.Name, result.Value.Name);
+            Assert.Equal(createdRegistration.Id, result.Value.Id);
+        }
 
         private void AllowDeleteReturns(bool value = true)
         {
