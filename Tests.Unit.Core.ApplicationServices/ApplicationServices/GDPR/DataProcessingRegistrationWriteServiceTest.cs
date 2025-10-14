@@ -2165,8 +2165,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
         }
 
-       
-        /*
         [Fact]
         public void Can_DeleteOversightDate()
         {
@@ -2184,27 +2182,19 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Id = registrationId,
                 OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
-                IsOversightCompleted = YesNoUndecidedOption.Yes
+                IsOversightCompleted = YesNoUndecidedOption.Yes,
+                Uuid = registrationUuid
             };
-
-            _dprServiceMock
-                .Setup(x => x.GetByUuid(registrationUuid))
-                .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
-
-            _dprServiceMock
-                .Setup(x => x.RemoveOversightDate(registrationId, oversightDateId))
-                .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(oversightDate));
+            SetupGetFromRepository(dpr);
+            AllowReadsReturns();
 
             // Act
             var result = _sut.DeleteOversightDate(registrationUuid, oversightDateUuid);
 
             // Assert
             Assert.True(result.IsNone);
+            _oversightDateRepositoryMock.Verify(_ => _.Delete(oversightDate));
         }
-
-        
-
-     */
 
         private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
         {
@@ -2397,8 +2387,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var orgDbId = A<int>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<Organization>(organizationUuid, orgDbId);
-            // ExpectCreateDataProcessingRegistrationReturns(orgDbId, parameters, parameters.Name.NewValue,
-            // createdRegistration)
             _namingServiceMock.Setup(_ => _.ValidateSuggestedNewRegistrationName(It.IsAny<int>(), It.IsAny<string>())).Returns(Maybe<OperationError>.None);
             _repositoryMock.Setup(_ => _.Add(It.IsAny<DataProcessingRegistration>())).Returns(createdRegistration);
             AllowCreateReturns();
@@ -2429,20 +2417,5 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Equal(failure, result.Error.FailureType);
             AssertTransactionNotCommitted(transaction);
         }
-
-        //private void ExpectUpdateNameReturns(int dprId, string nameNewValue, Result<DataProcessingRegistration, OperationError> result)
-        //{
-        //    _dprServiceMock.Setup(x => x.UpdateName(dprId, nameNewValue)).Returns(result);
-        //}
-
-        //private void ExpectGetDataProcessingRegistrationReturns(Guid dprUuid, Result<DataProcessingRegistration, OperationError> result)
-        //{
-        //    _dprServiceMock.Setup(x => x.GetByUuid(dprUuid)).Returns(result);
-        //}
-
-        //private void ExpectCreateDataProcessingRegistrationReturns(int orgDbId, DataProcessingRegistrationModificationParameters parameters, string name, Result<DataProcessingRegistration, OperationError> result)
-        //{
-        //    _dprServiceMock.Setup(x => x.Create(orgDbId, name)).Returns(result);
-        //}
     }
 }
