@@ -1295,7 +1295,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.HasValue);
             Assert.Equal(OperationFailure.NotFound, result.Value.FailureType);
         }
-        /*
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -1340,7 +1340,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Failed);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
-
+        
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -1352,18 +1352,18 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 OversightOptionsRemark = (inputIsNull ? null : A<string>()).AsChangedValue()
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            _dprServiceMock.Setup(x => x.UpdateOversightOptionRemark(createdRegistration.Id, oversightData.OversightOptionsRemark.NewValue)).Returns(createdRegistration);
+            SetupGetFromRepository(createdRegistration);
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
+            Assert.Same(createdRegistration.Name, result.Value.Name);
+            Assert.Equal(createdRegistration.Id, result.Value.Id);
             AssertTransactionCommitted(transaction);
         }
-
+        /*
         [Fact]
         public void Cannot_Create_With_OversightData_OversightOptionsRemark_If_Update_Fails()
         {
