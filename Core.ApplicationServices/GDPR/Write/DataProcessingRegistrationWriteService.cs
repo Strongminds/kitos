@@ -257,6 +257,14 @@ namespace Core.ApplicationServices.GDPR.Write
 
         private Result<DataProcessingRegistration, OperationError> Update<TParameters>(Func<Result<DataProcessingRegistration, OperationError>> getDpr, Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>> performUpdates, TParameters parameters)
         {
+            return UpdateBase(getDpr, performUpdates, parameters);
+        }
+
+        private Result<DataProcessingRegistration, OperationError> UpdateBase<TParameters>(
+            Func<Result<DataProcessingRegistration, OperationError>> getDpr,
+            Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>>
+                performUpdates, TParameters parameters, bool isUpdate = true)
+        {
             using var transaction = _transactionManager.Begin();
 
             var dprResult = getDpr();
@@ -268,7 +276,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var dpr = dprResult.Value;
 
-            if (parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
+            if (isUpdate && parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
             {
                 var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
                 var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
@@ -291,36 +299,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
         private Result<DataProcessingRegistration, OperationError> CreateDataProcessingRegistration<TParameters>(Func<Result<DataProcessingRegistration, OperationError>> getDpr, Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>> performUpdates, TParameters parameters)
         {
-            using var transaction = _transactionManager.Begin();
-
-            var dprResult = getDpr();
-
-            if (dprResult.Failed)
-            {
-                return dprResult.Error;
-            }
-
-            var dpr = dprResult.Value;
-
-            if (parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
-            {
-                var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
-                var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
-                if (!authorizeUpdate) return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
-            }
-
-            var snapshot = dpr.Snapshot();
-
-            var result = performUpdates(dpr, parameters);
-
-            if (result.Ok)
-            {
-                _domainEvents.Raise(new EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>(result.Value, snapshot.FromNullable()));
-                _databaseControl.SaveChanges();
-                transaction.Commit();
-            }
-
-            return result;
+            return UpdateBase(getDpr, performUpdates, parameters, false);
         }
 
         private Result<DataProcessingRegistration, OperationError> PerformUpdates(DataProcessingRegistration dpr, DataProcessingRegistrationModificationParameters parameters)
