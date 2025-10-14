@@ -887,7 +887,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
             //Act
-            var result = _sut.DisableOrEnableOrganization(organization.Uuid, disable);
+            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, disable);
 
             //Assert
             Assert.True(result.IsNone);
@@ -907,7 +907,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
             //Act
-            var result = _sut.DisableOrEnableOrganization(organization.Uuid, A<bool>());
+            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, A<bool>());
 
             //Assert
             Assert.True(result.HasValue);

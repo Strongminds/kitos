@@ -371,10 +371,10 @@ namespace Core.ApplicationServices.Organizations
             return Maybe<OperationError>.None;
         }
 
-        public Maybe<OperationError> DisableOrEnableOrganization(Guid organizationUuid, bool isDisabled)
+        public Maybe<OperationError> ChangeOrganizationDisabledStatus(Guid organizationUuid, bool isDisabled)
         {
             using var transaction = _transactionManager.Begin();
-            var organizationWhichCanBeDisabledOrActivated = GetOrganization(organizationUuid).Bind(WithDeletionAccess);
+            var organizationWhichCanBeDisabledOrActivated = GetOrganization(organizationUuid).Bind(WithDisabledStateChangeAccess);
             if (organizationWhichCanBeDisabledOrActivated.Failed)
             {
                 return organizationWhichCanBeDisabledOrActivated.Error;
@@ -473,6 +473,11 @@ namespace Core.ApplicationServices.Organizations
             }
 
             return new OperationError(OperationFailure.Forbidden);
+        }
+
+        private Result<Organization, OperationError> WithDisabledStateChangeAccess(Organization organization)
+        {
+            return WithDeletionAccess(organization);
         }
 
         private bool HasRole(int orgId, OrganizationRole role)
