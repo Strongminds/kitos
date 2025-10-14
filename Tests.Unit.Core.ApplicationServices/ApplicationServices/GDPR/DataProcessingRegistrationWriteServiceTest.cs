@@ -1830,7 +1830,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(createResult, "Duplicates of 'User Role Pairs' are not allowed", OperationFailure.BadInput, transaction);
         }
-        /*
+        
         [Fact]
         public void Can_Update_Roles_To_Remove_Them()
         {
@@ -1843,7 +1843,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(newRight.User.Uuid, newRight.UserId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(newRight.Role.Uuid, newRight.RoleId);
 
-            ExpectRoleAssignmentReturns(createdRegistration, newRight.RoleId, newRight.UserId, newRight);
+            ExpectRoleAssignmentReturns(newRight);
 
             var rightToRemove = CreateRight(createdRegistration, A<Guid>(), A<int>(), A<Guid>(), A<int>());
 
@@ -1855,9 +1855,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             createdRegistration.Rights.Add(rightToRemove);
             createdRegistration.Rights.Add(rightToKeep);
 
-            ExpectRoleRemovalReturns(createdRegistration, rightToRemove.RoleId, rightToRemove.UserId, rightToRemove);
-            ExpectGetDataProcessingRegistrationReturns(createdRegistration.Uuid, createdRegistration);
-
+            ExpectRoleRemovalReturns(createdRegistration, rightToRemove);
+            SetupGetFromRepository(createdRegistration);
+            AllowReadsReturns();
             var roles = CreateUpdatedDataProcessingRegistrationRoles(new List<UserRolePair>()
             {
                 newUserRolePair, userRolePairToKeep
@@ -1874,13 +1874,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(updateResult.Ok);
             AssertTransactionCommitted(transaction);
-            _dprServiceMock.Verify(x => x.AssignRole(createdRegistration.Id, newRight.RoleId, newRight.UserId), Times.Once);
-            _dprServiceMock.Verify(x => x.RemoveRole(createdRegistration.Id, rightToRemove.RoleId, rightToRemove.UserId), Times.Once);
+            _roleAssignmentsServiceMock.Verify(x => x.AssignRole(createdRegistration, newRight.RoleId, newRight.UserId), Times.Once);
+            _roleAssignmentsServiceMock.Verify(x => x.RemoveRole(createdRegistration, rightToRemove.RoleId, rightToRemove.UserId), Times.Once);
 
-            _dprServiceMock.Verify(x => x.AssignRole(createdRegistration.Id, rightToKeep.RoleId, rightToKeep.UserId), Times.Never);
-            _dprServiceMock.Verify(x => x.RemoveRole(createdRegistration.Id, rightToKeep.RoleId, rightToKeep.UserId), Times.Never);
+            _roleAssignmentsServiceMock.Verify(x => x.AssignRole(createdRegistration, rightToKeep.RoleId, rightToKeep.UserId), Times.Never);
+            _roleAssignmentsServiceMock.Verify(x => x.RemoveRole(createdRegistration, rightToKeep.RoleId, rightToKeep.UserId), Times.Never);
         }
-
+        
         [Fact]
         public void Can_Create_With_ExternalReferences()
         {
@@ -1915,7 +1915,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(result, "Failed to update references with error message", operationError.FailureType, transaction);
         }
-
+        
         [Fact]
         public void Can_Add_Role()
         {
@@ -1925,12 +1925,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var newRight = CreateRight(dpr, A<Guid>(), A<int>(), A<Guid>(), A<int>());
             var newAssignment = CreateUserRolePair(newRight.Role.Uuid, newRight.User.Uuid);
 
-            ExpectGetDataProcessingRegistrationReturns(dpr.Uuid, dpr);
+            SetupGetFromRepository(dpr);
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(newAssignment.UserUuid, newRight.UserId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(newAssignment.RoleUuid, newRight.RoleId);
-
-            ExpectRoleAssignmentReturns(dpr, newRight.RoleId, newRight.UserId, newRight);
+            AllowReadsReturns();
+            ExpectRoleAssignmentReturns(newRight);
 
             //Act
             var createResult = _sut.AddRole(dpr.Uuid, newAssignment);
@@ -1953,12 +1953,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var rightToRemove = CreateRight(dpr, userRolePairToRemove.RoleUuid, roleId, userRolePairToRemove.UserUuid, userId);
             dpr.Rights = new List<DataProcessingRegistrationRight> { rightToRemove };
 
-            ExpectGetDataProcessingRegistrationReturns(dpr.Uuid, dpr);
-
+            SetupGetFromRepository(dpr);
+            AllowReadsReturns();
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(userRolePairToRemove.UserUuid, userId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(userRolePairToRemove.RoleUuid, roleId);
 
-            ExpectRoleRemovalReturns(dpr, roleId, userId, rightToRemove);
+            ExpectRoleRemovalReturns(dpr, rightToRemove);
 
             //Act
             var createResult = _sut.RemoveRole(dpr.Uuid, userRolePairToRemove);
@@ -1993,13 +1993,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var dataProcessingRegistration = new DataProcessingRegistration
             {
-                Organization = new Organization { OrgUnits = { new OrganizationUnit { Uuid = orgUnitUuid.Value } } }
+                Organization = new Organization { OrgUnits = { new OrganizationUnit { Uuid = orgUnitUuid.Value } } }, Uuid = A<Guid>()
             };
             var transaction = ExpectTransaction();
-            var dprUuid = A<Guid>();
-
-            ExpectGetDataProcessingRegistrationReturns(dprUuid, dataProcessingRegistration);
-
+            var dprUuid = dataProcessingRegistration.Uuid;
+            AllowReadsReturns();
+            SetupGetFromRepository(dataProcessingRegistration);
+            
             //Act
             var result = _sut.Update(dprUuid, parameters);
 
@@ -2008,7 +2008,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Equal(result.Value.ResponsibleOrganizationUnit.Uuid, orgUnitUuid);
             AssertTransactionCommitted(transaction);
         }
-
+        
         [Fact]
         public void Can_Reset_Responsible_Unit()
         {
@@ -2020,12 +2020,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var dataProcessingRegistration = new DataProcessingRegistration
             {
-                ResponsibleOrganizationUnit = new OrganizationUnit { Uuid = A<Guid>() }
+                ResponsibleOrganizationUnit = new OrganizationUnit { Uuid = A<Guid>() }, Uuid = A<Guid>()
             };
             var transaction = ExpectTransaction();
-            var dprUuid = A<Guid>();
-
-            ExpectGetDataProcessingRegistrationReturns(dprUuid, dataProcessingRegistration);
+            var dprUuid = dataProcessingRegistration.Uuid;
+            SetupGetFromRepository(dataProcessingRegistration);
+            AllowReadsReturns();
 
             //Act
             var result = _sut.Update(dprUuid, parameters);
@@ -2047,12 +2047,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var dataProcessingRegistration = new DataProcessingRegistration
             {
-                Organization = new Organization()
+                Organization = new Organization(),
+                Uuid = A<Guid>()
             };
             var transaction = ExpectTransaction();
-            var dprUuid = A<Guid>();
-
-            ExpectGetDataProcessingRegistrationReturns(dprUuid, dataProcessingRegistration);
+            var dprUuid = dataProcessingRegistration.Uuid;
+            SetupGetFromRepository(dataProcessingRegistration);
 
             //Act
             var result = _sut.Update(dprUuid, parameters);
@@ -2062,7 +2062,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionNotCommitted(transaction);
         }
 
-
+        
         [Fact]
         public void Can_AddOversightDate()
         {
@@ -2075,24 +2075,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _identityResolverMock
                 .Setup(x => x.ResolveDbId<DataProcessingRegistration>(registrationUuid))
                 .Returns(registrationId);
-
-            _dprServiceMock
-                .Setup(x => x.AssignOversightDate(
-                    registrationId,
-                    parameters.CompletedAt.NewValue,
-                    parameters.Remark.NewValue,
-                    parameters.OversightReportLink.NewValue,
-                    parameters.OversightReportLinkName.NewValue))
-                .Returns(Result<DataProcessingRegistrationOversightDate, OperationError>.Success(expectedOversightDate));
+            SetupGetFromRepository(new DataProcessingRegistration(){ IsOversightCompleted = YesNoUndecidedOption.Yes});
+            AllowReadsReturns();
 
             // Act
             var result = _sut.AddOversightDate(registrationUuid, parameters);
 
             // Assert
             Assert.True(result.Ok);
-            Assert.Same(expectedOversightDate, result.Value);
         }
-
+        
         [Fact]
         public void Can_UpdateOversightDate()
         {
@@ -2111,13 +2103,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Id = registrationId,
                 OversightDates = new List<DataProcessingRegistrationOversightDate>{oversightDate},
-                IsOversightCompleted = YesNoUndecidedOption.Yes
+                IsOversightCompleted = YesNoUndecidedOption.Yes,
+                Uuid = registrationUuid
             };
 
             var transaction = ExpectTransaction();
-            _dprServiceMock
-                .Setup(x => x.GetByUuid(registrationUuid))
-                .Returns(Result<DataProcessingRegistration, OperationError>.Success(dpr));
+            SetupGetFromRepository(dpr);
+            AllowReadsReturns();
 
             // Act
             var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
@@ -2143,9 +2135,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                         Uuid = oversightDateUuid,
                         Id = A<int>()
                     }
-                }
+                },
+                Uuid = registrationUuid
             };
-            _dprServiceMock.Setup(_ => _.GetByUuid(registrationUuid)).Returns(dpr);
+            SetupGetFromRepository(dpr);
             SetupAuthorizationModelReturns(false, dpr, parameters);
 
             var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
@@ -2163,7 +2156,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Uuid = registrationUuid
             };
-            _dprServiceMock.Setup(_ => _.GetByUuid(registrationUuid)).Returns(dpr);
+            SetupGetFromRepository(dpr);
             SetupAuthorizationModelReturns(false, dpr, parameters);
 
             var result = _sut.Update(registrationUuid, parameters);
@@ -2172,11 +2165,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
         }
 
-        private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
-        {
-            _authorizationModel.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns(value);
-        }
-
+       
+        /*
         [Fact]
         public void Can_DeleteOversightDate()
         {
@@ -2212,6 +2202,15 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.IsNone);
         }
 
+        
+
+     */
+
+        private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
+        {
+            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns(value);
+        }
+
         private void ExpectBatchUpdateExternalReferencesReturns(DataProcessingRegistration dpr, IEnumerable<UpdatedExternalReferenceProperties> externalReferences, Maybe<OperationError> value)
         {
             _referenceServiceMock
@@ -2219,33 +2218,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 .Returns(value);
         }
 
-        
-
-       
-
-        
-
-       
-
-        
-
- 
-
-        
-
-        
-
-
-     
-        
-
-        
-
-        
-
-        
-
-     */
         private static DataProcessingRegistrationRight CreateRight(DataProcessingRegistration dpr, Guid roleUuid, int roleId, Guid userUuid, int userId)
         {
             return new DataProcessingRegistrationRight()
