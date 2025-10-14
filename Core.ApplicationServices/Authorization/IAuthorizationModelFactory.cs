@@ -2,7 +2,7 @@
 {
     public interface IAuthorizationModelFactory
     {
-        CrudAuthorizationModel CreateCrudAuthorizationModel();
-        FieldAuthorizationModel CreateFieldAuthorizationModel();
+        CrudAuthorizationModel CreateCrudAuthorizationModel(IAuthorizationContext authorizationContext);
+        FieldAuthorizationModel CreateFieldAuthorizationModel(IAuthorizationContext authorizationContext);
     }
 }
