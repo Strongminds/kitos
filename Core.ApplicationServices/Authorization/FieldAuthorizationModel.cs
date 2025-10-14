@@ -26,10 +26,10 @@ public class FieldAuthorizationModel : IAuthorizationModel
         if (_activeUserContext.IsGlobalAdmin()) return true;
        var entityOrganization = entity.Organization;
         var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
-        if (!organizationHasSuppliers) return authorizationContext.AllowModify(entity);
+        if (!organizationHasSuppliers) return _authorizationContext.AllowModify(entity);
 
         var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
-        var userHasSupplierApiAccess = activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
+        var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
          return userHasSupplierApiAccess
             ? CheckForSupplierApiUser(entity, parameters)
             : CheckForNonSupplierApiUser(entity, parameters);
