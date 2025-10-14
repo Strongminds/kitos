@@ -95,6 +95,7 @@ namespace Core.DomainModel.Organization
 
         public AccessModifier AccessModifier { get; set; }
         public Guid Uuid { get; set; }
+        public bool Disabled { get; set; }
         public virtual ICollection<OrganizationUnit> OrgUnits { get; set; }
 
         public virtual ICollection<LocalOptionEntity<Entity>> OrganizationOptions { get; set; }
@@ -690,6 +691,26 @@ namespace Core.DomainModel.Organization
                 return Maybe<OperationError>.None;
 
             return new OperationError($"Organization has the Supplier with uuid: {supplierUuid} already assigned", OperationFailure.BadState);
+        }
+
+        public Maybe<OperationError> CheckCanBeDeleted()
+        {
+            if (IsDefaultOrganization == true)
+            {
+                return new OperationError("Cannot delete default organization", OperationFailure.BadInput);
+            }
+
+            if (Disabled == false)
+            {
+                return new OperationError("Cannot delete an active organization", OperationFailure.BadInput);
+            }
+
+            return Maybe<OperationError>.None;
+        }
+
+        public void UpdateDisabledStatus(bool disabled)
+        {
+            Disabled = disabled;
         }
     }
 }

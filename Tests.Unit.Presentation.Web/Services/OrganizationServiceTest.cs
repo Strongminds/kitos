@@ -813,7 +813,7 @@ namespace Tests.Unit.Presentation.Web.Services
         public void Delete_Returns_Ok_Of_No_Conflicts()
         {
             //Arrange
-            var organization = SetupConflictCalculationPrerequisites(true, true);
+            var organization = SetupConflictCalculationPrerequisites(true, true, true);
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
@@ -825,10 +825,26 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
-        public void Delete_Returns_Conflict_If_Conflicts_And_EnforceDeletion_Is_False()
+        public void Delete_Fails_If_Organization_Is_Enabled()
         {
             //Arrange
             var organization = SetupConflictCalculationPrerequisites(true, true);
+            var transaction = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+
+            //Act
+            var result = _sut.RemoveOrganization(organization.Uuid, false);
+
+            //Assert
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.BadInput, result.Value.FailureType);
+        }
+
+        [Fact]
+        public void Delete_Returns_Conflict_If_Conflicts_And_EnforceDeletion_Is_False()
+        {
+            //Arrange
+            var organization = SetupConflictCalculationPrerequisites(true, true, true);
             organization.ItSystems.Add(CreateItSystem().InOrganization(organization).WithInterfaceExhibit(CreateInterface().InOrganization(CreateOrganization()))); //Create a conflict
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
@@ -848,7 +864,7 @@ namespace Tests.Unit.Presentation.Web.Services
         public void Delete_Returns_Ok_If_Conflicts_And_EnforceDeletion_Is_True()
         {
             //Arrange
-            var organization = SetupConflictCalculationPrerequisites(true, true);
+            var organization = SetupConflictCalculationPrerequisites(true, true, true);
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
 
@@ -857,6 +873,45 @@ namespace Tests.Unit.Presentation.Web.Services
 
             //Assert
             VerifyOrganizationDeleted(result, transaction, organization);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Can_Change_Disabled_Status_Organization(bool disable)
+        {
+            //Arrange
+            var organization = SetupConflictCalculationPrerequisites(true, true);
+            organization.Disabled = !disable;
+            var transaction = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+
+            //Act
+            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, disable);
+
+            //Assert
+            Assert.True(result.IsNone);
+            _organizationRepository.Verify(x => x.Save(), Times.Once());
+            _organizationRepository.Verify(x => x.Update(organization), Times.Once());
+            transaction.Verify(x => x.Commit(), Times.Once());
+            _domainEventsMock.Verify(
+                x => x.Raise(It.Is<EntityUpdatedEvent<Organization>>(org => org.Entity == organization)), Times.Once());
+        }
+
+        [Fact]
+        public void Change_Disable_Returns_Error_If_Forbidden()
+        {
+            //Arrange
+            var organization = SetupConflictCalculationPrerequisites(true, false);
+            var transaction = new Mock<IDatabaseTransaction>();
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+
+            //Act
+            var result = _sut.ChangeOrganizationDisabledStatus(organization.Uuid, A<bool>());
+
+            //Assert
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Forbidden, result.Value.FailureType);
         }
 
         [Theory]
@@ -965,9 +1020,10 @@ namespace Tests.Unit.Presentation.Web.Services
             return new DataProcessingRegistration();
         }
 
-        private Organization SetupConflictCalculationPrerequisites(bool allowRead, bool allowDelete)
+        private Organization SetupConflictCalculationPrerequisites(bool allowRead, bool allowDelete, bool isDisabled = false)
         {
             var organization = CreateOrganization();
+            organization.Disabled = isDisabled;
             ExpectGetOrganizationByUuidReturns(organization.Uuid, organization);
             ExpectAllowReadOrganizationReturns(organization, allowRead);
             ExpectAllowDeleteReturns(organization, allowDelete);

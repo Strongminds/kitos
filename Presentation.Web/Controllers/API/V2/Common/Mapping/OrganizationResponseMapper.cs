@@ -34,7 +34,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
         public OrganizationResponseDTO ToOrganizationDTO(Organization organization)
         {
             return new(organization.Uuid, organization.Name, organization.GetActiveCvr(),
-                _organizationTypeMapper.MapOrganizationType(organization.Type), organization.IsSupplier);
+                _organizationTypeMapper.MapOrganizationType(organization.Type), organization.IsSupplier, organization.Disabled);
         }
 
         public OrganizationMasterDataRolesResponseDTO ToRolesDTO(OrganizationMasterDataRoles roles)
