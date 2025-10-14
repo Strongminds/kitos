@@ -1660,7 +1660,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
         }
-        /*
+        
         [Fact]
         public void Can_Create_With_OversightData_OversightDates_Set_To_NoChanges()
         {
@@ -1679,12 +1679,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
             AssertTransactionCommitted(transaction);
-
-            _dprServiceMock.Verify(x => x.RemoveOversightDate(createdRegistration.Id, It.IsAny<int>()), Times.Never);
-            _dprServiceMock.Verify(x => x.AssignOversightDate(createdRegistration.Id, It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-
         }
-
+        
         [Fact]
         public void Can_Create_With_Roles()
         {
@@ -1698,10 +1694,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var roles = CreateUpdatedDataProcessingRegistrationRoles(rolePairs);
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(roles: roles);
             var right = CreateRight(createdRegistration, roleUuid, roleId, userUuid, userId);
+            SetupGetFromRepository(createdRegistration);
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(userUuid, userId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(roleUuid, roleId);
-            ExpectRoleAssignmentReturns(createdRegistration, roleId, userId, right);
+            ExpectRoleAssignmentReturns(right);
 
             //Act
             var createResult = _sut.Create(organizationUuid, parameters);
@@ -1709,10 +1706,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(createResult.Ok);
             AssertTransactionCommitted(transaction);
-            _dprServiceMock.Verify(x => x.AssignRole(createdRegistration.Id, roleId, userId), Times.Once);
-            _dprServiceMock.Verify(x => x.RemoveRole(createdRegistration.Id, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _roleAssignmentsServiceMock.Verify(_ => _.AssignRole(createdRegistration, roleId, userId), Times.Once);
         }
 
+        
         [Fact]
         public void Can_Create_With_No_Roles()
         {
@@ -1726,10 +1723,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(createResult.Ok);
             AssertTransactionCommitted(transaction);
-            _dprServiceMock.Verify(x => x.AssignRole(createdRegistration.Id, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-            _dprServiceMock.Verify(x => x.RemoveRole(createdRegistration.Id, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _roleAssignmentsServiceMock.Verify(x => x.AssignRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _roleAssignmentsServiceMock.Verify(x => x.RemoveRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_Roles_If_RoleUuid_Not_Found()
         {
@@ -1753,7 +1750,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(createResult, $"Could not find role with Uuid: {roleUuid}", OperationFailure.BadInput, transaction);
         }
-
+        
         [Fact]
         public void Cannot_Create_With_Roles_If_UserUuid_Not_Found()
         {
@@ -1791,14 +1788,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var rolePairs = new List<UserRolePair>() { CreateUserRolePair(roleUuid, userUuid) };
 
             var roles = CreateUpdatedDataProcessingRegistrationRoles(rolePairs);
-
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(roles: roles);
+            var (organizationUuid, parameters, dpr, transaction) = SetupCreateScenarioPrerequisites(roles: roles);
+            SetupGetFromRepository(dpr);
 
             var error = A<OperationError>();
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(userUuid, userId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(roleUuid, roleId);
-            ExpectRoleAssignmentReturns(createdRegistration, roleId, userId, error);
+            ExpectRoleAssignmentReturns(error);
 
             //Act
             var createResult = _sut.Create(organizationUuid, parameters);
@@ -1825,7 +1822,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<User>(userUuid, userId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<DataProcessingRegistrationRole>(roleUuid, roleId);
-            ExpectRoleAssignmentReturns(createdRegistration, roleId, userId, right);
+            ExpectRoleAssignmentReturns(right);
 
             //Act
             var createResult = _sut.Create(organizationUuid, parameters);
@@ -1833,7 +1830,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             AssertFailureWithKnownErrorDetails(createResult, "Duplicates of 'User Role Pairs' are not allowed", OperationFailure.BadInput, transaction);
         }
-
+        /*
         [Fact]
         public void Can_Update_Roles_To_Remove_Them()
         {
@@ -2222,50 +2219,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 .Returns(value);
         }
 
-        private void ExpectRoleAssignmentReturns(DataProcessingRegistration dpr, int roleId, int userId, Result<DataProcessingRegistrationRight, OperationError> result)
-        {
-            _dprServiceMock.Setup(x => x.AssignRole(dpr.Id, roleId, userId)).Returns(result);
-        }
-
-        private void ExpectRoleRemovalReturns(DataProcessingRegistration dpr, int roleId, int userId, Result<DataProcessingRegistrationRight, OperationError> result)
-        {
-            _dprServiceMock.Setup(x => x.RemoveRole(dpr.Id, roleId, userId)).Returns(result);
-        }
-
-        private UpdatedDataProcessingRegistrationRoles CreateUpdatedDataProcessingRegistrationRoles(IEnumerable<UserRolePair> roles)
-        {
-            return new UpdatedDataProcessingRegistrationRoles
-            {
-                UserRolePairs = roles.FromNullable().AsChangedValue()
-            };
-        }
+        
 
        
 
-        private static UserRolePair CreateUserRolePair(Guid roleUuid, Guid userUuid)
-        {
-            return new UserRolePair(userUuid, roleUuid);
-        }
+        
 
-        private static DataProcessingRegistrationRight CreateRight(DataProcessingRegistration dpr, Guid roleUuid, int roleId, Guid userUuid, int userId)
-        {
-            return new DataProcessingRegistrationRight()
-            {
-                Object = dpr,
-                Role = new DataProcessingRegistrationRole()
-                {
-                    Id = roleId,
-                    Uuid = roleUuid
-                },
-                RoleId = roleId,
-                User = new User()
-                {
-                    Id = userId,
-                    Uuid = userUuid
-                },
-                UserId = userId
-            };
-        }
+       
 
         
 
@@ -2286,6 +2246,48 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         
 
      */
+        private static DataProcessingRegistrationRight CreateRight(DataProcessingRegistration dpr, Guid roleUuid, int roleId, Guid userUuid, int userId)
+        {
+            return new DataProcessingRegistrationRight()
+            {
+                Object = dpr,
+                Role = new DataProcessingRegistrationRole()
+                {
+                    Id = roleId,
+                    Uuid = roleUuid
+                },
+                RoleId = roleId,
+                User = new User()
+                {
+                    Id = userId,
+                    Uuid = userUuid
+                },
+                UserId = userId
+            };
+        }
+
+        private void ExpectRoleAssignmentReturns(Result<DataProcessingRegistrationRight, OperationError> result)
+        {
+            _roleAssignmentsServiceMock.Setup(x => x.AssignRole(It.IsAny<DataProcessingRegistration>(), It.IsAny<int>(), It.IsAny<int>())).Returns(result);
+        }
+
+        private void ExpectRoleRemovalReturns(DataProcessingRegistration dpr, Result<DataProcessingRegistrationRight, OperationError> result)
+        {
+            _roleAssignmentsServiceMock.Setup(x => x.RemoveRole(dpr, It.IsAny<int>(), It.IsAny<int>())).Returns(result);
+        }
+
+        private UpdatedDataProcessingRegistrationRoles CreateUpdatedDataProcessingRegistrationRoles(IEnumerable<UserRolePair> roles)
+        {
+            return new UpdatedDataProcessingRegistrationRoles
+            {
+                UserRolePairs = roles.FromNullable().AsChangedValue()
+            };
+        }
+        private static UserRolePair CreateUserRolePair(Guid roleUuid, Guid userUuid)
+        {
+            return new UserRolePair(userUuid, roleUuid);
+        }
+
         private void AssertCreatedRegistrationNameAndId(DataProcessingRegistration createdRegistration, Result<DataProcessingRegistration, OperationError> result)
         {
             Assert.True(result.Ok);
