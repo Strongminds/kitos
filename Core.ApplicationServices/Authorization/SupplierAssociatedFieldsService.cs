@@ -7,17 +7,17 @@ using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.DomainModel;
+using Core.DomainModel.GDPR;
 
 namespace Core.ApplicationServices.Authorization;
 
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
-    private readonly IDataProcessingRegistrationApplicationService _dataProcessingRegistrationApplicationService;
     private const string _hasChangePropertyName = "HasChange";
 
-    public SupplierAssociatedFieldsService(IDataProcessingRegistrationApplicationService dataProcessingRegistrationApplicationService)
+    public SupplierAssociatedFieldsService()
     {
-        _dataProcessingRegistrationApplicationService = dataProcessingRegistrationApplicationService;
     }
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
@@ -42,12 +42,12 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return oversight.HasValue && oversight.Value.IsOversightCompleted.HasChange;
     }
 
-    public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, int entityId)
+    public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity)
     {
         return parameters switch
         {
             DataProcessingRegistrationModificationParameters dprParameters => CheckNonSupplierChangesToDprParams(
-                dprParameters, entityId),
+                dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckNonSupplierChangesToDprOversightDateParams(oversightDateParameters),
             _ => false
@@ -65,34 +65,31 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return false;
     }
 
-    private bool CheckNonSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams, int entityId)
+    private bool CheckNonSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
     {
         var nameHasChange = dprParams.Name.HasChange;
         var generalHasChange = dprParams.General.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.General.Value);
         var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(dprParams.Oversight);
         var rolesHasChange = dprParams.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.Roles.Value);
-        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, entityId);
-        var externalReferencesHasChange = ExternalReferencesHasChange(dprParams.ExternalReferences, entityId);
+        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, entity);
+        var externalReferencesHasChange = ExternalReferencesHasChange(dprParams.ExternalReferences, entity);
         return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange || externalReferencesHasChange;
     }
 
-    private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, int entityId)
+    private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, IEntity entity)
     {
-        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.Get(entityId);
-        return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
-            {
-                var existingReferences = dataProcessingRegistration.ExternalReferences;
-                if (updatedReferencesMaybe.IsNone && IsNullOrEmpty(existingReferences)) return false;
-                if (updatedReferencesMaybe.HasValue && existingReferences != null)
-                {
-                    var updatedReferences = updatedReferencesMaybe.Value.ToList();
-                    return existingReferences.Count != updatedReferences.Count() || updatedReferences.Any(u =>
-                        existingReferences.FirstOrDefault(e => e.Uuid == u.Uuid) == null);
-                }
-                return true;
+        if (entity is not DataProcessingRegistration dpr) return false;
+        
+        var existingReferences = dpr.ExternalReferences;
+        if (updatedReferencesMaybe.IsNone && IsNullOrEmpty(existingReferences)) return false;
+        if (updatedReferencesMaybe.HasValue && existingReferences != null)
+        {
+            var updatedReferences = updatedReferencesMaybe.Value.ToList();
+            return existingReferences.Count != updatedReferences.Count() || updatedReferences.Any(u =>
+                existingReferences.FirstOrDefault(e => e.Uuid == u.Uuid) == null);
+        }
+        return true;
 
-            }, _ => false
-        );
     }
 
     private bool OversightHasNonSupplierAssociatedChange(
@@ -108,21 +105,19 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                value.OversightScheduledInspectionDate.HasChange;
     }
 
-    private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, int entityId)
+    private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, IEntity entity)
     {
-        var dataProcessingRegistrationResult = _dataProcessingRegistrationApplicationService.Get(entityId);
-        return dataProcessingRegistrationResult.Match(dataProcessingRegistration =>
+        if (entity is not DataProcessingRegistration dpr) return false;
+
+        var existingSystemUsages = dpr.SystemUsages;
+        if (updatedSystemUsageUuids.IsNone && IsNullOrEmpty(existingSystemUsages)) return false;
+        if (updatedSystemUsageUuids.HasValue && existingSystemUsages != null)
         {
-            var existingSystemUsages = dataProcessingRegistration.SystemUsages;
-            if (updatedSystemUsageUuids.IsNone && IsNullOrEmpty(existingSystemUsages)) return false;
-            if (updatedSystemUsageUuids.HasValue && dataProcessingRegistration.SystemUsages != null)
-            {
-                var existingSystemUsageUuids = dataProcessingRegistration.SystemUsages.Select(su => su.Uuid).ToHashSet();
-                var updatedSystemUsageUuidsHashSet = updatedSystemUsageUuids.Value.ToHashSet();
-                return !existingSystemUsageUuids.SetEquals(updatedSystemUsageUuidsHashSet);
-            }
-            return true;
-            }, _ => false);
+            var existingSystemUsageUuids = existingSystemUsages.Select(su => su.Uuid).ToHashSet();
+            var updatedSystemUsageUuidsHashSet = updatedSystemUsageUuids.Value.ToHashSet();
+            return !existingSystemUsageUuids.SetEquals(updatedSystemUsageUuidsHashSet);
+        }
+        return true;
     }
 
     private bool AnyOptionalValueChangeFieldHasChange(object obj)

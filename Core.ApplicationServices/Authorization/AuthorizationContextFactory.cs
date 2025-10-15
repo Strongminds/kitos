@@ -10,13 +10,13 @@ namespace Core.ApplicationServices.Authorization
     {
         private readonly IEntityTypeResolver _typeResolver;
         private readonly IUserRepository _userRepository;
-        private readonly Lazy<IAuthorizationModelFactory> _authorizationModelFactory;
+        private readonly IAuthorizationModelFactory _authorizationModelFactory;
         private static readonly GlobalReadAccessPolicy GlobalReadAccessPolicy = new ();
 
         public AuthorizationContextFactory(
             IEntityTypeResolver typeResolver,
             IUserRepository userRepository,
-            Lazy<IAuthorizationModelFactory> authorizationModelFactory)
+            IAuthorizationModelFactory authorizationModelFactory)
         {
             _typeResolver = typeResolver;
             _userRepository = userRepository;
@@ -42,7 +42,7 @@ namespace Core.ApplicationServices.Authorization
                 GlobalReadAccessPolicy,
                 moduleLevelAccessPolicy,
                 _userRepository,
-                _authorizationModelFactory.Value
+                _authorizationModelFactory
             );
         }
     }

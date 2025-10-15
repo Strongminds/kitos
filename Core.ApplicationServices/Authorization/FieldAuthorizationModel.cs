@@ -38,7 +38,7 @@ public class FieldAuthorizationModel : IAuthorizationModel
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var requestsNonSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity.Id);
+        var requestsNonSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity);
         if (requestsNonSupplierFieldChanges) return _authorizationContext.AllowModify(entity);
         return true;
     }
