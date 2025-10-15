@@ -9,5 +9,6 @@ namespace Core.ApplicationServices.Authorization
         bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters);
         bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity);
         bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable);
+        bool RequestsDeleteToEntity<TEntity>(TEntity entity);
     }
 }

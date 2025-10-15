@@ -7,5 +7,6 @@ namespace Core.ApplicationServices.Authorization
     {
         bool AuthorizeUpdate(IEntityOwnedByOrganization entity,
             ISupplierAssociatedEntityUpdateParameters parameters);
+        bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization parent, TChild child) where TChild : class;
     }
 }

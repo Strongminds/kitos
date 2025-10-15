@@ -16,4 +16,9 @@ public class CrudAuthorizationModel : IAuthorizationModel
     {
         return _authorizationContext.AllowModify(entity);
     }
+
+    public bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization parent, TChild child) where TChild : class
+    {
+        return _authorizationContext.AllowModify(parent);
+    }
 }

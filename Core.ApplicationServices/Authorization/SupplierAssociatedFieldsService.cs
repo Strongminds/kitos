@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
@@ -50,6 +49,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                 dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckNonSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            _ => false
+        };
+    }
+    public bool RequestsDeleteToEntity<TEntity>(TEntity entity)
+    {
+        return entity switch
+        {
+            DataProcessingRegistrationOversightDate => true,
             _ => false
         };
     }

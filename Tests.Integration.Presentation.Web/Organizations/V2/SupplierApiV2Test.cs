@@ -65,7 +65,41 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             
             var patchRequest = A<ModifyOversightDateDTO>();
             var patchResponse = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, postResponse.Uuid, patchRequest, token);
-            AssertOversightDate(patchRequest, patchResponse);            
+            AssertOversightDate(patchRequest, patchResponse);
+
+            await DataProcessingRegistrationV2Helper.DeleteOversightDate(dpr.Uuid, postResponse.Uuid, token);
+            var dprAfterOperations = await DataProcessingRegistrationV2Helper.GetDPRAsync(globalAdminToken, dpr.Uuid);
+
+            Assert.Empty(dprAfterOperations.Oversight.OversightDates);
+        }
+
+        [Fact]
+        public async Task LocalAdmin_Cannot_Update_Supplier_Fields()
+        {
+            var organization = await CreateOrganizationAsync();
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid, true);
+            var globalAdminToken = await GetGlobalToken();
+
+            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
+
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(token,
+                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
+                    OrganizationUuid = organization.Uuid
+                });
+
+            var oversightDateRequest = A<ModifyOversightDateDTO>();
+            using var failedPostResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, token);
+            Assert.False(failedPostResponse.IsSuccessStatusCode);
+
+            var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, globalAdminToken);
+            
+            var patchRequest = A<ModifyOversightDateDTO>();
+            using var failedPatchResponse = await DataProcessingRegistrationV2Helper.SendPatchOversightDate(dpr.Uuid, postResponse.Uuid, patchRequest, token);
+            Assert.False(failedPatchResponse.IsSuccessStatusCode);
+
+            using var failedDeleteResponse = await DataProcessingRegistrationV2Helper.SendDeleteOversightDate(dpr.Uuid, postResponse.Uuid, token);
+            Assert.False(failedDeleteResponse.IsSuccessStatusCode);
         }
 
         private static void AssertOversightDate(ModifyOversightDateDTO expected, OversightDateDTO actual)

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -34,7 +35,23 @@ public class FieldAuthorizationModel : IAuthorizationModel
             ? CheckForSupplierApiUser(entity, parameters)
             : CheckForNonSupplierApiUser(entity, parameters);
     }
-    
+
+    public bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization parent, TChild child) where TChild : class
+    {
+        if (parent == null || child == null) return false;
+
+        if (_activeUserContext.IsGlobalAdmin()) return true;
+        var entityOrganization = parent.Organization;
+        var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
+        if (!organizationHasSuppliers) return _authorizationContext.AllowModify(parent);
+
+        var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
+        var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
+        return userHasSupplierApiAccess
+            ? _supplierAssociatedFieldsService.RequestsDeleteToEntity(child)
+            : _authorizationContext.AllowModify(parent);
+    }
+
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
