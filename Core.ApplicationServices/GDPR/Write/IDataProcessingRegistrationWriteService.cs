@@ -15,13 +15,13 @@ namespace Core.ApplicationServices.GDPR.Write
         Result<DataProcessingRegistration, OperationError> AddRole(Guid dprUuid, UserRolePair assignment);
         Result<DataProcessingRegistration, OperationError> RemoveRole(Guid dprUuid, UserRolePair assignment);
 
-        Result<DataProcessingRegistrationOversightDate, OperationError> AddOversight(
+        Result<DataProcessingRegistrationOversightDate, OperationError> AddOversightDate(
             Guid dataProcessingRegistrationUuid, UpdatedDataProcessingRegistrationOversightDateParameters parameters);
 
-        Result<DataProcessingRegistrationOversightDate, OperationError> UpdateOversight(
+        Result<DataProcessingRegistrationOversightDate, OperationError> UpdateOversightDate(
             Guid dataProcessingRegistrationUuid, Guid oversightDateUuid,
             UpdatedDataProcessingRegistrationOversightDateParameters parameters);
 
-        Maybe<OperationError> DeleteOversight(Guid dataProcessingRegistrationUuid, Guid oversightDateUuid);
+        Maybe<OperationError> DeleteOversightDate(Guid dataProcessingRegistrationUuid, Guid oversightDateUuid);
     }
 }

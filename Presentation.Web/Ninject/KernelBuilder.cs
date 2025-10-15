@@ -865,6 +865,8 @@ namespace Presentation.Web.Ninject
                 });
 
             //Authorization context
+            kernel.Bind<ISupplierAssociatedFieldsService>().To<SupplierAssociatedFieldsService>().InCommandScope(Mode);
+            kernel.Bind<IAuthorizationModelFactory>().To<AuthorizationModelFactory>().InCommandScope(Mode);
             kernel.Bind<IAuthorizationContextFactory>().To<AuthorizationContextFactory>().InCommandScope(Mode);
             kernel.Bind<IAuthorizationContext>()
                 .ToMethod(ctx =>

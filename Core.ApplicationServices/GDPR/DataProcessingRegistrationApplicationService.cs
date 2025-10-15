@@ -25,6 +25,8 @@ using Core.ApplicationServices.Organizations;
 
 namespace Core.ApplicationServices.GDPR
 {
+    //13/10/2025 DEPRECATED: this service only serves test purposes through leftover setup with v1 controllers.
+    //Do not use in application code as it ignores v2 API authorization rules.
     public class DataProcessingRegistrationApplicationService : IDataProcessingRegistrationApplicationService
     {
         private readonly IAuthorizationContext _authorizationContext;
@@ -413,7 +415,6 @@ namespace Core.ApplicationServices.GDPR
         public Result<DataProcessingBasisForTransferOption, OperationError> ClearBasisForTransfer(int id)
         {
             return Modify(id, registration => _basisForTransferAssignmentService.Clear(registration));
-
         }
 
         public Result<DataProcessingRegistration, OperationError> UpdateOversightInterval(int id, YearMonthIntervalOption oversightInterval)
