@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
-using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
@@ -11,7 +10,6 @@ using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
-using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -20,20 +18,14 @@ namespace Tests.Unit.Presentation.Web.Authorization
     public class SupplierAssociatedFieldsServiceTest: WithAutoFixture
     {
         private readonly SupplierAssociatedFieldsService _sut;
-        private readonly Mock<IDataProcessingRegistrationApplicationService> _dataProcessingRegistrationApplicationService;
         private readonly int _dprId;
         private readonly DataProcessingRegistration _existingDpr;
 
         public SupplierAssociatedFieldsServiceTest()
         {
-            _dataProcessingRegistrationApplicationService =
-                new Mock<IDataProcessingRegistrationApplicationService>();
-            _dprId = A<int>();
-            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
-            _dataProcessingRegistrationApplicationService.Setup(_ => _.Get(_dprId))
-                .Returns(Result<DataProcessingRegistration, OperationError>.Success(_existingDpr));
-
-            _sut = new SupplierAssociatedFieldsService(_dataProcessingRegistrationApplicationService.Object);
+           _dprId = A<int>();
+           _existingDpr = new DataProcessingRegistration() { Id = _dprId };
+           _sut = new SupplierAssociatedFieldsService();
         }
         
         [Theory]
@@ -59,7 +51,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
         {
             var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
-
+            var dpr = new DataProcessingRegistration();
             if (checkIsOversightCompleted)
                 oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
             //TODO same as above, awaiting response from MIOL about what fields to target
@@ -68,7 +60,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 Oversight = oversight
             };
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprId);
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _existingDpr);
 
             Assert.False(result);
         }
@@ -118,7 +110,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _dprId);
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _existingDpr);
 
             Assert.True(result);
         }
@@ -186,7 +178,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 var noChangesParameters = new DataProcessingRegistrationModificationParameters();
                 requestsChangesToSupplierAssociatedFields =
                     _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
+                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _existingDpr);
             }
             else
             {
@@ -198,7 +190,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                     };
                 requestsChangesToSupplierAssociatedFields =
                     _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _dprId);
+                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _existingDpr);
             }
 
             Assert.False(requestsChangesToSupplierAssociatedFields);

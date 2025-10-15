@@ -74,7 +74,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
             var entity = SetupEntityWithIdAndSuppliers();
 
-            RequestsChangesToNonSupplierAssociatedFieldsReturns(true, parameters, entity.Object.Id);
+            RequestsChangesToNonSupplierAssociatedFieldsReturns(true, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
 
@@ -90,7 +90,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             IsUserGlobalAdmin(false);
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
             var entity = SetupEntityWithIdAndSuppliers();
-            RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object.Id);
+            RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
 
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
@@ -121,7 +121,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             IsUserGlobalAdmin(false);
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
             var entity = SetupEntityWithIdAndSuppliers();
-            RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object.Id);
+            RequestsChangesToNonSupplierAssociatedFieldsReturns(false, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(false, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
 
@@ -170,9 +170,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToSupplierAssociatedFields(parameters.Object)).Returns(true);
         }
 
-        private void RequestsChangesToNonSupplierAssociatedFieldsReturns(bool value, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, int entityId)
+        private void RequestsChangesToNonSupplierAssociatedFieldsReturns(bool value, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)
         {
-            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(parameters.Object, entityId)).Returns(value);
+            _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(parameters.Object, entity)).Returns(value);
         }
         private void SetupDoesUserHaveSupplierApiAccess(bool value, Mock<IEntityOwnedByOrganization> entity)
         {
