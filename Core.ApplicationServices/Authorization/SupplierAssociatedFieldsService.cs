@@ -92,7 +92,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     }
 
-    private bool OversightHasNonSupplierAssociatedChange(
+    private static bool OversightHasNonSupplierAssociatedChange(
         Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
     {
         if (parameters.IsNone) return false;

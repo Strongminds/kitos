@@ -90,7 +90,7 @@ namespace Core.ApplicationServices.GDPR.Write
             _repository = repository;
         }
 
-        public Result<DataProcessingRegistration, OperationError> Create(Guid organizationUuid, DataProcessingRegistrationModificationParameters parameters)
+        public Result<DataProcessingRegistration, OperationError> Create(Guid organizationUuid, DataProcessingRegistrationCreationParameters parameters)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -110,7 +110,7 @@ namespace Core.ApplicationServices.GDPR.Write
             parameters.Name = OptionalValueChange<string>.None; //Remove from change set. It is set during creation
 
             var creationResult = Create(orgId.Value, name)
-                .Bind(createdDpr => CreateDataProcessingRegistration(() => createdDpr, PerformUpdates, parameters));
+                .Bind(createdDpr => PerformUpdates(createdDpr, parameters));
 
             if (creationResult.Ok)
             {
@@ -146,7 +146,16 @@ namespace Core.ApplicationServices.GDPR.Write
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            return Update(() => GetByUuid(dataProcessingRegistrationUuid), PerformUpdates, parameters);
+            return Update(() => GetByUuidAndAuthorizeRead(dataProcessingRegistrationUuid), PerformUpdates, parameters);
+        }
+
+        private Result<DataProcessingRegistration, OperationError> GetByUuidAndAuthorizeRead(Guid uuid)
+        {
+            return GetByUuid(uuid)
+                .Bind
+                (
+                    dpr => _authorizationContext.AllowReads(dpr) ? Result<DataProcessingRegistration, OperationError>.Success(dpr) : new OperationError(OperationFailure.Forbidden)
+                );
         }
 
         private Result<DataProcessingRegistration, OperationError> GetByUuid(Guid uuid)
@@ -155,11 +164,7 @@ namespace Core.ApplicationServices.GDPR.Write
                 .AsQueryable()
                 .ByUuid(uuid)
                 .FromNullable()
-                .Match<Result<DataProcessingRegistration, OperationError>>
-                (
-                    dpr => _authorizationContext.AllowReads(dpr) ? dpr : new OperationError(OperationFailure.Forbidden),
-                    () => new OperationError(OperationFailure.NotFound)
-                );
+                .Match(Result<DataProcessingRegistration, OperationError>.Success,() => new OperationError($"Data Processing Registration with uuid: {uuid} was not found", OperationFailure.NotFound) );
         }
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> AddOversightDate(Guid dataProcessingRegistrationUuid, UpdatedDataProcessingRegistrationOversightDateParameters parameters)
@@ -169,28 +174,10 @@ namespace Core.ApplicationServices.GDPR.Write
                 return new OperationError($"Could not find data processing registration with Uuid: {dataProcessingRegistrationUuid}", OperationFailure.BadInput);
             return AssignOversightDate(dprId.Value, parameters.CompletedAt.NewValue, parameters.Remark.NewValue, parameters.OversightReportLink.NewValue, parameters.OversightReportLinkName.NewValue);
         }
+
         private Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
         {
             return Modify(id, registration => registration.AssignOversightDate(oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName));
-        }
-
-        private Result<TSuccess, OperationError> Modify<TSuccess>(int id, Func<DataProcessingRegistration, Result<TSuccess, OperationError>> mutation)
-        {
-            var result = _repository.GetById(id);
-
-            if (result.IsNone)
-                return new OperationError(OperationFailure.NotFound);
-
-            var registration = result.Value;
-
-            var mutationResult = mutation(registration);
-
-            if (mutationResult.Ok)
-            {
-                _repository.Update(registration);
-            }
-
-            return mutationResult;
         }
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> UpdateOversightDate(Guid dataProcessingRegistrationUuid, Guid oversightDateUuid, UpdatedDataProcessingRegistrationOversightDateParameters parameters)
@@ -214,11 +201,23 @@ namespace Core.ApplicationServices.GDPR.Write
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int id, int oversightDateId)
         {
-            return Modify(id, registration => Remove(registration, oversightDateId));
+            return Modify(id, registration => PerformRemoveOversightDate(registration, oversightDateId));
         }
 
-        private Result<DataProcessingRegistrationOversightDate, OperationError> Remove(DataProcessingRegistration registration, int oversightId)
+        private Result<DataProcessingRegistrationOversightDate, OperationError> PerformRemoveOversightDate(DataProcessingRegistration registration, int oversightId)
         {
+            var oversightDateChangeParameters = new DataProcessingRegistrationModificationParameters
+            {
+                Oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
+                {
+                    OversightDates = new List<UpdatedDataProcessingRegistrationOversightDate>().AsEnumerable()
+                        .FromNullable().AsChangedValue()
+                }
+            };
+            var authorizeError = AuthorizeUpdate(registration, oversightDateChangeParameters);
+            if(authorizeError.HasValue)
+                return authorizeError.Value;
+
             var removedRegistration = registration.RemoveOversightDate(oversightId);
             if (removedRegistration.Ok)
             {
@@ -234,7 +233,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
         public Result<DataProcessingRegistration, OperationError> RemoveRole(Guid dprUuid, UserRolePair assignment)
         {
-            return GetByUuid(dprUuid)
+            return GetByUuidAndAuthorizeRead(dprUuid)
                 .Select(RoleMappingHelper.ExtractAssignedRoles)
                 .Bind<DataProcessingRegistrationModificationParameters>(existingRoles =>
                 {
@@ -250,7 +249,7 @@ namespace Core.ApplicationServices.GDPR.Write
         private Result<DataProcessingRegistration, OperationError> AddRoles(Guid dprUuid,
             IEnumerable<UserRolePair> assignments)
         {
-            return GetByUuid(dprUuid)
+            return GetByUuidAndAuthorizeRead(dprUuid)
                 .Bind(dpr => GetRoleAssignmentUpdates(dpr, assignments))
                 .Bind(update => Update(dprUuid, update));
         }
@@ -263,7 +262,7 @@ namespace Core.ApplicationServices.GDPR.Write
         private Result<DataProcessingRegistration, OperationError> UpdateBase<TParameters>(
             Func<Result<DataProcessingRegistration, OperationError>> getDpr,
             Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>>
-                performUpdates, TParameters parameters, bool isUpdate = true)
+                performUpdates, TParameters parameters)
         {
             using var transaction = _transactionManager.Begin();
 
@@ -276,11 +275,11 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var dpr = dprResult.Value;
 
-            if (isUpdate && parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
+            if ( parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
             {
-                var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
-                var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
-                if (!authorizeUpdate) return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
+                var authError = AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
+                if (authError.HasValue)
+                    return authError.Value;
             }
 
             var snapshot = dpr.Snapshot();
@@ -297,12 +296,20 @@ namespace Core.ApplicationServices.GDPR.Write
             return result;
         }
 
-        private Result<DataProcessingRegistration, OperationError> CreateDataProcessingRegistration<TParameters>(Func<Result<DataProcessingRegistration, OperationError>> getDpr, Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>> performUpdates, TParameters parameters)
+        private Maybe<OperationError> AuthorizeUpdate(DataProcessingRegistration dpr,
+            ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
         {
-            return UpdateBase(getDpr, performUpdates, parameters, false);
+            var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
+            var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
+            if (!authorizeUpdate)
+            {
+                return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
+            }
+
+            return Maybe<OperationError>.None;
         }
 
-        private Result<DataProcessingRegistration, OperationError> PerformUpdates(DataProcessingRegistration dpr, DataProcessingRegistrationModificationParameters parameters)
+        private Result<DataProcessingRegistration, OperationError> PerformUpdates<TParameters>(DataProcessingRegistration dpr, TParameters parameters) where TParameters : BaseDataProcessingRegistrationParameters
         {
             //Optionally apply changes across the entire update specification
             return dpr
@@ -893,6 +900,26 @@ namespace Core.ApplicationServices.GDPR.Write
         {
             return Modify(id, registration => _dataResponsibleAssigmentService.Clear(registration));
         }
+
+        private Result<TSuccess, OperationError> Modify<TSuccess>(int id, Func<DataProcessingRegistration, Result<TSuccess, OperationError>> mutation)
+        {
+            var result = _repository.GetById(id);
+
+            if (result.IsNone)
+                return new OperationError(OperationFailure.NotFound);
+
+            var registration = result.Value;
+
+            var mutationResult = mutation(registration);
+
+            if (mutationResult.Ok)
+            {
+                _repository.Update(registration);
+            }
+
+            return mutationResult;
+        }
+
 
         public Maybe<OperationError> Delete(Guid dataProcessingRegistrationUuid)
         {

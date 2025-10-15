@@ -278,6 +278,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         {
             using var response = await HttpApi.PostWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates"), request, token);
 
+            var res = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<OversightDateDTO>();
         }

@@ -6,7 +6,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
 {
     public interface IDataProcessingRegistrationWriteModelMapper
     {
-        DataProcessingRegistrationModificationParameters FromPOST(CreateDataProcessingRegistrationRequestDTO dto);
+        DataProcessingRegistrationCreationParameters FromPOST(CreateDataProcessingRegistrationRequestDTO dto);
         DataProcessingRegistrationModificationParameters FromPUT(UpdateDataProcessingRegistrationRequestDTO dto);
         DataProcessingRegistrationModificationParameters FromPATCH(UpdateDataProcessingRegistrationRequestDTO dto);
         UpdatedDataProcessingRegistrationOversightDateParameters FromOversightPOST(CreateOversightDateDTO dto);

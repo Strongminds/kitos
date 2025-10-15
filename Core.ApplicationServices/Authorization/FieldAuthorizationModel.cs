@@ -34,7 +34,7 @@ public class FieldAuthorizationModel : IAuthorizationModel
             ? CheckForSupplierApiUser(entity, parameters)
             : CheckForNonSupplierApiUser(entity, parameters);
     }
-
+    
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
