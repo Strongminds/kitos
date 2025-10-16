@@ -64,38 +64,37 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.True(result);
         }
 
-        [Theory]
-        [InlineData(true, false, false, false)]
-        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
+        [Fact]
+        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
         {
-            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
-            
-            if (checkIsOversightCompleted)
-                oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
-    
+            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
+            {
+                IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
+            };
+
             var parameters = new DataProcessingRegistrationModificationParameters()
             {
                 Oversight = oversight
             };
+
             var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
 
             Assert.True(result);
         }
 
-        [Theory]
-        [InlineData(true, false, false, false)]
-        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
+        [Fact]
+        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse()
         {
-            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
-            var dpr = new DataProcessingRegistration();
-            if (checkIsOversightCompleted)
-                oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
-            //TODO same as above, awaiting response from MIOL about what fields to target
+            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
+            {
+                IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
+            };
 
             var parameters = new DataProcessingRegistrationModificationParameters()
             {
                 Oversight = oversight
             };
+
             var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _existingDpr);
 
             Assert.False(result);
