@@ -6,9 +6,12 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -27,7 +30,40 @@ namespace Tests.Unit.Presentation.Web.Authorization
            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
            _sut = new SupplierAssociatedFieldsService();
         }
-        
+
+        [Theory]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        public void
+            UsageParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(
+                bool aiTechnology, bool gdprCriticality, bool RiskAssessmentResult)
+        {
+            var generalProperties = new UpdatedSystemUsageGeneralProperties();
+            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
+            var parameters = new SystemUsageUpdateParameters();
+            if (aiTechnology)
+            {
+                generalProperties.ContainsAITechnology = A<Maybe<YesNoUndecidedOption>>().AsChangedValue();
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(generalProperties);
+            }
+            if (gdprCriticality)
+            {
+                gdprProperties.GdprCriticality = A<GdprCriticality?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            if (RiskAssessmentResult)
+            {
+                gdprProperties.RiskAssessmentResult = A<RiskLevel?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+
+            Assert.True(result);
+        }
+
         [Theory]
         [InlineData(true, false, false, false)]
         public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)

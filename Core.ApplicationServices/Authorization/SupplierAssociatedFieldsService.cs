@@ -6,6 +6,7 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
 
@@ -13,11 +14,8 @@ namespace Core.ApplicationServices.Authorization;
 
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
-    private const string _hasChangePropertyName = "HasChange";
+    private const string HasChangePropertyName = "HasChange";
 
-    public SupplierAssociatedFieldsService()
-    {
-    }
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
         return parameters switch
@@ -26,8 +24,28 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                 dprParameters),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            SystemUsageUpdateParameters usageParameters => CheckSupplierChangesToUsageParameters(usageParameters),
             _ => false
         };
+    }
+
+    private bool CheckSupplierChangesToUsageParameters(SystemUsageUpdateParameters parameters)
+    {
+        var general = parameters.GeneralProperties;
+        if (general.HasValue)
+        {
+            var generalValue = general.Value;
+            if (generalValue.ContainsAITechnology.HasChange) return true;
+        }
+       
+        var gpdr = parameters.GDPR;
+        if (gpdr.HasValue)
+        {
+            var gdprValue = gpdr.Value;
+            if (gdprValue.GdprCriticality.HasChange || gdprValue.RiskAssessmentResult.HasChange) return true;
+        }
+
+        return false;
     }
 
     private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
@@ -137,14 +155,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         foreach (var property in properties)
         {
             var optionalValueChange = property.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
+            var hasChange = optionalValueChange?.GetType().GetProperty(HasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
         }
 
         foreach (var field in fields)
         {
             var optionalValueChange = field.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
+            var hasChange = optionalValueChange?.GetType().GetProperty(HasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
         }
 
