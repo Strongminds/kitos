@@ -97,15 +97,75 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.False(result);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData(true, false, false, false, false, false, false)]
+        [InlineData(false, true, false, false, false, false, false)]
+        [InlineData(false, false, true, false, false, false, false)]
+        [InlineData(false, false, false, true, false, false, false)]
+        [InlineData(false, false, false, false, true, false, false)]
+        [InlineData(false, false, false, false, false, true, false)]
+        [InlineData(false, false, false, false, true, false, true)]
         public void
-            UsageParams_GivenChangesToAnyNonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(
+            UsageParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(
+             bool general,
+             bool organizationalUsage,
+             bool kle,
+             bool externalReferences,
+             bool roles,
+             bool gdpr,
+             bool archiving
                 )
         {
-            var generalProperties = new UpdatedSystemUsageGeneralProperties();
-            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
             var usage = new ItSystemUsage(); 
             var parameters = new SystemUsageUpdateParameters();
+            if (general)
+            {
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(new UpdatedSystemUsageGeneralProperties()
+                {
+                    LocalCallName = A<string>().AsChangedValue()
+                });
+            }
+            if (organizationalUsage)
+            {
+                parameters.OrganizationalUsage = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.Some(new UpdatedSystemUsageOrganizationalUseParameters()
+                {
+                    UsingOrganizationUnitUuids =  Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (kle)
+            {
+                parameters.KLE = Maybe<UpdatedSystemUsageKLEDeviationParameters>.Some(new UpdatedSystemUsageKLEDeviationParameters()
+                {
+                    AddedKLEUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (externalReferences)
+            {
+                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
+            }
+
+            if (roles)
+            {
+                parameters.Roles = Maybe<UpdatedSystemUsageRoles>.Some(new UpdatedSystemUsageRoles()
+                {
+                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue()
+                });
+            }
+            if (gdpr)
+            {
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(new UpdatedSystemUsageGDPRProperties()
+                {
+                    HostedAt = A<HostedAt?>().AsChangedValue()
+                });
+            }
+
+            if (archiving)
+            {
+                parameters.Archiving = Maybe<UpdatedSystemUsageArchivingParameters>.Some(new UpdatedSystemUsageArchivingParameters()
+                {
+                    ArchiveActive = A<bool?>().AsChangedValue()
+                });
+            }
             
             var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
 

@@ -15,6 +15,15 @@ namespace Core.ApplicationServices.Authorization;
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
     private const string HasChangePropertyName = "HasChange";
+    private ISet<string> usageGeneralSupplierAssociatedProperties = new HashSet<string>
+    {
+        "ContainsAITechnology"
+    };
+    private ISet<string> usageGDPRSupplierAssociatedProperties = new HashSet<string>
+    {
+        "GdprCriticality",
+        "RiskAssessmentResult"
+    };
 
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
@@ -67,14 +76,33 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                 dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckNonSupplierChangesToDprOversightDateParams(oversightDateParameters),
-            SystemUsageUpdateParameters usageParameters => CheckNonSupplierChangesToUsageParameters(usageParameters),
+            SystemUsageUpdateParameters usageParameters => CheckNonSupplierChangesToUsageParameters(usageParameters, entity),
             _ => false
         };
     }
 
-    private bool CheckNonSupplierChangesToUsageParameters(SystemUsageUpdateParameters usageParameters)
+    private bool CheckNonSupplierChangesToUsageParameters(SystemUsageUpdateParameters usageParameters, IEntity entity)
     {
-        throw new NotImplementedException();
+        var generalHasChange = CheckGeneralHasNonSupplierChange(usageParameters.GeneralProperties);
+        var organizationUsageHasChange = usageParameters.OrganizationalUsage.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.OrganizationalUsage.Value);
+        var kleHasChange = usageParameters.KLE.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.KLE.Value);
+        var externalReferencesHasChange = usageParameters.ExternalReferences.HasValue && ExternalReferencesHasChange(usageParameters.ExternalReferences, entity);
+        var rolesHasChange = usageParameters.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.Roles.Value);
+        var gdprHasChange = CheckGdprHasNonSupplierChange(usageParameters.GDPR);
+        var archivingHasChange = usageParameters.Archiving.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.Archiving.Value);
+        return generalHasChange || organizationUsageHasChange || kleHasChange || externalReferencesHasChange || rolesHasChange || gdprHasChange || archivingHasChange;
+    }
+
+    private bool CheckGdprHasNonSupplierChange(Maybe<UpdatedSystemUsageGDPRProperties> usageParametersGdpr)
+    {
+        if (usageParametersGdpr.IsNone) return false;
+        return AnyOptionalValueChangeFieldHasChange(usageParametersGdpr.Value, usageGDPRSupplierAssociatedProperties);
+    }
+
+    private bool CheckGeneralHasNonSupplierChange(Maybe<UpdatedSystemUsageGeneralProperties> usageParametersGeneralProperties)
+    {
+        if (usageParametersGeneralProperties.IsNone) return false;
+        return AnyOptionalValueChangeFieldHasChange(usageParametersGeneralProperties.Value, usageGeneralSupplierAssociatedProperties);
     }
 
     public bool RequestsDeleteToEntity<TEntity>(TEntity entity)
@@ -110,9 +138,9 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, IEntity entity)
     {
-        if (entity is not DataProcessingRegistration dpr) return false;
+        if (entity is not IHasReferences entityWithReferences) return false;
         
-        var existingReferences = dpr.ExternalReferences;
+        var existingReferences = entityWithReferences.ExternalReferences;
         if (updatedReferencesMaybe.IsNone && IsNullOrEmpty(existingReferences)) return false;
         if (updatedReferencesMaybe.HasValue && existingReferences != null)
         {
@@ -152,15 +180,16 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return true;
     }
 
-    private bool AnyOptionalValueChangeFieldHasChange(object obj)
+    private bool AnyOptionalValueChangeFieldHasChange(object obj, ISet<string> excludedProperties = null)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj)); 
+        if (obj == null) throw new ArgumentNullException(nameof(obj));
 
         var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
         var fields = obj.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
         
         foreach (var property in properties)
         {
+            if (excludedProperties != null && excludedProperties.Contains(property.Name)) return false;
             var optionalValueChange = property.GetValue(obj);
             var hasChange = optionalValueChange?.GetType().GetProperty(HasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
