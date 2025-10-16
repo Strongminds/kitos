@@ -1904,7 +1904,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var oversightDateLinkNameEnabled = A<bool>();
             var oversightDateLinkEnabled = A<bool>();
 
-            var oversightDateCollectionKey = SupplierAssociatedFieldsService.SupplierOversightDateCollectionPath;
+            var oversightDateCollectionKey = SupplierAssociatedFieldsService
+                .GetPropertyPath<DataProcessingRegistration>(
+                    x => x.IsOversightCompleted);
             var oversightDateDateKey = SupplierAssociatedFieldsService
                 .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                     x => x.OversightDate);

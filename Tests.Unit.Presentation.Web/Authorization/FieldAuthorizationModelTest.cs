@@ -131,6 +131,21 @@ namespace Tests.Unit.Presentation.Web.Authorization
             VerifyAllowModify(entity.Object);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void GetFieldPermissions_Returns_Expected_Result(bool expected)
+        {
+            var key = A<string>();
+
+            IsUserGlobalAdmin(false);
+            var entity = SetupEntityWithIdAndSuppliers();
+            ExpectIsSupplierControlledFieldReturns(key, expected);
+
+            var result = _sut.GetFieldPermissions(entity.Object, key);
+
+        }
+
         private void VerifyAllowModify(IEntityOwnedByOrganization entity)
         {
             _authorizationContext.Verify(_ => _.AllowModify(entity), Times.Once);
@@ -173,6 +188,11 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private void RequestsChangesToNonSupplierAssociatedFieldsReturns(bool value, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)
         {
             _supplierAssociatedFieldsService.Setup(_ => _.RequestsChangesToNonSupplierAssociatedFields(parameters.Object, entity)).Returns(value);
+        }
+
+        private void ExpectIsSupplierControlledFieldReturns(string key, bool result)
+        {
+            _supplierAssociatedFieldsService.Setup(x => x.IsFieldSupplierControlled(key)).Returns(result);
         }
         private void SetupDoesUserHaveSupplierApiAccess(bool value, Mock<IEntityOwnedByOrganization> entity)
         {

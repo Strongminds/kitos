@@ -16,10 +16,8 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
     private const string _hasChangePropertyName = "HasChange";
 
-    public static readonly string SupplierOversightDateCollectionPath = "DataProcessingRegistrationOversightDate.Collection";
     private static readonly HashSet<string> SupplierOnlyControlledFieldPaths =
     [
-        SupplierOversightDateCollectionPath,
         "DataProcessingRegistration.IsOversightCompleted",
         "DataProcessingRegistrationOversightDate.CompletedAt",
         "DataProcessingRegistrationOversightDate.Remark",

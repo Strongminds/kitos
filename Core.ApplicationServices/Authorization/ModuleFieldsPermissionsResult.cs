@@ -24,7 +24,8 @@ namespace Core.ApplicationServices.Authorization
                 Create(new List<FieldPermissionsResult>
                 {
                     fieldAuthorizationModel.GetFieldPermissions(dpr, SupplierAssociatedFieldsService
-                        .SupplierOversightDateCollectionPath),
+                        .GetPropertyPath<DataProcessingRegistration>(
+                            x => x.IsOversightCompleted)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         SupplierAssociatedFieldsService
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
