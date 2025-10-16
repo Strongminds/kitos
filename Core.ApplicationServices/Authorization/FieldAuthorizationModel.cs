@@ -47,9 +47,10 @@ public class FieldAuthorizationModel : IAuthorizationModel
 
         var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
         var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
+        var requestsDeleteForSupplierControlledEntity = _supplierAssociatedFieldsService.RequestsDeleteToEntity(child);
         return userHasSupplierApiAccess
-            ? _supplierAssociatedFieldsService.RequestsDeleteToEntity(child)
-            : _authorizationContext.AllowModify(parent);
+            ? requestsDeleteForSupplierControlledEntity
+            : requestsDeleteForSupplierControlledEntity == false;
     }
 
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
