@@ -95,6 +95,8 @@ namespace Core.ApplicationServices.GDPR.Write
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
+            using var transaction = _transactionManager.Begin();
+
             var orgId = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
 
             if (orgId.IsNone)
@@ -115,6 +117,7 @@ namespace Core.ApplicationServices.GDPR.Write
             if (creationResult.Ok)
             {
                 _databaseControl.SaveChanges();
+                transaction.Commit();
             }
 
             return creationResult;
