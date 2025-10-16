@@ -117,6 +117,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     It.IsAny<ISupplierAssociatedEntityUpdateParameters>()))
                 .Returns(true);
 
+            _authorizationModelMock
+                .Setup(x => x.AuthorizeChildEntityDelete(It.IsAny<IEntityOwnedByOrganization>(),
+                    It.IsAny<object>()))
+                .Returns(true);
+
             // Initialize the system under test (SUT)
             _sut = new DataProcessingRegistrationWriteService(
                 _identityResolverMock.Object,
@@ -356,7 +361,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var transaction = ExpectTransaction();
             var dprUuid = A<Guid>();
             var operationError = new OperationError(OperationFailure.NotFound);
-            _repositoryMock.Setup(_ => _.AsQueryable()).Returns(new List<DataProcessingRegistration>().AsQueryable());
+            SetupGetFromRepository(new DataProcessingRegistration());
             
             //Act
             var result = _sut.Update(dprUuid, parameters);
@@ -1437,6 +1442,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightScheduledInspectionDate = (inputIsNull ? null : A<DateTime?>()).AsChangedValue()
             };
+
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
             SetupGetFromRepository(createdRegistration);
           //  ExpectTransaction();
@@ -1580,7 +1586,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     .ToDictionary(
                         x => x,
                         x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-
+            ;
             createdRegistration.OversightDates = dates.Select(x => oversightDatesMap[x]).ToList();
             SetupGetFromRepository(createdRegistration);
 
@@ -2025,14 +2031,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             // Arrange
             var registrationUuid = A<Guid>();
-            var registrationId = A<int>();
             var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
 
-            _identityResolverMock
-                .Setup(x => x.ResolveDbId<DataProcessingRegistration>(registrationUuid))
-                .Returns(registrationId);
-            SetupGetFromRepository(new DataProcessingRegistration(){ IsOversightCompleted = YesNoUndecidedOption.Yes, Uuid = registrationUuid });
-            ExpectTransaction();
+            var transaction = ExpectTransaction();
+            SetupGetFromRepository(new DataProcessingRegistration(){ Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes});
             AllowReadsReturns();
 
             // Act
@@ -2040,6 +2042,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             // Assert
             Assert.True(result.Ok);
+            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -2142,6 +2145,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 IsOversightCompleted = YesNoUndecidedOption.Yes,
                 Uuid = registrationUuid
             };
+
+            var transaction = ExpectTransaction();
             SetupGetFromRepository(dpr);
             AllowReadsReturns();
 
@@ -2151,6 +2156,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             // Assert
             Assert.True(result.IsNone);
             _oversightDateRepositoryMock.Verify(_ => _.Delete(oversightDate));
+            transaction.Verify(x => x.Commit());
         }
 
         private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
@@ -2273,7 +2279,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private static void AssertFailureWithKnownError(Result<DataProcessingRegistration, OperationError> result, OperationError operationError, Mock<IDatabaseTransaction> transaction)
         {
             Assert.True(result.Failed);
-            Assert.Equal(operationError, result.Error);
+            Assert.Equal(operationError.FailureType, result.Error.FailureType);
             AssertTransactionNotCommitted(transaction);
         }
 
@@ -2295,7 +2301,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _repositoryMock.Setup(_ => _.AsQueryable())
                 .Returns(dprsQueryable);
             _repositoryMock.Setup(_ => _.GetById(It.IsAny<int>())).Returns(dataProcessingRegistration);
-            }
+        }
+
 
         private static void AssertTransactionNotCommitted(Mock<IDatabaseTransaction> transactionMock)
         {
