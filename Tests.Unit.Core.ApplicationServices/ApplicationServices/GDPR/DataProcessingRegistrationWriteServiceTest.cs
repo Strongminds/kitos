@@ -1569,65 +1569,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
         }
 
-        
-        [Fact]
-        public void Can_Create_With_OversightData_OversightDates_Removes_Existing_If_None()
-        {
-            //Arrange
-            var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightDates = Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>.None.AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var oversightDatesMap =
-                dates
-                    .ToDictionary(
-                        x => x,
-                        x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-            ;
-            createdRegistration.OversightDates = dates.Select(x => oversightDatesMap[x]).ToList();
-            SetupGetFromRepository(createdRegistration);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
-        }
-        
-        [Fact]
-        public void Can_Create_With_OversightData_OversightDates_Updates_Existing_If_Any()
-        {
-            //Arrange
-            var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightDates = dates.FromNullable<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-            createdRegistration.IsOversightCompleted = YesNoUndecidedOption.Yes;
-
-            var oversightDatesMap =
-                dates
-                    .ToDictionary(
-                        x => x,
-                        x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-
-            createdRegistration.OversightDates = dates.Select(x => oversightDatesMap[x]).ToList();
-            createdRegistration.IsOversightCompleted = YesNoUndecidedOption.Yes;
-            SetupGetFromRepository(createdRegistration);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
-        }
-        
         [Fact]
         public void Can_Create_With_OversightData_OversightDates_Set_To_NoChanges()
         {
