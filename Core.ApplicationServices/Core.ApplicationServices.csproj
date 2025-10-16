@@ -254,6 +254,8 @@
     <Compile Include="Model\Contracts\Write\ItContractTerminationParameters.cs" />
     <Compile Include="Model\EventHandler\ValidateUserCredentialsCommandHandler.cs" />
     <Compile Include="Model\GDPR\DataProcessingRegistrationPermissions.cs" />
+    <Compile Include="Model\GDPR\Write\BaseDataProcessingRegistrationParameters.cs" />
+    <Compile Include="Model\GDPR\Write\DataProcessingRegistrationCreationParameters.cs" />
     <Compile Include="Model\GDPR\Write\SubDataProcessorParameter.cs" />
     <Compile Include="Model\GDPR\Write\SubDataProcessor\SubDataProcessorDetailsParameters.cs" />
     <Compile Include="Model\GDPR\Write\SubDataProcessor\TransferToInsecureCountryParameters.cs" />
@@ -274,7 +276,7 @@
     <Compile Include="Model\Interface\ItInterfacePermissions.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModel.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModelParametersBase.cs" />
-    <Compile Include="Model\ISupplierAssociatedEntityUpdateParameters.cs" />
+    <Compile Include="Model\Shared\Supplier\ISupplierAssociatedEntityUpdateParameters.cs" />
     <Compile Include="Model\KitosEvents\IKitosEventMapper.cs" />
     <Compile Include="Model\KitosEvents\KitosEvent.cs" />
     <Compile Include="Model\KitosEvents\KitosEventDTO.cs" />

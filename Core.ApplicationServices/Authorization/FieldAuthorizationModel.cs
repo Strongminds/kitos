@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -35,10 +36,27 @@ public class FieldAuthorizationModel : IAuthorizationModel
             : CheckForNonSupplierApiUser(entity, parameters);
     }
 
+    public bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization parent, TChild child) where TChild : class
+    {
+        if (parent == null || child == null) return false;
+
+        if (_activeUserContext.IsGlobalAdmin()) return true;
+        var entityOrganization = parent.Organization;
+        var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
+        if (!organizationHasSuppliers) return _authorizationContext.AllowModify(parent);
+
+        var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
+        var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
+        var requestsDeleteForSupplierControlledEntity = _supplierAssociatedFieldsService.RequestsDeleteToEntity(child);
+        return userHasSupplierApiAccess
+            ? requestsDeleteForSupplierControlledEntity
+            : requestsDeleteForSupplierControlledEntity == false;
+    }
+
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var requestsNonSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity.Id);
+        var requestsNonSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity);
         if (requestsNonSupplierFieldChanges) return _authorizationContext.AllowModify(entity);
         return true;
     }
