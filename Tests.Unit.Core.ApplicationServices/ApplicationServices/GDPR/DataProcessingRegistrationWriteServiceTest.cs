@@ -169,6 +169,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
+        }
+
+        private void AssertDBControlSaveChanges()
+        {
+            _databaseControlMock.Verify(_ => _.SaveChanges());
         }
 
 
@@ -391,6 +397,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Equal(createdRegistration.OrganizationId, result.Value.OrganizationId);
             Assert.Same(createdRegistration.Name, result.Value.Name);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -414,6 +421,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
 
         
@@ -438,6 +446,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
         
 
@@ -522,6 +531,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -560,6 +570,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
         
         
@@ -600,6 +611,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -639,6 +651,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -681,6 +694,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -705,6 +719,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -729,6 +744,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Equal(createdRegistration.Id, result.Value.Id);
             Assert.Same(createdRegistration.Name, result.Value.Name);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -811,6 +827,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
 
         
@@ -852,6 +869,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.Same(createdRegistration.Name, result.Value.Name);
             Assert.Equal(createdRegistration.Id, result.Value.Id);
             _sdpRepositoryMock.Verify(_ => _.RemoveRange(It.IsAny<IEnumerable<SubDataProcessor>>()));
+            AssertDBControlSaveChanges();
         }
         
         
@@ -892,6 +910,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -936,6 +955,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -986,6 +1006,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1131,6 +1152,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1170,6 +1192,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1290,6 +1313,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1332,6 +1356,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1370,6 +1395,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1410,6 +1436,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1429,9 +1456,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
         }
-
         
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -1452,6 +1477,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1490,6 +1516,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1528,6 +1555,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1586,6 +1614,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1613,6 +1642,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(createResult.Ok);
             _roleAssignmentsServiceMock.Verify(_ => _.AssignRole(createdRegistration, roleId, userId), Times.Once);
+            AssertDBControlSaveChanges();
         }
 
         
@@ -1630,6 +1660,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(createResult.Ok);
             _roleAssignmentsServiceMock.Verify(x => x.AssignRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
             _roleAssignmentsServiceMock.Verify(x => x.RemoveRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1800,6 +1831,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
