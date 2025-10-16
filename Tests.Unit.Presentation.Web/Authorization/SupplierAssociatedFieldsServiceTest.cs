@@ -172,6 +172,79 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.True(result);
         }
 
+        [Theory]
+        [InlineData(true, false, false, false, false, false, false)]
+        [InlineData(false, true, false, false, false, false, false)]
+        [InlineData(false, false, true, false, false, false, false)]
+        [InlineData(false, false, false, true, false, false, false)]
+        [InlineData(false, false, false, false, true, false, false)]
+        [InlineData(false, false, false, false, false, true, false)]
+        [InlineData(false, false, false, false, true, false, true)]
+        public void
+            UsageParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsFalse(
+             bool general,
+             bool organizationalUsage,
+             bool kle,
+             bool externalReferences,
+             bool roles,
+             bool gdpr,
+             bool archiving
+                )
+        {
+            var parameters = new SystemUsageUpdateParameters();
+            if (general)
+            {
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(new UpdatedSystemUsageGeneralProperties()
+                {
+                    LocalCallName = A<string>().AsChangedValue()
+                });
+            }
+            if (organizationalUsage)
+            {
+                parameters.OrganizationalUsage = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.Some(new UpdatedSystemUsageOrganizationalUseParameters()
+                {
+                    UsingOrganizationUnitUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (kle)
+            {
+                parameters.KLE = Maybe<UpdatedSystemUsageKLEDeviationParameters>.Some(new UpdatedSystemUsageKLEDeviationParameters()
+                {
+                    AddedKLEUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (externalReferences)
+            {
+                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
+            }
+
+            if (roles)
+            {
+                parameters.Roles = Maybe<UpdatedSystemUsageRoles>.Some(new UpdatedSystemUsageRoles()
+                {
+                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue()
+                });
+            }
+            if (gdpr)
+            {
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(new UpdatedSystemUsageGDPRProperties()
+                {
+                    HostedAt = A<HostedAt?>().AsChangedValue()
+                });
+            }
+
+            if (archiving)
+            {
+                parameters.Archiving = Maybe<UpdatedSystemUsageArchivingParameters>.Some(new UpdatedSystemUsageArchivingParameters()
+                {
+                    ArchiveActive = A<bool?>().AsChangedValue()
+                });
+            }
+
+            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+
+            Assert.False(result);
+        }
 
         [Fact]
         public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
