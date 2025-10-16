@@ -118,6 +118,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     It.IsAny<ISupplierAssociatedEntityUpdateParameters>()))
                 .Returns(true);
 
+            _authorizationModelMock
+                .Setup(x => x.AuthorizeChildEntityDelete(It.IsAny<IEntityOwnedByOrganization>(),
+                    It.IsAny<object>()))
+                .Returns(true);
+
             // Initialize the system under test (SUT)
             _sut = new DataProcessingRegistrationWriteService(
                 _identityResolverMock.Object,
@@ -174,7 +179,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var organizationUuid = A<Guid>();
-            var parameters = new DataProcessingRegistrationModificationParameters
+            var parameters = new DataProcessingRegistrationCreationParameters
             {
                 Name = A<string>().AsChangedValue()
             };
@@ -196,7 +201,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var organizationUuid = A<Guid>();
-            var parameters = new DataProcessingRegistrationModificationParameters
+            var parameters = new DataProcessingRegistrationCreationParameters
             {
                 Name = A<string>().AsChangedValue()
             };
@@ -221,7 +226,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var organizationUuid = A<Guid>();
-            var parameters = new DataProcessingRegistrationModificationParameters
+            var parameters = new DataProcessingRegistrationCreationParameters
             {
                 Name = OptionalValueChange<string>.None
             };
@@ -244,7 +249,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var organizationUuid = A<Guid>();
-            var parameters = new DataProcessingRegistrationModificationParameters
+            var parameters = new DataProcessingRegistrationCreationParameters
             {
                 Name = A<string>().AsChangedValue()
             };
@@ -358,7 +363,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var transaction = ExpectTransaction();
             var dprUuid = A<Guid>();
             var operationError = new OperationError(OperationFailure.NotFound);
-            _repositoryMock.Setup(_ => _.AsQueryable()).Returns(new List<DataProcessingRegistration>().AsQueryable());
+            SetupGetFromRepository(new DataProcessingRegistration());
             
             //Act
             var result = _sut.Update(dprUuid, parameters);
@@ -1223,7 +1228,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var usage = new ItSystemUsage() { Id = A<int>(), Uuid = A<Guid>() };
             var usageUuids = new List<Guid> { usage.Uuid };
-            var (_, parameters, registration, transaction) = SetupCreateScenarioPrerequisites(systemUsageUuids: usageUuids);
+            var (_, parameters, registration, transaction) = SetupModifyScenarioPrerequisites(systemUsageUuids: usageUuids);
             registration.SystemUsages.Add(usage);
             SetupGetFromRepository(registration);
             ExpectUpdateMultiAssignmentReturns<int, ItSystemUsage>(registration, usageUuids, Maybe<OperationError>.None);
@@ -1244,7 +1249,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var usage = new ItSystemUsage() { Id = A<int>(), Uuid = A<Guid>() };
             var usageUuids = new List<Guid>();
-            var (_, parameters, registration, transaction) = SetupCreateScenarioPrerequisites(systemUsageUuids: usageUuids);
+            var (_, parameters, registration, transaction) = SetupModifyScenarioPrerequisites(systemUsageUuids: usageUuids);
             registration.SystemUsages.Add(usage);
 
             SetupGetFromRepository(registration);
@@ -1472,6 +1477,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightScheduledInspectionDate = (inputIsNull ? null : A<DateTime?>()).AsChangedValue()
             };
+
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
             SetupGetFromRepository(createdRegistration);
 
@@ -1617,7 +1623,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     .ToDictionary(
                         x => x,
                         x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-
+            ;
             createdRegistration.OversightDates = dates.Select(x => oversightDatesMap[x]).ToList();
             SetupGetFromRepository(createdRegistration);
 
@@ -2068,14 +2074,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             // Arrange
             var registrationUuid = A<Guid>();
-            var registrationId = A<int>();
             var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
-            var expectedOversightDate = new DataProcessingRegistrationOversightDate();
 
-            _identityResolverMock
-                .Setup(x => x.ResolveDbId<DataProcessingRegistration>(registrationUuid))
-                .Returns(registrationId);
-            SetupGetFromRepository(new DataProcessingRegistration(){ IsOversightCompleted = YesNoUndecidedOption.Yes});
+            var transaction = ExpectTransaction();
+            SetupGetFromRepository(new DataProcessingRegistration(){ Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes});
             AllowReadsReturns();
 
             // Act
@@ -2083,6 +2085,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             // Assert
             Assert.True(result.Ok);
+            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -2185,6 +2188,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 IsOversightCompleted = YesNoUndecidedOption.Yes,
                 Uuid = registrationUuid
             };
+
+            var transaction = ExpectTransaction();
             SetupGetFromRepository(dpr);
             AllowReadsReturns();
 
@@ -2194,6 +2199,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             // Assert
             Assert.True(result.IsNone);
             _oversightDateRepositoryMock.Verify(_ => _.Delete(oversightDate));
+            transaction.Verify(x => x.Commit());
         }
 
         private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
@@ -2316,7 +2322,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private static void AssertFailureWithKnownError(Result<DataProcessingRegistration, OperationError> result, OperationError operationError, Mock<IDatabaseTransaction> transaction)
         {
             Assert.True(result.Failed);
-            Assert.Equal(operationError, result.Error);
+            Assert.Equal(operationError.FailureType, result.Error.FailureType);
             AssertTransactionNotCommitted(transaction);
         }
 
@@ -2338,7 +2344,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _repositoryMock.Setup(_ => _.AsQueryable())
                 .Returns(dprsQueryable);
             _repositoryMock.Setup(_ => _.GetById(It.IsAny<int>())).Returns(dataProcessingRegistration);
-            }
+        }
+
 
         private static void AssertTransactionNotCommitted(Mock<IDatabaseTransaction> transactionMock)
         {
@@ -2358,7 +2365,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             return transactionMock;
         }
 
-        private (Guid organizationUuid, DataProcessingRegistrationModificationParameters parameters,
+        private (Guid organizationUuid, DataProcessingRegistrationCreationParameters parameters,
             DataProcessingRegistration createdRegistration, Mock<IDatabaseTransaction> transaction)
             SetupCreateScenarioPrerequisites(
                 UpdatedDataProcessingRegistrationGeneralDataParameters generalData = null,
@@ -2367,8 +2374,34 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 UpdatedDataProcessingRegistrationRoles roles = null,
                 IEnumerable<UpdatedExternalReferenceProperties> externalReferences = null)
         {
+            return SetupScenarioPrerequisites<DataProcessingRegistrationCreationParameters>(generalData,
+                systemUsageUuids, oversightData, roles, externalReferences);
+        }
+
+        private (Guid organizationUuid, DataProcessingRegistrationModificationParameters parameters,
+            DataProcessingRegistration createdRegistration, Mock<IDatabaseTransaction> transaction)
+            SetupModifyScenarioPrerequisites(
+                UpdatedDataProcessingRegistrationGeneralDataParameters generalData = null,
+                IEnumerable<Guid> systemUsageUuids = null,
+                UpdatedDataProcessingRegistrationOversightDataParameters oversightData = null,
+                UpdatedDataProcessingRegistrationRoles roles = null,
+                IEnumerable<UpdatedExternalReferenceProperties> externalReferences = null)
+        {
+            return SetupScenarioPrerequisites<DataProcessingRegistrationModificationParameters>(generalData,
+                systemUsageUuids, oversightData, roles, externalReferences);
+        }
+
+        private (Guid organizationUuid, TReturnParameters parameters,
+            DataProcessingRegistration createdRegistration, Mock<IDatabaseTransaction> transaction)
+            SetupScenarioPrerequisites<TReturnParameters>(
+                UpdatedDataProcessingRegistrationGeneralDataParameters generalData = null,
+                IEnumerable<Guid> systemUsageUuids = null,
+                UpdatedDataProcessingRegistrationOversightDataParameters oversightData = null,
+                UpdatedDataProcessingRegistrationRoles roles = null,
+                IEnumerable<UpdatedExternalReferenceProperties> externalReferences = null) where TReturnParameters : BaseDataProcessingRegistrationParameters, new()
+        {
             var organizationUuid = A<Guid>();
-            var parameters = new DataProcessingRegistrationModificationParameters
+            var parameters = new TReturnParameters
             {
                 Name = A<string>().AsChangedValue(),
                 General = generalData.FromNullable(),
