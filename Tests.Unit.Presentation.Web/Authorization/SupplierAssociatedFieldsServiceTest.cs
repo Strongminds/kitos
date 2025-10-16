@@ -312,7 +312,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (addNonSupplierChangeToOversight)
             {
                 parameters.Oversight = Maybe<UpdatedDataProcessingRegistrationOversightDataParameters>.Some(new UpdatedDataProcessingRegistrationOversightDataParameters());
-                parameters.Oversight.Value.OversightCompletedRemark = A<string>().AsChangedValue();
+                parameters.Oversight.Value.OversightIntervalRemark = A<string>().AsChangedValue();
             }
             if (addChangeToRoles)
             {
