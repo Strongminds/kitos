@@ -10,6 +10,7 @@ using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
+using Presentation.Web.Models.API.V1;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
            _sut = new SupplierAssociatedFieldsService();
         }
-        
+
         [Theory]
         [InlineData(true, false, false, false)]
         public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)

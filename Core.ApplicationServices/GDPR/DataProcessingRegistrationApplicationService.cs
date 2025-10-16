@@ -46,6 +46,7 @@ namespace Core.ApplicationServices.GDPR
         private readonly IGenericRepository<SubDataProcessor> _sdpRepository;
         private readonly IOrganizationService _organizationService;
         private readonly IGenericRepository<DataProcessingRegistrationOversightDate> _oversightDateRepository;
+        private readonly IFieldAuthorizationModel _fieldAuthorizationModel;
 
         public DataProcessingRegistrationApplicationService(
             IAuthorizationContext authorizationContext,
@@ -63,7 +64,9 @@ namespace Core.ApplicationServices.GDPR
             IOrganizationalUserContext userContext,
             IGenericRepository<DataProcessingRegistrationOversightDate> dataProcessingRegistrationOversightDateRepository,
             IGenericRepository<SubDataProcessor> sdpRepository, 
-            IOrganizationService organizationService, IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository)
+            IOrganizationService organizationService,
+            IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository, 
+            IFieldAuthorizationModel fieldAuthorizationModel)
         {
             _authorizationContext = authorizationContext;
             _repository = repository;
@@ -82,6 +85,7 @@ namespace Core.ApplicationServices.GDPR
             _sdpRepository = sdpRepository;
             _organizationService = organizationService;
             _oversightDateRepository = oversightDateRepository;
+            _fieldAuthorizationModel = fieldAuthorizationModel;
         }
 
         public Result<DataProcessingRegistration, OperationError> Create(int organizationId, string name)
@@ -611,28 +615,26 @@ namespace Core.ApplicationServices.GDPR
                 .Select(organization => ResourceCollectionPermissionsResult.FromOrganizationId<DataProcessingRegistration>(organization.Id, _authorizationContext));
         }
 
-        private Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> systemResult)
+        private Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> dprResult)
         {
-            //TODO: Extend with isSupplier used logic when implemented
-            return systemResult
+            return dprResult
                 .Transform
                 (
-                    system =>
+                    dpr =>
                     {
                         return ResourcePermissionsResult
-                            .FromResolutionResult(system, _authorizationContext)
-                            .Select(permissions =>
-                                new DataProcessingRegistrationPermissions(permissions,
-                                    ModuleFieldsPermissionsResult.Create(new List<FieldPermissionsResult>
-                                    {
-                                        new() { Enabled = false, Key = "OversightDates.Collection" },
-                                        new() { Enabled = false, Key = "OversightDates.OversightDate" },
-                                        new() { Enabled = false, Key = "OversightDates.OversightRemark" },
-                                        new() { Enabled = true, Key = "OversightDates.OversightReportLink.Name" },
-                                        new() { Enabled = false, Key = "OversightDates.OversightReportLink.Url" }
-                                    })));
+                            .FromResolutionResult(dpr, _authorizationContext)
+                            .Bind(permissions =>
+                            {
+                                return ModuleFieldsPermissionsResult
+                                    .CreateFromDPRResult(_fieldAuthorizationModel, dpr)
+                                    .Select(fieldPermissions =>
+                                        new DataProcessingRegistrationPermissions(permissions, fieldPermissions)
+                                    );
+                            });
                     });
         }
+
         private Result<DataProcessingRegistrationOversightDate, OperationError> Remove(DataProcessingRegistration registration, int oversightId)
         {
             var removedRegistration = registration.RemoveOversightDate(oversightId);

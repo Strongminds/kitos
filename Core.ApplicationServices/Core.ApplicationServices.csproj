@@ -142,6 +142,7 @@
     <Compile Include="Authorization\FieldAuthorizationModel.cs" />
     <Compile Include="Authorization\IAuthorizationModel.cs" />
     <Compile Include="Authorization\IAuthorizationModelFactory.cs" />
+    <Compile Include="Authorization\IFieldAuthorizationModel.cs" />
     <Compile Include="Authorization\ISupplierAssociatedFieldsService.cs" />
     <Compile Include="Authorization\FieldPermissionsResult.cs" />
     <Compile Include="Authorization\ModuleFieldsPermissionsResult.cs" />

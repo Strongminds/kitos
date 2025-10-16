@@ -10,5 +10,6 @@ namespace Core.ApplicationServices.Authorization
         bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity);
         bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable);
         bool RequestsDeleteToEntity<TEntity>(TEntity entity);
+        bool IsFieldSupplierControlled(string key);
     }
 }

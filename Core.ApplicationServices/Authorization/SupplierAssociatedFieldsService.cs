@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -15,9 +16,16 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
     private const string _hasChangePropertyName = "HasChange";
 
-    public SupplierAssociatedFieldsService()
-    {
-    }
+    public static readonly string SupplierOversightDateCollectionPath = "DataProcessingRegistrationOversightDate.Collection";
+    private static readonly HashSet<string> SupplierOnlyControlledFieldPaths =
+    [
+        SupplierOversightDateCollectionPath,
+        "DataProcessingRegistration.IsOversightCompleted",
+        "DataProcessingRegistrationOversightDate.CompletedAt",
+        "DataProcessingRegistrationOversightDate.Remark",
+        "DataProcessingRegistrationOversightDate.OversightReportLink"
+    ];
+
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
         return parameters switch
@@ -70,6 +78,33 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
         return false;
+    }
+
+    public bool IsFieldSupplierControlled(string key)
+    {
+        return SupplierOnlyControlledFieldPaths.Contains(key);
+    }
+    
+    public static string GetPropertyPath<T>(Expression<Func<T, object>> expression)
+    {
+        var path = new List<string>();
+        var expr = expression.Body;
+
+        while (expr is MemberExpression memberExpr)
+        {
+            path.Insert(0, memberExpr.Member.Name);
+            expr = memberExpr.Expression;
+        }
+
+        if (expr is UnaryExpression unaryExpr && unaryExpr.Operand is MemberExpression memberExpr2)
+        {
+            path.Insert(0, memberExpr2.Member.Name);
+        }
+
+        var className = typeof(T).Name;
+        path.Insert(0, className);
+
+        return string.Join(".", path);
     }
 
     private bool CheckNonSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)

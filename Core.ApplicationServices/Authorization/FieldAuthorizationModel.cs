@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization;
 
-public class FieldAuthorizationModel : IAuthorizationModel
+public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationModel
 {
     private readonly IOrganizationalUserContext _activeUserContext;
     private readonly ISupplierAssociatedFieldsService _supplierAssociatedFieldsService;
@@ -25,7 +24,7 @@ public class FieldAuthorizationModel : IAuthorizationModel
         if (entity == null || parameters == null) return false;
 
         if (_activeUserContext.IsGlobalAdmin()) return true;
-       var entityOrganization = entity.Organization;
+        var entityOrganization = entity.Organization;
         var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
         if (!organizationHasSuppliers) return _authorizationContext.AllowModify(entity);
 
@@ -68,5 +67,19 @@ public class FieldAuthorizationModel : IAuthorizationModel
         if (requestsSupplierFieldChanges) return false;
         return _authorizationContext.AllowModify(entity);
 
+    }
+
+    public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key)
+    {
+        if (_activeUserContext.IsGlobalAdmin()) 
+            return new FieldPermissionsResult{ Enabled = true, Key = key};
+
+        var entityOrganization = entity.Organization;
+        var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
+        if (!organizationHasSuppliers)
+            return new FieldPermissionsResult { Enabled = true, Key = key };
+
+        return new FieldPermissionsResult
+                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key), Key = key };
     }
 }

@@ -49,6 +49,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<IGenericRepository<SubDataProcessor>> _sdpRepositoryMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IGenericRepository<DataProcessingRegistrationOversightDate>> _oversightDateRepositoryMock;
+        private readonly Mock<IFieldAuthorizationModel> _fieldAuthorizationModelMock;
 
         public DataProcessingRegistrationApplicationServiceTest()
         {
@@ -69,6 +70,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _sdpRepositoryMock = new Mock<IGenericRepository<SubDataProcessor>>();
             _organizationServiceMock = new Mock<IOrganizationService>();
             _oversightDateRepositoryMock = new Mock<IGenericRepository<DataProcessingRegistrationOversightDate>>();
+            _fieldAuthorizationModelMock = new Mock<IFieldAuthorizationModel>();
             _sut = new DataProcessingRegistrationApplicationService(
                 _authorizationContextMock.Object,
                 _repositoryMock.Object,
@@ -86,7 +88,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 _dprOversightDaterepositoryMock.Object,
                 _sdpRepositoryMock.Object,
                 _organizationServiceMock.Object,
-                _oversightDateRepositoryMock.Object);
+                _oversightDateRepositoryMock.Object,
+                _fieldAuthorizationModelMock.Object);
         }
 
         [Fact]
@@ -1894,10 +1897,30 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var uuid = A<Guid>();
             var registration = new DataProcessingRegistration { Id = A<int>(), Uuid = uuid };
+
+            var oversightDateCollectionKey = SupplierAssociatedFieldsService.SupplierOversightDateCollectionPath;
+            var oversightDateDateKey = SupplierAssociatedFieldsService
+                .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                    x => x.OversightDate);
+            var oversightDateRemarkKey = SupplierAssociatedFieldsService
+                .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                    x => x.OversightRemark);
+            var oversightDateLinkKey = SupplierAssociatedFieldsService
+                .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                    x => x.OversightReportLink);
+            var oversightDateLinkNameKey =
+                SupplierAssociatedFieldsService.GetPropertyPath<DataProcessingRegistrationOversightDate>(x =>
+                    x.OversightReportLinkName);
+
             _repositoryMock.Setup(x => x.AsQueryable()).Returns(CreateListOfDPRFromDpr(registration).AsQueryable());
             ExpectAllowReadReturns(registration, read);
             ExpectAllowModifyReturns(registration, modify);
             ExpectAllowDeleteReturns(registration, delete);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateCollectionKey, false);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateDateKey, false);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateRemarkKey, false);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkNameKey, true);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkKey, false);
 
             //Act
             var result = _sut.GetPermissions(uuid);
@@ -1905,19 +1928,30 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             var permissions = result.Value;
+            if (!permissions.BasePermissions.Read)
+            {
+                Assert.Empty(permissions.FieldPermissions.Fields);
+                return;
+            }
+
             Assert.Equivalent(new DataProcessingRegistrationPermissions(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
             {
                 Fields = new List<FieldPermissionsResult>
                 {
-                    new() { Enabled = false, Key = "OversightDates.Collection" },
-                    new() { Enabled = false, Key = "OversightDates.OversightDate" },
-                    new() { Enabled = false, Key = "OversightDates.OversightRemark" },
-                    new() { Enabled = true, Key = "OversightDates.OversightReportLink.Name" },
-                    new() { Enabled = false, Key = "OversightDates.OversightReportLink.Url" }
+                    new() { Enabled = false, Key = oversightDateCollectionKey },
+                    new() { Enabled = false, Key = oversightDateDateKey },
+                    new() { Enabled = false, Key = oversightDateRemarkKey },
+                    new() { Enabled = true, Key = oversightDateLinkNameKey },
+                    new() { Enabled = false, Key = oversightDateLinkKey }
                 }
             }), permissions);
         }
-        
+
+        private void ExpectGetFieldPermissionsReturns(DataProcessingRegistration registration, string key, bool result)
+        {
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(registration, key)).Returns(new FieldPermissionsResult{ Enabled = result, Key = key});
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
