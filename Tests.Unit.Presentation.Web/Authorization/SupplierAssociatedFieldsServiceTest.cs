@@ -64,6 +64,55 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.True(result);
         }
 
+        [Theory]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        public void
+            UsageParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool aiTechnology, bool gdprCriticality, bool RiskAssessmentResult)
+        {
+            var generalProperties = new UpdatedSystemUsageGeneralProperties();
+            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
+            var parameters = new SystemUsageUpdateParameters();
+            var usage = new ItSystemUsage();
+            if (aiTechnology)
+            {
+                generalProperties.ContainsAITechnology = A<Maybe<YesNoUndecidedOption>>().AsChangedValue();
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(generalProperties);
+            }
+            if (gdprCriticality)
+            {
+                gdprProperties.GdprCriticality = A<GdprCriticality?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            if (RiskAssessmentResult)
+            {
+                gdprProperties.RiskAssessmentResult = A<RiskLevel?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void
+            UsageParams_GivenChangesToAnyNonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(
+                )
+        {
+            var generalProperties = new UpdatedSystemUsageGeneralProperties();
+            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
+            var usage = new ItSystemUsage(); 
+            var parameters = new SystemUsageUpdateParameters();
+            
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
+
+            Assert.True(result);
+        }
+
+
         [Fact]
         public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
         {

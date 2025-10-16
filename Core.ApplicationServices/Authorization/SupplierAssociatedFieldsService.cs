@@ -67,9 +67,16 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                 dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckNonSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            SystemUsageUpdateParameters usageParameters => CheckNonSupplierChangesToUsageParameters(usageParameters),
             _ => false
         };
     }
+
+    private bool CheckNonSupplierChangesToUsageParameters(SystemUsageUpdateParameters usageParameters)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool RequestsDeleteToEntity<TEntity>(TEntity entity)
     {
         return entity switch
