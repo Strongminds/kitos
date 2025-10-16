@@ -9,7 +9,7 @@ namespace Core.ApplicationServices.GDPR.Write
 {
     public interface IDataProcessingRegistrationWriteService
     {
-        Result<DataProcessingRegistration, OperationError> Create(Guid organizationUuid, DataProcessingRegistrationModificationParameters parameters);
+        Result<DataProcessingRegistration, OperationError> Create(Guid organizationUuid, DataProcessingRegistrationCreationParameters parameters);
         Result<DataProcessingRegistration, OperationError> Update(Guid dataProcessingRegistrationUuid, DataProcessingRegistrationModificationParameters parameters);
         Maybe<OperationError> Delete(Guid dataProcessingRegistrationUuid);
         Result<DataProcessingRegistration, OperationError> AddRole(Guid dprUuid, UserRolePair assignment);

@@ -276,25 +276,40 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         
         public static async Task<OversightDateDTO> PostOversightDate(Guid uuid, ModifyOversightDateDTO request, string token)
         {
-            using var response = await HttpApi.PostWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates"), request, token);
+            using var response = await SendPostOversightDate(uuid, request, token);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<OversightDateDTO>();
+        }
+
+        public static async Task<HttpResponseMessage> SendPostOversightDate(Guid uuid, ModifyOversightDateDTO request, string token)
+        {
+            return await HttpApi.PostWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates"), request, token);
         }
 
         public static async Task<OversightDateDTO> PatchOversightDate(Guid uuid, Guid oversightDateUuid, ModifyOversightDateDTO request, string token)
         {
-            using var response = await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates/{oversightDateUuid}"), token, request);
+            using var response = await SendPatchOversightDate(uuid, oversightDateUuid, request, token);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<OversightDateDTO>();
         }
 
+        public static async Task<HttpResponseMessage> SendPatchOversightDate(Guid uuid, Guid oversightDateUuid, ModifyOversightDateDTO request, string token)
+        {
+            return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates/{oversightDateUuid}"), token, request);
+        }
+
         public static async Task DeleteOversightDate(Guid uuid, Guid oversightDateUuid, string token)
         {
-            using var response = await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates/{oversightDateUuid}"), token);
+            using var response = await SendDeleteOversightDate(uuid, oversightDateUuid, token);
 
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        public static async Task<HttpResponseMessage> SendDeleteOversightDate(Guid uuid, Guid oversightDateUuid, string token)
+        {
+            return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}/oversight-dates/{oversightDateUuid}"), token);
         }
 
         //Read model endpoint
