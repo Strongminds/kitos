@@ -71,6 +71,49 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             Assert.Empty(dprAfterOperations.Oversight.OversightDates);
         }
+        
+        [Fact]
+        public async Task Supplier_Cannot_Update_Non_Supplier_Fields()
+        {
+            var organization = await CreateOrganizationAsync();
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, supplier.Uuid, true);
+            var globalAdminToken = await GetGlobalToken();
+
+            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
+
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
+                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
+                    OrganizationUuid = organization.Uuid
+                });
+
+            var dprUpdate = A<DataProcessingRegistrationGeneralDataWriteRequestDTO>();
+            using var failedResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, dpr.Uuid, dprUpdate);
+            Assert.False(failedResponse.IsSuccessStatusCode);
+        }
+        
+        [Fact]
+        public async Task Supplier_Cannot_Update_Fields_With_No_Supplier_And_No_Access()
+        {
+            var organization = await CreateOrganizationAsync();
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, supplier.Uuid, true);
+            var globalAdminToken = await GetGlobalToken();
+
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
+                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
+                    OrganizationUuid = organization.Uuid
+                });
+
+
+            var oversightDateRequest = A<ModifyOversightDateDTO>();
+            using var postResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, token);
+            Assert.False(postResponse.IsSuccessStatusCode);
+
+            var dprUpdate = A<DataProcessingRegistrationGeneralDataWriteRequestDTO>();
+            using var failedResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, dpr.Uuid, dprUpdate);
+            Assert.False(failedResponse.IsSuccessStatusCode);
+        }
 
         [Fact]
         public async Task LocalAdmin_Cannot_Update_Supplier_Fields()

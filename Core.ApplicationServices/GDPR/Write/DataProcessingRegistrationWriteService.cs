@@ -43,7 +43,7 @@ namespace Core.ApplicationServices.GDPR.Write
         private readonly IDatabaseControl _databaseControl;
         private readonly IAssignmentUpdateService _assignmentUpdateService;
         private readonly IAuthorizationContext _authorizationContext;
-        private readonly IDataProcessingRegistrationNamingService namingService;
+        private readonly IDataProcessingRegistrationNamingService _namingService;
         private readonly IDataProcessingRegistrationRepository _repository;
         private readonly IGenericRepository<DataProcessingRegistrationOversightDate> _oversightDateRepository;
         private readonly IRoleAssignmentService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, DataProcessingRegistration> _roleAssignmentsService;
@@ -54,7 +54,7 @@ namespace Core.ApplicationServices.GDPR.Write
         private readonly IDataProcessingRegistrationDataProcessorAssignmentService _dataProcessingRegistrationDataProcessorAssignmentService;
         private readonly IDataProcessingRegistrationInsecureCountriesAssignmentService _countryAssignmentService;
         private readonly IDataProcessingRegistrationBasisForTransferAssignmentService _basisForTransferAssignmentService;
-        private readonly IDataProcessingRegistrationDataResponsibleAssignmentService _dataResponsibleAssigmentService;
+        private readonly IDataProcessingRegistrationDataResponsibleAssignmentService _dataResponsibleAssignmentService;
 
 
 
@@ -66,7 +66,7 @@ namespace Core.ApplicationServices.GDPR.Write
             ITransactionManager transactionManager,
             IDatabaseControl databaseControl,
             IAssignmentUpdateService assignmentUpdateService, 
-            IAuthorizationContext authorizationContext, IDataProcessingRegistrationNamingService namingService, IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository, IRoleAssignmentService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, DataProcessingRegistration> roleAssignmentsService, IGenericRepository<DataProcessingRegistrationOversightDate> dataProcessingRegistrationOversightDateRepository, IDataProcessingRegistrationOversightOptionsAssignmentService oversightOptionAssignmentService, IGenericRepository<SubDataProcessor> sdpRepository, IDataProcessingRegistrationSystemAssignmentService systemAssignmentService, IDataProcessingRegistrationDataProcessorAssignmentService dataProcessingRegistrationDataProcessorAssignmentService, IDataProcessingRegistrationInsecureCountriesAssignmentService countryAssignmentService, IDataProcessingRegistrationBasisForTransferAssignmentService basisForTransferAssignmentService, IDataProcessingRegistrationDataResponsibleAssignmentService dataResponsibleAssigmentService, IDataProcessingRegistrationRepository repository)
+            IAuthorizationContext authorizationContext, IDataProcessingRegistrationNamingService namingService, IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository, IRoleAssignmentService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, DataProcessingRegistration> roleAssignmentsService, IGenericRepository<DataProcessingRegistrationOversightDate> dataProcessingRegistrationOversightDateRepository, IDataProcessingRegistrationOversightOptionsAssignmentService oversightOptionAssignmentService, IGenericRepository<SubDataProcessor> sdpRepository, IDataProcessingRegistrationSystemAssignmentService systemAssignmentService, IDataProcessingRegistrationDataProcessorAssignmentService dataProcessingRegistrationDataProcessorAssignmentService, IDataProcessingRegistrationInsecureCountriesAssignmentService countryAssignmentService, IDataProcessingRegistrationBasisForTransferAssignmentService basisForTransferAssignmentService, IDataProcessingRegistrationDataResponsibleAssignmentService dataResponsibleAssignmentService, IDataProcessingRegistrationRepository repository)
         {
             _entityIdentityResolver = entityIdentityResolver;
             _referenceService = referenceService;
@@ -75,8 +75,8 @@ namespace Core.ApplicationServices.GDPR.Write
             _transactionManager = transactionManager;
             _databaseControl = databaseControl;
             _assignmentUpdateService = assignmentUpdateService;
-            this._authorizationContext = authorizationContext;
-            this.namingService = namingService;
+            _authorizationContext = authorizationContext;
+            _namingService = namingService;
             _oversightDateRepository = oversightDateRepository;
             _roleAssignmentsService = roleAssignmentsService;
             _dataProcessingRegistrationOversightDateRepository = dataProcessingRegistrationOversightDateRepository;
@@ -86,7 +86,7 @@ namespace Core.ApplicationServices.GDPR.Write
             _dataProcessingRegistrationDataProcessorAssignmentService = dataProcessingRegistrationDataProcessorAssignmentService;
             _countryAssignmentService = countryAssignmentService;
             _basisForTransferAssignmentService = basisForTransferAssignmentService;
-            _dataResponsibleAssigmentService = dataResponsibleAssigmentService;
+            _dataResponsibleAssignmentService = dataResponsibleAssignmentService;
             _repository = repository;
         }
 
@@ -125,7 +125,7 @@ namespace Core.ApplicationServices.GDPR.Write
             if (!_authorizationContext.AllowCreate<DataProcessingRegistration>(organizationId))
                 return new OperationError(OperationFailure.Forbidden);
 
-            var error = namingService.ValidateSuggestedNewRegistrationName(organizationId, name);
+            var error = _namingService.ValidateSuggestedNewRegistrationName(organizationId, name);
 
             if (error.HasValue)
                 return error.Value;
@@ -240,14 +240,6 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Bind(update => Update(dprUuid, update));
         }
 
-        private Result<DataProcessingRegistration, OperationError> AddRoles(Guid dprUuid,
-            IEnumerable<UserRolePair> assignments)
-        {
-            return GetByUuidAndAuthorizeRead(dprUuid)
-                .Bind(dpr => GetRoleAssignmentUpdates(dpr, assignments))
-                .Bind(update => Update(dprUuid, update));
-        }
-
         private Result<DataProcessingRegistration, OperationError> Update<TParameters>(
             Func<Result<DataProcessingRegistration, OperationError>> getDpr,
             Func<DataProcessingRegistration, TParameters, Result<DataProcessingRegistration, OperationError>>
@@ -317,7 +309,7 @@ namespace Core.ApplicationServices.GDPR.Write
             (
                 id,
                 registration =>
-                    namingService
+                    _namingService
                         .ChangeName(registration, name)
                         .Match
                         (
@@ -863,12 +855,12 @@ namespace Core.ApplicationServices.GDPR.Write
         
         public Result<DataProcessingDataResponsibleOption, OperationError> AssignDataResponsible(int id, int dataResponsibleId)
         {
-            return Modify(id, registration => _dataResponsibleAssigmentService.Assign(registration, dataResponsibleId));
+            return Modify(id, registration => _dataResponsibleAssignmentService.Assign(registration, dataResponsibleId));
         }
 
         public Result<DataProcessingDataResponsibleOption, OperationError> ClearDataResponsible(int id)
         {
-            return Modify(id, registration => _dataResponsibleAssigmentService.Clear(registration));
+            return Modify(id, registration => _dataResponsibleAssignmentService.Clear(registration));
         }
 
         private Result<TSuccess, OperationError> Modify<TSuccess>(int id, Func<DataProcessingRegistration, Result<TSuccess, OperationError>> mutation)
@@ -983,6 +975,14 @@ namespace Core.ApplicationServices.GDPR.Write
             }
             
             return CreateRoleAssignmentUpdate(existingRoles.Concat(newRoles));
+        }
+
+        private Result<DataProcessingRegistration, OperationError> AddRoles(Guid dprUuid,
+            IEnumerable<UserRolePair> assignments)
+        {
+            return GetByUuidAndAuthorizeRead(dprUuid)
+                .Bind(dpr => GetRoleAssignmentUpdates(dpr, assignments))
+                .Bind(update => Update(dprUuid, update));
         }
 
 
