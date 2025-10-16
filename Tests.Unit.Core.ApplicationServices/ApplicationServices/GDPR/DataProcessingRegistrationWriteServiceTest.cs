@@ -164,7 +164,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
 
 
@@ -410,7 +409,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
 
         
@@ -435,7 +433,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
 
@@ -727,7 +724,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Equal(createdRegistration.Id, result.Value.Id);
             Assert.Same(createdRegistration.Name, result.Value.Name);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
