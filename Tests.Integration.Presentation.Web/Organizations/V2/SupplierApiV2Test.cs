@@ -1,7 +1,6 @@
 ﻿using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
-using Presentation.Web.Models.API.V2.Types.Organization;
 using System.Linq;
 using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
