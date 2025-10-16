@@ -204,7 +204,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             using var transaction = _transactionManager.Begin();
 
             var result = getItSystemUsage()
-                    .Bind(WithWriteAccess)
+                    .Bind(usage => WithAuthorizationModelWriteAccess(usage, parameters))
                     .Bind(systemUsage => PerformUpdates(systemUsage, parameters));
 
             if (result.Ok)
@@ -701,6 +701,16 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
             return systemUsage.UpdateSystemCategories(optionByUuid.Value.option);
         }
+        private Result<ItSystemUsage, OperationError> WithAuthorizationModelWriteAccess(ItSystemUsage systemUsage, SystemUsageUpdateParameters parameters)
+        {
+            var authModel = _authorizationContext.GetAuthorizationModel(systemUsage);
+            return authModel.AuthorizeUpdate(systemUsage, parameters) ? systemUsage : new OperationError(OperationFailure.Forbidden);
+        }
+
+        private Result<ItSystemUsage, OperationError> WithWriteAccess(ItSystemUsage systemUsage)
+        {
+            return _authorizationContext.AllowModify(systemUsage) ? systemUsage : new OperationError(OperationFailure.Forbidden);
+        }
 
         private Result<ItSystemUsage, OperationError> PerformRoleAssignmentUpdates(ItSystemUsage itSystemUsage, UpdatedSystemUsageRoles usageRoles)
         {
@@ -722,11 +732,6 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             return _systemUsageService.GetReadableItSystemUsageByUuid(uuid)
                 .Bind(WithWriteAccess);
-        }
-
-        private Result<ItSystemUsage, OperationError> WithWriteAccess(ItSystemUsage systemUsage)
-        {
-            return _authorizationContext.AllowModify(systemUsage) ? systemUsage : new OperationError(OperationFailure.Forbidden);
         }
 
         public Maybe<OperationError> Delete(Guid itSystemUsageUuid)
