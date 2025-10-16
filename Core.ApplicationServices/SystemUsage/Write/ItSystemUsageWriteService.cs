@@ -124,7 +124,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
             var creationResult = _systemUsageService
                 .CreateNew(systemResult.Value.Id, organizationResult.Value.Id)
-                .Bind(createdSystemUsage => Update(() => createdSystemUsage, parameters.AdditionalValues));
+                .Bind(createdSystemUsage => Update(() => createdSystemUsage, parameters.AdditionalValues, true));
 
             if (creationResult.Ok)
             {
@@ -199,12 +199,12 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(update => Update(systemUsageUuid, update));
         }
 
-        private Result<ItSystemUsage, OperationError> Update(Func<Result<ItSystemUsage, OperationError>> getItSystemUsage, SystemUsageUpdateParameters parameters)
+        private Result<ItSystemUsage, OperationError> Update(Func<Result<ItSystemUsage, OperationError>> getItSystemUsage, SystemUsageUpdateParameters parameters, bool isCreate = false)
         {
             using var transaction = _transactionManager.Begin();
 
             var result = getItSystemUsage()
-                    .Bind(usage => WithAuthorizationModelWriteAccess(usage, parameters))
+                    .Bind(usage => WithAuthorizationModelWriteAccess(usage, parameters, isCreate))
                     .Bind(systemUsage => PerformUpdates(systemUsage, parameters));
 
             if (result.Ok)
@@ -701,8 +701,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
             return systemUsage.UpdateSystemCategories(optionByUuid.Value.option);
         }
-        private Result<ItSystemUsage, OperationError> WithAuthorizationModelWriteAccess(ItSystemUsage systemUsage, SystemUsageUpdateParameters parameters)
+        private Result<ItSystemUsage, OperationError> WithAuthorizationModelWriteAccess(ItSystemUsage systemUsage, SystemUsageUpdateParameters parameters, bool isCreate = false)
         {
+            if (isCreate) return WithWriteAccess(systemUsage);
             var authModel = _authorizationContext.GetAuthorizationModel(systemUsage);
             return authModel.AuthorizeUpdate(systemUsage, parameters) ? systemUsage : new OperationError(OperationFailure.Forbidden);
         }

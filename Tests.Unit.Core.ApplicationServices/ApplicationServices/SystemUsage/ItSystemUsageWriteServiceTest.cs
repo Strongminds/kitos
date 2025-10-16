@@ -3329,6 +3329,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectGetSystemReturns(systemUuid, itSystem);
             ExpectCreateNewReturns(itSystem, organization, itSystemUsage);
             SetupAuthorizationModelReturns();
+            ExpectAllowModifyReturns(itSystemUsage, true);
         }
 
         private Organization CreateOrganization()

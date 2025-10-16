@@ -264,7 +264,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var dpr = dprResult.Value;
 
-            if ( parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
+            if (parameters is ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
             {
                 var authError = AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
                 if (authError.HasValue)
