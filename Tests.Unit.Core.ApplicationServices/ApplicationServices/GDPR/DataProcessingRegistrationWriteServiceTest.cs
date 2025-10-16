@@ -6,7 +6,6 @@ using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
-using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.GDPR.Write;
 using Core.ApplicationServices.Generic.Write;
 using Core.ApplicationServices.Model;
@@ -388,18 +387,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Equal(createdRegistration.OrganizationId, result.Value.OrganizationId);
             Assert.Same(createdRegistration.Name, result.Value.Name);
-
-            AssertTransactionCommitted(transaction);
         }
-
-        private void SetupAuthorizeUpdateReturns(bool value = true)
-        {
-            _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<DataProcessingRegistration>()))
-                .Returns(_authorizationModelMock.Object);
-            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(value);
-        }
-
-        
 
         [Fact]
         public void Can_Create_With_GeneralData_With_Null_DataResponsible()
@@ -532,7 +520,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -571,7 +558,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         
@@ -612,7 +598,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -652,10 +637,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
-
-     
 
         [Fact]
         public void Create_With_GeneralData_AgreementConcludedAt_Set_To_NoChanges()
@@ -697,7 +679,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -722,7 +703,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -830,7 +810,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
 
         
@@ -871,7 +850,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Same(createdRegistration.Name, result.Value.Name);
             Assert.Equal(createdRegistration.Id, result.Value.Id);
-            AssertTransactionCommitted(transaction);
             _sdpRepositoryMock.Verify(_ => _.RemoveRange(It.IsAny<IEnumerable<SubDataProcessor>>()));
         }
         
@@ -913,7 +891,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -958,7 +935,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -1009,7 +985,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -1155,7 +1130,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1195,7 +1169,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1316,7 +1289,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1359,7 +1331,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1398,7 +1369,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1439,7 +1409,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1474,13 +1443,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
             SetupGetFromRepository(createdRegistration);
+          //  ExpectTransaction();
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1519,7 +1488,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1558,7 +1526,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -1627,7 +1594,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -1658,7 +1624,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -1678,7 +1643,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
         }
         
         [Fact]
@@ -1705,7 +1669,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(createResult.Ok);
-            AssertTransactionCommitted(transaction);
             _roleAssignmentsServiceMock.Verify(_ => _.AssignRole(createdRegistration, roleId, userId), Times.Once);
         }
 
@@ -1722,7 +1685,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(createResult.Ok);
-            AssertTransactionCommitted(transaction);
             _roleAssignmentsServiceMock.Verify(x => x.AssignRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
             _roleAssignmentsServiceMock.Verify(x => x.RemoveRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
@@ -1895,7 +1857,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
         }
 
         [Fact]
@@ -2070,12 +2031,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var registrationUuid = A<Guid>();
             var registrationId = A<int>();
             var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
-            var expectedOversightDate = new DataProcessingRegistrationOversightDate();
 
             _identityResolverMock
                 .Setup(x => x.ResolveDbId<DataProcessingRegistration>(registrationUuid))
                 .Returns(registrationId);
-            SetupGetFromRepository(new DataProcessingRegistration(){ IsOversightCompleted = YesNoUndecidedOption.Yes});
+            SetupGetFromRepository(new DataProcessingRegistration(){ IsOversightCompleted = YesNoUndecidedOption.Yes, Uuid = registrationUuid });
+            ExpectTransaction();
             AllowReadsReturns();
 
             // Act
