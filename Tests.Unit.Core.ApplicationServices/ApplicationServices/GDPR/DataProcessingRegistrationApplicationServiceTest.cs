@@ -1898,6 +1898,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var uuid = A<Guid>();
             var registration = new DataProcessingRegistration { Id = A<int>(), Uuid = uuid };
 
+            var oversightDateCollectionEnabled = A<bool>();
+            var oversightDateDateEnabled = A<bool>();
+            var oversightDateRemarkEnabled = A<bool>();
+            var oversightDateLinkNameEnabled = A<bool>();
+            var oversightDateLinkEnabled = A<bool>();
+
             var oversightDateCollectionKey = SupplierAssociatedFieldsService.SupplierOversightDateCollectionPath;
             var oversightDateDateKey = SupplierAssociatedFieldsService
                 .GetPropertyPath<DataProcessingRegistrationOversightDate>(
@@ -1916,11 +1922,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             ExpectAllowReadReturns(registration, read);
             ExpectAllowModifyReturns(registration, modify);
             ExpectAllowDeleteReturns(registration, delete);
-            ExpectGetFieldPermissionsReturns(registration, oversightDateCollectionKey, false);
-            ExpectGetFieldPermissionsReturns(registration, oversightDateDateKey, false);
-            ExpectGetFieldPermissionsReturns(registration, oversightDateRemarkKey, false);
-            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkNameKey, true);
-            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkKey, false);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateCollectionKey, oversightDateCollectionEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateDateKey, oversightDateDateEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateRemarkKey, oversightDateRemarkEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkNameKey, oversightDateLinkNameEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkKey, oversightDateLinkEnabled);
 
             //Act
             var result = _sut.GetPermissions(uuid);
@@ -1938,11 +1944,11 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Fields = new List<FieldPermissionsResult>
                 {
-                    new() { Enabled = false, Key = oversightDateCollectionKey },
-                    new() { Enabled = false, Key = oversightDateDateKey },
-                    new() { Enabled = false, Key = oversightDateRemarkKey },
-                    new() { Enabled = true, Key = oversightDateLinkNameKey },
-                    new() { Enabled = false, Key = oversightDateLinkKey }
+                    new() { Enabled = oversightDateCollectionEnabled, Key = oversightDateCollectionKey },
+                    new() { Enabled = oversightDateDateEnabled, Key = oversightDateDateKey },
+                    new() { Enabled = oversightDateRemarkEnabled, Key = oversightDateRemarkKey },
+                    new() { Enabled = oversightDateLinkNameEnabled, Key = oversightDateLinkNameKey },
+                    new() { Enabled = oversightDateLinkEnabled, Key = oversightDateLinkKey }
                 }
             }), permissions);
         }
