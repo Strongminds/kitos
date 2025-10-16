@@ -16,13 +16,18 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
     private const string _hasChangePropertyName = "HasChange";
 
-    private static readonly HashSet<string> SupplierOnlyControlledFieldPaths =
-    [
-        "DataProcessingRegistration.IsOversightCompleted",
-        "DataProcessingRegistrationOversightDate.CompletedAt",
-        "DataProcessingRegistrationOversightDate.Remark",
-        "DataProcessingRegistrationOversightDate.OversightReportLink"
-    ];
+    private readonly ISet<string> _supplierOnlyControlledFieldPaths;
+
+    public SupplierAssociatedFieldsService()
+    {
+        _supplierOnlyControlledFieldPaths = new HashSet<string>
+        {
+            GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted),
+            GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate),
+            GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark),
+            GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink)
+        };
+    }
 
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
@@ -80,7 +85,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     public bool IsFieldSupplierControlled(string key)
     {
-        return SupplierOnlyControlledFieldPaths.Contains(key);
+        return _supplierOnlyControlledFieldPaths.Contains(key);
     }
     
     public static string GetPropertyPath<T>(Expression<Func<T, object>> expression)
