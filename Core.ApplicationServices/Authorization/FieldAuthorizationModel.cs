@@ -55,16 +55,16 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var requestsNonSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity);
-        if (requestsNonSupplierFieldChanges) return _authorizationContext.AllowModify(entity);
+        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity);
+        if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
         return true;
     }
 
     private bool CheckForNonSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var requestsSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToSupplierAssociatedFields(parameters);
-        if (requestsSupplierFieldChanges) return false;
+        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity);
+        if (!anySupplierChanges) return false;
         return _authorizationContext.AllowModify(entity);
 
     }
