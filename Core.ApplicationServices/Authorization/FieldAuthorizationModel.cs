@@ -80,6 +80,6 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
             return new FieldPermissionsResult { Enabled = true, Key = key };
 
         return new FieldPermissionsResult
-                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key), Key = key };
+                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key) == false, Key = key };
     }
 }
