@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.GDPR;
@@ -22,8 +20,10 @@ using Core.DomainServices.Repositories.GDPR;
 using Core.DomainServices.Repositories.Reference;
 using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
-
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -1904,20 +1904,20 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var oversightDateLinkNameEnabled = A<bool>();
             var oversightDateLinkEnabled = A<bool>();
 
-            var oversightDateCollectionKey = SupplierAssociatedFieldsService
+            var oversightDateCollectionKey = ObjectHelper
                 .GetPropertyPath<DataProcessingRegistration>(
                     x => x.IsOversightCompleted);
-            var oversightDateDateKey = SupplierAssociatedFieldsService
+            var oversightDateDateKey = ObjectHelper
                 .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                     x => x.OversightDate);
-            var oversightDateRemarkKey = SupplierAssociatedFieldsService
+            var oversightDateRemarkKey = ObjectHelper
                 .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                     x => x.OversightRemark);
-            var oversightDateLinkKey = SupplierAssociatedFieldsService
+            var oversightDateLinkKey = ObjectHelper
                 .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                     x => x.OversightReportLink);
             var oversightDateLinkNameKey =
-                SupplierAssociatedFieldsService.GetPropertyPath<DataProcessingRegistrationOversightDate>(x =>
+                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x =>
                     x.OversightReportLinkName);
 
             _repositoryMock.Setup(x => x.AsQueryable()).Returns(CreateListOfDPRFromDpr(registration).AsQueryable());

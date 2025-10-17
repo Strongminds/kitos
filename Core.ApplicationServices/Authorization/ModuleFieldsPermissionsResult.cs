@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
 
@@ -23,23 +24,23 @@ namespace Core.ApplicationServices.Authorization
             return dprResult.Select(dpr =>
                 Create(new List<FieldPermissionsResult>
                 {
-                    fieldAuthorizationModel.GetFieldPermissions(dpr, SupplierAssociatedFieldsService
+                    fieldAuthorizationModel.GetFieldPermissions(dpr, ObjectHelper
                         .GetPropertyPath<DataProcessingRegistration>(
                             x => x.IsOversightCompleted)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
-                        SupplierAssociatedFieldsService
+                        ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightDate)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
-                        SupplierAssociatedFieldsService
+                        ObjectHelper
                             .GetPropertyPath< DataProcessingRegistrationOversightDate >(
                                 x => x.OversightRemark)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
-                        SupplierAssociatedFieldsService
+                        ObjectHelper
                             .GetPropertyPath< DataProcessingRegistrationOversightDate >(
                                 x => x.OversightReportLink)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
-                        SupplierAssociatedFieldsService
+                        ObjectHelper
                             .GetPropertyPath< DataProcessingRegistrationOversightDate >(
                                 x => x.OversightReportLinkName)),
                 })

@@ -7,25 +7,32 @@ using Core.DomainModel.GDPR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+using Core.Abstractions.Helpers;
+using Core.DomainServices.Suppliers;
+using Core.Abstractions.Extensions;
 
 namespace Core.ApplicationServices.Authorization;
 
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
-    private const string _hasChangePropertyName = "HasChange";
+    private const string HasChangePropertyName = "HasChange";
+    private const string SystemUsageUuidsPropertyName = nameof(DataProcessingRegistrationModificationParameters.SystemUsageUuids);
+    private const string ExternalReferencesPropertyName = nameof(DataProcessingRegistrationModificationParameters.ExternalReferences);
 
-    private readonly ISet<string> _supplierOnlyControlledFieldPaths;
+    private readonly Dictionary<string, string> _dataProcessingParameterToSupplierFieldMap;
 
-    public SupplierAssociatedFieldsService()
+    private readonly ISupplierFieldDomainService _supplierFieldDomainService;
+
+    public SupplierAssociatedFieldsService(ISupplierFieldDomainService supplierFieldDomainService)
     {
-        _supplierOnlyControlledFieldPaths = new HashSet<string>
+        _supplierFieldDomainService = supplierFieldDomainService;
+        _dataProcessingParameterToSupplierFieldMap = new Dictionary<string, string>
         {
-            GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted),
-            GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate),
-            GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark),
-            GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink)
+            { nameof(UpdatedDataProcessingRegistrationOversightDataParameters.IsOversightCompleted), ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted) },
+            { nameof(DataProcessingRegistrationOversightDate.OversightDate), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate) },
+            { nameof(DataProcessingRegistrationOversightDate.OversightRemark), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark)},
+            { nameof(DataProcessingRegistrationOversightDate.OversightReportLink), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink) },
         };
     }
 
@@ -41,15 +48,30 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         };
     }
 
-    private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
-    {
-        return parameters.CompletedAt.HasChange || parameters.Remark.HasChange || parameters.OversightReportLink.HasChange;
-    }
-
     private bool CheckSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams)
     {
         var oversight = dprParams.Oversight;
-        return oversight.HasValue && oversight.Value.IsOversightCompleted.HasChange;
+        if (oversight.IsNone)
+            return false;
+
+        return _supplierFieldDomainService.OnlySupplierFieldChanges(GetFieldDomainKeys(GetChangedProperties(oversight.Value)));
+    }
+
+    private IEnumerable<string> GetFieldDomainKeys(IEnumerable<string> properties)
+    {
+        foreach (var key in properties)
+        {
+            if (_dataProcessingParameterToSupplierFieldMap.TryGetValue(key, out var mappedValue))
+            {
+                yield return mappedValue;
+            }
+        }
+    }
+
+    private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+    {
+        return _supplierFieldDomainService.OnlySupplierFieldChanges(
+            GetFieldDomainKeys(GetChangedProperties(parameters)));
     }
 
     public bool RequestsChangesToNonSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity)
@@ -78,55 +100,39 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return results.Any(r => r);
     }
 
-    private bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+    private static bool CheckNonSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
         return false;
     }
 
     public bool IsFieldSupplierControlled(string key)
     {
-        return _supplierOnlyControlledFieldPaths.Contains(key);
-    }
-    
-    public static string GetPropertyPath<T>(Expression<Func<T, object>> expression)
-    {
-        var path = new List<string>();
-        var expr = expression.Body;
-
-        while (expr is MemberExpression memberExpr)
-        {
-            path.Insert(0, memberExpr.Member.Name);
-            expr = memberExpr.Expression;
-        }
-
-        if (expr is UnaryExpression unaryExpr && unaryExpr.Operand is MemberExpression memberExpr2)
-        {
-            path.Insert(0, memberExpr2.Member.Name);
-        }
-
-        var className = typeof(T).Name;
-        path.Insert(0, className);
-
-        return string.Join(".", path);
+        return _supplierFieldDomainService.IsSupplierControlled(key);
     }
 
     private bool CheckNonSupplierChangesToDprParams(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
     {
-        var nameHasChange = dprParams.Name.HasChange;
-        var generalHasChange = dprParams.General.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.General.Value);
-        var oversightHasNonSupplierAssociatedChange = OversightHasNonSupplierAssociatedChange(dprParams.Oversight);
-        var rolesHasChange = dprParams.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(dprParams.Roles.Value);
-        var systemUsageUuidsHasChange = SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, entity);
-        var externalReferencesHasChange = ExternalReferencesHasChange(dprParams.ExternalReferences, entity);
-        return nameHasChange || generalHasChange || oversightHasNonSupplierAssociatedChange || rolesHasChange || systemUsageUuidsHasChange || externalReferencesHasChange;
+        var changedProperties = GetChangedProperties(dprParams).ToList();
+        if(dprParams.General.HasValue)
+            changedProperties.AddRange(GetChangedProperties(dprParams.General.Value));
+        if(dprParams.Roles.HasValue)
+            changedProperties.AddRange(GetChangedProperties(dprParams.Roles.Value));
+        if(dprParams.Oversight.HasValue)
+            changedProperties.AddRange(GetChangedProperties(dprParams.Oversight.Value));
+        if(SystemUsageUuidsHasChange(dprParams.SystemUsageUuids, entity))
+            changedProperties.Add(SystemUsageUuidsPropertyName);
+        if(ExternalReferencesHasChange(dprParams.ExternalReferences, entity))
+            changedProperties.Add(ExternalReferencesPropertyName);
+
+        return _supplierFieldDomainService.AnySupplierFieldChanges(GetFieldDomainKeys(changedProperties));
     }
 
-    private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, IEntity entity)
+    private static bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, IEntity entity)
     {
         if (entity is not DataProcessingRegistration dpr) return false;
         
         var existingReferences = dpr.ExternalReferences;
-        if (updatedReferencesMaybe.IsNone && IsNullOrEmpty(existingReferences)) return false;
+        if (updatedReferencesMaybe.IsNone && existingReferences.IsNullOrEmpty()) return false;
         if (updatedReferencesMaybe.HasValue && existingReferences != null)
         {
             var updatedReferences = updatedReferencesMaybe.Value.ToList();
@@ -136,26 +142,13 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return true;
 
     }
-
-    private static bool OversightHasNonSupplierAssociatedChange(
-        Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
-    {
-        if (parameters.IsNone) return false;
-        var value = parameters.Value;
-        return value.OversightOptionUuids.HasChange ||
-               value.OversightOptionsRemark.HasChange ||
-               value.OversightInterval.HasChange ||
-               value.OversightIntervalRemark.HasChange ||
-               value.OversightCompletedRemark.HasChange ||
-               value.OversightScheduledInspectionDate.HasChange;
-    }
-
-    private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, IEntity entity)
+    
+    private static bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, IEntity entity)
     {
         if (entity is not DataProcessingRegistration dpr) return false;
 
         var existingSystemUsages = dpr.SystemUsages;
-        if (updatedSystemUsageUuids.IsNone && IsNullOrEmpty(existingSystemUsages)) return false;
+        if (updatedSystemUsageUuids.IsNone && existingSystemUsages.IsNullOrEmpty()) return false;
         if (updatedSystemUsageUuids.HasValue && existingSystemUsages != null)
         {
             var existingSystemUsageUuids = existingSystemUsages.Select(su => su.Uuid).ToHashSet();
@@ -165,32 +158,25 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return true;
     }
 
-    private bool AnyOptionalValueChangeFieldHasChange(object obj)
+    private static IEnumerable<string> GetChangedProperties(object obj)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj)); 
-
+        if (obj == null) throw new ArgumentNullException(nameof(obj));
         var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        var fields = obj.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
-        
-        foreach (var property in properties)
+        foreach (var prop in properties)
         {
-            var optionalValueChange = property.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
-            if (hasChange != null && (bool)hasChange) return true;
-        }
+            var value = prop.GetValue(obj);
+            if (value == null) continue;
 
-        foreach (var field in fields)
-        {
-            var optionalValueChange = field.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
-            if (hasChange != null && (bool)hasChange) return true;
+            var hasChangeProp = value.GetType().GetProperty(HasChangePropertyName, BindingFlags.Public | BindingFlags.Instance);
+            if (hasChangeProp != null)
+            {
+                var hasChangeValue = hasChangeProp.GetValue(value);
+                if (hasChangeValue is bool b && b)
+                {
+                    yield return prop.Name;
+                }
+            }
         }
-
-        return false;
-    }
-    private bool IsNullOrEmpty<T>(ICollection<T> collection)
-    {
-        return collection == null || !collection.Any();
     }
 }
 
