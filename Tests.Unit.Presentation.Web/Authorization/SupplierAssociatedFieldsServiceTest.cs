@@ -48,7 +48,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys(_existingDpr)).ToList();
 
-            ExpectOnlySupplierChangesReturns(keys, true);
+            ExpectAnySupplierChangesReturns(keys, true);
 
             //Act
             var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
@@ -282,8 +282,10 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         private void ExpectAnySupplierChangesReturns(IEnumerable<string> keys, bool result)
         {
-            _supplierDomainServiceMock.Setup(x => x.AnySupplierFieldChanges(It.Is<IEnumerable<string>>(actualKeys =>
-                    actualKeys.All(keys.Contains))))
+            _supplierDomainServiceMock.Setup(x => x.AnySupplierFieldChanges(
+                    It.Is<IEnumerable<string>>(actualKeys =>
+                        actualKeys.All(keys.Contains)
+                    )))
                 .Returns(result);
         }
 

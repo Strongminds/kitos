@@ -75,8 +75,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
         
-        var res = _supplierFieldDomainService.AnySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
-        return res;
+        return _supplierFieldDomainService.AnySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
     }
 
     public IEnumerable<string> MapParameterKeysToDomainKeys(IEnumerable<string> properties)
