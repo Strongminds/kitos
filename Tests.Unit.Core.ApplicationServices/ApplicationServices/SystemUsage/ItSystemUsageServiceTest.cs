@@ -145,7 +145,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectAllowReadReturns(itSystemUsage, true);
 
             //Act
-            var result = _sut.GetReadableItSystemUsageByUuid(uuid);
+            var result = _sut.GetItSystemUsageByUuidAndAuthorizeRead(uuid);
 
             //Assert
             Assert.True(result.Ok);
@@ -161,7 +161,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectUsageRepositoryAsQueryable(itSystemUsage);
 
             //Act
-            var result = _sut.GetReadableItSystemUsageByUuid(uuid);
+            var result = _sut.GetItSystemUsageByUuidAndAuthorizeRead(uuid);
 
             //Assert
             Assert.True(result.Failed);
@@ -178,7 +178,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectAllowReadReturns(itSystemUsage, false);
 
             //Act
-            var result = _sut.GetReadableItSystemUsageByUuid(uuid);
+            var result = _sut.GetItSystemUsageByUuidAndAuthorizeRead(uuid);
 
             //Assert
             Assert.True(result.Failed);
@@ -1217,12 +1217,22 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var aiFieldKey =
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
                     x.ContainsAITechnology);
+            var criticalityFieldKey =
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
+                    x.GdprCriticality);
+            var riskFieldKey =
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
+                    x.preriskAssessment);
             var isAiFieldEnabled = A<bool>();
+            var isCriticalityFieldEnabled = A<bool>();
+            var isRiskFieldEnabled = A<bool>();
 
             ExpectUsageRepositoryAsQueryable(itSystemUsage);
             ExpectAllowReadReturns(itSystemUsage, read);
             ExpectAllowModifyReturns(itSystemUsage, modify);
             ExpectGetFieldPermissionsReturns(itSystemUsage, aiFieldKey, isAiFieldEnabled);
+            ExpectGetFieldPermissionsReturns(itSystemUsage, criticalityFieldKey, isCriticalityFieldEnabled);
+            ExpectGetFieldPermissionsReturns(itSystemUsage, riskFieldKey, isRiskFieldEnabled);
             _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(delete);
 
             //Act
@@ -1240,7 +1250,24 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             Assert.Equivalent(new CombinedPermissionsResult(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
             {
-                Fields = new List<FieldPermissionsResult>{ new() { Enabled = isAiFieldEnabled, Key = aiFieldKey } }
+                Fields = new List<FieldPermissionsResult>
+                {
+                    new()
+                    {
+                        Enabled = isAiFieldEnabled,
+                        Key = aiFieldKey
+                    },
+                    new()
+                    {
+                        Enabled = isRiskFieldEnabled,
+                        Key = riskFieldKey
+                    },
+                    new()
+                    {
+                        Enabled = isCriticalityFieldEnabled,
+                        Key = criticalityFieldKey
+                    }
+                }
             }), permissions);
         }
 

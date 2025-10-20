@@ -18,7 +18,8 @@ namespace Core.ApplicationServices.SystemUsage
         Result<ItSystemUsage, OperationError> Delete(int id);
         ItSystemUsage GetByOrganizationAndSystemId(int organizationId, int systemId);
         ItSystemUsage GetById(int usageId);
-        Result<ItSystemUsage, OperationError> GetReadableItSystemUsageByUuid(Guid uuid);
+        Result<ItSystemUsage, OperationError> GetItSystemUsageByUuidAndAuthorizeRead(Guid uuid);
+        Result<ItSystemUsage, OperationError> GetItSystemUsageByUuid(Guid uuid);
         Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid);
         Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid);
 

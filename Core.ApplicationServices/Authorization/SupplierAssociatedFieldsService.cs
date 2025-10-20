@@ -68,14 +68,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
         
-        return _supplierFieldDomainService.AnySupplierFieldChanges(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
+        return _supplierFieldDomainService.ContainsAnySupplierControlledFields(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
     }
 
     private bool HasOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity)
     {
         var changedProperties = parameters.GetChangedPropertyKeys();
         var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
-        return _supplierFieldDomainService.AnySupplierFieldChanges(keys);
+        return _supplierFieldDomainService.ContainsAnySupplierControlledFields(keys);
     }
 
     private bool HasUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity)
@@ -84,7 +84,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         var changedProperties = parameters.GetChangedPropertyKeys();
         var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
 
-        return _supplierFieldDomainService.AnySupplierFieldChanges(keys);
+        return _supplierFieldDomainService.ContainsAnySupplierControlledFields(keys);
     }
 
     public bool IsFieldSupplierControlled(string key)
@@ -95,7 +95,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     private bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity)
     {
         var changedProperties = parameters.GetChangedPropertyKeys();
-        return _supplierFieldDomainService.OnlySupplierFieldChanges(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
+        return _supplierFieldDomainService.ContainsOnlySupplierControlledField(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
     }
 
     private bool HasOnlyDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
@@ -105,14 +105,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
 
-        return _supplierFieldDomainService.OnlySupplierFieldChanges(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
+        return _supplierFieldDomainService.ContainsOnlySupplierControlledField(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
     }
 
     private bool HasOnlyUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity)
     {
         var changedProperties = parameters.GetChangedPropertyKeys();
         var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
-        return _supplierFieldDomainService.OnlySupplierFieldChanges(keys);
+        return _supplierFieldDomainService.ContainsOnlySupplierControlledField(keys);
     }
 }
 

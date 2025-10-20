@@ -105,7 +105,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             return _itSystemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Select(x => x.Rights.ToList())
                 .Select(rights => rights.Select(right => right.MapExtendedRoleAssignmentResponse()))
                 .Match(Ok, FromOperationError);

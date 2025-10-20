@@ -52,14 +52,16 @@ namespace Core.ApplicationServices.Authorization
             );
         }
 
-        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromUsageResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<ItSystemUsage, OperationError> dprResult)
+        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromUsageResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<ItSystemUsage, OperationError> usageResult)
         {
-            return dprResult.Select(dpr =>
+            return usageResult.Select(usage =>
                 Create(new List<FieldPermissionsResult>
                 {
-                    fieldAuthorizationModel.GetFieldPermissions(dpr, ObjectHelper
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper
                         .GetPropertyPath<ItSystemUsage>(
-                            x => x.ContainsAITechnology))
+                            x => x.ContainsAITechnology)),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality)),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment))
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (

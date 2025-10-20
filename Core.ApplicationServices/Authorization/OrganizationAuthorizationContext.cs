@@ -10,6 +10,7 @@ using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
 using System;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystemUsage;
 
 
 namespace Core.ApplicationServices.Authorization
@@ -392,7 +393,7 @@ namespace Core.ApplicationServices.Authorization
         }
         private bool EntityHasSupplierAssociatedFields(IEntity entity)
         {
-            return entity is DataProcessingRegistration;
+            return entity is DataProcessingRegistration or ItSystemUsage;
         }
 
         #region PERMISSIONS

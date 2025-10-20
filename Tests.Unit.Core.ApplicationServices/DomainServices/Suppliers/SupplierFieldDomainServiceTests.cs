@@ -34,7 +34,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             };
 
             // Act
-            var result = _sut.OnlySupplierFieldChanges(properties);
+            var result = _sut.ContainsOnlySupplierControlledField(properties);
 
             // Assert
             Assert.True(result);
@@ -50,7 +50,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
                 _isOversightCompleted, nonSupplierControlledProperty
             };
             // Act
-            var result = _sut.OnlySupplierFieldChanges(properties);
+            var result = _sut.ContainsOnlySupplierControlledField(properties);
             // Assert
             Assert.False(result);
         }
@@ -85,7 +85,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
                 nonSupplierControlledProperty, _remark
             };
             // Act
-            var result = _sut.AnySupplierFieldChanges(properties);
+            var result = _sut.ContainsAnySupplierControlledFields(properties);
             // Assert
             Assert.True(result);
         }
@@ -101,7 +101,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
                 nonSupplierControlledProperty1, nonSupplierControlledProperty2
             };
             // Act
-            var result = _sut.AnySupplierFieldChanges(properties);
+            var result = _sut.ContainsAnySupplierControlledFields(properties);
             // Assert
             Assert.False(result);
         }

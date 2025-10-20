@@ -4,8 +4,8 @@ namespace Core.DomainServices.Suppliers
 {
     public interface ISupplierFieldDomainService
     {
-        bool OnlySupplierFieldChanges(IEnumerable<string> properties);
-        bool AnySupplierFieldChanges(IEnumerable<string> properties);
+        bool ContainsOnlySupplierControlledField(IEnumerable<string> properties);
+        bool ContainsAnySupplierControlledFields(IEnumerable<string> properties);
         bool IsSupplierControlled(string key);
     }
 }

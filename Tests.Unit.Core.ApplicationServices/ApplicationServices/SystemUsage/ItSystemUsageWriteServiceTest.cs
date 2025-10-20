@@ -3393,7 +3393,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
         private void ExpectGetSystemUsageReturns(Guid systemUuid, Result<ItSystemUsage, OperationError> result)
         {
-            _itSystemUsageServiceMock.Setup(x => x.GetReadableItSystemUsageByUuid(systemUuid)).Returns(result);
+            _itSystemUsageServiceMock.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(systemUuid)).Returns(result);
         }
 
         private void ExpectGetSystemReturns(Guid systemUuid, Result<ItSystem, OperationError> result)
@@ -3409,7 +3409,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void ExpectGetReadableItSystemUsageByUuidReturns(Guid usageUuid,
             Result<ItSystemUsage, OperationError> result)
         {
-            _itSystemUsageServiceMock.Setup(x => x.GetReadableItSystemUsageByUuid(usageUuid)).Returns(result);
+            _itSystemUsageServiceMock.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(result);
         }
 
         private Mock<IDatabaseTransaction> ExpectTransaction()

@@ -288,7 +288,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private void ExpectOnlySupplierChangesReturns(IEnumerable<string> keys, bool result)
         {
             _supplierDomainServiceMock
-                .Setup(x => x.OnlySupplierFieldChanges(
+                .Setup(x => x.ContainsOnlySupplierControlledField(
                     It.Is<IEnumerable<string>>(actualKeys =>
                         actualKeys.All(keys.Contains)
                     )
@@ -299,7 +299,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         private void ExpectAnySupplierChangesReturns(IEnumerable<string> keys, bool result)
         {
-            _supplierDomainServiceMock.Setup(x => x.AnySupplierFieldChanges(
+            _supplierDomainServiceMock.Setup(x => x.ContainsAnySupplierControlledFields(
                     It.Is<IEnumerable<string>>(actualKeys =>
                         actualKeys.All(keys.Contains)
                     )))

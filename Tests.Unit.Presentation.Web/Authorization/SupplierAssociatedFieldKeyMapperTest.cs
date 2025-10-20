@@ -57,6 +57,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             //Assert
             Assert.Contains(ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology), result);
+            Assert.Contains(ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality), result);
+            Assert.Contains(ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment), result);
         }
     }
 }

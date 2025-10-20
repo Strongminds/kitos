@@ -202,18 +202,24 @@ namespace Core.ApplicationServices.SystemUsage
                 .Match(WithReadAccess, () => new OperationError(OperationFailure.NotFound));
         }
 
-        public Result<ItSystemUsage, OperationError> GetReadableItSystemUsageByUuid(Guid uuid)
+        public Result<ItSystemUsage, OperationError> GetItSystemUsageByUuidAndAuthorizeRead(Guid uuid)
+        {
+            return GetItSystemUsageByUuid(uuid)
+                .Bind(WithReadAccess);
+        }
+
+        public Result<ItSystemUsage, OperationError> GetItSystemUsageByUuid(Guid uuid)
         {
             return _usageRepository
                 .AsQueryable()
                 .ByUuid(uuid)
                 .FromNullable()
-                .Match(WithReadAccess, () => new OperationError(OperationFailure.NotFound));
+                .Match<Result<ItSystemUsage, OperationError>>(usage => usage, () => new OperationError(OperationFailure.NotFound));
         }
 
         public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid)
         {
-            return GetReadableItSystemUsageByUuid(uuid)
+            return GetItSystemUsageByUuidAndAuthorizeRead(uuid)
                 .Transform(result => ResourcePermissionsResult.FromResolutionResult(result, _authorizationContext).Bind(permissions =>
                 {
                     return ModuleFieldsPermissionsResult
