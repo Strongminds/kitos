@@ -137,7 +137,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(false, false, false, true, false, false)]
         [InlineData(false, false, false, false, true, false)]
         [InlineData(false, false, false, false, false, true)]
-        public void HasAnySupplierChanges_Returns_True_If_Has_Any_Supplier_Changes(bool addChangeToName, bool addChangeToGeneral,
+        public void HasAnySupplierChanges_Returns_False_If_Has_Non_Supplier_Changes(bool addChangeToName, bool addChangeToGeneral,
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
@@ -175,28 +175,31 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            var keys = parameters.GetChangedPropertyKeys(_existingDpr);
-            ExpectAnySupplierChangesReturns(keys, true);
+            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys(_existingDpr)).ToList();
+            ExpectAnySupplierChangesReturns(keys, false);
 
             var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
 
-            Assert.True(result);
+            Assert.False(result);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void
-            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse(bool dprParams)
+        public void GivenNoChanges_HasOnlySupplierChanges_And_HasAnySupplierChanges_Both_Return_False(bool dprParams)
         {
-            bool requestsChangesToSupplierAssociatedFields;
-            bool requestsChangesToNonSupplierAssociatedFields;
+            bool hasAnySupplierChanges;
+            bool hasOnlySupplierChanges;
             if (dprParams)
             {
                 var noChangesParameters = new DataProcessingRegistrationModificationParameters();
-                requestsChangesToSupplierAssociatedFields =
-                    _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
-                requestsChangesToNonSupplierAssociatedFields = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
+                
+                var keys = _sut.MapParameterKeysToDomainKeys(noChangesParameters.GetChangedPropertyKeys(_existingDpr)).ToList();
+                ExpectAnySupplierChangesReturns(keys, false);
+                ExpectOnlySupplierChangesReturns(keys, false);
+
+                hasAnySupplierChanges = _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
+                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
             }
             else
             {
@@ -206,44 +209,54 @@ namespace Tests.Unit.Presentation.Web.Authorization
                         Remark = OptionalValueChange<string>.None,
                         OversightReportLink = OptionalValueChange<string>.None
                     };
-                requestsChangesToSupplierAssociatedFields =
+
+
+                var keys = _sut.MapParameterKeysToDomainKeys(noChangesParameters.GetChangedPropertyKeys()).ToList();
+                ExpectAnySupplierChangesReturns(keys, false);
+                ExpectOnlySupplierChangesReturns(keys, false);
+
+                hasAnySupplierChanges =
                     _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
-                requestsChangesToNonSupplierAssociatedFields = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
+                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
             }
 
-            Assert.False(requestsChangesToSupplierAssociatedFields);
-            Assert.False(requestsChangesToNonSupplierAssociatedFields);
+            Assert.False(hasAnySupplierChanges);
+            Assert.False(hasOnlySupplierChanges);
         }
 
         [Theory]
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
         [InlineData(false, false, true)]
-        public void DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True(bool completedAt, bool remark, bool oversightReportLink)
+        public void HasAnySupplierChanges_Returns_True_If_Has_OversightDate_Supplier_Changes(bool completedAt, bool remark, bool oversightReportLink)
         {
             var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
 
-            var keys = parameters.GetChangedPropertyKeys();
-            ExpectOnlySupplierChangesReturns(keys, true);
+            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()).ToList();
+            ExpectAnySupplierChangesReturns(keys, true);
 
             var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
             Assert.True(result);
         }
 
         [Fact]
-        public void GivenNoChanges_RequestsChangesToSupplierAssociatedFieldsInEnumerable_Returns_False()
+        public void HasAnySupplierChangesList_Returns_False_If_No_Changes()
         {
-            var parametersEnumerable = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters()
             {
-                new()
-                {
-                    CompletedAt = OptionalValueChange<DateTime>.None,
-                    OversightReportLink = OptionalValueChange<string>.None,
-                    Remark = OptionalValueChange<string>.None
-                }
+                CompletedAt = OptionalValueChange<DateTime>.None,
+                OversightReportLink = OptionalValueChange<string>.None,
+                Remark = OptionalValueChange<string>.None
+            };
+            var parametersList = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            {
+                parameters
             };
 
-            var requestsChangesToSupplierAssociatedFields = _sut.RequestsChangesToSupplierAssociatedFieldsInEnumerable(parametersEnumerable, _existingDpr);
+            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()).ToList();
+            ExpectOnlySupplierChangesReturns(keys, false);
+                
+            var requestsChangesToSupplierAssociatedFields = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
 
             Assert.False(requestsChangesToSupplierAssociatedFields);
         }
@@ -252,18 +265,19 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
         [InlineData(false, false, true)]
-        public void RequestsChangesToSupplierAssociatedFieldsInEnumerable_Returns_True(
+        public void HasAnySupplierChangesList_Returns_True_If_Any_Supplier_Changes(
             bool completedAt, bool remark, bool oversightReportLink)
         {
             var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
-            var parametersEnumerable = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            var parametersList = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
             {
                 parameters
             };
 
-            var keys = parameters.GetChangedPropertyKeys();
-            ExpectOnlySupplierChangesReturns(keys, true);
-            var result = _sut.RequestsChangesToSupplierAssociatedFieldsInEnumerable(parametersEnumerable, _existingDpr);
+            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()).ToList();
+            ExpectAnySupplierChangesReturns(keys, true);
+
+            var result = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
 
             Assert.True(result);
         }

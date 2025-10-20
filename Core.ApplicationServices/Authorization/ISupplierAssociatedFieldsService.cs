@@ -8,7 +8,7 @@ namespace Core.ApplicationServices.Authorization
     {
         bool HasAnySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity);
         bool HasOnlySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity);
-        bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity);
+        bool HasAnySupplierChangesList(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity);
         bool RequestsDeleteToEntity<TEntity>(TEntity entity);
         bool IsFieldSupplierControlled(string key);
         IEnumerable<string> MapParameterKeysToDomainKeys(IEnumerable<string> properties);

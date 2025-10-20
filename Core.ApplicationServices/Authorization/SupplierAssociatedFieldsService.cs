@@ -58,24 +58,10 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         };
     }
 
-    public bool RequestsChangesToSupplierAssociatedFieldsInEnumerable(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity)
+    public bool HasAnySupplierChangesList(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity)
     {
         var results = parametersEnumerable.Select(x => HasAnySupplierChanges(x, entity));
         return results.Any(r => r);
-    }
-
-    private bool HasDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
-    {
-        if (entity is not DataProcessingRegistration dpr)
-            return false;
-
-        var oversight = dprParams.Oversight;
-        if (oversight.IsNone)
-            return false;
-
-        var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
-        
-        return _supplierFieldDomainService.AnySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
     }
 
     public IEnumerable<string> MapParameterKeysToDomainKeys(IEnumerable<string> properties)
@@ -89,10 +75,21 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         }
     }
 
+    private bool HasDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
+    {
+        if (entity is not DataProcessingRegistration dpr)
+            return false;
+        
+        var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
+        
+        return _supplierFieldDomainService.AnySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
+    }
+
     private bool HasOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
-        return _supplierFieldDomainService.AnySupplierFieldChanges(
-            MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()));
+        var changedProperties = parameters.GetChangedPropertyKeys();
+        var keys = MapParameterKeysToDomainKeys(changedProperties);
+        return _supplierFieldDomainService.AnySupplierFieldChanges(keys);
     }
 
     public bool IsFieldSupplierControlled(string key)
@@ -112,7 +109,7 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
 
-        return _supplierFieldDomainService.OnlySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties).ToList());
+        return _supplierFieldDomainService.OnlySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
     }
 }
 

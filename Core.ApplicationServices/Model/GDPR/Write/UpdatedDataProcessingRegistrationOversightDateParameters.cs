@@ -15,13 +15,13 @@ namespace Core.ApplicationServices.Model.GDPR.Write
         {
             var changedProperties = new List<string>();
 
-            if(CompletedAt.HasChange)
+            if(CompletedAt != null && CompletedAt.HasChange)
                 changedProperties.Add(nameof(CompletedAt));
-            if(Remark.HasChange)
+            if(Remark != null && Remark.HasChange)
                 changedProperties.Add(nameof(Remark));
-            if(OversightReportLink.HasChange)
+            if(OversightReportLink != null && OversightReportLink.HasChange)
                 changedProperties.Add(nameof(OversightReportLink));
-            if(OversightReportLinkName.HasChange)
+            if(OversightReportLinkName != null && OversightReportLinkName.HasChange)
                 changedProperties.Add(nameof(OversightReportLinkName));
             return changedProperties;
         }
