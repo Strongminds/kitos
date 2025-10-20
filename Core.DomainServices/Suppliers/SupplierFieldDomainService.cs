@@ -2,6 +2,7 @@
 using Core.DomainModel.GDPR;
 using System.Collections.Generic;
 using System.Linq;
+using Core.DomainModel.ItSystemUsage;
 
 namespace Core.DomainServices.Suppliers
 {
@@ -17,7 +18,9 @@ namespace Core.DomainServices.Suppliers
                 ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted),
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate),
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark),
-                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink)
+                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink),
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology)
+
             };
             _sharedFieldKeys = new HashSet<string>
             {
