@@ -8,6 +8,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Contract;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.KLE;
+using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.SystemUsage.Write;
@@ -795,7 +796,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Arrange
             var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
             SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
-
             var archiveTypeUuid = A<Guid>();
             var archiveLocationUuid = A<Guid>();
             var archiveTestLocationUuid = A<Guid>();
@@ -840,7 +840,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Arrange
             var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
             SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
-
+            SetupAuthorizationModelReturns();
 
             var archivingParameters = CreateEmptySystemUsageArchivingParameters();
             ExpectRemoveAllArchivePeriodsReturns(itSystemUsage.Id, new List<ArchivePeriod>());
@@ -1343,7 +1343,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
             ExpectAllowModifyReturns(itSystemUsage, true);
-
+            SetupAuthorizationModelReturns();
             _roleAssignmentService
                 .Setup(x => x.BatchUpdateRoles(
                         itSystemUsage,
@@ -1392,7 +1392,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             itSystemUsage.Rights.Add(new ItSystemRight { Role = new ItSystemRole { Uuid = existingAssignment2.RoleUuid }, User = new User { Uuid = existingAssignment2.UserUuid } });
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
-            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
 
             _roleAssignmentService
                 .Setup(x => x.BatchUpdateRoles(
@@ -1806,7 +1806,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var updateParameters = CreateSystemUsageUpdateParametersWithSimpleParametersAdded();
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
-            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
 
             //Act
             var updateResult = _sut.Update(itSystemUsage.Uuid, updateParameters);
@@ -1824,7 +1824,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var (_, _, transactionMock, _, _, itSystemUsage) = CreateBasicTestVariables();
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
-            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
 
             var archivingParameters = CreateUpdatedSystemUsageArchivingParameters();
 
@@ -1871,7 +1871,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var (_, _, transactionMock, _, _, itSystemUsage) = CreateBasicTestVariables();
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
-            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
 
             var archivingParameters = CreateUpdatedSystemUsageArchivingParameters();
 
@@ -2083,7 +2083,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var updateParameters1 = CreateSystemUsageUpdateParametersWithSimpleParametersAdded();
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
-            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
 
             var update1Result = _sut.Update(itSystemUsage.Uuid, updateParameters1);
             Assert.True(update1Result.Ok);
@@ -2108,7 +2108,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var update1Parameters = CreateSystemUsageUpdateParametersWithSimpleParametersAdded();
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
-            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
 
             var update1Result = _sut.Update(itSystemUsage.Uuid, update1Parameters);
             Assert.True(update1Result.Ok);
@@ -2818,6 +2818,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usage = new ItSystemUsage { Uuid = A<Guid>() };
             var org = new Organization { Uuid = A<Guid>() };
             SetupSimpleUpdate(usage, org);
+            SetupAuthorizationModelReturns();
             var parameters = new SystemUsageUpdateParameters { GeneralProperties = new UpdatedSystemUsageGeneralProperties { WebAccessibilityCompliance = A<YesNoPartiallyOption>().FromNullable().AsChangedValue(), LastWebAccessibilityCheck = A<DateTime>().FromNullable().AsChangedValue(), WebAccessibilityNotes = A<string>().AsChangedValue() } };
 
             var result = _sut.Update(usage.Uuid, parameters);
@@ -2836,6 +2837,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usage = new ItSystemUsage { Uuid = A<Guid>(), WebAccessibilityCompliance = A<YesNoPartiallyOption>(), LastWebAccessibilityCheck = A<DateTime>(), WebAccessibilityNotes = A<string>() };
             var org = new Organization { Uuid = A<Guid>() };
             SetupSimpleUpdate(usage, org);
+            SetupAuthorizationModelReturns();
             var parameters = new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
@@ -2854,6 +2856,14 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Null(updatedSystem.WebAccessibilityCompliance);
             Assert.Null(updatedSystem.LastWebAccessibilityCheck);
             Assert.Null(updatedSystem.WebAccessibilityNotes);
+        }
+
+        private void SetupAuthorizationModelReturns(bool result = true)
+        {
+            var authModel = new Mock<IAuthorizationModel>();
+            _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<IEntityOwnedByOrganization>()))
+                .Returns(authModel.Object);
+            authModel.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(result);
         }
 
         private void SetupSimpleUpdate(ItSystemUsage usage, Organization org)
@@ -3318,6 +3328,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectGetOrganizationReturns(organizationUuid, organization);
             ExpectGetSystemReturns(systemUuid, itSystem);
             ExpectCreateNewReturns(itSystem, organization, itSystemUsage);
+            SetupAuthorizationModelReturns();
             ExpectAllowModifyReturns(itSystemUsage, true);
         }
 
