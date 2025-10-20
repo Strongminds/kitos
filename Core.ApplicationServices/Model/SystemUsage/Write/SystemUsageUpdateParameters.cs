@@ -5,7 +5,7 @@ using Core.ApplicationServices.Model.Shared.Write;
 
 namespace Core.ApplicationServices.Model.SystemUsage.Write
 {
-    public class SystemUsageUpdateParameters
+    public class SystemUsageUpdateParameters: ISupplierAssociatedEntityUpdateParameters
     {
         public Maybe<UpdatedSystemUsageGeneralProperties> GeneralProperties { get; set; } = Maybe<UpdatedSystemUsageGeneralProperties>.None;
         public Maybe<UpdatedSystemUsageOrganizationalUseParameters> OrganizationalUsage { get; set; } = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.None;

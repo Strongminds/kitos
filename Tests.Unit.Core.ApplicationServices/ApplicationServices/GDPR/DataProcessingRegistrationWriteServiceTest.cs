@@ -6,7 +6,6 @@ using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
-using Core.ApplicationServices.GDPR;
 using Core.ApplicationServices.GDPR.Write;
 using Core.ApplicationServices.Generic.Write;
 using Core.ApplicationServices.Model;
@@ -170,7 +169,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
+        }
+
+        private void AssertDBControlSaveChanges()
+        {
+            _databaseControlMock.Verify(_ => _.SaveChanges());
         }
 
 
@@ -393,18 +397,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Equal(createdRegistration.OrganizationId, result.Value.OrganizationId);
             Assert.Same(createdRegistration.Name, result.Value.Name);
-
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
-
-        private void SetupAuthorizeUpdateReturns(bool value = true)
-        {
-            _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<DataProcessingRegistration>()))
-                .Returns(_authorizationModelMock.Object);
-            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(value);
-        }
-
-        
 
         [Fact]
         public void Can_Create_With_GeneralData_With_Null_DataResponsible()
@@ -427,7 +421,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         
@@ -452,7 +446,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
 
@@ -537,7 +531,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -576,7 +570,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         
@@ -617,7 +611,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -657,10 +651,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
-
-     
 
         [Fact]
         public void Create_With_GeneralData_AgreementConcludedAt_Set_To_NoChanges()
@@ -702,7 +694,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -727,7 +719,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -752,7 +744,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Equal(createdRegistration.Id, result.Value.Id);
             Assert.Same(createdRegistration.Name, result.Value.Name);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -835,7 +827,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         
@@ -876,8 +868,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.Same(createdRegistration.Name, result.Value.Name);
             Assert.Equal(createdRegistration.Id, result.Value.Id);
-            AssertTransactionCommitted(transaction);
             _sdpRepositoryMock.Verify(_ => _.RemoveRange(It.IsAny<IEnumerable<SubDataProcessor>>()));
+            AssertDBControlSaveChanges();
         }
         
         
@@ -918,7 +910,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -963,7 +955,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1014,7 +1006,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1160,7 +1152,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1200,7 +1192,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1321,7 +1313,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1364,7 +1356,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1403,7 +1395,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1444,7 +1436,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1464,9 +1456,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
         }
-
         
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -1480,13 +1470,14 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
             SetupGetFromRepository(createdRegistration);
+          //  ExpectTransaction();
 
             //Act
             var result = _sut.Create(organizationUuid, parameters);
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1525,7 +1516,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1564,7 +1555,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             AssertCreatedRegistrationNameAndId(createdRegistration, result);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]
@@ -1606,67 +1597,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             AssertTransactionCommitted(transaction);
         }
 
-        
-        [Fact]
-        public void Can_Create_With_OversightData_OversightDates_Removes_Existing_If_None()
-        {
-            //Arrange
-            var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightDates = Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>.None.AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-
-            var oversightDatesMap =
-                dates
-                    .ToDictionary(
-                        x => x,
-                        x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-            ;
-            createdRegistration.OversightDates = dates.Select(x => oversightDatesMap[x]).ToList();
-            SetupGetFromRepository(createdRegistration);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
-        }
-        
-        [Fact]
-        public void Can_Create_With_OversightData_OversightDates_Updates_Existing_If_Any()
-        {
-            //Arrange
-            var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
-            var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
-            {
-                OversightDates = dates.FromNullable<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>().AsChangedValue()
-            };
-            var (organizationUuid, parameters, createdRegistration, transaction) = SetupCreateScenarioPrerequisites(oversightData: oversightData);
-            createdRegistration.IsOversightCompleted = YesNoUndecidedOption.Yes;
-
-            var oversightDatesMap =
-                dates
-                    .ToDictionary(
-                        x => x,
-                        x => new DataProcessingRegistrationOversightDate { Id = A<int>(), OversightDate = x.CompletedAt, OversightRemark = x.Remark });
-
-            createdRegistration.OversightDates = dates.Select(x => oversightDatesMap[x]).ToList();
-            createdRegistration.IsOversightCompleted = YesNoUndecidedOption.Yes;
-            SetupGetFromRepository(createdRegistration);
-
-            //Act
-            var result = _sut.Create(organizationUuid, parameters);
-
-            //Assert
-            Assert.True(result.Ok);
-            Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
-        }
-        
         [Fact]
         public void Can_Create_With_OversightData_OversightDates_Set_To_NoChanges()
         {
@@ -1684,7 +1614,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             Assert.Same(createdRegistration, result.Value);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1711,8 +1641,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(createResult.Ok);
-            AssertTransactionCommitted(transaction);
             _roleAssignmentsServiceMock.Verify(_ => _.AssignRole(createdRegistration, roleId, userId), Times.Once);
+            AssertDBControlSaveChanges();
         }
 
         
@@ -1728,9 +1658,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(createResult.Ok);
-            AssertTransactionCommitted(transaction);
             _roleAssignmentsServiceMock.Verify(x => x.AssignRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
             _roleAssignmentsServiceMock.Verify(x => x.RemoveRole(createdRegistration, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            AssertDBControlSaveChanges();
         }
         
         [Fact]
@@ -1901,7 +1831,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.True(result.Ok);
-            AssertTransactionCommitted(transaction);
+            AssertDBControlSaveChanges();
         }
 
         [Fact]

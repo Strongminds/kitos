@@ -6,9 +6,12 @@ using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -27,39 +30,253 @@ namespace Tests.Unit.Presentation.Web.Authorization
            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
            _sut = new SupplierAssociatedFieldsService();
         }
-        
+
         [Theory]
-        [InlineData(true, false, false, false)]
-        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        public void
+            UsageParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(
+                bool aiTechnology, bool gdprCriticality, bool RiskAssessmentResult)
         {
-            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
-            
-            if (checkIsOversightCompleted)
-                oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
-    
-            var parameters = new DataProcessingRegistrationModificationParameters()
+            var generalProperties = new UpdatedSystemUsageGeneralProperties();
+            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
+            var parameters = new SystemUsageUpdateParameters();
+            if (aiTechnology)
             {
-                Oversight = oversight
-            };
+                generalProperties.ContainsAITechnology = A<Maybe<YesNoUndecidedOption>>().AsChangedValue();
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(generalProperties);
+            }
+            if (gdprCriticality)
+            {
+                gdprProperties.GdprCriticality = A<GdprCriticality?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            if (RiskAssessmentResult)
+            {
+                gdprProperties.RiskAssessmentResult = A<RiskLevel?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
             var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
 
             Assert.True(result);
         }
 
         [Theory]
-        [InlineData(true, false, false, false)]
-        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool checkIsOversightCompleted, bool checkOversightDate, bool checkOversightNotes, bool checkOversightReportLink)
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        public void
+            UsageParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool aiTechnology, bool gdprCriticality, bool RiskAssessmentResult)
         {
-            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
-            var dpr = new DataProcessingRegistration();
-            if (checkIsOversightCompleted)
-                oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
-            //TODO same as above, awaiting response from MIOL about what fields to target
+            var generalProperties = new UpdatedSystemUsageGeneralProperties();
+            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
+            var parameters = new SystemUsageUpdateParameters();
+            var usage = new ItSystemUsage();
+            if (aiTechnology)
+            {
+                generalProperties.ContainsAITechnology = A<Maybe<YesNoUndecidedOption>>().AsChangedValue();
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(generalProperties);
+            }
+            if (gdprCriticality)
+            {
+                gdprProperties.GdprCriticality = A<GdprCriticality?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            if (RiskAssessmentResult)
+            {
+                gdprProperties.RiskAssessmentResult = A<RiskLevel?>().AsChangedValue();
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
+            }
+
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
+
+            Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData(true, false, false, false, false, false, false)]
+        [InlineData(false, true, false, false, false, false, false)]
+        [InlineData(false, false, true, false, false, false, false)]
+        [InlineData(false, false, false, true, false, false, false)]
+        [InlineData(false, false, false, false, true, false, false)]
+        [InlineData(false, false, false, false, false, true, false)]
+        [InlineData(false, false, false, false, true, false, true)]
+        public void
+            UsageParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(
+             bool general,
+             bool organizationalUsage,
+             bool kle,
+             bool externalReferences,
+             bool roles,
+             bool gdpr,
+             bool archiving
+                )
+        {
+            var usage = new ItSystemUsage(); 
+            var parameters = new SystemUsageUpdateParameters();
+            if (general)
+            {
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(new UpdatedSystemUsageGeneralProperties()
+                {
+                    LocalCallName = A<string>().AsChangedValue()
+                });
+            }
+            if (organizationalUsage)
+            {
+                parameters.OrganizationalUsage = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.Some(new UpdatedSystemUsageOrganizationalUseParameters()
+                {
+                    UsingOrganizationUnitUuids =  Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (kle)
+            {
+                parameters.KLE = Maybe<UpdatedSystemUsageKLEDeviationParameters>.Some(new UpdatedSystemUsageKLEDeviationParameters()
+                {
+                    AddedKLEUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (externalReferences)
+            {
+                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
+            }
+
+            if (roles)
+            {
+                parameters.Roles = Maybe<UpdatedSystemUsageRoles>.Some(new UpdatedSystemUsageRoles()
+                {
+                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue()
+                });
+            }
+            if (gdpr)
+            {
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(new UpdatedSystemUsageGDPRProperties()
+                {
+                    HostedAt = A<HostedAt?>().AsChangedValue()
+                });
+            }
+
+            if (archiving)
+            {
+                parameters.Archiving = Maybe<UpdatedSystemUsageArchivingParameters>.Some(new UpdatedSystemUsageArchivingParameters()
+                {
+                    ArchiveActive = A<bool?>().AsChangedValue()
+                });
+            }
+            
+            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
+
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData(true, false, false, false, false, false, false)]
+        [InlineData(false, true, false, false, false, false, false)]
+        [InlineData(false, false, true, false, false, false, false)]
+        [InlineData(false, false, false, true, false, false, false)]
+        [InlineData(false, false, false, false, true, false, false)]
+        [InlineData(false, false, false, false, false, true, false)]
+        [InlineData(false, false, false, false, true, false, true)]
+        public void
+            UsageParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsFalse(
+             bool general,
+             bool organizationalUsage,
+             bool kle,
+             bool externalReferences,
+             bool roles,
+             bool gdpr,
+             bool archiving
+                )
+        {
+            var parameters = new SystemUsageUpdateParameters();
+            if (general)
+            {
+                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(new UpdatedSystemUsageGeneralProperties()
+                {
+                    LocalCallName = A<string>().AsChangedValue()
+                });
+            }
+            if (organizationalUsage)
+            {
+                parameters.OrganizationalUsage = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.Some(new UpdatedSystemUsageOrganizationalUseParameters()
+                {
+                    UsingOrganizationUnitUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (kle)
+            {
+                parameters.KLE = Maybe<UpdatedSystemUsageKLEDeviationParameters>.Some(new UpdatedSystemUsageKLEDeviationParameters()
+                {
+                    AddedKLEUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
+                });
+            }
+            if (externalReferences)
+            {
+                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
+            }
+
+            if (roles)
+            {
+                parameters.Roles = Maybe<UpdatedSystemUsageRoles>.Some(new UpdatedSystemUsageRoles()
+                {
+                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue()
+                });
+            }
+            if (gdpr)
+            {
+                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(new UpdatedSystemUsageGDPRProperties()
+                {
+                    HostedAt = A<HostedAt?>().AsChangedValue()
+                });
+            }
+
+            if (archiving)
+            {
+                parameters.Archiving = Maybe<UpdatedSystemUsageArchivingParameters>.Some(new UpdatedSystemUsageArchivingParameters()
+                {
+                    ArchiveActive = A<bool?>().AsChangedValue()
+                });
+            }
+
+            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
+        {
+            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
+            {
+                IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
+            };
 
             var parameters = new DataProcessingRegistrationModificationParameters()
             {
                 Oversight = oversight
             };
+
+            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse()
+        {
+            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
+            {
+                IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
+            };
+
+            var parameters = new DataProcessingRegistrationModificationParameters()
+            {
+                Oversight = oversight
+            };
+
             var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _existingDpr);
 
             Assert.False(result);
@@ -95,7 +312,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (addNonSupplierChangeToOversight)
             {
                 parameters.Oversight = Maybe<UpdatedDataProcessingRegistrationOversightDataParameters>.Some(new UpdatedDataProcessingRegistrationOversightDataParameters());
-                parameters.Oversight.Value.OversightCompletedRemark = A<string>().AsChangedValue();
+                parameters.Oversight.Value.OversightIntervalRemark = A<string>().AsChangedValue();
             }
             if (addChangeToRoles)
             {

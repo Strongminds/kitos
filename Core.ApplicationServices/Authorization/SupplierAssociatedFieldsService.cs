@@ -6,6 +6,7 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
 
@@ -13,11 +14,23 @@ namespace Core.ApplicationServices.Authorization;
 
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
-    private const string _hasChangePropertyName = "HasChange";
-
-    public SupplierAssociatedFieldsService()
+    private const string HasChangePropertyName = "HasChange";
+    private readonly ISet<string> _usageGeneralSupplierAssociatedProperties = new HashSet<string>
     {
-    }
+        "ContainsAITechnology"
+    };
+    private readonly ISet<string> _usageGdprSupplierAssociatedProperties = new HashSet<string>
+    {
+        "GdprCriticality",
+        "RiskAssessmentResult"
+    };
+
+    private readonly ISet<string> _dprOversightSupplierAssociatedProperties = new HashSet<string>()
+    {
+        "IsOversightCompleted",
+        "OversightDates"
+    };
+
     public bool RequestsChangesToSupplierAssociatedFields(ISupplierAssociatedEntityUpdateParameters parameters)
     {
         return parameters switch
@@ -26,8 +39,27 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                 dprParameters),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            SystemUsageUpdateParameters usageParameters => CheckSupplierChangesToUsageParameters(usageParameters),
             _ => false
         };
+    }
+
+    private bool CheckSupplierChangesToUsageParameters(SystemUsageUpdateParameters parameters)
+    {
+        var generalHasChange = CheckSupplierChangesToUsageGeneral(parameters.GeneralProperties);
+        var gpdrHasChange = CheckSupplierChangesToUsageGdpr(parameters.GDPR);
+
+        return generalHasChange || gpdrHasChange;
+    }
+
+    private bool CheckSupplierChangesToUsageGeneral(Maybe<UpdatedSystemUsageGeneralProperties> general)
+    {
+       return general.HasValue && general.Value.ContainsAITechnology.HasChange;
+    }
+
+    private bool CheckSupplierChangesToUsageGdpr(Maybe<UpdatedSystemUsageGDPRProperties> gdpr)
+    {
+        return gdpr.HasValue && (gdpr.Value.GdprCriticality.HasChange || gdpr.Value.RiskAssessmentResult.HasChange);
     }
 
     private bool CheckSupplierChangesToDprOversightDateParams(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
@@ -49,9 +81,35 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
                 dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
                 CheckNonSupplierChangesToDprOversightDateParams(oversightDateParameters),
+            SystemUsageUpdateParameters usageParameters => CheckNonSupplierChangesToUsageParameters(usageParameters, entity),
             _ => false
         };
     }
+
+    private bool CheckNonSupplierChangesToUsageParameters(SystemUsageUpdateParameters usageParameters, IEntity entity)
+    {
+        var generalHasChange = CheckGeneralHasNonSupplierChange(usageParameters.GeneralProperties);
+        var organizationUsageHasChange = usageParameters.OrganizationalUsage.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.OrganizationalUsage.Value);
+        var kleHasChange = usageParameters.KLE.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.KLE.Value);
+        var externalReferencesHasChange = usageParameters.ExternalReferences.HasValue && ExternalReferencesHasChange(usageParameters.ExternalReferences, entity);
+        var rolesHasChange = usageParameters.Roles.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.Roles.Value);
+        var gdprHasChange = CheckGdprHasNonSupplierChange(usageParameters.GDPR);
+        var archivingHasChange = usageParameters.Archiving.HasValue && AnyOptionalValueChangeFieldHasChange(usageParameters.Archiving.Value);
+        return generalHasChange || organizationUsageHasChange || kleHasChange || externalReferencesHasChange || rolesHasChange || gdprHasChange || archivingHasChange;
+    }
+
+    private bool CheckGdprHasNonSupplierChange(Maybe<UpdatedSystemUsageGDPRProperties> usageParametersGdpr)
+    {
+        if (usageParametersGdpr.IsNone) return false;
+        return AnyOptionalValueChangeFieldHasChange(usageParametersGdpr.Value, _usageGdprSupplierAssociatedProperties);
+    }
+
+    private bool CheckGeneralHasNonSupplierChange(Maybe<UpdatedSystemUsageGeneralProperties> usageParametersGeneralProperties)
+    {
+        if (usageParametersGeneralProperties.IsNone) return false;
+        return AnyOptionalValueChangeFieldHasChange(usageParametersGeneralProperties.Value, _usageGeneralSupplierAssociatedProperties);
+    }
+
     public bool RequestsDeleteToEntity<TEntity>(TEntity entity)
     {
         return entity switch
@@ -85,9 +143,9 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     private bool ExternalReferencesHasChange(Maybe<IEnumerable<UpdatedExternalReferenceProperties>> updatedReferencesMaybe, IEntity entity)
     {
-        if (entity is not DataProcessingRegistration dpr) return false;
+        if (entity is not IHasReferences entityWithReferences) return false;
         
-        var existingReferences = dpr.ExternalReferences;
+        var existingReferences = entityWithReferences.ExternalReferences;
         if (updatedReferencesMaybe.IsNone && IsNullOrEmpty(existingReferences)) return false;
         if (updatedReferencesMaybe.HasValue && existingReferences != null)
         {
@@ -99,17 +157,11 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     }
 
-    private static bool OversightHasNonSupplierAssociatedChange(
+    private bool OversightHasNonSupplierAssociatedChange(
         Maybe<UpdatedDataProcessingRegistrationOversightDataParameters> parameters)
     {
         if (parameters.IsNone) return false;
-        var value = parameters.Value;
-        return value.OversightOptionUuids.HasChange ||
-               value.OversightOptionsRemark.HasChange ||
-               value.OversightInterval.HasChange ||
-               value.OversightIntervalRemark.HasChange ||
-               value.OversightCompletedRemark.HasChange ||
-               value.OversightScheduledInspectionDate.HasChange;
+        return AnyOptionalValueChangeFieldHasChange(parameters.Value, _dprOversightSupplierAssociatedProperties);
     }
 
     private bool SystemUsageUuidsHasChange(Maybe<IEnumerable<Guid>> updatedSystemUsageUuids, IEntity entity)
@@ -127,24 +179,25 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return true;
     }
 
-    private bool AnyOptionalValueChangeFieldHasChange(object obj)
+    private bool AnyOptionalValueChangeFieldHasChange(object obj, ISet<string> excludedProperties = null)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj)); 
+        if (obj == null) throw new ArgumentNullException(nameof(obj));
 
         var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
         var fields = obj.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
         
         foreach (var property in properties)
         {
+            if (excludedProperties != null && excludedProperties.Contains(property.Name)) return false;
             var optionalValueChange = property.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
+            var hasChange = optionalValueChange?.GetType().GetProperty(HasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
         }
 
         foreach (var field in fields)
         {
             var optionalValueChange = field.GetValue(obj);
-            var hasChange = optionalValueChange?.GetType().GetProperty(_hasChangePropertyName)?.GetValue(optionalValueChange);
+            var hasChange = optionalValueChange?.GetType().GetProperty(HasChangePropertyName)?.GetValue(optionalValueChange);
             if (hasChange != null && (bool)hasChange) return true;
         }
 

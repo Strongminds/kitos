@@ -30,7 +30,8 @@ namespace Core.DomainModel.ItSystemUsage
         IEntityWithAdvices,
         IEntityWithUserNotification,
         IHasUuid,
-        IHasDirtyMarking
+        IHasDirtyMarking,
+        IEntityOwnedByOrganization
     {
         public const int LongProperyMaxLength = 200;
         public const int DefaultMaxLength = 100;
