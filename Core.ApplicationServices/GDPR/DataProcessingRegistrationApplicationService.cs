@@ -1,27 +1,27 @@
-﻿using Core.ApplicationServices.Authorization;
+﻿using Core.Abstractions.Extensions;
+using Core.Abstractions.Types;
+using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
+using Core.ApplicationServices.Model.Shared;
+using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Shared;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
+using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.GDPR;
+using Core.DomainServices.Queries;
 using Core.DomainServices.Repositories.GDPR;
 using Core.DomainServices.Repositories.Reference;
+using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Abstractions.Extensions;
-using Core.Abstractions.Types;
-using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
-using Core.DomainModel.ItSystemUsage;
-using Core.DomainModel.Organization;
-using Core.DomainServices;
-using Core.DomainServices.Queries;
-using Core.DomainServices.Role;
-using Core.ApplicationServices.Model.GDPR;
-using Core.ApplicationServices.Organizations;
 
 namespace Core.ApplicationServices.GDPR
 {
@@ -603,7 +603,7 @@ namespace Core.ApplicationServices.GDPR
                 );
         }
 
-        public Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Guid uuid)
+        public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid)
         {
             return GetByUuid(uuid).Transform(GetPermissions);
         }
@@ -615,7 +615,7 @@ namespace Core.ApplicationServices.GDPR
                 .Select(organization => ResourceCollectionPermissionsResult.FromOrganizationId<DataProcessingRegistration>(organization.Id, _authorizationContext));
         }
 
-        private Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> dprResult)
+        private Result<CombinedPermissionsResult, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> dprResult)
         {
             return dprResult
                 .Transform
@@ -629,7 +629,7 @@ namespace Core.ApplicationServices.GDPR
                                 return ModuleFieldsPermissionsResult
                                     .CreateFromDPRResult(_fieldAuthorizationModel, dpr)
                                     .Select(fieldPermissions =>
-                                        new DataProcessingRegistrationPermissions(permissions, fieldPermissions)
+                                        new CombinedPermissionsResult(permissions, fieldPermissions)
                                     );
                             });
                     });

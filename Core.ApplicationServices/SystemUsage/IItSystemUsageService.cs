@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Model.Shared;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainServices.Queries;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Core.ApplicationServices.SystemUsage
 {
@@ -18,7 +19,7 @@ namespace Core.ApplicationServices.SystemUsage
         ItSystemUsage GetByOrganizationAndSystemId(int organizationId, int systemId);
         ItSystemUsage GetById(int usageId);
         Result<ItSystemUsage, OperationError> GetReadableItSystemUsageByUuid(Guid uuid);
-        Result<ResourcePermissionsResult, OperationError> GetPermissions(Guid uuid);
+        Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid);
         Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid);
 
         /// <summary>

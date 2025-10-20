@@ -1,17 +1,16 @@
 ﻿using Core.ApplicationServices.Authorization;
 
-namespace Core.ApplicationServices.Model.GDPR
+namespace Core.ApplicationServices.Model.Shared
 {
-    public class DataProcessingRegistrationPermissions
+    public class CombinedPermissionsResult
     {
         public ResourcePermissionsResult BasePermissions { get; }
         public ModuleFieldsPermissionsResult FieldPermissions { get; set; }
-        
-        public DataProcessingRegistrationPermissions(ResourcePermissionsResult basePermissions, ModuleFieldsPermissionsResult fieldPermissions)
+
+        public CombinedPermissionsResult(ResourcePermissionsResult basePermissions, ModuleFieldsPermissionsResult fieldPermissions)
         {
             BasePermissions = basePermissions;
             FieldPermissions = fieldPermissions;
         }
-
     }
 }

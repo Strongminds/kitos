@@ -1245,7 +1245,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var permissionsResponseDto = await DataProcessingRegistrationV2Helper.GetPermissionsAsync(token, dpr.Uuid);
 
             //Assert
-            var expected = new DataProcessingRegistrationPermissionsResponseDTO()
+            var expected = new CombinedPermissionsResponseDTO
             {
                 Read = read,
                 Modify = modify,
@@ -1293,7 +1293,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var permissionsResponseDto = await DataProcessingRegistrationV2Helper.GetPermissionsAsync(token, dpr.Uuid);
 
             //Assert
-            var expected = new DataProcessingRegistrationPermissionsResponseDTO()
+            var expected = new CombinedPermissionsResponseDTO
             {
                 Read = true,
                 Modify = false,

@@ -21,9 +21,11 @@ using Core.DomainServices.Repositories.Reference;
 using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
 using Moq;
+using Presentation.Web.Models.API.V2.Response.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.ApplicationServices.Model.Shared;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -1942,7 +1944,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 return;
             }
 
-            Assert.Equivalent(new DataProcessingRegistrationPermissions(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
+            Assert.Equivalent(new CombinedPermissionsResult(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
             {
                 Fields = new List<FieldPermissionsResult>
                 {

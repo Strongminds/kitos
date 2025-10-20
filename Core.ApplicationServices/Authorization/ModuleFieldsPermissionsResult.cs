@@ -2,6 +2,7 @@
 using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystemUsage;
 
 namespace Core.ApplicationServices.Authorization
 {
@@ -43,6 +44,22 @@ namespace Core.ApplicationServices.Authorization
                         ObjectHelper
                             .GetPropertyPath< DataProcessingRegistrationOversightDate >(
                                 x => x.OversightReportLinkName)),
+                })
+            ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
+            (
+                result => result,
+                error => error.FailureType == OperationFailure.Forbidden ? Empty : error
+            );
+        }
+
+        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromUsageResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<ItSystemUsage, OperationError> dprResult)
+        {
+            return dprResult.Select(dpr =>
+                Create(new List<FieldPermissionsResult>
+                {
+                    fieldAuthorizationModel.GetFieldPermissions(dpr, ObjectHelper
+                        .GetPropertyPath<ItSystemUsage>(
+                            x => x.ContainsAITechnology))
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (
