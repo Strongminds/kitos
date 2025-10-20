@@ -4,25 +4,14 @@ using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Abstractions.Helpers;
 using Core.ApplicationServices.Mapping.Authorization;
 using Core.ApplicationServices.Model.SystemUsage.Write;
-using Core.DomainModel.ItSystemUsage;
 using Core.DomainServices.Suppliers;
 
 namespace Core.ApplicationServices.Authorization;
 
 public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 {
-    private readonly Dictionary<string, string> _dataProcessingParameterToSupplierFieldMap = new()
-    {
-        { nameof(UpdatedDataProcessingRegistrationOversightDataParameters.IsOversightCompleted), ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted) },
-        { nameof(DataProcessingRegistrationOversightDate.OversightDate), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate) },
-        { nameof(DataProcessingRegistrationOversightDate.OversightRemark), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark)},
-        { nameof(DataProcessingRegistrationOversightDate.OversightReportLink), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink) },
-        { nameof(UpdatedSystemUsageGeneralProperties.ContainsAITechnology), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology) },
-    };
-
     private readonly ISupplierFieldDomainService _supplierFieldDomainService;
     private readonly ISupplierAssociatedFieldKeyMapper _mapper;
 

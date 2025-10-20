@@ -139,6 +139,7 @@ using Kombit.InfrastructureSamples.Token;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
+using Core.ApplicationServices.Mapping.Authorization;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
 using Core.DomainServices.Suppliers;
@@ -866,6 +867,7 @@ namespace Presentation.Web.Ninject
                 });
 
             //Authorization context
+            kernel.Bind<ISupplierAssociatedFieldKeyMapper>().To<SupplierAssociatedFieldKeyMapper>().InCommandScope(Mode);
             kernel.Bind<ISupplierFieldDomainService>().To<SupplierFieldDomainService>().InCommandScope(Mode);
             kernel.Bind<ISupplierAssociatedFieldsService>().To<SupplierAssociatedFieldsService>().InCommandScope(Mode);
             kernel.Bind<IAuthorizationModelFactory>().To<AuthorizationModelFactory>().InCommandScope(Mode);
