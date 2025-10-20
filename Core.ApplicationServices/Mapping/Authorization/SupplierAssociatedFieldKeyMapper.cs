@@ -31,7 +31,7 @@ namespace Core.ApplicationServices.Mapping.Authorization
             if (entity is ItSystemUsage)
                 return MapUsageRelatedKeys(properties).ToList();
 
-            return [];
+            return new List<string>();
         }
 
         private IEnumerable<string> MapDprRelatedKeys(IEnumerable<string> properties)
