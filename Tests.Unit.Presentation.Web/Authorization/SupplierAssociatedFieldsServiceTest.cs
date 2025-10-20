@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Mapping.Authorization;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
@@ -24,12 +25,14 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private readonly int _dprId;
         private readonly DataProcessingRegistration _existingDpr;
         private readonly Mock<ISupplierFieldDomainService> _supplierDomainServiceMock;
+        private readonly Mock<ISupplierAssociatedFieldKeyMapper> _mapperMock;
         public SupplierAssociatedFieldsServiceTest()
         {
            _dprId = A<int>();
            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
            _supplierDomainServiceMock = new Mock<ISupplierFieldDomainService>();
-           _sut = new SupplierAssociatedFieldsService(_supplierDomainServiceMock.Object);
+           _mapperMock = new Mock<ISupplierAssociatedFieldKeyMapper>();
+           _sut = new SupplierAssociatedFieldsService(_supplierDomainServiceMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -46,7 +49,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 Oversight = oversight
             };
 
-            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys(_existingDpr)).ToList();
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
 
             ExpectAnySupplierChangesReturns(keys, true);
 
@@ -69,7 +72,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             };
 
 
-            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys(_existingDpr));
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
 
             ExpectOnlySupplierChangesReturns(keys, false);
             var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr);
@@ -175,7 +178,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys(_existingDpr)).ToList();
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, false);
 
             var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
@@ -194,7 +197,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 var noChangesParameters = new DataProcessingRegistrationModificationParameters();
                 
-                var keys = _sut.MapParameterKeysToDomainKeys(noChangesParameters.GetChangedPropertyKeys(_existingDpr)).ToList();
+                var keys = ExpectMapParametersReturns(noChangesParameters.GetChangedPropertyKeys(_existingDpr), _existingDpr).ToList();
                 ExpectAnySupplierChangesReturns(keys, false);
                 ExpectOnlySupplierChangesReturns(keys, false);
 
@@ -211,7 +214,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                     };
 
 
-                var keys = _sut.MapParameterKeysToDomainKeys(noChangesParameters.GetChangedPropertyKeys()).ToList();
+                var keys = ExpectMapParametersReturns(noChangesParameters.GetChangedPropertyKeys(), _existingDpr).ToList();
                 ExpectAnySupplierChangesReturns(keys, false);
                 ExpectOnlySupplierChangesReturns(keys, false);
 
@@ -232,7 +235,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
 
-            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()).ToList();
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, true);
 
             var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
@@ -253,7 +256,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters
             };
 
-            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()).ToList();
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectOnlySupplierChangesReturns(keys, false);
                 
             var requestsChangesToSupplierAssociatedFields = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
@@ -274,7 +277,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters
             };
 
-            var keys = _sut.MapParameterKeysToDomainKeys(parameters.GetChangedPropertyKeys()).ToList();
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, true);
 
             var result = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
@@ -301,6 +304,13 @@ namespace Tests.Unit.Presentation.Web.Authorization
                         actualKeys.All(keys.Contains)
                     )))
                 .Returns(result);
+        }
+
+        private IEnumerable<string> ExpectMapParametersReturns(IEnumerable<string> keys, IEntity entity)
+        {
+            var keysList = keys.ToList();
+            _mapperMock.Setup(x => x.MapParameterKeysToDomainKeys(keysList, entity)).Returns(keysList);
+            return keysList;
         }
 
         private UpdatedDataProcessingRegistrationOversightDateParameters GetOversightDateParametersWithChange(bool completedAt, bool remark, bool oversightReportLink)

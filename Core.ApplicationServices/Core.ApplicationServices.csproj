@@ -175,6 +175,8 @@
     <Compile Include="LocalOptions\GenericLocalRoleOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalRoleOptionsService.cs" />
+    <Compile Include="Mapping\Authorization\ISupplierAssociatedFieldKeyMapper.cs" />
+    <Compile Include="Mapping\Authorization\SupplierAssociatedFieldKeyMapper.cs" />
     <Compile Include="Model\Authentication\BearerTokenConfig.cs" />
     <Compile Include="Model\Authentication\ClaimResponse.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />

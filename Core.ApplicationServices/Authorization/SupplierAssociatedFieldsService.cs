@@ -5,6 +5,9 @@ using Core.DomainModel.GDPR;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Helpers;
+using Core.ApplicationServices.Mapping.Authorization;
+using Core.ApplicationServices.Model.SystemUsage.Write;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainServices.Suppliers;
 
 namespace Core.ApplicationServices.Authorization;
@@ -17,13 +20,16 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         { nameof(DataProcessingRegistrationOversightDate.OversightDate), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate) },
         { nameof(DataProcessingRegistrationOversightDate.OversightRemark), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark)},
         { nameof(DataProcessingRegistrationOversightDate.OversightReportLink), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink) },
+        { nameof(UpdatedSystemUsageGeneralProperties.ContainsAITechnology), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology) },
     };
 
     private readonly ISupplierFieldDomainService _supplierFieldDomainService;
+    private readonly ISupplierAssociatedFieldKeyMapper _mapper;
 
-    public SupplierAssociatedFieldsService(ISupplierFieldDomainService supplierFieldDomainService)
+    public SupplierAssociatedFieldsService(ISupplierFieldDomainService supplierFieldDomainService, ISupplierAssociatedFieldKeyMapper mapper)
     {
         _supplierFieldDomainService = supplierFieldDomainService;
+        _mapper = mapper;
     }
 
     public bool HasAnySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity)
@@ -32,7 +38,8 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         {
             DataProcessingRegistrationModificationParameters dprParameters => HasDprSupplierChanges(dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
-                HasOversightDateSupplierChanges(oversightDateParameters),
+                HasOversightDateSupplierChanges(oversightDateParameters, entity),
+            SystemUsageUpdateParameters usageParameters => HasUsageSupplierChanges(usageParameters, entity),
             _ => false
         };
     }
@@ -44,7 +51,8 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
             DataProcessingRegistrationModificationParameters dprParameters => HasOnlyDprSupplierChanges(
                 dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
-                HasOnlyOversightDateSupplierChanges(oversightDateParameters),
+                HasOnlyOversightDateSupplierChanges(oversightDateParameters, entity),
+            SystemUsageUpdateParameters usageParameters => HasOnlyUsageSupplierChanges(usageParameters, entity),
             _ => false
         };
     }
@@ -64,17 +72,6 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return results.Any(r => r);
     }
 
-    public IEnumerable<string> MapParameterKeysToDomainKeys(IEnumerable<string> properties)
-    {
-        foreach (var key in properties)
-        {
-            if (_dataProcessingParameterToSupplierFieldMap.TryGetValue(key, out var mappedValue))
-            {
-                yield return mappedValue;
-            }
-        }
-    }
-
     private bool HasDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
     {
         if (entity is not DataProcessingRegistration dpr)
@@ -82,13 +79,22 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
         
-        return _supplierFieldDomainService.AnySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
+        return _supplierFieldDomainService.AnySupplierFieldChanges(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
     }
 
-    private bool HasOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+    private bool HasOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity)
     {
         var changedProperties = parameters.GetChangedPropertyKeys();
-        var keys = MapParameterKeysToDomainKeys(changedProperties);
+        var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
+        return _supplierFieldDomainService.AnySupplierFieldChanges(keys);
+    }
+
+    private bool HasUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity)
+    {
+
+        var changedProperties = parameters.GetChangedPropertyKeys();
+        var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
+
         return _supplierFieldDomainService.AnySupplierFieldChanges(keys);
     }
 
@@ -97,9 +103,10 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return _supplierFieldDomainService.IsSupplierControlled(key);
     }
 
-    private static bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+    private bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity)
     {
-        return true;
+        var changedProperties = parameters.GetChangedPropertyKeys();
+        return _supplierFieldDomainService.OnlySupplierFieldChanges(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
     }
 
     private bool HasOnlyDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
@@ -109,7 +116,14 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
 
-        return _supplierFieldDomainService.OnlySupplierFieldChanges(MapParameterKeysToDomainKeys(changedProperties));
+        return _supplierFieldDomainService.OnlySupplierFieldChanges(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
+    }
+
+    private bool HasOnlyUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity)
+    {
+        var changedProperties = parameters.GetChangedPropertyKeys();
+        var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
+        return _supplierFieldDomainService.OnlySupplierFieldChanges(keys);
     }
 }
 

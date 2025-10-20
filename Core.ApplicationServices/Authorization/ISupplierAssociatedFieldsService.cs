@@ -11,6 +11,5 @@ namespace Core.ApplicationServices.Authorization
         bool HasAnySupplierChangesList(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity);
         bool RequestsDeleteToEntity<TEntity>(TEntity entity);
         bool IsFieldSupplierControlled(string key);
-        IEnumerable<string> MapParameterKeysToDomainKeys(IEnumerable<string> properties);
     }
 }
