@@ -64,9 +64,8 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
         var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity);
-        if (!anySupplierChanges) return false;
+        if (anySupplierChanges) return false;
         return _authorizationContext.AllowModify(entity);
-
     }
 
     public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key)
