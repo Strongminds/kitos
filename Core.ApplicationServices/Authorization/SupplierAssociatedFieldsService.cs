@@ -41,10 +41,10 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
     {
         return parameters switch
         {
-            DataProcessingRegistrationModificationParameters dprParameters => HasNonDprSupplierChanges(
+            DataProcessingRegistrationModificationParameters dprParameters => HasOnlyDprSupplierChanges(
                 dprParameters, entity),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
-                HasNonOversightDateSupplierChanges(oversightDateParameters),
+                HasOnlyOversightDateSupplierChanges(oversightDateParameters),
             _ => false
         };
     }
@@ -97,12 +97,12 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return _supplierFieldDomainService.IsSupplierControlled(key);
     }
 
-    private static bool HasNonOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+    private static bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters)
     {
-        return false;
+        return true;
     }
 
-    private bool HasNonDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
+    private bool HasOnlyDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
     {
         if(entity is not DataProcessingRegistration dpr)
             return false;
