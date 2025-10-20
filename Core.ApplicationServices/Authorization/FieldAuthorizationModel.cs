@@ -74,6 +74,9 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
             return new FieldPermissionsResult{ Enabled = true, Key = key};
 
         var entityOrganization = entity.Organization;
+        if (!_authorizationContext.AllowModify(entity))
+            return new FieldPermissionsResult { Enabled = false, Key = key };
+
         var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
         if (!organizationHasSuppliers)
             return new FieldPermissionsResult { Enabled = true, Key = key };

@@ -1254,19 +1254,19 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                 {
                     Fields = new List<FieldPermissionsResponseDTO>
                     {
-                        new (){ Enabled = true, Key = ObjectHelper
+                        new (){ Enabled = modify, Key = ObjectHelper
                             .GetPropertyPath<DataProcessingRegistration>(
                                 x => x.IsOversightCompleted)},
-                        new (){ Enabled = true, Key = ObjectHelper
+                        new (){ Enabled = modify, Key = ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightDate)},
-                        new (){ Enabled = true, Key = ObjectHelper
+                        new (){ Enabled = modify, Key = ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightRemark)},
-                        new (){ Enabled = true, Key = ObjectHelper
+                        new (){ Enabled = modify, Key = ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightReportLink)},
-                        new (){ Enabled = true, Key = ObjectHelper
+                        new (){ Enabled = modify, Key = ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightReportLinkName)}
                     }
@@ -1285,7 +1285,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
 
             await OrganizationSupplierInternalV2Helper.AddSupplier(org.Uuid, supplier.Uuid);
 
-            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.User, org.Uuid).DisposeAsync();
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, org.Uuid).DisposeAsync();
 
             var dpr = await CreateDPRAsync(org.Uuid);
 
@@ -1296,8 +1296,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var expected = new CombinedPermissionsResponseDTO
             {
                 Read = true,
-                Modify = false,
-                Delete = false,
+                Modify = true,
+                Delete = true,
                 FieldPermissions = new ModuleFieldPermissionsResponseDTO
                 {
                     Fields = new List<FieldPermissionsResponseDTO>

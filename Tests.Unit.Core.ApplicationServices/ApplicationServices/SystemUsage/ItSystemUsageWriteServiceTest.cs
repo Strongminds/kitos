@@ -2864,6 +2864,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<IEntityOwnedByOrganization>()))
                 .Returns(authModel.Object);
             authModel.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(result);
+            _authorizationContextMock.Setup(x => x.AllowModify(It.IsAny<IEntityOwnedByOrganization>())).Returns(true);
         }
 
         private void SetupSimpleUpdate(ItSystemUsage usage, Organization org)
@@ -3394,6 +3395,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void ExpectGetSystemUsageReturns(Guid systemUuid, Result<ItSystemUsage, OperationError> result)
         {
             _itSystemUsageServiceMock.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(systemUuid)).Returns(result);
+            _itSystemUsageServiceMock.Setup(x => x.GetItSystemUsageByUuid(systemUuid)).Returns(result);
         }
 
         private void ExpectGetSystemReturns(Guid systemUuid, Result<ItSystem, OperationError> result)
