@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.OData.Edm;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {
@@ -28,7 +27,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         {
         }
 
-        public DataProcessingRegistrationModificationParameters FromPOST(CreateDataProcessingRegistrationRequestDTO dto)
+        public DataProcessingRegistrationCreationParameters FromPOST(CreateDataProcessingRegistrationRequestDTO dto)
         {
             return MapCreate(dto, false);
         }
@@ -53,10 +52,10 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             return MapOversightDate(dto, false);
         }
 
-        private DataProcessingRegistrationModificationParameters MapCreate(
+        private DataProcessingRegistrationCreationParameters MapCreate(
             CreateDataProcessingRegistrationRequestDTO dto, bool enforceFallbackIfNotProvided)
         {
-            var parameters = Map<CreateDataProcessingRegistrationRequestDTO, ExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
+            var parameters = Map<DataProcessingRegistrationCreationParameters, CreateDataProcessingRegistrationRequestDTO, ExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
             parameters.ExternalReferences = MapCreateReferences(dto);
 
             return parameters;
@@ -65,13 +64,14 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         private DataProcessingRegistrationModificationParameters MapUpdate(
             UpdateDataProcessingRegistrationRequestDTO dto, bool enforceFallbackIfNotProvided)
         {
-            var parameters = Map<UpdateDataProcessingRegistrationRequestDTO, UpdateExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
+            var parameters = Map<DataProcessingRegistrationModificationParameters, UpdateDataProcessingRegistrationRequestDTO, UpdateExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
             parameters.ExternalReferences = MapUpdateReferences(dto);
 
             return parameters;
         }
 
-        private DataProcessingRegistrationModificationParameters Map<TDto, TExternalReferenceDto>(TDto dto, bool enforceFallbackIfNotProvided)
+        private TParameters Map<TParameters, TDto, TExternalReferenceDto>(TDto dto, bool enforceFallbackIfNotProvided)
+            where TParameters : BaseDataProcessingRegistrationParameters, new()
             where TDto : DataProcessingRegistrationWriteRequestDTO, IHasNameExternal, IHasExternalReference<TExternalReferenceDto>
             where TExternalReferenceDto : ExternalReferenceDataWriteRequestDTO
         {
@@ -84,7 +84,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             dto.Roles = WithResetDataIfSectionIsNotDefinedWithFallback(dto.Roles, x => x.Roles, Array.Empty<RoleAssignmentRequestDTO>);
             dto.ExternalReferences = WithResetDataIfSectionIsNotDefinedWithFallback(dto.ExternalReferences, x => x.ExternalReferences, Array.Empty<TExternalReferenceDto>);
 
-            return new DataProcessingRegistrationModificationParameters
+            return new TParameters
             {
                 Name = (ClientRequestsChangeTo<IHasNameExternal>(x => x.Name) || enforceFallbackIfNotProvided) ? dto.Name.AsChangedValue() : OptionalValueChange<string>.None,
                 General = dto.General.FromNullable().Select(generalData => MapGeneral(generalData, enforceFallbackIfNotProvided)),

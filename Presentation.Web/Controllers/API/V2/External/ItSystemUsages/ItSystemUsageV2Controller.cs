@@ -119,7 +119,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
                 return BadRequest(ModelState);
 
             return _itSystemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Select(_responseMapper.MapSystemUsageDTO)
                 .Match(Ok, FromOperationError);
         }
@@ -284,7 +284,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         public IHttpActionResult GetIncomingSystemRelations([NonEmptyGuid] Guid systemUsageUuid)
         {
             return _itSystemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(usage => _systemRelationsService.GetRelationsTo(usage.Id))
                 .Select(relations => relations.Select(relation => _responseMapper.MapIncomingSystemRelationDTO(relation)).ToList())
                 .Match(Ok, FromOperationError);
@@ -383,7 +383,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
                 return BadRequest(ModelState);
 
             return _itSystemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(usage =>
                     usage.GetUsageRelation(systemRelationUuid)
                         .Match<Result<SystemRelation, OperationError>>
@@ -565,7 +565,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
                 return BadRequest(ModelState);
 
             return _itSystemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(usage =>
                     usage.GetArchivePeriod(journalPeriodUuid)
                         .Match<Result<ArchivePeriod, OperationError>>

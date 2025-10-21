@@ -534,7 +534,7 @@ namespace Core.ApplicationServices.Contract.Write
                  "system usage",
                  contract,
                  systemUsageUuids.FromNullable(),
-                 (systemUsageUuid) => _usageService.GetReadableItSystemUsageByUuid(systemUsageUuid),
+                 (systemUsageUuid) => _usageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid),
                  itContract => itContract.AssociatedSystemUsages.Select(x => x.ItSystemUsage).ToList(),
                  (itContract, usage) => itContract.AssignSystemUsage(usage),
                  (itContract, usage) => itContract.RemoveSystemUsage(usage)

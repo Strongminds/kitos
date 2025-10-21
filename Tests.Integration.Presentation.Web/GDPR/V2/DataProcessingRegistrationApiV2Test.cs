@@ -1,33 +1,36 @@
-﻿using Core.DomainModel.Organization;
+﻿using AutoFixture;
+using Core.Abstractions.Extensions;
+using Core.Abstractions.Helpers;
+using Core.DomainModel;
+using Core.DomainModel.GDPR;
+using Core.DomainModel.Organization;
+using Core.DomainServices.Extensions;
+using ExpectedObjects;
+using Presentation.Web.Models.API.V2.Request.Contract;
+using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
+using Presentation.Web.Models.API.V2.Request.Generic.Roles;
+using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
+using Presentation.Web.Models.API.V2.Request.SystemUsage;
+using Presentation.Web.Models.API.V2.Response.DataProcessing;
+using Presentation.Web.Models.API.V2.Response.Generic.Identity;
+using Presentation.Web.Models.API.V2.Response.Generic.Roles;
+using Presentation.Web.Models.API.V2.Response.Options;
+using Presentation.Web.Models.API.V2.Response.Organization;
+using Presentation.Web.Models.API.V2.Response.Shared;
+using Presentation.Web.Models.API.V2.Types.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.Organization;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using AutoFixture;
-using Core.Abstractions.Extensions;
-using Core.DomainModel;
-using Core.DomainServices.Extensions;
-using Presentation.Web.Models.API.V2.Request.DataProcessing;
-using Presentation.Web.Models.API.V2.Response.Generic.Identity;
-using Presentation.Web.Models.API.V2.Response.Organization;
-using Presentation.Web.Models.API.V2.Request.SystemUsage;
-using Presentation.Web.Models.API.V2.Request.Generic.Roles;
-using Presentation.Web.Models.API.V2.Response.DataProcessing;
-using Presentation.Web.Models.API.V2.Response.Generic.Roles;
-using Presentation.Web.Models.API.V2.Response.Options;
-using Presentation.Web.Models.API.V2.Types.DataProcessing;
-using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
 using Tests.Toolkit.Extensions;
 using Xunit;
-using ExpectedObjects;
-using Presentation.Web.Models.API.V2.Request.Contract;
-using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
-using Presentation.Web.Models.API.V2.Request.OrganizationUnit;
-using Presentation.Web.Models.API.V2.Response.Shared;
-using Presentation.Web.Models.API.V2.Types.Organization;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
 
 namespace Tests.Integration.Presentation.Web.GDPR.V2
@@ -1242,11 +1245,80 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var permissionsResponseDto = await DataProcessingRegistrationV2Helper.GetPermissionsAsync(token, dpr.Uuid);
 
             //Assert
-            var expected = new DataProcessingRegistrationPermissionsResponseDTO()
+            var expected = new CombinedPermissionsResponseDTO
             {
                 Read = read,
                 Modify = modify,
-                Delete = delete
+                Delete = delete,
+                FieldPermissions = new ModuleFieldPermissionsResponseDTO
+                {
+                    Fields = new List<FieldPermissionsResponseDTO>
+                    {
+                        new (){ Enabled = modify, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistration>(
+                                x => x.IsOversightCompleted)},
+                        new (){ Enabled = modify, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightDate)},
+                        new (){ Enabled = modify, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightRemark)},
+                        new (){ Enabled = modify, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightReportLink)},
+                        new (){ Enabled = modify, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightReportLinkName)}
+                    }
+                }
+            };
+            Assert.Equivalent(expected, permissionsResponseDto);
+        }
+
+        [Fact]
+        public async Task DataProcessingRegistration_Permissions_Fields_Are_Disabled_If_Has_Supplier()
+        {
+            //Arrange
+            var org = await CreateOrganizationAsync();
+            var (user, token) = await CreateApiUserAsync(org);
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+
+            await OrganizationSupplierInternalV2Helper.AddSupplier(org.Uuid, supplier.Uuid);
+
+            await HttpApi.SendAssignRoleToUserAsync(user.Uuid, OrganizationRole.LocalAdmin, org.Uuid).DisposeAsync();
+
+            var dpr = await CreateDPRAsync(org.Uuid);
+
+            //Act
+            var permissionsResponseDto = await DataProcessingRegistrationV2Helper.GetPermissionsAsync(token, dpr.Uuid);
+
+            //Assert
+            var expected = new CombinedPermissionsResponseDTO
+            {
+                Read = true,
+                Modify = true,
+                Delete = true,
+                FieldPermissions = new ModuleFieldPermissionsResponseDTO
+                {
+                    Fields = new List<FieldPermissionsResponseDTO>
+                    {
+                        new (){ Enabled = false, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistration>(
+                                x => x.IsOversightCompleted)},
+                        new (){ Enabled = false, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightDate)},
+                        new (){ Enabled = false, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightRemark)},
+                        new (){ Enabled = false, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightReportLink)},
+                        new (){ Enabled = true, Key = ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightReportLinkName)}
+                    }
+                }
             };
             Assert.Equivalent(expected, permissionsResponseDto);
         }

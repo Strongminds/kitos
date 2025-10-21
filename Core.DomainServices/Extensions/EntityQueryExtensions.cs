@@ -143,7 +143,8 @@ namespace Core.DomainServices.Extensions
         public static T ByUuid<T>(this IQueryable<T> result, Guid id) where T :
             class, IHasUuid
         {
-            return new QueryByUuid<T>(id).Apply(result).SingleOrDefault();
+            var x = new QueryByUuid<T>(id).Apply(result).SingleOrDefault();
+            return x;
         }
     }
 }

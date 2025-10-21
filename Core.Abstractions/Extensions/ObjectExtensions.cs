@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Core.Abstractions.Types;
+using System;
 using System.Collections.Generic;
-using Core.Abstractions.Types;
 
 namespace Core.Abstractions.Extensions
 {

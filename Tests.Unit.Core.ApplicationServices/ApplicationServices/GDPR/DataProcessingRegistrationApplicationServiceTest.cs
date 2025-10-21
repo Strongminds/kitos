@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.GDPR;
@@ -22,8 +20,12 @@ using Core.DomainServices.Repositories.GDPR;
 using Core.DomainServices.Repositories.Reference;
 using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
-
 using Moq;
+using Presentation.Web.Models.API.V2.Response.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Core.ApplicationServices.Model.Shared;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -49,6 +51,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<IGenericRepository<SubDataProcessor>> _sdpRepositoryMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IGenericRepository<DataProcessingRegistrationOversightDate>> _oversightDateRepositoryMock;
+        private readonly Mock<IFieldAuthorizationModel> _fieldAuthorizationModelMock;
 
         public DataProcessingRegistrationApplicationServiceTest()
         {
@@ -69,6 +72,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _sdpRepositoryMock = new Mock<IGenericRepository<SubDataProcessor>>();
             _organizationServiceMock = new Mock<IOrganizationService>();
             _oversightDateRepositoryMock = new Mock<IGenericRepository<DataProcessingRegistrationOversightDate>>();
+            _fieldAuthorizationModelMock = new Mock<IFieldAuthorizationModel>();
             _sut = new DataProcessingRegistrationApplicationService(
                 _authorizationContextMock.Object,
                 _repositoryMock.Object,
@@ -86,7 +90,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 _dprOversightDaterepositoryMock.Object,
                 _sdpRepositoryMock.Object,
                 _organizationServiceMock.Object,
-                _oversightDateRepositoryMock.Object);
+                _oversightDateRepositoryMock.Object,
+                _fieldAuthorizationModelMock.Object);
         }
 
         [Fact]
@@ -1894,10 +1899,38 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Arrange
             var uuid = A<Guid>();
             var registration = new DataProcessingRegistration { Id = A<int>(), Uuid = uuid };
+
+            var oversightDateCollectionEnabled = A<bool>();
+            var oversightDateDateEnabled = A<bool>();
+            var oversightDateRemarkEnabled = A<bool>();
+            var oversightDateLinkNameEnabled = A<bool>();
+            var oversightDateLinkEnabled = A<bool>();
+
+            var oversightDateCollectionKey = ObjectHelper
+                .GetPropertyPath<DataProcessingRegistration>(
+                    x => x.IsOversightCompleted);
+            var oversightDateDateKey = ObjectHelper
+                .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                    x => x.OversightDate);
+            var oversightDateRemarkKey = ObjectHelper
+                .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                    x => x.OversightRemark);
+            var oversightDateLinkKey = ObjectHelper
+                .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                    x => x.OversightReportLink);
+            var oversightDateLinkNameKey =
+                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x =>
+                    x.OversightReportLinkName);
+
             _repositoryMock.Setup(x => x.AsQueryable()).Returns(CreateListOfDPRFromDpr(registration).AsQueryable());
             ExpectAllowReadReturns(registration, read);
             ExpectAllowModifyReturns(registration, modify);
             ExpectAllowDeleteReturns(registration, delete);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateCollectionKey, oversightDateCollectionEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateDateKey, oversightDateDateEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateRemarkKey, oversightDateRemarkEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkNameKey, oversightDateLinkNameEnabled);
+            ExpectGetFieldPermissionsReturns(registration, oversightDateLinkKey, oversightDateLinkEnabled);
 
             //Act
             var result = _sut.GetPermissions(uuid);
@@ -1905,9 +1938,30 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             //Assert
             Assert.True(result.Ok);
             var permissions = result.Value;
-            Assert.Equivalent(new DataProcessingRegistrationPermissions(new ResourcePermissionsResult(read, modify, delete)), permissions);
+            if (!permissions.BasePermissions.Read)
+            {
+                Assert.Empty(permissions.FieldPermissions.Fields);
+                return;
+            }
+
+            Assert.Equivalent(new CombinedPermissionsResult(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
+            {
+                Fields = new List<FieldPermissionsResult>
+                {
+                    new() { Enabled = oversightDateCollectionEnabled, Key = oversightDateCollectionKey },
+                    new() { Enabled = oversightDateDateEnabled, Key = oversightDateDateKey },
+                    new() { Enabled = oversightDateRemarkEnabled, Key = oversightDateRemarkKey },
+                    new() { Enabled = oversightDateLinkNameEnabled, Key = oversightDateLinkNameKey },
+                    new() { Enabled = oversightDateLinkEnabled, Key = oversightDateLinkKey }
+                }
+            }), permissions);
         }
-        
+
+        private void ExpectGetFieldPermissionsReturns(DataProcessingRegistration registration, string key, bool result)
+        {
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(registration, key)).Returns(new FieldPermissionsResult{ Enabled = result, Key = key});
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]

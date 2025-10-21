@@ -9,6 +9,8 @@ using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Infrastructure.Services.DataAccess;
 using System;
+using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystemUsage;
 
 
 namespace Core.ApplicationServices.Authorization
@@ -21,6 +23,7 @@ namespace Core.ApplicationServices.Authorization
         private readonly IGlobalReadAccessPolicy _globalReadAccessPolicy;
         private readonly IModuleCreationPolicy _typeCreationPolicy;
         private readonly IUserRepository _userRepository;
+        private readonly IAuthorizationModelFactory _authorizationModelFactory;
 
         public OrganizationAuthorizationContext(
             IOrganizationalUserContext activeUserContext,
@@ -28,7 +31,8 @@ namespace Core.ApplicationServices.Authorization
             IModuleModificationPolicy moduleLevelAccessPolicy,
             IGlobalReadAccessPolicy globalReadAccessPolicy,
             IModuleCreationPolicy typeCreationPolicy,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IAuthorizationModelFactory authorizationModelFactory)
         {
             _activeUserContext = activeUserContext;
             _typeResolver = typeResolver;
@@ -36,6 +40,15 @@ namespace Core.ApplicationServices.Authorization
             _globalReadAccessPolicy = globalReadAccessPolicy;
             _typeCreationPolicy = typeCreationPolicy;
             _userRepository = userRepository;
+            _authorizationModelFactory = authorizationModelFactory;
+        }
+
+        public IAuthorizationModel GetAuthorizationModel(IEntityOwnedByOrganization entity)
+        {
+            if (!EntityHasSupplierAssociatedFields(entity)) return _authorizationModelFactory.CreateCrudAuthorizationModel(this);
+            return (entity.Organization?.HasSuppliers() ?? false)
+                ? _authorizationModelFactory.CreateFieldAuthorizationModel(this)
+                : _authorizationModelFactory.CreateCrudAuthorizationModel(this);
         }
 
         public CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccess()
@@ -377,6 +390,10 @@ namespace Core.ApplicationServices.Authorization
         private bool IsContractModuleAdmin(int organizationId)
         {
             return _activeUserContext.HasRole(organizationId, OrganizationRole.ContractModuleAdmin);
+        }
+        private bool EntityHasSupplierAssociatedFields(IEntity entity)
+        {
+            return entity is DataProcessingRegistration or ItSystemUsage;
         }
 
         #region PERMISSIONS

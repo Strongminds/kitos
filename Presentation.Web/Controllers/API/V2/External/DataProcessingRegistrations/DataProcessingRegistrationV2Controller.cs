@@ -250,7 +250,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(DataProcessingRegistrationPermissionsResponseDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(CombinedPermissionsResponseDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -261,7 +261,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
 
             return _dataProcessingRegistrationService
                 .GetPermissions(dprUuid)
-                .Select(_responseMapper.MapPermissions)
+                .Select(_permissionResponseMapper.Map)
                 .Match(Ok, FromOperationError);
         }
 
