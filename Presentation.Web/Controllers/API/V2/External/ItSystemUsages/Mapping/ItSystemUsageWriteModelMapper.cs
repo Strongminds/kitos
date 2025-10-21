@@ -278,6 +278,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return update;
         }
 
+        public IEnumerable<SystemRelationParameters> MapRelations(IEnumerable<SystemRelationWriteRequestDTO> dtos)
+        {
+            return dtos.Select(MapRelation);
+        }
+
         public SystemUsageJournalPeriodProperties MapJournalPeriodProperties(JournalPeriodDTO input)
         {
             var properties = new SystemUsageJournalPeriodProperties();

@@ -763,6 +763,18 @@ namespace Core.ApplicationServices.SystemUsage.Write
                         )
                 );
         }
+        
+        public Result<IEnumerable<SystemRelation>, OperationError> CreateSystemRelations(Guid fromSystemUsageUuid, IEnumerable<SystemRelationParameters> parametersCollection)
+        {
+            var results = new HashSet<SystemRelation>();
+            foreach (var parameters in parametersCollection)
+            {
+                var createResult = CreateSystemRelation(fromSystemUsageUuid, parameters);
+                if (createResult.Failed) return createResult.Error;
+                results.Add(createResult.Value);
+            }
+            return results;
+        }
 
         private Result<(Maybe<int> contractId, Maybe<int> interfaceId, Maybe<int> frequencyId, int systemUsageId), OperationError> ResolveRelationParameterIdentities(SystemRelationParameters parameters)
         {

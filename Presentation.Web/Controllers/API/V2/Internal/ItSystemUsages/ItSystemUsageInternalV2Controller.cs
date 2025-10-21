@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.ApplicationServices.SystemUsage;
 using Core.ApplicationServices.SystemUsage.Relations;
 using Core.ApplicationServices.SystemUsage.Write;
@@ -19,6 +21,7 @@ using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
+using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Swashbuckle.Swagger.Annotations;
@@ -36,14 +39,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         private readonly IItsystemUsageRelationsService _relationsService;
         private readonly IEntityIdentityResolver _identityResolver;
         private readonly IItSystemUsageResponseMapper _responseMapper;
+        private readonly IItSystemUsageWriteModelMapper _writeModelMapper;
 
-        public ItSystemUsageInternalV2Controller(IItSystemUsageService itSystemUsageService, IItSystemUsageWriteService writeService, IItsystemUsageRelationsService relationsService, IEntityIdentityResolver identityResolver, IItSystemUsageResponseMapper responseMapper)
+        public ItSystemUsageInternalV2Controller(IItSystemUsageService itSystemUsageService, IItSystemUsageWriteService writeService, IItsystemUsageRelationsService relationsService, IEntityIdentityResolver identityResolver, IItSystemUsageResponseMapper responseMapper, IItSystemUsageWriteModelMapper writeModelMapper)
         {
             _itSystemUsageService = itSystemUsageService;
             _writeService = writeService;
             _relationsService = relationsService;
             _identityResolver = identityResolver;
             _responseMapper = responseMapper;
+            _writeModelMapper = writeModelMapper;
         }
 
         /// <summary>
@@ -86,6 +91,24 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
                 .ExecuteItSystemUsagesQuery(organizationUuid, relatedToSystemUuid, relatedToSystemUsageUuid, relatedToContractUuid, systemUuid, systemNameContent, changedSinceGtEq, orderByProperty, paginationQuery)
                 .Select(Map)
                 .Transform(Ok);
+        }
+
+        [HttpPost]
+        [Route("{systemUsageUuid}/system-relations")]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.Forbidden)]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        public IHttpActionResult PostSystemUsageRelations([NonEmptyGuid] Guid systemUsageUuid,
+            [FromBody] [Required] IEnumerable<SystemRelationWriteRequestDTO> dtos)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var parameters = _writeModelMapper.MapRelations(dtos);
+            return _writeService
+                .CreateSystemRelations(systemUsageUuid, parameters)
+                .Select(_responseMapper.MapOutgoingSystemRelationDTOs)
+                .Match(Ok, FromOperationError);
         }
 
         /// <summary>
