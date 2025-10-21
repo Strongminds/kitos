@@ -205,12 +205,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.PatchWithCookieAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid}"), cookie, CreatePatchPayload(nameof(UpdateDataProcessingRegistrationRequestDTO.Name), name));
         }
 
-        public static async Task<DataProcessingRegistrationPermissionsResponseDTO> GetPermissionsAsync(string token, Guid uuid)
+        public static async Task<CombinedPermissionsResponseDTO> GetPermissionsAsync(string token, Guid uuid)
         {
             using var response = await HttpApi.GetWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{uuid:D}/permissions"), token);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            return await response.ReadResponseBodyAsAsync<DataProcessingRegistrationPermissionsResponseDTO>();
+            return await response.ReadResponseBodyAsAsync<CombinedPermissionsResponseDTO>();
         }
 
         public static async Task<ResourceCollectionPermissionsResponseDTO> GetCollectionPermissionsAsync(string token, Guid organizationUuid)

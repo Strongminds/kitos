@@ -142,7 +142,10 @@
     <Compile Include="Authorization\FieldAuthorizationModel.cs" />
     <Compile Include="Authorization\IAuthorizationModel.cs" />
     <Compile Include="Authorization\IAuthorizationModelFactory.cs" />
+    <Compile Include="Authorization\IFieldAuthorizationModel.cs" />
     <Compile Include="Authorization\ISupplierAssociatedFieldsService.cs" />
+    <Compile Include="Authorization\FieldPermissionsResult.cs" />
+    <Compile Include="Authorization\ModuleFieldsPermissionsResult.cs" />
     <Compile Include="Authorization\Permissions\ChangeLegalSystemPropertiesPermission.cs" />
     <Compile Include="Authorization\SupplierAssociatedFieldsService.cs" />
     <Compile Include="Generic\EntityTreeUuidCollector.cs" />
@@ -172,6 +175,8 @@
     <Compile Include="LocalOptions\GenericLocalRoleOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalOptionsService.cs" />
     <Compile Include="LocalOptions\IGenericLocalRoleOptionsService.cs" />
+    <Compile Include="Mapping\Authorization\ISupplierAssociatedFieldKeyMapper.cs" />
+    <Compile Include="Mapping\Authorization\SupplierAssociatedFieldKeyMapper.cs" />
     <Compile Include="Model\Authentication\BearerTokenConfig.cs" />
     <Compile Include="Model\Authentication\ClaimResponse.cs" />
     <Compile Include="Model\Authentication\Commands\ValidateUserCredentialsCommand.cs" />
@@ -253,7 +258,6 @@
     <Compile Include="Model\Contracts\Write\ItContractSupplierModificationParameters.cs" />
     <Compile Include="Model\Contracts\Write\ItContractTerminationParameters.cs" />
     <Compile Include="Model\EventHandler\ValidateUserCredentialsCommandHandler.cs" />
-    <Compile Include="Model\GDPR\DataProcessingRegistrationPermissions.cs" />
     <Compile Include="Model\GDPR\Write\BaseDataProcessingRegistrationParameters.cs" />
     <Compile Include="Model\GDPR\Write\DataProcessingRegistrationCreationParameters.cs" />
     <Compile Include="Model\GDPR\Write\SubDataProcessorParameter.cs" />
@@ -276,6 +280,7 @@
     <Compile Include="Model\Interface\ItInterfacePermissions.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModel.cs" />
     <Compile Include="Model\Interface\ItInterfaceWriteModelParametersBase.cs" />
+    <Compile Include="Model\Shared\CombinedPermissionsResult.cs" />
     <Compile Include="Model\Shared\Supplier\ISupplierAssociatedEntityUpdateParameters.cs" />
     <Compile Include="Model\KitosEvents\IKitosEventMapper.cs" />
     <Compile Include="Model\KitosEvents\KitosEvent.cs" />

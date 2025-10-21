@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Mapping.Authorization;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
-using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
-using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
-using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
+using Core.DomainServices.Suppliers;
+using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -23,232 +24,21 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private readonly SupplierAssociatedFieldsService _sut;
         private readonly int _dprId;
         private readonly DataProcessingRegistration _existingDpr;
-
+        private readonly Mock<ISupplierFieldDomainService> _supplierDomainServiceMock;
+        private readonly Mock<ISupplierAssociatedFieldKeyMapper> _mapperMock;
         public SupplierAssociatedFieldsServiceTest()
         {
            _dprId = A<int>();
            _existingDpr = new DataProcessingRegistration() { Id = _dprId };
-           _sut = new SupplierAssociatedFieldsService();
-        }
-
-        [Theory]
-        [InlineData(true, false, false)]
-        [InlineData(false, true, false)]
-        [InlineData(false, false, true)]
-        public void
-            UsageParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue(
-                bool aiTechnology, bool gdprCriticality, bool RiskAssessmentResult)
-        {
-            var generalProperties = new UpdatedSystemUsageGeneralProperties();
-            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
-            var parameters = new SystemUsageUpdateParameters();
-            if (aiTechnology)
-            {
-                generalProperties.ContainsAITechnology = A<Maybe<YesNoUndecidedOption>>().AsChangedValue();
-                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(generalProperties);
-            }
-            if (gdprCriticality)
-            {
-                gdprProperties.GdprCriticality = A<GdprCriticality?>().AsChangedValue();
-                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
-            }
-
-            if (RiskAssessmentResult)
-            {
-                gdprProperties.RiskAssessmentResult = A<RiskLevel?>().AsChangedValue();
-                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
-            }
-
-            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
-
-            Assert.True(result);
-        }
-
-        [Theory]
-        [InlineData(true, false, false)]
-        [InlineData(false, true, false)]
-        [InlineData(false, false, true)]
-        public void
-            UsageParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse(bool aiTechnology, bool gdprCriticality, bool RiskAssessmentResult)
-        {
-            var generalProperties = new UpdatedSystemUsageGeneralProperties();
-            var gdprProperties = new UpdatedSystemUsageGDPRProperties();
-            var parameters = new SystemUsageUpdateParameters();
-            var usage = new ItSystemUsage();
-            if (aiTechnology)
-            {
-                generalProperties.ContainsAITechnology = A<Maybe<YesNoUndecidedOption>>().AsChangedValue();
-                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(generalProperties);
-            }
-            if (gdprCriticality)
-            {
-                gdprProperties.GdprCriticality = A<GdprCriticality?>().AsChangedValue();
-                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
-            }
-
-            if (RiskAssessmentResult)
-            {
-                gdprProperties.RiskAssessmentResult = A<RiskLevel?>().AsChangedValue();
-                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(gdprProperties);
-            }
-
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
-
-            Assert.False(result);
-        }
-
-        [Theory]
-        [InlineData(true, false, false, false, false, false, false)]
-        [InlineData(false, true, false, false, false, false, false)]
-        [InlineData(false, false, true, false, false, false, false)]
-        [InlineData(false, false, false, true, false, false, false)]
-        [InlineData(false, false, false, false, true, false, false)]
-        [InlineData(false, false, false, false, false, true, false)]
-        [InlineData(false, false, false, false, true, false, true)]
-        public void
-            UsageParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(
-             bool general,
-             bool organizationalUsage,
-             bool kle,
-             bool externalReferences,
-             bool roles,
-             bool gdpr,
-             bool archiving
-                )
-        {
-            var usage = new ItSystemUsage(); 
-            var parameters = new SystemUsageUpdateParameters();
-            if (general)
-            {
-                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(new UpdatedSystemUsageGeneralProperties()
-                {
-                    LocalCallName = A<string>().AsChangedValue()
-                });
-            }
-            if (organizationalUsage)
-            {
-                parameters.OrganizationalUsage = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.Some(new UpdatedSystemUsageOrganizationalUseParameters()
-                {
-                    UsingOrganizationUnitUuids =  Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
-                });
-            }
-            if (kle)
-            {
-                parameters.KLE = Maybe<UpdatedSystemUsageKLEDeviationParameters>.Some(new UpdatedSystemUsageKLEDeviationParameters()
-                {
-                    AddedKLEUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
-                });
-            }
-            if (externalReferences)
-            {
-                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
-            }
-
-            if (roles)
-            {
-                parameters.Roles = Maybe<UpdatedSystemUsageRoles>.Some(new UpdatedSystemUsageRoles()
-                {
-                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue()
-                });
-            }
-            if (gdpr)
-            {
-                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(new UpdatedSystemUsageGDPRProperties()
-                {
-                    HostedAt = A<HostedAt?>().AsChangedValue()
-                });
-            }
-
-            if (archiving)
-            {
-                parameters.Archiving = Maybe<UpdatedSystemUsageArchivingParameters>.Some(new UpdatedSystemUsageArchivingParameters()
-                {
-                    ArchiveActive = A<bool?>().AsChangedValue()
-                });
-            }
-            
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, usage);
-
-            Assert.True(result);
-        }
-
-        [Theory]
-        [InlineData(true, false, false, false, false, false, false)]
-        [InlineData(false, true, false, false, false, false, false)]
-        [InlineData(false, false, true, false, false, false, false)]
-        [InlineData(false, false, false, true, false, false, false)]
-        [InlineData(false, false, false, false, true, false, false)]
-        [InlineData(false, false, false, false, false, true, false)]
-        [InlineData(false, false, false, false, true, false, true)]
-        public void
-            UsageParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsFalse(
-             bool general,
-             bool organizationalUsage,
-             bool kle,
-             bool externalReferences,
-             bool roles,
-             bool gdpr,
-             bool archiving
-                )
-        {
-            var parameters = new SystemUsageUpdateParameters();
-            if (general)
-            {
-                parameters.GeneralProperties = Maybe<UpdatedSystemUsageGeneralProperties>.Some(new UpdatedSystemUsageGeneralProperties()
-                {
-                    LocalCallName = A<string>().AsChangedValue()
-                });
-            }
-            if (organizationalUsage)
-            {
-                parameters.OrganizationalUsage = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.Some(new UpdatedSystemUsageOrganizationalUseParameters()
-                {
-                    UsingOrganizationUnitUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
-                });
-            }
-            if (kle)
-            {
-                parameters.KLE = Maybe<UpdatedSystemUsageKLEDeviationParameters>.Some(new UpdatedSystemUsageKLEDeviationParameters()
-                {
-                    AddedKLEUuids = Maybe<IEnumerable<Guid>>.Some(new List<Guid>()).AsChangedValue()
-                });
-            }
-            if (externalReferences)
-            {
-                parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
-            }
-
-            if (roles)
-            {
-                parameters.Roles = Maybe<UpdatedSystemUsageRoles>.Some(new UpdatedSystemUsageRoles()
-                {
-                    UserRolePairs = Maybe<IEnumerable<UserRolePair>>.Some(new List<UserRolePair>()).AsChangedValue()
-                });
-            }
-            if (gdpr)
-            {
-                parameters.GDPR = Maybe<UpdatedSystemUsageGDPRProperties>.Some(new UpdatedSystemUsageGDPRProperties()
-                {
-                    HostedAt = A<HostedAt?>().AsChangedValue()
-                });
-            }
-
-            if (archiving)
-            {
-                parameters.Archiving = Maybe<UpdatedSystemUsageArchivingParameters>.Some(new UpdatedSystemUsageArchivingParameters()
-                {
-                    ArchiveActive = A<bool?>().AsChangedValue()
-                });
-            }
-
-            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
-
-            Assert.False(result);
+           _supplierDomainServiceMock = new Mock<ISupplierFieldDomainService>();
+           _mapperMock = new Mock<ISupplierAssociatedFieldKeyMapper>();
+           _sut = new SupplierAssociatedFieldsService(_supplierDomainServiceMock.Object, _mapperMock.Object);
         }
 
         [Fact]
-        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsTrue()
+        public void HasAnySupplierChanges_Returns_True_If_Dpr_Has_Supplier_Changes()
         {
+            //Arrange
             var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
             {
                 IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
@@ -259,25 +49,33 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 Oversight = oversight
             };
 
-            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
 
+            ExpectAnySupplierChangesReturns(keys, true);
+
+            //Act
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
+
+            //Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void DprParams_GivenChangesToAnySupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsFalse()
+        public void HasOnlySupplierChanges_Returns_False_If_OversightDate_Has_Non_Supplier_Changes()
         {
-            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters
-            {
-                IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue()
-            };
+            var oversight = new UpdatedDataProcessingRegistrationOversightDataParameters();
+            oversight.IsOversightCompleted = A<YesNoUndecidedOption?>().AsChangedValue();
 
             var parameters = new DataProcessingRegistrationModificationParameters()
             {
                 Oversight = oversight
             };
 
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _existingDpr);
+
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
+
+            ExpectOnlySupplierChangesReturns(keys, false);
+            var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr);
 
             Assert.False(result);
         }
@@ -289,7 +87,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(false, false, false, true, false, false)]
         [InlineData(false, false, false, false, true, false)]
         [InlineData(false, false, false, false, false, true)] 
-        public void DprParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToNonSupplierAssociatedFields_ReturnsTrue(bool addChangeToName, bool addChangeToGeneral,
+        public void HasOnlySupplierChanges_Returns_False_If_Dpr_Has_Non_Supplier_Changes(bool addChangeToName, bool addChangeToGeneral,
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
@@ -312,7 +110,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             if (addNonSupplierChangeToOversight)
             {
                 parameters.Oversight = Maybe<UpdatedDataProcessingRegistrationOversightDataParameters>.Some(new UpdatedDataProcessingRegistrationOversightDataParameters());
-                parameters.Oversight.Value.OversightIntervalRemark = A<string>().AsChangedValue();
+                parameters.Oversight.Value.OversightCompletedRemark = A<string>().AsChangedValue();
             }
             if (addChangeToRoles)
             {
@@ -327,9 +125,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            var result = _sut.RequestsChangesToNonSupplierAssociatedFields(parameters, _existingDpr);
+            var keys = parameters.GetChangedPropertyKeys(_existingDpr);
+            ExpectOnlySupplierChangesReturns(keys, false);
 
-            Assert.True(result);
+            var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr);
+
+            Assert.False(result);
         }
 
         [Theory]
@@ -339,7 +140,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(false, false, false, true, false, false)]
         [InlineData(false, false, false, false, true, false)]
         [InlineData(false, false, false, false, false, true)]
-        public void DprParams_GivenChangesToANonSupplierAssociatedField_RequestsChangesToSupplierAssociatedFields_ReturnsFalse(bool addChangeToName, bool addChangeToGeneral,
+        public void HasAnySupplierChanges_Returns_False_If_Has_Non_Supplier_Changes(bool addChangeToName, bool addChangeToGeneral,
             bool addChangeToSystemUsageUuids, bool addNonSupplierChangeToOversight, bool addChangeToRoles, bool addChangeToExternalReferences)
         {
             var parameters = new DataProcessingRegistrationModificationParameters();
@@ -377,7 +178,10 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 parameters.ExternalReferences = Maybe<IEnumerable<UpdatedExternalReferenceProperties>>.Some(Many<UpdatedExternalReferenceProperties>());
             }
 
-            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
+            ExpectAnySupplierChangesReturns(keys, false);
+
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
 
             Assert.False(result);
         }
@@ -385,17 +189,20 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void
-            GivenNoChanges_RequestsChangesToSupplierAssociatedFields_And_RequestsChangesToNonSupplierAssociatedFields_BothReturnFalse(bool dprParams)
+        public void GivenNoChanges_HasOnlySupplierChanges_And_HasAnySupplierChanges_Both_Return_False(bool dprParams)
         {
-            bool requestsChangesToSupplierAssociatedFields;
-            bool requestsChangesToNonSupplierAssociatedFields;
+            bool hasAnySupplierChanges;
+            bool hasOnlySupplierChanges;
             if (dprParams)
             {
                 var noChangesParameters = new DataProcessingRegistrationModificationParameters();
-                requestsChangesToSupplierAssociatedFields =
-                    _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _existingDpr);
+                
+                var keys = ExpectMapParametersReturns(noChangesParameters.GetChangedPropertyKeys(_existingDpr), _existingDpr).ToList();
+                ExpectAnySupplierChangesReturns(keys, false);
+                ExpectOnlySupplierChangesReturns(keys, false);
+
+                hasAnySupplierChanges = _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
+                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
             }
             else
             {
@@ -405,43 +212,54 @@ namespace Tests.Unit.Presentation.Web.Authorization
                         Remark = OptionalValueChange<string>.None,
                         OversightReportLink = OptionalValueChange<string>.None
                     };
-                requestsChangesToSupplierAssociatedFields =
-                    _sut.RequestsChangesToSupplierAssociatedFields(noChangesParameters);
-                requestsChangesToNonSupplierAssociatedFields = _sut.RequestsChangesToNonSupplierAssociatedFields(noChangesParameters, _existingDpr);
+
+
+                var keys = ExpectMapParametersReturns(noChangesParameters.GetChangedPropertyKeys(), _existingDpr).ToList();
+                ExpectAnySupplierChangesReturns(keys, false);
+                ExpectOnlySupplierChangesReturns(keys, false);
+
+                hasAnySupplierChanges =
+                    _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
+                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
             }
 
-            Assert.False(requestsChangesToSupplierAssociatedFields);
-            Assert.False(requestsChangesToNonSupplierAssociatedFields);
+            Assert.False(hasAnySupplierChanges);
+            Assert.False(hasOnlySupplierChanges);
         }
 
         [Theory]
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
         [InlineData(false, false, true)]
-        public void
-            DprOversightDateParams_GivenChangesToSupplierFields_RequestsChangesToSupplierAssociatedFields_Returns_True(bool completedAt, bool remark, bool oversightReportLink)
+        public void HasAnySupplierChanges_Returns_True_If_Has_OversightDate_Supplier_Changes(bool completedAt, bool remark, bool oversightReportLink)
         {
             var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
 
-            var result = _sut.RequestsChangesToSupplierAssociatedFields(parameters);
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
+            ExpectAnySupplierChangesReturns(keys, true);
 
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
             Assert.True(result);
         }
 
         [Fact]
-        public void GivenNoChanges_RequestsChangesToSupplierAssociatedFieldsInEnumerable_Returns_False()
+        public void HasAnySupplierChangesList_Returns_False_If_No_Changes()
         {
-            var parametersEnumerable = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters()
             {
-                new()
-                {
-                    CompletedAt = OptionalValueChange<DateTime>.None,
-                    OversightReportLink = OptionalValueChange<string>.None,
-                    Remark = OptionalValueChange<string>.None
-                }
+                CompletedAt = OptionalValueChange<DateTime>.None,
+                OversightReportLink = OptionalValueChange<string>.None,
+                Remark = OptionalValueChange<string>.None
+            };
+            var parametersList = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            {
+                parameters
             };
 
-            var requestsChangesToSupplierAssociatedFields = _sut.RequestsChangesToSupplierAssociatedFieldsInEnumerable(parametersEnumerable);
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
+            ExpectOnlySupplierChangesReturns(keys, false);
+                
+            var requestsChangesToSupplierAssociatedFields = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
 
             Assert.False(requestsChangesToSupplierAssociatedFields);
         }
@@ -450,18 +268,49 @@ namespace Tests.Unit.Presentation.Web.Authorization
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
         [InlineData(false, false, true)]
-        public void GivenChangeToSupplierField_RequestsChangesToSupplierAssociatedFieldsInEnumerable_Returns_True(
+        public void HasAnySupplierChangesList_Returns_True_If_Any_Supplier_Changes(
             bool completedAt, bool remark, bool oversightReportLink)
         {
             var parameters = GetOversightDateParametersWithChange(completedAt, remark, oversightReportLink);
-            var parametersEnumerable = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
+            var parametersList = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
             {
                 parameters
             };
-            
-            var result = _sut.RequestsChangesToSupplierAssociatedFieldsInEnumerable(parametersEnumerable);
+
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
+            ExpectAnySupplierChangesReturns(keys, true);
+
+            var result = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
 
             Assert.True(result);
+        }
+
+        private void ExpectOnlySupplierChangesReturns(IEnumerable<string> keys, bool result)
+        {
+            _supplierDomainServiceMock
+                .Setup(x => x.ContainsOnlySupplierControlledField(
+                    It.Is<IEnumerable<string>>(actualKeys =>
+                        actualKeys.All(keys.Contains)
+                    )
+                ))
+                .Returns(result);
+
+        }
+
+        private void ExpectAnySupplierChangesReturns(IEnumerable<string> keys, bool result)
+        {
+            _supplierDomainServiceMock.Setup(x => x.ContainsAnySupplierControlledFields(
+                    It.Is<IEnumerable<string>>(actualKeys =>
+                        actualKeys.All(keys.Contains)
+                    )))
+                .Returns(result);
+        }
+
+        private IEnumerable<string> ExpectMapParametersReturns(IEnumerable<string> keys, IEntity entity)
+        {
+            var keysList = keys.ToList();
+            _mapperMock.Setup(x => x.MapParameterKeysToDomainKeys(keysList, entity)).Returns(keysList);
+            return keysList;
         }
 
         private UpdatedDataProcessingRegistrationOversightDateParameters GetOversightDateParametersWithChange(bool completedAt, bool remark, bool oversightReportLink)

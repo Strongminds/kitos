@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Core.ApplicationServices.Authorization;
 
-public class FieldAuthorizationModel : IAuthorizationModel
+public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationModel
 {
     private readonly IOrganizationalUserContext _activeUserContext;
     private readonly ISupplierAssociatedFieldsService _supplierAssociatedFieldsService;
@@ -25,7 +24,7 @@ public class FieldAuthorizationModel : IAuthorizationModel
         if (entity == null || parameters == null) return false;
 
         if (_activeUserContext.IsGlobalAdmin()) return true;
-       var entityOrganization = entity.Organization;
+        var entityOrganization = entity.Organization;
         var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
         if (!organizationHasSuppliers) return _authorizationContext.AllowModify(entity);
 
@@ -56,17 +55,33 @@ public class FieldAuthorizationModel : IAuthorizationModel
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var requestsNonSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToNonSupplierAssociatedFields(parameters, entity);
-        if (requestsNonSupplierFieldChanges) return _authorizationContext.AllowModify(entity);
+        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity);
+        if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
         return true;
     }
 
     private bool CheckForNonSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var requestsSupplierFieldChanges = _supplierAssociatedFieldsService.RequestsChangesToSupplierAssociatedFields(parameters);
-        if (requestsSupplierFieldChanges) return false;
+        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity);
+        if (anySupplierChanges) return false;
         return _authorizationContext.AllowModify(entity);
+    }
 
+    public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key)
+    {
+        if (_activeUserContext.IsGlobalAdmin()) 
+            return new FieldPermissionsResult{ Enabled = true, Key = key};
+
+        var entityOrganization = entity.Organization;
+        if (!_authorizationContext.AllowModify(entity))
+            return new FieldPermissionsResult { Enabled = false, Key = key };
+
+        var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
+        if (!organizationHasSuppliers)
+            return new FieldPermissionsResult { Enabled = true, Key = key };
+
+        return new FieldPermissionsResult
+                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key) == false, Key = key };
     }
 }

@@ -166,7 +166,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         public Result<ItSystemUsage, OperationError> Update(Guid systemUsageUuid, SystemUsageUpdateParameters parameters)
         {
-            return Update(() => _systemUsageService.GetReadableItSystemUsageByUuid(systemUsageUuid), parameters);
+            return Update(() => _systemUsageService.GetItSystemUsageByUuid(systemUsageUuid), parameters);
         }
 
         public Result<ItSystemUsage, OperationError> AddRole(Guid systemUsageUuid, UserRolePair assignment)
@@ -177,7 +177,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         public Result<ItSystemUsage, OperationError> RemoveRole(Guid systemUsageUuid, UserRolePair assignment)
         {
             return _systemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Select(RoleMappingHelper.ExtractAssignedRoles)
                 .Bind<SystemUsageUpdateParameters>(existingRoles =>
                 {
@@ -194,7 +194,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             IEnumerable<UserRolePair> assignments)
         {
             return _systemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(usage => GetRoleAssignmentUpdates(usage, assignments))
                 .Bind(update => Update(systemUsageUuid, update));
         }
@@ -731,13 +731,13 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         private Result<ItSystemUsage, OperationError> GetUsageAndAuthorizeWriteAccess(Guid uuid)
         {
-            return _systemUsageService.GetReadableItSystemUsageByUuid(uuid)
+            return _systemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(uuid)
                 .Bind(WithWriteAccess);
         }
 
         public Maybe<OperationError> Delete(Guid itSystemUsageUuid)
         {
-            return _systemUsageService.GetReadableItSystemUsageByUuid(itSystemUsageUuid)
+            return _systemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(itSystemUsageUuid)
                 .Match(DeleteUsage, error => error);
         }
 
@@ -754,7 +754,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         public Result<SystemRelation, OperationError> CreateSystemRelation(Guid fromSystemUsageUuid, SystemRelationParameters parameters)
         {
-            return _systemUsageService.GetReadableItSystemUsageByUuid(fromSystemUsageUuid)
+            return _systemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(fromSystemUsageUuid)
                 .Bind(usage => ResolveRelationParameterIdentities(parameters).Select(ids => (usage, ids)))
                 .Bind(usageAndIds =>
                     _systemUsageRelationsService.AddRelation
@@ -780,7 +780,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         public Result<SystemRelation, OperationError> UpdateSystemRelation(Guid fromSystemUsageUuid, Guid relationUuid, SystemRelationParameters parameters)
         {
-            return _systemUsageService.GetReadableItSystemUsageByUuid(fromSystemUsageUuid)
+            return _systemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(fromSystemUsageUuid)
                 .Bind(usage => ResolveRelationParameterIdentities(parameters).Select(ids => (usage, ids)))
                 .Bind(usageAndIds => ResolveRequiredId<SystemRelation>(relationUuid).Select(relationId => (usageAndIds.usage, relationId, usageAndIds.ids)))
                 .Bind(usageAndIds =>
@@ -800,7 +800,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         public Maybe<OperationError> DeleteSystemRelation(Guid itSystemUsageUuid, Guid itSystemUsageRelationUuid)
         {
             return _systemUsageService
-                .GetReadableItSystemUsageByUuid(itSystemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(itSystemUsageUuid)
                 .Bind<(int usageId, int relationId)>(usage =>
                 {
                     var usageRelation = _identityResolver.ResolveDbId<SystemRelation>(itSystemUsageRelationUuid);
@@ -816,7 +816,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         public Result<ArchivePeriod, OperationError> CreateJournalPeriod(Guid systemUsageUuid, SystemUsageJournalPeriodProperties parameters)
         {
             return _systemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(WithWriteAccess)
                 .Bind(usage => _systemUsageService.AddArchivePeriod(usage.Id, parameters.StartDate, parameters.EndDate, parameters.ArchiveId, parameters.Approved));
         }
@@ -824,7 +824,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         public Result<ArchivePeriod, OperationError> UpdateJournalPeriod(Guid systemUsageUuid, Guid periodUuid, SystemUsageJournalPeriodProperties parameters)
         {
             return _systemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(WithWriteAccess)
                 .Bind(usage => _systemUsageService.UpdateArchivePeriod(usage.Id, periodUuid, parameters.StartDate, parameters.EndDate, parameters.ArchiveId, parameters.Approved));
         }
@@ -832,7 +832,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         public Result<ArchivePeriod, OperationError> DeleteJournalPeriod(Guid systemUsageUuid, Guid periodUuid)
         {
             return _systemUsageService
-                .GetReadableItSystemUsageByUuid(systemUsageUuid)
+                .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(WithWriteAccess)
                 .Bind(usage => _systemUsageService.RemoveArchivePeriod(usage.Id, periodUuid));
         }

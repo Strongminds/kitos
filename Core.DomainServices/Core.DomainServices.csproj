@@ -189,6 +189,8 @@
     <Compile Include="Role\IRoleAssignmentService.cs" />
     <Compile Include="Role\RoleAssignmentService.cs" />
     <Compile Include="SSO\PortFactory.cs" />
+    <Compile Include="Suppliers\ISupplierFieldDomainService.cs" />
+    <Compile Include="Suppliers\SupplierFieldDomainService.cs" />
     <Compile Include="SystemUsage\AttachedOptionsAssignmentService.cs" />
     <Compile Include="SystemUsage\IAttachedOptionsAssignmentService.cs" />
     <Compile Include="SystemUsage\ItSystemUsageOverviewReadModelUpdate.cs" />

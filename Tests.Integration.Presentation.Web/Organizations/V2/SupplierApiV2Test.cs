@@ -1,8 +1,13 @@
 ﻿using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.System.Regular;
+using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.DomainModel.ItSystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
@@ -57,11 +62,35 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
                     OrganizationUuid = organization.Uuid
                 });
+            var system = await ItSystemV2Helper.CreateSystemAsync(globalAdminToken, new CreateItSystemRequestDTO
+            {
+                Name = A<string>(),
+                OrganizationUuid = organization.Uuid
+            });
+            var usage = await ItSystemUsageV2Helper.PostAsync(globalAdminToken,
+                new CreateItSystemUsageRequestDTO { OrganizationUuid = organization.Uuid, SystemUuid = system.Uuid });
 
             var oversightDateRequest = A<ModifyOversightDateDTO>();
             var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, token);
-            AssertOversightDate(oversightDateRequest, postResponse);            
-            
+            AssertOversightDate(oversightDateRequest, postResponse);
+
+            var updateGeneralRequest = new GeneralDataUpdateRequestDTO
+            {
+                ContainsAITechnology = A<YesNoUndecidedChoice>()
+            };
+            using var updatedUsage = await ItSystemUsageV2Helper.SendPatchGeneral(token, usage.Uuid, updateGeneralRequest);
+            Assert.True(updatedUsage.IsSuccessStatusCode);
+
+            var updateGdprRequest = new GDPRWriteRequestDTO
+            {
+                RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
+                GdprCriticality = A<GdprCriticalityChoice>(),
+                RiskAssessmentResult = A<RiskLevelChoice>()
+            };
+            using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, updateGdprRequest);
+            var res = await updateUsageGdpr.Content.ReadAsStringAsync();
+            Assert.True(updateUsageGdpr.IsSuccessStatusCode);
+
             var patchRequest = A<ModifyOversightDateDTO>();
             var patchResponse = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, postResponse.Uuid, patchRequest, token);
             AssertOversightDate(patchRequest, patchResponse);
@@ -82,6 +111,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
 
+            var system = await ItSystemV2Helper.CreateSystemAsync(globalAdminToken, new CreateItSystemRequestDTO
+            {
+                Name = A<string>(),
+                OrganizationUuid = organization.Uuid
+            });
+            var usage = await ItSystemUsageV2Helper.PostAsync(globalAdminToken,
+                new CreateItSystemUsageRequestDTO { OrganizationUuid = organization.Uuid, SystemUuid = system.Uuid });
+
             var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
                 new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
                     OrganizationUuid = organization.Uuid
@@ -90,6 +127,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var dprUpdate = A<DataProcessingRegistrationGeneralDataWriteRequestDTO>();
             using var failedResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, dpr.Uuid, dprUpdate);
             Assert.False(failedResponse.IsSuccessStatusCode);
+
+            var updateUsageRequest = A<GeneralDataUpdateRequestDTO>();
+            using var updatedUsage = await ItSystemUsageV2Helper.SendPatchGeneral(token, usage.Uuid, updateUsageRequest);
+            Assert.False(updatedUsage.IsSuccessStatusCode);
+
+            var updateGdprRequest = A<GDPRWriteRequestDTO>();
+            using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, dpr.Uuid, updateGdprRequest);
+            Assert.False(updateUsageGdpr.IsSuccessStatusCode);
         }
         
         [Fact]
@@ -105,6 +150,13 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                     OrganizationUuid = organization.Uuid
                 });
 
+            var system = await ItSystemV2Helper.CreateSystemAsync(globalAdminToken, new CreateItSystemRequestDTO
+            {
+                Name = A<string>(),
+                OrganizationUuid = organization.Uuid
+            });
+            var usage = await ItSystemUsageV2Helper.PostAsync(globalAdminToken,
+                new CreateItSystemUsageRequestDTO { OrganizationUuid = organization.Uuid, SystemUuid = system.Uuid });
 
             var oversightDateRequest = A<ModifyOversightDateDTO>();
             using var postResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, token);
@@ -113,6 +165,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var dprUpdate = A<DataProcessingRegistrationGeneralDataWriteRequestDTO>();
             using var failedResponse = await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(token, dpr.Uuid, dprUpdate);
             Assert.False(failedResponse.IsSuccessStatusCode);
+
+            var updateUsageRequest = A<GeneralDataUpdateRequestDTO>();
+            using var updatedUsage = await ItSystemUsageV2Helper.SendPatchGeneral(token, usage.Uuid, updateUsageRequest);
+            Assert.False(updatedUsage.IsSuccessStatusCode);
+
+            var updateGdprRequest = A<GDPRWriteRequestDTO>();
+            using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, dpr.Uuid, updateGdprRequest);
+            Assert.False(updateUsageGdpr.IsSuccessStatusCode);
         }
 
         [Fact]

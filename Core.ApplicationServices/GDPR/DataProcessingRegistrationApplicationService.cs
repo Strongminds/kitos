@@ -1,27 +1,27 @@
-﻿using Core.ApplicationServices.Authorization;
+﻿using Core.Abstractions.Extensions;
+using Core.Abstractions.Types;
+using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
+using Core.ApplicationServices.Model.Shared;
+using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Shared;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
+using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.GDPR;
+using Core.DomainServices.Queries;
 using Core.DomainServices.Repositories.GDPR;
 using Core.DomainServices.Repositories.Reference;
+using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Abstractions.Extensions;
-using Core.Abstractions.Types;
-using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
-using Core.DomainModel.ItSystemUsage;
-using Core.DomainModel.Organization;
-using Core.DomainServices;
-using Core.DomainServices.Queries;
-using Core.DomainServices.Role;
-using Core.ApplicationServices.Model.GDPR;
-using Core.ApplicationServices.Organizations;
 
 namespace Core.ApplicationServices.GDPR
 {
@@ -46,6 +46,7 @@ namespace Core.ApplicationServices.GDPR
         private readonly IGenericRepository<SubDataProcessor> _sdpRepository;
         private readonly IOrganizationService _organizationService;
         private readonly IGenericRepository<DataProcessingRegistrationOversightDate> _oversightDateRepository;
+        private readonly IFieldAuthorizationModel _fieldAuthorizationModel;
 
         public DataProcessingRegistrationApplicationService(
             IAuthorizationContext authorizationContext,
@@ -63,7 +64,9 @@ namespace Core.ApplicationServices.GDPR
             IOrganizationalUserContext userContext,
             IGenericRepository<DataProcessingRegistrationOversightDate> dataProcessingRegistrationOversightDateRepository,
             IGenericRepository<SubDataProcessor> sdpRepository, 
-            IOrganizationService organizationService, IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository)
+            IOrganizationService organizationService,
+            IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository, 
+            IFieldAuthorizationModel fieldAuthorizationModel)
         {
             _authorizationContext = authorizationContext;
             _repository = repository;
@@ -82,6 +85,7 @@ namespace Core.ApplicationServices.GDPR
             _sdpRepository = sdpRepository;
             _organizationService = organizationService;
             _oversightDateRepository = oversightDateRepository;
+            _fieldAuthorizationModel = fieldAuthorizationModel;
         }
 
         public Result<DataProcessingRegistration, OperationError> Create(int organizationId, string name)
@@ -599,7 +603,7 @@ namespace Core.ApplicationServices.GDPR
                 );
         }
 
-        public Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Guid uuid)
+        public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid)
         {
             return GetByUuid(uuid).Transform(GetPermissions);
         }
@@ -611,19 +615,26 @@ namespace Core.ApplicationServices.GDPR
                 .Select(organization => ResourceCollectionPermissionsResult.FromOrganizationId<DataProcessingRegistration>(organization.Id, _authorizationContext));
         }
 
-        private Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> systemResult)
+        private Result<CombinedPermissionsResult, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> dprResult)
         {
-            return systemResult
+            return dprResult
                 .Transform
                 (
-                    system =>
+                    dpr =>
                     {
                         return ResourcePermissionsResult
-                            .FromResolutionResult(system, _authorizationContext)
-                            .Select(permissions =>
-                                new DataProcessingRegistrationPermissions(permissions));
+                            .FromResolutionResult(dpr, _authorizationContext)
+                            .Bind(permissions =>
+                            {
+                                return ModuleFieldsPermissionsResult
+                                    .CreateFromDPRResult(_fieldAuthorizationModel, dpr)
+                                    .Select(fieldPermissions =>
+                                        new CombinedPermissionsResult(permissions, fieldPermissions)
+                                    );
+                            });
                     });
         }
+
         private Result<DataProcessingRegistrationOversightDate, OperationError> Remove(DataProcessingRegistration registration, int oversightId)
         {
             var removedRegistration = registration.RemoveOversightDate(oversightId);

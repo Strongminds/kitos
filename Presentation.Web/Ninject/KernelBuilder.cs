@@ -139,8 +139,10 @@ using Kombit.InfrastructureSamples.Token;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Core.ApplicationServices.LocalOptions;
+using Core.ApplicationServices.Mapping.Authorization;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
+using Core.DomainServices.Suppliers;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 
 namespace Presentation.Web.Ninject
@@ -865,6 +867,8 @@ namespace Presentation.Web.Ninject
                 });
 
             //Authorization context
+            kernel.Bind<ISupplierAssociatedFieldKeyMapper>().To<SupplierAssociatedFieldKeyMapper>().InCommandScope(Mode);
+            kernel.Bind<ISupplierFieldDomainService>().To<SupplierFieldDomainService>().InCommandScope(Mode);
             kernel.Bind<ISupplierAssociatedFieldsService>().To<SupplierAssociatedFieldsService>().InCommandScope(Mode);
             kernel.Bind<IAuthorizationModelFactory>().To<AuthorizationModelFactory>().InCommandScope(Mode);
             kernel.Bind<IAuthorizationContextFactory>().To<AuthorizationContextFactory>().InCommandScope(Mode);
@@ -875,6 +879,7 @@ namespace Presentation.Web.Ninject
                     return ctx.Kernel.Get<IAuthorizationContextFactory>().Create(context);
                 })
                 .InCommandScope(Mode);
+            kernel.Bind<IFieldAuthorizationModel>().To<FieldAuthorizationModel>().InCommandScope(Mode);
         }
 
         private void RegisterBackgroundJobs(IKernel kernel)
