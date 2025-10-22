@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
+using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.References;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel;
 using Core.DomainModel.Events;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
@@ -21,6 +21,9 @@ using Core.DomainServices.Repositories.GDPR;
 using Core.DomainServices.Repositories.System;
 using Infrastructure.Services.DataAccess;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tests.Toolkit.Extensions;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -41,6 +44,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IGenericRepository<ArchivePeriod>> _archivePeriodRepositoryMock;
         private readonly Mock<IGenericRepository<ItSystemUsagePersonalData>> _personalDataOptionsRepository;
         private readonly Mock<IOrganizationService> _organizationService;
+        private readonly Mock<IFieldAuthorizationModel> _fieldAuthorizationModelMock;
 
         public ItSystemUsageServiceTest()
         {
@@ -55,6 +59,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _archivePeriodRepositoryMock = new Mock<IGenericRepository<ArchivePeriod>>();
             _personalDataOptionsRepository = new Mock<IGenericRepository<ItSystemUsagePersonalData>>();
             _organizationService = new Mock<IOrganizationService>();
+            _fieldAuthorizationModelMock = new Mock<IFieldAuthorizationModel>();
             _sut = new ItSystemUsageService(
                 _usageRepository.Object,
                 _authorizationContext.Object,
@@ -67,7 +72,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 new Mock<IItSystemUsageAttachedOptionRepository>().Object,
                 _archivePeriodRepositoryMock.Object,
                 _personalDataOptionsRepository.Object,
-                _organizationService.Object);
+                _organizationService.Object,
+                _fieldAuthorizationModelMock.Object);
         }
 
         [Fact]
@@ -139,7 +145,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectAllowReadReturns(itSystemUsage, true);
 
             //Act
-            var result = _sut.GetReadableItSystemUsageByUuid(uuid);
+            var result = _sut.GetItSystemUsageByUuidAndAuthorizeRead(uuid);
 
             //Assert
             Assert.True(result.Ok);
@@ -155,7 +161,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectUsageRepositoryAsQueryable(itSystemUsage);
 
             //Act
-            var result = _sut.GetReadableItSystemUsageByUuid(uuid);
+            var result = _sut.GetItSystemUsageByUuidAndAuthorizeRead(uuid);
 
             //Assert
             Assert.True(result.Failed);
@@ -172,7 +178,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectAllowReadReturns(itSystemUsage, false);
 
             //Act
-            var result = _sut.GetReadableItSystemUsageByUuid(uuid);
+            var result = _sut.GetItSystemUsageByUuidAndAuthorizeRead(uuid);
 
             //Assert
             Assert.True(result.Failed);
@@ -1208,9 +1214,25 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Arrange
             var uuid = A<Guid>();
             var itSystemUsage = new ItSystemUsage { Uuid = uuid };
+            var aiFieldKey =
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
+                    x.ContainsAITechnology);
+            var criticalityFieldKey =
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
+                    x.GdprCriticality);
+            var riskFieldKey =
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
+                    x.preriskAssessment);
+            var isAiFieldEnabled = A<bool>();
+            var isCriticalityFieldEnabled = A<bool>();
+            var isRiskFieldEnabled = A<bool>();
+
             ExpectUsageRepositoryAsQueryable(itSystemUsage);
             ExpectAllowReadReturns(itSystemUsage, read);
             ExpectAllowModifyReturns(itSystemUsage, modify);
+            ExpectGetFieldPermissionsReturns(itSystemUsage, aiFieldKey, isAiFieldEnabled);
+            ExpectGetFieldPermissionsReturns(itSystemUsage, criticalityFieldKey, isCriticalityFieldEnabled);
+            ExpectGetFieldPermissionsReturns(itSystemUsage, riskFieldKey, isRiskFieldEnabled);
             _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(delete);
 
             //Act
@@ -1219,7 +1241,34 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(result.Ok);
             var permissions = result.Value;
-            Assert.Equivalent(new ResourcePermissionsResult(read, modify, delete), permissions);
+
+            if (!permissions.BasePermissions.Read)
+            {
+                Assert.Empty(permissions.FieldPermissions.Fields);
+                return;
+            }
+
+            Assert.Equivalent(new CombinedPermissionsResult(new ResourcePermissionsResult(read, modify, delete), new ModuleFieldsPermissionsResult
+            {
+                Fields = new List<FieldPermissionsResult>
+                {
+                    new()
+                    {
+                        Enabled = isAiFieldEnabled,
+                        Key = aiFieldKey
+                    },
+                    new()
+                    {
+                        Enabled = isRiskFieldEnabled,
+                        Key = riskFieldKey
+                    },
+                    new()
+                    {
+                        Enabled = isCriticalityFieldEnabled,
+                        Key = criticalityFieldKey
+                    }
+                }
+            }), permissions);
         }
 
         [Fact]
@@ -1381,6 +1430,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void ExpectAllowModifyReturns(ItSystemUsage source, bool value)
         {
             _authorizationContext.Setup(x => x.AllowModify(source)).Returns(value);
+        }
+
+        private void ExpectGetFieldPermissionsReturns(ItSystemUsage source, string key, bool result)
+        {
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(source, key)).Returns(new FieldPermissionsResult { Enabled = result, Key = key });
         }
 
         private void ExpectAllowCreateReturns(int orgId, bool value)

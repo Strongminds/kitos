@@ -53,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
         [Route("it-system-usages/{systemUsageUuid}")]
         public IHttpActionResult GetItSystemUsageReferences([NonEmptyGuid][FromUri] Guid systemUsageUuid)
         {
-            return _usageService.GetReadableItSystemUsageByUuid(systemUsageUuid)
+            return _usageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Select(ToResponseDTO)
                 .Match(Ok, FromOperationError);
         }

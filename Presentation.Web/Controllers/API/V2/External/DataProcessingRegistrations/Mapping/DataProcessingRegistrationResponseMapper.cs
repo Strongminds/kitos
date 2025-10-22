@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Core.ApplicationServices.Model.GDPR;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
@@ -37,16 +36,6 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 Oversight = MapOversight(dataProcessingRegistration),
                 Roles = MapRoles(dataProcessingRegistration),
                 ExternalReferences = _externalReferenceResponseMapper.MapExternalReferences(dataProcessingRegistration.ExternalReferences)
-            };
-        }
-
-        public DataProcessingRegistrationPermissionsResponseDTO MapPermissions(DataProcessingRegistrationPermissions permissions)
-        {
-            return new DataProcessingRegistrationPermissionsResponseDTO
-            {
-                Delete = permissions.BasePermissions.Delete,
-                Modify = permissions.BasePermissions.Modify,
-                Read = permissions.BasePermissions.Read
             };
         }
 

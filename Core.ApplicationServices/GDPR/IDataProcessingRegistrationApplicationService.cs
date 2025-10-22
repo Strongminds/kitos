@@ -1,7 +1,7 @@
 ﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
-using Core.ApplicationServices.Model.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
+using Core.ApplicationServices.Model.Shared;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
@@ -69,7 +69,7 @@ namespace Core.ApplicationServices.GDPR
         IQueryable<DataProcessingRegistration> Query(params IDomainQuery<DataProcessingRegistration>[] conditions);
         Result<DataProcessingRegistration, OperationError> GetByUuid(Guid uuid);
 
-        Result<DataProcessingRegistrationPermissions, OperationError> GetPermissions(Guid uuid);
+        Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid);
         Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid);
     }
 }

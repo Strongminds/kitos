@@ -170,6 +170,11 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<OrganizationSupplier> UsedAsSupplierByOrganizations { get; set; }
         public virtual ICollection<OrganizationSupplier> Suppliers { get; set; }
 
+        public bool HasSuppliers()
+        {
+            return Suppliers is { Count: > 0 };
+        }
+
         /// <summary>
         /// Get the level-0 organization unit, which by convention is named represently
         /// </summary>
