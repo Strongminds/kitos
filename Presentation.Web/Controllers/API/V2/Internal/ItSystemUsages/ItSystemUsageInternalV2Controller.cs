@@ -95,7 +95,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OutgoingSystemRelationResponseDTO>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
