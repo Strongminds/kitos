@@ -21,12 +21,13 @@ namespace Core.DomainServices.Suppliers
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality),
-                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment)
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment),
 
             };
             _sharedFieldKeys = new HashSet<string>
             {
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName),
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment)
             };
         }
 
