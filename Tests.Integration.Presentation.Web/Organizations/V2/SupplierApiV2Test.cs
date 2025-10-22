@@ -7,7 +7,6 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.DomainModel.ItSystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
@@ -74,21 +73,20 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, token);
             AssertOversightDate(oversightDateRequest, postResponse);
 
-            var updateGeneralRequest = new GeneralDataUpdateRequestDTO
+            var updateGeneralRequest = new
             {
                 ContainsAITechnology = A<YesNoUndecidedChoice>()
             };
             using var updatedUsage = await ItSystemUsageV2Helper.SendPatchGeneral(token, usage.Uuid, updateGeneralRequest);
             Assert.True(updatedUsage.IsSuccessStatusCode);
 
-            var updateGdprRequest = new GDPRWriteRequestDTO
+            var updateGdprRequest = new
             {
                 RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
                 GdprCriticality = A<GdprCriticalityChoice>(),
                 RiskAssessmentResult = A<RiskLevelChoice>()
             };
             using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, updateGdprRequest);
-            var res = await updateUsageGdpr.Content.ReadAsStringAsync();
             Assert.True(updateUsageGdpr.IsSuccessStatusCode);
 
             var patchRequest = A<ModifyOversightDateDTO>();

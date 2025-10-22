@@ -215,6 +215,13 @@ namespace Tests.Integration.Presentation.Web.Tools.External
                 dto.AsPatchPayloadOfProperty(nameof(UpdateItSystemUsageRequestDTO.General)));
         }
 
+        public static async Task<HttpResponseMessage> SendPatchGeneral(string token, Guid uuid,
+            object dto)
+        {
+            return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token,
+                dto.AsPatchPayloadOfProperty(nameof(UpdateItSystemUsageRequestDTO.General)));
+        }
+
         public static async Task<HttpResponseMessage> SendPatchOrganizationalUsage(string token, Guid uuid,
             OrganizationUsageWriteRequestDTO dto)
         {
@@ -259,6 +266,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         }
 
         public static async Task<HttpResponseMessage> SendPatchGDPR(string token, Guid uuid, GDPRWriteRequestDTO dto)
+        {
+            return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token,
+                dto.AsPatchPayloadOfProperty(nameof(UpdateItSystemUsageRequestDTO.GDPR)));
+        }
+
+        public static async Task<HttpResponseMessage> SendPatchGDPR(string token, Guid uuid, object dto)
         {
             return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token,
                 dto.AsPatchPayloadOfProperty(nameof(UpdateItSystemUsageRequestDTO.GDPR)));
