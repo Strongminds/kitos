@@ -125,11 +125,49 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 }
             };
 
-            var result = (await ItSystemUsageV2Helper.PostManyRelationsAsync(systemUsage2.Uuid, dtos)).ToList();
+            var response = await ItSystemUsageV2Helper.PostManyRelationsAsync(systemUsage2.Uuid, dtos);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var result = (await response.ReadResponseBodyAsAsync<IEnumerable<OutgoingSystemRelationResponseDTO>>()).ToList();
 
             Assert.Equal(2, result.Count);
             Assert.Contains(result, x => x.RelationInterface.Uuid == interface1.Uuid);
             Assert.Contains(result, x => x.RelationInterface.Uuid == interface2.Uuid);
+        }
+
+        [Fact]
+        public async Task Cannot_Create_Multiple_System_Relations_If_Any_Creation_Fails_Internal()
+        {
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var systemUsage1 = await TakeSystemIntoUsageAsync(system.Uuid, organization.Uuid);
+            var interface1 = await InterfaceV2Helper.CreateItInterfaceAsync(token, new CreateItInterfaceRequestDTO()
+            {
+                ExposedBySystemUuid = system.Uuid,
+                OrganizationUuid = organization.Uuid,
+                Name = A<string>(),
+            });
+            var interface2 = await InterfaceV2Helper.CreateItInterfaceAsync(token, new CreateItInterfaceRequestDTO()
+            {
+                ExposedBySystemUuid = system.Uuid,
+                OrganizationUuid = organization.Uuid,
+                Name = A<string>(),
+            });
+            var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
+            var dtos = new List<SystemRelationWriteRequestDTO>()
+            {
+                new ()
+                {
+                    ToSystemUsageUuid = systemUsage1.Uuid,
+                    RelationInterfaceUuid = interface1.Uuid,
+                },
+                new ()
+                {
+                    ToSystemUsageUuid = Guid.Empty,
+                    RelationInterfaceUuid = interface2.Uuid,
+                }
+            };
+
+            var response = await ItSystemUsageV2Helper.PostManyRelationsAsync(systemUsage2.Uuid, dtos);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
