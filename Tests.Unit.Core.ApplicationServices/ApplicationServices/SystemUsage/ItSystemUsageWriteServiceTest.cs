@@ -2236,6 +2236,41 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             AssertTransactionCommitted(transaction);
         }
 
+        [Fact]
+        public void Cannot_Create_Multiple_Relations_If_Any_Creation_Fails()
+        {
+            var fromUsageUuid = A<Guid>();
+            var fromSystemUsage = new ItSystemUsage() { Id = A<int>() };
+            var toSystemUsageId = A<int>();
+            var interfaceId = A<int>();
+            var frequencyTypeId = A<int>();
+            var contractId = A<int>();
+            var newRelation = new SystemRelation(fromSystemUsage);
+            var systemRelationParameters1 = new SystemRelationParameters(A<Guid>(), A<Guid>(), A<Guid>(), A<Guid>(), A<string>(), A<string>());
+            var systemRelationParameters2 = new SystemRelationParameters(A<Guid>(), A<Guid>(), A<Guid>(), A<Guid>(), A<string>(), A<string>());
+            var transaction = ExpectTransaction();
+            ExpectGetSystemUsageReturns(fromUsageUuid, fromSystemUsage);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters1.ToSystemUsageUuid, toSystemUsageId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters1.UsingInterfaceUuid, interfaceId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters1.RelationFrequencyUuid, frequencyTypeId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters1.AssociatedContractUuid, contractId);
+            ExpectAddSystemRelationReturns(fromSystemUsage, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters1.Description, systemRelationParameters1.UrlReference, newRelation);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters2.ToSystemUsageUuid, toSystemUsageId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters2.UsingInterfaceUuid, interfaceId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters2.RelationFrequencyUuid, frequencyTypeId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters2.AssociatedContractUuid, contractId);
+            var createError = A<OperationError>();
+            ExpectAddSystemRelationReturns(fromSystemUsage, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters2.Description, systemRelationParameters2.UrlReference, createError);
+
+            var parametersList = new List<SystemRelationParameters>() { systemRelationParameters1, systemRelationParameters2 };
+
+            var result = _sut.CreateSystemRelations(fromUsageUuid, parametersList);
+
+            Assert.True(result.Failed);
+            Assert.Equal(createError, result.Error);
+            AssertTransactionNotCommitted(transaction);
+        }
+
         [Theory]
         [InlineData(true, true, true)]
         [InlineData(true, true, false)]
