@@ -296,16 +296,14 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await response.ReadResponseBodyAsAsync<OutgoingSystemRelationResponseDTO>();
         }
 
-        public static async Task<IEnumerable<OutgoingSystemRelationResponseDTO>> PostManyRelationsAsync(
+        public static async Task<HttpResponseMessage> PostManyRelationsAsync(
             Guid systemUsageUuid, IEnumerable<SystemRelationWriteRequestDTO> dtos)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await SendPostRelationsAsync(cookie, systemUsageUuid, dtos);
+            var response = await SendPostRelationsAsync(cookie, systemUsageUuid, dtos);
             if (!response.IsSuccessStatusCode)
                 Debug.WriteLine(response.StatusCode + ":" + await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<IEnumerable<OutgoingSystemRelationResponseDTO>>();
+            return response;
         }
 
         public static async Task<HttpResponseMessage> SendPostRelationsAsync(Cookie cookie, Guid systemUsageUuid,
