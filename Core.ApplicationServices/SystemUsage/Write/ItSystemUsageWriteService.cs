@@ -772,7 +772,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         
         public Result<IEnumerable<SystemRelation>, OperationError> CreateSystemRelations(Guid fromSystemUsageUuid, IEnumerable<SystemRelationParameters> parametersCollection)
         {
-            var results = new HashSet<SystemRelation>();
+            var results = new List<SystemRelation>();
             foreach (var parameters in parametersCollection)
             {
                 var createResult = CreateSystemRelation(fromSystemUsageUuid, parameters);
