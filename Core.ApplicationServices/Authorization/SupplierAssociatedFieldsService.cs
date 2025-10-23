@@ -80,7 +80,6 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
 
     private bool HasUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity)
     {
-
         var changedProperties = parameters.GetChangedPropertyKeys();
         var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
 

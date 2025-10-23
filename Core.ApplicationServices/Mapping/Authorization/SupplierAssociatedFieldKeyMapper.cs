@@ -24,6 +24,7 @@ namespace Core.ApplicationServices.Mapping.Authorization
             { nameof(UpdatedSystemUsageGeneralProperties.ContainsAITechnology), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology) },
             { nameof(UpdatedSystemUsageGDPRProperties.GdprCriticality), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality) },
             { nameof(UpdatedSystemUsageGDPRProperties.RiskAssessmentResult), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment) },
+            { nameof(UpdatedSystemUsageGDPRProperties.RiskAssessmentConducted), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment) },
         };
 
         public IEnumerable<string> MapParameterKeysToDomainKeys(IEnumerable<string> properties, IEntity entity)
@@ -44,7 +45,10 @@ namespace Core.ApplicationServices.Mapping.Authorization
                 {
                     yield return mappedValue;
                 }
-
+                else
+                {
+                    yield return key;
+                }
             }
         }
         private IEnumerable<string> MapUsageRelatedKeys(IEnumerable<string> properties)
@@ -55,7 +59,10 @@ namespace Core.ApplicationServices.Mapping.Authorization
                 {
                     yield return mappedValue;
                 }
-
+                else
+                {
+                    yield return key;
+                }
             }
         }
     }
