@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using AutoFixture;
 using Core.Abstractions.Extensions;
@@ -2197,6 +2198,42 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(error.HasValue);
             Assert.Same(operationError, error.Value);
+        }
+
+
+        [Fact]
+        public void Can_Create_Multiple_Relations()
+        {
+            var fromUsageUuid = A<Guid>();
+            var fromSystemUsage = new ItSystemUsage() { Id = A<int>() };
+            var toSystemUsageId = A<int>();
+            var interfaceId =  A<int>();
+            var frequencyTypeId =  A<int>();
+            var contractId = A<int>();
+            var newRelation = new SystemRelation(fromSystemUsage);
+            var systemRelationParameters1 = new SystemRelationParameters(A<Guid>(), A<Guid>(), A<Guid>(), A<Guid>(), A<string>(), A<string>());
+            var systemRelationParameters2 = new SystemRelationParameters(A<Guid>(), A<Guid>(), A<Guid>(), A<Guid>(), A<string>(), A<string>());
+            var transaction = ExpectTransaction();
+            ExpectGetSystemUsageReturns(fromUsageUuid, fromSystemUsage);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters1.ToSystemUsageUuid, toSystemUsageId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters1.UsingInterfaceUuid, interfaceId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters1.RelationFrequencyUuid, frequencyTypeId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters1.AssociatedContractUuid, contractId);
+            ExpectAddSystemRelationReturns(fromSystemUsage, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters1.Description, systemRelationParameters1.UrlReference, newRelation);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters2.ToSystemUsageUuid, toSystemUsageId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters2.UsingInterfaceUuid, interfaceId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters2.RelationFrequencyUuid, frequencyTypeId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters2.AssociatedContractUuid, contractId);
+            ExpectAddSystemRelationReturns(fromSystemUsage, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters2.Description, systemRelationParameters2.UrlReference, newRelation);
+
+            var parametersList = new List<SystemRelationParameters>() { systemRelationParameters1, systemRelationParameters2 };
+
+            var result = _sut.CreateSystemRelations(fromUsageUuid, parametersList);
+
+            Assert.True(result.Ok);
+            var value = result.Value;
+            Assert.Equal(parametersList.Count, value.Count());
+            AssertTransactionCommitted(transaction);
         }
 
         [Theory]
