@@ -256,6 +256,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return MapSharedRelationProperties(systemRelation, dto);
         }
 
+        public IEnumerable<OutgoingSystemRelationResponseDTO> MapOutgoingSystemRelationDTOs(IEnumerable<SystemRelation> systemRelations)
+        {
+            return systemRelations.Select(MapOutgoingSystemRelationDTO);
+        }
+
         public IncomingSystemRelationResponseDTO MapIncomingSystemRelationDTO(SystemRelation systemRelation)
         {
             var dto = new IncomingSystemRelationResponseDTO

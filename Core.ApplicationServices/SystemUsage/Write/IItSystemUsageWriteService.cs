@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.SystemUsage.Write;
@@ -16,6 +17,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         Result<ItSystemUsage, OperationError> RemoveRole(Guid systemUsageUuid, UserRolePair assignment);
         Maybe<OperationError> Delete(Guid itSystemUsageUuid);
         Result<SystemRelation, OperationError> CreateSystemRelation(Guid fromSystemUsageUuid, SystemRelationParameters parameters);
+        Result<IEnumerable<SystemRelation>, OperationError> CreateSystemRelations(Guid fromSystemUsageUuid, IEnumerable<SystemRelationParameters> parametersCollection);
         Result<SystemRelation, OperationError> UpdateSystemRelation(Guid fromSystemUsageUuid, Guid relationUuid, SystemRelationParameters parameters);
         Maybe<OperationError> DeleteSystemRelation(Guid itSystemUsageUuid, Guid itSystemUsageRelationUuid);
         Result<ArchivePeriod, OperationError> CreateJournalPeriod(Guid systemUsageUuid, SystemUsageJournalPeriodProperties parameters);

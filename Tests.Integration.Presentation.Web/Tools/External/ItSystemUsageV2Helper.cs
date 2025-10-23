@@ -309,6 +309,23 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await response.ReadResponseBodyAsAsync<OutgoingSystemRelationResponseDTO>();
         }
 
+        public static async Task<HttpResponseMessage> PostManyRelationsAsync(
+            Guid systemUsageUuid, IEnumerable<SystemRelationWriteRequestDTO> dtos)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var response = await SendPostRelationsAsync(cookie, systemUsageUuid, dtos);
+            if (!response.IsSuccessStatusCode)
+                Debug.WriteLine(response.StatusCode + ":" + await response.Content.ReadAsStringAsync());
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> SendPostRelationsAsync(Cookie cookie, Guid systemUsageUuid,
+            IEnumerable<SystemRelationWriteRequestDTO> dtos)
+        {
+            return await HttpApi.PostWithCookieAsync(
+                TestEnvironment.CreateUrl($"{BaseUsageInternalApiPath}/{systemUsageUuid}/system-relations"), cookie, dtos);
+        }
+
         public static async Task<HttpResponseMessage> SendPostRelationAsync(string token, Guid systemUsageUuid,
             SystemRelationWriteRequestDTO dto)
         {
