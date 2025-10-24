@@ -241,6 +241,7 @@
     <Compile Include="DomainServices\DPR\QueryReadModelsWhichShouldBecomeActiveTest.cs" />
     <Compile Include="DomainServices\DPR\QueryReadModelsWhichShouldExpireTest.cs" />
     <Compile Include="DomainServices\Interface\QueryByExposingSystemTest.cs" />
+    <Compile Include="DomainServices\Interface\QueryByNameOrItInterfaceIdTest.cs" />
     <Compile Include="DomainServices\Interface\QueryInterfaceByUsedInOrganizationUuidTest.cs" />
     <Compile Include="DomainServices\Interface\QueryByInterfaceIdTest.cs" />
     <Compile Include="DomainServices\IntersectionQueryTest.cs" />
