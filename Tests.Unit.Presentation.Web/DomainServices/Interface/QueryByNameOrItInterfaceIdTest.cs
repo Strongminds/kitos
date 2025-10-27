@@ -26,7 +26,7 @@ namespace Tests.Unit.Presentation.Web.DomainServices.Interface
 
             //Act
             var result = sut.Apply(input);
-            //non-change for ui api generation
+            //non-change for ui api generation nr 2
             //Assert
             var itInterface = Assert.Single(result);
             Assert.Equal(valid.ItInterfaceId, itInterface.ItInterfaceId);
