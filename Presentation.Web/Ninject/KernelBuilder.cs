@@ -144,6 +144,7 @@ using Core.ApplicationServices.Model.KitosEvents;
 using Core.BackgroundJobs.Model.PublicMessages;
 using Core.DomainServices.Suppliers;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
+using Presentation.Web.Infrastructure.Attributes.RateLimiters;
 
 namespace Presentation.Web.Ninject
 {

@@ -44,6 +44,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         [SwaggerResponse(HttpStatusCode.BadRequest)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
         [IgnoreCSRFProtection]
+        [RateLimit]
         [AllowRightsHoldersAccess]
         public HttpResponseMessage GetToken(UserCredentialsDTO loginDto)
         {
