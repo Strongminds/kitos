@@ -934,13 +934,14 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
+        [InlineData(null, 9, UserCount.BELOWTEN)]
         [InlineData(0, 9, UserCount.BELOWTEN)]
         [InlineData(10, 49, UserCount.TENTOFORTYNINE)]
         [InlineData(50, 99, UserCount.FIFTYTONINETYNINE)]
         [InlineData(100, 499, UserCount.HUNDREDTOFOURHUNDREDNINETYNINE)]
         [InlineData(500, null, UserCount.FIVEHUNDREDPLUS)]
         [InlineData(500, int.MaxValue, UserCount.FIVEHUNDREDPLUS)]
-        public void Can_Change_UserCount(int lower, int? upper, UserCount expectedResult)
+        public void Can_Change_UserCount(int? lower, int? upper, UserCount expectedResult)
         {
             //Arrange
             var newIntervalValue = (lower, upper);
