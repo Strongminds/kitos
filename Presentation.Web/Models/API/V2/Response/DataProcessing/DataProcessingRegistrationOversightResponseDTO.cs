@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
@@ -28,8 +29,8 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         public string OversightIntervalRemark { get; set; }
         /// <summary>
         /// Determines if an oversight activity has been completed
-        /// (Supplier Field)
         /// </summary>
+        [SupplierField]
         public YesNoUndecidedChoice? IsOversightCompleted { get; set; }
         /// <summary>
         /// Remark related to the oversight completion

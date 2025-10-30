@@ -38,9 +38,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public SimpleLinkDTO UserSupervisionDocumentation { get; set; }
         public YesNoDontKnowChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
-        /// <summary>
-        /// (Supplier Field)
-        /// </summary>
+        [SupplierField]
         public RiskLevelChoice? RiskAssessmentResult { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
         /// <summary>
@@ -56,9 +54,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public YesNoDontKnowChoice? RetentionPeriodDefined { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
         public int? DataRetentionEvaluationFrequencyInMonths { get; set; }
-        /// <summary>
-        /// (Supplier Field)
-        /// </summary>
+        [SupplierField]
         public GdprCriticalityChoice? GdprCriticality { get; set; }
     }
 }

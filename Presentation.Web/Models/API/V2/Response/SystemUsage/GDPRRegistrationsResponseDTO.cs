@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
@@ -30,9 +31,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public SimpleLinkDTO UserSupervisionDocumentation { get; set; }
         public YesNoDontKnowChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
-        /// <summary>
-        /// (Supplier Field)
-        /// </summary>
+        [SupplierField]
         public RiskLevelChoice? RiskAssessmentResult { get; set; }
         public SimpleLinkDTO RiskAssessmentDocumentation { get; set; }
         public string RiskAssessmentNotes { get; set; }
@@ -43,9 +42,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public YesNoDontKnowChoice? RetentionPeriodDefined { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
         public int? DataRetentionEvaluationFrequencyInMonths { get; set; }
-        /// <summary>
-        /// (Supplier Field)
-        /// </summary>
+        [SupplierField]
         public GdprCriticalityChoice? GdprCriticality { get; set; }
     }
 }
