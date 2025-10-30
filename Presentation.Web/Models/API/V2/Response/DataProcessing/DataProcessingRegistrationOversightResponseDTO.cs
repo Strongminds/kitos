@@ -28,6 +28,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         public string OversightIntervalRemark { get; set; }
         /// <summary>
         /// Determines if an oversight activity has been completed
+        /// (Supplier Field)
         /// </summary>
         public YesNoUndecidedChoice? IsOversightCompleted { get; set; }
         /// <summary>

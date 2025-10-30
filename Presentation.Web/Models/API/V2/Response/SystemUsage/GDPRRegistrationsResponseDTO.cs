@@ -30,6 +30,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public SimpleLinkDTO UserSupervisionDocumentation { get; set; }
         public YesNoDontKnowChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
+        /// <summary>
+        /// (Supplier Field)
+        /// </summary>
         public RiskLevelChoice? RiskAssessmentResult { get; set; }
         public SimpleLinkDTO RiskAssessmentDocumentation { get; set; }
         public string RiskAssessmentNotes { get; set; }
@@ -40,6 +43,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public YesNoDontKnowChoice? RetentionPeriodDefined { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
         public int? DataRetentionEvaluationFrequencyInMonths { get; set; }
+        /// <summary>
+        /// (Supplier Field)
+        /// </summary>
         public GdprCriticalityChoice? GdprCriticality { get; set; }
     }
 }
