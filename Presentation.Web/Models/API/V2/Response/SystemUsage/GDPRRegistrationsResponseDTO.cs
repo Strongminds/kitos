@@ -29,6 +29,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public YesNoDontKnowChoice? UserSupervision { get; set; }
         public DateTime? UserSupervisionDate { get; set; }
         public SimpleLinkDTO UserSupervisionDocumentation { get; set; }
+        /// <summary>
+        /// (Shared Supplier Field)
+        /// </summary>
         public YesNoDontKnowChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
         [SupplierField]
