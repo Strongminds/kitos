@@ -14,6 +14,7 @@ namespace Presentation.Web.Models.API.V2.Types.DataProcessing
         /// <summary>
         /// Optional remark related to the oversight
         /// </summary>
+        [SupplierField]
         public string Remark { get; set; }
 
         /// <summary>
