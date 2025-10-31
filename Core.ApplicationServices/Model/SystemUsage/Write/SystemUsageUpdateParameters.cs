@@ -61,10 +61,20 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.NumberOfExpectedUsersInterval));
             if (general.LifeCycleStatus.HasChange)
                 changed.Add(nameof(general.LifeCycleStatus));
+            if (general.ValidFrom.HasChange)
+                changed.Add(nameof(general.ValidFrom));
+            if (general.ValidTo.HasChange)
+                changed.Add(nameof(general.ValidTo));
             if (general.MainContractUuid.HasChange)
                 changed.Add(nameof(general.MainContractUuid));
             if (general.ContainsAITechnology.HasChange)
                 changed.Add(nameof(general.ContainsAITechnology));
+            if (general.WebAccessibilityCompliance.HasChange)
+                changed.Add(nameof(general.WebAccessibilityCompliance));
+            if (general.LastWebAccessibilityCheck.HasChange)
+                changed.Add(nameof(general.LastWebAccessibilityCheck));
+            if (general.WebAccessibilityNotes.HasChange)
+                changed.Add(nameof(general.WebAccessibilityNotes));
             return changed;
         }
 
@@ -109,6 +119,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(gdpr.BusinessCritical));
             if (gdpr.HostedAt.HasChange)
                 changed.Add(nameof(gdpr.HostedAt));
+            if (gdpr.DirectoryDocumentation.HasChange)
+                changed.Add(nameof(gdpr.DirectoryDocumentation));
             if (gdpr.DataSensitivityLevels.HasChange)
                 changed.Add(nameof(gdpr.DataSensitivityLevels));
             if (gdpr.SensitivePersonDataUuids.HasChange)
@@ -119,6 +131,10 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(gdpr.RegisteredDataCategoryUuids));
             if (gdpr.TechnicalPrecautionsInPlace.HasChange)
                 changed.Add(nameof(gdpr.TechnicalPrecautionsInPlace));
+            if (gdpr.TechnicalPrecautionsApplied.HasChange)
+                changed.Add(nameof(gdpr.TechnicalPrecautionsApplied));
+            if (gdpr.TechnicalPrecautionsDocumentation.HasChange)
+                changed.Add(nameof(gdpr.TechnicalPrecautionsDocumentation));
             if (gdpr.UserSupervision.HasChange)
                 changed.Add(nameof(gdpr.UserSupervision));
             if (gdpr.UserSupervisionDate.HasChange)
@@ -131,12 +147,18 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(gdpr.RiskAssessmentConductedDate));
             if (gdpr.RiskAssessmentResult.HasChange)
                 changed.Add(nameof(gdpr.RiskAssessmentResult));
+            if (gdpr.RiskAssessmentDocumentation.HasChange)
+                changed.Add(nameof(gdpr.RiskAssessmentDocumentation));
             if (gdpr.PlannedRiskAssessmentDate.HasChange)
                 changed.Add(nameof(gdpr.PlannedRiskAssessmentDate));
+            if (gdpr.RiskAssessmentNotes.HasChange)
+                changed.Add(nameof(gdpr.RiskAssessmentNotes));
             if (gdpr.DPIAConducted.HasChange)
                 changed.Add(nameof(gdpr.DPIAConducted));
             if (gdpr.DPIADate.HasChange)
                 changed.Add(nameof(gdpr.DPIADate));
+            if (gdpr.DPIADocumentation.HasChange)
+                changed.Add(nameof(gdpr.DPIADocumentation));
             if (gdpr.RetentionPeriodDefined.HasChange)
                 changed.Add(nameof(gdpr.RetentionPeriodDefined));
             if (gdpr.NextDataRetentionEvaluationDate.HasChange)
@@ -164,10 +186,14 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(arch.ArchiveSupplierOrganizationUuid));
             if (arch.ArchiveActive.HasChange)
                 changed.Add(nameof(arch.ArchiveActive));
+            if (arch.ArchiveNotes.HasChange)
+                changed.Add(nameof(arch.ArchiveNotes));
             if (arch.ArchiveFrequencyInMonths.HasChange)
                 changed.Add(nameof(arch.ArchiveFrequencyInMonths));
             if (arch.ArchiveDocumentBearing.HasChange)
                 changed.Add(nameof(arch.ArchiveDocumentBearing));
+            if (arch.ArchiveJournalPeriods.HasChange)
+                changed.Add(nameof(arch.ArchiveJournalPeriods));
             return changed;
         }
 
