@@ -123,7 +123,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         [SwaggerResponse(HttpStatusCode.Unauthorized)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetAddRoleAssignments([NonEmptyGuid] Guid systemUsageUuid)
+        public IHttpActionResult GetRoleAssignments([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
