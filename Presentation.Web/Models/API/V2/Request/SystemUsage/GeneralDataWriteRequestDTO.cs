@@ -51,6 +51,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// <summary>
         /// Whether the system usage is known to include any kind of AI technology
         /// </summary>
+        [SupplierField]
         public YesNoUndecidedChoice? ContainsAITechnology { get; set; }
         /// <summary>
         /// Defines if the system is web accessibility compliant

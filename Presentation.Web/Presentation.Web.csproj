@@ -507,6 +507,7 @@
     <Compile Include="Controllers\API\V2\Internal\Users\PasswordResetV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Users\UsersInternalV2Controller.cs" />
     <Compile Include="Controllers\Web\HomeController.cs" />
+    <Compile Include="Infrastructure\Attributes\SupplierFieldAttribute.cs" />
     <Compile Include="Infrastructure\Attributes\V2StyleJsonResponseSerializationAttribute.cs" />
     <Compile Include="Infrastructure\Config\V2JsonSerializationConfig.cs" />
     <Compile Include="Controllers\API\V2\Internal\Notifications\Mapping\NotificationTypeMappingExtensions.cs" />
@@ -703,6 +704,7 @@
     <Compile Include="Models\API\V2\Types\System\SystemDeletionConflict.cs" />
     <Compile Include="Swagger\PurgeUnusedTypesDocumentFilter.cs" />
     <Compile Include="Swagger\RemoveUnneededMutatingCallsFilter.cs" />
+    <Compile Include="Swagger\SupplierFieldSchemaFilter.cs" />
     <Compile Include="Swagger\SwashbuckleExtensions.cs" />
     <Compile Include="Controllers\API\V1\Mapping\DTOMappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\Common\ApiV2Controller.cs" />

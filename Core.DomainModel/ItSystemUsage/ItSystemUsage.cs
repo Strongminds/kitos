@@ -546,10 +546,11 @@ namespace Core.DomainModel.ItSystemUsage
             UserCount = DomainModel.ItSystem.DataTypes.UserCount.UNDECIDED;
         }
 
-        public Maybe<OperationError> SetExpectedUsersInterval((int lower, int? upperBound) newIntervalValue)
+        public Maybe<OperationError> SetExpectedUsersInterval((int? lower, int? upperBound) newIntervalValue)
         {
             switch (newIntervalValue)
             {
+                case (null, 9):
                 case (0, 9):
                     UserCount = DomainModel.ItSystem.DataTypes.UserCount.BELOWTEN;
                     break;

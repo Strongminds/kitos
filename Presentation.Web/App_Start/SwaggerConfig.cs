@@ -119,6 +119,8 @@ namespace Presentation.Web
                     );
                     c.IncludeXmlComments(commentsFile);
 
+                    c.SchemaFilter<SupplierFieldSchemaFilter>();
+
                     c.DescribeAllEnumsAsStrings();
 
                     //Fix invalid names (generics etc)

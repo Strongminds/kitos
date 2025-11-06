@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
@@ -41,7 +42,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// Defines the master contract for this system (many contracts can point to a system usage but only one can be the master contract)
         /// </summary>
         public IdentityNamePairResponseDTO MainContract { get; set; }
-
+        [SupplierField]
         public YesNoUndecidedChoice? ContainsAITechnology { get; set; }
         /// <summary>
         /// Defines if the system is web accessibility compliant
