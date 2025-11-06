@@ -1081,9 +1081,15 @@
     <Content Include="Global.asax" />
     <Content Include="Metadata.ashx" />
     <Content Include="LoginHandler.ashx" />
-    <Content Include="Content\excel\OS2KITOS Brugere.xlsx" />
-    <Content Include="Content\excel\OS2KITOS IT Kontrakter.xlsx" />
-    <Content Include="Content\excel\OS2KITOS Organisationsenheder.xlsx" />
+    <Content Include="Content\excel\OS2KITOS Brugere.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\excel\OS2KITOS IT Kontrakter.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\excel\OS2KITOS Organisationsenheder.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
