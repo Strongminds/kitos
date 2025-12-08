@@ -100,7 +100,7 @@ namespace Tests.Unit.Core.Model
             else
             {
                 Assert.True(result.HasValue);
-                Assert.Equal(result.Value.FailureType, OperationFailure.BadInput);
+                Assert.Equal(OperationFailure.BadInput, result.Value.FailureType);
             }
         }
 

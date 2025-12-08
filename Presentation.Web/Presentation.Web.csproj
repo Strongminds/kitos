@@ -384,7 +384,6 @@
     <Compile Include="Controllers\API\V2\External\Tokens\TokenV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ExternalReferences\ExternalReferencesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GdprExportReportInternalV2Controller.cs" />
-    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationGlobalCountryCodesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationUnit\OrganizationUnitGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Messages\Mapping\PublicMessageIconTypeChoiceExtension.cs" />
