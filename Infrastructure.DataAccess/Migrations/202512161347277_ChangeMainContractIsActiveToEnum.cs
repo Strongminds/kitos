@@ -25,11 +25,11 @@
             Sql(@"
                 INSERT INTO PendingReadModelUpdates (Category, SourceId, Time)
                 SELECT 'ItSystemUsageOverviewReadModel', Id, GETUTCDATE()
-                FROM ItSystemUsages
+                FROM dbo.ItSystemUsage
                 WHERE NOT EXISTS (
                     SELECT 1 FROM PendingReadModelUpdates 
                     WHERE Category = 'ItSystemUsageOverviewReadModel' 
-                    AND SourceId = ItSystemUsages.Id
+                    AND SourceId = dbo.ItSystemUsage.Id
                 );
             ");
         }
