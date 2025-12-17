@@ -158,6 +158,7 @@
     <Compile Include="PublicMessage\PublicMessageStatus.cs" />
     <Compile Include="PublicMessage\PublicMessageIconType.cs" />
     <Compile Include="Shared\LifeCycleEventType.cs" />
+    <Compile Include="Shared\MainContractState.cs" />
     <Compile Include="Shared\RelatedEntityType.cs" />
     <Compile Include="ArchiveDutyRecommendationTypes.cs" />
     <Compile Include="ArchiveDutyTypes.cs" />

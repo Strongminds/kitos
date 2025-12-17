@@ -402,7 +402,18 @@ namespace Core.DomainServices.SystemUsage
             destination.MainContractId = source.MainContract?.ItContractId;
             destination.MainContractSupplierId = source.MainContract?.ItContract?.Supplier?.Id;
             destination.MainContractSupplierName = source.MainContract?.ItContract?.Supplier?.Name;
-            destination.MainContractIsActive = source.IsActiveAccordingToMainContract;
+            
+            // Map the contract state to the new enum
+            if (source.MainContract == null)
+            {
+                destination.MainContractIsActive = MainContractState.NoContract;
+            }
+            else
+            {
+                destination.MainContractIsActive = source.IsActiveAccordingToMainContract 
+                    ? MainContractState.Active 
+                    : MainContractState.Inactive;
+            }
         }
 
         private static void PatchReference(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
