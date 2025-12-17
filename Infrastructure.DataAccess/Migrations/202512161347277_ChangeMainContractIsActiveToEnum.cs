@@ -24,11 +24,11 @@
             // Queue all read models for rebuild to recalculate with the new business logic
             Sql(@"
                 INSERT INTO PendingReadModelUpdates (Category, SourceId, CreatedAt)
-                SELECT 'ItSystemUsageOverviewReadModel', Id, GETUTCDATE()
+                SELECT 8, Id, GETUTCDATE()
                 FROM dbo.ItSystemUsage
                 WHERE NOT EXISTS (
                     SELECT 1 FROM PendingReadModelUpdates 
-                    WHERE Category = 'ItSystemUsageOverviewReadModel' 
+                    WHERE Category = 8 
                     AND SourceId = dbo.ItSystemUsage.Id
                 );
             ");
