@@ -168,7 +168,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
         private static GeneralDataResponseDTO MapGeneral(ItSystemUsage systemUsage)
         {
-            var mainContractState = GetMainContractState(systemUsage);
             return new GeneralDataResponseDTO
             {
                 LocalCallName = systemUsage.LocalCallName,
@@ -184,7 +183,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ValidAccordingToValidityPeriod = systemUsage.IsActiveAccordingToDateFields,
                     ValidAccordingToLifeCycle = systemUsage.IsActiveAccordingToLifeCycle,
                     ValidAccordingToMainContract = systemUsage.IsActiveAccordingToMainContract,
-                    MainContractState = mainContractState.ToMainContractStateChoice(),
+                    MainContractState = systemUsage.MainContractState.ToMainContractStateChoice(),
                     LifeCycleStatus = MapLifeCycleStatus(systemUsage),
                     ValidFrom = systemUsage.Concluded,
                     ValidTo = systemUsage.ExpirationDate
@@ -194,17 +193,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 LastWebAccessibilityCheck = systemUsage.LastWebAccessibilityCheck,
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes
             };
-        }
-
-        private static MainContractState GetMainContractState(ItSystemUsage systemUsage)
-        {
-            if (systemUsage.MainContract == null)
-            {
-                return MainContractState.NoContract;
-            }
-            return systemUsage.IsActiveAccordingToMainContract 
-                ? MainContractState.Active 
-                : MainContractState.Inactive;
         }
 
         private static RiskLevelChoice? MapRiskAssessment(ItSystemUsage systemUsage)
