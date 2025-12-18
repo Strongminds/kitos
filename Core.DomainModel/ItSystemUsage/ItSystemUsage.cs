@@ -61,6 +61,26 @@ namespace Core.DomainModel.ItSystemUsage
         public bool IsActiveAccordingToMainContract => CheckContractValidity().IsNone;
 
         /// <summary>
+        /// Gets the current state of the main contract.
+        /// </summary>
+        /// <value>
+        /// The main contract state: NoContract if no contract is assigned, Active if contract is valid, Inactive otherwise.
+        /// </value>
+        public MainContractState MainContractState
+        {
+            get
+            {
+                if (MainContract == null)
+                {
+                    return MainContractState.NoContract;
+                }
+                return IsActiveAccordingToMainContract
+                    ? MainContractState.Active
+                    : MainContractState.Inactive;
+            }
+        }
+
+        /// <summary>
         ///     When the system began. (indgået)
         /// </summary>
         /// <value>
@@ -1207,7 +1227,7 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
-        private Maybe<ItSystemUsageValidationError> CheckContractValidity()
+            private Maybe<ItSystemUsageValidationError> CheckContractValidity()
         {
             return MainContract?.ItContract?.IsActive == false
                 ? ItSystemUsageValidationError.MainContractNotActive

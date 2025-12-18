@@ -76,7 +76,7 @@ namespace Core.DomainModel
         public int Priority { get; set; }
         public Guid Uuid { get; set; }
 
-        public void UpdateLocalOptionValues<TLocal>(LocalOptionEntity<TLocal>? localOption)
+        public void UpdateLocalOptionValues<TLocal>(LocalOptionEntity<TLocal> localOption)
         {
             if (localOption == null)
             {

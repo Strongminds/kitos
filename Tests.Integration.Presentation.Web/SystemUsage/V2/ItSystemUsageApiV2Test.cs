@@ -771,6 +771,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(contract1.Uuid, freshReadDTO.General.MainContract.Uuid);
             Assert.Equal(contract1.Name, freshReadDTO.General.MainContract.Name);
             Assert.True(freshReadDTO.General.Validity.ValidAccordingToMainContract);
+            Assert.Equal(MainContractStateChoice.Active, freshReadDTO.General.Validity.MainContractState);
 
             //Act - set to another contract
             using var response2 = await ItSystemUsageV2Helper.SendPatchGeneral(token, newUsage.Uuid, new GeneralDataUpdateRequestDTO { MainContractUuid = contract2.Uuid }).WithExpectedResponseCode(HttpStatusCode.OK);
@@ -786,6 +787,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(contract2.Uuid, freshReadDTO.General.MainContract.Uuid);
             Assert.Equal(contract2.Name, freshReadDTO.General.MainContract.Name);
             Assert.False(freshReadDTO.General.Validity.ValidAccordingToMainContract);
+            Assert.Equal(MainContractStateChoice.Inactive, freshReadDTO.General.Validity.MainContractState);
 
             //Act - set to contract to null
             using var response3 = await ItSystemUsageV2Helper.SendPatchGeneral(token, newUsage.Uuid, new GeneralDataUpdateRequestDTO { MainContractUuid = null }).WithExpectedResponseCode(HttpStatusCode.OK);
@@ -793,6 +795,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             //Assert
             freshReadDTO = await ItSystemUsageV2Helper.GetSingleAsync(token, newUsage.Uuid);
             Assert.True(freshReadDTO.General.Validity.ValidAccordingToMainContract);
+            Assert.Equal(MainContractStateChoice.NoContract, freshReadDTO.General.Validity.MainContractState);
         }
 
         [Fact]

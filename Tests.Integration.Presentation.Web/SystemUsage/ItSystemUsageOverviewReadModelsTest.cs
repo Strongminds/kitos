@@ -386,7 +386,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0)); //also MainContractUuid
             Assert.Equal(organizationId, readModel.MainContractSupplierId);
             Assert.Equal(organizationName, readModel.MainContractSupplierName);
-            Assert.True(readModel.MainContractIsActive);
+            Assert.Equal(MainContractState.Active, readModel.MainContractIsActive);
 
             // Associated contracts
             var expectedContracts = new[] { contract1, contract2 }.ToList();
@@ -648,7 +648,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Null(readModel.MainContractId);
             Assert.Null(readModel.MainContractSupplierId);
             Assert.Null(readModel.MainContractSupplierName);
-            Assert.True(readModel.MainContractIsActive);
+            Assert.Equal(MainContractState.NoContract, readModel.MainContractIsActive);
         }
 
         [Fact]

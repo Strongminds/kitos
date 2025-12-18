@@ -380,11 +380,11 @@
     <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\LegalPropertyWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\ItSystems\Mapping\ILegalPropertyWriteModelMapper.cs" />
     <Compile Include="Controllers\API\V2\External\ItSystemUsages\Mapping\GdprCriticalityChoiceMappingExtensions.cs" />
+    <Compile Include="Controllers\API\V2\External\ItSystemUsages\Mapping\MainContractStateMappingExtensions.cs" />
     <Compile Include="Controllers\API\V2\External\OrganizationUnits\OrganizationUnitRoleTypeV2Controller.cs" />
     <Compile Include="Controllers\API\V2\External\Tokens\TokenV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\ExternalReferences\ExternalReferencesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GdprExportReportInternalV2Controller.cs" />
-    <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\DataProcessingRegistrations\DprGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationGlobalCountryCodesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\GlobalOptionTypes\OrganizationUnit\OrganizationUnitGlobalRoleOptionTypesInternalV2Controller.cs" />
     <Compile Include="Controllers\API\V2\Internal\Messages\Mapping\PublicMessageIconTypeChoiceExtension.cs" />
@@ -701,6 +701,7 @@
     <Compile Include="Models\API\V2\Types\Shared\CommonOrderByProperty.cs" />
     <Compile Include="Models\API\V2\Types\Shared\YesNoPartiallyChoice.cs" />
     <Compile Include="Models\API\V2\Types\SystemUsage\GdprCriticalityChoice.cs" />
+    <Compile Include="Models\API\V2\Types\SystemUsage\MainContractStateChoice.cs" />
     <Compile Include="Models\API\V2\Types\System\SystemDeletionConflict.cs" />
     <Compile Include="Swagger\PurgeUnusedTypesDocumentFilter.cs" />
     <Compile Include="Swagger\RemoveUnneededMutatingCallsFilter.cs" />

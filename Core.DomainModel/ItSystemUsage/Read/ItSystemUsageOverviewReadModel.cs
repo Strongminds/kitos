@@ -103,7 +103,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public int? MainContractId { get; set; }
         public int? MainContractSupplierId { get; set; }
         public string MainContractSupplierName { get; set; }
-        public bool MainContractIsActive { get; set; }
+        public MainContractState MainContractIsActive { get; set; }
         public string SensitiveDataLevelsAsCsv { get; set; }
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }

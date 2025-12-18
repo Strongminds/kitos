@@ -6,6 +6,7 @@ using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
+using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Repositories.GDPR;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
@@ -182,6 +183,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ValidAccordingToValidityPeriod = systemUsage.IsActiveAccordingToDateFields,
                     ValidAccordingToLifeCycle = systemUsage.IsActiveAccordingToLifeCycle,
                     ValidAccordingToMainContract = systemUsage.IsActiveAccordingToMainContract,
+                    MainContractState = systemUsage.MainContractState.ToMainContractStateChoice(),
                     LifeCycleStatus = MapLifeCycleStatus(systemUsage),
                     ValidFrom = systemUsage.Concluded,
                     ValidTo = systemUsage.ExpirationDate

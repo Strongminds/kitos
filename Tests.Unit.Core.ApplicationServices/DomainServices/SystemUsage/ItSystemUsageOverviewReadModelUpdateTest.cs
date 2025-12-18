@@ -411,7 +411,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(contract1.Id, readModel.MainContractId);
             Assert.Equal(contract1.Supplier.Id, readModel.MainContractSupplierId);
             Assert.Equal(contract1.Supplier.Name, readModel.MainContractSupplierName);
-            Assert.Equal(contract1.IsActive, readModel.MainContractIsActive);
+            var expectedMainContractState = contract1.IsActive ? MainContractState.Active : MainContractState.Inactive;
+            Assert.Equal(expectedMainContractState, readModel.MainContractIsActive);
 
             //AsociatedContracts
             var expectedContracts = new[] { contract1, contract2 }.ToList();

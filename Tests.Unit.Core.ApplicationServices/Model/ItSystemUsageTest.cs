@@ -9,6 +9,7 @@ using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
+using Core.DomainModel.Shared;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -100,7 +101,7 @@ namespace Tests.Unit.Core.Model
             else
             {
                 Assert.True(result.HasValue);
-                Assert.Equal(result.Value.FailureType, OperationFailure.BadInput);
+                Assert.Equal(OperationFailure.BadInput, result.Value.FailureType);
             }
         }
 
@@ -459,6 +460,7 @@ namespace Tests.Unit.Core.Model
         [Theory]
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
+        [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.UNDECIDED)]
         public void UpdateUserSupervision_Clears_Related_Fields_If_Not_Yes(DataOptions userSupervision)
         {
@@ -1161,6 +1163,114 @@ namespace Tests.Unit.Core.Model
             }
 
             return usage;
+        }
+
+        [Fact]
+        public void MainContractState_Returns_NoContract_When_No_MainContract_Assigned()
+        {
+            //Arrange
+            var usage = new ItSystemUsage
+            {
+                MainContract = null
+            };
+
+            //Act
+            var state = usage.MainContractState;
+
+            //Assert
+            Assert.Equal(MainContractState.NoContract, state);
+        }
+
+        [Fact]
+        public void MainContractState_Returns_Active_When_MainContract_Is_Active()
+        {
+            //Arrange
+            var usage = new ItSystemUsage
+            {
+                MainContract = new ItContractItSystemUsage
+                {
+                    ItContract = new ItContract
+                    {
+                        Active = true
+                    }
+                }
+            };
+
+            //Act
+            var state = usage.MainContractState;
+
+            //Assert
+            Assert.Equal(MainContractState.Active, state);
+        }
+
+        [Fact]
+        public void MainContractState_Returns_Inactive_When_MainContract_Exists_But_Is_Not_Active()
+        {
+            //Arrange
+            var usage = new ItSystemUsage
+            {
+                MainContract = new ItContractItSystemUsage
+                {
+                    ItContract = new ItContract
+                    {
+                        Active = false,
+                        ExpirationDate = DateTime.UtcNow.AddDays(-1) // Expired contract
+                    }
+                }
+            };
+
+            //Act
+            var state = usage.MainContractState;
+
+            //Assert
+            Assert.Equal(MainContractState.Inactive, state);
+        }
+
+        [Fact]
+        public void MainContractState_Returns_Active_When_MainContract_Has_No_Validity_Constraints()
+        {
+            //Arrange
+            var usage = new ItSystemUsage
+            {
+                MainContract = new ItContractItSystemUsage
+                {
+                    ItContract = new ItContract
+                    {
+                        // No dates set, so contract is valid by default
+                        Concluded = null,
+                        ExpirationDate = null
+                    }
+                }
+            };
+
+            //Act
+            var state = usage.MainContractState;
+
+            //Assert
+            Assert.Equal(MainContractState.Active, state);
+        }
+
+        [Fact]
+        public void MainContractState_Returns_Inactive_When_MainContract_Is_Expired()
+        {
+            //Arrange
+            var usage = new ItSystemUsage
+            {
+                MainContract = new ItContractItSystemUsage
+                {
+                    ItContract = new ItContract
+                    {
+                        Active = false,
+                        ExpirationDate = DateTime.UtcNow.AddDays(-1)
+                    }
+                }
+            };
+
+            //Act
+            var state = usage.MainContractState;
+
+            //Assert
+            Assert.Equal(MainContractState.Inactive, state);
         }
     }
 }
