@@ -1227,9 +1227,9 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
-        private Maybe<ItSystemUsageValidationError> CheckContractValidity()
+            private Maybe<ItSystemUsageValidationError> CheckContractValidity()
         {
-            return MainContract?.ItContract?.IsActive == false
+            return MainContract?.ItContract?.IsActive != true
                 ? ItSystemUsageValidationError.MainContractNotActive
                 : Maybe<ItSystemUsageValidationError>.None;
         }

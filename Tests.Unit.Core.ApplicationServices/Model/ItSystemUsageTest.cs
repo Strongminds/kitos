@@ -1213,7 +1213,8 @@ namespace Tests.Unit.Core.Model
                 {
                     ItContract = new ItContract
                     {
-                        Active = false
+                        Active = false,
+                        ExpirationDate = DateTime.UtcNow.AddDays(-1) // Expired contract
                     }
                 }
             };
@@ -1235,7 +1236,7 @@ namespace Tests.Unit.Core.Model
                 {
                     ItContract = new ItContract
                     {
-                        Active = false,
+                        // No dates set, so contract is valid by default
                         Concluded = null,
                         ExpirationDate = null
                     }
