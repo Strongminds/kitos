@@ -1,15 +1,12 @@
-﻿param (
-    [Parameter(Mandatory = $true)]
-    [string]$AllowListPath
-)
+﻿$ErrorActionPreference = "Stop"
 
-$ErrorActionPreference = "Stop"
+# Retrieve configuration from AWS Parameter Store
+Write-Host "Loading allowlist configuration from AWS Parameter Store"
 
-if (-not (Test-Path $AllowListPath)) {
-    throw "Allow-list file not found: $AllowListPath"
-}
+$configJson = aws ssm get-parameter --with-decryption --name "/kitos/lightsail/allowlist/config" | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) { throw "FAILED TO LOAD allowlist configuration from AWS Parameter Store" }
 
-$cfg = Get-Content $AllowListPath | ConvertFrom-Json
+$cfg = $configJson.Parameter.Value | ConvertFrom-Json
 
 Write-Host ""
 Write-Host "=== Lightsail IP Whitelisting ==="
