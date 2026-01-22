@@ -160,6 +160,14 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
                 _configuration.ClientCertificateThumbprint
             );
             client.ClientCredentials.ClientCertificate.Certificate = certificate;
+            
+            var serviceCertificate = CertificateLoader.LoadCertificate(
+                StoreName.My,
+                StoreLocation.LocalMachine,
+                _configuration.OrganizationServiceCertificateThumbprint
+            );
+            client.ClientCredentials.ServiceCertificate.DefaultCertificate = serviceCertificate;
+            
             client.Endpoint.Contract.ProtectionLevel = ProtectionLevel.None;
 
             return client.ChannelFactory.CreateChannelWithIssuedToken(token);
