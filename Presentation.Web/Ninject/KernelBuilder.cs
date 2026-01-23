@@ -435,7 +435,8 @@ namespace Presentation.Web.Ninject
                     Settings.Default.ServiceCertificateAliasOrg,
                     Settings.Default.StsCertificateAlias,
                     Settings.Default.StsCertificateThumbprint,
-                    Settings.Default.OrgService6EntityId
+                    Settings.Default.OrgService6EntityId,
+                    Settings.Default.StsOrganisationCertificateThumbprint
                     ))
                 .InSingletonScope();
 

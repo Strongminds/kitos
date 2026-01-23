@@ -10,8 +10,9 @@
         public string StsCertificateAlias { get; }
         public string StsCertificateThumbprint { get; }
         public string OrgService6EntityId { get; }
+        public string OrganizationServiceCertificateThumbprint { get; }
 
-        public StsOrganisationIntegrationConfiguration(string clientCertificateThumbprint, string endpointHost, string issuer, string certificateEndpoint, string serviceCertificateAliasOrg, string stsCertificateAlias, string stsCertificateThumbprint, string orgService6EntityId)
+        public StsOrganisationIntegrationConfiguration(string clientCertificateThumbprint, string endpointHost, string issuer, string certificateEndpoint, string serviceCertificateAliasOrg, string stsCertificateAlias, string stsCertificateThumbprint, string orgService6EntityId, string organizationServiceCertificateThumbprint)
         {
             ClientCertificateThumbprint = clientCertificateThumbprint;
             EndpointHost = endpointHost;
@@ -21,6 +22,7 @@
             StsCertificateAlias = stsCertificateAlias;
             StsCertificateThumbprint = stsCertificateThumbprint;
             OrgService6EntityId = orgService6EntityId;
+            OrganizationServiceCertificateThumbprint = organizationServiceCertificateThumbprint;
         }
     }
 }
