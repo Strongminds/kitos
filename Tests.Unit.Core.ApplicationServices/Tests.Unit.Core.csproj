@@ -32,6 +32,11 @@
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ApplicationServices\KLE\*.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <!-- Uses Presentation.Web.* types - cannot reference .NET Framework 4.8 project -->
     <Compile Remove="ApplicationServices\GDPR\DataProcessingRegistrationApplicationServiceTest.cs" />
     <!-- Uses old Ninject API (StandardKernel) which is replaced by MEDI -->
