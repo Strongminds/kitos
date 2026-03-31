@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -10,11 +11,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
+using Presentation.Web.Helpers;
 using Presentation.Web.Hangfire;
 using Presentation.Web.Infrastructure.DI;
+using Presentation.Web.Swagger;
 using Serilog;
 using Core.BackgroundJobs.Model;
 using Hangfire.Common;
@@ -33,7 +37,7 @@ var configuration = builder.Configuration;
 var services = builder.Services;
 
 // Controllers with Newtonsoft.Json
-services.AddControllers()
+services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -80,8 +84,47 @@ services.AddAuthorization();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V1", Version = "v1" });
-    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V2", Version = "v2" });
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V1", Version = "1" });
+    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V2", Version = "2" });
+
+    c.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        var isV2Path = (apiDesc.RelativePath ?? "").IsExternalApiPath();
+        return docName == "v2" ? isV2Path : !isV2Path;
+    });
+
+    c.CustomSchemaIds(type =>
+    {
+        if (!type.IsConstructedGenericType) return type.Name;
+        string Recurse(Type t) => !t.IsConstructedGenericType
+            ? t.Name
+            : t.GetGenericArguments().Select(Recurse).Aggregate((a, b) => a + b) + t.Name.Split('`')[0];
+        return Recurse(type).Replace("[]", "_array_");
+    });
+
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Description = "The KITOS TOKEN"
+    });
+
+    c.DocumentFilter<FilterByApiVersionFilter>(
+        (Func<OpenApiDocument, int>)(doc => int.TryParse(doc.Info?.Version, out var v) ? v : 1),
+        (Func<string, int>)(path => path.IsExternalApiPath() ? 2 : 1));
+    c.DocumentFilter<RemoveUnneededMutatingCallsFilter>(
+        (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v < 2));
+    c.DocumentFilter<OnlyIncludeReadModelSchemasInSwaggerDocumentFilter>();
+    c.DocumentFilter<PurgeUnusedTypesDocumentFilter>();
+
+    c.OperationFilter<CreateOperationIdOperationFilter>();
+    c.OperationFilter<FixNamingOfComplexQueryParametersFilter>();
+    c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
+
+    c.SchemaFilter<SupplierFieldSchemaFilter>();
 });
 
 // Hangfire
@@ -139,6 +182,11 @@ app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyModificationsTh
 app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueriesMiddleware>();
 
 app.MapControllers();
+// Conventional route for MVC controllers (e.g. HomeController → "/" redirects to "/ui",
+// OldHomeController renders the legacy AngularJS shell at "/old")
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Initialize Hangfire recurring jobs
 using (var scope = app.Services.CreateScope())
