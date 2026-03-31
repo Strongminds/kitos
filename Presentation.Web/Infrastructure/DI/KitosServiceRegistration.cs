@@ -49,6 +49,8 @@ using Core.ApplicationServices.Users.Handlers;
 using Core.ApplicationServices.Users.Write;
 using Core.BackgroundJobs.Factories;
 using Core.BackgroundJobs.Model.ExternalLinks;
+using Core.BackgroundJobs.Model.Maintenance;
+using Core.BackgroundJobs.Model.PublicMessages;
 using Core.BackgroundJobs.Model.ReadModels;
 using Core.BackgroundJobs.Services;
 using Core.DomainModel;
@@ -89,14 +91,17 @@ using Core.DomainServices.Repositories.System;
 using Core.DomainServices.Repositories.SystemUsage;
 using Core.DomainServices.Repositories.TaskRefs;
 using Core.DomainServices.Repositories.UICustomization;
+using Core.DomainServices.Repositories.BackgroundJobs;
 using Core.DomainServices.Role;
 using Core.DomainServices.SSO;
 using Core.DomainServices.SystemUsage;
 using Core.DomainServices.Time;
 using Core.DomainServices.Tracking;
+using Core.DomainServices.Suppliers;
 using Infrastructure.DataAccess;
 using Infrastructure.DataAccess.Services;
 using Infrastructure.Ninject.ApplicationServices;
+using Infrastructure.Services.KLEDataBridge;
 using Infrastructure.Ninject.DomainServices;
 using Infrastructure.OpenXML;
 using Infrastructure.Services.BackgroundJobs;
@@ -131,6 +136,7 @@ using Infrastructure.DataAccess.Services;
 using Core.DomainServices.Repositories.Interface;
 using Serilog;
 using Core.ApplicationServices.Model.EventHandler;
+using dk.nita.saml20.identity;
 
 namespace Presentation.Web.Infrastructure.DI
 {
@@ -138,6 +144,13 @@ namespace Presentation.Web.Infrastructure.DI
     {
         public static void Register(IServiceCollection services, IConfiguration configuration)
         {
+            // Middleware (IMiddleware implementations must be registered in DI)
+            services.AddScoped<Presentation.Web.Infrastructure.Middleware.CorrelationIdMiddleware>();
+            services.AddScoped<Presentation.Web.Infrastructure.Middleware.ApiRequestsLoggingMiddleware>();
+            services.AddScoped<Presentation.Web.Infrastructure.Middleware.DenyUsersWithoutApiAccessMiddleware>();
+            services.AddScoped<Presentation.Web.Infrastructure.Middleware.DenyModificationsThroughApiMiddleware>();
+            services.AddScoped<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueriesMiddleware>();
+
             // Logger
             services.AddSingleton(Log.Logger);
 
@@ -244,7 +257,12 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOptionResolver, NinjectIOptionResolver>();
             services.AddScoped<IAssignmentUpdateService, AssignmentUpdateService>();
             services.AddScoped<IEntityResolver, NinjectEntityResolver>();
+            services.AddScoped<IEntityTypeResolver, PocoTypeFromProxyResolver>();
             services.AddScoped<ITrackingService, TrackingService>();
+            services.AddScoped<IAdviceRootResolution, AdviceRootResolution>();
+            services.AddScoped<ISupplierAssociatedFieldKeyMapper, SupplierAssociatedFieldKeyMapper>();
+            services.AddScoped<ISupplierFieldDomainService, SupplierFieldDomainService>();
+            services.AddScoped<ISupplierAssociatedFieldsService, SupplierAssociatedFieldsService>();
             services.AddScoped<IUIModuleCustomizationService, UIModuleCustomizationService>();
             services.AddScoped<IOrganizationUnitService, OrganizationUnitService>();
             services.AddScoped<IOrganizationUnitWriteService, OrganizationUnitWriteService>();
@@ -300,6 +318,17 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<ISsoFlowApplicationService, SsoFlowApplicationService>();
             services.AddScoped<IStsBrugerInfoService, StsBrugerInfoService>();
 
+            services.AddScoped<IApplicationAuthenticationState, ApplicationAuthenticationState>();
+            services.AddScoped<Maybe<ActiveUserIdContext>>(sp =>
+            {
+                var authentication = sp.GetRequiredService<IAuthenticationContext>();
+                if (authentication.UserId.HasValue == false || authentication.Method == AuthenticationMethod.Anonymous)
+                    return Maybe<ActiveUserIdContext>.None;
+                return new ActiveUserIdContext(authentication.UserId.Value);
+            });
+            services.AddScoped<Maybe<ISaml20Identity>>(sp =>
+                Saml20Identity.IsInitialized() ? Saml20Identity.Current : Maybe<ISaml20Identity>.None);
+
             RegisterDataAccess(services, configuration);
             RegisterDomainEventsEngine(services);
             RegisterDomainCommandsEngine(services);
@@ -343,9 +372,34 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<ITaskRefRepository, TaskRefRepository>();
             services.AddScoped<IUIModuleCustomizationRepository, UIModuleCustomizationRepository>();
             services.AddScoped<ISsoUserIdentityRepository, SsoUserIdentityRepository>();
+            services.AddScoped<IDatabaseControl, EntityFrameworkContextDatabaseControl>();
+            services.AddScoped<IStsOrganizationIdentityRepository, StsOrganizationIdentityRepository>();
+            services.AddScoped<IItSystemUsageAttachedOptionRepository, ItSystemUsageAttachedOptionRepository>();
+            services.AddScoped<ISensitivePersonalDataTypeRepository, SensitivePersonalDataTypeRepository>();
+            services.AddScoped<IDataProcessingRegistrationReadModelRepository, DataProcessingRegistrationReadModelRepository>();
+            services.AddScoped<IPendingReadModelUpdateRepository, PendingReadModelUpdateRepository>();
+            services.AddScoped<IDataProcessingRegistrationOptionRepository, DataProcessingRegistrationOptionRepository>();
+            services.AddScoped<IItSystemUsageOverviewReadModelRepository, ItSystemUsageOverviewReadModelRepository>();
+            services.AddScoped<IItContractOverviewReadModelRepository, ItContractOverviewReadModelRepository>();
 
-            services.AddScoped<IOrganizationalUserContext, OrganizationalUserContext>();
-            services.AddScoped<IAuthorizationContext, OrganizationAuthorizationContext>();
+            services.AddScoped<IAuthorizationModelFactory, AuthorizationModelFactory>();
+            services.AddScoped<IAuthorizationContextFactory, AuthorizationContextFactory>();
+            services.AddScoped<IFieldAuthorizationModel, FieldAuthorizationModel>();
+            services.AddScoped<UserContextFactory>();
+            services.AddScoped<IUserContextFactory>(sp =>
+                new CachingUserContextFactory(
+                    sp.GetRequiredService<UserContextFactory>(),
+                    sp.GetRequiredService<IObjectCache>()));
+            services.AddScoped<IOrganizationalUserContext>(sp =>
+            {
+                var authentication = sp.GetRequiredService<IAuthenticationContext>();
+                if (authentication.Method != AuthenticationMethod.Anonymous)
+                    return sp.GetRequiredService<IUserContextFactory>().Create(authentication.UserId.GetValueOrDefault());
+                return new UnauthenticatedUserContext();
+            });
+            services.AddScoped<IAuthorizationContext>(sp =>
+                sp.GetRequiredService<IAuthorizationContextFactory>().Create(
+                    sp.GetRequiredService<IOrganizationalUserContext>()));
         }
 
         private static void RegisterDomainEventsEngine(IServiceCollection services)
@@ -412,10 +466,29 @@ namespace Presentation.Web.Infrastructure.DI
         private static void RegisterKLE(IServiceCollection services)
         {
             services.AddScoped<IKLEApplicationService, KLEApplicationService>();
+            services.AddScoped<IKLEDataBridge, KLEDataBridge>();
+            services.AddScoped<IKLEParentHelper, KLEParentHelper>();
+            services.AddScoped<IKLEConverterHelper, KLEConverterHelper>();
         }
 
         private static void RegisterOptions(IServiceCollection services)
         {
+            // Open generic registrations for options application services
+            services.AddScoped(typeof(IOptionsApplicationService<,>), typeof(OptionsApplicationService<,>));
+            services.AddScoped(typeof(IRoleOptionsApplicationService<,>), typeof(RoleOptionsApplicationService<,>));
+
+            // Attached options assignment services
+            services.AddScoped<IAttachedOptionsAssignmentService<RegisterType, ItSystemUsage>>(sp =>
+                new AttachedOptionsAssignmentService<RegisterType, ItSystemUsage>(
+                    OptionType.REGISTERTYPEDATA,
+                    sp.GetRequiredService<IItSystemUsageAttachedOptionRepository>(),
+                    sp.GetRequiredService<IOptionsService<ItSystemUsage, RegisterType>>()));
+            services.AddScoped<IAttachedOptionsAssignmentService<SensitivePersonalDataType, ItSystem>>(sp =>
+                new AttachedOptionsAssignmentService<SensitivePersonalDataType, ItSystem>(
+                    OptionType.SENSITIVEPERSONALDATA,
+                    sp.GetRequiredService<IItSystemUsageAttachedOptionRepository>(),
+                    sp.GetRequiredService<IOptionsService<ItSystem, SensitivePersonalDataType>>()));
+
             RegisterOptionsService<ItInterface, InterfaceType, LocalInterfaceType>(services);
             RegisterOptionsService<DataRow, DataType, LocalDataType>(services);
             RegisterOptionsService<DataProcessingRegistrationRight, DataProcessingRegistrationRole, LocalDataProcessingRegistrationRole>(services);
@@ -468,6 +541,24 @@ namespace Presentation.Web.Infrastructure.DI
         {
             services.AddScoped<IBackgroundJobLauncher, BackgroundJobLauncher>();
             services.AddScoped<IBackgroundJobScheduler, BackgroundJobScheduler>();
+            services.AddScoped<IRebuildReadModelsJobFactory, RebuildReadModelsJobFactory>();
+
+            // Background job self-registrations (resolved directly by type from Hangfire)
+            services.AddScoped<CheckExternalLinksBackgroundJob>();
+            services.AddScoped<RebuildDataProcessingRegistrationReadModelsBatchJob>();
+            services.AddScoped<ScheduleDataProcessingRegistrationReadModelUpdates>();
+            services.AddScoped<RebuildItSystemUsageOverviewReadModelsBatchJob>();
+            services.AddScoped<ScheduleItSystemUsageOverviewReadModelUpdates>();
+            services.AddScoped<ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState>();
+            services.AddScoped<ScheduleUpdatesForItContractOverviewReadModelsWhichChangesActiveState>();
+            services.AddScoped<ScheduleItContractOverviewReadModelUpdates>();
+            services.AddScoped<ScheduleUpdatesForDataProcessingRegistrationOverviewReadModelsWhichChangesActiveState>();
+            services.AddScoped<RebuildItContractOverviewReadModelsBatchJob>();
+            services.AddScoped<PurgeDuplicatePendingReadModelUpdates>();
+            services.AddScoped<PurgeOrphanedHangfireJobs>();
+            services.AddScoped<ScheduleFkOrgUpdatesBackgroundJob>();
+            services.AddScoped<CreateInitialPublicMessages>();
+            services.AddScoped<CreateMainPublicMessage>();
         }
 
         private static void RegisterRoleAssignmentServices(IServiceCollection services)

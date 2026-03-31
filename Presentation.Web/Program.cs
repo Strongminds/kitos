@@ -141,14 +141,15 @@ app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueries
 app.MapControllers();
 
 // Initialize Hangfire recurring jobs
-InitializeHangfire();
+using (var scope = app.Services.CreateScope())
+{
+    InitializeHangfire(scope.ServiceProvider.GetRequiredService<IRecurringJobManager>());
+}
 
 app.Run();
 
-void InitializeHangfire()
+void InitializeHangfire(IRecurringJobManager recurringJobManager)
 {
-    var recurringJobManager = new RecurringJobManager();
-
     recurringJobManager.AddOrUpdate(
         recurringJobId: StandardJobIds.CheckExternalLinks,
         job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchLinkCheckAsync(CancellationToken.None)),
