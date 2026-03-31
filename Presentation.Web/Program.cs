@@ -1,0 +1,217 @@
+using System;
+using System.Threading;
+using Hangfire;
+using Hangfire.SqlServer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Presentation.Web;
+using Presentation.Web.Hangfire;
+using Presentation.Web.Infrastructure.DI;
+using Serilog;
+using Core.BackgroundJobs.Model;
+using Hangfire.Common;
+using Infrastructure.Services.BackgroundJobs;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+var configuration = builder.Configuration;
+var services = builder.Services;
+
+// Controllers with Newtonsoft.Json
+services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+    });
+
+// OData
+services.AddRouting();
+
+// Authentication
+var securityKeyString = configuration["AppSettings:SecurityKeyString"] ?? "";
+var baseUrl = configuration["AppSettings:BaseUrl"] ?? "https://localhost:44300/";
+
+var signingKey = new SymmetricSecurityKey(
+    System.Text.Encoding.UTF8.GetBytes(securityKeyString));
+
+services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidIssuer = baseUrl,
+            ValidateIssuer = true,
+            IssuerSigningKey = signingKey,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+        };
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/account/login";
+    });
+
+services.AddAuthorization();
+
+// Swagger
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V1", Version = "v1" });
+    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V2", Version = "v2" });
+});
+
+// Hangfire
+var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
+    ?? throw new InvalidOperationException("kitos_HangfireDB connection string is required");
+
+services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(hangfireConnectionString));
+
+services.AddHangfireServer();
+
+// AutoMapper - using explicit assembly scanning
+var mapperConfig = new AutoMapper.MapperConfiguration(cfg => {
+    cfg.AddMaps(typeof(MappingConfig).Assembly);
+});
+services.AddSingleton(mapperConfig.CreateMapper());
+
+// HttpContext accessor
+services.AddHttpContextAccessor();
+
+// KITOS services (DI registrations)
+KitosServiceRegistration.Register(services, configuration);
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "KITOS API V1");
+    c.SwaggerEndpoint("/swagger/v2/swagger.json", "KITOS API V2");
+});
+
+app.UseSerilogRequestLogging();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+// Custom middleware
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.CorrelationIdMiddleware>();
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.ApiRequestsLoggingMiddleware>();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyUsersWithoutApiAccessMiddleware>();
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyModificationsThroughApiMiddleware>();
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueriesMiddleware>();
+
+app.MapControllers();
+
+// Initialize Hangfire recurring jobs
+InitializeHangfire();
+
+app.Run();
+
+void InitializeHangfire()
+{
+    var recurringJobManager = new RecurringJobManager();
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.CheckExternalLinks,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchLinkCheckAsync(CancellationToken.None)),
+        cronExpression: Cron.Weekly(DayOfWeek.Sunday, 0),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateStaleSystemUsageRmAsync(CancellationToken.None)),
+        cronExpression: Cron.Daily(2),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.ScheduleUpdatesForItContractOverviewReadModelsWhichChangesActiveState,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateStaleContractRmAsync(CancellationToken.None)),
+        cronExpression: Cron.Daily(2),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.ScheduleUpdatesForDataProcessingReadModelsWhichChangesActiveState,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateStaleDataProcessingRegistrationReadModels(CancellationToken.None)),
+        cronExpression: Cron.Daily(2),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.ScheduleFkOrgUpdates,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateFkOrgSync(CancellationToken.None)),
+        cronExpression: Cron.Weekly(DayOfWeek.Monday, 3),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.RebuildDataProcessingReadModels,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.DataProcessingRegistration, CancellationToken.None)),
+        cronExpression: Cron.Never(),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.RebuildItSystemUsageReadModels,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.ItSystemUsage, CancellationToken.None)),
+        cronExpression: Cron.Never(),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.RebuildItContractReadModels,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.ItContract, CancellationToken.None)),
+        cronExpression: Cron.Never(),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.PurgeOrphanedHangfireJobs,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchPurgeOrphanedHangfireJobs(CancellationToken.None)),
+        cronExpression: Cron.Never(),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.CreateInitialPublicMessages,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchCreatePublicMessagesTask(CancellationToken.None)),
+        cronExpression: Cron.Never(),
+        timeZone: TimeZoneInfo.Local);
+
+    recurringJobManager.AddOrUpdate(
+        recurringJobId: StandardJobIds.CreateMainPublicMessage,
+        job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchCreateMainPublicMessageTask(CancellationToken.None)),
+        cronExpression: Cron.Never(),
+        timeZone: TimeZoneInfo.Local);
+}

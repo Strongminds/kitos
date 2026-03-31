@@ -9,7 +9,7 @@ namespace Core.ApplicationServices.Model.Authentication
         public static SecurityKey SecurityKey =>
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
-                    global::System.Web.Configuration.WebConfigurationManager.AppSettings["SecurityKeyString"]
+                    global::System.Configuration.ConfigurationManager.AppSettings["SecurityKeyString"] ?? string.Empty
                 )
             );
     }

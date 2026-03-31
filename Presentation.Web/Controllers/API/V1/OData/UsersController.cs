@@ -1,17 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Core.DomainModel;
 using Core.DomainServices;
 using Presentation.Web.Infrastructure.Attributes;
 using System.Linq;
-using System.Web.Http;
 using Core.Abstractions.Types;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authorization.Permissions;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Routing;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Formatter;
 using Core.DomainModel.Organization;
 
 namespace Presentation.Web.Controllers.API.V1.OData
@@ -34,9 +36,9 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [NonAction]
-        public override IHttpActionResult Post(int organizationId, User entity) => throw new NotSupportedException();
+        public override IActionResult Post(int organizationId, User entity) => throw new NotSupportedException();
 
-        protected override Maybe<IHttpActionResult> ValidatePatch(Delta<User> delta, User entity)
+        protected override Maybe<IActionResult> ValidatePatch(Delta<User> delta, User entity)
         {
             var error = base.ValidatePatch(delta, entity);
             if (error.IsNone)
@@ -46,7 +48,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 {
                     if (!AuthorizationContext.HasPermission(new AdministerGlobalPermission(GlobalPermission.StakeHolderAccess)))
                     {
-                        error = Forbidden();
+                        error = Maybe<IActionResult>.Some(Forbidden());
                     }
                 }
 
@@ -54,13 +56,13 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 {
                     if (!AuthorizationContext.HasPermission(new AdministerGlobalPermission(GlobalPermission.GlobalAdmin)))
                     {
-                        error = Forbidden();
+                        error = Maybe<IActionResult>.Some(Forbidden());
                     }
                 }
 
                 if (AttemptToChangeUuid(delta, entity, changedPropertyNames))
                 {
-                    return BadRequest("Uuid cannot be changed");
+                    return Maybe<IActionResult>.Some(BadRequest("Uuid cannot be changed"));
                 }
             }
 
@@ -92,7 +94,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [HttpPost]
-        public IHttpActionResult Create(ODataActionParameters parameters)
+        public IActionResult Create(ODataActionParameters parameters)
         {
             if (!ModelState.IsValid)
             {
@@ -103,7 +105,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             if (parameters.ContainsKey("user"))
             {
                 user = parameters["user"] as User;
-                Validate(user); // this will set the ModelState if not valid - it doesn't http://stackoverflow.com/questions/39484185/model-validation-in-odatacontroller
+                TryValidateModel(user); // this will set the ModelState if not valid
             }
 
             var organizationId = 0;
@@ -150,15 +152,15 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Created(createdUser);
         }
         [HttpGet]
-        public IHttpActionResult IsEmailAvailable(string email)
+        public IActionResult IsEmailAvailable(string email)
         {
             var available = EmailExists(email) == false;
 
             return Ok(available);
         }
 
-        [ODataRoute("GetUserByEmail(email={email})")]
-        public IHttpActionResult GetUserByEmail(string email)
+        [Route("GetUserByEmail(email={email})")]
+        public IActionResult GetUserByEmail(string email)
         {
             var userToReturn = this._repository.AsQueryable().FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
             if (userToReturn != null)
@@ -168,8 +170,8 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return NotFound();
         }
 
-        [ODataRoute("GetUserByEmailAndOrganizationRelationship(email={email},organizationId={organizationId})")]
-        public IHttpActionResult GetUserByEmailAndOrganizationId(string email, int organizationId)
+        [Route("GetUserByEmailAndOrganizationRelationship(email={email},organizationId={organizationId})")]
+        public IActionResult GetUserByEmailAndOrganizationId(string email, int organizationId)
         {
             var userToReturn = this._repository.AsQueryable().FirstOrDefault(u =>
                 u.Email.ToLower() == email.ToLower() &&
@@ -183,8 +185,8 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery(MaxExpansionDepth = 3)]
-        [ODataRoute("GetUsersByUuid(organizationUuid={organizationUuid})")]
-        public IHttpActionResult GetUsersByUuid(Guid organizationUuid)
+        [Route("GetUsersByUuid(organizationUuid={organizationUuid})")]
+        public IActionResult GetUsersByUuid(Guid organizationUuid)
         {
             var idResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
             if (idResult.IsNone)
@@ -208,7 +210,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="key"></param>
         /// <returns></returns>
         [NonAction]
-        public override IHttpActionResult Delete(int key) => throw new NotSupportedException();
+        public override IActionResult Delete(int key) => throw new NotSupportedException();
 
         private bool EmailExists(string email)
         {
@@ -217,3 +219,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
     }
 }
+
+
+
+

@@ -1,125 +1,98 @@
-﻿using Swashbuckle.Swagger;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.OpenApi.Models;
 
 namespace Presentation.Web.Swagger
 {
     public static class SwashbuckleExtensions
     {
-        public static IEnumerable<Operation> EnumerateOperations(this PathItem pathItem)
+        public static IEnumerable<OpenApiOperation> EnumerateOperations(this OpenApiPathItem pathItem)
         {
-            if (pathItem == null)
-            {
-                yield break;
-            }
-            yield return pathItem.get;
-            yield return pathItem.post;
-            yield return pathItem.put;
-            yield return pathItem.patch;
-            yield return pathItem.delete;
-            yield return pathItem.options;
-            yield return pathItem.head;
+            if (pathItem == null) yield break;
+            foreach (var operation in pathItem.Operations.Values)
+                yield return operation;
         }
 
-        public static IEnumerable<Schema> EnumerateSchema(this Operation operation)
+        public static IEnumerable<OpenApiSchema> EnumerateSchemas(this OpenApiOperation operation)
         {
-            if (operation == null)
+            if (operation == null) yield break;
+
+            foreach (var response in operation.Responses ?? new OpenApiResponses())
             {
-                yield break;
-            }
-            //Response schemas
-            foreach (var response in operation.responses ?? new Dictionary<string, Response>())
-            {
-                yield return response.Value.schema;
-                if (response.Value.schema?.items != null)
+                foreach (var content in response.Value.Content?.Values ?? Enumerable.Empty<OpenApiMediaType>())
                 {
-                    yield return response.Value.schema.items;
+                    if (content.Schema != null) yield return content.Schema;
+                    if (content.Schema?.Items != null) yield return content.Schema.Items;
                 }
             }
-            //Parameter schemas
-            foreach (var parameter in operation.parameters ?? new List<Parameter>())
+
+            foreach (var parameter in operation.Parameters ?? new List<OpenApiParameter>())
             {
-                if (parameter.schema != null)
+                if (parameter.Schema != null) yield return parameter.Schema;
+            }
+
+            if (operation.RequestBody != null)
+            {
+                foreach (var content in operation.RequestBody.Content?.Values ?? Enumerable.Empty<OpenApiMediaType>())
                 {
-                    yield return parameter.schema;
+                    if (content.Schema != null) yield return content.Schema;
                 }
             }
         }
 
-        public static IEnumerable<Schema> StartSchemaEnumeration(this Schema schema, IDictionary<string, Schema> schemaByTypeName)
+        public static IEnumerable<OpenApiSchema> StartSchemaEnumeration(this OpenApiSchema schema, IDictionary<string, OpenApiSchema> schemaByTypeName)
         {
-            return schema.EnumerateSchema(schemaByTypeName, new HashSet<string>());
+            return schema.EnumerateSchemaRecursive(schemaByTypeName, new HashSet<string>());
         }
 
-        private static IEnumerable<Schema> EnumerateSchema(this Schema schema, IDictionary<string, Schema> schemaByTypeName, ISet<string> visitedDefinitions, bool isRoot = true)
+        private static IEnumerable<OpenApiSchema> EnumerateSchemaRecursive(this OpenApiSchema schema, IDictionary<string, OpenApiSchema> schemaByTypeName, ISet<string> visitedDefinitions, bool isRoot = true)
         {
-            if (schema?.@ref == null)
-            {
-                yield break;
-            }
+            var root = schema?.GetRootSchemaOrNull();
+            if (root?.Reference?.Id == null) yield break;
 
             if (isRoot)
             {
-                visitedDefinitions.Add(schema.@ref);
+                visitedDefinitions.Add(root.Reference.Id);
                 yield return schema;
             }
 
-            var referencedSchemas = (schema.FindReferencedSchemas(schemaByTypeName) ?? new List<Schema>()).ToList();
-            foreach (var additionalSchema in referencedSchemas)
+            foreach (var referencedSchema in schema.FindReferencedSchemas(schemaByTypeName).ToList())
             {
-                if (visitedDefinitions.Add(additionalSchema.@ref))
+                var refId = referencedSchema.Reference?.Id;
+                if (refId == null || !visitedDefinitions.Add(refId)) continue;
+
+                yield return referencedSchema;
+
+                foreach (var childSchema in referencedSchema.EnumerateSchemaRecursive(schemaByTypeName, visitedDefinitions, false).ToList())
                 {
-                    yield return additionalSchema;
-                    foreach (var childSchema in (additionalSchema.EnumerateSchema(schemaByTypeName, visitedDefinitions.ToHashSet(), false) ?? new List<Schema>()).ToList())
-                    {
-                        if (visitedDefinitions.Add(childSchema.@ref))
-                        {
-                            yield return childSchema;
-                        }
-                    }
+                    var childRefId = childSchema.GetRootSchemaOrNull()?.Reference?.Id;
+                    if (childRefId != null && visitedDefinitions.Add(childRefId))
+                        yield return childSchema;
                 }
             }
         }
 
-        private static IEnumerable<Schema> FindReferencedSchemas(this Schema schema, IDictionary<string, Schema> schemaByTypeName)
+        private static IEnumerable<OpenApiSchema> FindReferencedSchemas(this OpenApiSchema schema, IDictionary<string, OpenApiSchema> schemaByTypeName)
         {
             var key = schema.GetSchemaTypeKey();
+            if (string.IsNullOrEmpty(key) || !schemaByTypeName.TryGetValue(key, out var definition))
+                return Enumerable.Empty<OpenApiSchema>();
 
-            if (!string.IsNullOrEmpty(key))
-            {
-                if (schemaByTypeName.TryGetValue(key, out var definition))
-                {
-                    var referencedRootSchemas = definition
-                        .properties
-                        .Values
-                        .Select(GetRootSchemaOrNull)
-                        .Where(x => x != null)
-                        .ToList();
-
-                    foreach (var propertySchema in referencedRootSchemas)
-                    {
-                        yield return propertySchema;
-                    }
-                }
-            }
+            return definition.Properties.Values
+                .Select(p => p.GetRootSchemaOrNull())
+                .Where(s => s != null);
         }
 
-        public static string GetSchemaRefOrNull(this Schema schema)
-        {
-            return GetRootSchemaOrNull(schema)?.@ref;
-        }
+        public static string GetSchemaRefOrNull(this OpenApiSchema schema) =>
+            GetRootSchemaOrNull(schema)?.Reference?.Id;
 
-        public static string GetSchemaTypeKey(this Schema schema)
-        {
-            return GetSchemaRefOrNull(schema)?.Replace("#/definitions/", string.Empty);
-        }
+        public static string GetSchemaTypeKey(this OpenApiSchema schema) =>
+            GetSchemaRefOrNull(schema);
 
-        public static Schema GetRootSchemaOrNull(this Schema schema)
+        public static OpenApiSchema GetRootSchemaOrNull(this OpenApiSchema schema)
         {
-            if (schema.@ref != null)
-                return schema;
-            if (schema.items?.@ref != null)
-                return schema.items;
+            if (schema?.Reference != null) return schema;
+            if (schema?.Items?.Reference != null) return schema.Items;
             return null;
         }
     }

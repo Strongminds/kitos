@@ -1,10 +1,11 @@
-﻿using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Messages;
 using Core.ApplicationServices.Model.Shared;
 using Core.DomainModel.PublicMessage;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Internal.Request;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Messages.Mapping
 {

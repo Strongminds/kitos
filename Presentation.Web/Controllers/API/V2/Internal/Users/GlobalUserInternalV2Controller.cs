@@ -1,9 +1,7 @@
-﻿using Core.ApplicationServices.Users.Write;
+using Core.ApplicationServices.Users.Write;
 using Presentation.Web.Infrastructure.Attributes;
-using Swashbuckle.Swagger.Annotations;
 using System.Net;
 using System;
-using System.Web.Http;
 using Core.Abstractions.Types;
 using Core.DomainModel;
 using Core.DomainServices.Queries.User;
@@ -20,6 +18,7 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Core.DomainModel.Organization;
 using Core.ApplicationServices.Rights;
+using Microsoft.AspNetCore.Mvc;
 using Core.ApplicationServices.Model.RightsHolder;
 
 
@@ -28,7 +27,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
     /// <summary>
     /// Internal API for managing users in all of KITOS
     /// </summary>
-    [RoutePrefix("api/v2/internal/users")]
+    [Route("api/v2/internal/users")]
     public class GlobalUserInternalV2Controller : InternalApiV2Controller
     {
         private readonly IUserWriteService _userWriteService;
@@ -49,12 +48,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{userUuid}")]
         [HttpDelete]
-        [SwaggerResponse(HttpStatusCode.OK)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteUser([NonEmptyGuid] Guid userUuid)
+        public IActionResult DeleteUser([NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.DeleteUser(userUuid, Maybe<Guid>.None)
                 .Match(FromOperationError, Ok);
@@ -62,16 +56,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("search")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetUsers(
+        public IActionResult GetUsers(
             string nameOrEmailQuery = null,
             string emailQuery = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             var queries = new List<IDomainQuery<User>>();
 
@@ -90,10 +79,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetGlobalAdmins()
+        public IActionResult GetGlobalAdmins()
         {
             var query = new List<IDomainQuery<User>> { new QueryByGlobalAdmin() };
             var globalAdmins = _userService.GetUsers(query.ToArray())
@@ -104,12 +90,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserReferenceResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult AddGlobalAdmin([FromUri][NonEmptyGuid] Guid userUuid)
+        public IActionResult AddGlobalAdmin([FromQuery][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.AddGlobalAdmin(userUuid)
                         .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
@@ -118,24 +99,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpDelete]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult RemoveGlobalAdmin([FromUri][NonEmptyGuid] Guid userUuid)
+        public IActionResult RemoveGlobalAdmin([FromQuery][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.RemoveGlobalAdmin(userUuid)
                         .Match(FromOperationError, NoContent);
         }
         [Route("{userUuid}/organizations")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationsByUserUuid(Guid userUuid)
+        public IActionResult GetOrganizationsByUserUuid(Guid userUuid)
         {
             
             return _userService
@@ -147,12 +118,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("local-admins")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceWithOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetAllLocalAdmins()
+        public IActionResult GetAllLocalAdmins()
         {
             return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.LocalAdmin)
                     .Select(users => users.SelectMany(InternalDtoModelV2MappingExtensions.MapUserToMultipleLocalAdminResponse).ToList())
@@ -161,12 +127,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(UserReferenceWithOrganizationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult AddLocalAdmin([NonEmptyGuid][FromUri] Guid organizationUuid, [NonEmptyGuid][FromUri] Guid userUuid)
+        public IActionResult AddLocalAdmin([NonEmptyGuid][FromQuery] Guid organizationUuid, [NonEmptyGuid][FromQuery] Guid userUuid)
         {
             return _userWriteService.AddLocalAdmin(organizationUuid, userUuid)
                     .Select(user => user.MapUserToSingleLocalAdminResponse(organizationUuid))
@@ -175,12 +136,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpDelete]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult RemoveLocalAdmin([NonEmptyGuid][FromUri] Guid organizationUuid, [NonEmptyGuid][FromUri] Guid userUuid)
+        public IActionResult RemoveLocalAdmin([NonEmptyGuid][FromQuery] Guid organizationUuid, [NonEmptyGuid][FromQuery] Guid userUuid)
         {
             return _userWriteService.RemoveLocalAdmin(organizationUuid, userUuid)
                     .Match(FromOperationError, NoContent);
@@ -188,11 +144,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         
         [HttpGet]
         [Route("with-rightsholder-access")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserWithOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetUsersWithRightsholderAccess()
+        public IActionResult GetUsersWithRightsholderAccess()
         {
             return _userRightsService
                 .GetUsersWithRoleAssignment(OrganizationRole.RightsHolderAccess)
@@ -204,11 +156,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("with-cross-organization-permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserWithCrossOrganizationalRightsResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetUsersWithCrossAccess()
+        public IActionResult GetUsersWithCrossAccess()
         {
             return _userService
                 .GetUsersWithCrossOrganizationPermissions()
@@ -220,11 +168,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("system-integrators")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<UserReferenceResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetSystemIntegrators()
+        public IActionResult GetSystemIntegrators()
         {
             var results = _userService.GetUsers(new QueryBySystemIntegrator());
             var mappedUsers = results.AsEnumerable()
@@ -234,12 +178,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpPatch]
         [Route("system-integrators/{userUuid}")]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromUri] Guid userUuid, [FromUri] bool requestedValue)
+        public IActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromQuery] Guid userUuid, [FromQuery] bool requestedValue)
         {
             return _userWriteService.UpdateSystemIntegrator(userUuid, requestedValue)
                     .Match(NoContent, FromOperationError);
@@ -276,3 +215,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         }
     }
 }
+

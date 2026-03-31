@@ -1,19 +1,18 @@
-﻿using Core.ApplicationServices.SystemUsage.GDPR;
+using Core.ApplicationServices.SystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
 
-    [RoutePrefix("api/v2/internal/gdpr-report")]
+    [Route("api/v2/internal/gdpr-report")]
     public class GdprExportReportInternalV2Controller : InternalApiV2Controller
     {
         private readonly IGDPRExportService _gdprExportService;
@@ -25,12 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{organizationUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<GdprReportResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetGdprReport([FromUri][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetGdprReport([FromQuery][NonEmptyGuid] Guid organizationUuid)
         {
             return _gdprExportService.GetGDPRDataByUuid(organizationUuid)
                     .Select(MapGdprDataToDTO)
@@ -78,3 +72,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         }
     }
 }
+

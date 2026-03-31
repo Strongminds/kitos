@@ -1,17 +1,7 @@
-﻿using System.Web;
-
 namespace Presentation.Web
 {
-    /// <summary>
-    /// LoginHandler redirects to the Login.ashx page with the forceAuthn parameter set to true.
-    /// </summary>
-    public class LoginHandler : IHttpHandler
+    // Legacy HTTP handler - replaced by ASP.NET Core middleware
+    public class LoginHandler
     {
-        public void ProcessRequest(HttpContext context)
-        {
-            context.Response.Redirect("Login.ashx?forceAuthn=true");
-        }
-
-        public bool IsReusable => false;
     }
 }

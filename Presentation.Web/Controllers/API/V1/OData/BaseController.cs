@@ -1,12 +1,11 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Results;
-using Microsoft.AspNet.OData;
-using Core.DomainServices;
-using Ninject;
-using Ninject.Extensions.Logging;
+using System.Net;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.DomainServices;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Presentation.Web.Extensions;
 
 namespace Presentation.Web.Controllers.API.V1.OData
 {
@@ -15,30 +14,23 @@ namespace Presentation.Web.Controllers.API.V1.OData
     {
         protected readonly IGenericRepository<T> Repository;
 
-        [Inject]
-        public IOrganizationalUserContext UserContext { get; set; }
+        public IOrganizationalUserContext? UserContext { get; set; }
 
-        [Inject]
-        public IAuthorizationContext AuthorizationContext { get; set; }
-
-        [Inject]
-        public ILogger Logger { get; set; }
+        public IAuthorizationContext? AuthorizationContext { get; set; }
 
         protected BaseController(IGenericRepository<T> repository)
         {
             Repository = repository;
         }
 
-        protected int UserId => UserContext.UserId;
+        protected int UserId => UserContext!.UserId;
 
-        [EnableQuery]
-        public virtual IHttpActionResult Get()
+        public virtual IActionResult Get()
         {
             return Ok(Repository.AsQueryable());
         }
 
-        [EnableQuery(MaxExpansionDepth = 4)]
-        public virtual IHttpActionResult Get(int key)
+        public virtual IActionResult Get(int key)
         {
             var entity = Repository.GetByKey(key);
             if (entity == null)
@@ -47,10 +39,9 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Ok(entity);
         }
 
-        protected virtual ResponseMessageResult Forbidden()
+        protected IActionResult Forbidden()
         {
-            return ResponseMessage(new HttpResponseMessage(HttpStatusCode.Forbidden));
+            return StatusCode((int)HttpStatusCode.Forbidden);
         }
-
     }
 }

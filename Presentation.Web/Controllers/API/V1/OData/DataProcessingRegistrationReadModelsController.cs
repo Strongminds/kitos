@@ -1,16 +1,14 @@
-﻿using System;
+using System;
 using System.Net;
-using System.Web.Http;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.GDPR;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Routing;
 using Presentation.Web.Infrastructure.Attributes;
-using Swashbuckle.OData;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace Presentation.Web.Controllers.API.V1.OData
 {
@@ -31,9 +29,8 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery]
-        [SwaggerResponse(HttpStatusCode.OK, type:typeof(ODataListResponse<DataProcessingRegistrationReadModel>))]
-        [ODataRoute("Organizations({organizationId})/DataProcessingRegistrationReadModels")]
-        public IHttpActionResult Get([FromODataUri]int organizationId)
+        [Route("Organizations({organizationId})/DataProcessingRegistrationReadModels")]
+        public IActionResult Get([FromRoute]int organizationId)
         {
             return GetOverviewReadModels(organizationId);
         }
@@ -44,9 +41,8 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="organizationUuid"></param>
         /// <returns></returns>
         [EnableQuery(MaxNodeCount = 300)]
-        [SwaggerResponse(HttpStatusCode.OK, type: typeof(ODataListResponse<DataProcessingRegistrationReadModel>))]
-        [ODataRoute("DataProcessingRegistrationReadModels")]
-        public IHttpActionResult GetByUuid(Guid organizationUuid, Guid? responsibleOrganizationUnitUuid = null)
+        [Route("DataProcessingRegistrationReadModels")]
+        public IActionResult GetByUuid(Guid organizationUuid, Guid? responsibleOrganizationUnitUuid = null)
         {
             var orgDbId = _identityResolver.ResolveDbId<Organization>(organizationUuid);
             if (orgDbId.IsNone)
@@ -57,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return GetOverviewReadModels(orgDbId.Value);
         }
 
-        private IHttpActionResult GetOverviewReadModels(int organizationId)
+        private IActionResult GetOverviewReadModels(int organizationId)
         {
             return _dataProcessingRegistrationReadModelService
                 .GetByOrganizationId(organizationId)
@@ -65,3 +61,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
     }
 }
+
+
+
+

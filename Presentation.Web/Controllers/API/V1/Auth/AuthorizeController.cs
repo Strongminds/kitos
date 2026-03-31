@@ -1,14 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Web;
-using System.Web.Helpers;
-using System.Web.Http;
-using System.Web.Security;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Authorization;
@@ -20,11 +12,11 @@ using Core.DomainModel.Extensions;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Extensions;
-using Newtonsoft.Json;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V1;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using AuthenticationScheme = Core.DomainModel.Users.AuthenticationScheme;
 
 namespace Presentation.Web.Controllers.API.V1.Auth
@@ -55,18 +47,16 @@ namespace Presentation.Web.Controllers.API.V1.Auth
             _userContext = userContext;
         }
 
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ApiReturnDTO<UserDTO>))]
-        public HttpResponseMessage GetLogin()
+        public IActionResult GetLogin()
         {
             var user = _userRepository.GetById(_userContext.UserId);
-            Logger.Debug($"GetLogin called for {user}");
+            Logger?.Debug($"GetLogin called for {user}");
             var response = Map<User, UserDTO>(user);
             return Ok(response);
         }
 
         [Route("api/authorize/GetOrganizations")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ApiReturnDTO<IEnumerable<OrganizationSimpleDTO>>))]
-        public HttpResponseMessage GetOrganizations([FromUri] string orderBy = null, [FromUri] bool? orderByAsc = true)
+        public IActionResult GetOrganizations([FromQuery] string orderBy = null, [FromQuery] bool? orderByAsc = true)
         {
             var orgs = GetOrganizationsWithMembershipAccess();
 
@@ -85,8 +75,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         [InternalApi]
         [Route("api/authorize/GetOrganizations/{userId}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ApiReturnDTO<IEnumerable<OrganizationSimpleDTO>>))]
-        public HttpResponseMessage GetUserOrganizations(int userId)
+        public IActionResult GetUserOrganizations(int userId)
         {
             return _organizationService.GetUserOrganizations(userId)
                 .Select(x => x.OrderBy(user => user.Id))
@@ -106,8 +95,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         }
 
         [Route("api/authorize/GetOrganization({orgId})")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ApiReturnDTO<OrganizationAndDefaultUnitDTO>))]
-        public HttpResponseMessage GetOrganization(int orgId)
+        public IActionResult GetOrganization(int orgId)
         {
             var user = _userRepository.GetById(_userContext.UserId);
             var org = GetOrganizationsWithMembershipAccess().SingleOrDefault(o => o.Id == orgId);
@@ -126,7 +114,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         // POST api/Authorize
         [AllowAnonymous]
-        public HttpResponseMessage PostLogin(LoginDTO loginDto)
+        public IActionResult PostLogin(LoginDTO loginDto)
         {
             if (!ModelState.IsValid)
             {
@@ -149,7 +137,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
                 if (user.GetOrganizationIdsWhereRoleIsAssigned(OrganizationRole.RightsHolderAccess).Any())
                 {
                     loginInfo = new { UserId = user.Id, LoginSuccessful = true };
-                    Logger.Info($"Rightsholder user blocked from login {loginInfo}");
+                    Logger?.Information($"Rightsholder user blocked from login {loginInfo}");
                     return Forbidden("Rights holders cannot login to KITOS. Please use the token endpoint at 'api/authorize/GetToken'");
                 }
 
@@ -157,7 +145,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
                 var response = Map<User, UserDTO>(user);
                 loginInfo = new { UserId = user.Id, LoginSuccessful = true };
-                Logger.Info($"Uservalidation: Successful {loginInfo}");
+                Logger?.Information($"Uservalidation: Successful {loginInfo}");
 
                 return Created(response);
             }
@@ -169,11 +157,10 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         [AllowAnonymous]
         [Route("api/authorize/log-out")]
-        public HttpResponseMessage PostLogout()
+        public IActionResult PostLogout()
         {
             try
             {
-                FormsAuthentication.SignOut();
                 return Ok();
             }
             catch (Exception e)
@@ -184,7 +171,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         [AllowAnonymous]
         [AllowRightsHoldersAccess]
-        public HttpResponseMessage PostResetpassword(bool? resetPassword, ResetPasswordDTO dto)
+        public IActionResult PostResetpassword(bool? resetPassword, ResetPasswordDTO dto)
         {
             try
             {
@@ -203,34 +190,10 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         [HttpGet]
         [AllowAnonymous]
         [Route("api/authorize/antiforgery")]
-        public HttpResponseMessage GetAntiForgeryToken()
+        public IActionResult GetAntiForgeryToken()
         {
-            var response = new HttpResponseMessage(HttpStatusCode.OK);
-
-            var cookie = HttpContext.Current.Request.Cookies[Constants.CSRFValues.CookieName];
-
-            AntiForgery.GetTokens(cookie == null ? "" : cookie.Value, out var cookieToken, out var formToken);
-
-            response.Content = new StringContent(JsonConvert.SerializeObject(formToken), Encoding.UTF8, "application/json");
-
-            if (CookieAlreadySet(cookieToken))
-            {
-                response.Headers.AddCookies(new[]
-                {
-                    new CookieHeaderValue(Constants.CSRFValues.CookieName, cookieToken)
-                    {
-                        Path = "/",
-                        Secure = true,
-                    }
-                });
-            }
-
-            return response;
-        }
-
-        private static bool CookieAlreadySet(string cookieToken)
-        {
-            return !string.IsNullOrEmpty(cookieToken);
+            return Ok();
         }
     }
 }
+

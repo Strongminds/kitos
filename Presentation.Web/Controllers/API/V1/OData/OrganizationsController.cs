@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using System.Net;
-using System.Web.Http;
-using Microsoft.AspNet.OData;
 using Core.DomainModel;
 using System.Linq;
 using Core.ApplicationServices.Organizations;
 using Core.DomainServices.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Formatter;
 using Presentation.Web.Infrastructure.Attributes;
 
 namespace Presentation.Web.Controllers.API.V1.OData
@@ -29,7 +31,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [HttpPost]
-        public IHttpActionResult RemoveUser([FromODataUri]int orgKey, ODataActionParameters parameters)
+        public IActionResult RemoveUser([FromRoute]int orgKey, ODataActionParameters parameters)
         {
             if (!ModelState.IsValid)
             {
@@ -43,7 +45,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 var result = _organizationService.RemoveUser(orgKey, userId);
                 return
                     result.Ok ?
-                        StatusCode(HttpStatusCode.NoContent) :
+                        StatusCode((int)HttpStatusCode.NoContent) :
                         FromOperationFailure(result.Error);
             }
 
@@ -51,10 +53,10 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [NonAction]
-        public override IHttpActionResult Post(int organizationId, Organization organization) => throw new NotSupportedException();
+        public override IActionResult Post(int organizationId, Organization organization) => throw new NotSupportedException();
 
         [EnableQuery]
-        public IHttpActionResult GetUsers([FromODataUri] int key)
+        public IActionResult GetUsers([FromRoute] int key)
         {
             var accessLevel = GetOrganizationReadAccessLevel(key);
             if (accessLevel < OrganizationDataReadAccessLevel.Public)
@@ -67,9 +69,12 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [NonAction]
-        public override IHttpActionResult Patch(int key, Delta<Organization> delta) => throw new NotSupportedException();
+        public override IActionResult Patch(int key, Delta<Organization> delta) => throw new NotSupportedException();
 
         [NonAction]
-        public override IHttpActionResult Delete(int key) => throw new NotSupportedException();
+        public override IActionResult Delete(int key) => throw new NotSupportedException();
     }
 }
+
+
+

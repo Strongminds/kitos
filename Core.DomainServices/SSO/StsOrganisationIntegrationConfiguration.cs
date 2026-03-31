@@ -22,5 +22,8 @@
             StsCertificateThumbprint = stsCertificateThumbprint;
             OrgService6EntityId = orgService6EntityId;
         }
+
+        public string GetOrganisationServiceUrl(string serviceName) =>
+            $"https://organisation.{EndpointHost}/organisation/{serviceName}/6";
     }
 }

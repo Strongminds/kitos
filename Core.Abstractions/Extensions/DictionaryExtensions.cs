@@ -1,17 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Core.Abstractions.Extensions
 {
     public static class DictionaryExtensions
     {
-        public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> input)
-        {
-            return
-                input
-                    .FromNullable()
-                    .Select(dic => new ReadOnlyDictionary<TKey, TValue>(dic))
-                    .GetValueOrDefault();
-        }
+        // AsReadOnly<TKey,TValue> is provided by System.Collections.Generic.CollectionExtensions since .NET 8
     }
 }

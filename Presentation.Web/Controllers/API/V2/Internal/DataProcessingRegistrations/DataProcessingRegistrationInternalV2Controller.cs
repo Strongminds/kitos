@@ -1,15 +1,13 @@
-﻿using Core.ApplicationServices.GDPR;
+using Core.ApplicationServices.GDPR;
 using Core.DomainServices.Queries;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.GDPR.Write;
@@ -22,6 +20,7 @@ using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistrations
@@ -29,7 +28,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
     /// <summary>
     /// Internal API for the data processing registrations stored in KITOS.
     /// </summary>
-    [RoutePrefix("api/v2/internal/data-processing-registrations")]
+    [Route("api/v2/internal/data-processing-registrations")]
     public class DataProcessingRegistrationInternalV2Controller : InternalApiV2Controller
     {
         private readonly IDataProcessingRegistrationApplicationService _dataProcessingRegistrationService;
@@ -56,15 +55,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("search")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<DataProcessingRegistrationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetItSystems(
+        public IActionResult GetItSystems(
             [NonEmptyGuid] Guid organizationUuid,
             string nameContains = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -91,11 +86,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/roles")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetAddRoleAssignments([NonEmptyGuid] Guid dprUuid)
+        public IActionResult GetAddRoleAssignments([NonEmptyGuid] Guid dprUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -114,13 +105,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{dprUuid}/roles/add")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(DataProcessingRegistrationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict, Description = "If duplicate is detected")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PatchAddRoleAssignment([NonEmptyGuid] Guid dprUuid, [FromBody] RoleAssignmentRequestDTO request)
+        public IActionResult PatchAddRoleAssignment([NonEmptyGuid] Guid dprUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -139,12 +124,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{dprUuid}/roles/remove")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(DataProcessingRegistrationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PatchRemoveRoleAssignment([NonEmptyGuid] Guid dprUuid, [FromBody] RoleAssignmentRequestDTO request)
+        public IActionResult PatchRemoveRoleAssignment([NonEmptyGuid] Guid dprUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -157,13 +137,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
         [HttpGet]
         [Route("{dprUuid}/data-processors/available")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetAvailableDataProcessors([NonEmptyGuid] Guid dprUuid,
-            [FromUri] string nameQuery = null, [FromUri] int pageSize = 25)
+        public IActionResult GetAvailableDataProcessors([NonEmptyGuid] Guid dprUuid,
+            [FromQuery] string nameQuery = null, [FromQuery] int pageSize = 25)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -179,13 +154,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
         [HttpGet]
         [Route("{dprUuid}/sub-data-processors/available")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetAvailableSubDataProcessors([NonEmptyGuid] Guid dprUuid,
-            [FromUri] string nameQuery = null, [FromUri] int pageSize = 25)
+        public IActionResult GetAvailableSubDataProcessors([NonEmptyGuid] Guid dprUuid,
+            [FromQuery] string nameQuery = null, [FromQuery] int pageSize = 25)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -201,13 +171,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
         [HttpGet]
         [Route("{dprUuid}/system-usages/available")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<IdentityNamePairResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetAvailableSystemUsages([NonEmptyGuid] Guid dprUuid,
-            [FromUri] string nameQuery = null, [FromUri] int pageSize = 25)
+        public IActionResult GetAvailableSystemUsages([NonEmptyGuid] Guid dprUuid,
+            [FromQuery] string nameQuery = null, [FromQuery] int pageSize = 25)
         {
             if (!ModelState.IsValid) 
                 return BadRequest(ModelState);
@@ -222,3 +187,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         }
     }
 }
+

@@ -1,19 +1,18 @@
-﻿using Core.ApplicationServices.Notification;
+using Core.ApplicationServices.Notification;
 using Core.DomainModel.Notification;
 using Core.DomainModel.Shared;
 using Presentation.Web.Infrastructure.Attributes;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
 using Presentation.Web.Models.API.V2.Internal.Response.Notifications;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Types.Notifications;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 {
-    [RoutePrefix("api/v2/internal/alerts")]
+    [Route("api/v2/internal/alerts")]
     public class AlertsV2Controller : InternalApiV2Controller
     {
         private readonly IUserNotificationApplicationService _userNotificationApplicationService;
@@ -25,22 +24,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 
         [HttpDelete]
         [Route("{alertUuid}")]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult DeleteAlert([FromUri][NonEmptyGuid] Guid alertUuid)
+        public IActionResult DeleteAlert([FromQuery][NonEmptyGuid] Guid alertUuid)
         {
             return _userNotificationApplicationService.DeleteByUuid(alertUuid).Match(FromOperationError, NoContent);
         }
 
         [HttpGet]
         [Route("organization/{organizationUuid}/user/{userUuid}/{relatedEntityType}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<AlertResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetByOrganizationAndUser([FromUri][NonEmptyGuid] Guid organizationUuid, [FromUri][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
+        public IActionResult GetByOrganizationAndUser([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromQuery][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
         {
             return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, relatedEntityType)
                     .Select(MapUserAlertsToDTO)
@@ -66,3 +57,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         }
     }
 }
+

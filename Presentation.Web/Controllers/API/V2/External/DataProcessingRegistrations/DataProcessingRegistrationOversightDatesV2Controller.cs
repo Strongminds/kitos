@@ -1,10 +1,9 @@
-﻿using Core.ApplicationServices.GDPR.Write;
+using Core.ApplicationServices.GDPR.Write;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Net;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations
@@ -12,7 +11,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
     /// <summary>
     /// API controller exclusively for managing CRUD operations on oversight dates for Data Processing Registrations in KITOS.
     /// </summary>
-    [RoutePrefix("api/v2/data-processing-registrations/{uuid}/oversight-dates")]
+    [Route("api/v2/data-processing-registrations/{uuid}/oversight-dates")]
     public class DataProcessingRegistrationOversightDatesV2Controller : ExternalBaseController
     {
 
@@ -36,14 +35,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OversightDateDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PostDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [FromBody] CreateOversightDateDTO request)
+        [Route("")]
+        public IActionResult PostDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [FromBody] CreateOversightDateDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -63,13 +56,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{oversightDateUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OversightDateDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PatchDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid, [FromBody] ModifyOversightDateDTO request)
+        public IActionResult PatchDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid, [FromBody] ModifyOversightDateDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -88,13 +75,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpDelete]
         [Route("{oversightDateUuid}")]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid)
+        public IActionResult DeleteDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid)
         {
             return _writeService
                 .DeleteOversightDate(uuid, oversightDateUuid)
@@ -102,3 +83,5 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         }
     }
 }
+
+

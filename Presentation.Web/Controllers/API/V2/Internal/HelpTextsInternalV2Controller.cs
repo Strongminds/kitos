@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.HelpTexts;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
-    [RoutePrefix("api/v2/internal/help-texts")]
+    [Route("api/v2/internal/help-texts")]
     public class HelpTextsInternalV2Controller: InternalApiV2Controller
     {
         private readonly IHelpTextApplicationService _helpTextApplicationService;
@@ -25,12 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{key}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetSingle([FromUri] string key)
+        public IActionResult GetSingle([FromQuery] string key)
         {
             return _helpTextApplicationService.GetHelpText(key)
                 .Select(_responseMapper.ToResponseDTO)
@@ -38,26 +32,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal
         }
 
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<HelpTextResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetAll()
+        [Route("")]
+        public IActionResult GetAll()
         {
             var helpTexts = _helpTextApplicationService.GetHelpTexts();
             return Ok(_responseMapper.ToResponseDTOs(helpTexts));
         }
 
         [HttpPost]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Post(HelpTextCreateRequestDTO dto)
+        [Route("")]
+        public IActionResult Post(HelpTextCreateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -69,12 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpDelete]
         [Route("{key}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Delete([FromUri] string key)
+        public IActionResult Delete([FromQuery] string key)
         {
             return _helpTextApplicationService.DeleteHelpText(key)
                 .Match(FromOperationError, Ok);
@@ -82,12 +61,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpPatch]
         [Route("{key}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(HelpTextResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Patch([FromUri] string key, HelpTextUpdateRequestDTO dto)
+        public IActionResult Patch([FromQuery] string key, HelpTextUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -99,3 +73,5 @@ namespace Presentation.Web.Controllers.API.V2.Internal
     }
 
 }
+
+
