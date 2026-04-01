@@ -6,10 +6,44 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
-    <PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.10.3" />
+    <!-- System.ServiceModel.Primitives ref assemblies omit MessagePartSpecification and
+         SecurityTokenReferenceStyle; reference the implementation (lib) DLL directly. -->
+    <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2">
+      <ExcludeAssets>compile</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.ServiceModel.Security" Version="4.10.3">
+      <ExcludeAssets>compile</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Use the lib (implementation) DLL directly so the compiler can resolve types that
+         are present at runtime but missing from the package's reference assemblies. -->
+    <Reference Include="System.ServiceModel.Primitives">
+      <HintPath>$(NuGetPackageRoot)system.servicemodel.primitives\8.1.2\lib\net8.0\System.ServiceModel.Primitives.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="System.Runtime.Caching" Version="9.0.4" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- WCF XML config extension types (BehaviorExtensionElement, StandardBindingElement, etc.)
+         only exist in .NET Framework. These files are excluded on .NET 5+. -->
+    <Compile Remove="Behaviors\ClientMessageInspectorBehavior.cs" />
+    <Compile Remove="Behaviors\SoapClientBehaviorExtensionElement.cs" />
+    <Compile Remove="Behaviors\SoapServiceBehaviorExtensionElement.cs" />
+    <Compile Remove="Bindings\SoapBindingCollectionElement.cs" />
+    <Compile Remove="Bindings\SoapBindingElement.cs" />
+    <!-- AsymmetricSecurityBindingElement is not available in .NET Core WCF client packages.
+         SoapBinding and HttpBindingFactory (which depends on it) are superseded by
+         the Digst.OioIdws.SoapCore binding in the Kombit.OioIdws.WscCore package. -->
+    <Compile Remove="Bindings\SoapBinding.cs" />
+    <Compile Remove="Bindings\HttpBindingFactory.cs" />
+    <!-- Extends WIF's Saml2SecurityTokenHandler which doesn't exist on .NET 5+.
+         The usage in SoapClientBehavior was also WIF-only and has been removed. -->
+    <Compile Remove="StrCustomization\StrReferenceSaml2SecurityTokenHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Digst.OioIdws.Common\Digst.OioIdws.Common.csproj" />
