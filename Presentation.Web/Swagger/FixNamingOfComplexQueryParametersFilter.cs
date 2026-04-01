@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Linq;
@@ -20,9 +20,9 @@ namespace Presentation.Web.Swagger
 
             foreach (var parameter in operation.Parameters)
             {
-                if (parameter.Name?.Contains(Separator) == true)
+                if (parameter is OpenApiParameter mutableParam && mutableParam.Name?.Contains(Separator) == true)
                 {
-                    parameter.Name = parameter.Name.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Last();
+                    mutableParam.Name = mutableParam.Name.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries).Last();
                 }
             }
         }

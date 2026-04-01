@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Presentation.Web.Infrastructure.Attributes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -9,7 +9,7 @@ namespace Presentation.Web.Swagger
 {
     public class SupplierFieldSchemaFilter : ISchemaFilter
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
         {
             if (schema?.Properties == null || context.Type == null) return;
 
@@ -21,10 +21,10 @@ namespace Presentation.Web.Swagger
                 var schemaProp = schema.Properties
                     .FirstOrDefault(p => string.Equals(p.Key, property.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (schemaProp.Key != null)
+                if (schemaProp.Key != null && schemaProp.Value is OpenApiSchema mutableSchema)
                 {
-                    var description = schemaProp.Value.Description ?? string.Empty;
-                    schemaProp.Value.Description = $"{description} (Supplier Field)";
+                    var description = mutableSchema.Description ?? string.Empty;
+                    mutableSchema.Description = $"{description} (Supplier Field)";
                 }
             }
         }

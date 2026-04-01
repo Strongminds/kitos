@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Presentation.Web.Infrastructure.Attributes;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

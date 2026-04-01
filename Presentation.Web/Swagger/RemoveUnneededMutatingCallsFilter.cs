@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Presentation.Web.Swagger
@@ -33,12 +33,12 @@ namespace Presentation.Web.Swagger
         private static bool IsExternalEndpointDocs(string path) =>
             path.Contains("/api/v2");
 
-        private static void NukeWriteOperationDocs(OpenApiPathItem pathItem)
+        private static void NukeWriteOperationDocs(IOpenApiPathItem pathItem)
         {
-            pathItem.Operations.Remove(OperationType.Delete);
-            pathItem.Operations.Remove(OperationType.Post);
-            pathItem.Operations.Remove(OperationType.Patch);
-            pathItem.Operations.Remove(OperationType.Put);
+            pathItem.Operations.Remove(System.Net.Http.HttpMethod.Delete);
+            pathItem.Operations.Remove(System.Net.Http.HttpMethod.Post);
+            pathItem.Operations.Remove(System.Net.Http.HttpMethod.Patch);
+            pathItem.Operations.Remove(System.Net.Http.HttpMethod.Put);
         }
     }
 }

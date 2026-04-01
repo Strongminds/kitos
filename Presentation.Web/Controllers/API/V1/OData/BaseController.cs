@@ -10,6 +10,7 @@ using Presentation.Web.Extensions;
 namespace Presentation.Web.Controllers.API.V1.OData
 {
     [Authorize]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public abstract class BaseController<T> : ODataController where T : class
     {
         protected readonly IGenericRepository<T> Repository;

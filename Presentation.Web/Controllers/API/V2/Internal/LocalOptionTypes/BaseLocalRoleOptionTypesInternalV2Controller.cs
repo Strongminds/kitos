@@ -24,7 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
             _writeModelMapper = writeModelMapper;
         }
 
-        public IActionResult GetAll([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        protected IActionResult GetAll([NonEmptyGuid][FromQuery] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -32,7 +32,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
             return Ok(_responseMapper.ToLocalRoleOptionDTOs<TReferenceType, TOptionType>(roleOptions));
         }
 
-        public IActionResult GetSingle([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        protected IActionResult GetSingle([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -41,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
                 .Match(Ok, FromOperationError);
         }
 
-        public IActionResult Create([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        protected IActionResult Create([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -52,7 +52,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
                 .Match(Ok, FromOperationError);
         }
 
-        public IActionResult Patch([NonEmptyGuid][FromQuery] Guid organizationUuid,
+        protected IActionResult Patch([NonEmptyGuid][FromQuery] Guid organizationUuid,
             [FromQuery] Guid optionUuid,
             LocalRoleOptionUpdateRequestDTO dto)
         {
@@ -65,7 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
                 .Match(Ok, FromOperationError);
         }
 
-        public IActionResult Delete([NonEmptyGuid][FromQuery] Guid organizationUuid,
+        protected IActionResult Delete([NonEmptyGuid][FromQuery] Guid organizationUuid,
             [FromQuery] Guid optionUuid)
         {
             if (!ModelState.IsValid) return BadRequest();

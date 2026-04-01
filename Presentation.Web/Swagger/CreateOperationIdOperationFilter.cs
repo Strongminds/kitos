@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Presentation.Web.Swagger
@@ -15,7 +15,7 @@ namespace Presentation.Web.Swagger
             {
                 foreach (var mediaType in okResponse.Content.Values)
                 {
-                    if (mediaType.Schema?.Type?.Equals("array", StringComparison.OrdinalIgnoreCase) == true)
+                    if (mediaType.Schema?.Type == JsonSchemaType.Array)
                     {
                         isCollectionResult = true;
                         break;

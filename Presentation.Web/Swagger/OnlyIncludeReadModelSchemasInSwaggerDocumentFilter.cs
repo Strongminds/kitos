@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Core.DomainModel;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Presentation.Web.Swagger

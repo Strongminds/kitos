@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Presentation.Web.Swagger
@@ -14,7 +14,7 @@ namespace Presentation.Web.Swagger
             _swaggerProvider = swaggerProvider;
         }
 
-        public OpenApiDocument GetSwagger(string documentName, string? host = null, string? basePath = null)
+        public OpenApiDocument GetSwagger(string documentName, string host, string basePath)
         {
             var cacheKey = $"{documentName}_{host}_{basePath}";
             return Cache.GetOrAdd(cacheKey, _ => _swaggerProvider.GetSwagger(documentName, host, basePath));

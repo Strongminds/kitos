@@ -2,21 +2,18 @@ using System;
 using System.Linq;
 using System.Threading;
 using Hangfire;
-using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
 using Presentation.Web.Helpers;
-using Presentation.Web.Hangfire;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Swagger;
 using Serilog;
@@ -84,11 +81,14 @@ services.AddAuthorization();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V1", Version = "1" });
-    c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KITOS API V2", Version = "2" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITOS API V1", Version = "1" });
+    c.SwaggerDoc("v2", new OpenApiInfo { Title = "KITOS API V2", Version = "2" });
 
     c.DocInclusionPredicate((docName, apiDesc) =>
     {
+        // Skip actions without an explicit HTTP method binding (OData, naming-convention V1, etc.)
+        if (string.IsNullOrEmpty(apiDesc.HttpMethod)) return false;
+
         var isV2Path = (apiDesc.RelativePath ?? "").IsExternalApiPath();
         return docName == "v2" ? isV2Path : !isV2Path;
     });
@@ -104,11 +104,11 @@ services.AddSwaggerGen(c =>
 
     c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
         Description = "The KITOS TOKEN"
     });
 
@@ -161,8 +161,8 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "KITOS API V1");
     c.SwaggerEndpoint("/swagger/v2/swagger.json", "KITOS API V2");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "KITOS API V1");
 });
 
 app.UseSerilogRequestLogging();
