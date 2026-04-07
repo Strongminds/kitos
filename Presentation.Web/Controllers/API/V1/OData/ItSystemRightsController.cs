@@ -43,13 +43,13 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery]
-        [Route("Users({userId})/ItSystemRights")]
+        [Route("odata/Users({userId})/ItSystemRights")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult GetByUser(int userId)
         {
             var result = GetAllQuery().Where(x => x.UserId == userId);
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         protected override void RaiseCreatedDomainEvent(ItSystemRight entity)

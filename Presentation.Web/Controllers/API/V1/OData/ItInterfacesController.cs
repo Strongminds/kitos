@@ -22,7 +22,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery(MaxExpansionDepth = 3)]
-        [Route("ItInterfaces")]
+        [Route("odata/ItInterfaces")]
         [RequireTopOnOdataThroughKitosToken]
         public override IActionResult Get()
         {
@@ -35,7 +35,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="key"></param>
         /// <returns></returns>
         [EnableQuery(MaxExpansionDepth = 3)]
-        [Route("Organizations({key})/ItInterfaces")]
+        [Route("odata/Organizations({key})/ItInterfaces")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult GetItInterfaces(int key)
         {
@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                     )
                 );
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         [NonAction]

@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using Core.DomainServices;
 using Core.DomainModel.Organization;
@@ -20,7 +21,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery]
-        [Route("OrganizationUnits")]
+        [Route("odata/OrganizationUnits")]
         public IActionResult GetOrganizationUnits()
         {
             return base.Get();
@@ -28,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         //GET /Organizations(1)/OrganizationUnits
         [EnableQuery]
-        [Route("Organizations({orgKey})/OrganizationUnits")]
+        [Route("odata/Organizations({orgKey})/OrganizationUnits")]
         public IActionResult GetOrganizationUnits(int orgKey)
         {
             if (GetOrganizationReadAccessLevel(orgKey) < OrganizationDataReadAccessLevel.All)
@@ -40,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 .AsQueryable()
                 .ByOrganizationId(orgKey);
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         [NonAction]

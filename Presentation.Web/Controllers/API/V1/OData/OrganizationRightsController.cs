@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Net;
 using Core.ApplicationServices.Organizations;
@@ -28,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         // GET /Organizations(1)/Rights
         [EnableQuery]
-        [HttpGet("Organizations({orgKey})/Rights")]
+        [HttpGet("odata/Organizations({orgKey})/Rights")]
         public IActionResult GetRights(int orgKey)
         {
             if (GetOrganizationReadAccessLevel(orgKey) != OrganizationDataReadAccessLevel.All)
@@ -39,11 +40,11 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 .AsQueryable()
                 .ByOrganizationId(orgKey);
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         // POST /Organizations(1)/Rights
-        [HttpPost("Organizations({orgKey})/Rights")]
+        [HttpPost("odata/Organizations({orgKey})/Rights")]
         public IActionResult PostRights(int orgKey, [FromBody] OrganizationRight entity)
         {
             if (!ModelState.IsValid)
@@ -76,7 +77,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         public override IActionResult Post(int organizationId, OrganizationRight entity) => throw new NotSupportedException();
 
         // DELETE /Organizations(1)/Rights(1)
-        [HttpDelete("Organizations({orgKey})/Rights({key})")]
+        [HttpDelete("odata/Organizations({orgKey})/Rights({key})")]
         public IActionResult DeleteRights(int orgKey, int key)
         {
             return PerformDelete(key);

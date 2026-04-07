@@ -6,6 +6,7 @@ using Core.DomainModel;
 using Core.DomainServices.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Infrastructure.Authorization.Controller.Crud;
 using Presentation.Web.Infrastructure.Authorization.Controller.General;
@@ -16,20 +17,17 @@ namespace Presentation.Web.Controllers.API.V1
     [Authorize]
     public abstract class BaseApiController : ExtendedApiController
     {
-        public IOrganizationalUserContext? UserContext { get; set; }
+        protected IOrganizationalUserContext UserContext => HttpContext.RequestServices.GetRequiredService<IOrganizationalUserContext>();
+        protected IAuthorizationContext AuthorizationContext => HttpContext.RequestServices.GetRequiredService<IAuthorizationContext>();
 
-        public IAuthorizationContext? AuthorizationContext { get; set; }
+        private IControllerAuthorizationStrategy CreateAuthorizationStrategy() =>
+            new ContextBasedAuthorizationStrategy(AuthorizationContext);
 
-        private readonly Lazy<IControllerAuthorizationStrategy> _authorizationStrategy;
-        private readonly Lazy<IControllerCrudAuthorization> _crudAuthorization;
-
-        protected IControllerAuthorizationStrategy AuthorizationStrategy => _authorizationStrategy.Value;
-        protected IControllerCrudAuthorization CrudAuthorization => _crudAuthorization.Value;
+        protected IControllerAuthorizationStrategy AuthorizationStrategy => CreateAuthorizationStrategy();
+        protected IControllerCrudAuthorization CrudAuthorization => GetCrudAuthorization();
 
         protected BaseApiController()
         {
-            _authorizationStrategy = new Lazy<IControllerAuthorizationStrategy>(() => new ContextBasedAuthorizationStrategy(AuthorizationContext!));
-            _crudAuthorization = new Lazy<IControllerCrudAuthorization>(GetCrudAuthorization);
         }
 
         protected virtual IControllerCrudAuthorization GetCrudAuthorization()

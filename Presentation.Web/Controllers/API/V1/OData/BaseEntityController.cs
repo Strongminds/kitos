@@ -11,6 +11,7 @@ using Core.DomainServices.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.Extensions.DependencyInjection;
 using Presentation.Web.Extensions;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Infrastructure.Authorization.Controller.Crud;
@@ -21,17 +22,15 @@ namespace Presentation.Web.Controllers.API.V1.OData
 {
     public abstract class BaseEntityController<T> : BaseController<T> where T : class, IEntity
     {
-        public IDomainEvents? DomainEvents { get; set; }
+        protected IDomainEvents DomainEvents => HttpContext.RequestServices.GetRequiredService<IDomainEvents>();
 
-        private readonly Lazy<IControllerAuthorizationStrategy> _authorizationStrategy;
-        private readonly Lazy<IControllerCrudAuthorization> _crudAuthorization;
-        protected IControllerCrudAuthorization CrudAuthorization => _crudAuthorization.Value;
+        protected IControllerAuthorizationStrategy AuthorizationStrategy =>
+            new ContextBasedAuthorizationStrategy(AuthorizationContext);
+        protected IControllerCrudAuthorization CrudAuthorization => GetCrudAuthorization();
 
         protected BaseEntityController(IGenericRepository<T> repository)
             : base(repository)
         {
-            _authorizationStrategy = new Lazy<IControllerAuthorizationStrategy>(() => new ContextBasedAuthorizationStrategy(AuthorizationContext!));
-            _crudAuthorization = new Lazy<IControllerCrudAuthorization>(GetCrudAuthorization);
         }
 
         [EnableQuery]
@@ -52,7 +51,9 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 .Select(x => x.Apply(mainQuery))
                 .GetValueOrFallback(mainQuery);
 
-            return Ok(result);
+            // AsEnumerable() materializes via EF6 before OData applies in-memory filtering.
+            // [EnableQuery] with IEnumerable uses LINQ-to-Objects, avoiding EF6/OData expression-tree incompatibilities.
+            return Ok(result.ToList());
         }
 
         protected virtual IQueryable<T> GetAllQuery()
@@ -76,7 +77,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 return Forbidden();
             }
 
-            return Ok(Microsoft.AspNetCore.OData.Results.SingleResult.Create(result));
+            return Ok(entity);
         }
 
         public virtual IActionResult Post(int organizationId, [FromBody] T entity)
@@ -216,17 +217,17 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         protected CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccessLevel()
         {
-            return _authorizationStrategy.Value.GetCrossOrganizationReadAccess();
+            return AuthorizationStrategy.GetCrossOrganizationReadAccess();
         }
 
         protected EntityReadAccessLevel GetEntityTypeReadAccessLevel<T>()
         {
-            return _authorizationStrategy.Value.GetEntityTypeReadAccessLevel<T>();
+            return AuthorizationStrategy.GetEntityTypeReadAccessLevel<T>();
         }
 
         protected OrganizationDataReadAccessLevel GetOrganizationReadAccessLevel(int organizationId)
         {
-            return _authorizationStrategy.Value.GetOrganizationReadAccessLevel(organizationId);
+            return AuthorizationStrategy.GetOrganizationReadAccessLevel(organizationId);
         }
 
         protected bool AllowRead(T entity)
@@ -251,12 +252,12 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         protected bool AllowEntityVisibilityControl(IEntity entity)
         {
-            return _authorizationStrategy.Value.HasPermission(new VisibilityControlPermission(entity));
+            return AuthorizationStrategy.HasPermission(new VisibilityControlPermission(entity));
         }
 
         protected virtual IControllerCrudAuthorization GetCrudAuthorization()
         {
-            return new RootEntityCrudAuthorization(_authorizationStrategy.Value);
+            return new RootEntityCrudAuthorization(AuthorizationStrategy);
         }
 
         protected IActionResult FromOperationFailure(OperationFailure failure)

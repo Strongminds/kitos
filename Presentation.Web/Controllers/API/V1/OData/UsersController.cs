@@ -151,7 +151,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
             return Created(createdUser);
         }
-        [HttpGet("Users/IsEmailAvailable")]
+        [HttpGet("odata/Users/IsEmailAvailable")]
         public IActionResult IsEmailAvailable(string email)
         {
             var available = EmailExists(email) == false;
@@ -159,7 +159,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Ok(available);
         }
 
-        [HttpGet("GetUserByEmail(email={email})")]
+        [HttpGet("odata/GetUserByEmail(email={email})")]
         public IActionResult GetUserByEmail(string email)
         {
             var userToReturn = this._repository.AsQueryable().FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
@@ -170,7 +170,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return NotFound();
         }
 
-        [HttpGet("GetUserByEmailAndOrganizationRelationship(email={email},organizationId={organizationId})")]
+        [HttpGet("odata/GetUserByEmailAndOrganizationRelationship(email={email},organizationId={organizationId})")]
         public IActionResult GetUserByEmailAndOrganizationId(string email, int organizationId)
         {
             var userToReturn = this._repository.AsQueryable().FirstOrDefault(u =>
@@ -185,7 +185,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery(MaxExpansionDepth = 3)]
-        [HttpGet("GetUsersByUuid(organizationUuid={organizationUuid})")]
+        [HttpGet("odata/GetUsersByUuid(organizationUuid={organizationUuid})")]
         public IActionResult GetUsersByUuid(Guid organizationUuid)
         {
             var idResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);
@@ -200,7 +200,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             }
 
             var result = _repository.AsQueryable().Where(m => m.OrganizationRights.Any(r => r.OrganizationId == id));
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
 

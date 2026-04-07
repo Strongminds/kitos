@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Net;
 using Core.Abstractions.Types;
@@ -25,7 +26,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery]
-        [Route("Organizations({organizationId})/ItContractOverviewReadModels")]
+        [Route("odata/Organizations({organizationId})/ItContractOverviewReadModels")]
         public IActionResult Get([FromRoute] int organizationId, int? responsibleOrganizationUnitId = null)
         {
             return GetOverviewReadModels(organizationId, responsibleOrganizationUnitId);
@@ -38,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="responsibleOrganizationUnitUuid"></param>
         /// <returns></returns>
         [EnableQuery(MaxNodeCount = 300)]
-        [Route("ItContractOverviewReadModels")]
+        [Route("odata/ItContractOverviewReadModels")]
         public IActionResult GetByUuid(Guid organizationUuid, Guid? responsibleOrganizationUnitUuid = null)
         {
             var orgDbId = _identityResolver.ResolveDbId<Organization>(organizationUuid);
@@ -69,7 +70,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 : _readModelsService.GetByOrganizationIdOrUnitIdInSubTree(organizationId,
                     responsibleOrganizationUnitId.Value);
 
-            return query.Match(onSuccess: Ok, onFailure: FromOperationError);
+            return query.Match(onSuccess: q => Ok(q.ToList()), onFailure: FromOperationError);
         }
     }
 }

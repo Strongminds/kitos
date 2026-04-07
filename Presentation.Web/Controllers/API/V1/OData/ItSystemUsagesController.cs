@@ -1,3 +1,4 @@
+using System.Linq;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
@@ -25,7 +26,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="orgKey"></param>
         /// <returns></returns>
         [EnableQuery(MaxExpansionDepth = 4)] // MaxExpansionDepth is 4 because we need to do MainContract($expand=ItContract($expand=Supplier))
-        [Route("Organizations({orgKey})/ItSystemUsages")]
+        [Route("odata/Organizations({orgKey})/ItSystemUsages")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult GetItSystems(int orgKey)
         {
@@ -40,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 .AsQueryable()
                 .ByOrganizationId(orgKey);
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
     }
 }

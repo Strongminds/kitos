@@ -26,7 +26,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// </summary>
         /// <returns></returns>
         [EnableQuery]
-        [Route("ItContracts")]
+        [Route("odata/ItContracts")]
         [RequireTopOnOdataThroughKitosToken]
         public override IActionResult Get()
         {
@@ -39,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="key"></param>
         /// <returns></returns>
         [EnableQuery(MaxExpansionDepth = 3)]
-        [Route("Organizations({key})/ItContracts")]
+        [Route("odata/Organizations({key})/ItContracts")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult GetItContracts(int key)
         {
@@ -51,7 +51,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
             var result = Repository.AsQueryable().ByOrganizationId(key);
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         [NonAction]

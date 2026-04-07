@@ -30,7 +30,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             _userRepository = userRepository;
         }
 
-        [HttpPost("Organizations({orgKey})/RemoveUser")]
+        [HttpPost("odata/Organizations({orgKey})/RemoveUser")]
         public IActionResult RemoveUser([FromRoute]int orgKey, ODataActionParameters parameters)
         {
             if (!ModelState.IsValid)
@@ -55,7 +55,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         [NonAction]
         public override IActionResult Post(int organizationId, Organization organization) => throw new NotSupportedException();
 
-        [HttpGet("Organizations({key})/Users")]
+        [HttpGet("odata/Organizations({key})/Users")]
         [EnableQuery]
         public IActionResult GetUsers([FromRoute] int key)
         {
@@ -66,7 +66,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             }
 
             var result = _userRepository.AsQueryable().Where(m => m.OrganizationRights.Any(r => r.OrganizationId == key));
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         [NonAction]

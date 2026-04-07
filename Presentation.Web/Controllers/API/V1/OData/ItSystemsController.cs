@@ -34,7 +34,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="orgKey"></param>
         /// <returns></returns>
         [EnableQuery]
-        [Route("Organizations({orgKey})/ItSystems")]
+        [Route("odata/Organizations({orgKey})/ItSystems")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult GetItSystems(int orgKey)
         {
@@ -48,7 +48,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
                     .AsQueryable()
                     .ByOrganizationDataAndPublicDataFromOtherOrganizations(orgKey, readAccessLevel, GetCrossOrganizationReadAccessLevel());
 
-            return Ok(result);
+            return Ok(result.ToList());
         }
 
         public override IActionResult Patch(int key, Delta<ItSystem> delta)
@@ -92,7 +92,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
 
-        [Route("ItSystems")]
+        [Route("odata/ItSystems")]
         [RequireTopOnOdataThroughKitosToken]
         public override IActionResult Get()
         {

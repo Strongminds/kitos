@@ -15,7 +15,10 @@ using Newtonsoft.Json.Serialization;
 using Presentation.Web;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
+using Presentation.Web.Infrastructure.OData;
 using Presentation.Web.Swagger;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OData;
 using Serilog;
 using Core.BackgroundJobs.Model;
 using Hangfire.Common;
@@ -33,7 +36,7 @@ builder.Host.UseSerilog();
 var configuration = builder.Configuration;
 var services = builder.Services;
 
-// Controllers with Newtonsoft.Json
+// Controllers with Newtonsoft.Json + OData
 services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     {
@@ -41,9 +44,14 @@ services.AddControllersWithViews()
         options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+    })
+    .AddOData(options =>
+    {
+        options.AddRouteComponents("odata", ODataModelConfig.GetEdmModel());
+        options.EnableQueryFeatures();
     });
 
-// OData
+// Routing
 services.AddRouting();
 
 // Authentication
@@ -186,6 +194,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+
+// Enable buffering early so the body stream can be rewound and re-read by WriteModelMapperBase
+// (CurrentRequestStream.GetInputStreamCopy sets Position=0; only works if stream is buffered)
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

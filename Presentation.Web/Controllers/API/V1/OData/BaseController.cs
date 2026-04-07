@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
@@ -5,6 +6,7 @@ using Core.DomainServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.Extensions.DependencyInjection;
 using Presentation.Web.Extensions;
 
 namespace Presentation.Web.Controllers.API.V1.OData
@@ -15,20 +17,19 @@ namespace Presentation.Web.Controllers.API.V1.OData
     {
         protected readonly IGenericRepository<T> Repository;
 
-        public IOrganizationalUserContext? UserContext { get; set; }
-
-        public IAuthorizationContext? AuthorizationContext { get; set; }
+        protected IOrganizationalUserContext UserContext => HttpContext.RequestServices.GetRequiredService<IOrganizationalUserContext>();
+        protected IAuthorizationContext AuthorizationContext => HttpContext.RequestServices.GetRequiredService<IAuthorizationContext>();
 
         protected BaseController(IGenericRepository<T> repository)
         {
             Repository = repository;
         }
 
-        protected int UserId => UserContext!.UserId;
+        protected int UserId => UserContext.UserId;
 
         public virtual IActionResult Get()
         {
-            return Ok(Repository.AsQueryable());
+            return Ok(Repository.AsQueryable().ToList());
         }
 
         public virtual IActionResult Get(int key)
