@@ -274,6 +274,8 @@ namespace Core.DomainServices.Contract
                 .ToList();
 
             destination.ItSystemUsagesCsv = string.Join(", ", itSystemUsages.Select(MapSystemName));
+            destination.ExternalPaymentOrganizationUnitsCsv = string.Join(", ", source.ExternEconomyStreams.Select(x => x.OrganizationUnit.Name));
+            destination.InternalPaymentOrganizationUnitsCsv = string.Join(", ", source.InternEconomyStreams.Select(x => x.OrganizationUnit.Name));
             destination.ItSystemUsagesSystemUuidCsv = string.Join(", ", itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")));
 
             var actionContexts = itSystemUsages

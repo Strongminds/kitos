@@ -54,6 +54,9 @@ namespace Core.DomainModel.ItContract.Read
         public string DataProcessingAgreementsCsv { get; set; } //Used for sorting AND excel output (not filtering since we cannot set a ceiling on length and hence no index)
         public virtual ICollection<ItContractOverviewReadModelItSystemUsage> ItSystemUsages { get; set; } //used for generating links and filtering IN collection (we can add index since the name can be constrained)
         public string ItSystemUsagesCsv { get; set; } //Used for sorting AND excel output 
+        public string ExternalPaymentOrganizationUnitsCsv { get; set; }
+        public string InternalPaymentOrganizationUnitsCsv { get; set; }
+
         public string ItSystemUsagesSystemUuidCsv { get; set; } //Used for sorting AND excel output 
         public int NumberOfAssociatedSystemRelations { get; set; } //for display, order and filtering
         public virtual ICollection<ItContractOverviewReadModelSystemRelation> SystemRelations { get; set; } //for lookup used during update scheduling (to check if an outside change affects this overview item)
