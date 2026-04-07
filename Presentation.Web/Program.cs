@@ -131,6 +131,11 @@ services.AddSwaggerGen(c =>
 var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
     ?? throw new InvalidOperationException("kitos_HangfireDB connection string is required");
 
+if (builder.Environment.IsDevelopment())
+{
+    EnsureHangfireDatabaseCreated(hangfireConnectionString);
+}
+
 services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
@@ -263,4 +268,17 @@ void InitializeHangfire(IRecurringJobManager recurringJobManager)
         job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchCreateMainPublicMessageTask(CancellationToken.None)),
         cronExpression: Cron.Never(),
         timeZone: TimeZoneInfo.Local);
+}
+
+static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
+{
+    var csb = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(hangfireConnectionString);
+    var databaseName = csb.InitialCatalog;
+    csb.InitialCatalog = "master";
+
+    using var connection = new Microsoft.Data.SqlClient.SqlConnection(csb.ConnectionString);
+    connection.Open();
+    using var cmd = connection.CreateCommand();
+    cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{databaseName}') CREATE DATABASE [{databaseName}]";
+    cmd.ExecuteNonQuery();
 }
