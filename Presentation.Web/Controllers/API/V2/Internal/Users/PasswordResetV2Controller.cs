@@ -40,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{requestId}")]
         [HttpGet]
-        public IActionResult GetPasswordReset([FromQuery] string requestId)
+        public IActionResult GetPasswordReset([FromRoute] string requestId)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{requestId}")]
         [HttpPost]
-        public IActionResult PostPasswordReset([FromQuery] string requestId, [FromBody] ResetPasswordRequestDTO request)
+        public IActionResult PostPasswordReset([FromRoute] string requestId, [FromBody] ResetPasswordRequestDTO request)
         {
             try
             {

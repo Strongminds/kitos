@@ -26,29 +26,29 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalInterfaceTypes([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetLocalInterfaceTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalInterfaceTypeByOptionId([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        public IActionResult GetLocalInterfaceTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalInterfaceType([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalInterfaceType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchLocalInterfaceType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid,
+        public IActionResult PatchLocalInterfaceType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
             LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
@@ -56,8 +56,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteLocalInterfaceType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid)
+        public IActionResult DeleteLocalInterfaceType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }

@@ -25,29 +25,29 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalSensitivePersonalDataTypes([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetLocalSensitivePersonalDataTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalSensitivePersonalDataTypeByOptionId([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        public IActionResult GetLocalSensitivePersonalDataTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalSensitivePersonalDataType([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchLocalSensitivePersonalDataType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid,
+        public IActionResult PatchLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
             LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
@@ -55,8 +55,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteLocalSensitivePersonalDataType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid)
+        public IActionResult DeleteLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }

@@ -25,29 +25,29 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalItContractRoles([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetLocalItContractRoles([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalItContractRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        public IActionResult GetLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalItContractRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchLocalItContractRole([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid,
+        public IActionResult PatchLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
             LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
@@ -55,8 +55,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteLocalItContractRole([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid)
+        public IActionResult DeleteLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }

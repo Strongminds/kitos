@@ -27,29 +27,29 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalRelationFrequencyTypes([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetLocalRelationFrequencyTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalRelationFrequencyTypeByOptionId([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        public IActionResult GetLocalRelationFrequencyTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalRelationFrequencyType([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalRelationFrequencyType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchLocalRelationFrequencyType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid,
+        public IActionResult PatchLocalRelationFrequencyType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
             LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
@@ -57,8 +57,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteLocalRelationFrequencyType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid)
+        public IActionResult DeleteLocalRelationFrequencyType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }

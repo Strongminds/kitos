@@ -27,29 +27,29 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalBasisForTransferTypes([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetLocalBasisForTransferTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalBasisForTransferTypeByOptionId([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        public IActionResult GetLocalBasisForTransferTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalBasisForTransferType([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalBasisForTransferType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchLocalBasisForTransferType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid,
+        public IActionResult PatchLocalBasisForTransferType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
             LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
@@ -57,8 +57,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteLocalBasisForTransferType([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid)
+        public IActionResult DeleteLocalBasisForTransferType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }

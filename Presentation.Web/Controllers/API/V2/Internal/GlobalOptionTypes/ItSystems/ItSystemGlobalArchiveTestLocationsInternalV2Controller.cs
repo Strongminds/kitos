@@ -37,7 +37,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalArchiveTestLocation([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalArchiveTestLocation([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

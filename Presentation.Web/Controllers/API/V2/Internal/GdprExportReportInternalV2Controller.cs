@@ -24,7 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{organizationUuid}")]
-        public IActionResult GetGdprReport([FromQuery][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetGdprReport([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             return _gdprExportService.GetGDPRDataByUuid(organizationUuid)
                     .Select(MapGdprDataToDTO)

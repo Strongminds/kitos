@@ -90,7 +90,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpPost]
-        public IActionResult AddGlobalAdmin([FromQuery][NonEmptyGuid] Guid userUuid)
+        public IActionResult AddGlobalAdmin([FromRoute][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.AddGlobalAdmin(userUuid)
                         .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO)
@@ -99,7 +99,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpDelete]
-        public IActionResult RemoveGlobalAdmin([FromQuery][NonEmptyGuid] Guid userUuid)
+        public IActionResult RemoveGlobalAdmin([FromRoute][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.RemoveGlobalAdmin(userUuid)
                         .Match(FromOperationError, NoContent);
@@ -127,7 +127,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpPost]
-        public IActionResult AddLocalAdmin([NonEmptyGuid][FromQuery] Guid organizationUuid, [NonEmptyGuid][FromQuery] Guid userUuid)
+        public IActionResult AddLocalAdmin([NonEmptyGuid][FromRoute] Guid organizationUuid, [NonEmptyGuid][FromRoute] Guid userUuid)
         {
             return _userWriteService.AddLocalAdmin(organizationUuid, userUuid)
                     .Select(user => user.MapUserToSingleLocalAdminResponse(organizationUuid))
@@ -136,7 +136,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpDelete]
-        public IActionResult RemoveLocalAdmin([NonEmptyGuid][FromQuery] Guid organizationUuid, [NonEmptyGuid][FromQuery] Guid userUuid)
+        public IActionResult RemoveLocalAdmin([NonEmptyGuid][FromRoute] Guid organizationUuid, [NonEmptyGuid][FromRoute] Guid userUuid)
         {
             return _userWriteService.RemoveLocalAdmin(organizationUuid, userUuid)
                     .Match(FromOperationError, NoContent);
@@ -178,7 +178,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpPatch]
         [Route("system-integrators/{userUuid}")]
-        public IActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromQuery] Guid userUuid, [FromQuery] bool requestedValue)
+        public IActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
         {
             return _userWriteService.UpdateSystemIntegrator(userUuid, requestedValue)
                     .Match(NoContent, FromOperationError);

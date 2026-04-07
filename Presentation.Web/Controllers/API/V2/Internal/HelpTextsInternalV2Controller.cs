@@ -24,7 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{key}")]
-        public IActionResult GetSingle([FromQuery] string key)
+        public IActionResult GetSingle([FromRoute] string key)
         {
             return _helpTextApplicationService.GetHelpText(key)
                 .Select(_responseMapper.ToResponseDTO)
@@ -53,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpDelete]
         [Route("{key}")]
-        public IActionResult Delete([FromQuery] string key)
+        public IActionResult Delete([FromRoute] string key)
         {
             return _helpTextApplicationService.DeleteHelpText(key)
                 .Match(FromOperationError, Ok);
@@ -61,7 +61,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpPatch]
         [Route("{key}")]
-        public IActionResult Patch([FromQuery] string key, [FromBody] HelpTextUpdateRequestDTO dto)
+        public IActionResult Patch([FromRoute] string key, [FromBody] HelpTextUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 

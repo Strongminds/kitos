@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItContr
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalItContractRoleType([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalItContractRoleType([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

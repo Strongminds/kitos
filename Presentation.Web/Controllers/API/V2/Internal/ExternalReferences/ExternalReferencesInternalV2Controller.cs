@@ -31,7 +31,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-systems/{systemUuid}")]
-        public IActionResult GetItSystemReferences([NonEmptyGuid][FromQuery] Guid systemUuid)
+        public IActionResult GetItSystemReferences([NonEmptyGuid][FromRoute] Guid systemUuid)
         {
             return _systemService.GetSystem(systemUuid)
                 .Select(ToResponseDTO)
@@ -40,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-system-usages/{systemUsageUuid}")]
-        public IActionResult GetItSystemUsageReferences([NonEmptyGuid][FromQuery] Guid systemUsageUuid)
+        public IActionResult GetItSystemUsageReferences([NonEmptyGuid][FromRoute] Guid systemUsageUuid)
         {
             return _usageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Select(ToResponseDTO)
@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-contracts/{contractUuid}")]
-        public IActionResult GetItContractReferences([NonEmptyGuid][FromQuery] Guid contractUuid)
+        public IActionResult GetItContractReferences([NonEmptyGuid][FromRoute] Guid contractUuid)
         {
             return _contractService.GetContract(contractUuid)
                 .Select(ToResponseDTO)
@@ -58,7 +58,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("data-processing/{dprUuid}")]
-        public IActionResult GetDataProcessingReferences([NonEmptyGuid][FromQuery] Guid dprUuid)
+        public IActionResult GetDataProcessingReferences([NonEmptyGuid][FromRoute] Guid dprUuid)
         {
             return _dprService.GetByUuid(dprUuid)
                 .Select(ToResponseDTO)

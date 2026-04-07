@@ -24,14 +24,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 
         [HttpDelete]
         [Route("{alertUuid}")]
-        public IActionResult DeleteAlert([FromQuery][NonEmptyGuid] Guid alertUuid)
+        public IActionResult DeleteAlert([FromRoute][NonEmptyGuid] Guid alertUuid)
         {
             return _userNotificationApplicationService.DeleteByUuid(alertUuid).Match(FromOperationError, NoContent);
         }
 
         [HttpGet]
         [Route("organization/{organizationUuid}/user/{userUuid}/{relatedEntityType}")]
-        public IActionResult GetByOrganizationAndUser([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromQuery][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
+        public IActionResult GetByOrganizationAndUser([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromRoute][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
         {
             return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, relatedEntityType)
                     .Select(MapUserAlertsToDTO)

@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalDataProcessingCountryOption([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalDataProcessingCountryOption([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

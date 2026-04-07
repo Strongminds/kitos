@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.DependencyInjection;
 using Presentation.Web.Extensions;
 using Presentation.Web.Helpers;
 using Presentation.Web.Models.API.V1;
@@ -20,9 +21,9 @@ namespace Presentation.Web.Controllers.API.V1
     [Authorize]
     public abstract class ExtendedApiController : ControllerBase
     {
-        public ILogger? Logger { get; set; }
+        protected ILogger Logger => Log.Logger;
 
-        public IMapper? Mapper { get; set; }
+        protected IMapper Mapper => HttpContext.RequestServices.GetRequiredService<IMapper>();
 
         protected IActionResult LogError(Exception exp, [CallerMemberName] string memberName = "")
         {
@@ -141,7 +142,7 @@ namespace Presentation.Web.Controllers.API.V1
 
         protected virtual TDest Map<TSource, TDest>(TSource item)
         {
-            return Mapper!.Map<TDest>(item);
+            return Mapper.Map<TDest>(item);
         }
 
         protected virtual IQueryable<T> Page<T>(IQueryable<T> query, PagingModel<T> paging)

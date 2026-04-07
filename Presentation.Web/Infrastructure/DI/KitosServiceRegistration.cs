@@ -395,8 +395,8 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationalUserContext>(sp =>
             {
                 var authentication = sp.GetRequiredService<IAuthenticationContext>();
-                if (authentication.Method != AuthenticationMethod.Anonymous)
-                    return sp.GetRequiredService<IUserContextFactory>().Create(authentication.UserId.GetValueOrDefault());
+                if (authentication.Method != AuthenticationMethod.Anonymous && authentication.UserId.HasValue)
+                    return sp.GetRequiredService<IUserContextFactory>().Create(authentication.UserId.Value);
                 return new UnauthenticatedUserContext();
             });
             services.AddScoped<IAuthorizationContext>(sp =>

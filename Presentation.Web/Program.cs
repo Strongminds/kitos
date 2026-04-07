@@ -53,10 +53,21 @@ var baseUrl = configuration["AppSettings:BaseUrl"] ?? "https://localhost:44300/"
 var signingKey = new SymmetricSecurityKey(
     System.Text.Encoding.UTF8.GetBytes(securityKeyString));
 
+const string multiScheme = "CookieOrJwt";
 services.AddAuthentication(options =>
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = multiScheme;
+        options.DefaultChallengeScheme = multiScheme;
+    })
+    .AddPolicyScheme(multiScheme, "Cookie or JWT", options =>
+    {
+        options.ForwardDefaultSelector = context =>
+        {
+            var auth = context.Request.Headers[Microsoft.Net.Http.Headers.HeaderNames.Authorization].FirstOrDefault();
+            if (!string.IsNullOrEmpty(auth) && auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                return JwtBearerDefaults.AuthenticationScheme;
+            return CookieAuthenticationDefaults.AuthenticationScheme;
+        };
     })
     .AddJwtBearer(options =>
     {
@@ -73,6 +84,19 @@ services.AddAuthentication(options =>
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.LoginPath = "/account/login";
+        options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = ctx =>
+            {
+                ctx.Response.StatusCode = 401;
+                return System.Threading.Tasks.Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = ctx =>
+            {
+                ctx.Response.StatusCode = 403;
+                return System.Threading.Tasks.Task.CompletedTask;
+            }
+        };
     });
 
 services.AddAuthorization();
@@ -175,13 +199,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Custom middleware
-app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.CorrelationIdMiddleware>();
-app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.ApiRequestsLoggingMiddleware>();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Custom middleware (after auth so IAuthenticationContext is resolved with populated HttpContext.User)
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.CorrelationIdMiddleware>();
+app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.ApiRequestsLoggingMiddleware>();
 app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyUsersWithoutApiAccessMiddleware>();
 app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyModificationsThroughApiMiddleware>();
 app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueriesMiddleware>();

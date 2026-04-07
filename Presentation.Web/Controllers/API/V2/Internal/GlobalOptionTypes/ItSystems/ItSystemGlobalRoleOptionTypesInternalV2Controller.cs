@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalBItSystemRole([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalBItSystemRole([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

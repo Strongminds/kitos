@@ -15,6 +15,8 @@ using Core.DomainServices.Extensions;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V1;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AuthenticationScheme = Core.DomainModel.Users.AuthenticationScheme;
@@ -163,6 +165,8 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         {
             try
             {
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .GetAwaiter().GetResult();
                 return Ok();
             }
             catch (Exception e)

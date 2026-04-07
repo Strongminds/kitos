@@ -147,7 +147,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("applied-procurement-plans/{organizationUuid}")]
-        public IActionResult GetAppliedProcurementPlans([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetAppliedProcurementPlans([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return _itContractService.GetAppliedProcurementPlansByUuid(organizationUuid)
                 .Select(plans => plans.Select(MapAppliedProcurementPlansToDTO))

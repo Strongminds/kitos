@@ -25,7 +25,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalOrganizationUnitRoles([NonEmptyGuid][FromQuery] Guid organizationUuid)
+        public IActionResult GetLocalOrganizationUnitRoles([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
 
@@ -33,22 +33,22 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalOrganizationUnitRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
+        public IActionResult GetLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalOrganizationUnitRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchLocalOrganizationUnitRole([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid,
+        public IActionResult PatchLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
             LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
@@ -56,8 +56,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteLocalOrganizationUnitRole([NonEmptyGuid][FromQuery] Guid organizationUuid,
-            [FromQuery] Guid optionUuid)
+        public IActionResult DeleteLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }

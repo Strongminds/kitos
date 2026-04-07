@@ -38,7 +38,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchCountryCode([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchCountryCode([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

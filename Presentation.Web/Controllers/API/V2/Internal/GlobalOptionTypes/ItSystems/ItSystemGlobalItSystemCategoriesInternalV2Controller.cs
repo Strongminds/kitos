@@ -37,7 +37,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalItSystemCategories([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalItSystemCategories([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

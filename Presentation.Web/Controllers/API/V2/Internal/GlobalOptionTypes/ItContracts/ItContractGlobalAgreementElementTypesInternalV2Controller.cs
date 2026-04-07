@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItContr
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalAgreementElementType([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalAgreementElementType([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

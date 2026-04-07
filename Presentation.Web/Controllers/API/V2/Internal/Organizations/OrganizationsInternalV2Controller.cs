@@ -70,7 +70,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
 
         [Route("{organizationUuid}/ui-customization/{moduleName}")]
-        public IActionResult GetUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromQuery] string moduleName)
+        public IActionResult GetUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromRoute] string moduleName)
         {
             return _uiModuleCustomizationService.GetModuleCustomizationByOrganizationUuid(organizationUuid, moduleName)
              .Select(_organizationResponseMapper.ToUIModuleCustomizationResponseDTO)
@@ -79,7 +79,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [Route("{organizationUuid}/ui-customization/{moduleName}")]
         [HttpPut]
-        public IActionResult PutUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromQuery] string moduleName,
+        public IActionResult PutUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromRoute] string moduleName,
             UIModuleCustomizationRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -109,7 +109,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/patch")]
-        public IActionResult PatchOrganization([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationUpdateRequestDTO requestDto)
+        public IActionResult PatchOrganization([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationUpdateRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -121,7 +121,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{organizationUuid}/delete")]
-        public IActionResult DeleteOrganization([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromQuery] bool enforceDeletion)
+        public IActionResult DeleteOrganization([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromQuery] bool enforceDeletion)
         {
             return _organizationService.RemoveOrganization(organizationUuid, enforceDeletion)
                     .Match(FromOperationError, NoContent);
@@ -129,7 +129,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/disabled-status")]
-        public IActionResult ChangeDisabledStatus([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationDisabledStatusRequestDTO request)
+        public IActionResult ChangeDisabledStatus([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationDisabledStatusRequestDTO request)
         {
             return _organizationService.ChangeOrganizationDisabledStatus(organizationUuid, request.Disabled)
                     .Match(FromOperationError, NoContent);
@@ -137,7 +137,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/conflicts")]
-        public IActionResult GetConflicts([FromQuery][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetConflicts([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationService.ComputeOrganizationRemovalConflicts(organizationUuid)
                     .Select(MapConflictsToDTO)
@@ -146,7 +146,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/master-data")]
-        public IActionResult PatchOrganizationMasterData([FromQuery] [NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRequestDTO requestDto)
+        public IActionResult PatchOrganizationMasterData([FromRoute] [NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -157,7 +157,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
 
         [Route("{organizationUuid}/master-data")]
-        public IActionResult GetOrganizationMasterData([FromQuery] [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetOrganizationMasterData([FromRoute] [NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -167,7 +167,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
 
         [Route("{organizationUuid}/master-data/roles")]
-        public IActionResult GetOrganizationMasterDataRoles([FromQuery][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetOrganizationMasterDataRoles([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -178,7 +178,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         
         [HttpPatch]
         [Route("{organizationUuid}/master-data/roles")]
-        public IActionResult UpsertOrganizationMasterDataRoles([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRolesRequestDTO requestDto)
+        public IActionResult UpsertOrganizationMasterDataRoles([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRolesRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
 

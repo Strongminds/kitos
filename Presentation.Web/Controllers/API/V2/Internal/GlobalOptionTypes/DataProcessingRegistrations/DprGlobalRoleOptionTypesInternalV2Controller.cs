@@ -42,7 +42,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
             [HttpPatch]
             [Route("{optionUuid}")]
-            public IActionResult PatchDprRole([NonEmptyGuid] [FromQuery] Guid optionUuid,
+            public IActionResult PatchDprRole([NonEmptyGuid] [FromRoute] Guid optionUuid,
                 GlobalRoleOptionUpdateRequestDTO dto)
             {
                 return Patch(optionUuid, dto);

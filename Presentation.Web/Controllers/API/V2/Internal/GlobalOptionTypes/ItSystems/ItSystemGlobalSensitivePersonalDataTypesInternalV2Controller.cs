@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGlobalSensitivePersonalData([NonEmptyGuid][FromQuery] Guid optionUuid,
+        public IActionResult PatchGlobalSensitivePersonalData([NonEmptyGuid][FromRoute] Guid optionUuid,
             GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);
