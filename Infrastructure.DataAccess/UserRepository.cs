@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
@@ -72,6 +73,13 @@ namespace Infrastructure.DataAccess
         public Maybe<User> GetByUuid(Guid uuid)
         {
             return AsQueryable().ByUuid(uuid);
+        }
+
+        public User GetByIdWithRoles(int id)
+        {
+            return _context.Users
+                .Include(u => u.OrganizationRights.Select(r => r.Organization.Type))
+                .SingleOrDefault(u => u.Id == id);
         }
     }
 }

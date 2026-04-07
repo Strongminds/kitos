@@ -39,8 +39,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <param name="responsibleOrganizationUnitUuid"></param>
         /// <returns></returns>
         [EnableQuery(MaxNodeCount = 300)]
-        [Route("odata/ItContractOverviewReadModels")]
-        public IActionResult GetByUuid(Guid organizationUuid, Guid? responsibleOrganizationUnitUuid = null)
+        public IActionResult Get(Guid organizationUuid, Guid? responsibleOrganizationUnitUuid = null)
         {
             var orgDbId = _identityResolver.ResolveDbId<Organization>(organizationUuid);
             if (orgDbId.IsNone)
