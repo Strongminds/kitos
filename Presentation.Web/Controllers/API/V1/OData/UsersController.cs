@@ -152,6 +152,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Created(createdUser);
         }
         [HttpGet]
+        [HttpGet("Users/IsEmailAvailable")]
         public IActionResult IsEmailAvailable(string email)
         {
             var available = EmailExists(email) == false;
@@ -159,7 +160,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Ok(available);
         }
 
-        [Route("GetUserByEmail(email={email})")]
+        [HttpGet("GetUserByEmail(email={email})")]
         public IActionResult GetUserByEmail(string email)
         {
             var userToReturn = this._repository.AsQueryable().FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
@@ -170,7 +171,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return NotFound();
         }
 
-        [Route("GetUserByEmailAndOrganizationRelationship(email={email},organizationId={organizationId})")]
+        [HttpGet("GetUserByEmailAndOrganizationRelationship(email={email},organizationId={organizationId})")]
         public IActionResult GetUserByEmailAndOrganizationId(string email, int organizationId)
         {
             var userToReturn = this._repository.AsQueryable().FirstOrDefault(u =>
@@ -185,7 +186,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery(MaxExpansionDepth = 3)]
-        [Route("GetUsersByUuid(organizationUuid={organizationUuid})")]
+        [HttpGet("GetUsersByUuid(organizationUuid={organizationUuid})")]
         public IActionResult GetUsersByUuid(Guid organizationUuid)
         {
             var idResult = _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid);

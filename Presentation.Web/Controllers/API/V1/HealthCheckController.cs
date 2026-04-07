@@ -7,6 +7,7 @@ namespace Presentation.Web.Controllers.API.V1
 {
     [AllowAnonymous]
     [InternalApi]
+    [Route("api/healthcheck")]
     public class HealthCheckController : ControllerBase
     {
         private static readonly string DeploymentVersion = Settings.Default.DeploymentVersion;

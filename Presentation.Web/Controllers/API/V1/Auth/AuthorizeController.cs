@@ -47,6 +47,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
             _userContext = userContext;
         }
 
+        [HttpGet("api/authorize")]
         public IActionResult GetLogin()
         {
             var user = _userRepository.GetById(_userContext.UserId);
@@ -55,7 +56,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
             return Ok(response);
         }
 
-        [Route("api/authorize/GetOrganizations")]
+        [HttpGet("api/authorize/GetOrganizations")]
         public IActionResult GetOrganizations([FromQuery] string orderBy = null, [FromQuery] bool? orderByAsc = true)
         {
             var orgs = GetOrganizationsWithMembershipAccess();
@@ -74,7 +75,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         }
 
         [InternalApi]
-        [Route("api/authorize/GetOrganizations/{userId}")]
+        [HttpGet("api/authorize/GetOrganizations/{userId}")]
         public IActionResult GetUserOrganizations(int userId)
         {
             return _organizationService.GetUserOrganizations(userId)
@@ -94,7 +95,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
             return orgs;
         }
 
-        [Route("api/authorize/GetOrganization({orgId})")]
+        [HttpGet("api/authorize/GetOrganization({orgId})")]
         public IActionResult GetOrganization(int orgId)
         {
             var user = _userRepository.GetById(_userContext.UserId);
@@ -114,6 +115,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         // POST api/Authorize
         [AllowAnonymous]
+        [HttpPost("api/authorize")]
         public IActionResult PostLogin(LoginDTO loginDto)
         {
             if (!ModelState.IsValid)
@@ -156,7 +158,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         }
 
         [AllowAnonymous]
-        [Route("api/authorize/log-out")]
+        [HttpPost("api/authorize/log-out")]
         public IActionResult PostLogout()
         {
             try
@@ -171,6 +173,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
 
         [AllowAnonymous]
         [AllowRightsHoldersAccess]
+        [HttpPost("api/authorize/resetpassword")]
         public IActionResult PostResetpassword(bool? resetPassword, ResetPasswordDTO dto)
         {
             try

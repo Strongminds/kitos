@@ -28,7 +28,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         // GET /Organizations(1)/Rights
         [EnableQuery]
-        [Route("Organizations({orgKey})/Rights")]
+        [HttpGet("Organizations({orgKey})/Rights")]
         public IActionResult GetRights(int orgKey)
         {
             if (GetOrganizationReadAccessLevel(orgKey) != OrganizationDataReadAccessLevel.All)
@@ -43,7 +43,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         // POST /Organizations(1)/Rights
-        [Route("Organizations({orgKey})/Rights")]
+        [HttpPost("Organizations({orgKey})/Rights")]
         public IActionResult PostRights(int orgKey, OrganizationRight entity)
         {
             if (!ModelState.IsValid)
@@ -76,7 +76,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         public override IActionResult Post(int organizationId, OrganizationRight entity) => throw new NotSupportedException();
 
         // DELETE /Organizations(1)/Rights(1)
-        [Route("Organizations({orgKey})/Rights({key})")]
+        [HttpDelete("Organizations({orgKey})/Rights({key})")]
         public IActionResult DeleteRights(int orgKey, int key)
         {
             return PerformDelete(key);
