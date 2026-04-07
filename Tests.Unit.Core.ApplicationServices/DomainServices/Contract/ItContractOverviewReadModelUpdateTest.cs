@@ -753,8 +753,8 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             Assert.Equal(string.Join(", ", systemUsages.Select(x => x.ItSystemUsage.MapItSystemName())), itContractOverviewReadModel.ItSystemUsagesCsv);
             Assert.Equal(string.Join(", ", systemUsages.Select(x => x.ItSystemUsage.ItSystem.Uuid.ToString("D"))), itContractOverviewReadModel.ItSystemUsagesSystemUuidCsv);
-            Assert.Equal(string.Join(", ", itContract.ExternEconomyStreams.Select(x => x.OrganizationUnit.Name)), itContractOverviewReadModel.ExternalPaymentOrganizationUnitsCsv));
-            Assert.Equal(string.Join(", ", itContract.InternEconomyStreams.Select(x => x.OrganizationUnit.Name)), itContractOverviewReadModel.InternalPaymentOrganizationUnitsCsv));
+            Assert.Equal(string.Join(", ", itContract.ExternEconomyStreams.Select(x => x.OrganizationUnit.Name)), itContractOverviewReadModel.ExternalPaymentOrganizationUnitsCsv);
+            Assert.Equal(string.Join(", ", itContract.InternEconomyStreams.Select(x => x.OrganizationUnit.Name)), itContractOverviewReadModel.InternalPaymentOrganizationUnitsCsv);
         }
 
         [Fact]
