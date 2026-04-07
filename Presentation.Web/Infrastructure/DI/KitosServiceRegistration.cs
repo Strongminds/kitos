@@ -131,12 +131,14 @@ using Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Infrastructure.Factories.Authentication;
+using Presentation.Web.Infrastructure.Authentication;
 using Presentation.Web.Infrastructure.Model.Request;
 using Infrastructure.DataAccess.Services;
 using Core.DomainServices.Repositories.Interface;
 using Serilog;
 using Core.ApplicationServices.Model.EventHandler;
 using dk.nita.saml20.identity;
+using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
 
 namespace Presentation.Web.Infrastructure.DI
 {
