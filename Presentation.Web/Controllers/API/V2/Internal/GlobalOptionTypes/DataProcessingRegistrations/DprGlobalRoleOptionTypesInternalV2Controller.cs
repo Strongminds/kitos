@@ -35,7 +35,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
             [HttpPost]
             [Route("")]
-            public IActionResult CreateDprRole(GlobalRoleOptionCreateRequestDTO dto)
+            public IActionResult CreateDprRole([FromBody] GlobalRoleOptionCreateRequestDTO dto)
             {
                 return Create(dto);
             }

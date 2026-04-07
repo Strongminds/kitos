@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateItSystemRole(GlobalRoleOptionCreateRequestDTO dto)
+        public IActionResult CreateItSystemRole([FromBody] GlobalRoleOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

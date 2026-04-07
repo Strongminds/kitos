@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItContr
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateGlobalItContractTemplateType(GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateGlobalItContractTemplateType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

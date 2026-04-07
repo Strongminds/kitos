@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateArchiveLocation(GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateArchiveLocation([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

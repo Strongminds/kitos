@@ -41,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpPost]
         [Route("")]
-        public IActionResult Post(HelpTextCreateRequestDTO dto)
+        public IActionResult Post([FromBody] HelpTextCreateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -61,7 +61,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpPatch]
         [Route("{key}")]
-        public IActionResult Patch([FromQuery] string key, HelpTextUpdateRequestDTO dto)
+        public IActionResult Patch([FromQuery] string key, [FromBody] HelpTextUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 

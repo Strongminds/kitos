@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.Organiz
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateOrganizationUnitRole(GlobalRoleOptionCreateRequestDTO dto)
+        public IActionResult CreateOrganizationUnitRole([FromBody] GlobalRoleOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

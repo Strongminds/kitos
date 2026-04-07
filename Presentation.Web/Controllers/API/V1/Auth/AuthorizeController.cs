@@ -116,7 +116,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         // POST api/Authorize
         [AllowAnonymous]
         [HttpPost("api/authorize")]
-        public IActionResult PostLogin(LoginDTO loginDto)
+        public IActionResult PostLogin([FromBody] LoginDTO loginDto)
         {
             if (!ModelState.IsValid)
             {
@@ -174,7 +174,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         [AllowAnonymous]
         [AllowRightsHoldersAccess]
         [HttpPost("api/authorize/resetpassword")]
-        public IActionResult PostResetpassword(bool? resetPassword, ResetPasswordDTO dto)
+        public IActionResult PostResetpassword(bool? resetPassword, [FromBody] ResetPasswordDTO dto)
         {
             try
             {

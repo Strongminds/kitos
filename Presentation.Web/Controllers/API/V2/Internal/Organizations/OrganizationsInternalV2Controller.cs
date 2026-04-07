@@ -50,7 +50,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/ui-root-config")]
-        public IActionResult PatchUIRootConfig([NonEmptyGuid] Guid organizationUuid, UIRootConfigUpdateRequestDTO dto)
+        public IActionResult PatchUIRootConfig([NonEmptyGuid] Guid organizationUuid, [FromBody] UIRootConfigUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -109,7 +109,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/patch")]
-        public IActionResult PatchOrganization([FromQuery][NonEmptyGuid] Guid organizationUuid, OrganizationUpdateRequestDTO requestDto)
+        public IActionResult PatchOrganization([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationUpdateRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -146,7 +146,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/master-data")]
-        public IActionResult PatchOrganizationMasterData([FromQuery] [NonEmptyGuid] Guid organizationUuid, OrganizationMasterDataRequestDTO requestDto)
+        public IActionResult PatchOrganizationMasterData([FromQuery] [NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -178,7 +178,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         
         [HttpPatch]
         [Route("{organizationUuid}/master-data/roles")]
-        public IActionResult UpsertOrganizationMasterDataRoles([FromQuery][NonEmptyGuid] Guid organizationUuid, OrganizationMasterDataRolesRequestDTO requestDto)
+        public IActionResult UpsertOrganizationMasterDataRoles([FromQuery][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRolesRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
 

@@ -40,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalTerminationDeadlineType([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalTerminationDeadlineType([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }

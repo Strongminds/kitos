@@ -40,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalOrganizationUnitRole([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalOrganizationUnitRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }

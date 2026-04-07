@@ -151,7 +151,6 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
             return Created(createdUser);
         }
-        [HttpGet]
         [HttpGet("Users/IsEmailAvailable")]
         public IActionResult IsEmailAvailable(string email)
         {

@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateGlobalDataProcessingOversightOption(GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateGlobalDataProcessingOversightOption([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

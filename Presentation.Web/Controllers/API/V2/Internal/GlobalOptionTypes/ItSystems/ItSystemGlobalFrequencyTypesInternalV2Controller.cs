@@ -30,7 +30,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateGlobalFrequencyType(GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateGlobalFrequencyType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

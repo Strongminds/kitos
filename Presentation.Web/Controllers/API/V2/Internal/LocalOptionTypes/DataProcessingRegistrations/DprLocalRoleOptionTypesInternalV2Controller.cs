@@ -39,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalDprRole([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalDprRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }

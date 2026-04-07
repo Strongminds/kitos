@@ -39,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateLocalItContractRole([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateLocalItContractRole([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }

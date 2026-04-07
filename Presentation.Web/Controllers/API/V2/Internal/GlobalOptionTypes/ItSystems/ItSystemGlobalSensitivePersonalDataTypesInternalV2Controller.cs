@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateGlobalSensitivePersonalData(GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateGlobalSensitivePersonalData([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

@@ -31,7 +31,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateCountryCode(GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateCountryCode([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }

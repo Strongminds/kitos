@@ -44,7 +44,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         // POST /Organizations(1)/Rights
         [HttpPost("Organizations({orgKey})/Rights")]
-        public IActionResult PostRights(int orgKey, OrganizationRight entity)
+        public IActionResult PostRights(int orgKey, [FromBody] OrganizationRight entity)
         {
             if (!ModelState.IsValid)
             {

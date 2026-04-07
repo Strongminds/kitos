@@ -41,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         [Route("api/authorize/GetToken")]
         [IgnoreCSRFProtection]
         [AllowRightsHoldersAccess]
-        public IActionResult GetToken(UserCredentialsDTO loginDto)
+        public IActionResult GetToken([FromBody] UserCredentialsDTO loginDto)
         {
             if (!ModelState.IsValid)
             {

@@ -79,7 +79,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Ok(Microsoft.AspNetCore.OData.Results.SingleResult.Create(result));
         }
 
-        public virtual IActionResult Post(int organizationId, T entity)
+        public virtual IActionResult Post(int organizationId, [FromBody] T entity)
         {
             if (!ModelState.IsValid)
             {
