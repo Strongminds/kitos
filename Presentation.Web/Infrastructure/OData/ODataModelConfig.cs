@@ -6,6 +6,7 @@ using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
+using Core.DomainModel.Qa.References;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 
@@ -29,6 +30,14 @@ namespace Presentation.Web.Infrastructure.OData
             RegisterEntitySet<ItSystemUsageOverviewReadModel>(builder, "ItSystemUsageOverviewReadModels");
             RegisterEntitySet<ItContractOverviewReadModel>(builder, "ItContractOverviewReadModels");
             RegisterEntitySet<DataProcessingRegistrationReadModel>(builder, "DataProcessingRegistrationReadModels");
+
+            // ExternalReference is a navigation target on ItSystem, ItSystemUsage, ItContract etc.
+            // Register as entity type (no entity set needed) so $expand=Reference works.
+            // Ignore navigations to unregistered types to prevent EDM build failures.
+            var extRef = builder.EntityType<ExternalReference>();
+            extRef.HasKey(e => e.Id);
+            extRef.Ignore(e => e.BrokenLinkReports);
+            extRef.Ignore(e => e.DataProcessingRegistration);
 
             return builder.GetEdmModel();
         }
