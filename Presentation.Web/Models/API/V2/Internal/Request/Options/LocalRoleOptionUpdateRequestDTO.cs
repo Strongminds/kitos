@@ -3,6 +3,6 @@
     public class LocalRoleOptionUpdateRequestDTO : LocalRegularOptionUpdateRequestDTO
     {
         public bool IsExternallyUsed { get; set; }
-        public string ExternallyUsedDescription { get; set; }
+        public string? ExternallyUsedDescription { get; set; }
     }
 }

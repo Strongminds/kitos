@@ -17,7 +17,7 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         /// <summary>
         /// Who, at the supplier, signed the contract
         /// </summary>
-        public string SignedBy { get; set; }
+        public string? SignedBy { get; set; }
         /// <summary>
         /// Which date was the contract signed by the supplier
         /// </summary>
