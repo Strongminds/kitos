@@ -523,6 +523,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterOptionsService<ItContract, TerminationDeadlineType, LocalTerminationDeadlineType>(services);
             RegisterOptionsService<ItContract, CriticalityType, LocalCriticalityType>(services);
             RegisterOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(services);
+            RegisterRoleOptionsService<OrganizationUnitRight, OrganizationUnitRole, LocalOrganizationUnitRole>(services);
         }
 
         private static void RegisterOptionsService<TReferenceType, TOptionType, TLocalOptionType>(IServiceCollection services)
