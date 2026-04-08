@@ -23,6 +23,8 @@ using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Presentation.Web.Controllers.API.V1.Auth;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
@@ -128,7 +130,13 @@ services.AddSwaggerGen(c =>
         if (string.IsNullOrEmpty(apiDesc.HttpMethod)) return false;
 
         var isV2Path = (apiDesc.RelativePath ?? "").IsExternalApiPath();
-        return docName == "v2" ? isV2Path : !isV2Path;
+
+        if (docName == "v2") return isV2Path;
+
+        // V1 doc: only expose the token authentication endpoints
+        if (isV2Path) return false;
+        return apiDesc.ActionDescriptor is ControllerActionDescriptor cad &&
+               cad.ControllerTypeInfo == typeof(TokenAuthenticationController);
     });
 
     c.CustomSchemaIds(type =>
@@ -156,7 +164,8 @@ services.AddSwaggerGen(c =>
     c.DocumentFilter<RemoveUnneededMutatingCallsFilter>(
         (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v < 2));
     c.DocumentFilter<OnlyIncludeReadModelSchemasInSwaggerDocumentFilter>();
-    c.DocumentFilter<PurgeUnusedTypesDocumentFilter>();
+    c.DocumentFilter<PurgeUnusedTypesDocumentFilter>(
+        (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v >= 2));
 
     c.OperationFilter<CreateOperationIdOperationFilter>();
     c.OperationFilter<FixNamingOfComplexQueryParametersFilter>();
