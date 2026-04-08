@@ -31,7 +31,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         [EnableQuery]
         [Route("odata/Organizations({organizationId})/DataProcessingRegistrationReadModels")]
-        public IActionResult Get([FromRoute]int organizationId)
+        public IActionResult GetByOrganizationId([FromRoute]int organizationId)
         {
             return GetOverviewReadModels(organizationId);
         }

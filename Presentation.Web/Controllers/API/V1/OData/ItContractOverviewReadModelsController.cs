@@ -27,7 +27,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         [EnableQuery]
         [Route("odata/Organizations({organizationId})/ItContractOverviewReadModels")]
-        public IActionResult Get([FromRoute] int organizationId, int? responsibleOrganizationUnitId = null)
+        public IActionResult GetByOrganizationId([FromRoute] int organizationId, int? responsibleOrganizationUnitId = null)
         {
             return GetOverviewReadModels(organizationId, responsibleOrganizationUnitId);
         }
