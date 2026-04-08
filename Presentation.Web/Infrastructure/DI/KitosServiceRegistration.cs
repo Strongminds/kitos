@@ -132,6 +132,7 @@ using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Infrastructure.Factories.Authentication;
 using Presentation.Web.Infrastructure.Authentication;
+using Presentation.Web.Infrastructure.Mail;
 using Presentation.Web.Infrastructure.Model.Request;
 using Infrastructure.DataAccess.Services;
 using Core.DomainServices.Repositories.Interface;
@@ -180,7 +181,28 @@ namespace Presentation.Web.Infrastructure.DI
             var resetPasswordTtl = TimeSpan.FromHours(double.Parse(appSettings["ResetPasswordTTL"] ?? "24"));
 
             services.AddSingleton(_ => new KitosUrl(new Uri(baseUrl)));
-            services.AddScoped<IMailClient, SingleThreadedMailClient>();
+            services.AddScoped<IMailClient>(_ =>
+            {
+                var smtpSection = configuration.GetSection("Smtp");
+                var fromAddress = smtpSection["From"] ?? "noreply@kitos.dk";
+                var deliveryMethod = smtpSection["DeliveryMethod"] ?? "SpecifiedPickupDirectory";
+
+                SingleThreadedMailClient inner;
+                if (deliveryMethod.Equals("SpecifiedPickupDirectory", StringComparison.OrdinalIgnoreCase))
+                {
+                    var pickupDir = smtpSection["PickupDirectoryLocation"] ?? @"c:\temp\maildrop\";
+                    inner = new SingleThreadedMailClient(pickupDir);
+                }
+                else
+                {
+                    var host = smtpSection["Host"] ?? throw new InvalidOperationException("Smtp:Host is required when DeliveryMethod is Network");
+                    var port = int.Parse(smtpSection["Port"] ?? "25");
+                    var ssl = bool.Parse(smtpSection["EnableSsl"] ?? "false");
+                    inner = new SingleThreadedMailClient(host, port, ssl);
+                }
+
+                return new DefaultFromAddressMailClient(inner, fromAddress);
+            });
             services.AddScoped<ICryptoService, CryptoService>();
             services.AddScoped<IUserService>(sp => new UserService(
                 resetPasswordTtl,
