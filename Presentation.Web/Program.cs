@@ -1,10 +1,20 @@
 using System;
 using System.Linq;
 using System.Threading;
+using Core.Abstractions.Types;
+using Core.BackgroundJobs.Model;
+using Core.DomainModel;
+using Core.DomainServices.Context;
+using Core.DomainServices.Time;
 using Hangfire;
+using Hangfire.Common;
+using Infrastructure.DataAccess.Interceptors;
+using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +27,8 @@ using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
 using Presentation.Web.Swagger;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.OData;
 using Serilog;
-using Core.BackgroundJobs.Model;
-using Hangfire.Common;
-using Infrastructure.Services.BackgroundJobs;
+using System.Data.Entity.Infrastructure.Interception;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -190,6 +196,11 @@ KitosServiceRegistration.Register(services, configuration);
 
 var app = builder.Build();
 
+// Register the EF6 interceptor that auto-assigns ObjectOwnerId, LastChangedByUserId and LastChanged
+// on every INSERT/UPDATE. Uses IHttpContextAccessor to resolve per-request scoped services; for
+// background jobs (no HTTP context) it falls back to a dedicated scope or safe defaults.
+RegisterEfEntityInterceptor(app.Services);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -320,4 +331,41 @@ static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
     using var cmd = connection.CreateCommand();
     cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{databaseName}') CREATE DATABASE [{databaseName}]";
     cmd.ExecuteNonQuery();
+}
+
+static void RegisterEfEntityInterceptor(IServiceProvider rootProvider)
+{
+    var httpContextAccessor = rootProvider.GetRequiredService<IHttpContextAccessor>();
+
+    DbInterception.Add(new EFEntityInterceptor(
+        operationClock: () =>
+            httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()
+            ?? new OperationClock(),
+        userContext: () =>
+            httpContextAccessor.HttpContext?.RequestServices.GetService<Maybe<ActiveUserIdContext>>()
+            ?? Maybe<ActiveUserIdContext>.None,
+        fallbackUserResolver: () =>
+            httpContextAccessor.HttpContext?.RequestServices.GetService<IFallbackUserResolver>()
+            ?? new BackgroundJobFallbackUserResolver(rootProvider)));
+}
+
+/// <summary>
+/// Used when there is no active HTTP request (e.g. Hangfire background jobs).
+/// Creates a short-lived DI scope each time Resolve() is called so that
+/// the underlying KitosContext is properly disposed after the query.
+/// </summary>
+sealed class BackgroundJobFallbackUserResolver : IFallbackUserResolver
+{
+    private readonly IServiceProvider _rootProvider;
+
+    public BackgroundJobFallbackUserResolver(IServiceProvider rootProvider)
+    {
+        _rootProvider = rootProvider;
+    }
+
+    public User Resolve()
+    {
+        using var scope = _rootProvider.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<IFallbackUserResolver>().Resolve();
+    }
 }
