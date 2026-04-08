@@ -39,6 +39,13 @@ namespace Presentation.Web.Infrastructure.OData
             extRef.Ignore(e => e.BrokenLinkReports);
             extRef.Ignore(e => e.DataProcessingRegistration);
 
+            // Register unbound functions so OData middleware sets up the correct entity-type context
+            // before routing. Without this, [EnableQuery] has no EDM metadata and falls back to
+            // full object-graph serialization, triggering EF6 lazy-loading explosion.
+            var getUsersByUuid = builder.Function("GetUsersByUuid");
+            getUsersByUuid.Parameter<System.Guid>("organizationUuid");
+            getUsersByUuid.ReturnsCollectionFromEntitySet<User>("Users");
+
             return builder.GetEdmModel();
         }
 
