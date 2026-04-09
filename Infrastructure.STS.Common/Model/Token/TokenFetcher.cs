@@ -16,14 +16,16 @@ public class TokenFetcher
     private readonly string _stsEndpoint;
     private readonly string _stsCertificateAlias;
     private readonly string _stsCertificateThumbprint;
+    private readonly string _wspCertificateThumbprint;
 
-    public TokenFetcher(string clientCertificateThumbprint, string stsIssuer, string stsEndpoint, string stsCertificateAlias, string stsCertificateThumbprint)
+    public TokenFetcher(string clientCertificateThumbprint, string stsIssuer, string stsEndpoint, string stsCertificateAlias, string stsCertificateThumbprint, string wspCertificateThumbprint)
     {
         _clientCertificateThumbprint = clientCertificateThumbprint;
         _stsIssuer = stsIssuer;
         _stsEndpoint = stsEndpoint;
         _stsCertificateAlias = stsCertificateAlias;
         _stsCertificateThumbprint = stsCertificateThumbprint;
+        _wspCertificateThumbprint = wspCertificateThumbprint;
     }
 
     /// <summary>
@@ -63,9 +65,9 @@ public class TokenFetcher
     {
         var clientCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _clientCertificateThumbprint);
         var stsCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _stsCertificateThumbprint);
+        var wspCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
         var stsConfig = new StsConfiguration(_stsEndpoint, _stsIssuer, cvr, stsCert);
-        // Service certificate is used for message-level WSP auth; pass null since KITOS uses transport security (HTTPS).
-        var wspConfig = new WspConfiguration(entityId, wspEndpoint, System.ServiceModel.EnvelopeVersion.Soap12, null!);
+        var wspConfig = new WspConfiguration(entityId, wspEndpoint, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
         return new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert);
     }
 

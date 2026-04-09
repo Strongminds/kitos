@@ -323,10 +323,11 @@ namespace Presentation.Web.Infrastructure.DI
             var serviceCertificateAliasOrg = appSettings["ServiceCertificateAliasOrg"] ?? "";
             var orgService6EntityId = appSettings["OrgService6EntityId"] ?? "";
             var ssoServiceProviderId = appSettings["SsoServiceProviderId"] ?? "";
+            var stsOrganisationCertificateThumbprint = appSettings["StsOrganisationCertificateThumbprint"] ?? "";
 
             services.AddSingleton(_ => new TokenFetcher(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
-                stsCertificateAlias, stsCertificateThumbprint));
+                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint));
             services.AddScoped<IStsOrganizationService, StsOrganizationService>();
             services.AddScoped<IStsOrganizationCompanyLookupService, StsOrganizationCompanyLookupService>();
             services.AddScoped<IStsOrganizationSystemService, StsOrganizationSystemService>();

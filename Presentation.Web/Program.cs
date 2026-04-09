@@ -211,6 +211,11 @@ var app = builder.Build();
 // background jobs (no HTTP context) it falls back to a dedicated scope or safe defaults.
 RegisterEfEntityInterceptor(app.Services);
 
+// Initialize the SAML library's static HTTP context accessor so it can access HttpContext.Current
+// during SAML flows without requiring DI injection into the (statically-instantiated) handler classes.
+dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
+    app.Services.GetRequiredService<IHttpContextAccessor>());
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -261,30 +266,24 @@ app.MapGet("/LoginHandler.ashx", (HttpContext ctx) =>
     return Task.CompletedTask;
 }).AllowAnonymous();
 
-// TODO: The SAML .ashx handlers (Login.ashx, Logout.ashx, Metadata.ashx) rely on
-// kitos.dk.nita.saml20 which is a net472-only library targeting System.Web.IHttpHandler.
-// These cannot be called directly from net10.0 code due to assembly identity mismatch
-// (CS7069). Pending migration options:
-//   1. Port kitos.dk.nita.saml20 to netstandard2.0 using Microsoft.AspNetCore.SystemWebAdapters
-//      (source at https://github.com/Strongminds/OIOSAML.Net)
-//   2. Replace with a net10.0-compatible SAML library (e.g., Sustainsys.Saml2.AspNetCore2)
-// Until one of those is done, these endpoints return 501 to clarify why SSO fails.
+// SAML .ashx handlers — migrated to net10.0 in the local OIOSAML.Net project.
+// Login.ashx handles both the SP-initiated AuthnRequest (GET) and the IdP response (POST).
 app.MapMethods("/Login.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
 {
-    ctx.Response.StatusCode = 501;
-    return ctx.Response.WriteAsync("SAML Login.ashx: kitos.dk.nita.saml20 requires porting to net10.0. See Program.cs TODO.");
+    new dk.nita.saml20.protocol.Saml20SignonHandler().ProcessRequest(ctx);
+    return Task.CompletedTask;
 }).AllowAnonymous();
 
 app.MapMethods("/Logout.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
 {
-    ctx.Response.StatusCode = 501;
-    return ctx.Response.WriteAsync("SAML Logout.ashx: kitos.dk.nita.saml20 requires porting to net10.0. See Program.cs TODO.");
+    new dk.nita.saml20.protocol.Saml20LogoutHandler().ProcessRequest(ctx);
+    return Task.CompletedTask;
 }).AllowAnonymous();
 
 app.MapGet("/Metadata.ashx", (HttpContext ctx) =>
 {
-    ctx.Response.StatusCode = 501;
-    return ctx.Response.WriteAsync("SAML Metadata.ashx: kitos.dk.nita.saml20 requires porting to net10.0. See Program.cs TODO.");
+    new dk.nita.saml20.protocol.Saml20MetadataHandler().ProcessRequest(ctx);
+    return Task.CompletedTask;
 }).AllowAnonymous();
 
 // Initialize Hangfire recurring jobs

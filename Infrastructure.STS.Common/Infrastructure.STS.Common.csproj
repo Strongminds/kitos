@@ -9,9 +9,37 @@
     <PackageReference Include="Polly" Version="8.4.2" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="System.Runtime.Caching" Version="9.0.4" />
-    <PackageReference Include="Kombit.OioIdws.WscCore" Version="4.0.71" />
-    <PackageReference Include="System.ServiceModel.Federation" Version="4.10.3" />
-    <PackageReference Include="System.ServiceModel.Http" Version="4.10.3" />
+    <!--
+      Kombit.OioIdws.WscCore 4.0.71 was compiled against System.ServiceModel.Security 4.10.2,
+      where SecurityKeyType was in System.ServiceModel.Security (via type-forward). In WCF 6.0+,
+      SecurityKeyType moved to System.ServiceModel.Primitives with no type-forward in Security.
+      The DLLs in lib/kombit-patched/ are IL-patched with Mono.Cecil to change the SecurityKeyType
+      assembly reference from System.ServiceModel.Security → System.ServiceModel.Primitives.
+      ExcludeAssets=all on the NuGet package ensures only the patched DLLs are used.
+    -->
+    <PackageReference Include="Kombit.OioIdws.WscCore" Version="4.0.71">
+      <ExcludeAssets>all</ExcludeAssets>
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+    <Reference Include="Digst.OioIdws.CommonCore">
+      <HintPath>lib\kombit-patched\Digst.OioIdws.CommonCore.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Digst.OioIdws.OioWsTrustCore">
+      <HintPath>lib\kombit-patched\Digst.OioIdws.OioWsTrustCore.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Digst.OioIdws.SoapCore">
+      <HintPath>lib\kombit-patched\Digst.OioIdws.SoapCore.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Digst.OioIdws.WscCore">
+      <HintPath>lib\kombit-patched\Digst.OioIdws.WscCore.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <PackageReference Include="System.ServiceModel.Federation" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />

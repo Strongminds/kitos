@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Http" Version="4.10.3" />
+    <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
     <!-- System.ServiceModel.Primitives ref assemblies omit MessagePartSpecification and
          SecurityTokenReferenceStyle; reference the implementation (lib) DLL directly. -->
     <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2">

@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Presentation.Web</RootNamespace>
     <AssemblyName>Presentation.Web</AssemblyName>
+    <!-- Copy App.config → Presentation.Web.dll.config so ConfigurationManager finds the SAML sections -->
+    <AppConfig>App.config</AppConfig>
   </PropertyGroup>
   <ItemGroup>
     <!-- Core packages -->
@@ -24,8 +26,12 @@
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.9.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
     <PackageReference Include="Polly" Version="8.4.2" />
-    <PackageReference Include="kitos.dk.nita.saml20" Version="1.0.1" />
-    <PackageReference Include="Kombit.OioIdws.WscCore" Version="4.0.71" />
+    <!-- TODO: Restore NuGet package once kitos.dk.nita.saml20 is published with net10.0 support -->
+    <!-- <PackageReference Include="kitos.dk.nita.saml20" Version="1.0.1" /> -->
+    <ProjectReference Include="..\..\Oiosaml.net\src\dk.nita.saml20\dk.nita.saml20\dk.nita.saml20.csproj" />
+    <PackageReference Include="Kombit.OioIdws.WscCore" Version="4.0.71">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.0" />
@@ -63,6 +69,16 @@
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <!-- Patched Kombit DLLs: included as content so they're copied to both build output
+       and publish output. Kombit.OioIdws.WscCore 4.0.71 was IL-patched (see lib/kombit-patched/
+       in Infrastructure.STS.Common) to fix SecurityKeyType ref (Security→Primitives). -->
+  <ItemGroup>
+    <None Include="..\Infrastructure.STS.Common\lib\kombit-patched\*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Link>%(Filename)%(Extension)</Link>
     </None>
   </ItemGroup>
 </Project>

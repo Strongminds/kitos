@@ -169,6 +169,7 @@
 
     <parameter name="StsOrganisationCertificateThumbprint" defaultvalue="__STS_ORGANISATION_CERTIFICATE_THUMBPRINT">
         <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.serviceModel/behaviors/endpointBehaviors/behavior/clientCredentials/serviceCertificate/defaultCertificate/@findValue"/>
+        <parameterentry kind="TextFile" scope="\\appsettings\.json$" match="(?&lt;=&quot;StsOrganisationCertificateThumbprint&quot;\s*:\s*&quot;)[^&quot;]*"/>
     </parameter>
 
 </parameters>
