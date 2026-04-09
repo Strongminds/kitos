@@ -121,6 +121,10 @@ namespace Core.DomainServices.Contract
             destination.PaymentFrequencyUuid = source.PaymentFreqency?.Uuid;
             destination.PaymentFrequencyName = source.PaymentFreqency?.Name;
 
+            //Payment organization units
+            destination.ExternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.ExternEconomyStreams);
+            destination.InternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.InternEconomyStreams);
+
             //Duration
             MapDuration(source, destination);
 
@@ -275,8 +279,6 @@ namespace Core.DomainServices.Contract
                 .ToList();
 
             destination.ItSystemUsagesCsv = itSystemUsages.Select(MapSystemName).ToStringWithDelimiter();
-            destination.ExternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.ExternEconomyStreams);
-            destination.InternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.InternEconomyStreams);
             destination.ItSystemUsagesSystemUuidCsv = itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")).ToStringWithDelimiter();
 
             var actionContexts = itSystemUsages
