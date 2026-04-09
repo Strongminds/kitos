@@ -58,6 +58,12 @@
     <None Remove="packages.config" />
     <Content Remove="Global.asax" />
   </ItemGroup>
+  <!-- IdP SAML metadata files: copied to output so AppDomain.CurrentDomain.BaseDirectory + "idp-metadata" resolves correctly at runtime -->
+  <ItemGroup>
+    <Content Include="idp-metadata\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

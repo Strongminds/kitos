@@ -33,6 +33,19 @@ using Serilog;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Threading.Tasks;
 
+// Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
+// as "type:reference" in deps.json. The runtime's assembly loader skips those entries
+// and the AppContext.BaseDirectory fallback can fail under some hosting models (IIS,
+// dotnet watch). Registering an explicit resolver here ensures they are always found.
+System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, name) =>
+{
+    if (name.Name?.StartsWith("Digst.OioIdws.", StringComparison.Ordinal) != true)
+        return null;
+    var path = System.IO.Path.Combine(AppContext.BaseDirectory, name.Name + ".dll");
+    return System.IO.File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
+};
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog
