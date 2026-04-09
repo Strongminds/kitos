@@ -21,6 +21,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.XUnit;
 using Tests.Toolkit.Extensions;
+using Presentation.Web.Models.API.V2.Response.Contract;
 
 namespace Tests.Integration.Presentation.Web.Contract
 {
@@ -128,8 +129,16 @@ namespace Tests.Integration.Presentation.Web.Contract
                 new List<UpdateExternalReferenceDataWriteRequestDTO> { referenceRequest });
 
             var externalPaymentRequest = A<PaymentRequestDTO>();
+            var internalPaymentRequest = A<PaymentRequestDTO>();
             externalPaymentRequest.OrganizationUnitUuid = organizationUnit.Uuid;
-            await ItContractV2Helper.SendPatchPayments(await GetGlobalToken(), itContract.Uuid, new ContractPaymentsDataWriteRequestDTO { External = externalPaymentRequest.WrapAsEnumerable() });
+            internalPaymentRequest.OrganizationUnitUuid = organizationUnit.Uuid;
+            var patchPaymentsResponse = await ItContractV2Helper.SendPatchPayments(await GetGlobalToken(), itContract.Uuid, new ContractPaymentsDataWriteRequestDTO { External = externalPaymentRequest.WrapAsEnumerable(), Internal = internalPaymentRequest.WrapAsEnumerable() });
+            Assert.Equal(HttpStatusCode.OK, patchPaymentsResponse.StatusCode);
+            var paymentsResponseContent = await patchPaymentsResponse.ReadResponseBodyAsAsync<ItContractResponseDTO>();
+            var externalPaymentOrganizationUnit = paymentsResponseContent.Payments.External.First().OrganizationUnit;
+            Assert.NotNull(externalPaymentOrganizationUnit);
+            var internalPaymentOrganizationUnit = paymentsResponseContent.Payments.Internal.First().OrganizationUnit;
+            Assert.NotNull(internalPaymentOrganizationUnit);
 
             await ItContractV2Helper.SendPatchContractSupplierAsync(await GetGlobalToken(), itContract.Uuid,
                 new ContractSupplierDataWriteRequestDTO()
@@ -273,6 +282,8 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(externalPaymentRequest.AuditStatus == PaymentAuditStatus.Yellow ? 1 : 0, readModel.AuditStatusYellow);
             Assert.Equal(2, readModel.NumberOfAssociatedSystemRelations);
             AssertCsv(readModel.ItSystemUsagesCsv, itSystem1.Name, itSystem2.Name);
+            AssertCsv(readModel.ExternalPaymentOrganizationUnitsCsv, organizationUnit.Name);
+            AssertCsv(readModel.InternalPaymentOrganizationUnitsCsv, organizationUnit.Name);
             Assert.Equal(2, readModel.RoleAssignments.Count);
             Assert.Contains(readModel.RoleAssignments, ra => DatabaseAccess.GetEntityUuid<ItContractRole>(ra.RoleId) == role1.Uuid && ra.UserId == user1Id);
             Assert.Contains(readModel.RoleAssignments, ra => DatabaseAccess.GetEntityUuid<ItContractRole>(ra.RoleId) == role2.Uuid && ra.UserId == user2Id);
