@@ -356,7 +356,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDataAccess(services, configuration);
             RegisterDomainEventsEngine(services);
             RegisterDomainCommandsEngine(services);
-            RegisterKLE(services);
+            RegisterKLE(services, appSettings["KLEOnlineUrl"] ?? "http://api.kle-online.dk/resources/kle");
             RegisterOptions(services);
             RegisterBackgroundJobs(services);
             RegisterRoleAssignmentServices(services);
@@ -487,10 +487,10 @@ namespace Presentation.Web.Infrastructure.DI
                 .ForEach(iface => services.AddScoped(iface, typeof(THandler)));
         }
 
-        private static void RegisterKLE(IServiceCollection services)
+        private static void RegisterKLE(IServiceCollection services, string kleOnlineUrl)
         {
             services.AddScoped<IKLEApplicationService, KLEApplicationService>();
-            services.AddScoped<IKLEDataBridge, KLEDataBridge>();
+            services.AddScoped<IKLEDataBridge>(_ => new KLEDataBridge(kleOnlineUrl));
             services.AddScoped<IKLEParentHelper, KLEParentHelper>();
             services.AddScoped<IKLEConverterHelper, KLEConverterHelper>();
         }

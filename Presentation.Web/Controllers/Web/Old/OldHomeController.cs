@@ -5,6 +5,7 @@ using Core.DomainServices;
 using Presentation.Web.Models.Application.FeatureToggle;
 using Presentation.Web.Models.Application.RuntimeEnv;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Presentation.Web.Controllers.Web.Old
 {
@@ -18,11 +19,11 @@ namespace Presentation.Web.Controllers.Web.Old
         private const string FeatureToggleKey = "FEATURE_TOGGLE";
         private const string SsoAuthenticationCompletedKey = "SSO_PREFERRED_START";
 
-        public OldHomeController(IAuthenticationContext userContext, IUserRepository userRepository)
+        public OldHomeController(IAuthenticationContext userContext, IUserRepository userRepository, IConfiguration configuration)
         {
             _userContext = userContext;
             _userRepository = userRepository;
-            _isProd = KitosEnvironmentConfiguration.FromConfiguration().Environment == KitosEnvironment.Production;
+            _isProd = KitosEnvironmentConfiguration.FromConfiguration(configuration).Environment == KitosEnvironment.Production;
         }
 
         [Route("")]

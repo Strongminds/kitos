@@ -1,7 +1,7 @@
 using Presentation.Web.Infrastructure.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Presentation.Web.Properties;
+using Microsoft.Extensions.Configuration;
 
 namespace Presentation.Web.Controllers.API.V1
 {
@@ -10,12 +10,17 @@ namespace Presentation.Web.Controllers.API.V1
     [Route("api/healthcheck")]
     public class HealthCheckController : ControllerBase
     {
-        private static readonly string DeploymentVersion = Settings.Default.DeploymentVersion;
+        private readonly string _deploymentVersion;
+
+        public HealthCheckController(IConfiguration configuration)
+        {
+            _deploymentVersion = configuration["AppSettings:DeploymentVersion"] ?? "unknown";
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(DeploymentVersion);
+            return Ok(_deploymentVersion);
         }
     }
 }

@@ -54,4 +54,5 @@ Deploy-Website  -packageDirectory (Resolve-Path "$PSScriptRoot\..\WebPackage") `
                 -smtpNetworkPort "$Env:SmtpNetworkPort" `
                 -smtpNetworkUsername "$Env:SmtpUserName" `
                 -smtpNetworkPassword "$Env:SmtpPassword" `
-                -pubSubBaseUrl "$Env:PubSubBaseUrl"
+                -pubSubBaseUrl "$Env:PubSubBaseUrl" `
+                -smtpDeliveryMethod "$Env:SmtpDeliveryMethod"

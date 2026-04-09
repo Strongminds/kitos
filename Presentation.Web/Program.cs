@@ -31,6 +31,7 @@ using Presentation.Web.Infrastructure.OData;
 using Presentation.Web.Swagger;
 using Serilog;
 using System.Data.Entity.Infrastructure.Interception;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -251,6 +252,40 @@ app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Legacy .ashx handler routes: LoginHandler.ashx initiates external (SAML SSO) login
+// by forwarding to the SAML sign-on endpoint with forceAuthn=true.
+app.MapGet("/LoginHandler.ashx", (HttpContext ctx) =>
+{
+    ctx.Response.Redirect("/Login.ashx?forceAuthn=true");
+    return Task.CompletedTask;
+}).AllowAnonymous();
+
+// TODO: The SAML .ashx handlers (Login.ashx, Logout.ashx, Metadata.ashx) rely on
+// kitos.dk.nita.saml20 which is a net472-only library targeting System.Web.IHttpHandler.
+// These cannot be called directly from net10.0 code due to assembly identity mismatch
+// (CS7069). Pending migration options:
+//   1. Port kitos.dk.nita.saml20 to netstandard2.0 using Microsoft.AspNetCore.SystemWebAdapters
+//      (source at https://github.com/Strongminds/OIOSAML.Net)
+//   2. Replace with a net10.0-compatible SAML library (e.g., Sustainsys.Saml2.AspNetCore2)
+// Until one of those is done, these endpoints return 501 to clarify why SSO fails.
+app.MapMethods("/Login.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
+{
+    ctx.Response.StatusCode = 501;
+    return ctx.Response.WriteAsync("SAML Login.ashx: kitos.dk.nita.saml20 requires porting to net10.0. See Program.cs TODO.");
+}).AllowAnonymous();
+
+app.MapMethods("/Logout.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
+{
+    ctx.Response.StatusCode = 501;
+    return ctx.Response.WriteAsync("SAML Logout.ashx: kitos.dk.nita.saml20 requires porting to net10.0. See Program.cs TODO.");
+}).AllowAnonymous();
+
+app.MapGet("/Metadata.ashx", (HttpContext ctx) =>
+{
+    ctx.Response.StatusCode = 501;
+    return ctx.Response.WriteAsync("SAML Metadata.ashx: kitos.dk.nita.saml20 requires porting to net10.0. See Program.cs TODO.");
+}).AllowAnonymous();
 
 // Initialize Hangfire recurring jobs
 using (var scope = app.Services.CreateScope())

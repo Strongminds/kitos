@@ -47,8 +47,8 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     $Env:StsOrganisationSystemPort = $parameters["StsOrganisationSystemPort"]
     $Env:StsOrganisationCertificateThumbprint = $parameters["StsOrganisationCertificateThumbprint"]
     $Env:PubSubBaseUrl = $parameters["PubSubBaseUrl"]
-    
-    if($loadTcHangfireConnectionString -eq $true) {
+    $Env:SmtpDeliveryMethod = $parameters["SmtpDeliveryMethod"]
+        if($loadTcHangfireConnectionString -eq $true) {
         $Env:HangfireDbConnectionStringForTeamCity = $parameters["HangfireDbConnectionStringForTeamCity"]
     }
     
