@@ -1,7 +1,4 @@
 using System;
-using System.IdentityModel.Tokens;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using Core.Abstractions.Types;
 using Digst.OioIdws.SoapCore;
@@ -20,28 +17,26 @@ namespace Core.DomainServices.SSO
         public static Result<BrugerPortType, string> CreateBrugerPort(TokenFetcher tokenFetcher, StsOrganisationIntegrationConfiguration configuration, string cvrNumber)
         {
             return ChannelWithIssuedToken<BrugerPortType>(tokenFetcher, configuration,
-                configuration.GetOrganisationServiceUrl("bruger"), cvrNumber);
+                configuration.BrugerServiceUrl, cvrNumber);
         }
 
         public static Result<AdressePortType, string> CreateAdressePort(TokenFetcher tokenFetcher, StsOrganisationIntegrationConfiguration configuration, string cvrNumber)
         {
             return ChannelWithIssuedToken<AdressePortType>(tokenFetcher, configuration,
-                configuration.GetOrganisationServiceUrl("adresse"), cvrNumber);
+                configuration.AdresseServiceUrl, cvrNumber);
         }
 
         public static Result<PersonPortType, string> CreatePersonPort(TokenFetcher tokenFetcher, StsOrganisationIntegrationConfiguration configuration, string cvrNumber)
         {
             return ChannelWithIssuedToken<PersonPortType>(tokenFetcher, configuration,
-                configuration.GetOrganisationServiceUrl("person"), cvrNumber);
+                configuration.PersonServiceUrl, cvrNumber);
         }
 
         private static Result<T, string> ChannelWithIssuedToken<T>(TokenFetcher tokenFetcher, StsOrganisationIntegrationConfiguration configuration, string serviceEndpointUrl, string cvrNumber) where T : class
         {
             try
             {
-                var token = (GenericXmlSecurityToken)tokenFetcher.IssueToken(configuration.OrgService6EntityId, cvrNumber);
-                var config = tokenFetcher.BuildServiceConfig(configuration.OrgService6EntityId, serviceEndpointUrl, cvrNumber);
-                return FederatedChannelFactoryExtensions.CreateChannelWithIssuedToken<T>(token, config);
+                return tokenFetcher.CreateChannel<T>(configuration.OrgService6EntityId, serviceEndpointUrl, cvrNumber);
             }
             catch (FaultException e)
             {

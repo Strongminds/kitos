@@ -119,10 +119,8 @@ namespace Infrastructure.STS.Organization.DomainServices
 
         private OrganisationPortType CreatePort(string cvr)
         {
-            var serviceUrl = _configuration.GetOrganisationServiceUrl("organisation");
-            var token = (System.IdentityModel.Tokens.GenericXmlSecurityToken)_tokenFetcher.IssueToken(_configuration.OrgService6EntityId, cvr);
-            var config = _tokenFetcher.BuildServiceConfig(_configuration.OrgService6EntityId, serviceUrl, cvr);
-            return FederatedChannelFactoryExtensions.CreateChannelWithIssuedToken<OrganisationPortType>(token, config);
+            var serviceUrl = _configuration.OrganisationServiceUrl;
+            return _tokenFetcher.CreateChannel<OrganisationPortType>(_configuration.OrgService6EntityId, serviceUrl, cvr);
         }
 
         public Result<Guid, OperationError> ResolveOrganizationHierarchyRootUuid(Core.DomainModel.Organization.Organization organization)

@@ -83,10 +83,8 @@ public class StsOrganizationCompanyLookupService : IStsOrganizationCompanyLookup
 
     private VirksomhedPortType CreatePort(string cvr)
     {
-        var serviceUrl = _configuration.GetOrganisationServiceUrl("virksomhed");
-        var token = (System.IdentityModel.Tokens.GenericXmlSecurityToken)_tokenFetcher.IssueToken(_configuration.OrgService6EntityId, cvr);
-        var config = _tokenFetcher.BuildServiceConfig(_configuration.OrgService6EntityId, serviceUrl, cvr);
-        return FederatedChannelFactoryExtensions.CreateChannelWithIssuedToken<VirksomhedPortType>(token, config);
+        var serviceUrl = _configuration.VirksomhedServiceUrl;
+        return _tokenFetcher.CreateChannel<VirksomhedPortType>(_configuration.OrgService6EntityId, serviceUrl, cvr);
     }
 
     private static soegRequest CreateSearchByCvrRequest(Organization organization)

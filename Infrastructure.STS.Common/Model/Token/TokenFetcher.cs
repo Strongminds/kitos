@@ -67,8 +67,24 @@ public class TokenFetcher
         var stsCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _stsCertificateThumbprint);
         var wspCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
         var stsConfig = new StsConfiguration(_stsEndpoint, _stsIssuer, cvr, stsCert);
-        var wspConfig = new WspConfiguration(entityId, wspEndpoint, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
-        return new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert);
+        var wspConfig = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
+        return new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert)
+        {
+            MaxReceivedMessageSize = int.MaxValue
+        };
+    }
+
+    /// <summary>
+    /// Issues a STS token and creates a WCF channel to <paramref name="wspEndpoint"/>.
+    /// Uses <see cref="FixedCreateChannelExtensions"/> instead of the Kombit
+    /// <see cref="Digst.OioIdws.SoapCore.FederatedChannelFactoryExtensions"/> to work around
+    /// a .NET 10 WCF incompatibility in <c>FederatedChannelFactory.ApplyConfiguration</c>.
+    /// </summary>
+    public T CreateChannel<T>(string entityId, string wspEndpoint, string cvr)
+    {
+        var token = (GenericXmlSecurityToken)IssueToken(entityId, cvr);
+        var config = BuildServiceConfig(entityId, wspEndpoint, cvr);
+        return FixedCreateChannelExtensions.CreateChannelWithIssuedToken<T>(token, config);
     }
 
     private SecurityToken FetchToken(string entityId, string cvr)

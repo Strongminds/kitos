@@ -319,11 +319,16 @@ namespace Presentation.Web.Infrastructure.DI
             var stsCertificateEndpoint = appSettings["StsCertificateEndpoint"] ?? "";
             var stsCertificateAlias = appSettings["StsCertificateAlias"] ?? "";
             var stsCertificateThumbprint = appSettings["StsCertificateThumbprint"] ?? "";
-            var stsOrganisationEndpointHost = appSettings["StsOrganisationEndpointHost"] ?? "";
             var serviceCertificateAliasOrg = appSettings["ServiceCertificateAliasOrg"] ?? "";
             var orgService6EntityId = appSettings["OrgService6EntityId"] ?? "";
             var ssoServiceProviderId = appSettings["SsoServiceProviderId"] ?? "";
             var stsOrganisationCertificateThumbprint = appSettings["StsOrganisationCertificateThumbprint"] ?? "";
+            var stsVirksomhedPort = appSettings["StsVirksomhedPort"] ?? "";
+            var stsOrganisationPort = appSettings["StsOrganisationPort"] ?? "";
+            var stsOrganisationSystemPort = appSettings["StsOrganisationSystemPort"] ?? "";
+            var stsAdressePort = appSettings["StsAdressePort"] ?? "";
+            var stsBrugerPort = appSettings["StsBrugerPort"] ?? "";
+            var stsPersonPort = appSettings["StsPersonPort"] ?? "";
 
             services.AddSingleton(_ => new TokenFetcher(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
@@ -336,9 +341,11 @@ namespace Presentation.Web.Infrastructure.DI
             // SSO
             services.AddSingleton(_ => new SsoFlowConfiguration(ssoServiceProviderId));
             services.AddSingleton(_ => new StsOrganisationIntegrationConfiguration(
-                ssoCertificateThumbprint, stsOrganisationEndpointHost, stsIssuer,
+                ssoCertificateThumbprint, stsIssuer,
                 stsCertificateEndpoint, serviceCertificateAliasOrg, stsCertificateAlias,
-                stsCertificateThumbprint, orgService6EntityId));
+                stsCertificateThumbprint, orgService6EntityId,
+                stsVirksomhedPort, stsOrganisationPort, stsOrganisationSystemPort,
+                stsAdressePort, stsBrugerPort, stsPersonPort));
             services.AddScoped<ISsoStateFactory, SsoStateFactory>();
             services.AddScoped<ISsoFlowApplicationService, SsoFlowApplicationService>();
             services.AddScoped<IStsBrugerInfoService, StsBrugerInfoService>();

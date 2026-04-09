@@ -145,10 +145,8 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
 
         private OrganisationSystemPortType CreatePort(string cvr)
         {
-            var serviceUrl = _configuration.GetOrganisationServiceUrl("organisationsystem");
-            var token = (System.IdentityModel.Tokens.GenericXmlSecurityToken)_tokenFetcher.IssueToken(_configuration.OrgService6EntityId, cvr);
-            var config = _tokenFetcher.BuildServiceConfig(_configuration.OrgService6EntityId, serviceUrl, cvr);
-            return Digst.OioIdws.SoapCore.FederatedChannelFactoryExtensions.CreateChannelWithIssuedToken<OrganisationSystemPortType>(token, config);
+            var serviceUrl = _configuration.OrganisationSystemServiceUrl;
+            return _tokenFetcher.CreateChannel<OrganisationSystemPortType>(_configuration.OrgService6EntityId, serviceUrl, cvr);
         }
 
         private static fremsoegobjekthierarkiResponse LoadOrganizationHierarchy(OrganisationSystemPortType port, fremsoegobjekthierarkiRequest request)
