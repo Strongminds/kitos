@@ -275,8 +275,8 @@ namespace Core.DomainServices.Contract
                 .ToList();
 
             destination.ItSystemUsagesCsv = itSystemUsages.Select(MapSystemName).ToStringWithDelimiter();
-            destination.ExternalPaymentOrganizationUnitsCsv = source.ExternEconomyStreams.Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
-            destination.InternalPaymentOrganizationUnitsCsv = source.InternEconomyStreams.Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
+            destination.ExternalPaymentOrganizationUnitsCsv = source.ExternEconomyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
+            destination.InternalPaymentOrganizationUnitsCsv = source.InternEconomyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
             destination.ItSystemUsagesSystemUuidCsv = itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")).ToStringWithDelimiter();
 
             var actionContexts = itSystemUsages
