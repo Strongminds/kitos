@@ -9,6 +9,7 @@ using Core.DomainModel.ItContract.Read;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
 using Core.DomainModel.Users;
+using Core.DomainServices.Extensions;
 using Core.DomainServices.Mapping;
 using Core.DomainServices.Model;
 
@@ -273,10 +274,10 @@ namespace Core.DomainServices.Contract
                 .Select(x => x.First()) //guard against any duplicates
                 .ToList();
 
-            destination.ItSystemUsagesCsv = string.Join(", ", itSystemUsages.Select(MapSystemName));
-            destination.ExternalPaymentOrganizationUnitsCsv = string.Join(", ", source.ExternEconomyStreams.Select(x => x.OrganizationUnit.Name));
-            destination.InternalPaymentOrganizationUnitsCsv = string.Join(", ", source.InternEconomyStreams.Select(x => x.OrganizationUnit.Name));
-            destination.ItSystemUsagesSystemUuidCsv = string.Join(", ", itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")));
+            destination.ItSystemUsagesCsv = itSystemUsages.Select(MapSystemName).ToStringWithDelimiter();
+            destination.ExternalPaymentOrganizationUnitsCsv = source.ExternEconomyStreams.Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
+            destination.InternalPaymentOrganizationUnitsCsv = source.InternEconomyStreams.Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
+            destination.ItSystemUsagesSystemUuidCsv = itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")).ToStringWithDelimiter();
 
             var actionContexts = itSystemUsages
                 .ComputeMirrorActions
@@ -340,7 +341,7 @@ namespace Core.DomainServices.Contract
                 .ToList();
 
             //CSV field
-            destination.DataProcessingAgreementsCsv = string.Join(", ", dataProcessingAgreements.Select(x => x.Name));
+            destination.DataProcessingAgreementsCsv = dataProcessingAgreements.Select(x => x.Name).ToStringWithDelimiter();
 
             var mirrorActionContexts = dataProcessingAgreements
                 .ComputeMirrorActions
