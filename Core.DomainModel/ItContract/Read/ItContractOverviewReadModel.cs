@@ -56,7 +56,6 @@ namespace Core.DomainModel.ItContract.Read
         public string ItSystemUsagesCsv { get; set; } //Used for sorting AND excel output 
         public string ExternalPaymentOrganizationUnitsCsv { get; set; }
         public string InternalPaymentOrganizationUnitsCsv { get; set; }
-
         public string ItSystemUsagesSystemUuidCsv { get; set; } //Used for sorting AND excel output 
         public int NumberOfAssociatedSystemRelations { get; set; } //for display, order and filtering
         public virtual ICollection<ItContractOverviewReadModelSystemRelation> SystemRelations { get; set; } //for lookup used during update scheduling (to check if an outside change affects this overview item)

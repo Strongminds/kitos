@@ -265,11 +265,6 @@ namespace Core.DomainServices.Contract
             }
         }
 
-        private string ToCommaSeparatedOrganizationUnitNames(IEnumerable<EconomyStream> economyStreams)
-        {
-            return economyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
-        }
-
         private void MapSystemUsages(ItContract source, ItContractOverviewReadModel destination)
         {
             var itSystemUsages = source
@@ -454,6 +449,11 @@ namespace Core.DomainServices.Contract
             destination.OrganizationId = source.OrganizationId;
             destination.SourceEntityId = source.Id;
             destination.SourceEntityUuid = source.Uuid;
+        }
+
+        private static string ToCommaSeparatedOrganizationUnitNames(IEnumerable<EconomyStream> economyStreams)
+        {
+            return economyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
         }
     }
 }
