@@ -265,6 +265,11 @@ namespace Core.DomainServices.Contract
             }
         }
 
+        private string ToCommaSeparatedOrganizationUnitNames(IEnumerable<EconomyStream> economyStreams)
+        {
+            return economyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
+        }
+
         private void MapSystemUsages(ItContract source, ItContractOverviewReadModel destination)
         {
             var itSystemUsages = source
@@ -275,8 +280,8 @@ namespace Core.DomainServices.Contract
                 .ToList();
 
             destination.ItSystemUsagesCsv = itSystemUsages.Select(MapSystemName).ToStringWithDelimiter();
-            destination.ExternalPaymentOrganizationUnitsCsv = source.ExternEconomyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
-            destination.InternalPaymentOrganizationUnitsCsv = source.InternEconomyStreams.Where(x => x.OrganizationUnit != null).Select(x => x.OrganizationUnit.Name).ToStringWithDelimiter();
+            destination.ExternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.ExternEconomyStreams);
+            destination.InternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.InternEconomyStreams);
             destination.ItSystemUsagesSystemUuidCsv = itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")).ToStringWithDelimiter();
 
             var actionContexts = itSystemUsages
