@@ -20,7 +20,7 @@
     <!-- Use the lib (implementation) DLL directly so the compiler can resolve types that
          are present at runtime but missing from the package's reference assemblies. -->
     <Reference Include="System.ServiceModel.Primitives">
-      <HintPath>$(NuGetPackageRoot)system.servicemodel.primitives\8.1.2\lib\net8.0\System.ServiceModel.Primitives.dll</HintPath>
+      <HintPath>$(NuGetPackageRoot)system.servicemodel.primitives/8.1.2/lib/net8.0/System.ServiceModel.Primitives.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
