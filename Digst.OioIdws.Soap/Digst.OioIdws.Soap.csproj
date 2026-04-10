@@ -11,6 +11,7 @@
          SecurityTokenReferenceStyle; reference the implementation (lib) DLL directly. -->
     <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2">
       <ExcludeAssets>compile</ExcludeAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
     </PackageReference>
     <PackageReference Include="System.ServiceModel.Security" Version="4.10.3">
       <ExcludeAssets>compile</ExcludeAssets>
@@ -20,7 +21,7 @@
     <!-- Use the lib (implementation) DLL directly so the compiler can resolve types that
          are present at runtime but missing from the package's reference assemblies. -->
     <Reference Include="System.ServiceModel.Primitives">
-      <HintPath>$(NuGetPackageRoot)system.servicemodel.primitives/8.1.2/lib/net8.0/System.ServiceModel.Primitives.dll</HintPath>
+      <HintPath>$(PkgSystem_ServiceModel_Primitives)/lib/net8.0/System.ServiceModel.Primitives.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
