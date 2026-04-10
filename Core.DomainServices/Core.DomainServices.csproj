@@ -82,6 +82,7 @@
     <Compile Include="Contract\IContractDataProcessingRegistrationAssignmentService.cs" />
     <Compile Include="Contract\ItContractOverviewReadModelUpdate.cs" />
     <Compile Include="Extensions\EntityQueryExtensions.cs" />
+    <Compile Include="Extensions\StringEnumerableExtensions.cs" />
     <Compile Include="Extensions\OrganizationExtensions.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationBasisForTransferAssignmentService.cs" />
     <Compile Include="GDPR\DataProcessingRegistrationDataProcessorAssignmentService.cs" />
