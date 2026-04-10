@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
         [Route("{optionUuid}")]
         public IActionResult PatchLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
-            LocalRoleOptionUpdateRequestDTO dto)
+            [FromBody] LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

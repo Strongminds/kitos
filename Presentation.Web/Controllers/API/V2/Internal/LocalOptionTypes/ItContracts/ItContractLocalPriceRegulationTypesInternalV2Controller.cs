@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
         [Route("{optionUuid}")]
         public IActionResult PatchLocalPriceRegulationType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            [FromBody] LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

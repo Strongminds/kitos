@@ -69,6 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/ui-customization/{moduleName}")]
         public IActionResult GetUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromRoute] string moduleName)
         {
@@ -80,7 +81,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [Route("{organizationUuid}/ui-customization/{moduleName}")]
         [HttpPut]
         public IActionResult PutUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromRoute] string moduleName,
-            UIModuleCustomizationRequestDTO dto)
+            [FromBody] UIModuleCustomizationRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 

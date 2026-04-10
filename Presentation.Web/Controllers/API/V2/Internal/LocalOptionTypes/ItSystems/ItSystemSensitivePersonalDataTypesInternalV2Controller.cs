@@ -48,7 +48,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
         [Route("{optionUuid}")]
         public IActionResult PatchLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+            [FromBody] LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

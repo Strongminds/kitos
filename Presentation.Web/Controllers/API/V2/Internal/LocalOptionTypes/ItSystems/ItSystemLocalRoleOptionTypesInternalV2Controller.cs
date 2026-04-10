@@ -48,7 +48,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
         [Route("{optionUuid}")]
         public IActionResult PatchLocalItSystemRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
-            LocalRoleOptionUpdateRequestDTO dto)
+            [FromBody] LocalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }

@@ -37,7 +37,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.Organiz
         [HttpPatch]
         [Route("{optionUuid}")]
         public IActionResult PatchGlobalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid optionUuid,
-            GlobalRoleOptionUpdateRequestDTO dto)
+            [FromBody] GlobalRoleOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);
         }

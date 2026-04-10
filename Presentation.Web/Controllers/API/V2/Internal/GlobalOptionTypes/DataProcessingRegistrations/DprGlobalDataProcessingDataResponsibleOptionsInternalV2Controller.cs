@@ -37,7 +37,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
         [HttpPatch]
         [Route("{optionUuid}")]
         public IActionResult PatchGlobalDataProcessingDataResponsibleOption([NonEmptyGuid][FromRoute] Guid optionUuid,
-            GlobalRegularOptionUpdateRequestDTO dto)
+            [FromBody] GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);
         }
