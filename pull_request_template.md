@@ -1,7 +1,7 @@
 ## KITOS Pull request template
 
 ### Description
-_Describe what was changed in this branch, and WHY it was changed._
+*Describe what was changed in this branch, and WHY it was changed.*
 
 ### Checklist
 The following procedure dictates the steps needed before a Pull request can be merged into master.
