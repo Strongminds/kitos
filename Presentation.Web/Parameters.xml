@@ -172,8 +172,6 @@
         <parameterentry kind="TextFile" scope="\\appsettings\.json$" match="(?&lt;=&quot;StsOrganisationCertificateThumbprint&quot;\s*:\s*&quot;)[^&quot;]*"/>
     </parameter>
 
-</parameters>
-<parameters>
     <!-- SERILOG -->
     <parameter name="serilog:minimum-level" description="" defaultvalue="__SerilogMinimumLogLevel__" tags="">
         <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='serilog:minimum-level']/@value">
