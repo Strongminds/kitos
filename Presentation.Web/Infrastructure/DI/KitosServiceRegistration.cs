@@ -139,6 +139,7 @@ using Core.DomainServices.Repositories.Interface;
 using Serilog;
 using Core.ApplicationServices.Model.EventHandler;
 using dk.nita.saml20.identity;
+using Presentation.Web.Infrastructure.Middleware;
 using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
 
 namespace Presentation.Web.Infrastructure.DI
@@ -148,11 +149,11 @@ namespace Presentation.Web.Infrastructure.DI
         public static void Register(IServiceCollection services, IConfiguration configuration)
         {
             // Middleware (IMiddleware implementations must be registered in DI)
-            services.AddScoped<Presentation.Web.Infrastructure.Middleware.CorrelationIdMiddleware>();
-            services.AddScoped<Presentation.Web.Infrastructure.Middleware.ApiRequestsLoggingMiddleware>();
-            services.AddScoped<Presentation.Web.Infrastructure.Middleware.DenyUsersWithoutApiAccessMiddleware>();
-            services.AddScoped<Presentation.Web.Infrastructure.Middleware.DenyModificationsThroughApiMiddleware>();
-            services.AddScoped<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueriesMiddleware>();
+            services.AddScoped<CorrelationIdMiddleware>();
+            services.AddScoped<ApiRequestsLoggingMiddleware>();
+            services.AddScoped<DenyUsersWithoutApiAccessMiddleware>();
+            services.AddScoped<DenyModificationsThroughApiMiddleware>();
+            services.AddScoped<DenyTooLargeQueriesMiddleware>();
 
             // Logger
             services.AddSingleton(Log.Logger);
@@ -354,7 +355,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<Maybe<ActiveUserIdContext>>(sp =>
             {
                 var authentication = sp.GetRequiredService<IAuthenticationContext>();
-                if (authentication.UserId.HasValue == false || authentication.Method == AuthenticationMethod.Anonymous)
+                if (!authentication.UserId.HasValue || authentication.Method == AuthenticationMethod.Anonymous)
                     return Maybe<ActiveUserIdContext>.None;
                 return new ActiveUserIdContext(authentication.UserId.Value);
             });
@@ -651,7 +652,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterLocalItSystemOptionTypes(services);
             RegisterLocalDprOptionTypes(services);
             RegisterLocalItContractOptionTypes(services);
-            RegisterLocalOptionService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>(services);
+            RegisterLocalRoleOptionService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>(services);
         }
 
         private static void RegisterGlobalOptionTypes(IServiceCollection services)
