@@ -116,6 +116,7 @@ using Infrastructure.STS.Organization.DomainServices;
 using Infrastructure.STS.OrganizationSystem.DomainServices;
 using Kombit.InfrastructureSamples.Token;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
@@ -360,7 +361,20 @@ namespace Presentation.Web.Infrastructure.DI
                 return new ActiveUserIdContext(authentication.UserId.Value);
             });
             services.AddScoped<Maybe<ISaml20Identity>>(sp =>
-                Saml20Identity.IsInitialized() ? Saml20Identity.Current : Maybe<ISaml20Identity>.None);
+            {
+                // Explicitly pin the current request's HttpContext so the SAML session lookup
+                // succeeds even when IHttpContextAccessor.HttpContext is inaccessible via the
+                // static SamlHttpContextAccessor (which requires SetExplicitContext to be called
+                // first, as it is in Saml20AbstractEndpointHandler.ProcessRequest for SAML
+                // endpoints — but NOT for ordinary controller requests like GET /SSO).
+                var httpCtx = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                if (httpCtx != null)
+                    dk.nita.saml20.Utils.SamlHttpContextAccessor.SetExplicitContext(httpCtx);
+
+                return Saml20Identity.IsInitialized()
+                    ? (Maybe<ISaml20Identity>)Saml20Identity.Current
+                    : Maybe<ISaml20Identity>.None;
+            });
 
             RegisterDataAccess(services, configuration);
             RegisterDomainEventsEngine(services);

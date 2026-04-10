@@ -18,6 +18,6 @@ namespace Core.DomainServices
         IQueryable<User> GetUsersWithRoleAssignment(OrganizationRole role);
         IQueryable<User> GetUsersInOrganization(int organizationId);
         Maybe<User> GetByUuid(Guid uuid);
-        User GetByIdWithRoles(int id);
+        User? GetByIdWithRoles(int id);
     }
 }

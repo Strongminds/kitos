@@ -75,7 +75,7 @@ namespace Infrastructure.DataAccess
             return AsQueryable().ByUuid(uuid);
         }
 
-        public User GetByIdWithRoles(int id)
+        public User? GetByIdWithRoles(int id)
         {
             return _context.Users
                 .Include(u => u.OrganizationRights.Select(r => r.Organization.Type))
