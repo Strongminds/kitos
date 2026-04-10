@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading;
 using Core.Abstractions.Types;
 using Core.BackgroundJobs.Model;
 using Core.DomainModel;
@@ -13,7 +10,10 @@ using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,14 +23,16 @@ using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Presentation.Web.Controllers.API.V1.Auth;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
 using Presentation.Web.Swagger;
 using Serilog;
+using System;
 using System.Data.Entity.Infrastructure.Interception;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
@@ -250,6 +252,14 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseSerilogRequestLogging();
+// Forward X-Forwarded-For and X-Forwarded-Proto headers from reverse proxies (IIS Express,
+// IIS, Nginx, etc.) so that Request.IsHttps correctly reflects the original connection.
+// This must run before UseHttpsRedirection and the SAML handlers.
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

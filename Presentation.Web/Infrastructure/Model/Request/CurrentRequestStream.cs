@@ -17,7 +17,7 @@ namespace Presentation.Web.Infrastructure.Model.Request
             var stream = new MemoryStream();
             var requestInputStream = _httpContextAccessor.HttpContext!.Request.Body;
             requestInputStream.Position = 0;
-            requestInputStream.CopyTo(stream);
+            requestInputStream.CopyToAsync(stream).GetAwaiter().GetResult();
             requestInputStream.Position = 0;
             stream.Position = 0;
             return stream;
