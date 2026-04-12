@@ -23,5 +23,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<YesNoPartiallyOption>> WebAccessibilityCompliance { get; set; } = OptionalValueChange<Maybe<YesNoPartiallyOption>>.None;
         public OptionalValueChange<Maybe<DateTime>> LastWebAccessibilityCheck { get; set; } = OptionalValueChange<Maybe<DateTime>>.None;
         public OptionalValueChange<string> WebAccessibilityNotes { get; set; } = OptionalValueChange<string>.None;
+        public OptionalValueChange<bool> IsSociallyCritical {  get; set; } = OptionalValueChange<bool>.None;
     }
 }
