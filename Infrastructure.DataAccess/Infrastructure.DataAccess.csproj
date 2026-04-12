@@ -1193,6 +1193,10 @@
     <Compile Include="Migrations\202604071741464_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel.Designer.cs">
       <DependentUpon>202604071741464_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202604121733168_Add_SystemUsage_IsSociallyCritical.cs" />
+    <Compile Include="Migrations\202604121733168_Add_SystemUsage_IsSociallyCritical.Designer.cs">
+      <DependentUpon>202604121733168_Add_SystemUsage_IsSociallyCritical.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mapping\TerminationDeadlineTypeMap.cs" />
     <Content Include="Migrations\SQLScripts\Manually run scripts to fix prod DB\Add Country Codes.sql" />
@@ -1311,6 +1315,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202604071741464_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel.resx">
       <DependentUpon>202604071741464_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604121733168_Add_SystemUsage_IsSociallyCritical.resx">
+      <DependentUpon>202604121733168_Add_SystemUsage_IsSociallyCritical.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SQLScripts\Patch_Uuid_DataRow.sql" />
     <EmbeddedResource Include="Migrations\202301261301403_ItSystemUsageOverviewReadModel_With_Uuids.resx">
