@@ -427,7 +427,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
                 IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
                     ? source.IsSociallyCritical.AsChangedValue()
-                    :OptionalValueChange<bool>.None,
+                    : OptionalValueChange<bool>.None,
             };
         }
 

@@ -639,7 +639,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.ContainsAITechnology, (systemUsage, containsAITechnology) => systemUsage.UpdateContainsAITechnology(containsAITechnology)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityCompliance, (systemUsage, webAccessibilityCompliance) => systemUsage.UpdateWebAccessibilityCompliance(webAccessibilityCompliance)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.LastWebAccessibilityCheck, (systemUsage, lastWebAccessibilityCheck) => systemUsage.UpdateLastWebAccessibilityCheck(lastWebAccessibilityCheck)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.IsSociallyCritical, (systemUsage, isSociallyCritical) => systemUsage.IsSociallyCritical = isSociallyCritical));
         }
 
         private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)
