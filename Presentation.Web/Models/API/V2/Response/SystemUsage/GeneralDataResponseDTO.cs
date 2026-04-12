@@ -30,6 +30,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         public string SystemVersion { get; set; }
         /// <summary>
+        /// Whether this system is considered socially critical.
+        /// </summary>
+        public bool IsSociallyCritical { get; set; }
+        /// <summary>
         /// Interval which defines the number of expected users this system has within the organization
         /// </summary>
         public ExpectedUsersIntervalDTO NumberOfExpectedUsers { get; set; }

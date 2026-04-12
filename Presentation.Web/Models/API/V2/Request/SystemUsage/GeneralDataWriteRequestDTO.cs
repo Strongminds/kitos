@@ -65,5 +65,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Notes related to the web accessibility of the system
         /// </summary>
         public string WebAccessibilityNotes { get; set; }
+
+        /// <summary>
+        /// Whether the system is considered socially critical.
+        /// </summary>
+        public bool IsSociallyCritical { get; set; }
     }
 }
