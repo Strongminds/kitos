@@ -410,7 +410,8 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddDbContext<KitosContext>((sp, options) =>
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                options.UseSqlServer(connectionString)
+                options.UseLazyLoadingProxies()
+                    .UseSqlServer(connectionString)
                     .AddInterceptors(new EFEntityInterceptor(
                         operationClock: () =>
                             httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()

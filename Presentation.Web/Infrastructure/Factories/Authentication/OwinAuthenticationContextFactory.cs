@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Security.Principal;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
@@ -88,7 +89,16 @@ namespace Presentation.Web.Infrastructure.Factories.Authentication
 
         private int? GetUserId(IPrincipal user)
         {
-            var userId = user.Identity?.Name;
+            // JsonWebTokenHandler (.NET 8+) does not apply inbound claim type mapping,
+            // so the JWT "name" claim may be stored as "name" rather than ClaimTypes.Name.
+            // Try both forms, then fall back to Identity.Name (which uses NameClaimType).
+            string? userId = null;
+            if (user is ClaimsPrincipal cp)
+            {
+                userId = cp.FindFirstValue("name")
+                    ?? cp.FindFirstValue(ClaimTypes.Name);
+            }
+            userId ??= user.Identity?.Name;
             return userId == null ? null : ParseUserIdInteger(userId);
         }
     }
