@@ -1,14 +1,14 @@
-﻿using Core.DomainModel.ItSystemUsage.GDPR;
-using System.Data.Entity.ModelConfiguration;
+using Core.DomainModel.ItSystemUsage.GDPR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Mapping
 {
-    public class ItSystemUsagePersonalDataOptionsMap : EntityTypeConfiguration<ItSystemUsagePersonalData>
+    public class ItSystemUsagePersonalDataOptionsMap : IEntityTypeConfiguration<ItSystemUsagePersonalData>
     {
-        public ItSystemUsagePersonalDataOptionsMap()
+        public void Configure(EntityTypeBuilder<ItSystemUsagePersonalData> builder)
         {
-            Property(x => x.PersonalData)
-                .IsRequired();
+            builder.Property(x => x.PersonalData).IsRequired();
         }
     }
 }

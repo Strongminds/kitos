@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Net;
 using Core.ApplicationServices.Tracking;
 using Core.DomainModel.Tracking;
 using Presentation.Web.Controllers.API.V2.External.Deltas.Mapping;

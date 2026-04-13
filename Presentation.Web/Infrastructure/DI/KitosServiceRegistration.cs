@@ -3,6 +3,8 @@ using System.Linq;
 using AutoMapper;
 using Core.Abstractions.Caching;
 using Core.Abstractions.Types;
+using Infrastructure.DataAccess.Interceptors;
+using Microsoft.EntityFrameworkCore;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Authorization;
@@ -402,11 +404,23 @@ namespace Presentation.Web.Infrastructure.DI
 
         private static void RegisterDataAccess(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<KitosContext>(sp =>
+            var connectionString = configuration.GetConnectionString("KitosContext")
+                ?? throw new InvalidOperationException("KitosContext connection string is required");
+
+            services.AddDbContext<KitosContext>((sp, options) =>
             {
-                var connectionString = configuration.GetConnectionString("KitosContext")
-                    ?? throw new InvalidOperationException("KitosContext connection string is required");
-                return new KitosContext(connectionString);
+                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+                options.UseSqlServer(connectionString)
+                    .AddInterceptors(new EFEntityInterceptor(
+                        operationClock: () =>
+                            httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()
+                            ?? new OperationClock(),
+                        userContext: () =>
+                            httpContextAccessor.HttpContext?.RequestServices.GetService<Maybe<ActiveUserIdContext>>()
+                            ?? Maybe<ActiveUserIdContext>.None,
+                        fallbackUserResolver: () =>
+                            httpContextAccessor.HttpContext?.RequestServices.GetService<IFallbackUserResolver>()
+                            ?? new BackgroundJobFallbackUserResolver(sp)));
             });
 
             services.AddScoped<ITransactionManager, TransactionManager>();

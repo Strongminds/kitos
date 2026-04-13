@@ -30,7 +30,7 @@ using Presentation.Web.Infrastructure.OData;
 using Presentation.Web.Swagger;
 using Serilog;
 using System;
-using System.Data.Entity.Infrastructure.Interception;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -221,11 +221,6 @@ KitosServiceRegistration.Register(services, configuration);
 
 var app = builder.Build();
 
-// Register the EF6 interceptor that auto-assigns ObjectOwnerId, LastChangedByUserId and LastChanged
-// on every INSERT/UPDATE. Uses IHttpContextAccessor to resolve per-request scoped services; for
-// background jobs (no HTTP context) it falls back to a dedicated scope or safe defaults.
-RegisterEfEntityInterceptor(app.Services);
-
 // Initialize the SAML library's static HTTP context accessor so it can access HttpContext.Current
 // during SAML flows without requiring DI injection into the (statically-instantiated) handler classes.
 dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
@@ -397,22 +392,6 @@ static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
     using var cmd = connection.CreateCommand();
     cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{databaseName}') CREATE DATABASE [{databaseName}]";
     cmd.ExecuteNonQuery();
-}
-
-static void RegisterEfEntityInterceptor(IServiceProvider rootProvider)
-{
-    var httpContextAccessor = rootProvider.GetRequiredService<IHttpContextAccessor>();
-
-    DbInterception.Add(new EFEntityInterceptor(
-        operationClock: () =>
-            httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()
-            ?? new OperationClock(),
-        userContext: () =>
-            httpContextAccessor.HttpContext?.RequestServices.GetService<Maybe<ActiveUserIdContext>>()
-            ?? Maybe<ActiveUserIdContext>.None,
-        fallbackUserResolver: () =>
-            httpContextAccessor.HttpContext?.RequestServices.GetService<IFallbackUserResolver>()
-            ?? new BackgroundJobFallbackUserResolver(rootProvider)));
 }
 
 /// <summary>

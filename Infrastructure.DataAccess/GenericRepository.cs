@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Validation;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
 using Core.DomainServices;
@@ -68,7 +66,7 @@ namespace Infrastructure.DataAccess
 
         public T Create()
         {
-            return _dbSet.Create<T>();
+            return Activator.CreateInstance<T>();
         }
 
         public T GetByKey(params object[] key)
@@ -78,7 +76,8 @@ namespace Infrastructure.DataAccess
 
         public T Insert(T entity)
         {
-            return _dbSet.Add(entity);
+            _dbSet.Add(entity);
+            return entity;
         }
 
         public void AddRange(IEnumerable<T> entities)
@@ -140,21 +139,7 @@ namespace Infrastructure.DataAccess
 
         public void Save()
         {
-            try
-            {
-                _context.SaveChanges();
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                    }
-                }
-                throw;
-            }
+            _context.SaveChanges();
         }
 
         public int Count => _dbSet.Count();

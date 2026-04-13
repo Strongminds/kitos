@@ -1,13 +1,13 @@
-using System.Data.Entity.ModelConfiguration;
 using Core.DomainModel.ItSystemUsage.GDPR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Mapping
 {
-    public class ItSystemUsageSensitiveDataLevelMap : EntityTypeConfiguration<ItSystemUsageSensitiveDataLevel>
+    public class ItSystemUsageSensitiveDataLevelMap : IEntityTypeConfiguration<ItSystemUsageSensitiveDataLevel>
     {
-        public ItSystemUsageSensitiveDataLevelMap()
+        public void Configure(EntityTypeBuilder<ItSystemUsageSensitiveDataLevel> builder)
         {
-            
         }
     }
 }

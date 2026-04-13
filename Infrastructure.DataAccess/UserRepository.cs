@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
@@ -78,7 +78,9 @@ namespace Infrastructure.DataAccess
         public User? GetByIdWithRoles(int id)
         {
             return _context.Users
-                .Include(u => u.OrganizationRights.Select(r => r.Organization.Type))
+                .Include(u => u.OrganizationRights)
+                    .ThenInclude(r => r.Organization)
+                    .ThenInclude(o => o.Type)
                 .SingleOrDefault(u => u.Id == id);
         }
     }
