@@ -8,6 +8,8 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
+    <PackageReference Include="ExpectedObjects" Version="3.5.4" />
+    <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.8" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -23,7 +25,7 @@
     <PackageReference Include="Polly" Version="8.4.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.Bcl.TimeProvider" Version="9.0.5" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.5" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tests.Toolkit\Tests.Toolkit.csproj" />
@@ -33,90 +35,8 @@
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
     <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj" />
+    <ProjectReference Include="..\Presentation.Web\Presentation.Web.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- Files requiring Presentation.Web.* or other legacy types unavailable in .NET 10 -->
-    <Compile Remove="Authorization\TokenV2Tests.cs" />
-    <Compile Remove="Contract\ItContractOverviewReadModelsApiTest.cs" />
-    <Compile Remove="Contract\V2\ItContractsApiV2Test.cs" />
-    <Compile Remove="Contract\V2\ItContractsInternalApiV2Test.cs" />
-    <Compile Remove="Deltas\V2\DeltaFeedApiV2Test.cs" />
-    <Compile Remove="GDPR\DataProcessingRegistrationReadModelsTest.cs" />
-    <Compile Remove="GDPR\V2\DataProcessingRegistrationApiV2Test.cs" />
-    <Compile Remove="GDPR\V2\DataProcessingRegistrationInternalAPIV2Test.cs" />
-    <Compile Remove="GlobalAdminArea\ItSystemGlobalBusinessTypesInternalV2ApiTest.cs" />
-    <Compile Remove="GlobalAdminArea\ItSystemGlobalRoleOptionTypesInternalV2ApiTest.cs" />
-    <Compile Remove="Headers\V2EnumSerializationTest.cs" />
-    <Compile Remove="HelpTexts\HelpTextsInternalApiV2Test.cs" />
-    <Compile Remove="Interfaces\V2\BaseItInterfaceApiV2Test.cs" />
-    <Compile Remove="Interfaces\V2\ItInterfaceApiV2Test.cs" />
-    <Compile Remove="Interfaces\V2\RightsHolderItInterfaceApiV2Test.cs" />
-    <Compile Remove="Internal\GdprReport\GdprReportApiV2Test.cs" />
-    <Compile Remove="Internal\Messages\PublicMessagesApiV2Test.cs" />
-    <Compile Remove="ItSystem\V2\BaseItSystemsApiV2Test.cs" />
-    <Compile Remove="ItSystem\V2\ItSystemLocalOptionTypesInternalV2ApiTest.cs" />
-    <Compile Remove="ItSystem\V2\ItSystemsApiV2RightsHoldersTest.cs" />
-    <Compile Remove="ItSystem\V2\ItSystemsApiV2Test.cs" />
-    <Compile Remove="ItSystem\V2\ItSystemsInternalApiV2Test.cs" />
-    <Compile Remove="ItSystem\V2\ItSystemUsageMigrationApiV2Test.cs" />
-    <Compile Remove="ItSystem\V2\LegalPropertiesV2ApiTest.cs" />
-    <Compile Remove="LocalAdminArea\ExcelImportTest.cs" />
-    <Compile Remove="Notifications\AlertsApiV2Test.cs" />
-    <Compile Remove="Notifications\NotificationApiV2Test.cs" />
-    <Compile Remove="Options\V2\OptionV2ApiTests.cs" />
-    <Compile Remove="Organizations\StsOrganizationSynchronizationApiTest.cs" />
-    <Compile Remove="Organizations\V2\LocalOrganizationUnitRoleOptionTypesInternalV2ApiTest.cs" />
-    <Compile Remove="Organizations\V2\OrganizationApiV2Test.cs" />
-    <Compile Remove="Organizations\V2\OrganizationApiV2TestBase.cs" />
-    <Compile Remove="Organizations\V2\OrganizationGridApiV2Test.cs" />
-    <Compile Remove="Organizations\V2\OrganizationInternalApiV2Test.cs" />
-    <Compile Remove="Organizations\V2\OrganizationUnitRegistrationApiV2Test.cs" />
-    <Compile Remove="Organizations\V2\OrganizationUnitsApiV2Test.cs" />
-    <Compile Remove="Organizations\V2\OrganizationUserApiV2Test.cs" />
-    <Compile Remove="Organizations\V2\SupplierApiV2Test.cs" />
-    <Compile Remove="Qa\BrokenExternalReferencesReportTest.cs" />
-    <Compile Remove="References\ExternalReferenceInternalApiV2Test.cs" />
-    <Compile Remove="Security\CSRFProtectionTest.cs" />
-    <Compile Remove="Swagger\SwaggerDocumentationTest.cs" />
-    <Compile Remove="SystemUsage\ItSystemUsageOverviewReadModelsTest.cs" />
-    <Compile Remove="SystemUsage\V2\BaseItSystemUsageApiV2Test.cs" />
-    <Compile Remove="SystemUsage\V2\ItSystemUsageApiV2Test.cs" />
-    <Compile Remove="Tools\BaseTest.cs" />
-    <Compile Remove="Tools\BrokenExternalReferencesReportHelper.cs" />
-    <Compile Remove="Tools\External\DataProcessingRegistrationV2Helper.cs" />
-    <Compile Remove="Tools\External\DeltaFeedV2Helper.cs" />
-    <Compile Remove="Tools\External\InterfaceV2Helper.cs" />
-    <Compile Remove="Tools\External\ItContractV2Helper.cs" />
-    <Compile Remove="Tools\External\ItSystemUsageV2Helper.cs" />
-    <Compile Remove="Tools\External\ItSystemV2Helper.cs" />
-    <Compile Remove="Tools\External\KleOptionV2Helper.cs" />
-    <Compile Remove="Tools\External\LegalItSystemPropertiesV2Helper.cs" />
-    <Compile Remove="Tools\External\OptionV2ApiHelper.cs" />
-    <Compile Remove="Tools\External\OrganizationUnitV2Helper.cs" />
-    <Compile Remove="Tools\External\OrganizationUserV2Helper.cs" />
-    <Compile Remove="Tools\External\OrganizationV2Helper.cs" />
-    <Compile Remove="Tools\HelpTextsInternalV2Helper.cs" />
-    <Compile Remove="Tools\HttpApi.cs" />
-    <Compile Remove="Tools\Internal\DPR\DataProcessingRegistrationInternalV2Helper.cs" />
-    <Compile Remove="Tools\Internal\GlobalOptionTypeV2Helper.cs" />
-    <Compile Remove="Tools\Internal\ItSystemUsage\ItSystemUsageMigrationV2Helper.cs" />
-    <Compile Remove="Tools\Internal\LocalOptionTypeV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Notifications\NotificationV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Organizations\OrganizationInternalV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Organizations\OrganizationSupplierInternalV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Organizations\OrganizationUnitRegistrationV2Helper.cs" />
-    <Compile Remove="Tools\Internal\References\ExternalReferencesInternalV2Helper.cs" />
-    <Compile Remove="Tools\Internal\References\ExternalReferencesV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Users\PasswordResetV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Users\UsersV2Helper.cs" />
-    <Compile Remove="Tools\ObjectCreateHelper.cs" />
-    <Compile Remove="Tools\OrganizationGridConfigV2Helper.cs" />
-    <Compile Remove="Users\V2\PasswordResetInternalApiV2Test.cs" />
-    <Compile Remove="Users\V2\UserInternalApiV2Test.cs" />
-    <Compile Remove="Security\AccessibilityTests.cs" />
-    <Compile Remove="KLE\V2\KleOptionV2ApiTest.cs" />
-    <Compile Remove="Security\AuthorizationTests.cs" />
-    <Compile Remove="Tools\Internal\GdprReportV2Helper.cs" />
-    <Compile Remove="Tools\Internal\Notifications\AlertsV2Helper.cs" />
-  </ItemGroup>
+
 </Project>
+

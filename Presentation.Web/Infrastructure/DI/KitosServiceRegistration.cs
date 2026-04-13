@@ -363,17 +363,27 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<Maybe<ISaml20Identity>>(sp =>
             {
                 // Explicitly pin the current request's HttpContext so the SAML session lookup
-                // succeeds even when IHttpContextAccessor.HttpContext is inaccessible via the
-                // static SamlHttpContextAccessor (which requires SetExplicitContext to be called
-                // first, as it is in Saml20AbstractEndpointHandler.ProcessRequest for SAML
-                // endpoints — but NOT for ordinary controller requests like GET /SSO).
+                // succeeds for ordinary controller requests (e.g. GET /SSO) where
+                // Saml20AbstractEndpointHandler.ProcessRequest has not been called and therefore
+                // the AsyncLocal in SamlHttpContextAccessor has not been set.
                 var httpCtx = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
                 if (httpCtx != null)
                     dk.nita.saml20.Utils.SamlHttpContextAccessor.SetExplicitContext(httpCtx);
 
-                return Saml20Identity.IsInitialized()
-                    ? (Maybe<ISaml20Identity>)Saml20Identity.Current
-                    : Maybe<ISaml20Identity>.None;
+                var logger = sp.GetRequiredService<Serilog.ILogger>();
+                var cookie = httpCtx?.Request.Cookies["saml-session"];
+                logger.Debug("[SAML-DI] path={Path} cookie={Cookie} samlCtxNull={SamlCtxNull}",
+                    httpCtx?.Request.Path.Value ?? "<null>",
+                    cookie ?? "<absent>",
+                    dk.nita.saml20.Utils.SamlHttpContextAccessor.Current == null ? "yes" : "no");
+
+                var isInit = Saml20Identity.IsInitialized();
+                logger.Debug("[SAML-DI] IsInitialized={IsInit}", isInit);
+
+                if (!isInit) return Maybe<ISaml20Identity>.None;
+                var current = Saml20Identity.Current;
+                logger.Debug("[SAML-DI] Current={CurrentNull}", current == null ? "null" : current.Name);
+                return current != null ? (Maybe<ISaml20Identity>)current : Maybe<ISaml20Identity>.None;
             });
 
             RegisterDataAccess(services, configuration);

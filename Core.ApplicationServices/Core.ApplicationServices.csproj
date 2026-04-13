@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.1" />
     <PackageReference Include="Hangfire.Core" Version="1.8.21" />
-    <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.2" />
+    <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.8" />
     <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="8.9.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.9.0" />
     <PackageReference Include="Microsoft.IdentityModel.Logging" Version="8.9.0" />
@@ -25,3 +25,4 @@
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
   </ItemGroup>
 </Project>
+
