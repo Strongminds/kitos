@@ -4,6 +4,9 @@
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
+    <OutputPath>..\Output\DataAccess\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <!-- Nameless artifact files that were committed accidentally and cause duplicate type/resource errors -->
@@ -11,6 +14,13 @@
     <Compile Remove="Migrations\.designer.cs" />
     <EmbeddedResource Remove="Migrations\.resx" />
   </ItemGroup>
+  <Target Name="CopyEf6NetCoreTool" AfterTargets="Build">
+    <!-- Copy the net6.0 ef6 runner (usable with 'dotnet ef6.dll') alongside the built assembly -->
+    <Copy
+      SourceFiles="$(NuGetPackageRoot)entityframework\6.5.1\tools\net6.0\any\ef6.dll;$(NuGetPackageRoot)entityframework\6.5.1\tools\net6.0\any\ef6.runtimeconfig.json"
+      DestinationFolder="$(OutputPath)"
+      SkipUnchangedFiles="true" />
+  </Target>
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.5.1" />
   </ItemGroup>
