@@ -370,19 +370,8 @@ namespace Presentation.Web.Infrastructure.DI
                 if (httpCtx != null)
                     dk.nita.saml20.Utils.SamlHttpContextAccessor.SetExplicitContext(httpCtx);
 
-                var logger = sp.GetRequiredService<Serilog.ILogger>();
-                var cookie = httpCtx?.Request.Cookies["saml-session"];
-                logger.Debug("[SAML-DI] path={Path} cookie={Cookie} samlCtxNull={SamlCtxNull}",
-                    httpCtx?.Request.Path.Value ?? "<null>",
-                    cookie ?? "<absent>",
-                    dk.nita.saml20.Utils.SamlHttpContextAccessor.Current == null ? "yes" : "no");
-
-                var isInit = Saml20Identity.IsInitialized();
-                logger.Debug("[SAML-DI] IsInitialized={IsInit}", isInit);
-
-                if (!isInit) return Maybe<ISaml20Identity>.None;
+                if (!Saml20Identity.IsInitialized()) return Maybe<ISaml20Identity>.None;
                 var current = Saml20Identity.Current;
-                logger.Debug("[SAML-DI] Current={CurrentNull}", current == null ? "null" : current.Name);
                 return current != null ? (Maybe<ISaml20Identity>)current : Maybe<ISaml20Identity>.None;
             });
 
