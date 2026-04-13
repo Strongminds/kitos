@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Mapping
         public override void Configure(EntityTypeBuilder<Text> builder)
         {
             base.Configure(builder);
-            base.Configure(builder);
             builder.ToTable("Text");
             builder.Property(t => t.Value).HasColumnName("Value");
         }

@@ -66,6 +66,10 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [st
         Write-Host "Baseline migration pre-applied: $baselineMigrationId"
     }
 
+    # Expose the connection string via the standard .NET env var so the
+    # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
+    $Env:ConnectionStrings__KitosContext = $connectionString
+
     dotnet ef database update `
         --project "$infraProject" `
         --startup-project "$startupProject" `
