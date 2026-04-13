@@ -350,7 +350,20 @@ namespace Presentation.Web.Infrastructure.DI
                 stsAdressePort, stsBrugerPort, stsPersonPort));
             services.AddScoped<ISsoStateFactory, SsoStateFactory>();
             services.AddScoped<ISsoFlowApplicationService, SsoFlowApplicationService>();
-            services.AddScoped<IStsBrugerInfoService, StsBrugerInfoService>();
+
+            var localSsoTestEmail = appSettings["LocalSsoTestUserEmail"];
+            if (!string.IsNullOrWhiteSpace(localSsoTestEmail))
+            {
+                // Local-dev bypass: skip KOMBIT STS BrugerService call (see LocalTestStsBrugerInfoService).
+                // Remove or clear "LocalSsoTestUserEmail" in Web.config before deploying to production.
+                services.AddScoped<IStsBrugerInfoService>(sp =>
+                    new Presentation.Web.Infrastructure.SSO.LocalTestStsBrugerInfoService(
+                        localSsoTestEmail, sp.GetRequiredService<ILogger>()));
+            }
+            else
+            {
+                services.AddScoped<IStsBrugerInfoService, StsBrugerInfoService>();
+            }
 
             services.AddScoped<IApplicationAuthenticationState, ApplicationAuthenticationState>();
             services.AddScoped<Maybe<ActiveUserIdContext>>(sp =>
