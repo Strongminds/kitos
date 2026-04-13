@@ -128,6 +128,7 @@ namespace Tests.Integration.Presentation.Web.Tools
         public static KitosContext GetDatabase()
         {
             var options = new DbContextOptionsBuilder<KitosContext>()
+                .UseLazyLoadingProxies()
                 .UseSqlServer(ConnectionString)
                 .Options;
             return new KitosContext(options);

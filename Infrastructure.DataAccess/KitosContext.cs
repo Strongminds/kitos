@@ -30,6 +30,7 @@ namespace Infrastructure.DataAccess
     public class KitosContext : DbContext
     {
         public KitosContext() : this(new DbContextOptionsBuilder<KitosContext>()
+            .UseLazyLoadingProxies()
             .UseSqlServer(ConnectionStringTools.GetConnectionString("KitosContext"))
             .Options) { }
 

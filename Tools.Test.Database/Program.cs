@@ -27,6 +27,7 @@ namespace Tools.Test.Database
                 var connectionString = EnsureTrustServerCertificate(GetArgument(additionalArgs, 0));
                 FailOnConnectionToProd(connectionString);
                 var dbOptions = new DbContextOptionsBuilder<KitosContext>()
+                    .UseLazyLoadingProxies()
                     .UseSqlServer(connectionString)
                     .Options;
                 using (var context = new KitosContext(dbOptions))

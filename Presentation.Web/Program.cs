@@ -111,6 +111,13 @@ services.AddAuthentication(options =>
             IssuerSigningKey = signingKey,
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
+            // JsonWebTokenHandler (.NET 8+) defaults ClaimsIdentity.AuthenticationType to
+            // "AuthenticationTypes.Federation" which OwinAuthenticationContextFactory does not
+            // recognise. Setting it to "Bearer" keeps the existing switch mapping working.
+            AuthenticationType = JwtBearerDefaults.AuthenticationScheme,
+            // JsonWebTokenHandler does not apply inbound claim type mapping, so the JWT "name"
+            // claim stays as "name". Setting NameClaimType ensures Identity.Name resolves it.
+            NameClaimType = "name",
         };
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
