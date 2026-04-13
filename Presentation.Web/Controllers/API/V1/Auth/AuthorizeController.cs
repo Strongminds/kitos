@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Authorization;
@@ -199,7 +200,19 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         [Route("api/authorize/antiforgery")]
         public IActionResult GetAntiForgeryToken()
         {
-            return Ok();
+            var tokenValue = Guid.NewGuid().ToString("N");
+
+            Response.Cookies.Append(
+                Constants.CSRFValues.CookieName,
+                tokenValue,
+                new Microsoft.AspNetCore.Http.CookieOptions
+                {
+                    Path = "/",
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
+                    MaxAge = TimeSpan.FromMinutes(Constants.CSRFValues.CookieExpirationMinutes)
+                });
+
+            return Content(JsonConvert.SerializeObject(tokenValue), "application/json");
         }
     }
 }
