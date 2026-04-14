@@ -664,6 +664,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noValidFrom,
             bool noValidTo,
             bool noMainContractUuid,
+            bool noIsSociallyCritical,
             bool noBusinessCritical)
         {
             //Arrange
@@ -679,6 +680,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noValidFrom,
                 noValidTo,
                 noMainContractUuid,
+                noIsSociallyCritical,              
                 noBusinessCritical);
 
             //Act
@@ -696,6 +698,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noValidFrom, generalSection.ValidFrom.IsUnchanged);
             Assert.Equal(noValidTo, generalSection.ValidTo.IsUnchanged);
             Assert.Equal(noMainContractUuid, generalSection.MainContractUuid.IsUnchanged);
+            Assert.Equal(noIsSociallyCritical, generalSection.IsSociallyCritical.IsUnchanged);
             Assert.Equal(noBusinessCritical, generalSection.BusinessCritical.IsUnchanged);
         }
 
@@ -713,6 +716,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noValidFrom,
             bool noValidTo,
             bool noMainContractUuid,
+            bool noIsSociallyCritical,
             bool noBusinessCritical)
         {
             //Arrange
@@ -728,6 +732,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noValidFrom,
                 noValidTo,
                 noMainContractUuid,
+                noIsSociallyCritical,
                 noBusinessCritical);
 
             //Act
@@ -745,6 +750,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(generalSection.ValidFrom.HasChange);
             Assert.True(generalSection.ValidTo.HasChange);
             Assert.True(generalSection.MainContractUuid.HasChange);
+            Assert.True(generalSection.IsSociallyCritical.HasChange);
             Assert.True(generalSection.BusinessCritical.HasChange);
         }
 
@@ -1257,6 +1263,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noValidFrom,
             bool noValidTo,
             bool noMainContractUuid,
+            bool noIsSociallyCritical,
             bool noBusinessCritical = false)
         {
             var generalProperties = GetAllInputPropertyNames<GeneralDataUpdateRequestDTO>();
@@ -1267,6 +1274,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noSystemVersion) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemVersion));
             if (noNumberOfExpectedUsers) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.NumberOfExpectedUsers));
             if (noMainContractUuid) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.MainContractUuid));
+            if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
             if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.BusinessCritical));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
