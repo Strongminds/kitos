@@ -359,14 +359,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             var newRole = new OrganizationUnitRole
             {
-                Name = A<string>()
+                Name = A<string>(),
             };
             AssignOwnership(newRole, userUuid);
 
             var right = new OrganizationUnitRight
             {
                 ObjectId = unitId,
-                UserId = userId
+                UserId = userId,
             };
             AssignOwnership(right, userUuid);
 
@@ -419,7 +419,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 context.ItContracts.Add(contract);
 
                 context.ItSystems.Add(system);
-                usage.ItSystemId = system.Id;
+                usage.ItSystem = system;
                 context.ItSystemUsages.Add(usage);
 
                 context.SaveChanges();
