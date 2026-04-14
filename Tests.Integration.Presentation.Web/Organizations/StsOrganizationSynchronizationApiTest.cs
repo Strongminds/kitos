@@ -801,7 +801,11 @@ namespace Tests.Integration.Presentation.Web.Organizations
                 DatabaseAccess.MutateEntitySet<Organization>(repo =>
                 {
                     var organization = repo.AsQueryable().ByUuid(org.Uuid);
-                    organization.ConnectToExternalOrganizationHierarchy(OrganizationUnitOrigin.STS_Organisation, new ExternalOrganizationUnit(Guid.NewGuid(), "FAKE ROOT", new Dictionary<string, string>(), new List<ExternalOrganizationUnit>()), Maybe<int>.Some(1), fakeInitialSubscription);
+                    var externalUnit = new ExternalOrganizationUnit(Guid.NewGuid(), "FAKE ROOT",
+                        new Dictionary<string, string>(), new List<ExternalOrganizationUnit>());
+                    organization.ConnectToExternalOrganizationHierarchy(OrganizationUnitOrigin.STS_Organisation, externalUnit, Maybe<int>.Some(1), fakeInitialSubscription);
+                    organization.StsOrganizationConnection.LastChangedByUserId = TestEnvironment.DefaultUserId;
+                    organization.StsOrganizationConnection.ObjectOwnerId = TestEnvironment.DefaultUserId;
                 });
             }
             return org.Uuid;

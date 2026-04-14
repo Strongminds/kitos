@@ -446,8 +446,10 @@ namespace Core.DomainServices.SystemUsage
 
         private void PatchKLE(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            destination.ItSystemKLEIdsAsCsv = string.Join(", ", source.ItSystem.TaskRefs.Select(x => x.TaskKey));
-            destination.ItSystemKLENamesAsCsv = string.Join(", ", source.ItSystem.TaskRefs.Select(x => x.Description));
+            var kleIds = string.Join(", ", source.ItSystem.TaskRefs.Select(x => x.TaskKey).Where(k => k != null));
+            destination.ItSystemKLEIdsAsCsv = string.IsNullOrEmpty(kleIds) ? null : kleIds;
+            var kleNames = string.Join(", ", source.ItSystem.TaskRefs.Select(x => x.Description).Where(d => d != null));
+            destination.ItSystemKLENamesAsCsv = string.IsNullOrEmpty(kleNames) ? null : kleNames;
 
             static string CreateTaskRefKey(string KLEId) => $"I:{KLEId}";
 

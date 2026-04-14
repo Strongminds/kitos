@@ -1,11 +1,11 @@
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Infrastructure.DataAccess.Mapping;
 using System;
-using System.Data.Entity.ModelConfiguration.Conventions;
 using Core.DomainModel.Advice;
 using Core.DomainModel.Organization;
 using Core.DomainModel.LocalOptions;
@@ -29,13 +29,12 @@ namespace Infrastructure.DataAccess
 {
     public class KitosContext : DbContext
     {
-        public KitosContext() : this(ConnectionStringTools.GetConnectionString("KitosContext")) { }
-        
-        public KitosContext(string nameOrConnectionString)
-            : base(nameOrConnectionString)
-        {
-            Database.Log = null;
-        }
+        public KitosContext() : this(new DbContextOptionsBuilder<KitosContext>()
+            .UseLazyLoadingProxies()
+            .UseSqlServer(ConnectionStringTools.GetConnectionString("KitosContext"))
+            .Options) { }
+
+        public KitosContext(DbContextOptions<KitosContext> options) : base(options) { }
 
         public DbSet<ItContractAgreementElementTypes> ItContractAgreementElementTypes { get; set; }
         public DbSet<OrganizationRight> OrganizationRights { get; set; }
@@ -171,112 +170,57 @@ namespace Infrastructure.DataAccess
         public DbSet<ItSystemUsageOverviewItContractReadModel> ItSystemUsageOverviewItContractReadModels { get; set; }
         public DbSet<CountryCode> CountryCodes { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // it's not possible to remove individual cascading deletes pr M:M relation
-            // so have to remove all of them
-            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
-            // configure DateTime to use datetime2 in sql server as their range match
-            modelBuilder.Properties<DateTime>().Configure(c => c.HasColumnType("datetime2"));
-            // placed first because then we have the ability to override
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(KitosContext).Assembly);
 
-            modelBuilder.Configurations.Add(new AdviceMap());
-            modelBuilder.Configurations.Add(new AgreementElementTypeMap());
-            modelBuilder.Configurations.Add(new ArchiveTypeMap());
-            modelBuilder.Configurations.Add(new BusinessTypeMap());
-            modelBuilder.Configurations.Add(new ConfigMap());
-            modelBuilder.Configurations.Add(new ItContractTemplateMap());
-            modelBuilder.Configurations.Add(new ItContractTypeMap());
-            modelBuilder.Configurations.Add(new DataTypeMap());
-            modelBuilder.Configurations.Add(new DataRowMap());
-            modelBuilder.Configurations.Add(new EconomyStreamMap());
-            modelBuilder.Configurations.Add(new RelationFrequencyTypeMap());
-            modelBuilder.Configurations.Add(new CriticalityTypeMap());
-            modelBuilder.Configurations.Add(new InterfaceTypeMap());
-            modelBuilder.Configurations.Add(new ItInterfaceMap());
-            modelBuilder.Configurations.Add(new ItInterfaceExhibitMap());
-            modelBuilder.Configurations.Add(new ItContractMap());
-            modelBuilder.Configurations.Add(new ItContractRightMap());
-            modelBuilder.Configurations.Add(new ItContractRoleMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOrgUnitUsageMap());
-            modelBuilder.Configurations.Add(new ItSystemMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageMap());
-            modelBuilder.Configurations.Add(new ItSystemRightMap());
-            modelBuilder.Configurations.Add(new ItSystemRoleMap());
-            modelBuilder.Configurations.Add(new OrganizationMap());
-            modelBuilder.Configurations.Add(new OrganizationRightMap());
-            modelBuilder.Configurations.Add(new OrganizationTypeMap());
-            modelBuilder.Configurations.Add(new OrganizationUnitMap());
-            modelBuilder.Configurations.Add(new OrganizationUnitRightMap());
-            modelBuilder.Configurations.Add(new OrganizationUnitRoleMap());
-            modelBuilder.Configurations.Add(new OrganizationSupplierMap());
-            modelBuilder.Configurations.Add(new PasswordResetRequestMap());
-            modelBuilder.Configurations.Add(new ProcurementStrategyTypeMap());
-            modelBuilder.Configurations.Add(new PurchaseFormTypeMap());
-            modelBuilder.Configurations.Add(new SensitiveDataTypeMap());
-            modelBuilder.Configurations.Add(new TaskRefMap());
-            modelBuilder.Configurations.Add(new TextMap());
-            modelBuilder.Configurations.Add(new PublicMessageMap());
-            modelBuilder.Configurations.Add(new TerminationDeadlineTypeMap());
-            modelBuilder.Configurations.Add(new UserMap());
-            modelBuilder.Configurations.Add(new ArchivePeriodMap());
-            modelBuilder.Configurations.Add(new PriceRegulationTypeMap());
-            modelBuilder.Configurations.Add(new PaymentModelTypeMap());
-            modelBuilder.Configurations.Add(new PaymentFreqencyTypeMap());
-            modelBuilder.Configurations.Add(new OptionExtendTypeMap());
-            modelBuilder.Configurations.Add(new ItContractItSystemUsageMap());
-            modelBuilder.Configurations.Add(new ItContractAgreementElementTypeMap());
-            modelBuilder.Configurations.Add(new DataResponsibleMap());
-            modelBuilder.Configurations.Add(new DataProtectionAdvisorMap());
-            modelBuilder.Configurations.Add(new SystemRelationMap());
-            modelBuilder.Configurations.Add(new BrokenExternalReferencesReportMap());
-            modelBuilder.Configurations.Add(new BrokenLinkInExternalReferenceMap());
-            modelBuilder.Configurations.Add(new BrokenLinkInInterfaceMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageSensitiveDataLevelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsagePersonalDataOptionsMap());
-            modelBuilder.Configurations.Add(new SsoUserIdentityMap());
-            modelBuilder.Configurations.Add(new StsOrganizationIdentityMap());
-            modelBuilder.Configurations.Add(new DataProcessingRegistrationMap());
-            modelBuilder.Configurations.Add(new DataProcessingRegistrationRightMap());
-            modelBuilder.Configurations.Add(new DataProcessingRegistrationRoleMap());
-            modelBuilder.Configurations.Add(new DataProcessingRegistrationReadModelMap());
-            modelBuilder.Configurations.Add(new DataProcessingRegistrationRoleAssignmentReadModelMap());
-            modelBuilder.Configurations.Add(new DataProcessingBasisForTransferOptionMap());
-            modelBuilder.Configurations.Add(new DataProcessingOversightOptionMap());
-            modelBuilder.Configurations.Add(new DataProcessingDataResponsibleOptionMap());
-            modelBuilder.Configurations.Add(new DataProcessingCountryOptionMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewRoleAssignmentReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewTaskRefReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewSensitiveDataLevelReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewArchivePeriodReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewDataProcessingRegistrationReadModelMap());
-            modelBuilder.Configurations.Add(new PendingReadModelUpdateMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewInterfaceReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewUsedBySystemUsageReadModelMap());
-            modelBuilder.Configurations.Add(new KendoOrganizationalConfigurationMap());
-            modelBuilder.Configurations.Add(new DataProcessingRegistrationOversightDateMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewUsingSystemUsageReadModelMap());
-            modelBuilder.Configurations.Add(new UserNotificationMap());
-            modelBuilder.Configurations.Add(new AttachedOptionMap());
-            modelBuilder.Configurations.Add(new LifeCycleTrackingEventMap());
-            modelBuilder.Configurations.Add(new UIModuleCustomizationMap());
-            modelBuilder.Configurations.Add(new CustomizedUINodeMap());
-            modelBuilder.Configurations.Add(new AdviceUserRelationMap());
-            modelBuilder.Configurations.Add(new ItContractOverviewReadModelMap());
-            modelBuilder.Configurations.Add(new ItContractOverviewReadModelDataProcessingAgreementMap());
-            modelBuilder.Configurations.Add(new ItContractOverviewReadModelItSystemUsageMap());
-            modelBuilder.Configurations.Add(new ItContractOverviewRoleAssignmentReadModelMap());
-            modelBuilder.Configurations.Add(new ItContractOverviewReadModelSystemRelationMap());
-            modelBuilder.Configurations.Add(new StsOrganizationConnectionMap());
-            modelBuilder.Configurations.Add(new StsOrganizationChangeLogMap());
-            modelBuilder.Configurations.Add(new StsOrganizationConsequenceLogMap());
-            modelBuilder.Configurations.Add(new SubDataProcessorMap());
-            modelBuilder.Configurations.Add(new ExternalReferenceMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewRelevantOrgUnitReadModelMap());
-            modelBuilder.Configurations.Add(new ItSystemUsageOverviewItContractReadModelMap());
-            modelBuilder.Configurations.Add(new CountryCodeMap());
+            ConfigureLocalOptionTypes(modelBuilder);
+        }
+
+        private static void ConfigureLocalOptionTypes(ModelBuilder modelBuilder)
+        {
+            // Each LocalOptionEntity<T> concrete type maps to its own table.
+            // EF Core cannot automatically resolve the polymorphic hierarchy of generic base types,
+            // so each type is explicitly configured with its table name and with the obsolete
+            // Option navigation ignored (it has no concrete CLR counterpart for EF Core to map).
+            ConfigureLocalOptionType<LocalAgreementElementType>(modelBuilder, "LocalAgreementElementTypes");
+            ConfigureLocalOptionType<LocalArchiveLocation>(modelBuilder, "LocalArchiveLocations");
+            ConfigureLocalOptionType<LocalArchiveTestLocation>(modelBuilder, "LocalArchiveTestLocations");
+            ConfigureLocalOptionType<LocalArchiveType>(modelBuilder, "LocalArchiveTypes");
+            ConfigureLocalOptionType<LocalBusinessType>(modelBuilder, "LocalBusinessTypes");
+            ConfigureLocalOptionType<LocalCriticalityType>(modelBuilder, "LocalCriticalityTypes");
+            ConfigureLocalOptionType<LocalDataProcessingBasisForTransferOption>(modelBuilder, "LocalDataProcessingBasisForTransferOptions");
+            ConfigureLocalOptionType<LocalDataProcessingCountryOption>(modelBuilder, "LocalDataProcessingCountryOptions");
+            ConfigureLocalOptionType<LocalDataProcessingDataResponsibleOption>(modelBuilder, "LocalDataProcessingDataResponsibleOptions");
+            ConfigureLocalOptionType<LocalDataProcessingOversightOption>(modelBuilder, "LocalDataProcessingOversightOptions");
+            ConfigureLocalOptionType<LocalDataProcessingRegistrationRole>(modelBuilder, "LocalDataProcessingRegistrationRoles");
+            ConfigureLocalOptionType<LocalDataType>(modelBuilder, "LocalDataTypes");
+            ConfigureLocalOptionType<LocalInterfaceType>(modelBuilder, "LocalInterfaceTypes");
+            ConfigureLocalOptionType<LocalItContractRole>(modelBuilder, "LocalItContractRoles");
+            ConfigureLocalOptionType<LocalItContractTemplateType>(modelBuilder, "LocalItContractTemplateTypes");
+            ConfigureLocalOptionType<LocalItContractType>(modelBuilder, "LocalItContractTypes");
+            ConfigureLocalOptionType<LocalItSystemCategories>(modelBuilder, "LocalItSystemCategories");
+            ConfigureLocalOptionType<LocalItSystemRole>(modelBuilder, "LocalItSystemRoles");
+            ConfigureLocalOptionType<LocalOptionExtendType>(modelBuilder, "LocalOptionExtendTypes");
+            ConfigureLocalOptionType<LocalOrganizationUnitRole>(modelBuilder, "LocalOrganizationUnitRoles");
+            ConfigureLocalOptionType<LocalPaymentFreqencyType>(modelBuilder, "LocalPaymentFreqencyTypes");
+            ConfigureLocalOptionType<LocalPaymentModelType>(modelBuilder, "LocalPaymentModelTypes");
+            ConfigureLocalOptionType<LocalPriceRegulationType>(modelBuilder, "LocalPriceRegulationTypes");
+            ConfigureLocalOptionType<LocalProcurementStrategyType>(modelBuilder, "LocalProcurementStrategyTypes");
+            ConfigureLocalOptionType<LocalPurchaseFormType>(modelBuilder, "LocalPurchaseFormTypes");
+            ConfigureLocalOptionType<LocalRegisterType>(modelBuilder, "LocalRegisterTypes");
+            ConfigureLocalOptionType<LocalRelationFrequencyType>(modelBuilder, "LocalFrequencyTypes");
+            ConfigureLocalOptionType<LocalSensitiveDataType>(modelBuilder, "LocalSensitiveDataTypes");
+            ConfigureLocalOptionType<LocalSensitivePersonalDataType>(modelBuilder, "LocalSensitivePersonalDataTypes");
+            ConfigureLocalOptionType<LocalTerminationDeadlineType>(modelBuilder, "LocalTerminationDeadlineTypes");
+        }
+
+        private static void ConfigureLocalOptionType<T>(ModelBuilder modelBuilder, string tableName)
+            where T : class
+        {
+            modelBuilder.Entity<T>()
+                .ToTable(tableName)
+                .Ignore("Option");
         }
     }
 }

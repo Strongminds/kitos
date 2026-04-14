@@ -1,6 +1,5 @@
 ﻿param(
     [Parameter(Mandatory=$true)][string]$testToolsExePath,
-    [Parameter(Mandatory=$true)][string]$migrationsFolderPath,
     [Parameter(Mandatory=$true)][string]$kitosDbConnectionString,
     [Parameter(Mandatory=$true)][string]$hangfireDbConnectionString,
     [Parameter(Mandatory=$true)][string]$globalAdminUserName,
@@ -40,7 +39,7 @@ if($LASTEXITCODE -ne 0)	{ Throw "FAILED TO DROP HANGFIRE DB" }
 #-------------------------------------------------------------
 Write-Host "Running migrations"
 #-------------------------------------------------------------
-Run-DB-Migrations -newDb $true -migrationsFolder "$migrationsFolderPath" -connectionString "$kitosDbConnectionString"
+Run-DB-Migrations -newDb $true -connectionString "$kitosDbConnectionString"
 
 ##-------------------------------------------------------------
 Write-Host "Creating test database"

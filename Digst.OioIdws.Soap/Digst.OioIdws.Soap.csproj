@@ -6,14 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Http" Version="8.1.2" />
+    <PackageReference Include="System.ServiceModel.Http" Version="10.0.652802" />
     <!-- System.ServiceModel.Primitives ref assemblies omit MessagePartSpecification and
          SecurityTokenReferenceStyle; reference the implementation (lib) DLL directly. -->
-    <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.2">
+    <PackageReference Include="System.ServiceModel.Primitives" Version="10.0.652802">
       <ExcludeAssets>compile</ExcludeAssets>
       <GeneratePathProperty>true</GeneratePathProperty>
     </PackageReference>
-    <PackageReference Include="System.ServiceModel.Security" Version="4.10.3">
+    <PackageReference Include="System.ServiceModel.Security" Version="6.0.0">
       <ExcludeAssets>compile</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
@@ -21,13 +21,13 @@
     <!-- Use the lib (implementation) DLL directly so the compiler can resolve types that
          are present at runtime but missing from the package's reference assemblies. -->
     <Reference Include="System.ServiceModel.Primitives">
-      <HintPath>$(PkgSystem_ServiceModel_Primitives)/lib/net8.0/System.ServiceModel.Primitives.dll</HintPath>
+      <HintPath>$(PkgSystem_ServiceModel_Primitives)/lib/net10.0/System.ServiceModel.Primitives.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Runtime.Caching" Version="9.0.4" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.4" />
+    <PackageReference Include="System.Runtime.Caching" Version="10.0.5" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
   </ItemGroup>
   <ItemGroup>
     <!-- WCF XML config extension types (BehaviorExtensionElement, StandardBindingElement, etc.)

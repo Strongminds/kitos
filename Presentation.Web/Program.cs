@@ -5,6 +5,7 @@ using Core.DomainServices.Context;
 using Core.DomainServices.Time;
 using Hangfire;
 using Hangfire.Common;
+using Hangfire.Server;
 using Infrastructure.DataAccess.Interceptors;
 using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Newtonsoft.Json;
@@ -27,10 +29,11 @@ using Presentation.Web.Controllers.API.V1.Auth;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
+using Presentation.Web.Hangfire;
 using Presentation.Web.Swagger;
 using Serilog;
 using System;
-using System.Data.Entity.Infrastructure.Interception;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +64,12 @@ var configuration = builder.Configuration;
 var services = builder.Services;
 
 // Controllers with Newtonsoft.Json + OData
-services.AddControllersWithViews()
+services.AddControllersWithViews(options =>
+    {
+        // Block rights-holder-only users from all endpoints by default.
+        // Endpoints that should be accessible to rights holders are decorated with [AllowRightsHoldersAccess].
+        options.Filters.Add(new Presentation.Web.Infrastructure.Attributes.DenyRightsHoldersAccessAttribute());
+    })
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -111,6 +119,13 @@ services.AddAuthentication(options =>
             IssuerSigningKey = signingKey,
             ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
+            // JsonWebTokenHandler (.NET 8+) defaults ClaimsIdentity.AuthenticationType to
+            // "AuthenticationTypes.Federation" which OwinAuthenticationContextFactory does not
+            // recognise. Setting it to "Bearer" keeps the existing switch mapping working.
+            AuthenticationType = JwtBearerDefaults.AuthenticationScheme,
+            // JsonWebTokenHandler does not apply inbound claim type mapping, so the JWT "name"
+            // claim stays as "name". Setting NameClaimType ensures Identity.Name resolves it.
+            NameClaimType = "name",
         };
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -135,6 +150,7 @@ services.AddAuthorization();
 
 // Swagger
 services.AddEndpointsApiExplorer();
+var isDevelopment = builder.Environment.IsDevelopment();
 services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITOS API V1", Version = "1" });
@@ -149,8 +165,9 @@ services.AddSwaggerGen(c =>
 
         if (docName == "v2") return isV2Path;
 
-        // V1 doc: only expose the token authentication endpoints
+        // V1 doc: in development show all V1 endpoints; in release only token authentication
         if (isV2Path) return false;
+        if (isDevelopment) return true;
         return apiDesc.ActionDescriptor is ControllerActionDescriptor cad &&
                cad.ControllerTypeInfo == typeof(TokenAuthenticationController);
     });
@@ -183,6 +200,15 @@ services.AddSwaggerGen(c =>
     c.DocumentFilter<PurgeUnusedTypesDocumentFilter>(
         (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v >= 2));
 
+    // Register all DTO model types so they appear in the Swagger "Models" section.
+    // Applied after PurgeUnusedTypesDocumentFilter to ensure the manually-added schemas survive the purge.
+    c.DocumentFilter<RegisterDtoSchemasDocumentFilter>(
+        (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v < 2),
+        "Presentation.Web.Models.API.V1");
+    c.DocumentFilter<RegisterDtoSchemasDocumentFilter>(
+        (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v >= 2),
+        "Presentation.Web.Models.API.V2");
+
     c.OperationFilter<CreateOperationIdOperationFilter>();
     c.OperationFilter<FixNamingOfComplexQueryParametersFilter>();
     c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
@@ -205,12 +231,13 @@ services.AddHangfire(config => config
     .UseRecommendedSerializerSettings()
     .UseSqlServerStorage(hangfireConnectionString));
 
+services.AddSingleton<IBackgroundProcess>(provider => new KeepReadModelsInSyncProcess(provider));
 services.AddHangfireServer();
 
 // AutoMapper - using explicit assembly scanning
 var mapperConfig = new AutoMapper.MapperConfiguration(cfg => {
     cfg.AddMaps(typeof(MappingConfig).Assembly);
-});
+}, NullLoggerFactory.Instance);
 services.AddSingleton(mapperConfig.CreateMapper());
 
 // HttpContext accessor
@@ -220,11 +247,6 @@ services.AddHttpContextAccessor();
 KitosServiceRegistration.Register(services, configuration);
 
 var app = builder.Build();
-
-// Register the EF6 interceptor that auto-assigns ObjectOwnerId, LastChangedByUserId and LastChanged
-// on every INSERT/UPDATE. Uses IHttpContextAccessor to resolve per-request scoped services; for
-// background jobs (no HTTP context) it falls back to a dedicated scope or safe defaults.
-RegisterEfEntityInterceptor(app.Services);
 
 // Initialize the SAML library's static HTTP context accessor so it can access HttpContext.Current
 // during SAML flows without requiring DI injection into the (statically-instantiated) handler classes.
@@ -397,22 +419,6 @@ static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
     using var cmd = connection.CreateCommand();
     cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{databaseName}') CREATE DATABASE [{databaseName}]";
     cmd.ExecuteNonQuery();
-}
-
-static void RegisterEfEntityInterceptor(IServiceProvider rootProvider)
-{
-    var httpContextAccessor = rootProvider.GetRequiredService<IHttpContextAccessor>();
-
-    DbInterception.Add(new EFEntityInterceptor(
-        operationClock: () =>
-            httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()
-            ?? new OperationClock(),
-        userContext: () =>
-            httpContextAccessor.HttpContext?.RequestServices.GetService<Maybe<ActiveUserIdContext>>()
-            ?? Maybe<ActiveUserIdContext>.None,
-        fallbackUserResolver: () =>
-            httpContextAccessor.HttpContext?.RequestServices.GetService<IFallbackUserResolver>()
-            ?? new BackgroundJobFallbackUserResolver(rootProvider)));
 }
 
 /// <summary>

@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure.Interception;
-using Core.Abstractions.Types;
-using Core.DomainModel;
 using Core.DomainModel.Organization;
-using Core.DomainServices.Context;
-using Core.DomainServices.Time;
 using Infrastructure.DataAccess;
-using Infrastructure.DataAccess.Interceptors;
-using Moq;
+using Microsoft.EntityFrameworkCore;
 using Tests.Integration.Presentation.Web.Tools.Model;
 
 namespace Tests.Integration.Presentation.Web.Tools
@@ -27,9 +21,6 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         static TestEnvironment()
         {
-            //Fake the interception for EF in the text context
-            DbInterception.Add(new EFEntityInterceptor(() => new OperationClock(), () => Maybe<ActiveUserIdContext>.None, () => Mock.Of<IFallbackUserResolver>(x => x.Resolve() == new User() { Id = DefaultUserId })));
-
             var testEnvironment = GetEnvironmentVariable("KitosTestEnvironment", false);
             if (string.IsNullOrWhiteSpace(testEnvironment))
             {
@@ -46,7 +37,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 Console.Out.WriteLine("Running locally. Loading all configuration in-line");
                 const string localDevUserPassword = "localNoSecret";
                 DefaultUserPassword = "arne123";
-                ConnectionString = @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True";
+                ConnectionString = @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True";
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
                     {
@@ -136,7 +127,11 @@ namespace Tests.Integration.Presentation.Web.Tools
         }
         public static KitosContext GetDatabase()
         {
-            return new KitosContext(ConnectionString);
+            var options = new DbContextOptionsBuilder<KitosContext>()
+                .UseLazyLoadingProxies()
+                .UseSqlServer(ConnectionString)
+                .Options;
+            return new KitosContext(options);
         }
 
         private static string GetEnvironmentVariable(string name, bool mandatory = true, string defaultValue = null)
