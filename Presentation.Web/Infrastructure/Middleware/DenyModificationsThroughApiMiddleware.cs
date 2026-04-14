@@ -25,8 +25,11 @@ namespace Presentation.Web.Infrastructure.Middleware
                 var sanitizedMethod = context.Request.Method
                     .Replace("\r", string.Empty)
                     .Replace("\n", string.Empty);
+                var sanitizedPath = context.Request.Path.ToString()
+                    .Replace("\r", string.Empty)
+                    .Replace("\n", string.Empty);
                 _logger.Warning("User with id: {userID} attempted to mutate resource: {url} by method {method}",
-                    _authenticationContext.UserId, context.Request.Path.ToString(), sanitizedMethod);
+                    _authenticationContext.UserId, sanitizedPath, sanitizedMethod);
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsync("Write operations are not allowed on this API");
             }
