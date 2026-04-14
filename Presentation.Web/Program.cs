@@ -5,6 +5,7 @@ using Core.DomainServices.Context;
 using Core.DomainServices.Time;
 using Hangfire;
 using Hangfire.Common;
+using Hangfire.Server;
 using Infrastructure.DataAccess.Interceptors;
 using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -27,6 +28,7 @@ using Presentation.Web.Controllers.API.V1.Auth;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
+using Presentation.Web.Hangfire;
 using Presentation.Web.Swagger;
 using Serilog;
 using System;
@@ -212,6 +214,7 @@ services.AddHangfire(config => config
     .UseRecommendedSerializerSettings()
     .UseSqlServerStorage(hangfireConnectionString));
 
+services.AddSingleton<IBackgroundProcess>(provider => new KeepReadModelsInSyncProcess(provider));
 services.AddHangfireServer();
 
 // AutoMapper - using explicit assembly scanning

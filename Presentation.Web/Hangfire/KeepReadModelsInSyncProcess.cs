@@ -25,16 +25,40 @@ namespace Presentation.Web.Hangfire
             {
                 var backgroundJobLauncher = scope.ServiceProvider.GetRequiredService<IBackgroundJobLauncher>();
                 PurgeDuplicateUpdates(backgroundJobLauncher, combinedTokenSource);
+                ScheduleUpdatesCausedByDependencyChanges(backgroundJobLauncher, combinedTokenSource);
+                ProcessPendingUpdates(backgroundJobLauncher, combinedTokenSource);
             }
             catch (Exception e)
             {
                 logger.Error(e, "Error in KeepReadModelsInSyncProcess");
             }
+
+            CoolDown();
         }
 
-        private static void PurgeDuplicateUpdates(IBackgroundJobLauncher launcher, CancellationTokenSource tokenSource)
+        private static void ProcessPendingUpdates(IBackgroundJobLauncher backgroundJobLauncher, CancellationTokenSource combinedTokenSource)
         {
-            // Background job logic - moved to Hangfire recurring jobs
+            backgroundJobLauncher.LaunchUpdateDataProcessingRegistrationReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
+            backgroundJobLauncher.LaunchUpdateItSystemUsageOverviewReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
+            backgroundJobLauncher.LaunchUpdateItContractOverviewReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
+        }
+
+        private static void PurgeDuplicateUpdates(IBackgroundJobLauncher backgroundJobLauncher, CancellationTokenSource combinedTokenSource)
+        {
+            //Ensures that duplicated update requests are filtered out before dependency and read model processing
+            backgroundJobLauncher.LaunchPurgeDuplicatedReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
+        }
+
+        private static void ScheduleUpdatesCausedByDependencyChanges(IBackgroundJobLauncher backgroundJobLauncher, CancellationTokenSource combinedTokenSource)
+        {
+            backgroundJobLauncher.LaunchScheduleDataProcessingRegistrationReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
+            backgroundJobLauncher.LaunchScheduleItSystemUsageOverviewReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
+            backgroundJobLauncher.LaunchScheduleItContractOverviewReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
+        }
+
+        private static void CoolDown()
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(1));
         }
     }
 }
