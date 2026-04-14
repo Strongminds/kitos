@@ -13,7 +13,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.9" />
+    <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.10" />
   </ItemGroup>
   <ItemGroup>
     <None Update="SamlMetadataTemplate.xml">

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Newtonsoft.Json;
@@ -199,6 +200,15 @@ services.AddSwaggerGen(c =>
     c.DocumentFilter<PurgeUnusedTypesDocumentFilter>(
         (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v >= 2));
 
+    // Register all DTO model types so they appear in the Swagger "Models" section.
+    // Applied after PurgeUnusedTypesDocumentFilter to ensure the manually-added schemas survive the purge.
+    c.DocumentFilter<RegisterDtoSchemasDocumentFilter>(
+        (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v < 2),
+        "Presentation.Web.Models.API.V1");
+    c.DocumentFilter<RegisterDtoSchemasDocumentFilter>(
+        (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v >= 2),
+        "Presentation.Web.Models.API.V2");
+
     c.OperationFilter<CreateOperationIdOperationFilter>();
     c.OperationFilter<FixNamingOfComplexQueryParametersFilter>();
     c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
@@ -227,7 +237,7 @@ services.AddHangfireServer();
 // AutoMapper - using explicit assembly scanning
 var mapperConfig = new AutoMapper.MapperConfiguration(cfg => {
     cfg.AddMaps(typeof(MappingConfig).Assembly);
-});
+}, NullLoggerFactory.Instance);
 services.AddSingleton(mapperConfig.CreateMapper());
 
 // HttpContext accessor

@@ -16,7 +16,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.*" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
   </ItemGroup>
   <ItemGroup>
     <!-- EF6 migration files are preserved for historical reference but excluded from compilation -->

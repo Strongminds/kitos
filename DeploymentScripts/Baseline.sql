@@ -2121,7 +2121,7 @@ CREATE TABLE [ItContractItSystemUsages] (
     [ItSystemUsageId] int NOT NULL,
     [ItSystemUsage_Id] int NULL,
     CONSTRAINT [PK_ItContractItSystemUsages] PRIMARY KEY ([ItContractId], [ItSystemUsageId]),
-    CONSTRAINT [FK_ItContractItSystemUsages_ItContract_ItContractId] FOREIGN KEY ([ItContractId]) REFERENCES [ItContract] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_ItContractItSystemUsages_ItContract_ItContractId] FOREIGN KEY ([ItContractId]) REFERENCES [ItContract] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_ItContractItSystemUsages_ItSystemUsage_ItSystemUsageId] FOREIGN KEY ([ItSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE NO ACTION,
     CONSTRAINT [FK_ItContractItSystemUsages_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE NO ACTION
 );
