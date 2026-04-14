@@ -95,10 +95,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.Purpose.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                BusinessCritical = rule.MustUpdate(x => x.GDPR.BusinessCritical)
-                    ? MapYesNoDontKnow(source.BusinessCritical)
-                    : OptionalValueChange<DataOptions?>.None,
-
                 HostedAt = rule.MustUpdate(x => x.GDPR.HostedAt)
                     ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
                     : OptionalValueChange<HostedAt?>.None,
@@ -427,6 +423,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
                 IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
                     ? MapYesNoDontKnow(source.IsSociallyCritical)
+                    : OptionalValueChange<DataOptions?>.None,
+
+                BusinessCritical = rule.MustUpdate(x => x.General.BusinessCritical)
+                    ? MapYesNoDontKnow(source.BusinessCritical)
                     : OptionalValueChange<DataOptions?>.None,
             };
         }

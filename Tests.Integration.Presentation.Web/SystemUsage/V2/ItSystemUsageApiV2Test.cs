@@ -2519,6 +2519,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.LocalSystemId, actual.LocalSystemId);
             Assert.Equal(expected.SystemVersion, actual.SystemVersion);
             Assert.Equal(expected.Notes, actual.Notes);
+            Assert.Equal(expected.BusinessCritical, actual.BusinessCritical);
             if (hasData)
             {
                 Assert.Equal(expected.NumberOfExpectedUsers.LowerBound, actual.NumberOfExpectedUsers.LowerBound);
@@ -2641,13 +2642,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                     ValidFrom = DateTime.UtcNow.Date,
                     ValidTo = DateTime.UtcNow.Date.AddDays(Math.Abs(A<short>()))
                 },
+                BusinessCritical = A<YesNoDontKnowChoice?>(),
             };
         }
 
         private static void AssertGDPR(GDPRWriteRequestDTO gdprInput, GDPRRegistrationsResponseDTO gdprResponse)
         {
             Assert.Equal(gdprInput.Purpose, gdprResponse.Purpose);
-            Assert.Equal(gdprInput.BusinessCritical, gdprResponse.BusinessCritical);
             Assert.Equal(gdprInput.HostedAt, gdprResponse.HostedAt);
             (gdprInput.DirectoryDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.DirectoryDocumentation);
             Assert.Equal((gdprInput.DataSensitivityLevels ?? new List<DataSensitivityLevelChoice>()).OrderBy(x => x), gdprResponse.DataSensitivityLevels.OrderBy(x => x));
