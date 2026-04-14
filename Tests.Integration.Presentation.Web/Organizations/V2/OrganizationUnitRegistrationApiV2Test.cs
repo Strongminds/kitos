@@ -411,7 +411,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                     throw new Exception($"Unit with ID: {unitId} was not found!");
 
                 context.OrganizationUnitRoles.Add(newRole);
-                right.RoleId = newRole.Id;
+                right.Role = newRole;
                 context.OrganizationUnitRights.Add(right);
 
                 unitEntity.Rights = new List<OrganizationUnitRight> { right };

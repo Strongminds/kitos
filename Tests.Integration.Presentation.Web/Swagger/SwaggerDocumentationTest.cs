@@ -72,7 +72,7 @@ namespace Tests.Integration.Presentation.Web.Swagger
 
         private static Uri CreateUrl(int apiVersion)
         {
-            return TestEnvironment.CreateUrl($"/swagger/docs/{apiVersion}");
+            return TestEnvironment.CreateUrl($"/swagger/v{apiVersion}/swagger.json");
         }
     }
 }

@@ -63,7 +63,12 @@ var configuration = builder.Configuration;
 var services = builder.Services;
 
 // Controllers with Newtonsoft.Json + OData
-services.AddControllersWithViews()
+services.AddControllersWithViews(options =>
+    {
+        // Block rights-holder-only users from all endpoints by default.
+        // Endpoints that should be accessible to rights holders are decorated with [AllowRightsHoldersAccess].
+        options.Filters.Add(new Presentation.Web.Infrastructure.Attributes.DenyRightsHoldersAccessAttribute());
+    })
     .AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -144,6 +149,7 @@ services.AddAuthorization();
 
 // Swagger
 services.AddEndpointsApiExplorer();
+var isDevelopment = builder.Environment.IsDevelopment();
 services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITOS API V1", Version = "1" });
@@ -158,8 +164,9 @@ services.AddSwaggerGen(c =>
 
         if (docName == "v2") return isV2Path;
 
-        // V1 doc: only expose the token authentication endpoints
+        // V1 doc: in development show all V1 endpoints; in release only token authentication
         if (isV2Path) return false;
+        if (isDevelopment) return true;
         return apiDesc.ActionDescriptor is ControllerActionDescriptor cad &&
                cad.ControllerTypeInfo == typeof(TokenAuthenticationController);
     });

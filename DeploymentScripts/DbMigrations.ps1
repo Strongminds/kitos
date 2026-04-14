@@ -1,22 +1,41 @@
-Function Invoke-KitosSql([string]$connectionString, [string]$sql) {
-    # Load Microsoft.Data.SqlClient from the NuGet packages cache (guaranteed present as an EF Core dependency)
-    if (-not ([System.AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.GetName().Name -eq "Microsoft.Data.SqlClient" })) {
-        $sqlClientDll = Get-ChildItem "$env:USERPROFILE\.nuget\packages\microsoft.data.sqlclient" -Recurse -Filter "Microsoft.Data.SqlClient.dll" `
-            | Where-Object { $_.DirectoryName -match "net8\.0|net9\.0|net10\.0" } `
-            | Sort-Object FullName -Descending `
-            | Select-Object -First 1
-        if (-not $sqlClientDll) { Throw "Could not find Microsoft.Data.SqlClient.dll in NuGet package cache" }
-        Add-Type -Path $sqlClientDll.FullName
+Function ConvertTo-SqlConnectionParts([string]$connectionString) {
+    $cs = @{}
+    ($connectionString -split ';') | Where-Object { $_ -match '=' } | ForEach-Object {
+        $kv = $_ -split '=', 2
+        $cs[$kv[0].Trim()] = $kv[1].Trim()
     }
-    $conn = New-Object Microsoft.Data.SqlClient.SqlConnection($connectionString)
-    $conn.Open()
-    try {
-        $cmd = $conn.CreateCommand()
-        $cmd.CommandText = $sql
-        $cmd.ExecuteNonQuery() | Out-Null
-    } finally {
-        $conn.Close()
+    return @{
+        Server    = if ($cs['Server'])          { $cs['Server'] }          else { $cs['Data Source'] }
+        Database  = if ($cs['Initial Catalog']) { $cs['Initial Catalog'] } else { $cs['Database'] }
+        Trusted   = $cs['Integrated Security'] -in @('true', 'sspi', 'yes')
+        TrustCert = $cs['TrustServerCertificate'] -eq 'true'
+        UserId    = $cs['User ID']
+        Password  = $cs['Password']
     }
+}
+
+Function Get-SqlcmdAuthArgs($parts) {
+    $args = @()
+    if ($parts.Trusted) { $args += '-E' } else { $args += @('-U', $parts.UserId, '-P', $parts.Password) }
+    if ($parts.TrustCert) { $args += '-C' }
+    return $args
+}
+
+# Creates the database via master if it does not already exist.
+Function New-SqlDatabase([string]$connectionString) {
+    $parts = ConvertTo-SqlConnectionParts $connectionString
+    $authArgs = Get-SqlcmdAuthArgs $parts
+    $createSql = "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'$($parts.Database)') CREATE DATABASE [$($parts.Database)]"
+    & sqlcmd -S $parts.Server -d master @authArgs -Q $createSql -b
+    if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed creating database $($parts.Database)" }
+}
+
+# Executes a .sql file via sqlcmd, which natively handles GO batch separators.
+Function Invoke-KitosSqlFile([string]$connectionString, [string]$sqlFilePath) {
+    $parts = ConvertTo-SqlConnectionParts $connectionString
+    $authArgs = Get-SqlcmdAuthArgs $parts
+    & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $sqlFilePath -b -I
+    if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed executing $sqlFilePath" }
 }
 
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [string]$connectionString) {
@@ -40,30 +59,15 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [st
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
     $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
 
-    # On existing databases (production/staging), the schema was already built by EF6 migrations.
-    # The InitialBaseline EF Core migration carries full DDL (for fresh local DBs), but must not
-    # run against an existing schema. Pre-mark it as applied so dotnet ef skips the Up() body.
-    if ($newDb -eq $false) {
-        Write-Host "Existing database detected - pre-marking EF Core baseline migration as applied"
-
-        $baselineMigrationId = (Get-ChildItem "$repoRoot\Infrastructure.DataAccess\Migrations\EfCore" -Filter "*_InitialBaseline.cs" `
-            | Select-Object -First 1 `
-            | ForEach-Object { $_.BaseName })
-
-        $efCoreVersion = ((dotnet ef --version 2>&1) -join "" | Select-String "\d+\.\d+\.\d+").Matches[0].Value
-
-        $createHistoryTable = "IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = '__EFMigrationsHistory' AND schema_id = SCHEMA_ID('dbo')) " +
-            "BEGIN " +
-            "CREATE TABLE [dbo].[__EFMigrationsHistory] ([MigrationId] nvarchar(150) NOT NULL, [ProductVersion] nvarchar(32) NOT NULL, CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])) " +
-            "END"
-        $insertBaseline = "IF NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = '$baselineMigrationId') " +
-            "BEGIN " +
-            "INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES ('$baselineMigrationId', '$efCoreVersion') " +
-            "END"
-
-        Invoke-KitosSql -connectionString $connectionString -sql $createHistoryTable
-        Invoke-KitosSql -connectionString $connectionString -sql $insertBaseline
-        Write-Host "Baseline migration pre-applied: $baselineMigrationId"
+    if ($newDb -eq $true) {
+        # New database: apply the extracted baseline SQL script which creates the full schema
+        # and inserts the InitialBaseline record into __EFMigrationsHistory.
+        # dotnet ef database update will then only apply migrations added after the baseline.
+        $baselineSql = "$repoRoot\DeploymentScripts\Baseline.sql"
+        Write-Host "New database detected - creating database and applying baseline schema from $baselineSql"
+        New-SqlDatabase -connectionString $connectionString
+        Invoke-KitosSqlFile -connectionString $connectionString -sqlFilePath $baselineSql
+        Write-Host "Baseline schema applied"
     }
 
     # Expose the connection string via the standard .NET env var so the
