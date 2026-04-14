@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -3155,7 +3155,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         column: x => x.OrganizationId,
                         principalTable: "Organization",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrganizationRights_User_LastChangedByUserId",
                         column: x => x.LastChangedByUserId,
@@ -3203,7 +3203,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         column: x => x.ObjectId,
                         principalTable: "OrganizationUnit",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrganizationUnitRights_User_LastChangedByUserId",
                         column: x => x.LastChangedByUserId,
@@ -4243,7 +4243,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         column: x => x.ObjectId,
                         principalTable: "ItContract",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ItContractRights_User_LastChangedByUserId",
                         column: x => x.LastChangedByUserId,
@@ -4575,7 +4575,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         column: x => x.ObjectId,
                         principalTable: "ItSystemUsage",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ItSystemRights_User_LastChangedByUserId",
                         column: x => x.LastChangedByUserId,
@@ -8488,7 +8488,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "ObjectId",
                 principalTable: "DataProcessingRegistrations",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_DataProcessingRegistrations_ExternalReferences_ReferenceId",

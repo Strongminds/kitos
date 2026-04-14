@@ -15,7 +15,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithMany(obj => obj.Rights)
                 .HasForeignKey(right => right.OrganizationId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(t => t.User)
                 .WithMany(d => d.OrganizationRights)
