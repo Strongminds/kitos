@@ -49,12 +49,12 @@ namespace Presentation.Web.Controllers.SSO
 
         private IActionResult LoggedIn()
         {
-            return Redirect($"{Request.Scheme}://{Request.Host}/ui");
+            return Redirect("/ui");
         }
 
         private RedirectResult SsoError(SsoErrorCode error)
         {
-            return Redirect($"{Request.Scheme}://{Request.Host}/ui?ssoErrorCode={error:G}");
+            return Redirect($"/ui?ssoErrorCode={error:G}");
         }
     }
 }
