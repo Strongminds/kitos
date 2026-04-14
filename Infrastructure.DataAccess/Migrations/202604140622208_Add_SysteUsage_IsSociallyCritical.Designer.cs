@@ -7,13 +7,13 @@ namespace Infrastructure.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class Add_SystemUsage_IsSociallyCritical : IMigrationMetadata
+    public sealed partial class Add_SysteUsage_IsSociallyCritical : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_SystemUsage_IsSociallyCritical));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_SysteUsage_IsSociallyCritical));
         
         string IMigrationMetadata.Id
         {
-            get { return "202604121733168_Add_SystemUsage_IsSociallyCritical"; }
+            get { return "202604140622208_Add_SysteUsage_IsSociallyCritical"; }
         }
         
         string IMigrationMetadata.Source
