@@ -7,8 +7,8 @@
     {
         public override void Up()
         {
-            AddColumn("dbo.ItSystemUsage", "IsSociallyCritical", c => c.Boolean(nullable: false));
-            AddColumn("dbo.ItSystemUsageOverviewReadModels", "IsSociallyCritical", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ItSystemUsage", "IsSociallyCritical", c => c.Int(nullable: false));
+            AddColumn("dbo.ItSystemUsageOverviewReadModels", "IsSociallyCritical", c => c.Int(nullable: false));
         }
         
         public override void Down()

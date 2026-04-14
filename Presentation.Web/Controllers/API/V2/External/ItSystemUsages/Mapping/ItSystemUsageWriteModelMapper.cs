@@ -426,8 +426,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<string>.None,
 
                 IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
-                    ? source.IsSociallyCritical.AsChangedValue()
-                    : OptionalValueChange<bool>.None,
+                    ? (source.IsSociallyCritical?.ToYesNoUndecidedOption() ?? YesNoUndecidedOption.Undecided).AsChangedValue()
+                    : OptionalValueChange<YesNoUndecidedOption>.None,
             };
         }
 

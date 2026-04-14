@@ -717,7 +717,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 WebAccessibilityCompliance = A<YesNoPartiallyChoice>(),
                 LastWebAccessibilityCheck = A<DateTime>(),
                 WebAccessibilityNotes = A<string>(),
-                IsSociallyCritical = A<bool>(),
+                IsSociallyCritical = A<YesNoUndecidedChoice>(),
             });
 
             //Act

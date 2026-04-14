@@ -144,6 +144,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public YesNoPartiallyOption? WebAccessibilityCompliance { get; set; }
         public DateTime? LastWebAccessibilityCheck { get; set; }
         public string WebAccessibilityNotes { get; set; }
-        public bool IsSociallyCritical { get; set; }
+        public DataOptions? IsSociallyCritical { get; set; }
     }
 }
