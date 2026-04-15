@@ -13,7 +13,8 @@
     [Parameter(Mandatory=$true)][string]$apiGlobalAdminUserName,
     [Parameter(Mandatory=$true)][string]$apiGlobalAdminPw,
     [Parameter(Mandatory=$true)][string]$systemIntegratorEmail,
-    [Parameter(Mandatory=$true)][string]$systemIntegratorPw
+    [Parameter(Mandatory=$true)][string]$systemIntegratorPw,
+    [string]$buildConfiguration = "Debug"
     )
     
 #-------------------------------------------------------------
@@ -39,7 +40,7 @@ if($LASTEXITCODE -ne 0)	{ Throw "FAILED TO DROP HANGFIRE DB" }
 #-------------------------------------------------------------
 Write-Host "Running migrations"
 #-------------------------------------------------------------
-Run-DB-Migrations -newDb $true -connectionString "$kitosDbConnectionString"
+Run-DB-Migrations -newDb $true -connectionString "$kitosDbConnectionString" -buildConfiguration $buildConfiguration
 
 ##-------------------------------------------------------------
 Write-Host "Creating test database"
