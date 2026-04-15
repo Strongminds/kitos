@@ -85,6 +85,10 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.AccumulatedOperationCost).HasDatabaseName("IX_AccumulatedOperationCost");
             builder.HasIndex(x => x.AccumulatedOtherCost).HasDatabaseName("IX_AccumulatedOtherCost");
 
+            builder.Property(x => x.ExternalPaymentOrganizationUnitsCsv);
+            builder.Property(x => x.InternalPaymentOrganizationUnitsCsv);
+            builder.Property(x => x.ItSystemUsagesSystemUuidCsv);
+
             builder.HasIndex(x => x.OperationRemunerationBegunDate).HasDatabaseName("IX_OperationRemunerationBegunDate");
 
             MapOptionTypeReference<PaymentModelType>(builder, p => p.PaymentModelId, p => p.PaymentModelName, p => p.PaymentModelUuid);
