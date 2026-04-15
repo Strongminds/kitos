@@ -187,14 +187,9 @@ namespace Core.ApplicationServices.Contract
             using var transaction = _transactionManager.Begin();
             try
             {
-                //Delete the economy streams to prevent them from being orphaned
-                foreach (var economyStream in contract.GetAllPayments())
-                {
-                    _economyStreamRepository.DeleteWithReferencePreload(economyStream);
-                }
-                _economyStreamRepository.Save();
-
+                AvoidOrphaningEconomyStreams(contract);
                 AvoidOrphaningAssociatedAgreementElementTypes(contract);
+                
 
                 //Delete the contract
                 var deleteByContractId = _referenceService.DeleteByContractId(id);
@@ -217,10 +212,6 @@ namespace Core.ApplicationServices.Contract
 
             return contract;
 
-        }
-
-        private void AvoidOrphaningAssociatedAgreementElementTypes(ItContract contract) {
-            contract.AssociatedAgreementElementTypes.Clear();
         }
 
         public Result<DataProcessingRegistration, OperationError> AssignDataProcessingRegistration(int id, int dataProcessingRegistrationId)
@@ -452,6 +443,20 @@ namespace Core.ApplicationServices.Contract
                 return new OperationError(OperationFailure.Forbidden);
 
             return authorizedAction(contract);
+        }
+
+        private void AvoidOrphaningEconomyStreams(ItContract contract)
+        {
+            foreach (var economyStream in contract.GetAllPayments())
+            {
+                _economyStreamRepository.DeleteWithReferencePreload(economyStream);
+            }
+            _economyStreamRepository.Save();
+        }
+
+        private void AvoidOrphaningAssociatedAgreementElementTypes(ItContract contract)
+        {
+            contract.AssociatedAgreementElementTypes.Clear();
         }
     }
 }
