@@ -194,6 +194,8 @@ namespace Core.ApplicationServices.Contract
                 }
                 _economyStreamRepository.Save();
 
+                AvoidOrphaningAssociatedAgreementElementTypes(contract);
+
                 //Delete the contract
                 var deleteByContractId = _referenceService.DeleteByContractId(id);
                 if (deleteByContractId.Failed)
@@ -215,6 +217,10 @@ namespace Core.ApplicationServices.Contract
 
             return contract;
 
+        }
+
+        private void AvoidOrphaningAssociatedAgreementElementTypes(ItContract contract) {
+            contract.AssociatedAgreementElementTypes.Clear();
         }
 
         public Result<DataProcessingRegistration, OperationError> AssignDataProcessingRegistration(int id, int dataProcessingRegistrationId)
