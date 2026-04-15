@@ -79,11 +79,21 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
     $Env:ConnectionStrings__KitosContext = $connectionString
 
-    dotnet ef database update `
-        --project "$infraProject" `
-        --startup-project "$startupProject" `
-        --connection "$connectionString" `
-        --configuration "$buildConfiguration"
+    # CI path: use the pre-built self-contained bundle (no source or SDK required on the agent).
+    # Local dev fallback: build and run via dotnet ef when the bundle is not present.
+    $bundleExe = "$PSScriptRoot\..\MigrationsBundle\efbundle.exe"
+
+    if (Test-Path $bundleExe) {
+        Write-Host "Using pre-built migrations bundle at $bundleExe"
+        & "$bundleExe" --connection "$connectionString" --verbose
+    } else {
+        Write-Host "Migrations bundle not found, running dotnet ef database update"
+        dotnet ef database update `
+            --project "$infraProject" `
+            --startup-project "$startupProject" `
+            --connection "$connectionString" `
+            --configuration "$buildConfiguration"
+    }
 
     if ($LASTEXITCODE -ne 0) { Throw "FAILED TO MIGRATE DB" }
 }
