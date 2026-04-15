@@ -14,28 +14,48 @@ Function ConvertTo-SqlConnectionParts([string]$connectionString) {
     }
 }
 
-Function Get-SqlcmdAuthArgs($parts) {
-    $args = @()
-    if ($parts.Trusted) { $args += '-E' } else { $args += @('-U', $parts.UserId, '-P', $parts.Password) }
-    if ($parts.TrustCert) { $args += '-C' }
-    return $args
+Function Invoke-SqlQuery([string]$connectionString, [string]$sql) {
+    $conn = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+    try {
+        $conn.Open()
+        $cmd = $conn.CreateCommand()
+        $cmd.CommandTimeout = 300
+        $cmd.CommandText = $sql
+        $cmd.ExecuteNonQuery() | Out-Null
+    } finally {
+        $conn.Close()
+    }
 }
 
 # Creates the database via master if it does not already exist.
 Function New-SqlDatabase([string]$connectionString) {
     $parts = ConvertTo-SqlConnectionParts $connectionString
-    $authArgs = Get-SqlcmdAuthArgs $parts
+    # Connect to master to create the target database
+    $masterCs = $connectionString -replace "(?i)(Initial Catalog|Database)\s*=[^;]*(;|$)", "Initial Catalog=master;"
     $createSql = "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'$($parts.Database)') CREATE DATABASE [$($parts.Database)]"
-    & sqlcmd -S $parts.Server -d master @authArgs -Q $createSql -b
-    if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed creating database $($parts.Database)" }
+    Write-Host "Creating database $($parts.Database) if not exists"
+    Invoke-SqlQuery -connectionString $masterCs -sql $createSql
 }
 
-# Executes a .sql file via sqlcmd, which natively handles GO batch separators.
+# Executes a .sql file by splitting on GO batch separators (sqlcmd-style).
 Function Invoke-KitosSqlFile([string]$connectionString, [string]$sqlFilePath) {
-    $parts = ConvertTo-SqlConnectionParts $connectionString
-    $authArgs = Get-SqlcmdAuthArgs $parts
-    & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $sqlFilePath -b -I
-    if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed executing $sqlFilePath" }
+    Write-Host "Executing SQL file: $sqlFilePath"
+    $content = Get-Content $sqlFilePath -Raw
+    # Split on GO statements (case-insensitive, on its own line)
+    $batches = $content -split '(?im)^\s*GO\s*$' | Where-Object { $_.Trim() -ne '' }
+    $conn = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+    try {
+        $conn.Open()
+        foreach ($batch in $batches) {
+            $cmd = $conn.CreateCommand()
+            $cmd.CommandTimeout = 300
+            $cmd.CommandText = $batch
+            $cmd.ExecuteNonQuery() | Out-Null
+        }
+    } finally {
+        $conn.Close()
+    }
+    Write-Host "SQL file executed successfully"
 }
 
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [string]$connectionString) {
