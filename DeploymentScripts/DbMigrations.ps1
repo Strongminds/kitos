@@ -7,6 +7,7 @@ Function ConvertTo-SqlConnectionParts([string]$connectionString) {
     $server = if ($cs['Server']) { $cs['Server'] } else { $cs['Data Source'] }
     # Normalize server for sqlcmd: add tcp: prefix if no protocol is specified.
     # This replicates what the legacy 'Network Library=dbmssocn' keyword used to do.
+    Write-Host $server
     if ($server -and $server -notmatch '^(tcp|np|lpc):') {
         $server = "tcp:$server"
     }
