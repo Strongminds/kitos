@@ -5,7 +5,6 @@ using System.ServiceModel.Channels;
 using Core.Abstractions.Types;
 using Core.DomainServices.Organizations;
 using Core.DomainServices.SSO;
-using Digst.OioIdws.SoapCore;
 using Infrastructure.STS.Common.Model;
 using Infrastructure.STS.Common.Model.Client;
 using Kombit.InfrastructureSamples.Token;

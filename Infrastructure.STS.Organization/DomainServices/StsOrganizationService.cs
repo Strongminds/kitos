@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
-using System.ServiceModel;
 using Core.Abstractions.Types;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.Model.StsOrganization;
 using Core.DomainServices.Organizations;
 using Core.DomainServices.Repositories.Organization;
 using Core.DomainServices.SSO;
-using Digst.OioIdws.SoapCore;
 using Infrastructure.STS.Common.Model;
 using Infrastructure.STS.Common.Model.Client;
 using Kombit.InfrastructureSamples.OrganisationService;

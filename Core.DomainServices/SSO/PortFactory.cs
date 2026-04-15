@@ -1,8 +1,5 @@
-using System;
 using System.ServiceModel;
 using Core.Abstractions.Types;
-using Digst.OioIdws.SoapCore;
-using Infrastructure.STS.Common.Model.Token;
 using Kombit.InfrastructureSamples.AdresseService;
 using Kombit.InfrastructureSamples.BrugerService;
 using Kombit.InfrastructureSamples.PersonService;

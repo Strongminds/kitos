@@ -13,9 +13,6 @@
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
     <ProjectReference Include="..\Core.DomainModel\Core.DomainModel.csproj" />
     <ProjectReference Include="..\Core.DomainServices\Core.DomainServices.csproj" />
-    <PackageReference Include="Kombit.OioIdws.WscCore" Version="4.0.71">
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
     <ProjectReference Include="..\Infrastructure.STS.Common\Infrastructure.STS.Common.csproj" />
     <ProjectReference Include="..\Infrastructure.STS.SvcUtilClients\Infrastructure.STS.SvcUtilClients.csproj" />

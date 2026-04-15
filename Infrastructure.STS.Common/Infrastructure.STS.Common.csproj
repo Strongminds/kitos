@@ -17,10 +17,6 @@
       assembly reference from System.ServiceModel.Security → System.ServiceModel.Primitives.
       ExcludeAssets=all on the NuGet package ensures only the patched DLLs are used.
     -->
-    <PackageReference Include="Kombit.OioIdws.WscCore" Version="4.0.71">
-      <ExcludeAssets>all</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </PackageReference>
     <Reference Include="Digst.OioIdws.CommonCore">
       <HintPath>lib\kombit-patched\Digst.OioIdws.CommonCore.dll</HintPath>
       <Private>true</Private>
