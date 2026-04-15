@@ -3,10 +3,9 @@ Function ConvertTo-SqlConnectionParts([string]$connectionString) {
     ($connectionString -split ';') | Where-Object { $_ -match '=' } | ForEach-Object {
         $kv = $_ -split '=', 2
         $cs[$kv[0].Trim()] = $kv[1].Trim()
+    }
+    $server = if ($cs['Server']) { $cs['Server'] } else { $cs['Data Source'] }
     
-        $server = if ($cs['Server']) { $cs['Server'] } else { $cs['Data Source'] }
-    # Normalize server for sqlcmd: add tcp: prefix if no protocol is specified.
-    # This replicates what the legacy 'Network Library=dbmssocn' keyword used to do.
     if ($server -and $server -notmatch '^(tcp|np|lpc):') {
         $server = "tcp:$server"
     }
