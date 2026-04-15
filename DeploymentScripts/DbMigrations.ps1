@@ -75,14 +75,8 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [st
         $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
     }
 
-    $repoRoot = Resolve-Path "$PSScriptRoot\.."
-    $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
-    $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
-
     if ($newDb -eq $true) {
-        # New database: apply the extracted baseline SQL script which creates the full schema
-        # and inserts the InitialBaseline record into __EFMigrationsHistory.
-        # dotnet ef database update will then only apply migrations added after the baseline.
+        $repoRoot = Resolve-Path "$PSScriptRoot\.."
         $baselineSql = "$repoRoot\DeploymentScripts\Baseline.sql"
         Write-Host "New database detected - creating database and applying baseline schema from $baselineSql"
         New-SqlDatabase -connectionString $connectionString
@@ -90,17 +84,15 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [st
         Write-Host "Baseline schema applied"
     }
 
-    # Expose the connection string via the standard .NET env var so the
-    # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
-    $Env:ConnectionStrings__KitosContext = $connectionString
+    # Use the pre-built migrations bundle (efbundle.exe) shipped as a build artifact.
+    # This avoids needing source project files (.csproj) on the deployment agent.
+    $bundlePath = "$Env:MigrationsBundlePath"
+    if (-not $bundlePath) {
+        Throw "MigrationsBundlePath environment variable is not set. Point it to the efbundle.exe artifact."
+    }
 
-    dotnet ef database update `
-        --project "$infraProject" `
-        --startup-project "$startupProject" `
-        --connection "$connectionString" `
-        --no-build
-
-    # NOTE: remove --no-build if you want the tool to build before migrating
+    Write-Host "Running migrations bundle: $bundlePath"
+    & $bundlePath --connection "$connectionString"
 
     if ($LASTEXITCODE -ne 0) { Throw "FAILED TO MIGRATE DB" }
 }
