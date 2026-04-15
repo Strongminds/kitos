@@ -45,7 +45,6 @@
     <ProjectReference Include="..\Infrastructure.Ninject\Infrastructure.Ninject.csproj" />
     <ProjectReference Include="..\Infrastructure.OpenXML\Infrastructure.OpenXML.csproj" />
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
-    <ProjectReference Include="..\Infrastructure.Soap\Infrastructure.STS.SSO.csproj" />
     <ProjectReference Include="..\Infrastructure.STS.Common\Infrastructure.STS.Common.csproj" />
     <ProjectReference Include="..\Infrastructure.STS.Company\Infrastructure.STS.Company.csproj" />
     <ProjectReference Include="..\Infrastructure.STS.Organization\Infrastructure.STS.Organization.csproj" />
