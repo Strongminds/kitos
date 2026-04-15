@@ -12,9 +12,12 @@ $ErrorActionPreference = "Stop"
 
 Setup-Environment -environmentName $targetEnvironment
 
-Prepare-Package -environmentName $targetEnvironment -pathToArchive (Resolve-Path "$PSScriptRoot\..\WebPackage\Presentation.Web.zip")
+$webPackageDir = Resolve-Path "$PSScriptRoot\..\WebPackage"
+$presentationWebArchive = Join-Path $webPackageDir "Presentation.Web.zip"
 
-Deploy-Website  -packageDirectory (Resolve-Path "$PSScriptRoot\..\WebPackage") `
+Prepare-Package -environmentName $targetEnvironment -pathToArchive (Resolve-Path $presentationWebArchive)
+
+Deploy-Website  -packageDirectory $webPackageDir `
                 -msDeployUrl "$Env:MsDeployUrl" `
                 -msDeployUser $Env:MsDeployUserName `
                 -msDeployPassword $Env:MsDeployPassword
