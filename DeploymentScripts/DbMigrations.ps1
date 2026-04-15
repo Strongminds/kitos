@@ -43,7 +43,7 @@ Function Invoke-KitosSqlFile([string]$connectionString, [string]$sqlFilePath) {
     if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed executing $sqlFilePath" }
 }
 
-Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [string]$connectionString, [string]$buildConfiguration = "Release") {
+Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [string]$buildConfiguration = "Release") {
     Write-Host "Executing db migrations"
 
     if ($newDb -eq $true) {
@@ -83,10 +83,7 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$migrationsFolder, [st
         --project "$infraProject" `
         --startup-project "$startupProject" `
         --connection "$connectionString" `
-        --configuration "$buildConfiguration" `
-        --no-build
-
-    # NOTE: remove --no-build if you want the tool to build before migrating
+        --configuration "$buildConfiguration"
 
     if ($LASTEXITCODE -ne 0) { Throw "FAILED TO MIGRATE DB" }
 }
