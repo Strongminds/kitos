@@ -4,8 +4,14 @@ Function ConvertTo-SqlConnectionParts([string]$connectionString) {
         $kv = $_ -split '=', 2
         $cs[$kv[0].Trim()] = $kv[1].Trim()
     }
+    $server = if ($cs['Server']) { $cs['Server'] } else { $cs['Data Source'] }
+    # Normalize server for sqlcmd: add tcp: prefix if no protocol is specified.
+    # This replicates what the legacy 'Network Library=dbmssocn' keyword used to do.
+    if ($server -and $server -notmatch '^(tcp|np|lpc):') {
+        $server = "tcp:$server"
+    }
     return @{
-        Server    = if ($cs['Server'])          { $cs['Server'] }          else { $cs['Data Source'] }
+        Server    = $server
         Database  = if ($cs['Initial Catalog']) { $cs['Initial Catalog'] } else { $cs['Database'] }
         Trusted   = $cs['Integrated Security'] -in @('true', 'sspi', 'yes')
         TrustCert = $cs['TrustServerCertificate'] -eq 'true'
