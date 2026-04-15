@@ -134,8 +134,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractPayment
             {
-                Note = dto.Note,
-                AccountingEntry = dto.AccountingEntry,
+                Note = dto.Note ?? "",
+                AccountingEntry = dto.AccountingEntry ?? "",
                 Acquisition = dto.Acquisition,
                 Operation = dto.Operation,
                 Other = dto.Other,
