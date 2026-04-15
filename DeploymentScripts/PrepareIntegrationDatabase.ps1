@@ -31,7 +31,6 @@ Setup-Environment -environmentName $targetEnvironment
 
 .$PSScriptRoot\PrepareCleanDeveloperDatabase.ps1 `
                 -testToolsExePath "$Env:TestToolsPath" `
-                -migrationsFolderPath "$Env:MigrationsFolder" `
                 -kitosDbConnectionString "$Env:KitosDbConnectionStringForTeamCity" `
                 -hangfireDbConnectionString "$Env:HangfireDbConnectionStringForTeamCity" `
                 -globalAdminUserName "$Env:TestUserGlobalAdmin" `
