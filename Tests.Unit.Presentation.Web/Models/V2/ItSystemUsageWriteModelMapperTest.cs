@@ -1122,7 +1122,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(10);
+            return CreateGetUndefinedSectionsInput(11);
         }
 
         public static IEnumerable<object[]> GetUndefinedOrganizationUsageSectionsInput()
