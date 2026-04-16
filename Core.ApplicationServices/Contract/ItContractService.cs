@@ -187,8 +187,8 @@ namespace Core.ApplicationServices.Contract
             using var transaction = _transactionManager.Begin();
             try
             {
-                AvoidOrphaningEconomyStreams(contract);
-                AvoidOrphaningAssociatedAgreementElementTypes(contract);
+                DeleteDependingEconomyStreams(contract);
+                DeleteDependingAssociatedAgreementElementTypes(contract);
                 
 
                 //Delete the contract
@@ -445,7 +445,7 @@ namespace Core.ApplicationServices.Contract
             return authorizedAction(contract);
         }
 
-        private void AvoidOrphaningEconomyStreams(ItContract contract)
+        private void DeleteDependingEconomyStreams(ItContract contract)
         {
             foreach (var economyStream in contract.GetAllPayments())
             {
@@ -454,7 +454,7 @@ namespace Core.ApplicationServices.Contract
             _economyStreamRepository.Save();
         }
 
-        private void AvoidOrphaningAssociatedAgreementElementTypes(ItContract contract)
+        private void DeleteDependingAssociatedAgreementElementTypes(ItContract contract)
         {
             contract.AssociatedAgreementElementTypes.Clear();
         }
