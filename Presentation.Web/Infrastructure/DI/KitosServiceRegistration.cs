@@ -182,7 +182,7 @@ namespace Presentation.Web.Infrastructure.DI
             var mailSuffix = appSettings["MailSuffix"] ?? "@test.dk";
             var defaultUserPassword = appSettings["DefaultUserPassword"] ?? "";
             var useDefaultUserPassword = bool.Parse(appSettings["UseDefaultUserPassword"] ?? "false");
-            var resetPasswordTtl = TimeSpan.FromHours(double.Parse(appSettings["ResetPasswordTTL"] ?? "24"));
+            var resetPasswordTtl = TimeSpan.Parse(appSettings["ResetPasswordTTL"] ?? "24:00:00");
 
             services.AddSingleton(_ => new KitosUrl(new Uri(baseUrl)));
             services.AddScoped<IMailClient>(_ =>
