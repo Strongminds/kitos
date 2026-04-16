@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Query.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,14 +28,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
 using Presentation.Web.Controllers.API.V1.Auth;
+using Presentation.Web.Hangfire;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
-using Presentation.Web.Hangfire;
+using Presentation.Web.OData;
 using Presentation.Web.Swagger;
 using Serilog;
 using System;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,10 +81,12 @@ services.AddControllersWithViews(options =>
     })
     .AddOData(options =>
     {
-        options.AddRouteComponents("odata", ODataModelConfig.GetEdmModel());
+        options.AddRouteComponents("odata", ODataModelConfig.GetEdmModel(), services =>
+            services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>());
         options.EnableQueryFeatures();
     });
 
+services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>();
 // Routing
 services.AddRouting();
 
