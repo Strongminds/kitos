@@ -32,7 +32,6 @@ using Presentation.Web.Hangfire;
 using Presentation.Web.Helpers;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Infrastructure.OData;
-using Presentation.Web.OData;
 using Presentation.Web.Swagger;
 using Serilog;
 using System;
