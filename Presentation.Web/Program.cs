@@ -1,12 +1,9 @@
-using Core.Abstractions.Types;
 using Core.BackgroundJobs.Model;
 using Core.DomainModel;
 using Core.DomainServices.Context;
-using Core.DomainServices.Time;
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.Server;
-using Infrastructure.DataAccess.Interceptors;
 using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

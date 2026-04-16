@@ -16,15 +16,17 @@ namespace Presentation.Web.Infrastructure.OData
 
         public override Expression BindSingleValueFunctionCallNode(SingleValueFunctionCallNode node, QueryBinderContext context)
         {
-            if (node.Name is ContainsFunctionName)
-            {
-                var parameters = node.Parameters.ToList();  
-                    var left = Bind(parameters[0], context);
-                    var right = Bind(parameters[1], context);
-                    return Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);                
-            }
+            return node.Name is ContainsFunctionName
+                ? CallCaseInsensitiveContainsExpression(node, context)
+                : base.BindSingleValueFunctionCallNode(node, context);
+        }
 
-            return base.BindSingleValueFunctionCallNode(node, context);
+        private Expression CallCaseInsensitiveContainsExpression(SingleValueFunctionCallNode node, QueryBinderContext context)
+        {
+            var parameters = node.Parameters.ToList();
+            var left = Bind(parameters[0], context);
+            var right = Bind(parameters[1], context);
+            return Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);
         }
 
     }
