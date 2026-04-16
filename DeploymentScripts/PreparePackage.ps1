@@ -1,18 +1,39 @@
-Function Prepare-Package([String] $environmentName, $pathToArchive) {
+﻿Function Prepare-Package([String] $environmentName, $pathToArchive) {
 
 	Write-Host "Environment is $environmentName"
 
 	[string]$archivePath = $pathToArchive.Path
+	$item = Get-Item -LiteralPath $archivePath -Force -ErrorAction Stop
 
-	Write-Host "Archive path: $archivePath"
-	Write-Host "Running as: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+	$destination = Join-Path (Get-Location) "TEMP_PresentationWeb"
 
-	$item = Get-Item -LiteralPath $archivePath -ErrorAction Stop
-	Write-Host "Resolved file: $($item.FullName)"
-	Write-Host "Length: $($item.Length)"
+	Write-Host "Resolved path: $($item.FullName)"
+	Write-Host "PSIsContainer: $($item.PSIsContainer)"
+	Write-Host "Destination: $destination"
 
-	Write-Host "Unzipping $archivePath to TEMP_PresentationWeb"
-	Expand-Archive -LiteralPath $item.FullName -DestinationPath .\TEMP_PresentationWeb -Force
+	# Ensure clean destination
+	if (Test-Path -LiteralPath $destination) {
+		Remove-Item -LiteralPath $destination -Recurse -Force
+	}
+
+	New-Item -ItemType Directory -Path $destination | Out-Null
+
+	if ($item.PSIsContainer) {
+		Write-Host "Source is a directory → copying contents"
+
+		Copy-Item -Path (Join-Path $item.FullName '*') `
+				  -Destination $destination `
+				  -Recurse -Force
+	}
+	else {
+		Write-Host "Source is a zip → extracting"
+
+		Expand-Archive -LiteralPath $item.FullName `
+					   -DestinationPath $destination `
+					   -Force
+	}
+
+	Write-Host "Files prepared in: $destination"
 	Remove-Item -Path "$pathToArchive"
 
 	Write-Host "Updating appsettings.json"
