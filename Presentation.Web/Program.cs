@@ -218,10 +218,7 @@ services.AddSwaggerGen(c =>
 var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
     ?? throw new InvalidOperationException("kitos_HangfireDB connection string is required");
 
-if (builder.Environment.IsDevelopment())
-{
-    EnsureHangfireDatabaseCreated(hangfireConnectionString);
-}
+EnsureHangfireDatabaseCreated(hangfireConnectionString);
 
 services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
