@@ -227,7 +227,7 @@ services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(hangfireConnectionString, new SqlServerStorageOptions{ SqlClientFactory = Microsoft.Data.SqlClient.SqlClientFactory.Instance}));
+    .UseSqlServerStorage(hangfireConnectionString));
 
 services.AddSingleton<IBackgroundProcess>(provider => new KeepReadModelsInSyncProcess(provider));
 services.AddHangfireServer();
