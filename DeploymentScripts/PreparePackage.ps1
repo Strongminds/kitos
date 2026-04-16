@@ -2,41 +2,17 @@ Function Prepare-Package([String] $environmentName, $pathToArchive) {
 
 	Write-Host "Environment is $environmentName"
 
-	Write-Host "Zip path raw: >$pathToArchive<"
-	Write-Host "Type: $($pathToArchive.GetType().FullName)"
+	[string]$archivePath = $pathToArchive.Path
 
-	$item = Get-Item -LiteralPath $pathToArchive -ErrorAction Stop
+	Write-Host "Archive path: $archivePath"
+	Write-Host "Running as: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+
+	$item = Get-Item -LiteralPath $archivePath -ErrorAction Stop
 	Write-Host "Resolved file: $($item.FullName)"
-	Write-Host "Exists: $($item.Exists)"
 	Write-Host "Length: $($item.Length)"
-	Write-Host "Extension: $($item.Extension)"
 
-	Add-Type -AssemblyName System.IO.Compression.FileSystem
-
-	try {
-		$zip = [System.IO.Compression.ZipFile]::OpenRead($item.FullName)
-		Write-Host "Zip opened successfully. Entry count: $($zip.Entries.Count)"
-		$zip.Dispose()
-	}
-	catch {
-		Write-Host "Zip validation failed: $($_.Exception.Message)"
-		throw
-	}
-
-[System.IO.Compression.ZipFile]::ExtractToDirectory($item.FullName, (Join-Path (Get-Location) "TEMP_PresentationWeb"))
-
-	#Write-Host "Zip path raw: >$pathToArchive<"
-	#Write-Host "Testing path..."
-	#
-	#if (-not (Test-Path -LiteralPath $pathToArchive)) {
-	#	Write-Host "File not found by Test-Path"
-	#	$directory = Split-Path -Path $pathToArchive -Parent
-	#	Get-ChildItem -Path $directory
-	#	throw "Zip file does not exist at runtime: $pathToArchive"
-	#}
-	#
-	#Write-Host "Unzipping $pathToArchive to TEMP_PresentationWeb"
-	#Expand-Archive -LiteralPath $pathToArchive -DestinationPath .\TEMP_PresentationWeb -Force
+	Write-Host "Unzipping $archivePath to TEMP_PresentationWeb"
+	Expand-Archive -LiteralPath $item.FullName -DestinationPath .\TEMP_PresentationWeb -Force
 	Remove-Item -Path "$pathToArchive"
 
 	Write-Host "Updating appsettings.json"
