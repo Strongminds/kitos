@@ -13,6 +13,7 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
                     "-disableLink:ContentExtension " +
                     "-disableLink:CertificateExtension " +
                     "-skip:objectname=`"dirPath`",absolutepath=`"App_Data$`" " +
+                    "-skip:objectName=`"dirPath`",absolutePath=`".*\\runtimes\\unix($|\\.*)`" " +
                     "-allowUntrusted") `
     -f $msdeploy, $packageDirectory, $msDeployUrl, $msDeployUser, $msDeployPassword
 
