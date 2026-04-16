@@ -13,7 +13,7 @@ Function Prepare-Package([String] $environmentName, $pathToArchive) {
 	}
 
 	Write-Host "Unzipping $pathToArchive to TEMP_PresentationWeb"
-	Expand-Archive -Path "$pathToArchive" -DestinationPath .\TEMP_PresentationWeb
+	Expand-Archive -LiteralPath $pathToArchive -DestinationPath .\TEMP_PresentationWeb -Force
 	Remove-Item -Path "$pathToArchive"
 
 	Write-Host "Updating appsettings.json"
