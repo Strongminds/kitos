@@ -34,7 +34,10 @@
 	}
 
 	Write-Host "Files prepared in: $destination"
-	Remove-Item -Path "$pathToArchive"
+
+	if (Test-Path -LiteralPath $pathToArchive) {
+		Remove-Item -LiteralPath $pathToArchive -Recurse -Force -Confirm:$false
+	}
 
 	Write-Host "Updating appsettings.json"
 	$appSettingsPath = ".\TEMP_PresentationWeb\appsettings.json"
