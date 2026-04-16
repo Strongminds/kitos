@@ -86,7 +86,6 @@ services.AddControllersWithViews(options =>
         options.EnableQueryFeatures();
     });
 
-services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>();
 // Routing
 services.AddRouting();
 
