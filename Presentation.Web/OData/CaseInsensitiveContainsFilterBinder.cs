@@ -18,13 +18,10 @@ namespace Presentation.Web.OData
         {
             if (node.Name is ContainsFunctionName)
             {
-                var parameters = node.Parameters.ToList();
-                if (parameters[0].GetType() == typeof(string) && parameters[1].GetType() == typeof(string))
-                {
+                var parameters = node.Parameters.ToList();  
                     var left = Bind(parameters[0], context);
                     var right = Bind(parameters[1], context);
-                    return Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);
-                };
+                    return Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);                
             }
 
             return base.BindSingleValueFunctionCallNode(node, context);
