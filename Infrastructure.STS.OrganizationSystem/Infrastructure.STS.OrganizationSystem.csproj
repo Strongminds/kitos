@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Polly" Version="8.6.6" />
     <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
