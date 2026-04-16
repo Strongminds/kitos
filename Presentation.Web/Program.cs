@@ -8,13 +8,11 @@ using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Query.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,6 +33,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hangfire.SqlServer;
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
@@ -228,7 +227,7 @@ services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(hangfireConnectionString));
+    .UseSqlServerStorage(hangfireConnectionString, new SqlServerStorageOptions{ SqlClientFactory = Microsoft.Data.SqlClient.SqlClientFactory.Instance}));
 
 services.AddSingleton<IBackgroundProcess>(provider => new KeepReadModelsInSyncProcess(provider));
 services.AddHangfireServer();
