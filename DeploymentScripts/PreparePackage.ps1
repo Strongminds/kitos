@@ -2,6 +2,16 @@ Function Prepare-Package([String] $environmentName, $pathToArchive) {
 
 	Write-Host "Environment is $environmentName"
 
+	Write-Host "Zip path raw: >$pathToArchive<"
+	Write-Host "Testing path..."
+
+	if (-not (Test-Path -LiteralPath $pathToArchive)) {
+		Write-Host "File not found by Test-Path"
+		$directory = Split-Path -Path $pathToArchive -Parent
+		Get-ChildItem -Path $directory
+		throw "Zip file does not exist at runtime: $pathToArchive"
+	}
+
 	Write-Host "Unzipping $pathToArchive to TEMP_PresentationWeb"
 	Expand-Archive -Path "$pathToArchive" -DestinationPath .\TEMP_PresentationWeb
 	Remove-Item -Path "$pathToArchive"
