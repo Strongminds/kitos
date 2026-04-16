@@ -4,14 +4,15 @@ Function Prepare-Package([String] $environmentName, $pathToArchive) {
 
 	[string]$archivePath = $pathToArchive.Path
 
-	Write-Host "Zip path raw: >$archivePath<"
+	Write-Host "Archive path: $archivePath"
+	Write-Host "Running as: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
 
 	$item = Get-Item -LiteralPath $archivePath -ErrorAction Stop
 	Write-Host "Resolved file: $($item.FullName)"
 	Write-Host "Length: $($item.Length)"
 
 	Write-Host "Unzipping $archivePath to TEMP_PresentationWeb"
-	Expand-Archive -LiteralPath $archivePath -DestinationPath .\TEMP_PresentationWeb -Force
+	Expand-Archive -LiteralPath $item.FullName -DestinationPath .\TEMP_PresentationWeb -Force
 	Remove-Item -Path "$pathToArchive"
 
 	Write-Host "Updating appsettings.json"
