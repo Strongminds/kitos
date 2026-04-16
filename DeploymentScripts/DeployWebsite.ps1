@@ -7,7 +7,7 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
     # The backend always deploys to the Default Web Site root (C:\inetpub\wwwroot) across all environments.
     $fullCommand = ("`"{0}`" " +
                     "-verb:sync " +
-                    "-source:archivedir=`"{1}\Presentation.Web.zip`" " +
+                    "-source:package=`"{1}\Presentation.Web.zip`" " +
                     "-dest:contentPath=`"Default Web Site`",computerName=`"{2}`",userName=`"{3}`",password=`"{4}`",authtype=`"Basic`",includeAcls=`"False`" " +
                     "-disableLink:AppPoolExtension " +
                     "-disableLink:ContentExtension " +
