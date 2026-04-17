@@ -5,6 +5,7 @@ using Core.Abstractions.Caching;
 using Core.Abstractions.Types;
 using Infrastructure.DataAccess.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Authorization;
@@ -149,7 +150,7 @@ namespace Presentation.Web.Infrastructure.DI
 {
     public static class KitosServiceRegistration
     {
-        public static void Register(IServiceCollection services, IConfiguration configuration)
+        public static void Register(IServiceCollection services, IConfiguration configuration, SecurityKey signingKey)
         {
             // Middleware (IMiddleware implementations must be registered in DI)
             services.AddScoped<CorrelationIdMiddleware>();
@@ -183,9 +184,6 @@ namespace Presentation.Web.Infrastructure.DI
             var defaultUserPassword = appSettings["DefaultUserPassword"] ?? "";
             var useDefaultUserPassword = bool.Parse(appSettings["UseDefaultUserPassword"] ?? "false");
             var resetPasswordTtl = TimeSpan.Parse(appSettings["ResetPasswordTTL"] ?? "24:00:00");
-            var securityKeyString = appSettings["SecurityKeyString"] ?? "";
-            var signingKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(securityKeyString)) { KeyId = "kitos-jwt" };
 
             services.AddSingleton(_ => new KitosUrl(new Uri(baseUrl)));
             services.AddScoped<IMailClient>(_ =>
