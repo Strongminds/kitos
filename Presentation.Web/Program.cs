@@ -318,12 +318,17 @@ app.MapMethods("/Login.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
 {
     try
     {
+        Log.Information("SAML /Login.ashx invoked. Method: {Method}, QueryString: {QueryString}, ContentType: {ContentType}",
+            ctx.Request.Method, ctx.Request.QueryString.Value, ctx.Request.ContentType);
+        
         new dk.nita.saml20.protocol.Saml20SignonHandler().ProcessRequest(ctx);
+        
+        Log.Information("SAML /Login.ashx ProcessRequest completed. StatusCode: {StatusCode}", ctx.Response.StatusCode);
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. QueryString: {QueryString}",
-            "/Login.ashx", ctx.Request.QueryString.Value);
+        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. Method: {Method}, QueryString: {QueryString}",
+            "/Login.ashx", ctx.Request.Method, ctx.Request.QueryString.Value);
         ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
     }
 
@@ -334,12 +339,17 @@ app.MapMethods("/Logout.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
 {
     try
     {
+        Log.Information("SAML /Logout.ashx invoked. Method: {Method}, QueryString: {QueryString}, ContentType: {ContentType}",
+            ctx.Request.Method, ctx.Request.QueryString.Value, ctx.Request.ContentType);
+        
         new dk.nita.saml20.protocol.Saml20LogoutHandler().ProcessRequest(ctx);
+        
+        Log.Information("SAML /Logout.ashx ProcessRequest completed. StatusCode: {StatusCode}", ctx.Response.StatusCode);
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. QueryString: {QueryString}",
-            "/Logout.ashx", ctx.Request.QueryString.Value);
+        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. Method: {Method}, QueryString: {QueryString}",
+            "/Logout.ashx", ctx.Request.Method, ctx.Request.QueryString.Value);
         ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
     }
 
@@ -350,7 +360,12 @@ app.MapGet("/Metadata.ashx", (HttpContext ctx) =>
 {
     try
     {
+        Log.Information("SAML /Metadata.ashx invoked. QueryString: {QueryString}",
+            ctx.Request.QueryString.Value);
+        
         new dk.nita.saml20.protocol.Saml20MetadataHandler().ProcessRequest(ctx);
+        
+        Log.Information("SAML /Metadata.ashx ProcessRequest completed. StatusCode: {StatusCode}", ctx.Response.StatusCode);
     }
     catch (Exception ex)
     {
