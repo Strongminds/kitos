@@ -26,10 +26,14 @@ namespace Tools.Test.Database.Model.Tasks
                 connection.Open();
                 using var sqlCommand = connection.CreateCommand();
                 var sqlToDropDb =
-                    $"if DB_ID('{dbName}') IS NOT NULL " +
+                    $"IF DB_ID('{dbName}') IS NOT NULL " +
                     "BEGIN " +
-                        $"alter database [{dbName}] set single_user with rollback immediate " +
-                        $"drop database [{dbName}] " +
+                        $"DECLARE @kill varchar(8000) = ''; " +
+                        $"SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + '; ' " +
+                        $"FROM sys.dm_exec_sessions " +
+                        $"WHERE database_id = DB_ID('{dbName}') AND session_id <> @@SPID; " +
+                        $"IF LEN(@kill) > 0 EXEC(@kill); " +
+                        $"DROP DATABASE [{dbName}]; " +
                     "END ";
 
                 sqlCommand.CommandText = sqlToDropDb;
