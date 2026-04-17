@@ -151,14 +151,15 @@
 
 	Write-Host "Update of appsettings.json complete"
 
-	# Keep SAML configuration in Web.config in sync with environment values.
-	# Web.config is the authoritative SAML config file in the publish output — it is updated here
-	# with environment-specific values, then copied as Presentation.Web.dll.config so that
-	# ConfigurationManager (which the SAML library uses) can find the Federation / SAML20Federation
-	# sections. IIS reads Web.config itself; the .NET process reads <AssemblyName>.dll.config.
+	# Keep SAML configuration in sync with environment values.
+	# - Web.config is updated for IIS / ASP.NET (which reads Web.config directly).
+	# - Presentation.Web.dll.config is updated for ConfigurationManager (used by the SAML library,
+	#   MemoryCache, etc.), which reads <AssemblyName>.dll.config. This file is produced from
+	#   App.config during build and contains only the Federation / SAML20Federation sections —
+	#   none of the IIS-specific sections (system.webServer, system.web, …) that would cause
+	#   ConfigurationManager to throw "Unrecognized configuration section".
 	Update-SamlConfigFile ".\TEMP_PresentationWeb\Web.config"
-	Copy-Item ".\TEMP_PresentationWeb\Web.config" ".\TEMP_PresentationWeb\Presentation.Web.dll.config" -Force
-	Write-Host "Copied Web.config → Presentation.Web.dll.config"
+	Update-SamlConfigFile ".\TEMP_PresentationWeb\Presentation.Web.dll.config"
 
 	# Handle environment-specific robots file (was previously done via msdeploy -replace)
 	$wwwroot = ".\TEMP_PresentationWeb\wwwroot"
