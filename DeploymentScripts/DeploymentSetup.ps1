@@ -77,6 +77,21 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     
     
     Write-Host "Finished loading environment configuration from SSM"
+
+    # Emit TeamCity service messages so all env vars set in this step are available
+    # to subsequent build steps (TC env vars are process-scoped and don't cross step boundaries).
+    Publish-TeamCityParameters
+}
+
+# Emits ##teamcity[setParameter] messages for every env: variable currently set in this process,
+# making them available to all subsequent TeamCity build steps as environment variables.
+Function Publish-TeamCityParameters() {
+    if (-not $Env:TEAMCITY_VERSION) { return }  # no-op outside TeamCity
+
+    Get-ChildItem Env: | ForEach-Object {
+        $escaped = $_.Value -replace '\|', '||' -replace "'", "|'" -replace '\[', '|[' -replace '\]', '|]' -replace "`n", '|n' -replace "`r", '|r'
+        Write-Host "##teamcity[setParameter name='env.$($_.Name)' value='$escaped']"
+    }
 }
 
 Function Setup-Environment([String] $environmentName) {
