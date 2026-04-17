@@ -113,6 +113,7 @@ Function Setup-Environment([String] $environmentName) {
             $loadTestUsers = $true
             $Env:UseDefaultUserPassword = "true"
             $Env:Robots = ".*Robots\.Test\.Txt"
+            $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
             break;
         }
         "dev" 
@@ -122,6 +123,7 @@ Function Setup-Environment([String] $environmentName) {
             $loadTestUsers = $true
             $Env:UseDefaultUserPassword = "true"
             $Env:Robots = ".*Robots\.Test\.Txt"
+            $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
             break;
         }
          "staging"
