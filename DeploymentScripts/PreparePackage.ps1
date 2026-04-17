@@ -1,4 +1,65 @@
 ﻿Function Prepare-Package([String] $environmentName, $pathToArchive) {
+	function Update-SamlConfigFile([string] $configPath) {
+		if (-not (Test-Path -LiteralPath $configPath)) {
+			Write-Host "Skipping SAML config update (file not found): $configPath"
+			return
+		}
+
+		Write-Host "Updating SAML config in $configPath"
+
+		$xml = New-Object System.Xml.XmlDocument
+		$xml.PreserveWhitespace = $true
+		$xml.Load($configPath)
+
+		$federation = $xml.SelectSingleNode("/*[local-name()='configuration']/*[local-name()='Federation']")
+		if ($federation -ne $null) {
+			if ($Env:SsoCertificateThumbPrint) {
+				$signingCert = $federation.SelectSingleNode(".//*[local-name()='SigningCertificate']")
+				if ($signingCert -ne $null) {
+					$signingCert.SetAttribute("findValue", $Env:SsoCertificateThumbPrint)
+				}
+			}
+
+			if ($Env:SsoServiceProviderId) {
+				$audience = $federation.SelectSingleNode(".//*[local-name()='AllowedAudienceUris']/*[local-name()='Audience']")
+				if ($audience -ne $null) {
+					$audience.InnerText = $Env:SsoServiceProviderId
+				}
+			}
+		}
+
+		$saml20Federation = $xml.SelectSingleNode("/*[local-name()='configuration']/*[local-name()='SAML20Federation']")
+		if ($saml20Federation -ne $null) {
+			$serviceProvider = $saml20Federation.SelectSingleNode(".//*[local-name()='ServiceProvider']")
+			if ($serviceProvider -ne $null) {
+				if ($Env:SsoServiceProviderId) {
+					$serviceProvider.SetAttribute("id", $Env:SsoServiceProviderId)
+				}
+				if ($Env:SsoServiceProviderServer) {
+					$serviceProvider.SetAttribute("server", $Env:SsoServiceProviderServer)
+				}
+			}
+
+			if ($Env:SsoIDPEndPoints) {
+				$idp = $saml20Federation.SelectSingleNode(".//*[local-name()='IDPEndPoints']/*[local-name()='add' and @default='true']")
+				if ($idp -eq $null) {
+					$idp = $saml20Federation.SelectSingleNode(".//*[local-name()='IDPEndPoints']/*[local-name()='add'][1]")
+				}
+				if ($idp -ne $null) {
+					$idp.SetAttribute("id", $Env:SsoIDPEndPoints)
+				}
+			}
+		}
+
+		$settings = New-Object System.Xml.XmlWriterSettings
+		$settings.Encoding = New-Object System.Text.UTF8Encoding($false)
+		$settings.Indent = $true
+		$settings.OmitXmlDeclaration = $false
+
+		$writer = [System.Xml.XmlWriter]::Create($configPath, $settings)
+		$xml.Save($writer)
+		$writer.Dispose()
+	}
 
 	Write-Host "Environment is $environmentName"
 
@@ -89,6 +150,13 @@
 	$appSettings | ConvertTo-Json -Depth 10 | Set-Content $appSettingsPath -Encoding UTF8
 
 	Write-Host "Update of appsettings.json complete"
+
+	# Keep XML SAML configuration in sync with environment values used for deployment.
+	# The SAML library reads from ConfigurationManager (Presentation.Web.dll.config in net10),
+	# so appsettings.json updates are not sufficient for SSO endpoints.
+	Update-SamlConfigFile ".\TEMP_PresentationWeb\Presentation.Web.dll.config"
+	Update-SamlConfigFile ".\TEMP_PresentationWeb\App.config"
+	Update-SamlConfigFile ".\TEMP_PresentationWeb\Web.config"
 
 	# Handle environment-specific robots file (was previously done via msdeploy -replace)
 	$wwwroot = ".\TEMP_PresentationWeb\wwwroot"
