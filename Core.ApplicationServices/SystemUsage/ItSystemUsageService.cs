@@ -164,6 +164,8 @@ namespace Core.ApplicationServices.SystemUsage
                 return new OperationError($"Not allowed to delete it system usage with Id: {id}", OperationFailure.Forbidden);
             }
 
+            DeleteAssociationsToOrganizationUnits(itSystemUsage);
+
             // delete it system usage
             var deleteBySystemUsageId = _referenceService.DeleteBySystemUsageId(id);
             if (deleteBySystemUsageId.Failed)
@@ -462,6 +464,11 @@ namespace Core.ApplicationServices.SystemUsage
             }
 
             return mutationResult;
+        }
+
+        private void DeleteAssociationsToOrganizationUnits(ItSystemUsage itSystemUsage)
+        {
+            itSystemUsage.UsedBy.Clear();
         }
     }
 }
