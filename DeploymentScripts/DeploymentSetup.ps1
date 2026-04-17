@@ -77,10 +77,6 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     
     
     Write-Host "Finished loading environment configuration from SSM"
-
-    # Emit TeamCity service messages so all env vars set in this step are available
-    # to subsequent build steps (TC env vars are process-scoped and don't cross step boundaries).
-    Publish-TeamCityParameters
 }
 
 # Emits ##teamcity[setParameter] messages for every env: variable currently set in this process,
@@ -104,6 +100,8 @@ Function Setup-Environment([String] $environmentName) {
     	throw "Error: Remember to set the AwsSecretAccessKey input before starting the build"
     }
 
+    $forcePickupDirectorySmtp = $false
+
     switch( $environmentName )
     {
         "integration" 
@@ -113,7 +111,7 @@ Function Setup-Environment([String] $environmentName) {
             $loadTestUsers = $true
             $Env:UseDefaultUserPassword = "true"
             $Env:Robots = ".*Robots\.Test\.Txt"
-            $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
+            $forcePickupDirectorySmtp = $true
             break;
         }
         "dev" 
@@ -123,7 +121,7 @@ Function Setup-Environment([String] $environmentName) {
             $loadTestUsers = $true
             $Env:UseDefaultUserPassword = "true"
             $Env:Robots = ".*Robots\.Test\.Txt"
-            $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
+            $forcePickupDirectorySmtp = $true
             break;
         }
          "staging"
@@ -147,6 +145,15 @@ Function Setup-Environment([String] $environmentName) {
     
     Configure-Aws -accessKeyId "$Env:AwsAccessKeyId" -secretAccessKey "$Env:AwsSecretAccessKey"
     Load-Environment-Secrets-From-Aws -envName "$environmentName" -loadTcHangfireConnectionString $loadTcHangfireConnectionString -loadTestUsers $loadTestUsers
-    
+
+    # Apply after SSM load so it cannot be overwritten by SSM parameters
+    if ($forcePickupDirectorySmtp) {
+        $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
+    }
+
+    # Emit TeamCity service messages after all overrides are applied so subsequent
+    # build steps receive the final values (not the pre-override SSM values).
+    Publish-TeamCityParameters
+
     Write-Host "Finished configuring $environmentName"
 }
