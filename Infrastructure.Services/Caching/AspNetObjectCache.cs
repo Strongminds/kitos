@@ -8,7 +8,9 @@ namespace Infrastructure.Services.Caching
 {
     public class AspNetObjectCache : IObjectCache
     {
-        private static readonly MemoryCache InternalCache = new MemoryCache(nameof(AspNetObjectCache));
+        // ignoreConfigSection: true prevents MemoryCache from calling ConfigurationManager,
+        // which reads Presentation.Web.dll.config and fails if it contains unrecognized sections (e.g. system.net).
+        private static readonly MemoryCache InternalCache = new MemoryCache(nameof(AspNetObjectCache), config: null, ignoreConfigSection: true);
 
         public void Write<T>(T entry, string key, TimeSpan duration) where T : class
         {
