@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Microsoft.Data.SqlClient;
 using Infrastructure.DataAccess;
 
@@ -7,9 +6,6 @@ namespace Tools.Test.Database.Model.Tasks
 {
     public class DropDatabaseTask : DatabaseTask
     {
-        private const int MaxAttempts = 5;
-        private const int RetryDelayMs = 3000;
-
         private readonly string _connectionString;
 
         public DropDatabaseTask(string connectionString)
@@ -23,37 +19,30 @@ namespace Tools.Test.Database.Model.Tasks
             var connectionStringBuilder = new SqlConnectionStringBuilder(_connectionString);
             var dbName = connectionStringBuilder.InitialCatalog;
             connectionStringBuilder.Remove("Initial Catalog");
-            // Disable connection pooling so each attempt gets a fresh physical connection
-            connectionStringBuilder.Pooling = false;
 
-            var sqlToDropDb =
-                $"IF DB_ID('{dbName}') IS NOT NULL " +
-                "BEGIN " +
-                    $"ALTER DATABASE [{dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; " +
-                    $"DROP DATABASE [{dbName}]; " +
-                "END ";
-
-            for (var attempt = 1; attempt <= MaxAttempts; attempt++)
+            using var connection = new SqlConnection(connectionStringBuilder.ConnectionString);
+            try
             {
-                try
-                {
-                    using var connection = new SqlConnection(connectionStringBuilder.ConnectionString);
-                    connection.Open();
-                    using var sqlCommand = connection.CreateCommand();
-                    sqlCommand.CommandText = sqlToDropDb;
-                    sqlCommand.ExecuteNonQuery();
-                    return true;
-                }
-                catch (SqlException ex) when (attempt < MaxAttempts)
-                {
-                    Console.WriteLine($"Attempt {attempt}/{MaxAttempts} failed (SQL error {ex.Number}): {ex.Message}. Retrying in {RetryDelayMs}ms...");
-                    Thread.Sleep(RetryDelayMs);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+                connection.Open();
+                using var sqlCommand = connection.CreateCommand();
+                var sqlToDropDb =
+                    $"if DB_ID('{dbName}') IS NOT NULL " +
+                    "BEGIN " +
+                        $"alter database [{dbName}] set single_user with rollback immediate " +
+                        $"drop database [{dbName}] " +
+                    "END ";
+
+                sqlCommand.CommandText = sqlToDropDb;
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            finally
+            {
+                connection.Close();
             }
 
             return true;
