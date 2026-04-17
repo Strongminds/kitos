@@ -316,19 +316,49 @@ app.MapGet("/LoginHandler.ashx", (HttpContext ctx) =>
 // Login.ashx handles both the SP-initiated AuthnRequest (GET) and the IdP response (POST).
 app.MapMethods("/Login.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
 {
-    new dk.nita.saml20.protocol.Saml20SignonHandler().ProcessRequest(ctx);
+    try
+    {
+        new dk.nita.saml20.protocol.Saml20SignonHandler().ProcessRequest(ctx);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. QueryString: {QueryString}",
+            "/Login.ashx", ctx.Request.QueryString.Value);
+        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    }
+
     return Task.CompletedTask;
 }).AllowAnonymous();
 
 app.MapMethods("/Logout.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
 {
-    new dk.nita.saml20.protocol.Saml20LogoutHandler().ProcessRequest(ctx);
+    try
+    {
+        new dk.nita.saml20.protocol.Saml20LogoutHandler().ProcessRequest(ctx);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. QueryString: {QueryString}",
+            "/Logout.ashx", ctx.Request.QueryString.Value);
+        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    }
+
     return Task.CompletedTask;
 }).AllowAnonymous();
 
 app.MapGet("/Metadata.ashx", (HttpContext ctx) =>
 {
-    new dk.nita.saml20.protocol.Saml20MetadataHandler().ProcessRequest(ctx);
+    try
+    {
+        new dk.nita.saml20.protocol.Saml20MetadataHandler().ProcessRequest(ctx);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unhandled exception in SAML endpoint {Endpoint}. QueryString: {QueryString}",
+            "/Metadata.ashx", ctx.Request.QueryString.Value);
+        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    }
+
     return Task.CompletedTask;
 }).AllowAnonymous();
 
