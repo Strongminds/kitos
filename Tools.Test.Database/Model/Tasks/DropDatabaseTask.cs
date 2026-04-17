@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Data.SqlClient;
 using Infrastructure.DataAccess;
 
@@ -6,6 +7,9 @@ namespace Tools.Test.Database.Model.Tasks
 {
     public class DropDatabaseTask : DatabaseTask
     {
+        private const int MaxAttempts = 5;
+        private const int RetryDelayMs = 3000;
+
         private readonly string _connectionString;
 
         public DropDatabaseTask(string connectionString)
@@ -19,34 +23,37 @@ namespace Tools.Test.Database.Model.Tasks
             var connectionStringBuilder = new SqlConnectionStringBuilder(_connectionString);
             var dbName = connectionStringBuilder.InitialCatalog;
             connectionStringBuilder.Remove("Initial Catalog");
+            // Disable connection pooling so each attempt gets a fresh physical connection
+            connectionStringBuilder.Pooling = false;
 
-            using var connection = new SqlConnection(connectionStringBuilder.ConnectionString);
-            try
-            {
-                connection.Open();
-                using var sqlCommand = connection.CreateCommand();
-                var sqlToDropDb =
-                    $"IF DB_ID('{dbName}') IS NOT NULL " +
-                    "BEGIN " +
-                        $"DECLARE @kill varchar(8000) = ''; " +
-                        $"SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + '; ' " +
-                        $"FROM sys.dm_exec_sessions " +
-                        $"WHERE database_id = DB_ID('{dbName}') AND session_id <> @@SPID; " +
-                        $"IF LEN(@kill) > 0 EXEC(@kill); " +
-                        $"DROP DATABASE [{dbName}]; " +
-                    "END ";
+            var sqlToDropDb =
+                $"IF DB_ID('{dbName}') IS NOT NULL " +
+                "BEGIN " +
+                    $"ALTER DATABASE [{dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; " +
+                    $"DROP DATABASE [{dbName}]; " +
+                "END ";
 
-                sqlCommand.CommandText = sqlToDropDb;
-                sqlCommand.ExecuteNonQuery();
-            }
-            catch (Exception e)
+            for (var attempt = 1; attempt <= MaxAttempts; attempt++)
             {
-                Console.WriteLine(e);
-                throw;
-            }
-            finally
-            {
-                connection.Close();
+                try
+                {
+                    using var connection = new SqlConnection(connectionStringBuilder.ConnectionString);
+                    connection.Open();
+                    using var sqlCommand = connection.CreateCommand();
+                    sqlCommand.CommandText = sqlToDropDb;
+                    sqlCommand.ExecuteNonQuery();
+                    return true;
+                }
+                catch (SqlException ex) when (attempt < MaxAttempts)
+                {
+                    Console.WriteLine($"Attempt {attempt}/{MaxAttempts} failed (SQL error {ex.Number}): {ex.Message}. Retrying in {RetryDelayMs}ms...");
+                    Thread.Sleep(RetryDelayMs);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }
 
             return true;
