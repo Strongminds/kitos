@@ -89,7 +89,13 @@ var securityKeyString = configuration["AppSettings:SecurityKeyString"] ?? "";
 var baseUrl = configuration["AppSettings:BaseUrl"] ?? "https://localhost:44300/";
 
 var signingKey = new SymmetricSecurityKey(
-    System.Text.Encoding.UTF8.GetBytes(securityKeyString));
+    System.Text.Encoding.UTF8.GetBytes(securityKeyString))
+{
+    // KeyId is required so the JWT includes a 'kid' header.
+    // .NET 8's JsonWebTokenHandler (used by AddJwtBearer) throws IDX10517
+    // when the token has no 'kid' and the validation key has no KeyId.
+    KeyId = "kitos-jwt"
+};
 
 const string multiScheme = "CookieOrJwt";
 services.AddAuthentication(options =>

@@ -183,6 +183,9 @@ namespace Presentation.Web.Infrastructure.DI
             var defaultUserPassword = appSettings["DefaultUserPassword"] ?? "";
             var useDefaultUserPassword = bool.Parse(appSettings["UseDefaultUserPassword"] ?? "false");
             var resetPasswordTtl = TimeSpan.Parse(appSettings["ResetPasswordTTL"] ?? "24:00:00");
+            var securityKeyString = appSettings["SecurityKeyString"] ?? "";
+            var signingKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(securityKeyString)) { KeyId = "kitos-jwt" };
 
             services.AddSingleton(_ => new KitosUrl(new Uri(baseUrl)));
             services.AddScoped<IMailClient>(_ =>
@@ -316,7 +319,7 @@ namespace Presentation.Web.Infrastructure.DI
                 sp.GetRequiredService<IKitosInternalTokenIssuer>(),
                 pubSubBaseUrl));
 
-            services.AddScoped<ITokenValidator>(sp => new TokenValidator(baseUrl));
+            services.AddScoped<ITokenValidator>(sp => new TokenValidator(baseUrl, signingKey));
             services.AddScoped<IKitosInternalTokenIssuer, KitosInternalTokenIssuer>();
 
             // STS Organization

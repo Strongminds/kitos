@@ -15,10 +15,12 @@ namespace Core.ApplicationServices.Authentication
     {
         public ILogger Logger = Log.Logger;
         private readonly string _baseUrl;
+        private readonly SecurityKey _signingKey;
 
-        public TokenValidator(string baseUrl)
+        public TokenValidator(string baseUrl, SecurityKey signingKey)
         {
             _baseUrl = baseUrl;
+            _signingKey = signingKey ?? throw new ArgumentNullException(nameof(signingKey));
         }
 
         public KitosApiToken CreateToken(DomainModel.User user)
@@ -44,7 +46,7 @@ namespace Core.ApplicationServices.Authentication
                     Issuer = _baseUrl,
                     IssuedAt = validFrom,
                     Expires = expires,
-                    SigningCredentials = new SigningCredentials(BearerTokenConfig.SecurityKey, SecurityAlgorithms.HmacSha256Signature, SecurityAlgorithms.Sha256Digest)
+                    SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256Signature, SecurityAlgorithms.Sha256Digest)
                 });
                 var tokenString = handler.WriteToken(securityToken);
                 return new KitosApiToken(user, tokenString, expires);
@@ -63,7 +65,7 @@ namespace Core.ApplicationServices.Authentication
             var validationParams = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = BearerTokenConfig.SecurityKey,
+                IssuerSigningKey = _signingKey,
                 ValidateIssuer = true,
                 ValidIssuer = _baseUrl,
                 ValidateLifetime = true,
