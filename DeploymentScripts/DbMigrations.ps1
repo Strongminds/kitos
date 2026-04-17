@@ -6,7 +6,10 @@ Function ConvertTo-SqlConnectionParts([string]$connectionString) {
     }
     $server = if ($cs['Server']) { $cs['Server'] } else { $cs['Data Source'] }
     
-    if ($server -and $server -notmatch '^(tcp|np|lpc):') {
+    # Only prepend tcp: for remote servers. Local instances (.\X, (local), localhost, (localdb)\X)
+    # use named pipes or shared memory and fail when forced onto TCP.
+    $isLocal = $server -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|$)'
+    if ($server -and -not $isLocal -and $server -notmatch '^(tcp|np|lpc):') {
         $server = "tcp:$server"
     }
     return @{
