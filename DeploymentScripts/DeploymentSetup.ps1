@@ -146,9 +146,11 @@ Function Setup-Environment([String] $environmentName) {
     Configure-Aws -accessKeyId "$Env:AwsAccessKeyId" -secretAccessKey "$Env:AwsSecretAccessKey"
     Load-Environment-Secrets-From-Aws -envName "$environmentName" -loadTcHangfireConnectionString $loadTcHangfireConnectionString -loadTestUsers $loadTestUsers
 
-    # Apply after SSM load so it cannot be overwritten by SSM parameters
+    # Apply after SSM load so these cannot be overwritten by SSM parameters
     if ($forcePickupDirectorySmtp) {
         $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
+    } else {
+        $Env:SmtpDeliveryMethod = "Network"
     }
 
     # Emit TeamCity service messages after all overrides are applied so subsequent
