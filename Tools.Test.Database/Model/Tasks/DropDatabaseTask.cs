@@ -26,8 +26,8 @@ namespace Tools.Test.Database.Model.Tasks
             {
                 connection.Open();
 
-                const int maxAttempts = 8;
-                const int delayMs = 3000;
+                const int maxAttempts = 15;
+                const int delayMs = 5000;
 
                 for (var attempt = 1; attempt <= maxAttempts; attempt++)
                 {
@@ -39,6 +39,11 @@ namespace Tools.Test.Database.Model.Tasks
                             "DECLARE @dbName sysname = @name; " +
                             "IF DB_ID(@dbName) IS NOT NULL " +
                             "BEGIN " +
+                                "DECLARE @killSql nvarchar(max) = N''; " +
+                                "SELECT @killSql = @killSql + N'KILL ' + CONVERT(nvarchar(20), s.session_id) + N';' " +
+                                "FROM sys.dm_exec_sessions s " +
+                                "WHERE s.database_id = DB_ID(@dbName) AND s.session_id <> @@SPID; " +
+                                "IF LEN(@killSql) > 0 EXEC(@killSql); " +
                                 "DECLARE @quotedDbName nvarchar(258) = QUOTENAME(@dbName); " +
                                 "DECLARE @sql nvarchar(max) = N'ALTER DATABASE ' + @quotedDbName + N' SET SINGLE_USER WITH ROLLBACK IMMEDIATE;'; " +
                                 "EXEC(@sql); " +
