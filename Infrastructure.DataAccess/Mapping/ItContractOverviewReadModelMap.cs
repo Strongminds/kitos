@@ -112,6 +112,12 @@ namespace Infrastructure.DataAccess.Mapping
             Property(x => x.ItSystemUsagesCsv)
                 .IsOptional();
 
+            Property(x => x.ExternalPaymentOrganizationUnitsCsv)
+                .IsOptional();
+
+            Property(x => x.InternalPaymentOrganizationUnitsCsv)
+                .IsOptional();
+
             Property(x => x.ItSystemUsagesSystemUuidCsv)
                 .IsOptional();
 
