@@ -7,7 +7,12 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Presentation.Web</RootNamespace>
     <AssemblyName>Presentation.Web</AssemblyName>
-    <!-- Copy App.config → Presentation.Web.dll.config so ConfigurationManager finds the SAML sections -->
+  </PropertyGroup>
+  <!-- AppConfig points MSBuild at the right file for local builds (dotnet build / run).
+       For publish/deploy, PreparePackage.ps1 copies Web.config → Presentation.Web.dll.config
+       because ConfigurationManager on .NET Core reads <AssemblyName>.dll.config, not Web.config.
+       Web.config is only used by IIS itself; the .NET process never reads it via ConfigurationManager. -->
+  <PropertyGroup>
     <AppConfig>App.config</AppConfig>
   </PropertyGroup>
   <ItemGroup>
@@ -91,4 +96,3 @@
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.WscCore.dll" />
   </ItemGroup>
 </Project>
-
