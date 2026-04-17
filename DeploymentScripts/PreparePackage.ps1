@@ -49,7 +49,9 @@
 
 	# SMTP
 	$appSettings.Smtp.From           = $Env:SmtpFromMail
-	$appSettings.Smtp.DeliveryMethod = $Env:SmtpDeliveryMethod
+	# Only overwrite DeliveryMethod if the env var is explicitly set; otherwise keep the appsettings.json default.
+	# This prevents a missing/null SSM value from blanking the field and causing SmtpClient to fail.
+	if ($Env:SmtpDeliveryMethod) { $appSettings.Smtp.DeliveryMethod = $Env:SmtpDeliveryMethod }
 	$appSettings.Smtp.Host           = $Env:SmtpNetworkHost
 	$appSettings.Smtp.Port           = $Env:SmtpNetworkPort
 	$appSettings.Smtp.UserName       = $Env:SmtpUserName
