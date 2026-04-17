@@ -151,12 +151,14 @@
 
 	Write-Host "Update of appsettings.json complete"
 
-	# Keep XML SAML configuration in sync with environment values used for deployment.
-	# The SAML library reads from ConfigurationManager (Presentation.Web.dll.config in net10),
-	# so appsettings.json updates are not sufficient for SSO endpoints.
-	Update-SamlConfigFile ".\TEMP_PresentationWeb\Presentation.Web.dll.config"
-	Update-SamlConfigFile ".\TEMP_PresentationWeb\App.config"
+	# Keep SAML configuration in Web.config in sync with environment values.
+	# Web.config is the authoritative SAML config file in the publish output — it is updated here
+	# with environment-specific values, then copied as Presentation.Web.dll.config so that
+	# ConfigurationManager (which the SAML library uses) can find the Federation / SAML20Federation
+	# sections. IIS reads Web.config itself; the .NET process reads <AssemblyName>.dll.config.
 	Update-SamlConfigFile ".\TEMP_PresentationWeb\Web.config"
+	Copy-Item ".\TEMP_PresentationWeb\Web.config" ".\TEMP_PresentationWeb\Presentation.Web.dll.config" -Force
+	Write-Host "Copied Web.config → Presentation.Web.dll.config"
 
 	# Handle environment-specific robots file (was previously done via msdeploy -replace)
 	$wwwroot = ".\TEMP_PresentationWeb\wwwroot"
