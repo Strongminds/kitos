@@ -8222,7 +8222,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItContract.ItContract", "ItContract")
                         .WithMany("AssociatedAgreementElementTypes")
                         .HasForeignKey("ItContract_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AgreementElementType");
@@ -8241,7 +8241,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", "ItSystemUsage")
                         .WithMany("Contracts")
                         .HasForeignKey("ItSystemUsageId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", null)
@@ -9307,7 +9307,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", "ToSystemUsage")
                         .WithMany("UsedByRelations")
                         .HasForeignKey("ToSystemUsageId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.ItSystem.RelationFrequencyType", "UsageFrequency")
@@ -10549,7 +10549,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ExternalReference", "BrokenReferenceOrigin")
                         .WithMany("BrokenLinkReports")
                         .HasForeignKey("BrokenReferenceOriginId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.Qa.References.BrokenExternalReferencesReport", "ParentReport")
@@ -10568,7 +10568,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystem.ItInterface", "BrokenReferenceOrigin")
                         .WithMany("BrokenLinkReports")
                         .HasForeignKey("BrokenReferenceOriginId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.Qa.References.BrokenExternalReferencesReport", "ParentReport")

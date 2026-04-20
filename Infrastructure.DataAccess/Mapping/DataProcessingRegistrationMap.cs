@@ -26,10 +26,18 @@ namespace Infrastructure.DataAccess.Mapping
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(x => x.SystemUsages)
-                .WithMany(x => x.AssociatedDataProcessingRegistrations);
+                .WithMany(x => x.AssociatedDataProcessingRegistrations)
+                .UsingEntity(
+                    l => l.HasOne(typeof(Core.DomainModel.ItSystemUsage.ItSystemUsage)).WithMany().HasForeignKey("ItSystemUsage_Id"),
+                    r => r.HasOne(typeof(DataProcessingRegistration)).WithMany().HasForeignKey("DataProcessingRegistration_Id"),
+                    j => { j.ToTable("DataProcessingRegistrationItSystemUsages"); j.HasKey("DataProcessingRegistration_Id", "ItSystemUsage_Id"); });
 
             builder.HasMany(x => x.DataProcessors)
-                .WithMany(x => x.DataProcessorForDataProcessingRegistrations);
+                .WithMany(x => x.DataProcessorForDataProcessingRegistrations)
+                .UsingEntity(
+                    l => l.HasOne(typeof(Core.DomainModel.Organization.Organization)).WithMany().HasForeignKey("Organization_Id"),
+                    r => r.HasOne(typeof(DataProcessingRegistration)).WithMany().HasForeignKey("DataProcessingRegistration_Id"),
+                    j => { j.ToTable("DataProcessingRegistrationOrganizations"); j.HasKey("DataProcessingRegistration_Id", "Organization_Id"); });
 
             builder.HasMany(x => x.InsecureCountriesSubjectToDataTransfer)
                 .WithMany(x => x.References);

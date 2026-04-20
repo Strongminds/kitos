@@ -46,6 +46,48 @@ Function Invoke-KitosSqlFile([string]$connectionString, [string]$sqlFilePath) {
     if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed executing $sqlFilePath" }
 }
 
+# For existing databases (previously managed by EF6), pre-marks EF Core migrations as applied
+# so that dotnet ef does not attempt to re-apply schema changes that are already present.
+#
+# Rules:
+#   - InitialBaseline: always pre-marked because the full schema already exists.
+#   - AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel: pre-marked only when
+#     the matching EF6 entry is found in __MigrationHistory (name match, any timestamp prefix).
+Function Initialize-EFCoreHistoryForExistingDb([string]$connectionString) {
+    $parts = ConvertTo-SqlConnectionParts $connectionString
+    $authArgs = Get-SqlcmdAuthArgs $parts
+
+    $sql = @"
+-- Ensure the EF Core history table exists before any inserts.
+-- dotnet ef creates it automatically, but we run before dotnet ef.
+IF OBJECT_ID('[__EFMigrationsHistory]', 'U') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId]    nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32)  NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    )
+END
+
+-- InitialBaseline: existing DB already has the full schema, never re-apply it.
+IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] LIKE '%_InitialBaseline')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES ('20260413095837_InitialBaseline', '10.0.6')
+    PRINT 'Pre-marked InitialBaseline'
+END
+"@
+
+    $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
+    $sql | Set-Content -Path $tmpFile -Encoding UTF8
+    try {
+        & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $tmpFile -b
+        if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed initializing EF Core migration history" }
+    } finally {
+        Remove-Item $tmpFile -ErrorAction SilentlyContinue
+    }
+}
+
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [string]$buildConfiguration = "Release") {
     Write-Host "Executing db migrations"
 
@@ -81,6 +123,11 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # Expose the connection string via the standard .NET env var so the
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
     $Env:ConnectionStrings__KitosContext = $connectionString
+
+    if ($newDb -eq $false) {
+        Write-Host "Initializing EF Core migration history for existing database"
+        Initialize-EFCoreHistoryForExistingDb -connectionString $connectionString
+    }
 
     # CI path: use the pre-built self-contained bundle (no source or SDK required on the agent).
     # Local dev fallback: build and run via dotnet ef when the bundle is not present.

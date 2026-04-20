@@ -1420,7 +1420,7 @@ CREATE TABLE [BrokenLinkInInterface] (
     [ParentReportId] int NOT NULL,
     CONSTRAINT [PK_BrokenLinkInInterface] PRIMARY KEY ([Id]),
     CONSTRAINT [FK_BrokenLinkInInterface_BrokenExternalReferencesReports_ParentReportId] FOREIGN KEY ([ParentReportId]) REFERENCES [BrokenExternalReferencesReports] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_BrokenLinkInInterface_ItInterface_BrokenReferenceOriginId] FOREIGN KEY ([BrokenReferenceOriginId]) REFERENCES [ItInterface] ([Id]) ON DELETE NO ACTION
+    CONSTRAINT [FK_BrokenLinkInInterface_ItInterface_BrokenReferenceOriginId] FOREIGN KEY ([BrokenReferenceOriginId]) REFERENCES [ItInterface] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [DataRow] (
@@ -1892,7 +1892,7 @@ CREATE TABLE [ItContractAgreementElementTypes] (
     [AgreementElementType_Id] int NOT NULL,
     CONSTRAINT [PK_ItContractAgreementElementTypes] PRIMARY KEY ([AgreementElementType_Id], [ItContract_Id]),
     CONSTRAINT [FK_ItContractAgreementElementTypes_AgreementElementTypes_AgreementElementType_Id] FOREIGN KEY ([AgreementElementType_Id]) REFERENCES [AgreementElementTypes] ([Id]) ON DELETE NO ACTION,
-    CONSTRAINT [FK_ItContractAgreementElementTypes_ItContract_ItContract_Id] FOREIGN KEY ([ItContract_Id]) REFERENCES [ItContract] ([Id]) ON DELETE NO ACTION
+    CONSTRAINT [FK_ItContractAgreementElementTypes_ItContract_ItContract_Id] FOREIGN KEY ([ItContract_Id]) REFERENCES [ItContract] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [ItContractOverviewReadModels] (
@@ -2122,7 +2122,7 @@ CREATE TABLE [ItContractItSystemUsages] (
     [ItSystemUsage_Id] int NULL,
     CONSTRAINT [PK_ItContractItSystemUsages] PRIMARY KEY ([ItContractId], [ItSystemUsageId]),
     CONSTRAINT [FK_ItContractItSystemUsages_ItContract_ItContractId] FOREIGN KEY ([ItContractId]) REFERENCES [ItContract] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_ItContractItSystemUsages_ItSystemUsage_ItSystemUsageId] FOREIGN KEY ([ItSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_ItContractItSystemUsages_ItSystemUsage_ItSystemUsageId] FOREIGN KEY ([ItSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_ItContractItSystemUsages_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE NO ACTION
 );
 
@@ -2277,7 +2277,7 @@ CREATE TABLE [SystemRelations] (
     CONSTRAINT [FK_SystemRelations_ItContract_AssociatedContractId] FOREIGN KEY ([AssociatedContractId]) REFERENCES [ItContract] ([Id]) ON DELETE NO ACTION,
     CONSTRAINT [FK_SystemRelations_ItInterface_RelationInterfaceId] FOREIGN KEY ([RelationInterfaceId]) REFERENCES [ItInterface] ([Id]) ON DELETE NO ACTION,
     CONSTRAINT [FK_SystemRelations_ItSystemUsage_FromSystemUsageId] FOREIGN KEY ([FromSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_SystemRelations_ItSystemUsage_ToSystemUsageId] FOREIGN KEY ([ToSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_SystemRelations_ItSystemUsage_ToSystemUsageId] FOREIGN KEY ([ToSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_SystemRelations_RelationFrequencyTypes_UsageFrequencyId] FOREIGN KEY ([UsageFrequencyId]) REFERENCES [RelationFrequencyTypes] ([Id]) ON DELETE NO ACTION,
     CONSTRAINT [FK_SystemRelations_User_LastChangedByUserId] FOREIGN KEY ([LastChangedByUserId]) REFERENCES [User] ([Id]) ON DELETE NO ACTION,
     CONSTRAINT [FK_SystemRelations_User_ObjectOwnerId] FOREIGN KEY ([ObjectOwnerId]) REFERENCES [User] ([Id]) ON DELETE NO ACTION
@@ -3685,7 +3685,7 @@ CREATE INDEX [IX_UserNotifications_OrganizationId] ON [UserNotifications] ([Orga
 
 ALTER TABLE [ArchivePeriod] ADD CONSTRAINT [FK_ArchivePeriod_ItSystemUsage_ItSystemUsageId] FOREIGN KEY ([ItSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [BrokenLinkInExternalReference] ADD CONSTRAINT [FK_BrokenLinkInExternalReference_ExternalReferences_BrokenReferenceOriginId] FOREIGN KEY ([BrokenReferenceOriginId]) REFERENCES [ExternalReferences] ([Id]) ON DELETE NO ACTION;
+ALTER TABLE [BrokenLinkInExternalReference] ADD CONSTRAINT [FK_BrokenLinkInExternalReference_ExternalReferences_BrokenReferenceOriginId] FOREIGN KEY ([BrokenReferenceOriginId]) REFERENCES [ExternalReferences] ([Id]) ON DELETE CASCADE;
 
 ALTER TABLE [DataProcessingCountryOptionDataProcessingRegistration] ADD CONSTRAINT [FK_DataProcessingCountryOptionDataProcessingRegistration_DataProcessingRegistrations_ReferencesId] FOREIGN KEY ([ReferencesId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 

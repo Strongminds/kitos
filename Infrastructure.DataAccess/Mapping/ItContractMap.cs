@@ -55,7 +55,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithOne(t => t.ItContract)
                 .HasForeignKey(t => t.ItContract_Id)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(t => t.ResponsibleOrganizationUnit)
                 .WithMany(t => t.ResponsibleForItContracts)

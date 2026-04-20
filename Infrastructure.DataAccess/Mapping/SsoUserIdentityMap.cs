@@ -12,8 +12,9 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasOne(x => x.User)
                 .WithMany(x => x.SsoIdentities)
+                .HasForeignKey("User_Id")
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

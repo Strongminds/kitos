@@ -8,6 +8,8 @@ namespace Infrastructure.DataAccess.Mapping
     {
         public void Configure(EntityTypeBuilder<StsOrganizationIdentity> builder)
         {
+            builder.ToTable("StsOrganizationIdentities");
+
             builder.HasIndex(x => x.ExternalUuid).IsUnique().HasDatabaseName("UX_" + nameof(StsOrganizationIdentity.ExternalUuid));
 
             builder.HasOne(x => x.Organization)

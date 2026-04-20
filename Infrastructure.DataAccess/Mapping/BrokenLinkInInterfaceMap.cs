@@ -8,10 +8,12 @@ namespace Infrastructure.DataAccess.Mapping
     {
         public void Configure(EntityTypeBuilder<BrokenLinkInInterface> builder)
         {
+            builder.ToTable("BrokenLinkInInterfaces");
+
             builder.HasOne(x => x.BrokenReferenceOrigin)
                 .WithMany(x => x.BrokenLinkReports)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

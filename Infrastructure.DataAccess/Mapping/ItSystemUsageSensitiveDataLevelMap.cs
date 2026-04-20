@@ -8,6 +8,12 @@ namespace Infrastructure.DataAccess.Mapping
     {
         public void Configure(EntityTypeBuilder<ItSystemUsageSensitiveDataLevel> builder)
         {
+            // SQL Server rejects CASCADE here due to multiple cascade paths through ItSystemUsage.
+            builder
+                .HasOne(x => x.ItSystemUsage)
+                .WithMany(x => x.SensitiveDataLevels)
+                .HasForeignKey("ItSystemUsage_Id")
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

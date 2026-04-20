@@ -57,7 +57,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithOne(t => t.ItSystemUsage)
                 .HasForeignKey(d => d.ItSystemUsageId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(t => t.ArchiveLocation)
                 .WithMany(t => t.References)
@@ -78,7 +78,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasMany(t => t.SensitiveDataLevels)
                 .WithOne(t => t.ItSystemUsage)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(x => x.PersonalDataOptions)
                 .WithOne(o => o.ItSystemUsage)

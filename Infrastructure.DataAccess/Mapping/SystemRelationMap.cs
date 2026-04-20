@@ -30,7 +30,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithMany(x => x.UsedByRelations)
                 .HasForeignKey(x => x.ToSystemUsageId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.FromSystemUsage)
                 .WithMany(x => x.UsageRelations)
