@@ -324,6 +324,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>No content</returns>
         [HttpDelete]
         [AllowRightsHoldersAccess]
+        [Consumes("application/json")]
         [Route("rightsholder/it-systems/{uuid}")]
         public IActionResult DeactivateSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] DeactivationReasonRequestDTO request)
         {

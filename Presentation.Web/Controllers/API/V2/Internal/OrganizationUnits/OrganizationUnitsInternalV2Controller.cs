@@ -130,6 +130,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
         }
 
         [HttpDelete]
+        [Consumes("application/json")]
         [Route("{organizationUnitUuid}/roles/delete")]
         public IActionResult DeleteRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] DeleteOrganizationUnitRoleAssignmentRequestDTO request)

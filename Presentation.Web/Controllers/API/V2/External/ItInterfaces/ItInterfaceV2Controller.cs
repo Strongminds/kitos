@@ -295,6 +295,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces
         /// <returns>No content</returns>
         [HttpDelete]
         [AllowRightsHoldersAccess]
+        [Consumes("application/json")]
         [Route("rightsholder/it-interfaces/{uuid}")]
         public IActionResult DeactivateItInterfaceAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] DeactivationReasonRequestDTO request)
         {

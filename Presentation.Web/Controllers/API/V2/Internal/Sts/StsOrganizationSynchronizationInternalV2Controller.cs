@@ -79,6 +79,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
         }
 
         [HttpDelete]
+        [Consumes("application/json")]
         [Route("connection")]
         public IActionResult Disconnect(Guid organizationUuid, [FromBody] DisconnectFromStsOrganizationRequestDTO request)
         {
