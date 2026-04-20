@@ -1,11 +1,10 @@
 using Core.ApplicationServices.Notification;
 using Core.DomainModel.Notification;
-using Core.DomainModel.Shared;
+using Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Presentation.Web.Models.API.V2.Internal.Response.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Types.Notifications;
@@ -30,10 +29,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         }
 
         [HttpGet]
-        [Route("organization/{organizationUuid}/user/{userUuid}/{relatedEntityType}")]
-        public IActionResult GetByOrganizationAndUser([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromRoute][NonEmptyGuid] Guid userUuid, RelatedEntityType relatedEntityType)
+        [Route("organization/{organizationUuid}/user/{userUuid}/{ownerResourceType}")]
+        public IActionResult GetByOrganizationAndUser([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromRoute][NonEmptyGuid] Guid userUuid, OwnerResourceType ownerResourceType)
         {
-            return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, relatedEntityType)
+            return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, ownerResourceType.ToRelatedEntityType())
                     .Select(MapUserAlertsToDTO)
                     .Match(Ok, FromOperationError);
         }

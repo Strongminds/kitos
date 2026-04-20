@@ -278,12 +278,16 @@ app.UseSerilogRequestLogging();
 // Forward X-Forwarded-For and X-Forwarded-Proto headers from reverse proxies (IIS Express,
 // IIS, Nginx, etc.) so that Request.IsHttps correctly reflects the original connection.
 // This must run before UseHttpsRedirection and the SAML handlers.
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+if (!app.Environment.IsDevelopment())
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
 
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
+}
+
 app.UseStaticFiles();
 app.UseRouting();
 

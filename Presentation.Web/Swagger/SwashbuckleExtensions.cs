@@ -79,6 +79,9 @@ namespace Presentation.Web.Swagger
             if (string.IsNullOrEmpty(key) || !schemaByTypeName.TryGetValue(key, out var definition))
                 return Enumerable.Empty<IOpenApiSchema>();
 
+            if (definition.Properties == null)
+                return Enumerable.Empty<IOpenApiSchema>();
+
             return definition.Properties.Values
                 .Select(p => p.GetRootSchemaOrNull())
                 .Where(s => s != null)!;

@@ -53,6 +53,12 @@ namespace Presentation.Web.Swagger
                 opsId += "_V" + indexOfCurrentAction;
             }
 
+            var relativePath = apiDescription.RelativePath ?? string.Empty;
+            if (relativePath.Contains("/$count", StringComparison.OrdinalIgnoreCase))
+            {
+                opsId += "_count";
+            }
+
             operation.OperationId = opsId;
         }
     }

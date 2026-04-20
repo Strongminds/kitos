@@ -49,6 +49,9 @@ namespace Presentation.Web.Swagger
                     EnsureResponseContent(operation, Json);
                     break;
                 case "DELETE":
+                    if (operation.RequestBody != null)
+                        EnsureRequestBodyContent(operation, Json);
+                    break;
                 default:
                     break;
             }
