@@ -7073,7 +7073,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BrokenReferenceOriginId")
+                    b.Property<int>("BrokenReferenceOrigin_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("Cause")
@@ -7082,7 +7082,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("ErrorResponseCode")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParentReportId")
+                    b.Property<int>("ParentReport_Id")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReferenceDateOfLatestLinkChange")
@@ -7093,9 +7093,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrokenReferenceOriginId");
+                    b.HasIndex("BrokenReferenceOrigin_Id");
 
-                    b.HasIndex("ParentReportId");
+                    b.HasIndex("ParentReport_Id");
 
                     b.ToTable("BrokenLinkInExternalReferences");
                 });
@@ -7108,7 +7108,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BrokenReferenceOriginId")
+                    b.Property<int>("BrokenReferenceOrigin_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("Cause")
@@ -7117,7 +7117,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("ErrorResponseCode")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParentReportId")
+                    b.Property<int>("ParentReport_Id")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReferenceDateOfLatestLinkChange")
@@ -7128,9 +7128,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrokenReferenceOriginId");
+                    b.HasIndex("BrokenReferenceOrigin_Id");
 
-                    b.HasIndex("ParentReportId");
+                    b.HasIndex("ParentReport_Id");
 
                     b.ToTable("BrokenLinkInInterfaces");
                 });
@@ -10545,13 +10545,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.ExternalReference", "BrokenReferenceOrigin")
                         .WithMany("BrokenLinkReports")
-                        .HasForeignKey("BrokenReferenceOriginId")
+                        .HasForeignKey("BrokenReferenceOrigin_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.Qa.References.BrokenExternalReferencesReport", "ParentReport")
                         .WithMany("BrokenExternalReferences")
-                        .HasForeignKey("ParentReportId")
+                        .HasForeignKey("ParentReport_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -10564,13 +10564,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.ItSystem.ItInterface", "BrokenReferenceOrigin")
                         .WithMany("BrokenLinkReports")
-                        .HasForeignKey("BrokenReferenceOriginId")
+                        .HasForeignKey("BrokenReferenceOrigin_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.Qa.References.BrokenExternalReferencesReport", "ParentReport")
                         .WithMany("BrokenInterfaceLinks")
-                        .HasForeignKey("ParentReportId")
+                        .HasForeignKey("ParentReport_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

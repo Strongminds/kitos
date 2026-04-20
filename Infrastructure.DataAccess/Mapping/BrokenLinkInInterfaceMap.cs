@@ -12,6 +12,13 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasOne(x => x.BrokenReferenceOrigin)
                 .WithMany(x => x.BrokenLinkReports)
+                .HasForeignKey("BrokenReferenceOrigin_Id")
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.ParentReport)
+                .WithMany(x => x.BrokenInterfaceLinks)
+                .HasForeignKey("ParentReport_Id")
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }
