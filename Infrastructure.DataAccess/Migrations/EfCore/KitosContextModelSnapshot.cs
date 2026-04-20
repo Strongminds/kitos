@@ -3697,7 +3697,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemUsageId");
 
-                    b.ToTable("ItSystemUsagePersonalDataOptions");
+                    b.ToTable("ItSystemUsagePersonalDatas");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.GDPR.ItSystemUsageSensitiveDataLevel", b =>
@@ -7426,47 +7426,47 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             modelBuilder.Entity("DataProcessingCountryOptionDataProcessingRegistration", b =>
                 {
-                    b.Property<int>("InsecureCountriesSubjectToDataTransferId")
+                    b.Property<int>("DataProcessingRegistration_Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReferencesId")
+                    b.Property<int>("DataProcessingCountryOption_Id")
                         .HasColumnType("int");
 
-                    b.HasKey("InsecureCountriesSubjectToDataTransferId", "ReferencesId");
+                    b.HasKey("DataProcessingRegistration_Id", "DataProcessingCountryOption_Id");
 
-                    b.HasIndex("ReferencesId");
+                    b.HasIndex("DataProcessingCountryOption_Id");
 
-                    b.ToTable("DataProcessingCountryOptionDataProcessingRegistration");
+                    b.ToTable("DataProcessingRegistrationDataProcessingCountryOptions");
                 });
 
             modelBuilder.Entity("DataProcessingOversightOptionDataProcessingRegistration", b =>
                 {
-                    b.Property<int>("OversightOptionsId")
+                    b.Property<int>("DataProcessingRegistration_Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReferencesId")
+                    b.Property<int>("DataProcessingOversightOption_Id")
                         .HasColumnType("int");
 
-                    b.HasKey("OversightOptionsId", "ReferencesId");
+                    b.HasKey("DataProcessingRegistration_Id", "DataProcessingOversightOption_Id");
 
-                    b.HasIndex("ReferencesId");
+                    b.HasIndex("DataProcessingOversightOption_Id");
 
-                    b.ToTable("DataProcessingOversightOptionDataProcessingRegistration");
+                    b.ToTable("DataProcessingRegistrationDataProcessingOversightOptions");
                 });
 
             modelBuilder.Entity("DataProcessingRegistrationItContract", b =>
                 {
-                    b.Property<int>("AssociatedContractsId")
+                    b.Property<int>("ItContract_Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("DataProcessingRegistrationsId")
+                    b.Property<int>("DataProcessingRegistration_Id")
                         .HasColumnType("int");
 
-                    b.HasKey("AssociatedContractsId", "DataProcessingRegistrationsId");
+                    b.HasKey("ItContract_Id", "DataProcessingRegistration_Id");
 
-                    b.HasIndex("DataProcessingRegistrationsId");
+                    b.HasIndex("DataProcessingRegistration_Id");
 
-                    b.ToTable("DataProcessingRegistrationItContract");
+                    b.ToTable("ItContractDataProcessingRegistrations");
                 });
 
             modelBuilder.Entity("DataProcessingRegistrationItSystemUsage", b =>
@@ -10697,13 +10697,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingCountryOption", null)
                         .WithMany()
-                        .HasForeignKey("InsecureCountriesSubjectToDataTransferId")
+                        .HasForeignKey("DataProcessingCountryOption_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingRegistration", null)
                         .WithMany()
-                        .HasForeignKey("ReferencesId")
+                        .HasForeignKey("DataProcessingRegistration_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -10712,13 +10712,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingOversightOption", null)
                         .WithMany()
-                        .HasForeignKey("OversightOptionsId")
+                        .HasForeignKey("DataProcessingOversightOption_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingRegistration", null)
                         .WithMany()
-                        .HasForeignKey("ReferencesId")
+                        .HasForeignKey("DataProcessingRegistration_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -10727,13 +10727,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.ItContract.ItContract", null)
                         .WithMany()
-                        .HasForeignKey("AssociatedContractsId")
+                        .HasForeignKey("ItContract_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingRegistration", null)
                         .WithMany()
-                        .HasForeignKey("DataProcessingRegistrationsId")
+                        .HasForeignKey("DataProcessingRegistration_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

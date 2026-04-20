@@ -209,7 +209,7 @@ namespace Infrastructure.DataAccess
             ConfigureLocalOptionType<LocalProcurementStrategyType>(modelBuilder, "LocalProcurementStrategyTypes");
             ConfigureLocalOptionType<LocalPurchaseFormType>(modelBuilder, "LocalPurchaseFormTypes");
             ConfigureLocalOptionType<LocalRegisterType>(modelBuilder, "LocalRegisterTypes");
-            ConfigureLocalOptionType<LocalRelationFrequencyType>(modelBuilder, "LocalFrequencyTypes");
+            ConfigureLocalOptionType<LocalRelationFrequencyType>(modelBuilder, "LocalRelationFrequencyTypes");
             ConfigureLocalOptionType<LocalSensitiveDataType>(modelBuilder, "LocalSensitiveDataTypes");
             ConfigureLocalOptionType<LocalSensitivePersonalDataType>(modelBuilder, "LocalSensitivePersonalDataTypes");
             ConfigureLocalOptionType<LocalTerminationDeadlineType>(modelBuilder, "LocalTerminationDeadlineTypes");

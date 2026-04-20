@@ -40,7 +40,11 @@ namespace Infrastructure.DataAccess.Mapping
                     j => { j.ToTable("DataProcessingRegistrationOrganizations"); j.HasKey("DataProcessingRegistration_Id", "Organization_Id"); });
 
             builder.HasMany(x => x.InsecureCountriesSubjectToDataTransfer)
-                .WithMany(x => x.References);
+                .WithMany(x => x.References)
+                .UsingEntity(
+                    l => l.HasOne(typeof(DataProcessingCountryOption)).WithMany().HasForeignKey("DataProcessingCountryOption_Id"),
+                    r => r.HasOne(typeof(DataProcessingRegistration)).WithMany().HasForeignKey("DataProcessingRegistration_Id"),
+                    j => { j.ToTable("DataProcessingRegistrationDataProcessingCountryOptions"); j.HasKey("DataProcessingRegistration_Id", "DataProcessingCountryOption_Id"); });
 
             builder.HasOne(x => x.BasisForTransfer)
                 .WithMany(x => x.References)
@@ -51,7 +55,11 @@ namespace Infrastructure.DataAccess.Mapping
                 .HasForeignKey(x => x.DataResponsible_Id);
 
             builder.HasMany(x => x.OversightOptions)
-                .WithMany(x => x.References);
+                .WithMany(x => x.References)
+                .UsingEntity(
+                    l => l.HasOne(typeof(DataProcessingOversightOption)).WithMany().HasForeignKey("DataProcessingOversightOption_Id"),
+                    r => r.HasOne(typeof(DataProcessingRegistration)).WithMany().HasForeignKey("DataProcessingRegistration_Id"),
+                    j => { j.ToTable("DataProcessingRegistrationDataProcessingOversightOptions"); j.HasKey("DataProcessingRegistration_Id", "DataProcessingOversightOption_Id"); });
 
             builder.Property(x => x.Uuid).IsRequired();
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_DataProcessingRegistration_Uuid");

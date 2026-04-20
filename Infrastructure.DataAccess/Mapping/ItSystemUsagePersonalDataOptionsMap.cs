@@ -8,6 +8,7 @@ namespace Infrastructure.DataAccess.Mapping
     {
         public void Configure(EntityTypeBuilder<ItSystemUsagePersonalData> builder)
         {
+            builder.ToTable("ItSystemUsagePersonalDatas");
             builder.Property(x => x.PersonalData).IsRequired();
         }
     }
