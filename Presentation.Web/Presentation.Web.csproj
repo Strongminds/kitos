@@ -8,10 +8,10 @@
     <RootNamespace>Presentation.Web</RootNamespace>
     <AssemblyName>Presentation.Web</AssemblyName>
   </PropertyGroup>
-  <!-- AppConfig points MSBuild at the right file for local builds (dotnet build / run).
-       For publish/deploy, PreparePackage.ps1 copies Web.config → Presentation.Web.dll.config
-       because ConfigurationManager on .NET Core reads <AssemblyName>.dll.config, not Web.config.
-       Web.config is only used by IIS itself; the .NET process never reads it via ConfigurationManager. -->
+    <!-- AppConfig points MSBuild at the right file for local builds (dotnet build / run).
+      For publish/deploy, PreparePackage.ps1 updates App.config with environment-specific SAML
+      values and copies it to Presentation.Web.dll.config, because ConfigurationManager on .NET
+      Core reads <AssemblyName>.dll.config, not Web.config. Web.config remains IIS-only. -->
   <PropertyGroup>
     <AppConfig>App.config</AppConfig>
   </PropertyGroup>

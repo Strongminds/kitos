@@ -45,5 +45,6 @@ Setup-Environment -environmentName $targetEnvironment
                 -apiGlobalAdminPw "$Env:TestUserApiGlobalAdminPw" `
                 -systemIntegratorEmail "$Env:TestUserSystemIntegrator" `
                 -systemIntegratorPw "$Env:TestUserSystemIntegratorPw" `
-                -buildConfiguration "Release"
+                -buildConfiguration "Release" `
+                -stopWebHostDuringReset
                 

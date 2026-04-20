@@ -84,7 +84,13 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
 Function Publish-TeamCityParameters() {
     if (-not $Env:TEAMCITY_VERSION) { return }  # no-op outside TeamCity
 
+    # These TeamCity parameters are marked readOnly and must not be re-published.
+    $variablesNotToPublish = @("AwsAccessKeyId", "AwsSecretAccessKey")
+
     Get-ChildItem Env: | ForEach-Object {
+        if ($variablesNotToPublish -contains $_.Name) { return }
+        if ([string]::IsNullOrEmpty($_.Value)) { return }
+
         $escaped = $_.Value -replace '\|', '||' -replace "'", "|'" -replace '\[', '|[' -replace '\]', '|]' -replace "`n", '|n' -replace "`r", '|r'
         Write-Host "##teamcity[setParameter name='env.$($_.Name)' value='$escaped']"
     }
