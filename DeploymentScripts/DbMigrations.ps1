@@ -132,6 +132,21 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         Write-Host "Baseline schema applied"
     }
 
+    # Debug: verify TCP connectivity before attempting any DB operations.
+    $parts = ConvertTo-SqlConnectionParts $connectionString
+    $rawServer = $parts.Server -replace '^tcp:', ''
+    $host_, $port_ = ($rawServer -split ',', 2) + @('1433')
+    $port_ = [int]($port_.Trim())
+    Write-Host "Checking TCP connectivity to $host_`:$port_ ..."
+    $tcpTest = Test-NetConnection -ComputerName $host_ -Port $port_ -WarningAction SilentlyContinue
+    if ($tcpTest.TcpTestSucceeded) {
+        Write-Host "TCP connectivity OK ($host_`:$port_)"
+    } else {
+        Write-Warning "TCP connectivity FAILED to $host_`:$port_ - SQL connections will time out"
+        Write-Host "PingSucceeded: $($tcpTest.PingSucceeded)"
+        Write-Host "RemoteAddress: $($tcpTest.RemoteAddress)"
+    }
+
     # Expose the connection string via the standard .NET env var so the
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
     $Env:ConnectionStrings__KitosContext = $connectionString
