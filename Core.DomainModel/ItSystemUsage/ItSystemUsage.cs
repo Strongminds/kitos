@@ -208,6 +208,8 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<ExternalReference> ExternalReferences { get; set; }
+        public ItSystemUsageCriticalitySection CriticalitySection { get; set; } = new();
+
         public ReferenceRootType GetRootType()
         {
             return ReferenceRootType.SystemUsage;

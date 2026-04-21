@@ -105,6 +105,11 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasIndex(x => x.GdprCriticality).HasDatabaseName("ItSystemUsage_Index_GdprCriticality");
 
+            builder.OwnsOne(x => x.CriticalitySection, owned =>
+            {
+                owned.Property(p => p.isBusinessCritical).HasColumnName("isBusinessCritical");
+            });
+
             builder.Property(x => x.Uuid).IsRequired();
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ItSystemUsage_Uuid");
         }

@@ -345,7 +345,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     },
                 } : new List<ItContractItSystemUsage>(),
                 OrganizationId = orgId,
-                isBusinessCritical = A<DataOptions>(),
+                CriticalitySection = new ItSystemUsageCriticalitySection { isBusinessCritical = A<DataOptions>() },
                 noteRisks = A<string>(),
                 LinkToDirectoryUrl = A<string>(),
                 HostedAt = A<HostedAt>(),
