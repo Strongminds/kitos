@@ -61,8 +61,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         public YesNoDontKnowChoice? IsSociallyCritical { get; set; }
         /// <summary>
-        /// Whether this system is considered business critical.
+        /// Criticality-related properties for this system usage.
         /// </summary>
-        public YesNoDontKnowChoice? BusinessCritical { get; set; }
+        [Required]
+        public CriticalitySectionResponseDTO CriticalitySection { get; set; }
     }
 }

@@ -77,8 +77,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.WebAccessibilityNotes));
             if (general.IsSociallyCritical.HasChange)
                 changed.Add(nameof(general.IsSociallyCritical));
-            if (general.BusinessCritical.HasChange)
-                changed.Add(nameof(general.BusinessCritical));
+            if (general.CriticalitySection.BusinessCritical.HasChange)
+                changed.Add(nameof(general.CriticalitySection.BusinessCritical));
             return changed;
         }
 
