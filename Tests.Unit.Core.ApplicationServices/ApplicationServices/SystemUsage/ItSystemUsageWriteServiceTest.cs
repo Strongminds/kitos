@@ -1526,6 +1526,13 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Act
             var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters
             {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    CriticalitySection = new UpdatedCriticalitySectionProperties
+                    {
+                        BusinessCritical = businessCritical.AsChangedValue()
+                    }
+                },
                 GDPR = gdprInput
             }));
 
@@ -3007,7 +3014,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
-            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalitySection.isBusinessCritical);
+            Assert.Equal(generalProperties.CriticalitySection.BusinessCritical.NewValue, actual.CriticalitySection.isBusinessCritical);
 
             //Archiving
             var archiving = expected.Archiving.Value;
@@ -3081,6 +3088,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = Maybe<DateTime>.Some(DateTime.Now).AsChangedValue(),
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
+                    CriticalitySection = new UpdatedCriticalitySectionProperties
+                    {
+                        BusinessCritical = A<DataOptions?>().AsChangedValue(),
+                    },
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3131,7 +3142,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     LifeCycleStatus = new ChangedValue<LifeCycleStatusType?>(null),
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
-                    ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None)
+                    ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
+                    CriticalitySection = new UpdatedCriticalitySectionProperties
+                    {
+                        BusinessCritical = new ChangedValue<DataOptions?>(null)
+                    }
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {

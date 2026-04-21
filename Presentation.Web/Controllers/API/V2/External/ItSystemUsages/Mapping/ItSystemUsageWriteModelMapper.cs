@@ -428,6 +428,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
                     ? MapYesNoDontKnow(source.IsSociallyCritical)
                     : OptionalValueChange<DataOptions?>.None,
+
+                CriticalitySection = new UpdatedCriticalitySectionProperties
+                {
+                    BusinessCritical = rule.MustUpdate(x => x.General.CriticalitySection.BusinessCritical)
+                        ? MapYesNoDontKnow(source.CriticalitySection?.BusinessCritical)
+                        : OptionalValueChange<DataOptions?>.None,
+                },
             };
         }
 

@@ -70,5 +70,9 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Whether the system is considered socially critical.
         /// </summary>
         public YesNoDontKnowChoice? IsSociallyCritical { get; set; }
+        /// <summary>
+        /// Criticality-related properties for this system usage.
+        /// </summary>
+        public CriticalitySectionWriteRequestDTO? CriticalitySection { get; set; }
     }
 }
