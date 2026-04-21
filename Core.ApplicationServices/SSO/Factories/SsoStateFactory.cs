@@ -61,7 +61,7 @@ namespace Core.ApplicationServices.SSO.Factories
             {
                 throw new InvalidOperationException("Error: No SAML state");
             }
-            return new InitialFlowState(Saml20IdentityParser.CreateFrom(_samlState.Value), this, _logger);
+            return new InitialFlowState(_configuration, Saml20IdentityParser.CreateFrom(_samlState.Value), this, _logger);
         }
 
         public AbstractState CreatePrivilegeVerifiedState(Guid userExternalUuid, string cvrNumber)
