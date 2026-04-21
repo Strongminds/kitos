@@ -1,7 +1,8 @@
-﻿using Core.Abstractions.Types;
+using Core.Abstractions.Types;
 using Core.DomainModel;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
 using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
 {

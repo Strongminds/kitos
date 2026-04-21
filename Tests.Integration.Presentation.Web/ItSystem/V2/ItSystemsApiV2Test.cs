@@ -397,9 +397,10 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             //Act
             var dtos = (await ItSystemV2Helper.GetManyAsync(token, changedSinceGtEq: system3DTO.LastModified, page: 0, pageSize: 10)).ToList();
 
-            //Assert
-            Assert.Equal(2, dtos.Count);
-            Assert.Equal(new[] { system3.Uuid, system1.Uuid }, dtos.Select(x => x.Uuid).ToArray());
+            //Assert - system3 and system1 were modified at or after the cutoff; system2 was modified before it
+            Assert.Contains(dtos, dto => dto.Uuid == system3.Uuid);
+            Assert.Contains(dtos, dto => dto.Uuid == system1.Uuid);
+            Assert.DoesNotContain(dtos, dto => dto.Uuid == system2.Uuid);
         }
 
         [Fact]

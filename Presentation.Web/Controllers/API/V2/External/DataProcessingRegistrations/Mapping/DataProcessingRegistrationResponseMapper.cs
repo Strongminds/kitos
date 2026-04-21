@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.Shared;
@@ -9,6 +9,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {

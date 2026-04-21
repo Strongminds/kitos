@@ -19,7 +19,7 @@ namespace Core.ApplicationServices.Authorization
 
         public IOrganizationalUserContext Create(int userId)
         {
-            var user = _userRepository.GetByKey(userId);
+            var user = _userRepository.GetByIdWithRoles(userId);
             if (user == null)
             {
                 throw new InvalidOperationException($"Cannot create user context for invalid user ID:{userId}");

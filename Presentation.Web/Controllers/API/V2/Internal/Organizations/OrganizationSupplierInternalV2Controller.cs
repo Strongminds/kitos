@@ -1,21 +1,20 @@
-﻿using Core.ApplicationServices.Organizations.Write;
+using Core.ApplicationServices.Organizations.Write;
 using Core.DomainModel.Organization;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Organization;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
     /// <summary>
     /// Internal API for the organizations in KITOS
     /// </summary>
-    [RoutePrefix("api/v2/internal/organizations")]
+    [Route("api/v2/internal/organizations")]
     public class OrganizationSupplierInternalV2Controller : InternalApiV2Controller
     {
         private readonly IOrganizationSupplierService _organizationSupplierService;
@@ -26,11 +25,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
 
         [Route("{organizationUuid}/suppliers")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetSuppliers([NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationSupplierService.GetSuppliersForOrganization(organizationUuid)
                 .Select(MapSuppliersToResponse)
@@ -38,11 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
 
         [Route("{organizationUuid}/suppliers/available")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetAvailableSuppliers([NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetAvailableSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationSupplierService.GetAvailableSuppliers(organizationUuid)
                 .Select(MapOrganizations)
@@ -51,11 +42,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ShallowOrganizationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult AddSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)
+        public IActionResult AddSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)
         {
             return _organizationSupplierService.AddSupplierToOrganization(organizationUuid, supplierUuid)
                 .Select(MapSingleToResponse)
@@ -64,11 +51,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult DeleteSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)
+        public IActionResult DeleteSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)
         {
             return _organizationSupplierService.RemoveSupplierFromOrganization(organizationUuid, supplierUuid)
                 .Match(FromOperationError, Ok);
@@ -90,3 +73,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
     }
 }
+

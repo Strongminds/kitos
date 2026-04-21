@@ -1,26 +1,26 @@
-﻿using System.Data.Entity.ModelConfiguration;
 using Core.DomainModel.Organization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Mapping
 {
-    public class OrganizationSupplierMap : EntityTypeConfiguration<OrganizationSupplier>
+    public class OrganizationSupplierMap : IEntityTypeConfiguration<OrganizationSupplier>
     {
-        public OrganizationSupplierMap()
+        public void Configure(EntityTypeBuilder<OrganizationSupplier> builder)
         {
-            HasKey(x => new
-            {
-                x.SupplierId,
-                x.OrganizationId
-            });
+            builder.HasKey(x => new { x.SupplierId, x.OrganizationId });
 
-            HasRequired(x => x.Supplier)
+            builder.HasOne(x => x.Supplier)
                 .WithMany(x => x.UsedAsSupplierByOrganizations)
                 .HasForeignKey(x => x.SupplierId)
-                .WillCascadeOnDelete(false);
-            HasRequired(x => x.Organization)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Organization)
                 .WithMany(x => x.Suppliers)
                 .HasForeignKey(x => x.OrganizationId)
-                .WillCascadeOnDelete(true);
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

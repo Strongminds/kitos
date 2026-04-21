@@ -152,16 +152,19 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var businessType = await OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.BusinessType, organizationUuid);
 
             var refs = await KleOptionV2Helper.GetKleNumbersAsync(await GetGlobalToken());
-            var taskRef = refs.Payload.RandomItem();
+            // Pick a KLE item that has a non-null description so the CSV assertion is deterministic.
+            // Some KLE entries in the database have null descriptions; using one of those would cause
+            // the assertion to compare null == null, which is trivially true and doesn't verify propagation.
+            var taskRef = refs.Payload.First(r => r.Description != null);
             var sensitiveDataLevel = A<DataSensitivityLevelChoice>();
 
             // System changes
             var systemChanges = new KeyValuePair<string, object>[] {
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid),
-                new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.Uuid.WrapAsEnumerable())
+                new(nameof(UpdateItSystemRequestDTO.Deactivated), systemDisabled),
+                new(nameof(UpdateItSystemRequestDTO.ParentUuid), systemParent.Uuid),
+                new(nameof(UpdateItSystemRequestDTO.RightsHolderUuid), organizationUuid),
+                new(nameof(UpdateItSystemRequestDTO.BusinessTypeUuid), businessType.Uuid),
+                new(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.Uuid.WrapAsEnumerable())
             };
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
 

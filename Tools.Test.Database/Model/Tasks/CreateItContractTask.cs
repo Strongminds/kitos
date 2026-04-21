@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Core.DomainModel.BackgroundJobs;
 using Core.DomainModel.ItContract;
 using Infrastructure.DataAccess;

@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.SystemUsage.Write;
@@ -24,14 +23,14 @@ using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 {
     /// <summary>
     /// Internal API for the local registrations related to it-systems in KITOS
     /// </summary>
-    [RoutePrefix("api/v2/internal/it-system-usages")]
+    [Route("api/v2/internal/it-system-usages")]
     public class ItSystemUsageInternalV2Controller : InternalApiV2Controller
     {
         private readonly IItSystemUsageService _itSystemUsageService;
@@ -70,10 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         ///
         [HttpGet]
         [Route("search")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ItSystemUsageSearchResultResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetItSystemUsages(
+        public IActionResult GetItSystemUsages(
             [NonEmptyGuid] Guid organizationUuid,
             [NonEmptyGuid] Guid? relatedToSystemUuid = null,
             [NonEmptyGuid] Guid? relatedToSystemUsageUuid = null,
@@ -82,7 +78,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
             string systemNameContent = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -95,12 +91,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OutgoingSystemRelationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        public IHttpActionResult PostSystemUsageRelations([NonEmptyGuid] Guid systemUsageUuid,
+        public IActionResult PostSystemUsageRelations([NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] [Required] IEnumerable<SystemRelationWriteRequestDTO> dtos)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -119,11 +110,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/roles")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetRoleAssignments([NonEmptyGuid] Guid systemUsageUuid)
+        public IActionResult GetRoleAssignments([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -142,27 +129,19 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("system/{systemUuid}/organization/{organizationUuid}")]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteItSystemUsageByOrganizationUuidAndSystemUuid([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid systemUuid)
+        public IActionResult DeleteItSystemUsageByOrganizationUuidAndSystemUuid([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid systemUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return _writeService
                 .DeleteByItSystemAndOrganizationUuids(systemUuid, organizationUuid)
-                .Match(FromOperationError, () => StatusCode(HttpStatusCode.NoContent));
+                .Match(FromOperationError, () => StatusCode((int)HttpStatusCode.NoContent));
         }
 
         [HttpGet]
         [Route("relations/{contractUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<GeneralSystemRelationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetRelations([NonEmptyGuid] Guid contractUuid)
+        public IActionResult GetRelations([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -194,3 +173,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 {

@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.LocalOptions;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.LocalOptions;
@@ -9,11 +8,11 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Presentation.Web.Models.API.V2.Internal.Response;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
-    [RoutePrefix("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/criticality-types")]
+    [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/criticality-types")]
     public class ItContractLocalCriticalityTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalCriticalityType, ItContract, CriticalityType>
     {
         private readonly IGenericLocalOptionsService<LocalCriticalityType, ItContract, CriticalityType> _localOptionTypeService;
@@ -26,66 +25,43 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
         }
 
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<LocalRegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetLocalCriticalityTypes([NonEmptyGuid][FromUri] Guid organizationUuid)
+        [Route("")]
+        public IActionResult GetLocalCriticalityTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetLocalCriticalityTypeByOptionId([NonEmptyGuid][FromUri] Guid organizationUuid, [FromUri] Guid optionUuid)
+        public IActionResult GetLocalCriticalityTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult CreateLocalCriticalityType([NonEmptyGuid][FromUri] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        [Route("")]
+        public IActionResult CreateLocalCriticalityType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult PatchLocalCriticalityType([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+        public IActionResult PatchLocalCriticalityType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
+            [FromBody] LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult DeleteLocalCriticalityType([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid)
+        public IActionResult DeleteLocalCriticalityType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }
     }
 }
+
+

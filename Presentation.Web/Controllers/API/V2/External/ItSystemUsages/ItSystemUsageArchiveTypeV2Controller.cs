@@ -1,18 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
-    [RoutePrefix("api/v2/it-system-usage-archive-types")]
+    [Route("api/v2/it-system-usage-archive-types")]
     public class ItSystemUsageArchiveTypeV2Controller : BaseRegularOptionTypeV2Controller<ItSystemUsage, ArchiveType>
     {
         public ItSystemUsageArchiveTypeV2Controller(IOptionsApplicationService<ItSystemUsage, ArchiveType> optionService)
@@ -26,13 +25,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="organizationUuid">organization context for the archivetype availability</param>
         /// <returns>A list of available It-System Usage archive option types</returns>
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<RegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null)
+        [Route("")]
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -45,14 +39,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the archive type is available in the organization</returns>
         [HttpGet]
         [Route("{archiveTypeUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(RegularOptionExtendedResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get([NonEmptyGuid] Guid archiveTypeUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult Get([NonEmptyGuid] Guid archiveTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(archiveTypeUuid, organizationUuid);
         }
     }
 }
+
+
