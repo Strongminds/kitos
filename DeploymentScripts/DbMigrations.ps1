@@ -1,18 +1,18 @@
 Function Wait-ForTcpPort {
     param(
-        [Parameter(Mandatory = $true)][string]$Host,
+        [Parameter(Mandatory = $true)][string]$Hostname,
         [Parameter(Mandatory = $true)][int]$Port,
         [int]$MaxAttempts = 12,
         [int]$DelaySeconds = 5
     )
 
     for ($i = 1; $i -le $MaxAttempts; $i++) {
-        Write-Host "Checking TCP connectivity to $Host`:$Port (attempt $i/$MaxAttempts) ..."
+        Write-Host "Checking TCP connectivity to $Hostname`:$Port (attempt $i/$MaxAttempts) ..."
 
-        $ok = Test-NetConnection -ComputerName $Host -Port $Port -InformationLevel Quiet -WarningAction SilentlyContinue
+        $ok = Test-NetConnection -ComputerName $Hostname -Port $Port -InformationLevel Quiet -WarningAction SilentlyContinue
 
         if ($ok) {
-            Write-Host "TCP connectivity OK ($Host`:$Port)"
+            Write-Host "TCP connectivity OK ($Hostname`:$Port)"
             return
         }
 
@@ -21,7 +21,7 @@ Function Wait-ForTcpPort {
         }
     }
 
-    throw "TCP connectivity was not established to $Host`:$Port after $MaxAttempts attempts."
+    throw "TCP connectivity was not established to $Hostname`:$Port after $MaxAttempts attempts."
 }
 
 Function ConvertTo-SqlConnectionParts([string]$connectionString) {
@@ -139,7 +139,7 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     $splitParts = $rawServer -split ',', 2
     $sqlHost = $splitParts[0].Trim()
     $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
-    Wait-ForTcpPort -Host $sqlHost -Port $sqlPort
+    Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
