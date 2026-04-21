@@ -1,17 +1,14 @@
-﻿using Core.ApplicationServices.GDPR;
+using Core.ApplicationServices.GDPR;
 using Core.DomainModel.GDPR;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Queries.DPR;
 using Presentation.Web.Extensions;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
-using System.Web.Http.Results;
 using Core.Abstractions.Extensions;
 using Core.ApplicationServices.GDPR.Write;
 using Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping;
@@ -20,6 +17,7 @@ using Presentation.Web.Models.API.V2.Response.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations
@@ -27,7 +25,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
     /// <summary>
     /// API for the data processing registrations in KITOS
     /// </summary>
-    [RoutePrefix("api/v2/data-processing-registrations")]
+    [Route("api/v2/data-processing-registrations")]
     public class DataProcessingRegistrationV2Controller : ExternalBaseController
     {
         private readonly IDataProcessingRegistrationApplicationService _dataProcessingRegistrationService;
@@ -62,12 +60,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="orderByProperty">Ordering property</param>
         /// <returns></returns>
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<DataProcessingRegistrationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetDataProcessingRegistrations(
+        [Route("")]
+        public IActionResult GetDataProcessingRegistrations(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
             [NonEmptyGuid] Guid? systemUsageUuid = null,
@@ -78,7 +72,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             string nameEquals = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -129,12 +123,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{uuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(DataProcessingRegistrationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetDataProcessingRegistration([NonEmptyGuid] Guid uuid)
+        public IActionResult GetDataProcessingRegistration([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -151,15 +140,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route]
-        [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.Created, Type = typeof(DataProcessingRegistrationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PostDataProcessingRegistration([FromBody] CreateDataProcessingRegistrationRequestDTO request)
+        [Route("")]
+        public IActionResult PostDataProcessingRegistration([FromBody] CreateDataProcessingRegistrationRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -179,13 +161,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPut]
         [Route("{uuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(DataProcessingRegistrationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PutDataProcessingRegistration([NonEmptyGuid] Guid uuid, [FromBody] UpdateDataProcessingRegistrationRequestDTO request)
+        public IActionResult PutDataProcessingRegistration([NonEmptyGuid] Guid uuid, [FromBody] UpdateDataProcessingRegistrationRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -204,13 +180,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{uuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(DataProcessingRegistrationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PatchDataProcessingRegistration([NonEmptyGuid] Guid uuid, [FromBody] UpdateDataProcessingRegistrationRequestDTO request)
+        public IActionResult PatchDataProcessingRegistration([NonEmptyGuid] Guid uuid, [FromBody] UpdateDataProcessingRegistrationRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -228,19 +198,14 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpDelete]
         [Route("{uuid}")]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteDataProcessingRegistration([NonEmptyGuid] Guid uuid)
+        public IActionResult DeleteDataProcessingRegistration([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return _writeService
                 .Delete(uuid)
-                .Match(FromOperationError, () => StatusCode(HttpStatusCode.NoContent));
+                .Match(FromOperationError, () => StatusCode((int)HttpStatusCode.NoContent));
         }
 
         /// <summary>
@@ -250,11 +215,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(CombinedPermissionsResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetDataProcessingRegistrationPermissions([NonEmptyGuid] Guid dprUuid)
+        public IActionResult GetDataProcessingRegistrationPermissions([NonEmptyGuid] Guid dprUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -273,11 +234,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ResourceCollectionPermissionsResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetDataProcessingRegistrationCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetDataProcessingRegistrationCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -287,9 +244,12 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 .Match(Ok, FromOperationError);
         }
         
-        private CreatedNegotiatedContentResult<DataProcessingRegistrationResponseDTO> MapCreatedResponse(DataProcessingRegistrationResponseDTO dto)
+        private IActionResult MapCreatedResponse(DataProcessingRegistrationResponseDTO dto)
         {
-            return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
+            return Created($"{new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
         }
     }
 }
+
+
+

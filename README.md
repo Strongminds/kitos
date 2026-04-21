@@ -17,8 +17,8 @@ the terms of the Mozilla Public License, v. 2.0.
 
 ## Solution structure
 
-### Backend and legacy UI
-This repository maintains the old (current) UI along with the backend services.
+### Backend
+This repository maintains the backend services.
 
-### New UI
-The future UI is developed and maintained here: https://github.com/os2kitos/kitos_frontend
+### UI
+The UI is developed and maintained here: https://github.com/os2kitos/kitos_frontend

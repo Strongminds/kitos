@@ -1,10 +1,10 @@
-﻿using System;
-using System.Web.Http;
+using System;
 using Core.ApplicationServices.LocalOptions;
 using Core.DomainModel;
 using Core.DomainModel.LocalOptions;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
@@ -24,7 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
             _writeModelMapper = writeModelMapper;
         }
 
-        public IHttpActionResult GetAll([NonEmptyGuid][FromUri] Guid organizationUuid)
+        protected IActionResult GetAll([NonEmptyGuid][FromQuery] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -32,7 +32,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
             return Ok(_responseMapper.ToLocalRoleOptionDTOs<TReferenceType, TOptionType>(roleOptions));
         }
 
-        public IHttpActionResult GetSingle([NonEmptyGuid][FromUri] Guid organizationUuid, [FromUri] Guid optionUuid)
+        protected IActionResult GetSingle([NonEmptyGuid][FromQuery] Guid organizationUuid, [FromQuery] Guid optionUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -41,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
                 .Match(Ok, FromOperationError);
         }
 
-        public IHttpActionResult Create([NonEmptyGuid][FromUri] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        protected IActionResult Create([NonEmptyGuid][FromQuery] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -52,8 +52,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
                 .Match(Ok, FromOperationError);
         }
 
-        public IHttpActionResult Patch([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid,
+        protected IActionResult Patch([NonEmptyGuid][FromQuery] Guid organizationUuid,
+            [FromQuery] Guid optionUuid,
             LocalRoleOptionUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -65,8 +65,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
                 .Match(Ok, FromOperationError);
         }
 
-        public IHttpActionResult Delete([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid)
+        protected IActionResult Delete([NonEmptyGuid][FromQuery] Guid organizationUuid,
+            [FromQuery] Guid optionUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
 
@@ -76,3 +76,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes
         }
     }
 }
+

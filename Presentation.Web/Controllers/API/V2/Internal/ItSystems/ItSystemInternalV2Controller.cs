@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
 using Core.Abstractions.Extensions;
 using Core.ApplicationServices.System;
 using Core.DomainModel.ItSystem;
@@ -14,14 +13,14 @@ using Presentation.Web.Models.API.V2.Internal.Response.ItSystem;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
 {
     /// <summary>
     /// Internal API for the system product master data (not local organization usage registrations) stored in KITOS.
     /// </summary>
-    [RoutePrefix("api/v2/internal")]
+    [Route("api/v2/internal")]
     public class ItSystemInternalV2Controller : InternalApiV2Controller
     {
         private readonly IItSystemService _itSystemService;
@@ -47,11 +46,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/search")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ItSystemSearchResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetItSystems(
+        public IActionResult GetItSystems(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             [NonEmptyGuid] Guid? businessTypeUuid = null,
             string kleNumber = null,
@@ -62,7 +57,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
             string nameEquals = null,
             string nameContains = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null,
+            [FromQuery] BoundedPaginationQuery paginationQuery = null,
             [NonEmptyGuid] Guid? excludeUuid = null,
             [NonEmptyGuid] Guid? excludeChildrenOfUuid = null)
         {
@@ -77,11 +72,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
 
         [HttpGet]
         [Route("organization/{organizationUuid}/it-systems/{systemUuid}/hierarchy")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ItSystemHierarchyNodeResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetHierarchy([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetHierarchy([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -99,3 +90,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
         }
     }
 }
+

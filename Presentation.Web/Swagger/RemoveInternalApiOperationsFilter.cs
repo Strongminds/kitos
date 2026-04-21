@@ -1,38 +1,43 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web.Http.Description;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.OpenApi;
 using Presentation.Web.Infrastructure.Attributes;
-using Swashbuckle.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Presentation.Web.Swagger
 {
     public class RemoveInternalApiOperationsFilter : IDocumentFilter
     {
-        public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            foreach (var apiDescription in apiExplorer.ApiDescriptions)
+            foreach (var apiDescription in context.ApiDescriptions)
             {
                 if (IsActionInternal(apiDescription))
                 {
-                    var route = "/" + apiDescription.RelativePath.TrimEnd('/');
-                    swaggerDoc.paths.Remove(route);
+                    var route = "/" + apiDescription.RelativePath?.TrimEnd('/');
+                    swaggerDoc.Paths.Remove(route);
                 }
-                if (IsControllerInternal(apiDescription))
+                else if (IsControllerInternal(apiDescription))
                 {
-                    var route = Regex.Replace("/" + apiDescription.RelativePath.TrimEnd('/'), @"(\?.*)", "");
-                    swaggerDoc.paths.Remove(route);
+                    var route = Regex.Replace("/" + apiDescription.RelativePath?.TrimEnd('/'), @"(\?.*)", "");
+                    swaggerDoc.Paths.Remove(route);
                 }
             }
         }
 
-        private static bool IsActionInternal(ApiDescription apiDescription)
+        private static bool IsActionInternal(Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription apiDescription)
         {
-            return apiDescription.ActionDescriptor.GetCustomAttributes<InternalApiAttribute>().Any();
+            if (apiDescription.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
+                return actionDescriptor.MethodInfo.GetCustomAttributes(typeof(InternalApiAttribute), true).Any();
+            return apiDescription.ActionDescriptor.EndpointMetadata.OfType<InternalApiAttribute>().Any();
         }
 
-        private static bool IsControllerInternal(ApiDescription apiDescription)
+        private static bool IsControllerInternal(Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription apiDescription)
         {
-            return apiDescription.ActionDescriptor.ControllerDescriptor.GetCustomAttributes<InternalApiAttribute>().Any();
+            if (apiDescription.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
+                return actionDescriptor.ControllerTypeInfo.GetCustomAttributes(typeof(InternalApiAttribute), true).Any();
+            return false;
         }
     }
 }

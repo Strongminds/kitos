@@ -1,20 +1,20 @@
-﻿using Core.ApplicationServices.OptionTypes;
+using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel;
 using Core.DomainServices.Model.Options;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Extensions;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.External
 {
     public abstract class BaseRoleOptionTypeV2Controller<TParent, TOption> : BaseOptionTypeV2Controller<TParent, TOption, RoleOptionResponseDTO, RoleOptionExtendedResponseDTO>
         where TOption : OptionEntity<TParent>, IRoleEntity
     {
-        protected override IHttpActionResult GetAvailableOptions(Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null)
+        protected override IActionResult GetAvailableOptions(Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return _roleOptionApplicationService
                 .GetOptionTypes(organizationUuid)

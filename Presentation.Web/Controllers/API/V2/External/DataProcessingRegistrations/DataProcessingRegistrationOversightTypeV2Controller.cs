@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel.GDPR;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations
 {
-    [RoutePrefix("api/v2/data-processing-registration-oversight-types")]
+    [Route("api/v2/data-processing-registration-oversight-types")]
     public class DataProcessingRegistrationOversightTypeV2Controller : BaseRegularOptionTypeV2Controller<DataProcessingRegistration, DataProcessingOversightOption>
     {
         public DataProcessingRegistrationOversightTypeV2Controller(IOptionsApplicationService<DataProcessingRegistration, DataProcessingOversightOption> optionService)
@@ -25,13 +24,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="organizationUuid">organization context for the oversight availability</param>
         /// <returns>A list of available Data Processing Registration oversight</returns>
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<RegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null)
+        [Route("")]
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -44,14 +38,11 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns>A uuid and name pair with boolean to mark if the oversight is available in the organization</returns>
         [HttpGet]
         [Route("{oversightUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(RegularOptionExtendedResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get([NonEmptyGuid] Guid oversightUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult Get([NonEmptyGuid] Guid oversightUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(oversightUuid, organizationUuid);
         }
     }
 }
+
+

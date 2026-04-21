@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
 using Core.Abstractions.Types;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Model.Organizations;
@@ -13,11 +12,11 @@ using Core.DomainServices.Generic;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
-    [RoutePrefix("api/v2/internal/organizations/{organizationUuid}/grid")]
+    [Route("api/v2/internal/organizations/{organizationUuid}/grid")]
     public class OrganizationGridInternalV2Controller : InternalApiV2Controller
     {
 
@@ -34,12 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{overviewType}/save")]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationGridConfigurationResponseDTO))]
-        public IHttpActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromUri] OverviewType overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
+        public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -52,11 +46,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{overviewType}/delete")]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromUri] OverviewType overviewType)
+        public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -70,11 +60,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{overviewType}/get")]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromUri] OverviewType overviewType)
+        public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType)
         {
             if (!ModelState.IsValid) 
                 return BadRequest(ModelState);
@@ -87,12 +73,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("permissions")]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationGridPermissionsResponseDTO))]
-        public IHttpActionResult GetOrganizationGridPermissions([NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetOrganizationGridPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             return MapUuidToId(organizationUuid)
@@ -154,3 +135,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
     }
 }
+

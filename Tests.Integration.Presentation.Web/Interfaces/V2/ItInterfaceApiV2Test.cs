@@ -40,6 +40,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             using var result = await InterfaceV2Helper.SendGetInterfaceAsync(token, itInterface.Uuid);
 
             //Assert
+            var res = await result.Content.ReadAsStringAsync();
             Assert.True(result.IsSuccessStatusCode);
             var interfaceResponse = await result.ReadResponseBodyAsAsync<ItInterfaceResponseDTO>();
             Assert.Equal(itInterface.Uuid, interfaceResponse.Uuid);

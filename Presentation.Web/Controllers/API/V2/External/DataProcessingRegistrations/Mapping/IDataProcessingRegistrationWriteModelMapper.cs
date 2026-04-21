@@ -1,6 +1,7 @@
-﻿using Core.ApplicationServices.Model.GDPR.Write;
+using Core.ApplicationServices.Model.GDPR.Write;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {
