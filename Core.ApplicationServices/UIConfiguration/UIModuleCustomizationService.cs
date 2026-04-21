@@ -45,7 +45,7 @@ namespace Core.ApplicationServices.UIConfiguration
                 .Bind(organization => organization.GetUiModuleCustomization(module)
                     .Match(
                         Result<UIModuleCustomization, OperationError>.Success,
-                        () => new OperationError($"module customization {module} not found on organization with id:{organizationId}", OperationFailure.NotFound)
+                        () => Result<UIModuleCustomization, OperationError>.Success(new UIModuleCustomization { OrganizationId = organizationId, Module = module })
                     )
                 );
         }

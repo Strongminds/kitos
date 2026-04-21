@@ -42,14 +42,14 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// <summary>
         /// Former name of IT-System (if any)
         /// </summary>
-        public string PreviousName { get; set; }
+        public string? PreviousName { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string Description { get; set; }
-        
+
         /// <summary>
         /// User defined external references.
         /// The external reference marked as "master reference" will be shown in overviews
@@ -59,7 +59,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         ///     - If the reference has no uuid, a new External Reference will be created
         ///     - Existing references will be replaced by the input data, so unless identified using uuid in the updates, the existing references will be removed.
         /// </summary>
-        public IEnumerable<ExternalReferenceDataWriteRequestDTO> ExternalReferences { get; set; }
+        public IEnumerable<ExternalReferenceDataWriteRequestDTO>? ExternalReferences { get; set; }
 
         /// <summary>
         /// UUID for IT-System business type
@@ -70,6 +70,6 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// <summary>
         /// UUID's for KLE numbers categorizing this IT-System
         /// </summary>
-        public IEnumerable<Guid> KLEUuids { get; set; }
+        public IEnumerable<Guid>? KLEUuids { get; set; }
     }
 }

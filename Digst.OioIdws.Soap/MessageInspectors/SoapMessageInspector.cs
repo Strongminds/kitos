@@ -4,7 +4,6 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
-using Infrastructure.STS.Common;
 
 namespace Digst.OioIdws.Soap.MessageInspectors
 {
@@ -77,7 +76,7 @@ namespace Digst.OioIdws.Soap.MessageInspectors
             if (messageIdHeader == null)
             {
                 const string errorMessage = "WS-Adressing MessageID header was not present";
-                SoapFaults.CreateClientSoapFault(errorMessage);
+                throw new FaultException(errorMessage, new FaultCode("Sender"));
             }
         }
 
@@ -95,7 +94,7 @@ namespace Digst.OioIdws.Soap.MessageInspectors
             if (relatesToHeader == null)
             {
                 var errorMessage = "WS-Adressing RelatesTo header was not present";
-                throw new FaultException(SoapFaults.CreateClientSoapFault(errorMessage));
+                throw new FaultException(errorMessage, new FaultCode("Sender"));
             }
         }
     }

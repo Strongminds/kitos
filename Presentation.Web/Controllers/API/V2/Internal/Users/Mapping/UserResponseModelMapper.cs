@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Organizations;
@@ -6,6 +6,7 @@ using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
 {

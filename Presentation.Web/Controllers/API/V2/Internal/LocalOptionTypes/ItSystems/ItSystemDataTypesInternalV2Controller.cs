@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.LocalOptions;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.LocalOptions;
@@ -9,11 +8,11 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Presentation.Web.Models.API.V2.Internal.Response;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
-    [RoutePrefix("api/v2/internal/it-systems/{organizationUuid}/local-option-types/data-types")]
+    [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/data-types")]
     public class ItSystemLocalDataTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataType, DataRow, DataType>
     {
         private readonly IGenericLocalOptionsService<LocalDataType, DataRow, DataType> _localDataTypeService;
@@ -26,66 +25,43 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
         }
 
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<LocalRegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetLocalDataTypes([NonEmptyGuid][FromUri] Guid organizationUuid)
+        [Route("")]
+        public IActionResult GetLocalDataTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetLocalDataTypeByOptionId([NonEmptyGuid][FromUri] Guid organizationUuid, [FromUri] Guid optionUuid)
+        public IActionResult GetLocalDataTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult CreateLocalDataType([NonEmptyGuid][FromUri] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        [Route("")]
+        public IActionResult CreateLocalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult PatchLocalDataType([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+        public IActionResult PatchLocalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
+            [FromBody] LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult DeleteLocalDataType([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid)
+        public IActionResult DeleteLocalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }
     }
 }
+
+

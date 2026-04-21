@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel.ItSystem;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems
 {
-    [RoutePrefix("api/v2/business-types")]
+    [Route("api/v2/business-types")]
     [AllowRightsHoldersAccess]
     public class ItSystemBusinessTypeV2Controller: BaseRegularOptionTypeV2Controller<ItSystem,BusinessType>
     {
@@ -26,13 +25,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <param name="organizationUuid">organization context for the business type availability</param>
         /// <returns>A list of available IT-System business type specifics formatted as uuid and name pairs</returns>
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<RegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null)
+        [Route("")]
+        public IActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -45,14 +39,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>A uuid and name pair with boolean to mark if the business type is available in the organization</returns>
         [HttpGet]
         [Route("{businessTypeUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(RegularOptionExtendedResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetBusinessType([NonEmptyGuid] Guid businessTypeUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetBusinessType([NonEmptyGuid] Guid businessTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(businessTypeUuid, organizationUuid);
         }
     }
 }
+
+

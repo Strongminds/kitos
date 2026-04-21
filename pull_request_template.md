@@ -1,4 +1,9 @@
 ## KITOS Pull request template
+
+### Description
+*Describe what was changed in this branch, and WHY it was changed.*
+
+### Checklist
 The following procedure dictates the steps needed before a Pull request can be merged into master.
 
 - [ ] **Implement**: 
@@ -9,6 +14,9 @@ The following procedure dictates the steps needed before a Pull request can be m
       
 - [ ] **Green on integration**: 
       *All integration tests are green on integration*
+
+- [ ] **Add a description**
+      _Under "Description" above, explain what was changed in this branch, and WHY it was changed_ 
       
 - [ ] **Request review**: 
       *Tag whomever you wish to review your code*

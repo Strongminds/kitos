@@ -466,15 +466,30 @@ namespace Tests.Integration.Presentation.Web.Notifications
             switch (ownerResourceType)
             {
                 case OwnerResourceType.ItContract:
-                    var contractRoleEntity = new ItContractRole { Name = CreateName() };
+                    var contractRoleEntity = new ItContractRole
+                    {
+                        Name = CreateName(),
+                        ObjectOwnerId = TestEnvironment.DefaultUserId,
+                        LastChangedByUserId = TestEnvironment.DefaultUserId
+                    };
                     InsertContractRole(contractRoleEntity);
                     return contractRoleEntity;
                 case OwnerResourceType.ItSystemUsage:
-                    var systemRoleEntity = new ItSystemRole { Name = CreateName() };
+                    var systemRoleEntity = new ItSystemRole
+                    {
+                        Name = CreateName(),
+                        ObjectOwnerId = TestEnvironment.DefaultUserId,
+                        LastChangedByUserId = TestEnvironment.DefaultUserId
+                    };
                     InsertSystemRole(systemRoleEntity);
                     return systemRoleEntity;
                 case OwnerResourceType.DataProcessingRegistration:
-                    var dprRoleEntity = new DataProcessingRegistrationRole { Name = CreateName() };
+                    var dprRoleEntity = new DataProcessingRegistrationRole
+                    {
+                        Name = CreateName(),
+                        ObjectOwnerId = TestEnvironment.DefaultUserId,
+                        LastChangedByUserId = TestEnvironment.DefaultUserId
+                    };
                     InsertDprRole(dprRoleEntity);
                     return dprRoleEntity;
                 default:

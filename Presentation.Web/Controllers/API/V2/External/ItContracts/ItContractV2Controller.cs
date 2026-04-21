@@ -1,4 +1,4 @@
-﻿
+
 using Core.ApplicationServices.Contract;
 using Core.DomainModel.ItContract;
 using Core.DomainServices.Queries;
@@ -6,13 +6,10 @@ using Core.DomainServices.Queries.Contract;
 using Presentation.Web.Extensions;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Contract;
-using Swashbuckle.Swagger.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
-using System.Web.Http.Results;
 using Core.ApplicationServices.Contract.Write;
 using Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping;
 using Presentation.Web.Models.API.V2.Request.Contract;
@@ -22,6 +19,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Controllers.API.V2.External.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts
@@ -29,7 +27,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
     /// <summary>
     /// API for the contracts stored in KITOS.
     /// </summary>
-    [RoutePrefix("api/v2/it-contracts")]
+    [Route("api/v2/it-contracts")]
     public class ItContractV2Controller : ExternalBaseController
     {
         private readonly IItContractService _itContractService;
@@ -66,12 +64,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <param name="orderByProperty">Ordering property</param>
         /// <returns></returns>
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ItContractResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetItContracts(
+        [Route("")]
+        public IActionResult GetItContracts(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
             [NonEmptyGuid] Guid? systemUsageUuid = null,
@@ -82,7 +76,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
             string nameEquals = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -133,12 +127,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns>Specific data related to the IT-Contract</returns>
         [HttpGet]
         [Route("{contractUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ItContractResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetItContract([NonEmptyGuid] Guid contractUuid)
+        public IActionResult GetItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -155,14 +144,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route]
-        [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.Created, Type = typeof(ItContractResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        public IHttpActionResult PostItContract([FromBody] CreateNewContractRequestDTO request)
+        [Route("")]
+        public IActionResult PostItContract([FromBody] CreateNewContractRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -184,13 +167,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ItContractResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult PutItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
+        public IActionResult PutItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -211,13 +188,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("{contractUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ItContractResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Conflict)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult PatchItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
+        public IActionResult PatchItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -238,19 +209,14 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}")]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult DeleteItContract([NonEmptyGuid] Guid contractUuid)
+        public IActionResult DeleteItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return _writeService
                 .Delete(contractUuid)
-                .Match(FromOperationError, () => StatusCode(HttpStatusCode.NoContent));
+                .Match(FromOperationError, () => StatusCode((int)HttpStatusCode.NoContent));
         }
 
         /// <summary>
@@ -260,11 +226,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("{contractUuid}/permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ItContractPermissionsResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetItContractPermissions([NonEmptyGuid] Guid contractUuid)
+        public IActionResult GetItContractPermissions([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -283,11 +245,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ResourceCollectionPermissionsResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetItContractCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetItContractCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -304,13 +262,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPost]
         [Route("{contractUuid}/external-references")]
-        [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.Created, Type = typeof(ExternalReferenceDataResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PostExternalReference([NonEmptyGuid] Guid contractUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
+        public IActionResult PostExternalReference([NonEmptyGuid] Guid contractUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -320,7 +272,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
             return _writeService
                 .AddExternalReference(contractUuid, properties)
                 .Select(_referenceResponseMapper.MapExternalReference)
-                .Match(reference => Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{contractUuid}/external-references/{reference.Uuid}", reference), FromOperationError);
+                .Match(reference => Created($"{new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").AbsoluteUri.TrimEnd('/')}/{contractUuid}/external-references/{reference.Uuid}", reference), FromOperationError);
         }
 
         /// <summary>
@@ -331,12 +283,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(ExternalReferenceDataResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult PutExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
+        public IActionResult PutExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -357,13 +304,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
-        [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.NoContent)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult DeleteExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid)
+        public IActionResult DeleteExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -373,9 +314,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
                 .Match(_ => NoContent(), FromOperationError);
         }
 
-        private CreatedNegotiatedContentResult<ItContractResponseDTO> MapCreatedResponse(ItContractResponseDTO dto)
+        private IActionResult MapCreatedResponse(ItContractResponseDTO dto)
         {
-            return Created($"{Request.RequestUri.AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
+            return Created($"{new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").AbsoluteUri.TrimEnd('/')}/{dto.Uuid}", dto);
         }
     }
 }
+
+
+

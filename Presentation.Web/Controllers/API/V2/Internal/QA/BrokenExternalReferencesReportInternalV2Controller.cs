@@ -1,15 +1,14 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Net;
 using Core.ApplicationServices.Qa;
-using System.Web.Http;
 using Core.Abstractions.Types;
 using Core.DomainModel.Qa.References;
 using Presentation.Web.Models.API.V2.Internal.Response.QA;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.QA
 {
-    [RoutePrefix("api/v2/internal/broken-external-references-report")]
+    [Route("api/v2/internal/broken-external-references-report")]
     public class BrokenExternalReferencesReportInternalV2Controller : InternalApiV2Controller
     {
         private readonly IBrokenExternalReferencesReportService _brokenExternalReferencesReportService;
@@ -21,11 +20,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpGet]
         [Route("status")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(BrokenExternalReferencesReportStatusResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetStatus()
+        public IActionResult GetStatus()
         {
             return _brokenExternalReferencesReportService
                 .GetLatestReport()
@@ -41,27 +36,20 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpPost]
         [Route("trigger")]
-        [SwaggerResponse(HttpStatusCode.OK)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult Trigger()
+        public IActionResult Trigger()
         {
             return _brokenExternalReferencesReportService
                 .TriggerReportGeneration()
                 .Match
                 (
                     FromOperationError,
-                    () => StatusCode(HttpStatusCode.Accepted)
+                    () => StatusCode((int)HttpStatusCode.Accepted)
                 );
         }
 
         [HttpGet]
         [Route("current/csv")]
-        [SwaggerResponse(HttpStatusCode.OK)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetCurrentCsvReport()
+        public IActionResult GetCurrentCsvReport()
         {
             return _brokenExternalReferencesReportService
                 .GetLatestReport()
@@ -91,3 +79,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
         }
     }
 }
+

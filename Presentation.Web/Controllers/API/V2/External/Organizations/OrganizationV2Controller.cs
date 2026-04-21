@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices;
@@ -23,11 +22,11 @@ using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Serilog;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.Organizations
 {
-    [RoutePrefix("api/v2")]
+    [Route("api/v2")]
     public class OrganizationV2Controller : ExternalBaseController
     {
         private readonly IRightsHolderSystemService _rightsHolderSystemService;
@@ -62,17 +61,14 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list of organizations</returns>
         [HttpGet]
         [Route("organizations")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        public IHttpActionResult GetOrganizations(
+        public IActionResult GetOrganizations(
             bool onlyWhereUserHasMembership = false,
             string nameContent = null,
             string cvrContent = null,
             string nameOrCvrContent = null,
             [NonEmptyGuid] Guid? uuid = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery pagination = null)
+            [FromQuery] BoundedPaginationQuery pagination = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -107,12 +103,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        public IHttpActionResult GetOrganization([NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetOrganization([NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -133,18 +124,13 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list og users in a specific organizational context</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationUserResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound, Description = "Organization provided does not exist")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationUsers(
+        public IActionResult GetOrganizationUsers(
             [NonEmptyGuid] Guid organizationUuid,
             string nameOrEmailQuery = null,
             string emailQuery = null,
             OrganizationUserRole? roleQuery = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             var queries = new List<IDomainQuery<User>>();
 
@@ -173,12 +159,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A user in the context of a specific organization</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users/{userUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationUserResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationUser([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
+        public IActionResult GetOrganizationUser([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
             return _userService
                 .GetUserInOrganization(organizationUuid, userUuid)
@@ -197,17 +178,12 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list og organization unit representations</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<OrganizationUnitResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound, Description = "Organization provided does not exist")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationUnits(
+        public IActionResult GetOrganizationUnits(
             [NonEmptyGuid] Guid organizationUuid,
             string nameQuery = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromUri] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery paginationQuery = null)
         {
             var queries = new List<IDomainQuery<OrganizationUnit>>();
 
@@ -233,12 +209,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization unit</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units/{organizationUnitId}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(OrganizationUnitResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitId)
+        public IActionResult GetOrganizationUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitId)
         {
             return _organizationService
                 .GetOrganization(organizationUuid, OrganizationDataReadAccessLevel.All)
@@ -254,10 +225,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/organizations")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<ShallowOrganizationResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        public IHttpActionResult GetOrganizationsAsRightsHolder([FromUri] BoundedPaginationQuery pagination = null)
+        public IActionResult GetOrganizationsAsRightsHolder([FromQuery] BoundedPaginationQuery pagination = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -335,7 +303,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
                     return exportedRole;
                 }
 
-                _logger.Error("ERROR: Failed mapping org role:{role} to an exported role", role.ToString("G"));
+                _logger?.Error("ERROR: Failed mapping org role:{role} to an exported role", role.ToString("G"));
             }
             return Maybe<OrganizationUserRole>.None;
         }
@@ -351,3 +319,4 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         }
     }
 }
+

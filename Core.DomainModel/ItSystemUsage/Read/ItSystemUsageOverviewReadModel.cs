@@ -51,12 +51,12 @@ namespace Core.DomainModel.ItSystemUsage.Read
         }
 
         public int OrganizationId { get; set; }
-        public Organization.Organization Organization { get; set; }
+        public virtual Organization.Organization Organization { get; set; }
         public int Id { get; set; }
         public int SourceEntityId { get; set; }
         public Guid SourceEntityUuid { get; set; }
         public Guid? ExternalSystemUuid { get; set; }
-        public ItSystemUsage SourceEntity { get; set; }
+        public virtual ItSystemUsage SourceEntity { get; set; }
         public string SystemName { get; set; }
         public string SystemPreviousName { get; set; }
         public string SystemDescription { get; set; }

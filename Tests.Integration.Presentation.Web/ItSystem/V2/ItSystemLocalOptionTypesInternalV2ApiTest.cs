@@ -130,10 +130,11 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var globalOption = new BusinessType()
             {
                 Uuid = A<Guid>(),
-                Id = A<int>(),
                 Name = A<string>(),
                 IsObligatory = false,
                 IsEnabled = isEnabled,
+                ObjectOwnerId = TestEnvironment.DefaultUserId,
+                LastChangedByUserId = TestEnvironment.DefaultUserId
             };
             DatabaseAccess.MutateEntitySet<BusinessType>(repository =>
             {

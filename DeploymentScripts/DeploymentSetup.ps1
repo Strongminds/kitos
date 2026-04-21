@@ -47,7 +47,8 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     $Env:StsOrganisationSystemPort = $parameters["StsOrganisationSystemPort"]
     $Env:StsOrganisationCertificateThumbprint = $parameters["StsOrganisationCertificateThumbprint"]
     $Env:PubSubBaseUrl = $parameters["PubSubBaseUrl"]
-    
+    $Env:SmtpDeliveryMethod = $parameters["SmtpDeliveryMethod"]
+
     if($loadTcHangfireConnectionString -eq $true) {
         $Env:HangfireDbConnectionStringForTeamCity = $parameters["HangfireDbConnectionStringForTeamCity"]
     }
@@ -78,6 +79,23 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     Write-Host "Finished loading environment configuration from SSM"
 }
 
+# Emits ##teamcity[setParameter] messages for every env: variable currently set in this process,
+# making them available to all subsequent TeamCity build steps as environment variables.
+Function Publish-TeamCityParameters() {
+    if (-not $Env:TEAMCITY_VERSION) { return }  # no-op outside TeamCity
+
+    # These TeamCity parameters are marked readOnly and must not be re-published.
+    $variablesNotToPublish = @("AwsAccessKeyId", "AwsSecretAccessKey")
+
+    Get-ChildItem Env: | ForEach-Object {
+        if ($variablesNotToPublish -contains $_.Name) { return }
+        if ([string]::IsNullOrEmpty($_.Value)) { return }
+
+        $escaped = $_.Value -replace '\|', '||' -replace "'", "|'" -replace '\[', '|[' -replace '\]', '|]' -replace "`n", '|n' -replace "`r", '|r'
+        Write-Host "##teamcity[setParameter name='env.$($_.Name)' value='$escaped']"
+    }
+}
+
 Function Setup-Environment([String] $environmentName) {
     Write-Host "Configuring Deployment Environment $environmentName"
     
@@ -88,9 +106,9 @@ Function Setup-Environment([String] $environmentName) {
     	throw "Error: Remember to set the AwsSecretAccessKey input before starting the build"
     }
 
-    $Env:MigrationsFolder = Resolve-Path "$PSScriptRoot\..\DataAccessApp"
+    $forcePickupDirectorySmtp = $false
 
-    switch( $environmentName ) 
+    switch( $environmentName )
     {
         "integration" 
         {
@@ -99,6 +117,7 @@ Function Setup-Environment([String] $environmentName) {
             $loadTestUsers = $true
             $Env:UseDefaultUserPassword = "true"
             $Env:Robots = ".*Robots\.Test\.Txt"
+            $forcePickupDirectorySmtp = $true
             break;
         }
         "dev" 
@@ -108,6 +127,7 @@ Function Setup-Environment([String] $environmentName) {
             $loadTestUsers = $true
             $Env:UseDefaultUserPassword = "true"
             $Env:Robots = ".*Robots\.Test\.Txt"
+            $forcePickupDirectorySmtp = $true
             break;
         }
          "staging"
@@ -131,6 +151,17 @@ Function Setup-Environment([String] $environmentName) {
     
     Configure-Aws -accessKeyId "$Env:AwsAccessKeyId" -secretAccessKey "$Env:AwsSecretAccessKey"
     Load-Environment-Secrets-From-Aws -envName "$environmentName" -loadTcHangfireConnectionString $loadTcHangfireConnectionString -loadTestUsers $loadTestUsers
-    
+
+    # Apply after SSM load so these cannot be overwritten by SSM parameters
+    if ($forcePickupDirectorySmtp) {
+        $Env:SmtpDeliveryMethod = "SpecifiedPickupDirectory"
+    } else {
+        $Env:SmtpDeliveryMethod = "Network"
+    }
+
+    # Emit TeamCity service messages after all overrides are applied so subsequent
+    # build steps receive the final values (not the pre-override SSM values).
+    Publish-TeamCityParameters
+
     Write-Host "Finished configuring $environmentName"
 }

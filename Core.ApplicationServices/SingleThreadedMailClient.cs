@@ -14,11 +14,16 @@ namespace Core.ApplicationServices
         private readonly Factory<SmtpClient> _clientFactory;
 
         /// <summary>
-        /// Construct a smtp client with configuration from web.config
+        /// Initializes a client that drops mail to a local pickup directory (e.g. for local development).
         /// </summary>
-        public SingleThreadedMailClient()
+        /// <param name="pickupDirectoryLocation">Path where .eml files are written.</param>
+        public SingleThreadedMailClient(string pickupDirectoryLocation)
         {
-            _clientFactory = () => new SmtpClient();
+            _clientFactory = () => new SmtpClient
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+                PickupDirectoryLocation = pickupDirectoryLocation
+            };
         }
 
         /// <summary>

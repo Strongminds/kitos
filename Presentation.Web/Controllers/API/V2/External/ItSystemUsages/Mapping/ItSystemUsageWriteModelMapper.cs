@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Extensions;
@@ -21,6 +21,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using GdprCriticality = Core.DomainModel.ItSystemUsage.GDPR.GdprCriticality;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
