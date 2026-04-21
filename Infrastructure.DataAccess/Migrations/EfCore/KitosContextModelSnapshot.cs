@@ -9304,7 +9304,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", "ToSystemUsage")
                         .WithMany("UsedByRelations")
                         .HasForeignKey("ToSystemUsageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.ItSystem.RelationFrequencyType", "UsageFrequency")
