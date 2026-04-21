@@ -721,7 +721,7 @@ CREATE TABLE [Text] (
 
 CREATE TABLE [AdviceSents] (
     [Id] int NOT NULL IDENTITY,
-    [AdviceSentsDate] datetime2 NOT NULL,
+    [AdviceSentDate] datetime2 NOT NULL,
     [AdviceId] int NULL,
     [ObjectOwnerId] int NOT NULL,
     [LastChanged] datetime2 NOT NULL,
@@ -2284,11 +2284,11 @@ CREATE TABLE [SystemRelations] (
 );
 
 CREATE TABLE [TaskRefItSystemUsageOptOut] (
-    [ItSystemUsagesOptOutId] int NOT NULL,
-    [TaskRefsOptOutId] int NOT NULL,
-    CONSTRAINT [PK_TaskRefItSystemUsageOptOut] PRIMARY KEY ([ItSystemUsagesOptOutId], [TaskRefsOptOutId]),
-    CONSTRAINT [FK_TaskRefItSystemUsageOptOut_ItSystemUsage_ItSystemUsagesOptOutId] FOREIGN KEY ([ItSystemUsagesOptOutId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_TaskRefItSystemUsageOptOut_TaskRef_TaskRefsOptOutId] FOREIGN KEY ([TaskRefsOptOutId]) REFERENCES [TaskRef] ([Id]) ON DELETE CASCADE
+    [ItSystemUsage_Id] int NOT NULL,
+    [TaskRef_Id] int NOT NULL,
+    CONSTRAINT [PK_TaskRefItSystemUsageOptOut] PRIMARY KEY ([ItSystemUsage_Id], [TaskRef_Id]),
+    CONSTRAINT [FK_TaskRefItSystemUsageOptOut_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TaskRefItSystemUsageOptOut_TaskRef_TaskRef_Id] FOREIGN KEY ([TaskRef_Id]) REFERENCES [TaskRef] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [UserNotifications] (
@@ -3639,7 +3639,7 @@ CREATE UNIQUE INDEX [UX_TaskKey] ON [TaskRef] ([TaskKey]) WHERE [TaskKey] IS NOT
 
 CREATE UNIQUE INDEX [UX_TaskRef_Uuid] ON [TaskRef] ([Uuid]);
 
-CREATE INDEX [IX_TaskRefItSystemUsageOptOut_TaskRefsOptOutId] ON [TaskRefItSystemUsageOptOut] ([TaskRefsOptOutId]);
+CREATE INDEX [IX_TaskRefItSystemUsageOptOut_TaskRef_Id] ON [TaskRefItSystemUsageOptOut] ([TaskRef_Id]);
 
 CREATE INDEX [IX_TerminationDeadlineTypes_LastChangedByUserId] ON [TerminationDeadlineTypes] ([LastChangedByUserId]);
 
