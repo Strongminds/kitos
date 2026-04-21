@@ -686,9 +686,9 @@ CREATE TABLE [SensitivePersonalDataTypes] (
 CREATE TABLE [SsoUserIdentities] (
     [Id] int NOT NULL IDENTITY,
     [ExternalUuid] uniqueidentifier NOT NULL,
-    [UserId] int NOT NULL,
+    [User_Id] int NOT NULL,
     CONSTRAINT [PK_SsoUserIdentities] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_SsoUserIdentities_User_UserId] FOREIGN KEY ([UserId]) REFERENCES [User] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_SsoUserIdentities_User_User_Id] FOREIGN KEY ([User_Id]) REFERENCES [User] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [TerminationDeadlineTypes] (
@@ -1416,11 +1416,11 @@ CREATE TABLE [BrokenLinkInInterfaces] (
     [Cause] int NOT NULL,
     [ErrorResponseCode] int NULL,
     [ReferenceDateOfLatestLinkChange] datetime2 NOT NULL,
-    [BrokenReferenceOriginId] int NOT NULL,
-    [ParentReportId] int NOT NULL,
+    [BrokenReferenceOrigin_Id] int NOT NULL,
+    [ParentReport_Id] int NOT NULL,
     CONSTRAINT [PK_BrokenLinkInInterfaces] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_BrokenLinkInInterfaces_BrokenExternalReferencesReports_ParentReportId] FOREIGN KEY ([ParentReportId]) REFERENCES [BrokenExternalReferencesReports] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_BrokenLinkInInterfaces_ItInterface_BrokenReferenceOriginId] FOREIGN KEY ([BrokenReferenceOriginId]) REFERENCES [ItInterface] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_BrokenLinkInInterfaces_BrokenExternalReferencesReports_ParentReport_Id] FOREIGN KEY ([ParentReport_Id]) REFERENCES [BrokenExternalReferencesReports] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_BrokenLinkInInterfaces_ItInterface_BrokenReferenceOrigin_Id] FOREIGN KEY ([BrokenReferenceOrigin_Id]) REFERENCES [ItInterface] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [DataRow] (
@@ -1569,43 +1569,43 @@ CREATE TABLE [BrokenLinkInExternalReferences] (
     [Cause] int NOT NULL,
     [ErrorResponseCode] int NULL,
     [ReferenceDateOfLatestLinkChange] datetime2 NOT NULL,
-    [BrokenReferenceOriginId] int NOT NULL,
-    [ParentReportId] int NOT NULL,
+    [BrokenReferenceOrigin_Id] int NOT NULL,
+    [ParentReport_Id] int NOT NULL,
     CONSTRAINT [PK_BrokenLinkInExternalReferences] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_BrokenLinkInExternalReferences_BrokenExternalReferencesReports_ParentReportId] FOREIGN KEY ([ParentReportId]) REFERENCES [BrokenExternalReferencesReports] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_BrokenLinkInExternalReferences_BrokenExternalReferencesReports_ParentReport_Id] FOREIGN KEY ([ParentReport_Id]) REFERENCES [BrokenExternalReferencesReports] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [DataProcessingRegistrationDataProcessingCountryOptions] (
-    [InsecureCountriesSubjectToDataTransferId] int NOT NULL,
-    [ReferencesId] int NOT NULL,
-    CONSTRAINT [PK_DataProcessingRegistrationDataProcessingCountryOptions] PRIMARY KEY ([InsecureCountriesSubjectToDataTransferId], [ReferencesId]),
-    CONSTRAINT [FK_DataProcessingRegistrationDataProcessingCountryOptions_DataProcessingCountryOptions_InsecureCountriesSubjectToDataTransferId] FOREIGN KEY ([InsecureCountriesSubjectToDataTransferId]) REFERENCES [DataProcessingCountryOptions] ([Id]) ON DELETE CASCADE
+    [DataProcessingCountryOption_Id] int NOT NULL,
+    [DataProcessingRegistration_Id] int NOT NULL,
+    CONSTRAINT [PK_DataProcessingRegistrationDataProcessingCountryOptions] PRIMARY KEY ([DataProcessingCountryOption_Id], [DataProcessingRegistration_Id]),
+    CONSTRAINT [FK_DataProcessingRegistrationDataProcessingCountryOptions_DataProcessingCountryOptions_DataProcessingCountryOption_Id] FOREIGN KEY ([DataProcessingCountryOption_Id]) REFERENCES [DataProcessingCountryOptions] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [DataProcessingRegistrationDataProcessingOversightOptions] (
-    [OversightOptionsId] int NOT NULL,
-    [ReferencesId] int NOT NULL,
-    CONSTRAINT [PK_DataProcessingRegistrationDataProcessingOversightOptions] PRIMARY KEY ([OversightOptionsId], [ReferencesId]),
-    CONSTRAINT [FK_DataProcessingRegistrationDataProcessingOversightOptions_DataProcessingOversightOptions_OversightOptionsId] FOREIGN KEY ([OversightOptionsId]) REFERENCES [DataProcessingOversightOptions] ([Id]) ON DELETE CASCADE
+    [DataProcessingOversightOption_Id] int NOT NULL,
+    [DataProcessingRegistration_Id] int NOT NULL,
+    CONSTRAINT [PK_DataProcessingRegistrationDataProcessingOversightOptions] PRIMARY KEY ([DataProcessingOversightOption_Id], [DataProcessingRegistration_Id]),
+    CONSTRAINT [FK_DataProcessingRegistrationDataProcessingOversightOptions_DataProcessingOversightOptions_DataProcessingOversightOption_Id] FOREIGN KEY ([DataProcessingOversightOption_Id]) REFERENCES [DataProcessingOversightOptions] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [ItContractDataProcessingRegistrations] (
-    [AssociatedContractsId] int NOT NULL,
-    [DataProcessingRegistrationsId] int NOT NULL,
-    CONSTRAINT [PK_ItContractDataProcessingRegistrations] PRIMARY KEY ([AssociatedContractsId], [DataProcessingRegistrationsId])
+    [ItContract_Id] int NOT NULL,
+    [DataProcessingRegistration_Id] int NOT NULL,
+    CONSTRAINT [PK_ItContractDataProcessingRegistrations] PRIMARY KEY ([ItContract_Id], [DataProcessingRegistration_Id])
 );
 
 CREATE TABLE [DataProcessingRegistrationItSystemUsages] (
-    [AssociatedDataProcessingRegistrationsId] int NOT NULL,
-    [SystemUsagesId] int NOT NULL,
-    CONSTRAINT [PK_DataProcessingRegistrationItSystemUsages] PRIMARY KEY ([AssociatedDataProcessingRegistrationsId], [SystemUsagesId])
+    [DataProcessingRegistration_Id] int NOT NULL,
+    [ItSystemUsage_Id] int NOT NULL,
+    CONSTRAINT [PK_DataProcessingRegistrationItSystemUsages] PRIMARY KEY ([DataProcessingRegistration_Id], [ItSystemUsage_Id])
 );
 
 CREATE TABLE [DataProcessingRegistrationOrganizations] (
-    [DataProcessorForDataProcessingRegistrationsId] int NOT NULL,
-    [DataProcessorsId] int NOT NULL,
-    CONSTRAINT [PK_DataProcessingRegistrationOrganizations] PRIMARY KEY ([DataProcessorForDataProcessingRegistrationsId], [DataProcessorsId]),
-    CONSTRAINT [FK_DataProcessingRegistrationOrganizations_Organization_DataProcessorsId] FOREIGN KEY ([DataProcessorsId]) REFERENCES [Organization] ([Id]) ON DELETE CASCADE
+    [DataProcessingRegistration_Id] int NOT NULL,
+    [Organization_Id] int NOT NULL,
+    CONSTRAINT [PK_DataProcessingRegistrationOrganizations] PRIMARY KEY ([DataProcessingRegistration_Id], [Organization_Id]),
+    CONSTRAINT [FK_DataProcessingRegistrationOrganizations_Organization_Organization_Id] FOREIGN KEY ([Organization_Id]) REFERENCES [Organization] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [DataProcessingRegistrationOversightDates] (
@@ -1987,11 +1987,11 @@ CREATE TABLE [ItContractRights] (
 );
 
 CREATE TABLE [TaskRefItSystems] (
-    [ItSystemsId] int NOT NULL,
-    [TaskRefsId] int NOT NULL,
-    CONSTRAINT [PK_TaskRefItSystems] PRIMARY KEY ([ItSystemsId], [TaskRefsId]),
-    CONSTRAINT [FK_TaskRefItSystems_ItSystem_ItSystemsId] FOREIGN KEY ([ItSystemsId]) REFERENCES [ItSystem] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_TaskRefItSystems_TaskRef_TaskRefsId] FOREIGN KEY ([TaskRefsId]) REFERENCES [TaskRef] ([Id]) ON DELETE CASCADE
+    [ItSystem_Id] int NOT NULL,
+    [TaskRef_Id] int NOT NULL,
+    CONSTRAINT [PK_TaskRefItSystems] PRIMARY KEY ([ItSystem_Id], [TaskRef_Id]),
+    CONSTRAINT [FK_TaskRefItSystems_ItSystem_ItSystem_Id] FOREIGN KEY ([ItSystem_Id]) REFERENCES [ItSystem] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TaskRefItSystems_TaskRef_TaskRef_Id] FOREIGN KEY ([TaskRef_Id]) REFERENCES [TaskRef] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [ItSystemUsage] (
@@ -2253,11 +2253,11 @@ CREATE TABLE [ItSystemUsageSensitiveDataLevels] (
 );
 
 CREATE TABLE [TaskRefItSystemUsages] (
-    [ItSystemUsagesId] int NOT NULL,
-    [TaskRefsId] int NOT NULL,
-    CONSTRAINT [PK_TaskRefItSystemUsages] PRIMARY KEY ([ItSystemUsagesId], [TaskRefsId]),
-    CONSTRAINT [FK_TaskRefItSystemUsages_ItSystemUsage_ItSystemUsagesId] FOREIGN KEY ([ItSystemUsagesId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_TaskRefItSystemUsages_TaskRef_TaskRefsId] FOREIGN KEY ([TaskRefsId]) REFERENCES [TaskRef] ([Id]) ON DELETE CASCADE
+    [ItSystemUsage_Id] int NOT NULL,
+    [TaskRef_Id] int NOT NULL,
+    CONSTRAINT [PK_TaskRefItSystemUsages] PRIMARY KEY ([ItSystemUsage_Id], [TaskRef_Id]),
+    CONSTRAINT [FK_TaskRefItSystemUsages_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TaskRefItSystemUsages_TaskRef_TaskRef_Id] FOREIGN KEY ([TaskRef_Id]) REFERENCES [TaskRef] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [SystemRelations] (
@@ -2479,13 +2479,13 @@ CREATE INDEX [UX_OptionId] ON [AttachedOptions] ([OptionId]);
 
 CREATE INDEX [UX_OptionType] ON [AttachedOptions] ([OptionType]);
 
-CREATE INDEX [IX_BrokenLinkInExternalReferences_BrokenReferenceOriginId] ON [BrokenLinkInExternalReferences] ([BrokenReferenceOriginId]);
+CREATE INDEX [IX_BrokenLinkInExternalReferences_BrokenReferenceOrigin_Id] ON [BrokenLinkInExternalReferences] ([BrokenReferenceOrigin_Id]);
 
-CREATE INDEX [IX_BrokenLinkInExternalReferences_ParentReportId] ON [BrokenLinkInExternalReferences] ([ParentReportId]);
+CREATE INDEX [IX_BrokenLinkInExternalReferences_ParentReport_Id] ON [BrokenLinkInExternalReferences] ([ParentReport_Id]);
 
-CREATE INDEX [IX_BrokenLinkInInterfaces_BrokenReferenceOriginId] ON [BrokenLinkInInterfaces] ([BrokenReferenceOriginId]);
+CREATE INDEX [IX_BrokenLinkInInterfaces_BrokenReferenceOrigin_Id] ON [BrokenLinkInInterfaces] ([BrokenReferenceOrigin_Id]);
 
-CREATE INDEX [IX_BrokenLinkInInterfaces_ParentReportId] ON [BrokenLinkInInterfaces] ([ParentReportId]);
+CREATE INDEX [IX_BrokenLinkInInterfaces_ParentReport_Id] ON [BrokenLinkInInterfaces] ([ParentReport_Id]);
 
 CREATE INDEX [IX_BusinessTypes_LastChangedByUserId] ON [BusinessTypes] ([LastChangedByUserId]);
 
@@ -2525,7 +2525,7 @@ CREATE INDEX [IX_DataProcessingBasisForTransferOptions_ObjectOwnerId] ON [DataPr
 
 CREATE UNIQUE INDEX [UX_Option_Uuid] ON [DataProcessingBasisForTransferOptions] ([Uuid]);
 
-CREATE INDEX [IX_DataProcessingRegistrationDataProcessingCountryOptions_ReferencesId] ON [DataProcessingRegistrationDataProcessingCountryOptions] ([ReferencesId]);
+CREATE INDEX [IX_DataProcessingRegistrationDataProcessingCountryOptions_DataProcessingRegistration_Id] ON [DataProcessingRegistrationDataProcessingCountryOptions] ([DataProcessingRegistration_Id]);
 
 CREATE INDEX [IX_DataProcessingCountryOptions_LastChangedByUserId] ON [DataProcessingCountryOptions] ([LastChangedByUserId]);
 
@@ -2539,7 +2539,7 @@ CREATE INDEX [IX_DataProcessingDataResponsibleOptions_ObjectOwnerId] ON [DataPro
 
 CREATE UNIQUE INDEX [UX_Option_Uuid] ON [DataProcessingDataResponsibleOptions] ([Uuid]);
 
-CREATE INDEX [IX_DataProcessingRegistrationDataProcessingOversightOptions_ReferencesId] ON [DataProcessingRegistrationDataProcessingOversightOptions] ([ReferencesId]);
+CREATE INDEX [IX_DataProcessingRegistrationDataProcessingOversightOptions_DataProcessingRegistration_Id] ON [DataProcessingRegistrationDataProcessingOversightOptions] ([DataProcessingRegistration_Id]);
 
 CREATE INDEX [IX_DataProcessingOversightOptions_LastChangedByUserId] ON [DataProcessingOversightOptions] ([LastChangedByUserId]);
 
@@ -2547,11 +2547,11 @@ CREATE INDEX [IX_DataProcessingOversightOptions_ObjectOwnerId] ON [DataProcessin
 
 CREATE UNIQUE INDEX [UX_Option_Uuid] ON [DataProcessingOversightOptions] ([Uuid]);
 
-CREATE INDEX [IX_ItContractDataProcessingRegistrations_DataProcessingRegistrationsId] ON [ItContractDataProcessingRegistrations] ([DataProcessingRegistrationsId]);
+CREATE INDEX [IX_ItContractDataProcessingRegistrations_DataProcessingRegistration_Id] ON [ItContractDataProcessingRegistrations] ([DataProcessingRegistration_Id]);
 
-CREATE INDEX [IX_DataProcessingRegistrationItSystemUsages_SystemUsagesId] ON [DataProcessingRegistrationItSystemUsages] ([SystemUsagesId]);
+CREATE INDEX [IX_DataProcessingRegistrationItSystemUsages_ItSystemUsage_Id] ON [DataProcessingRegistrationItSystemUsages] ([ItSystemUsage_Id]);
 
-CREATE INDEX [IX_DataProcessingRegistrationOrganizations_DataProcessorsId] ON [DataProcessingRegistrationOrganizations] ([DataProcessorsId]);
+CREATE INDEX [IX_DataProcessingRegistrationOrganizations_Organization_Id] ON [DataProcessingRegistrationOrganizations] ([Organization_Id]);
 
 CREATE INDEX [IX_DataProcessingRegistrationOversightDates_ParentId] ON [DataProcessingRegistrationOversightDates] ([ParentId]);
 
@@ -2995,7 +2995,7 @@ CREATE INDEX [IX_ItSystemRoles_ObjectOwnerId] ON [ItSystemRoles] ([ObjectOwnerId
 
 CREATE UNIQUE INDEX [UX_Option_Uuid] ON [ItSystemRoles] ([Uuid]);
 
-CREATE INDEX [IX_TaskRefItSystems_TaskRefsId] ON [TaskRefItSystems] ([TaskRefsId]);
+CREATE INDEX [IX_TaskRefItSystems_TaskRef_Id] ON [TaskRefItSystems] ([TaskRef_Id]);
 
 CREATE INDEX [ItSystemUsage_Index_GdprCriticality] ON [ItSystemUsage] ([GdprCriticality]);
 
@@ -3215,7 +3215,7 @@ CREATE INDEX [IX_ItSystemUsagePersonalDatas_ItSystemUsageId] ON [ItSystemUsagePe
 
 CREATE INDEX [IX_ItSystemUsageSensitiveDataLevels_ItSystemUsageId] ON [ItSystemUsageSensitiveDataLevels] ([ItSystemUsageId]);
 
-CREATE INDEX [IX_TaskRefItSystemUsages_TaskRefsId] ON [TaskRefItSystemUsages] ([TaskRefsId]);
+CREATE INDEX [IX_TaskRefItSystemUsages_TaskRef_Id] ON [TaskRefItSystemUsages] ([TaskRef_Id]);
 
 CREATE INDEX [IX_KendoColumnConfigurations_KendoOrganizationalConfigurationId] ON [KendoColumnConfigurations] ([KendoOrganizationalConfigurationId]);
 
@@ -3569,7 +3569,7 @@ CREATE INDEX [IX_StsOrganizationIdentities_OrganizationId] ON [StsOrganizationId
 
 CREATE UNIQUE INDEX [UX_ExternalUuid] ON [StsOrganizationIdentities] ([ExternalUuid]);
 
-CREATE INDEX [IX_SsoUserIdentities_UserId] ON [SsoUserIdentities] ([UserId]);
+CREATE INDEX [IX_SsoUserIdentities_User_Id] ON [SsoUserIdentities] ([User_Id]);
 
 CREATE UNIQUE INDEX [UX_ExternalUuid] ON [SsoUserIdentities] ([ExternalUuid]);
 
@@ -3685,21 +3685,21 @@ CREATE INDEX [IX_UserNotifications_OrganizationId] ON [UserNotifications] ([Orga
 
 ALTER TABLE [ArchivePeriod] ADD CONSTRAINT [FK_ArchivePeriod_ItSystemUsage_ItSystemUsageId] FOREIGN KEY ([ItSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [BrokenLinkInExternalReferences] ADD CONSTRAINT [FK_BrokenLinkInExternalReferences_ExternalReferences_BrokenReferenceOriginId] FOREIGN KEY ([BrokenReferenceOriginId]) REFERENCES [ExternalReferences] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [BrokenLinkInExternalReferences] ADD CONSTRAINT [FK_BrokenLinkInExternalReferences_ExternalReferences_BrokenReferenceOrigin_Id] FOREIGN KEY ([BrokenReferenceOrigin_Id]) REFERENCES [ExternalReferences] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [DataProcessingRegistrationDataProcessingCountryOptions] ADD CONSTRAINT [FK_DataProcessingRegistrationDataProcessingCountryOptions_DataProcessingRegistrations_ReferencesId] FOREIGN KEY ([ReferencesId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [DataProcessingRegistrationDataProcessingCountryOptions] ADD CONSTRAINT [FK_DataProcessingRegistrationDataProcessingCountryOptions_DataProcessingRegistrations_DataProcessingRegistration_Id] FOREIGN KEY ([DataProcessingRegistration_Id]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [DataProcessingRegistrationDataProcessingOversightOptions] ADD CONSTRAINT [FK_DataProcessingRegistrationDataProcessingOversightOptions_DataProcessingRegistrations_ReferencesId] FOREIGN KEY ([ReferencesId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [DataProcessingRegistrationDataProcessingOversightOptions] ADD CONSTRAINT [FK_DataProcessingRegistrationDataProcessingOversightOptions_DataProcessingRegistrations_DataProcessingRegistration_Id] FOREIGN KEY ([DataProcessingRegistration_Id]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [ItContractDataProcessingRegistrations] ADD CONSTRAINT [FK_ItContractDataProcessingRegistrations_DataProcessingRegistrations_DataProcessingRegistrationsId] FOREIGN KEY ([DataProcessingRegistrationsId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [ItContractDataProcessingRegistrations] ADD CONSTRAINT [FK_ItContractDataProcessingRegistrations_DataProcessingRegistrations_DataProcessingRegistration_Id] FOREIGN KEY ([DataProcessingRegistration_Id]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [ItContractDataProcessingRegistrations] ADD CONSTRAINT [FK_ItContractDataProcessingRegistrations_ItContract_AssociatedContractsId] FOREIGN KEY ([AssociatedContractsId]) REFERENCES [ItContract] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [ItContractDataProcessingRegistrations] ADD CONSTRAINT [FK_ItContractDataProcessingRegistrations_ItContract_ItContract_Id] FOREIGN KEY ([ItContract_Id]) REFERENCES [ItContract] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [DataProcessingRegistrationItSystemUsages] ADD CONSTRAINT [FK_DataProcessingRegistrationItSystemUsages_DataProcessingRegistrations_AssociatedDataProcessingRegistrationsId] FOREIGN KEY ([AssociatedDataProcessingRegistrationsId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [DataProcessingRegistrationItSystemUsages] ADD CONSTRAINT [FK_DataProcessingRegistrationItSystemUsages_DataProcessingRegistrations_DataProcessingRegistration_Id] FOREIGN KEY ([DataProcessingRegistration_Id]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [DataProcessingRegistrationItSystemUsages] ADD CONSTRAINT [FK_DataProcessingRegistrationItSystemUsages_ItSystemUsage_SystemUsagesId] FOREIGN KEY ([SystemUsagesId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [DataProcessingRegistrationItSystemUsages] ADD CONSTRAINT [FK_DataProcessingRegistrationItSystemUsages_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE;
 
-ALTER TABLE [DataProcessingRegistrationOrganizations] ADD CONSTRAINT [FK_DataProcessingRegistrationOrganizations_DataProcessingRegistrations_DataProcessorForDataProcessingRegistrationsId] FOREIGN KEY ([DataProcessorForDataProcessingRegistrationsId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
+ALTER TABLE [DataProcessingRegistrationOrganizations] ADD CONSTRAINT [FK_DataProcessingRegistrationOrganizations_DataProcessingRegistrations_DataProcessingRegistration_Id] FOREIGN KEY ([DataProcessingRegistration_Id]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 
 ALTER TABLE [DataProcessingRegistrationOversightDates] ADD CONSTRAINT [FK_DataProcessingRegistrationOversightDates_DataProcessingRegistrations_ParentId] FOREIGN KEY ([ParentId]) REFERENCES [DataProcessingRegistrations] ([Id]) ON DELETE CASCADE;
 
