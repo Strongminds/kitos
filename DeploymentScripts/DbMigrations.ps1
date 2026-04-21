@@ -76,16 +76,6 @@ BEGIN
     VALUES ('20260413095837_InitialBaseline', '10.0.6')
     PRINT 'Pre-marked InitialBaseline'
 END
-
--- AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel: pre-mark when the
--- matching EF6 migration was already applied (columns already exist on the table).
-IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] LIKE '%_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel')
-   AND EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItContractOverviewReadModels') AND name = 'ExternalPaymentOrganizationUnitsCsv')
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES ('20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel', '10.0.6')
-    PRINT 'Pre-marked AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel'
-END
 "@
 
     $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
@@ -116,6 +106,15 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     if ($newDb -eq $true -and $connectionString -notmatch "TrustServerCertificate\s*=\s*True") {
         $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
     }
+
+    # Verify TCP connectivity before proceeding.
+    $parts = ConvertTo-SqlConnectionParts $connectionString
+    $rawServer = $parts.Server -replace '^tcp:', ''
+    $splitParts = $rawServer -split ',', 2
+    $sqlHost = $splitParts[0].Trim()
+    $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
+    $tcpTest = Test-NetConnection -ComputerName $sqlHost -Port $sqlPort -WarningAction SilentlyContinue
+    if (-not $tcpTest.TcpTestSucceeded) { Throw "SQL Server at $sqlHost`:$sqlPort is not reachable" }
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
