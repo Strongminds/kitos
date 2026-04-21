@@ -1534,7 +1534,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Same(itSystemUsage, createResult.Value);
             AssertTransactionCommitted(transactionMock);
             Assert.Equal(purpose, itSystemUsage.GeneralPurpose);
-            Assert.Equal(businessCritical, itSystemUsage.isBusinessCritical);
+            Assert.Equal(businessCritical, itSystemUsage.CriticalitySection.isBusinessCritical);
             Assert.Equal(hostedAt, itSystemUsage.HostedAt);
             AssertLink(directoryDoc, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);
             Assert.Equal(sensitiveDataLevels.OrderBy(x => x), itSystemUsage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).OrderBy(x => x));
@@ -3007,6 +3007,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
+            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalitySection.isBusinessCritical);
 
             //Archiving
             var archiving = expected.Archiving.Value;
