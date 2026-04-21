@@ -1031,6 +1031,48 @@ namespace Tests.Unit.Core.DomainServices.Contract
             AssertAuditStatus(sourceAuditStatuses, TrafficLight.White, itContractOverviewReadModel.AuditStatusWhite);
         }
 
+        [Fact]
+        public void Apply_Can_Update_ItSystemUsageUuid_On_Existing_ItSystemUsages()
+        {
+            //Arrange - existing read model with an entry that has an empty UUID (simulates data created before the UUID column was added)
+            var systemUsageId = A<int>();
+            var existingReadModelEntry = new ItContractOverviewReadModelItSystemUsage
+            {
+                ItSystemUsageId = systemUsageId,
+                ItSystemUsageUuid = Guid.Empty
+            };
+
+            var newUuid = A<Guid>();
+            var systemUsage = new ItContractItSystemUsage
+            {
+                ItSystemUsage = new ItSystemUsage
+                {
+                    Id = systemUsageId,
+                    Uuid = newUuid,
+                    ItSystem = new ItSystem
+                    {
+                        Name = A<string>(),
+                        Uuid = A<Guid>(),
+                        Disabled = A<bool>()
+                    }
+                }
+            };
+
+            var itContract = new ItContract
+            {
+                AssociatedSystemUsages = new List<ItContractItSystemUsage> { systemUsage }
+            };
+            var itContractOverviewReadModel = new ItContractOverviewReadModel();
+            itContractOverviewReadModel.ItSystemUsages.Add(existingReadModelEntry);
+
+            //Act
+            _sut.Apply(itContract, itContractOverviewReadModel);
+
+            //Assert
+            var updatedEntry = Assert.Single(itContractOverviewReadModel.ItSystemUsages);
+            Assert.Equal(newUuid, updatedEntry.ItSystemUsageUuid);
+        }
+
         private static void AssertAuditStatus(Dictionary<TrafficLight, int> sourceAuditStatuses, TrafficLight statusType, int mappedResult)
         {
             Assert.Equal(sourceAuditStatuses.ContainsKey(statusType) ? sourceAuditStatuses[statusType] : 0, mappedResult);
