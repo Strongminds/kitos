@@ -76,10 +76,22 @@ BEGIN
     VALUES ('20260413095837_InitialBaseline', '10.0.6')
     PRINT 'Pre-marked InitialBaseline'
 END
+
+-- AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel: pre-mark when the
+-- matching EF6 migration was already applied (columns already exist on the table).
+IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] LIKE '%_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel')
+   AND EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItContractOverviewReadModels') AND name = 'ExternalPaymentOrganizationUnitsCsv')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES ('20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel', '10.0.6')
+    PRINT 'Pre-marked AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel'
+END
 "@
 
     $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
-    $sql | Set-Content -Path $tmpFile -Encoding UTF8
+    # Write without BOM — PowerShell 5.x Set-Content -Encoding UTF8 emits a BOM which
+    # causes sqlcmd to fail parsing the file on some versions.
+    [System.IO.File]::WriteAllText($tmpFile, $sql, (New-Object System.Text.UTF8Encoding $false))
     try {
         & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $tmpFile -b
         if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed initializing EF Core migration history" }
