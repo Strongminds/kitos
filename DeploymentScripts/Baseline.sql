@@ -2246,10 +2246,10 @@ CREATE TABLE [ItSystemUsagePersonalDatas] (
 
 CREATE TABLE [ItSystemUsageSensitiveDataLevels] (
     [Id] int NOT NULL IDENTITY,
-    [ItSystemUsageId] int NOT NULL,
+    [ItSystemUsage_Id] int NOT NULL,
     [SensitivityDataLevel] int NOT NULL,
     CONSTRAINT [PK_ItSystemUsageSensitiveDataLevels] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_ItSystemUsageSensitiveDataLevels_ItSystemUsage_ItSystemUsageId] FOREIGN KEY ([ItSystemUsageId]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_ItSystemUsageSensitiveDataLevels_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [TaskRefItSystemUsages] (
@@ -3213,7 +3213,7 @@ CREATE INDEX [IX_ItSystemUsageOverviewUsingSystemUsageReadModels_ParentId] ON [I
 
 CREATE INDEX [IX_ItSystemUsagePersonalDatas_ItSystemUsageId] ON [ItSystemUsagePersonalDatas] ([ItSystemUsageId]);
 
-CREATE INDEX [IX_ItSystemUsageSensitiveDataLevels_ItSystemUsageId] ON [ItSystemUsageSensitiveDataLevels] ([ItSystemUsageId]);
+CREATE INDEX [IX_ItSystemUsageSensitiveDataLevels_ItSystemUsage_Id] ON [ItSystemUsageSensitiveDataLevels] ([ItSystemUsage_Id]);
 
 CREATE INDEX [IX_TaskRefItSystemUsages_TaskRef_Id] ON [TaskRefItSystemUsages] ([TaskRef_Id]);
 
