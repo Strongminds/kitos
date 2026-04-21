@@ -1,3 +1,29 @@
+Function Wait-ForTcpPort {
+    param(
+        [Parameter(Mandatory = $true)][string]$Host,
+        [Parameter(Mandatory = $true)][int]$Port,
+        [int]$MaxAttempts = 12,
+        [int]$DelaySeconds = 5
+    )
+
+    for ($i = 1; $i -le $MaxAttempts; $i++) {
+        Write-Host "Checking TCP connectivity to $Host`:$Port (attempt $i/$MaxAttempts) ..."
+
+        $ok = Test-NetConnection -ComputerName $Host -Port $Port -InformationLevel Quiet -WarningAction SilentlyContinue
+
+        if ($ok) {
+            Write-Host "TCP connectivity OK ($Host`:$Port)"
+            return
+        }
+
+        if ($i -lt $MaxAttempts) {
+            Start-Sleep -Seconds $DelaySeconds
+        }
+    }
+
+    throw "TCP connectivity was not established to $Host`:$Port after $MaxAttempts attempts."
+}
+
 Function ConvertTo-SqlConnectionParts([string]$connectionString) {
     $cs = @{}
     ($connectionString -split ';') | Where-Object { $_ -match '=' } | ForEach-Object {
@@ -107,14 +133,13 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
     }
 
-    # Verify TCP connectivity before proceeding.
+    # Verify TCP connectivity before proceeding with any sqlcmd or migration operations.
     $parts = ConvertTo-SqlConnectionParts $connectionString
     $rawServer = $parts.Server -replace '^tcp:', ''
     $splitParts = $rawServer -split ',', 2
     $sqlHost = $splitParts[0].Trim()
     $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
-    $tcpTest = Test-NetConnection -ComputerName $sqlHost -Port $sqlPort -WarningAction SilentlyContinue
-    if (-not $tcpTest.TcpTestSucceeded) { Throw "SQL Server at $sqlHost`:$sqlPort is not reachable" }
+    Wait-ForTcpPort -Host $sqlHost -Port $sqlPort
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
