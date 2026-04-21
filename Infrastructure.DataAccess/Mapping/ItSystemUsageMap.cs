@@ -78,7 +78,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasMany(t => t.SensitiveDataLevels)
                 .WithOne(t => t.ItSystemUsage)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             builder.HasMany(x => x.PersonalDataOptions)
                 .WithOne(o => o.ItSystemUsage)

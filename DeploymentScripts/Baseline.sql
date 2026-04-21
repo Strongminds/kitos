@@ -2249,7 +2249,7 @@ CREATE TABLE [ItSystemUsageSensitiveDataLevels] (
     [ItSystemUsage_Id] int NOT NULL,
     [SensitivityDataLevel] int NOT NULL,
     CONSTRAINT [PK_ItSystemUsageSensitiveDataLevels] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_ItSystemUsageSensitiveDataLevels_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_ItSystemUsageSensitiveDataLevels_ItSystemUsage_ItSystemUsage_Id] FOREIGN KEY ([ItSystemUsage_Id]) REFERENCES [ItSystemUsage] ([Id]) ON DELETE NO ACTION
 );
 
 CREATE TABLE [TaskRefItSystemUsages] (
