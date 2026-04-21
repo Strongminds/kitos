@@ -135,8 +135,9 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # Debug: verify TCP connectivity before attempting any DB operations.
     $parts = ConvertTo-SqlConnectionParts $connectionString
     $rawServer = $parts.Server -replace '^tcp:', ''
-    $host_, $port_ = ($rawServer -split ',', 2) + @('1433')
-    $port_ = [int]($port_.Trim())
+    $splitParts = $rawServer -split ',', 2
+    $host_ = $splitParts[0].Trim()
+    $port_ = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
     Write-Host "Checking TCP connectivity to $host_`:$port_ ..."
     $tcpTest = Test-NetConnection -ComputerName $host_ -Port $port_ -WarningAction SilentlyContinue
     if ($tcpTest.TcpTestSucceeded) {
