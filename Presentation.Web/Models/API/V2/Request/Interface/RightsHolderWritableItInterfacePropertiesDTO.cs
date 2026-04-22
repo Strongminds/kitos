@@ -26,20 +26,20 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// Identifier for IT-Interface
         /// </summary>
         [MaxLength(ItInterface.MaxNameLength)]
-        public string InterfaceId { get; set; }
-        
+        public string? InterfaceId { get; set; }
+
         /// <summary>
         /// Version signifier for IT-Interface
         /// </summary>
         [MaxLength(ItInterface.MaxVersionLength)]
-        public string Version { get; set; }
-        
+        public string? Version { get; set; }
+
         /// <summary>
         /// General description of the IT-Interface
         /// </summary>
         [Required]
         public string Description { get; set; }
-        
+
         /// <summary>
         /// Url reference for further information
         /// </summary>

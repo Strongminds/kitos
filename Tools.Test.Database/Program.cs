@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Linq;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Tools.Test.Database.Model.Cli;
 using Tools.Test.Database.Model.Environment;
 using Tools.Test.Database.Model.Parameters;
@@ -22,9 +24,13 @@ namespace Tools.Test.Database
             try
             {
                 Console.WriteLine($"Executing {taskName}");
-                var connectionString = GetArgument(additionalArgs, 0);
+                var connectionString = EnsureTrustServerCertificate(GetArgument(additionalArgs, 0));
                 FailOnConnectionToProd(connectionString);
-                using (var context = new KitosContext(connectionString))
+                var dbOptions = new DbContextOptionsBuilder<KitosContext>()
+                    .UseLazyLoadingProxies()
+                    .UseSqlServer(connectionString)
+                    .Options;
+                using (var context = new KitosContext(dbOptions))
                 {
                     var success = databaseTask.Execute(context);
                     if (success == false)
@@ -50,7 +56,7 @@ namespace Tools.Test.Database
             {
                 case CliTargets.DropDatabase:
                     Console.WriteLine("Expecting the following arguments: <connectionString>");
-                    var connectionString = GetArgument(additionalArgs, 0);
+                    var connectionString = EnsureTrustServerCertificate(GetArgument(additionalArgs, 0));
                     return new DropDatabaseTask(connectionString);
 
                 case CliTargets.CreateOrganization:
@@ -162,6 +168,13 @@ namespace Tools.Test.Database
             {
                 throw new NotSupportedException("This operation is not allowed in prod.");
             }
+        }
+
+        private static string EnsureTrustServerCertificate(string connectionString)
+        {
+            var builder = new SqlConnectionStringBuilder(connectionString);
+            builder.TrustServerCertificate = true;
+            return builder.ConnectionString;
         }
 
         private static string GetArgument(string[] additionalArgs, int index, bool trimEnclosingQuotes = true)

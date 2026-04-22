@@ -14,11 +14,11 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         ///     - No duplicates
         ///     - Option must be available in the organization
         /// </summary>
-        public IEnumerable<Guid> OversightOptionUuids { get; set; }
+        public IEnumerable<Guid>? OversightOptionUuids { get; set; }
         /// <summary>
         /// Remark related to the selected oversight options
         /// </summary>
-        public string OversightOptionsRemark { get; set; }
+        public string? OversightOptionsRemark { get; set; }
         /// <summary>
         /// Determines the interval of the oversight activity
         /// </summary>
@@ -26,7 +26,7 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         /// <summary>
         /// Remark regarding the oversight interval
         /// </summary>
-        public string OversightIntervalRemark { get; set; }
+        public string? OversightIntervalRemark { get; set; }
         /// <summary>
         /// Determines if an oversight activity has been completed
         /// </summary>
@@ -35,7 +35,7 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         /// <summary>
         /// Remark related to the oversight completion
         /// </summary>
-        public string OversightCompletedRemark { get; set; }
+        public string? OversightCompletedRemark { get; set; }
         /// <summary>
         /// Determines the date of a scheduled inspection
         /// </summary>
@@ -45,6 +45,6 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         /// Constraints:
         ///     - IsOversightCompleted equals yes
         /// </summary>
-        public IEnumerable<OversightDateDTO> OversightDates { get; set; }
+        public IEnumerable<OversightDateDTO>? OversightDates { get; set; }
     }
 }

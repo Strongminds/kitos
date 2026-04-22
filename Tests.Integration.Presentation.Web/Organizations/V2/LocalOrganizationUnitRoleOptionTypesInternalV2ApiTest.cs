@@ -115,11 +115,12 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var globalOption = new OrganizationUnitRole()
             {
                 Uuid = A<Guid>(),
-                Id = A<int>(),
                 Name = A<string>(),
                 IsObligatory = false,
                 HasWriteAccess = A<bool>(),
-                IsEnabled = true
+                IsEnabled = true,
+                LastChangedByUserId = TestEnvironment.DefaultUserId,
+                ObjectOwnerId = TestEnvironment.DefaultUserId,
             };
             DatabaseAccess.MutateEntitySet<OrganizationUnitRole>(repository =>
             {

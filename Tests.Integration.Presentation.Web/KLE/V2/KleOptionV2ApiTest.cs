@@ -189,7 +189,24 @@ namespace Tests.Integration.Presentation.Web.KLE.V2
                 Uuid = Guid.NewGuid()
             }));
 
-            return DatabaseAccess.MapFromEntitySet<TaskRef, TaskRef>(refs => refs.AsQueryable().Include(x => x.Parent).AsNoTracking().Single(x => x.TaskKey == key));
+            return DatabaseAccess.MapFromEntitySet<TaskRef, TaskRef>(refs =>
+                refs.AsQueryable()
+                    .Where(x => x.TaskKey == key)
+                    .Select(x => new TaskRef
+                    {
+                        Id = x.Id,
+                        Uuid = x.Uuid,
+                        TaskKey = x.TaskKey,
+                        Description = x.Description,
+                        ParentId = x.ParentId,
+                        Parent = x.Parent == null ? null : new TaskRef
+                        {
+                            Id = x.Parent.Id,
+                            Uuid = x.Parent.Uuid,
+                            TaskKey = x.Parent.TaskKey
+                        }
+                    })
+                    .Single());
         }
 
         private static void PurgePreviousTestData()

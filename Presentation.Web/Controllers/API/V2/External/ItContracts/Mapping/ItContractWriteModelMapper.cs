@@ -1,4 +1,4 @@
-﻿using Core.Abstractions.Extensions;
+using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Contracts.Write;
@@ -18,6 +18,7 @@ using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.SharedProperties;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 {
@@ -133,8 +134,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractPayment
             {
-                Note = dto.Note,
-                AccountingEntry = dto.AccountingEntry,
+                Note = dto.Note ?? "",
+                AccountingEntry = dto.AccountingEntry ?? "",
                 Acquisition = dto.Acquisition,
                 Operation = dto.Operation,
                 Other = dto.Other,

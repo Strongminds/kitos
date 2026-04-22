@@ -177,6 +177,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task DeleteContractAsync(string token, Guid contractUuid)
         {
             using var response = await SendDeleteContractAsync(token, contractUuid);
+            var test = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 

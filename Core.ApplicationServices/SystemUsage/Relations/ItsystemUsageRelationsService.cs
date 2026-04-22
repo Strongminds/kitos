@@ -258,12 +258,14 @@ namespace Core.ApplicationServices.SystemUsage.Relations
                                 onSuccess: removedRelation =>
                                 {
                                     var fromSystemUsage = removedRelation.FromSystemUsage;
-                                    var toSystemUsage = removedRelation.ToSystemUsage;
+                                    var toSystemUsageId = removedRelation.ToSystemUsageId;
                                     _relationRepository.DeleteWithReferencePreload(removedRelation);
                                     _relationRepository.Save();
                                     _usageRepository.Save();
                                     _domainEvents.Raise(new EntityUpdatedEvent<ItSystemUsage>(fromSystemUsage));
-                                    _domainEvents.Raise(new EntityUpdatedEvent<ItSystemUsage>(toSystemUsage));
+                                    var toSystemUsage = _usageRepository.GetByKey(toSystemUsageId);
+                                    if (toSystemUsage != null)
+                                        _domainEvents.Raise(new EntityUpdatedEvent<ItSystemUsage>(toSystemUsage));
                                     transaction.Commit();
                                     return removedRelation;
                                 },

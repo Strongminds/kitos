@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.LocalOptions;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.LocalOptions;
@@ -9,11 +8,11 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Presentation.Web.Models.API.V2.Internal.Response;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
-    [RoutePrefix("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/price-regulation-types")]
+    [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/price-regulation-types")]
     public class ItContractLocalPriceRegulationTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalPriceRegulationType, ItContract, PriceRegulationType>
     {
         private readonly IGenericLocalOptionsService<LocalPriceRegulationType, ItContract, PriceRegulationType> _localOptionTypeService;
@@ -26,66 +25,43 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
         }
 
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<LocalRegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetLocalPriceRegulationTypes([NonEmptyGuid][FromUri] Guid organizationUuid)
+        [Route("")]
+        public IActionResult GetLocalPriceRegulationTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult GetLocalPriceRegulationTypeByOptionId([NonEmptyGuid][FromUri] Guid organizationUuid, [FromUri] Guid optionUuid)
+        public IActionResult GetLocalPriceRegulationTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult CreateLocalPriceRegulationType([NonEmptyGuid][FromUri] Guid organizationUuid, LocalOptionCreateRequestDTO dto)
+        [Route("")]
+        public IActionResult CreateLocalPriceRegulationType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult PatchLocalPriceRegulationType([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid,
-            LocalRegularOptionUpdateRequestDTO dto)
+        public IActionResult PatchLocalPriceRegulationType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid,
+            [FromBody] LocalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(organizationUuid, optionUuid, dto);
         }
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(LocalRegularOptionResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult DeleteLocalPriceRegulationType([NonEmptyGuid][FromUri] Guid organizationUuid,
-            [FromUri] Guid optionUuid)
+        public IActionResult DeleteLocalPriceRegulationType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+            [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);
         }
     }
 }
+
+

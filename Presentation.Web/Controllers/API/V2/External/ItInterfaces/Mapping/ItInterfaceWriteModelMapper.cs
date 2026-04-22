@@ -1,4 +1,4 @@
-﻿using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Interface;
 using Core.ApplicationServices.Model.Shared;
 using Presentation.Web.Infrastructure.Model.Request;
@@ -9,6 +9,7 @@ using Core.DomainModel;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
 {

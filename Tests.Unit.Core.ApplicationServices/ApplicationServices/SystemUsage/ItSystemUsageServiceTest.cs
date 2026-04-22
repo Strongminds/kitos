@@ -8,7 +8,6 @@ using Core.ApplicationServices.References;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel;
 using Core.DomainModel.Events;
-using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
@@ -362,28 +361,27 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
-        public void Delete_Returns_Ok()
+        public void Delete_CanDelete_WithPopulatedUsedBy()
         {
-            //Arrange
-            var id = A<int>();
-            var itSystemUsage = new ItSystemUsage();
-            var transaction = new Mock<IDatabaseTransaction>();
-            ExpectGetUsageByKeyReturns(id, itSystemUsage);
-            _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(true);
-            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
-            _referenceService.Setup(x => x.DeleteBySystemUsageId(id)).Returns(Result<IEnumerable<ExternalReference>, OperationFailure>.Success(new ExternalReference[0]));
+            var (itSystemUsage, id, transaction) = SetupDeleteSuccess();
+            itSystemUsage.UsedBy = new List<ItSystemUsageOrgUnitUsage>()
+            {
+                new ItSystemUsageOrgUnitUsage()
+            };
 
-            //Act
             var result = _sut.Delete(id);
 
-            //Assert
-            Assert.True(result.Ok);
-            Assert.Same(itSystemUsage, result.Value);
-            _usageRepository.Verify(x => x.DeleteByKeyWithReferencePreload(id), Times.Once);
-            _usageRepository.Verify(x => x.Save(), Times.Once);
-            _referenceService.Verify(x => x.DeleteBySystemUsageId(id), Times.Once);
-            transaction.Verify(x => x.Commit(), Times.Once);
-            _domainEvents.Verify(x => x.Raise(It.Is<EntityLifeCycleEvent<ItSystemUsage>>(ev => ev.Entity == itSystemUsage && ev.ChangeType == LifeCycleEventType.Deleting)));
+            AssertDeleteSuccess(result, itSystemUsage, transaction, id);
+        }
+
+        [Fact]
+        public void Delete_Returns_Ok()
+        {
+            var (itSystemUsage, id, transaction) = SetupDeleteSuccess();
+
+            var result = _sut.Delete(id);
+
+            AssertDeleteSuccess(result, itSystemUsage, transaction, id);
         }
 
         [Fact]
@@ -1493,6 +1491,29 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(result.HasValue);
             Assert.Equal(OperationFailure.Forbidden, result.Value.FailureType);
+        }
+
+        private (ItSystemUsage itSystemUsage, int id, Mock<IDatabaseTransaction> transaction) SetupDeleteSuccess()
+        {
+            var id = A<int>();
+            var itSystemUsage = new ItSystemUsage();
+            var transaction = new Mock<IDatabaseTransaction>();
+            ExpectGetUsageByKeyReturns(id, itSystemUsage);
+            _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(true);
+            _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
+            _referenceService.Setup(x => x.DeleteBySystemUsageId(id)).Returns(Result<IEnumerable<ExternalReference>, OperationFailure>.Success(new ExternalReference[0]));
+            return (itSystemUsage, id, transaction);
+        }
+
+        private void AssertDeleteSuccess(Result<ItSystemUsage, OperationError> result, ItSystemUsage expected, Mock<IDatabaseTransaction> transaction, int id)
+        {
+            Assert.True(result.Ok);
+            Assert.Same(expected, result.Value);
+            _usageRepository.Verify(x => x.DeleteByKeyWithReferencePreload(id), Times.Once);
+            _usageRepository.Verify(x => x.Save(), Times.Once);
+            _referenceService.Verify(x => x.DeleteBySystemUsageId(id), Times.Once);
+            transaction.Verify(x => x.Commit(), Times.Once);
+            _domainEvents.Verify(x => x.Raise(It.Is<EntityLifeCycleEvent<ItSystemUsage>>(ev => ev.Entity == expected && ev.ChangeType == LifeCycleEventType.Deleting)));
         }
 
         private void VerifyChangesNotSaved(Mock<IDatabaseTransaction> transaction, bool expectRollback = true)

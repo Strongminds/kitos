@@ -248,7 +248,7 @@ namespace Infrastructure.OpenXML
                     sheetData.AppendChild(newRow);
                 }
             }
-            spreadsheetDocument.Close();
+            spreadsheetDocument.Dispose();
 
             return stream;
         }

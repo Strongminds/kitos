@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.ApplicationServices.SystemUsage;
@@ -8,6 +8,7 @@ using Core.DomainServices.Queries;
 using Presentation.Web.Extensions;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Common.Helpers
 {

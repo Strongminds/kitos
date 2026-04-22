@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web.Http;
 using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel.ItSystem;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
-using Swashbuckle.Swagger.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
-    [RoutePrefix("api/v2/it-system-usage-sensitive-personal-data-types")]
+    [Route("api/v2/it-system-usage-sensitive-personal-data-types")]
     public class ItSystemUsageSensitivePersonalDataTypeV2Controller : BaseRegularOptionTypeV2Controller<ItSystem, SensitivePersonalDataType>
     {
         public ItSystemUsageSensitivePersonalDataTypeV2Controller(IOptionsApplicationService<ItSystem, SensitivePersonalDataType> optionService)
@@ -25,13 +24,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="organizationUuid">organization context for the sensitive personal data types availability</param>
         /// <returns>A list of available It-System usage sensitive personal data types</returns>
         [HttpGet]
-        [Route]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<RegularOptionResponseDTO>))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null)
+        [Route("")]
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -44,14 +38,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the sensitive personal data type is available in the organization</returns>
         [HttpGet]
         [Route("{sensitivePersonalDataTypeUuid}")]
-        [SwaggerResponse(HttpStatusCode.OK, Type = typeof(RegularOptionExtendedResponseDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest)]
-        [SwaggerResponse(HttpStatusCode.Unauthorized)]
-        [SwaggerResponse(HttpStatusCode.Forbidden)]
-        [SwaggerResponse(HttpStatusCode.NotFound)]
-        public IHttpActionResult Get([NonEmptyGuid] Guid sensitivePersonalDataTypeUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult Get([NonEmptyGuid] Guid sensitivePersonalDataTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(sensitivePersonalDataTypeUuid, organizationUuid);
         }
     }
 }
+
+

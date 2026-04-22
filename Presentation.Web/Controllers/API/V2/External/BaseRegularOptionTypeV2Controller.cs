@@ -1,4 +1,4 @@
-﻿using Core.ApplicationServices.OptionTypes;
+using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel;
 using Core.DomainServices.Model.Options;
 using Presentation.Web.Extensions;
@@ -6,15 +6,15 @@ using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Options;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Web.Http;
 
 namespace Presentation.Web.Controllers.API.V2.External
 {
     public abstract class BaseRegularOptionTypeV2Controller<TParent,TOption> 
         : BaseOptionTypeV2Controller<TParent,TOption, RegularOptionResponseDTO, RegularOptionExtendedResponseDTO> where TOption : OptionEntity<TParent>
     {
-        protected override IHttpActionResult GetAvailableOptions(Guid organizationUuid, [FromUri] UnboundedPaginationQuery pagination = null)
+        protected override IActionResult GetAvailableOptions(Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return _optionApplicationService
                 .GetOptionTypes(organizationUuid)
@@ -45,3 +45,4 @@ namespace Presentation.Web.Controllers.API.V2.External
         }
     }
 }
+

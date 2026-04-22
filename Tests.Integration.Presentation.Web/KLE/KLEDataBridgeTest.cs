@@ -10,7 +10,7 @@ namespace Tests.Integration.Presentation.Web.KLE
         [Fact]
         public void GetKLEXMLData_Returns_Valid_XML()
         {
-            var sut = new KLEDataBridge();
+            var sut = new KLEDataBridge("http://api.kle-online.dk/resources/kle");
             var result = sut.GetAllActiveKleNumbers();
             var publishingDateXElement = result.Descendants("UdgivelsesDato");
             DateTime.Parse(publishingDateXElement.First().Value);

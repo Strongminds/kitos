@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security;
 using System.Text;
-using System.Web;
 using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
@@ -45,10 +44,10 @@ namespace Core.ApplicationServices
         private readonly ICryptoService _cryptoService;
         private readonly IAuthorizationContext _authorizationContext;
         private readonly IDomainEvents _domainEvents;
-        private readonly SHA256Managed _crypt;
+        private readonly SHA256 _crypt;
         private readonly IOrganizationalUserContext _organizationalUserContext;
         private readonly ICommandBus _commandBus;
-        private static readonly RNGCryptoServiceProvider rngCsp = new();
+        private static readonly RandomNumberGenerator rngCsp = RandomNumberGenerator.Create();
         private const string PasswordResetApiRoute = "ui/reset-password/";
         private const string KitosManualsLink = "https://info.kitos.dk/s/YeFJqK6D2f2CQCR";
 
@@ -87,7 +86,7 @@ namespace Core.ApplicationServices
             _transactionManager = transactionManager;
             _organizationalUserContext = organizationalUserContext;
             _commandBus = commandBus;
-            _crypt = new SHA256Managed();
+            _crypt = SHA256.Create();
             if (useDefaultUserPassword && string.IsNullOrWhiteSpace(defaultUserPassword))
             {
                 throw new ArgumentException(nameof(defaultUserPassword) + " must be defined, when it must be used.");
@@ -200,7 +199,7 @@ namespace Core.ApplicationServices
 
         private string GetResetLink(string hash)
         {
-            return _baseUrl + PasswordResetApiRoute + HttpUtility.UrlEncode(hash);
+            return _baseUrl + PasswordResetApiRoute + Uri.EscapeDataString(hash);
         }
 
         public bool IsEmailInUse(string email)
@@ -260,7 +259,7 @@ namespace Core.ApplicationServices
 
             byte[] encrypted = _crypt.ComputeHash(randomNumber);
 
-            var hash = HttpServerUtility.UrlTokenEncode(encrypted);
+            var hash = UrlTokenEncode(encrypted);
 
             var request = new PasswordResetRequest { Hash = hash, Time = now, UserId = user.Id };
 
@@ -521,6 +520,38 @@ namespace Core.ApplicationServices
             return userToDelete.IsGlobalAdmin
                 ? OrganizationalUserDeletionStrategy.Local //Global admins are not automatically removed from kitos when removed from the last organization
                 : OrganizationalUserDeletionStrategy.Global;
+        }
+
+        /// <summary>
+        /// Reimplements System.Web.HttpServerUtility.UrlTokenEncode so that password-reset tokens
+        /// stored in the database remain valid after the System.Web removal.
+        /// </summary>
+        private static string UrlTokenEncode(byte[] input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input.Length == 0) return string.Empty;
+
+            string base64 = Convert.ToBase64String(input);
+            int endPos = base64.Length;
+            int paddingCount = 0;
+            while (endPos > 0 && base64[endPos - 1] == '=')
+            {
+                endPos--;
+                paddingCount++;
+            }
+
+            char[] chars = new char[endPos + 1];
+            chars[endPos] = (char)('0' + paddingCount);
+            for (int i = 0; i < endPos; i++)
+            {
+                chars[i] = base64[i] switch
+                {
+                    '+' => '-',
+                    '/' => '_',
+                    var c => c
+                };
+            }
+            return new string(chars);
         }
     }
 }
