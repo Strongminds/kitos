@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
 using Presentation.Web.Controllers.API.V1.Auth;
@@ -33,7 +34,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hangfire.SqlServer;
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
@@ -73,6 +73,7 @@ services.AddControllersWithViews(options =>
         options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
     })
     .AddOData(options =>
     {
@@ -218,7 +219,11 @@ services.AddSwaggerGen(c =>
     c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
 
     c.SchemaFilter<SupplierFieldSchemaFilter>();
+
+    c.UseAllOfToExtendReferenceSchemas();
 });
+
+services.AddSwaggerGenNewtonsoftSupport();
 
 // Hangfire
 var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
