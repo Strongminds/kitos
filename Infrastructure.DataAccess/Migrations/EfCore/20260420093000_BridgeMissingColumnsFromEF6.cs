@@ -11,9 +11,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // These columns exist in the EF Core model but were never added by EF6 migrations on
-            // existing databases. All other structural differences (table names, FK column names)
-            // are handled by configuring EF Core to match the EF6 naming conventions directly,
-            // so no renaming is required here.
+            // existing databases. All other structural differences (shadow FK column names such as
+            // ItSystemUsage_Id, TaskRef_Id, etc.) use EF6's naming convention, which EF Core inherits
+            // as shadow property names — so existing EF6 databases already have the correct column names
+            // and no renaming is required here.
 
             migrationBuilder.Sql(@"
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItSystem') AND name = 'SensitivePersonalDataTypeId')
