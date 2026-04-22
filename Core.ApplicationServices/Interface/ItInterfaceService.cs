@@ -375,8 +375,9 @@ namespace Core.ApplicationServices.Interface
             foreach (var newRowData in newData)
             {
                 DataType? dataType = null;
+                if (newRowData.DataTypeUuid.HasValue)
                 {
-                    var availableOptionResult = LoadAvailableDataTypeOption(itInterface.Organization.Uuid, newRowData.DataTypeUuid!.Value);
+                    var availableOptionResult = LoadAvailableDataTypeOption(itInterface.Organization.Uuid, newRowData.DataTypeUuid.Value);
                     if (availableOptionResult.Failed)
                     {
                         return availableOptionResult.Error;
