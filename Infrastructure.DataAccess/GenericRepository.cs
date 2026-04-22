@@ -24,8 +24,8 @@ namespace Infrastructure.DataAccess
         }
 
         public IEnumerable<T> Get(
-           Expression<Func<T, bool>> filter = null,
-           Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+           Expression<Func<T, bool>>? filter = null,
+           Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
            string includeProperties = "")
         {
             IQueryable<T> query = _dbSet;
@@ -36,7 +36,7 @@ namespace Infrastructure.DataAccess
             }
 
             foreach (var includeProperty in includeProperties.Split
-                (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                ([','], StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProperty);
             }
@@ -52,7 +52,7 @@ namespace Infrastructure.DataAccess
             return _dbSet.Include(includeExpression);
         }
 
-        public TProperty GetMax<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
+        public TProperty? GetMax<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
         {
             return _dbSet.Max(propertyExpression);
         }
@@ -69,7 +69,7 @@ namespace Infrastructure.DataAccess
             return Activator.CreateInstance<T>();
         }
 
-        public T GetByKey(params object[] key)
+        public T? GetByKey(params object[] key)
         {
             return _dbSet.Find(key);
         }

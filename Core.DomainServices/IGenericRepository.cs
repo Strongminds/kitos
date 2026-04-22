@@ -15,9 +15,9 @@ namespace Core.DomainServices
 
         IQueryable<TModel> GetWithReferencePreload<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
 
-        TProperty GetMax<TProperty>(Expression<Func<TModel, TProperty>> propertyExpression);
+        TProperty? GetMax<TProperty>(Expression<Func<TModel, TProperty>> propertyExpression);
 
-        TModel GetByKey(params object[] key);
+        TModel? GetByKey(params object[] key);
 
         TModel Insert(TModel entity);
 
