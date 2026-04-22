@@ -19,11 +19,11 @@ namespace Core.DomainServices.Organizations
             _orgUnitRepository = orgUnitRepository;
         }
 
-        public ICollection<OrganizationUnit> GetSubTree(int orgUnitId)
+        public ICollection<OrganizationUnit?> GetSubTree(int orgUnitId)
         {
             var orgUnit = _orgUnitRepository.GetByKey(orgUnitId);
 
-            return orgUnit.FlattenHierarchy().ToList()!;
+            return orgUnit.FlattenHierarchy().ToList();
         }
 
         public bool DescendsFrom(int descendantUnitId, int ancestorUnitId)

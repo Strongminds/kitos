@@ -85,11 +85,11 @@ namespace Core.ApplicationServices.Organizations.Write
                     error => error);
         }
 
-        private Result<OrganizationSupplier, OperationError> GetByUuids(Guid organizationUuid, Guid supplierUuid)
+        private Result<OrganizationSupplier?, OperationError> GetByUuids(Guid organizationUuid, Guid supplierUuid)
         {
             return ResolveIds(organizationUuid, supplierUuid)
                 .Select(tuple => _organizationSupplierRepository.AsQueryable().FirstOrDefault(x =>
-                    x.OrganizationId == tuple.organizationId && x.SupplierId == tuple.supplierId))!;
+                    x.OrganizationId == tuple.organizationId && x.SupplierId == tuple.supplierId));
         }
 
         private Result<(int organizationId, int supplierId), OperationError> ResolveIds(Guid organizationUuid, Guid supplierUuid)
