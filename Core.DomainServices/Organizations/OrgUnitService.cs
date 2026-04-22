@@ -23,7 +23,7 @@ namespace Core.DomainServices.Organizations
         {
             var orgUnit = _orgUnitRepository.GetByKey(orgUnitId);
 
-            return orgUnit.FlattenHierarchy().ToList();
+            return orgUnit.FlattenHierarchy().ToList()!;
         }
 
         public bool DescendsFrom(int descendantUnitId, int ancestorUnitId)

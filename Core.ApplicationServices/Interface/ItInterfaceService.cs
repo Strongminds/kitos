@@ -376,7 +376,7 @@ namespace Core.ApplicationServices.Interface
             {
                 DataType? dataType = null;
                 {
-                    var availableOptionResult = LoadAvailableDataTypeOption(itInterface.Organization.Uuid, newRowData.DataTypeUuid.Value);
+                    var availableOptionResult = LoadAvailableDataTypeOption(itInterface.Organization.Uuid, newRowData.DataTypeUuid!.Value);
                     if (availableOptionResult.Failed)
                     {
                         return availableOptionResult.Error;

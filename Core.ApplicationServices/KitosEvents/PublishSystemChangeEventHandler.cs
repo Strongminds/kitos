@@ -70,8 +70,8 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         return new SystemChangeEventBodyModel
         {
             SystemUuid = usage.ItSystem.Uuid,
-            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
-            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue()!,
+            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()!
         };
     }
 

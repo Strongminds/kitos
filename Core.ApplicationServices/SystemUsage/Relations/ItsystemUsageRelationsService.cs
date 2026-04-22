@@ -436,14 +436,14 @@ namespace Core.ApplicationServices.SystemUsage.Relations
 
         private Result<SystemRelationOperationContext, OperationError> WithAuthorizedModificationAccess(SystemRelationOperationContext context)
         {
-            return !_authorizationContext.AllowModify(context.Entities.FromSystemUsage)
+            return context.Entities.FromSystemUsage != null && !_authorizationContext.AllowModify(context.Entities.FromSystemUsage)
                 ? Result<SystemRelationOperationContext, OperationError>.Failure(OperationFailure.Forbidden)
                 : context;
         }
 
         private Result<SystemRelationOperationContext, OperationError> WithAuthorizedReadAccess(SystemRelationOperationContext context)
         {
-            return !_authorizationContext.AllowReads(context.Entities.FromSystemUsage)
+            return context.Entities.FromSystemUsage != null && !_authorizationContext.AllowReads(context.Entities.FromSystemUsage)
                 ? Result<SystemRelationOperationContext, OperationError>.Failure(OperationFailure.Forbidden)
                 : context;
         }
@@ -483,14 +483,14 @@ namespace Core.ApplicationServices.SystemUsage.Relations
             var interfaceId = context.Input.InterfaceId;
             if (interfaceId.HasValue)
             {
-                toInterface = _interfaceRepository.GetByKey(interfaceId.Value)?.FromNullable();
+                toInterface = _interfaceRepository.GetByKey(interfaceId.Value);
                 if (toInterface.IsNone)
                 {
                     return new OperationError("The provided interface id does not point to a valid interface", OperationFailure.BadInput);
                 }
             }
 
-            context.Entities.Interface = toInterface.GetValueOrDefault();
+            context.Entities.Interface = toInterface;
 
             return context;
         }

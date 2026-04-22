@@ -22,7 +22,7 @@ namespace Core.Abstractions.Extensions
         /// <param name="nextCollectionState">A collection o UNIQUE entities of <typeparam name="T"></typeparam></param>
         /// <param name="withIdentity">A function which provides an identity for an item of type <typeparam name="T"></typeparam></param>
         /// <returns></returns>
-        public static IEnumerable<(EnumerableDelta delta, T item)> ComputeDelta<T, TIdentity>(this IEnumerable<T> currentCollectionState, IEnumerable<T> nextCollectionState, Func<T, TIdentity> withIdentity)
+        public static IEnumerable<(EnumerableDelta delta, T item)> ComputeDelta<T, TIdentity>(this IEnumerable<T> currentCollectionState, IEnumerable<T> nextCollectionState, Func<T, TIdentity> withIdentity) where TIdentity : notnull
         {
             var next = nextCollectionState.ToList();
             var current = currentCollectionState.ToList();
@@ -80,7 +80,7 @@ namespace Core.Abstractions.Extensions
         /// <param name="newState">A collection o UNIQUE entities of <typeparam name="T"></typeparam></param>
         /// <param name="existingState">A collection o UNIQUE entities of <typeparam name="T"></typeparam></param>
         /// <param name="withIdentity">A function which provides an identity for an item of type <typeparam name="T"></typeparam></param>
-        public static void MirrorTo<T, TIdentity>(this IEnumerable<T> newState, ICollection<T> existingState, Func<T, TIdentity> withIdentity)
+        public static void MirrorTo<T, TIdentity>(this IEnumerable<T> newState, ICollection<T> existingState, Func<T, TIdentity> withIdentity) where TIdentity : notnull
         {
             existingState
                 .ComputeDelta(newState, withIdentity)

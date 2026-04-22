@@ -114,7 +114,7 @@ namespace Core.ApplicationServices
 
             var savedUser = _userRepository.Get(u => u.Id == user.Id).FirstOrDefault();
 
-            _domainEvents.Raise(new EntityCreatedEvent<User>(savedUser));
+            _domainEvents.Raise(new EntityCreatedEvent<User>(savedUser!));
 
             if (sendMailOnCreation)
                 IssueAdvisMail(savedUser, false, orgId);
@@ -135,7 +135,7 @@ namespace Core.ApplicationServices
             }
         }
 
-        public void IssueAdvisMail(User user, bool reminder, int orgId)
+        public void IssueAdvisMail(User? user, bool reminder, int orgId)
         {
             if (user == null || _userRepository.GetByKey(user.Id) == null)
                 throw new ArgumentNullException(nameof(user));
@@ -148,7 +148,7 @@ namespace Core.ApplicationServices
             var subject = (reminder ? "Påmindelse: " : string.Empty) + "Oprettelse som ny bruger i KITOS " + _mailSuffix;
             var content = "<h2>Kære " + user.Name + "</h2>" +
                           "<p>Du er blevet oprettet, som bruger i KITOS (Kommunernes IT Overblikssystem) under organisationen " +
-                          org.Name + ".</p>" +
+                          org!.Name + ".</p>" +
                           "<p>Du bedes klikke <a href='" + resetLink +
                           "'>her</a>, hvor du første gang bliver bedt om at indtaste et nyt password for din KITOS profil.</p>" +
                           "<p>Linket udløber om " + _ttl.TotalDays + " dage. <a href='" + resetLink + "'>Klik her</a>, " +
@@ -219,12 +219,17 @@ namespace Core.ApplicationServices
                             OperationFailure.Forbidden);
                     return Maybe<OperationError>.None;
                 }, error => error)
-                .Match<Result<User, OperationError>>(error => error,
+                .Match<Result<User?, OperationError>>(error => error,
                     () =>
                     {
                         return _repository.AsQueryable().FirstOrDefault(u =>
                             u.Email == email);
-                    });
+                    })
+                .Match<Result<User, OperationError>>(x => x == null
+                        ? new OperationError("User was not found!",
+                            OperationFailure.NotFound)
+                        : x,
+                    error => error);
         }
 
         public Result<User, OperationError> GetUserByUuid(Guid userUuid)
@@ -451,7 +456,7 @@ namespace Core.ApplicationServices
 
             using var transaction = _transactionManager.Begin();
             var operationErrorMaybe = hasOrganizationIdValue
-                ? DeleteUser(scopedToOrganizationId.Value, user)
+                ? DeleteUser(scopedToOrganizationId!.Value, user)
                 : DeleteUserFromKitos(user);
             if (!operationErrorMaybe.HasValue)
             {

@@ -25,7 +25,7 @@ namespace Core.Abstractions.Types
             }
         }
 
-        public static implicit operator Maybe<T>(T source)
+        public static implicit operator Maybe<T>(T? source)
         {
             return source == null ? None : Some(source);
         }

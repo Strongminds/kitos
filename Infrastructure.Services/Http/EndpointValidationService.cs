@@ -151,7 +151,7 @@ namespace Infrastructure.Services.Http
             _logger.Warning("EndpointValidation: {correlationId}: Request failed exception chain: '{exnChain}'. Waiting {timeSpan} before next retry. Retry attempt {retryCount}", context.CorrelationId.ToString("D"), BuildExceptionChain(exception), timeSpan, retryCount);
         }
 
-        private static string BuildExceptionChain(Exception exception)
+        private static string BuildExceptionChain(Exception? exception)
         {
             return exception == null
                 ? "END_OF_CHAIN"

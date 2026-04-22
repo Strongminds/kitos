@@ -9,7 +9,7 @@ public class SystemChangeEventBodyModel : IEventBody
 {
     public Guid SystemUuid { get; set; }
     public OptionalValueChange<string> SystemName { get; set; } = OptionalValueChange<string>.None;
-    public OptionalValueChange<Maybe<Guid>> DataProcessorUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
+    public OptionalValueChange<Maybe<Guid>?> DataProcessorUuid { get; set; } = OptionalValueChange<Maybe<Guid>?>.None;
     public OptionalValueChange<string> DataProcessorName { get; set; } = OptionalValueChange<string>.None;
     public Dictionary<string, object> ToKeyValuePairs()
     {

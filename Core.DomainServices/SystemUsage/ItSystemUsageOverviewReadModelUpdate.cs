@@ -281,7 +281,7 @@ namespace Core.DomainServices.SystemUsage
                 .Where(x => x.GetValueOrDefault(YesNoIrrelevantOption.UNDECIDED) != YesNoIrrelevantOption.UNDECIDED)
                 .ToList();
 
-            destination.DataProcessingRegistrationsConcludedAsCsv = string.Join(", ", isAgreementConcludedList.Select(x => x.Value.GetReadableName()));
+            destination.DataProcessingRegistrationsConcludedAsCsv = string.Join(", ", isAgreementConcludedList.Select(x => x!.Value.GetReadableName()));
 
             destination.RiskAssessmentDate = source.riskAssesmentDate;
             destination.PlannedRiskAssessmentDate = source.PlannedRiskAssessmentDate;
@@ -673,7 +673,7 @@ namespace Core.DomainServices.SystemUsage
             ItSystem parent,
             TOption optionEntity,
             IOptionsService<ItSystem, TOption> service)
-            where TOption : OptionEntity<ItSystem>
+            where TOption : OptionEntity<ItSystem>?
         {
             if (optionEntity != null)
             {

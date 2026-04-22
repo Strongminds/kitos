@@ -191,7 +191,7 @@ namespace Core.ApplicationServices.SystemUsage
                 .FirstOrDefault(u => u.ItSystemId == systemId);
         }
 
-        public ItSystemUsage GetById(int usageId)
+        public ItSystemUsage? GetById(int usageId)
         {
             return _usageRepository.GetByKey(usageId);
         }

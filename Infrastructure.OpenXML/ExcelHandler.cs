@@ -191,7 +191,7 @@ namespace Infrastructure.OpenXML
             foreach (DataTable table in data.Tables)
             {
                 var id = workbookPart!.Workbook!.Descendants<Sheet>().First(x => x.Name == table.TableName).Id;
-                var workSheetPart = (WorksheetPart)workbookPart.GetPartById(id);
+                var workSheetPart = (WorksheetPart)workbookPart.GetPartById(id!);
                 var sheetData = workSheetPart.Worksheet!.GetFirstChild<SheetData>();
 
                 // append the locked cell format to the stylesheet

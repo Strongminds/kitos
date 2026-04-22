@@ -88,8 +88,8 @@ namespace Core.ApplicationServices.Organizations.Write
         private Result<OrganizationSupplier, OperationError> GetByUuids(Guid organizationUuid, Guid supplierUuid)
         {
             return ResolveIds(organizationUuid, supplierUuid)
-               .Select(tuple => _organizationSupplierRepository.AsQueryable().FirstOrDefault(x =>
-                    x.OrganizationId == tuple.organizationId && x.SupplierId == tuple.supplierId));
+                .Select(tuple => _organizationSupplierRepository.AsQueryable().FirstOrDefault(x =>
+                    x.OrganizationId == tuple.organizationId && x.SupplierId == tuple.supplierId))!;
         }
 
         private Result<(int organizationId, int supplierId), OperationError> ResolveIds(Guid organizationUuid, Guid supplierUuid)
