@@ -74,7 +74,7 @@ namespace Core.Abstractions.Types
             return HasValue ? onValue(Value) : onNone();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is Maybe<T> other))
                 return false;
@@ -89,7 +89,7 @@ namespace Core.Abstractions.Types
 
         public override int GetHashCode()
         {
-            return HasValue ? Value.GetHashCode() : 0;
+            return HasValue && Value != null ? Value.GetHashCode() : 0;
         }
     }
 }

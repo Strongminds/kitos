@@ -60,9 +60,9 @@ namespace Tools.SSOWithKombitSts
             var namespaceManager = GetXmlNamespaceManager(samlMetadataTemplate);
             var certificateNodes = samlMetadataTemplate.SelectNodes("//ds:X509Certificate", namespaceManager);
             var extractCertificateFromFile = ExtractCertificateFromFile(certificateFilename);
-            for (var i = 0; i < certificateNodes.Count; i++)
+            for (var i = 0; i < certificateNodes?.Count; i++)
             {
-                certificateNodes.Item(i).InnerText = extractCertificateFromFile;
+                certificateNodes.Item(i)?.InnerText = extractCertificateFromFile;
             }
             return samlMetadataTemplate;
         }
@@ -80,9 +80,9 @@ namespace Tools.SSOWithKombitSts
         {
           var xmlNamespaceManager = GetXmlNamespaceManager(patchedCertificateSamlXml);
           var entityIdAttr = patchedCertificateSamlXml.SelectSingleNode("//md:EntityDescriptor/@entityID", xmlNamespaceManager);
-          entityIdAttr.Value = entityId;
+          entityIdAttr?.Value = entityId;
           var acsLocation = patchedCertificateSamlXml.SelectSingleNode("//md:AssertionConsumerService/@Location", xmlNamespaceManager);
-          acsLocation.Value = callbackUrl.TrimEnd('/') + "/Login.ashx";
+          acsLocation?.Value = callbackUrl.TrimEnd('/') + "/Login.ashx";
           return patchedCertificateSamlXml;
         }
 

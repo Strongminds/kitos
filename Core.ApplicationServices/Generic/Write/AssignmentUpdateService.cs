@@ -101,7 +101,7 @@ namespace Core.ApplicationServices.Generic.Write
             //Optionally perform updates
             if (update != null)
             {
-                foreach (var assignmentState in itemsToUpdate.Values)
+                foreach (var assignmentState in itemsToUpdate!.Values)
                 {
                     //Perform the update to existing items
                     var updateError = update(destination, assignmentState);

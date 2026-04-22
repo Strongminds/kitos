@@ -374,8 +374,7 @@ namespace Core.ApplicationServices.Interface
             //Add replacement data
             foreach (var newRowData in newData)
             {
-                DataType dataType = null;
-                if (newRowData.DataTypeUuid.HasValue)
+                DataType? dataType = null;
                 {
                     var availableOptionResult = LoadAvailableDataTypeOption(itInterface.Organization.Uuid, newRowData.DataTypeUuid.Value);
                     if (availableOptionResult.Failed)
@@ -426,10 +425,10 @@ namespace Core.ApplicationServices.Interface
 
         public Result<DataRow, OperationError> AddInterfaceData(int id, ItInterfaceDataWriteModel parameters)
         {
-            DataRow created = null;
+            DataRow? created = null;
             return Mutate(id, _ => true, updateWithResult: itInterface =>
             {
-                DataType dataType = null;
+                DataType? dataType = null;
                 if (parameters.DataTypeUuid.HasValue)
                 {
                     var dataTypeResult = LoadAvailableDataTypeOption(itInterface.Organization.Uuid, parameters.DataTypeUuid.Value);
@@ -440,12 +439,12 @@ namespace Core.ApplicationServices.Interface
 
                 created = itInterface.AddDataRow(parameters.DataDescription, dataType.FromNullable());
                 return itInterface;
-            }).Match(_ => Result<DataRow, OperationError>.Success(created), error => error);
+            }).Match(_ => Result<DataRow, OperationError>.Success(created!), error => error);
         }
 
         public Result<DataRow, OperationError> UpdateInterfaceData(int id, Guid dataUuid, ItInterfaceDataWriteModel parameters)
         {
-            DataRow updated = null;
+            DataRow? updated = null;
             return Mutate(id, _ => true, updateWithResult: itInterface =>
             {
                 var dataRowResult = itInterface.GetDataRow(dataUuid);
@@ -468,12 +467,12 @@ namespace Core.ApplicationServices.Interface
                     updated.ResetDataType();
                 }
                 return itInterface;
-            }).Match(_ => Result<DataRow, OperationError>.Success(updated), error => error);
+            }).Match(_ => Result<DataRow, OperationError>.Success(updated!), error => error);
         }
 
         public Result<DataRow, OperationError> DeleteInterfaceData(int id, Guid dataUuid)
         {
-            DataRow deleted = null;
+            DataRow? deleted = null;
             return Mutate(id, _ => true, updateWithResult: itInterface =>
             {
                 var dataRowResult = itInterface.GetDataRow(dataUuid);
@@ -483,7 +482,7 @@ namespace Core.ApplicationServices.Interface
                 itInterface.DataRows.Remove(dataRowResult.Value);
                 _dataRowRepository.Delete(deleted);
                 return itInterface;
-            }).Match(_ => Result<DataRow, OperationError>.Success(deleted), error => error);
+            }).Match(_ => Result<DataRow, OperationError>.Success(deleted!), error => error);
         }
 
         private static bool ValidateName(string name)
@@ -517,7 +516,7 @@ namespace Core.ApplicationServices.Interface
             return Maybe<OperationError>.None;
         }
 
-        private Result<ItInterface, OperationError> Mutate(int interfaceId, Predicate<ItInterface> performUpdateTo, Action<ItInterface>? updateWith = null, Func<ItInterface, Result<ItInterface, OperationError>> updateWithResult = null)
+        private Result<ItInterface, OperationError> Mutate(int interfaceId, Predicate<ItInterface> performUpdateTo, Action<ItInterface>? updateWith = null, Func<ItInterface, Result<ItInterface, OperationError>>? updateWithResult = null)
         {
             if (updateWith == null && updateWithResult == null)
                 throw new ArgumentException("No mutations provided");

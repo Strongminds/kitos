@@ -576,9 +576,9 @@ namespace Core.ApplicationServices
                     RowIndex = rowIndex, // needed for error reporting
                     IsNew = isNew,
                     Id = id,
-                    Parent = row.Field<string>(1),
-                    Name = row.Field<string>(2),
-                    Ean = StringToEan(row.Field<string>(3))
+                    Parent = row.Field<string>(1)!,
+                    Name = row.Field<string>(2)!,
+                    Ean = StringToEan(row.Field<string>(3)!)
                 };
 
                 rowIndex++;
@@ -590,7 +590,7 @@ namespace Core.ApplicationServices
                     errors.Add(new ExcelImportOrgUnitNoNameError(orgUnitRow.RowIndex));
                 }
                 // ean must be valid
-                else if (isNew && !String.IsNullOrWhiteSpace(row.Field<string>(3)) && !(orgUnitRow.Ean.HasValue && orgUnitRow.Ean.ToString().Length == 13))
+                else if (isNew && !String.IsNullOrWhiteSpace(row.Field<string>(3)) && !(orgUnitRow.Ean.HasValue && orgUnitRow.Ean.ToString()!.Length == 13))
                 {
                     var error = new ExcelImportError()
                     {
