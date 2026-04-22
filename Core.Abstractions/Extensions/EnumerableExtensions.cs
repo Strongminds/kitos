@@ -94,7 +94,7 @@ namespace Core.Abstractions.Extensions
         /// <param name="src"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public static Maybe<T> FirstOrNone<T>(this IEnumerable<T> src, Func<T, bool> predicate = null)
+        public static Maybe<T> FirstOrNone<T>(this IEnumerable<T> src, Func<T, bool>? predicate = null)
         {
             var condition = predicate ?? (_ => true);
 
@@ -115,7 +115,7 @@ namespace Core.Abstractions.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="src"></param>
         /// <returns></returns>
-        public static Maybe<(T head, IEnumerable<T> tail)> MatchHeadAndTail<T>(this IEnumerable<T> src)
+        public static Maybe<(T head, IEnumerable<T> tail)> MatchHeadAndTail<T>(this IEnumerable<T>? src)
         {
             if (src == null)
                 return Maybe<(T head, IEnumerable<T> tail)>.None;

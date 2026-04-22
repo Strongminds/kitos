@@ -669,7 +669,7 @@ namespace Core.DomainServices.SystemUsage
             });
         }
 
-        private static string GetNameOfItSystemOption<TOption>(
+        private static string? GetNameOfItSystemOption<TOption>(
             ItSystem parent,
             TOption optionEntity,
             IOptionsService<ItSystem, TOption> service)
@@ -688,7 +688,7 @@ namespace Core.DomainServices.SystemUsage
             return null;
         }
 
-        private static string GetUserFullName(User user)
+        private static string? GetUserFullName(User user)
         {
             var fullName = user?.GetFullName()?.TrimEnd();
             return fullName?.Substring(0, Math.Min(fullName.Length, UserConstraints.MaxNameLength));

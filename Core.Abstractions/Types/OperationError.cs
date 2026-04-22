@@ -18,8 +18,8 @@ namespace Core.Abstractions.Types
             FailureType = failureType;
         }
 
-        public OperationError(string message, OperationFailure failureType)
-            : this(message.FromNullable(), failureType)
+        public OperationError(string? message, OperationFailure failureType)
+            : this(message == null ? Maybe<string>.None : message.FromNullable(), failureType)
         {
 
         }

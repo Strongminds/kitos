@@ -60,7 +60,8 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
             return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
         }
 
-        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable();
+        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable()
+               ?? Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
     }
 
     private static SystemChangeEventBodyModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)

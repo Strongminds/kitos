@@ -517,7 +517,7 @@ namespace Core.ApplicationServices.Interface
             return Maybe<OperationError>.None;
         }
 
-        private Result<ItInterface, OperationError> Mutate(int interfaceId, Predicate<ItInterface> performUpdateTo, Action<ItInterface> updateWith = null, Func<ItInterface, Result<ItInterface, OperationError>> updateWithResult = null)
+        private Result<ItInterface, OperationError> Mutate(int interfaceId, Predicate<ItInterface> performUpdateTo, Action<ItInterface>? updateWith = null, Func<ItInterface, Result<ItInterface, OperationError>> updateWithResult = null)
         {
             if (updateWith == null && updateWithResult == null)
                 throw new ArgumentException("No mutations provided");

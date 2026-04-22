@@ -15,8 +15,8 @@ namespace Core.ApplicationServices
 
         void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId);
         void IssueAdvisMail(User user, bool reminder, int orgId);
-        PasswordResetRequest IssuePasswordReset(User user, string subject, string content);
-        PasswordResetRequest GetPasswordReset(string hash);
+        PasswordResetRequest IssuePasswordReset(User user, string? subject, string? content);
+        PasswordResetRequest? GetPasswordReset(string hash);
         void ResetPassword(PasswordResetRequest passwordResetRequest, string newPassword);
         Result<IQueryable<User>, OperationError> GetUsersWithCrossOrganizationPermissions();
         Result<IQueryable<User>, OperationError> GetUsersWithRoleAssignedInAnyOrganization(OrganizationRole role);

@@ -64,7 +64,7 @@ namespace Core.Abstractions.Types
             return Match(val => val, () => fallback);
         }
 
-        public T GetValueOrDefault()
+        public T? GetValueOrDefault()
         {
             return Match(val => val, () => default(T));
         }

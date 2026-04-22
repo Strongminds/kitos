@@ -183,7 +183,7 @@ namespace Core.ApplicationServices.SystemUsage
             return itSystemUsage;
         }
 
-        public ItSystemUsage GetByOrganizationAndSystemId(int organizationId, int systemId)
+        public ItSystemUsage? GetByOrganizationAndSystemId(int organizationId, int systemId)
         {
             return _usageRepository
                 .AsQueryable()

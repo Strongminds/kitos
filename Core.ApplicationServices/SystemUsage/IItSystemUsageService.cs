@@ -16,7 +16,7 @@ namespace Core.ApplicationServices.SystemUsage
         IQueryable<ItSystemUsage> Query(params IDomainQuery<ItSystemUsage>[] conditions);
         Result<ItSystemUsage, OperationError> CreateNew(int itSystemId, int organizationId);
         Result<ItSystemUsage, OperationError> Delete(int id);
-        ItSystemUsage GetByOrganizationAndSystemId(int organizationId, int systemId);
+        ItSystemUsage? GetByOrganizationAndSystemId(int organizationId, int systemId);
         ItSystemUsage GetById(int usageId);
         Result<ItSystemUsage, OperationError> GetItSystemUsageByUuidAndAuthorizeRead(Guid uuid);
         Result<ItSystemUsage, OperationError> GetItSystemUsageByUuid(Guid uuid);

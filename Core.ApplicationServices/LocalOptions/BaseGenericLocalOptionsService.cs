@@ -121,7 +121,7 @@ namespace Core.ApplicationServices.LocalOptions
             Guid globalOptionUuid,
             TUpdateParameters parameters,
             Action<TOptionType, TLocalOptionType> updateLocalOptionValues,
-            Func<TLocalOptionType, TUpdateParameters, Maybe<OperationError>> updateExtraParameters = null) where TUpdateParameters : LocalOptionUpdateParameters
+            Func<TLocalOptionType, TUpdateParameters, Maybe<OperationError>>? updateExtraParameters = null) where TUpdateParameters : LocalOptionUpdateParameters
         {
             return GetLocalOptionMaybe(organizationUuid, globalOptionUuid)
                 .Match(localOption => ValidateModify(localOption)

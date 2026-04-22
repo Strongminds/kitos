@@ -163,7 +163,7 @@ namespace Core.ApplicationServices
             _userRepository.Save();
         }
 
-        public PasswordResetRequest IssuePasswordReset(User user, string subject, string content)
+        public PasswordResetRequest IssuePasswordReset(User user, string? subject, string? content)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -269,7 +269,7 @@ namespace Core.ApplicationServices
             return request;
         }
 
-        public PasswordResetRequest GetPasswordReset(string hash)
+        public PasswordResetRequest? GetPasswordReset(string hash)
         {
             var passwordReset = _passwordResetRequestRepository.Get(req => req.Hash == hash).FirstOrDefault();
 

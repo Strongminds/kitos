@@ -176,13 +176,13 @@ namespace Core.ApplicationServices
                 var contractRow = new ContractRow
                 {
                     RowIndex = rowIndex,
-                    Name = row.Field<string>(1),
-                    ItContractId = row.Field<string>(2),
-                    Note = row.Field<string>(3),
-                    ConcludedText = row.Field<string>(4),
-                    IrrevocableToText = row.Field<string>(5),
-                    ExpirationDateText = row.Field<string>(6),
-                    TerminatedText = row.Field<string>(7),
+                    Name = row.Field<string>(1) ?? "",
+                    ItContractId = row.Field<string>(2) ?? "",
+                    Note = row.Field<string>(3) ?? "",
+                    ConcludedText = row.Field<string>(4) ?? "",
+                    IrrevocableToText = row.Field<string>(5) ?? "",
+                    ExpirationDateText = row.Field<string>(6) ?? "",
+                    TerminatedText = row.Field<string>(7) ?? "",
                 };
 
                 // validate that name exists
