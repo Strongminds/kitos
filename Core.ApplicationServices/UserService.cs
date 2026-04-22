@@ -208,7 +208,7 @@ namespace Core.ApplicationServices
             return matchingEmails.Any();
         }
 
-        public Result<User, OperationError> GetUserByEmail(Guid organizationUuid, string email)
+        public Result<User?, OperationError> GetUserByEmail(Guid organizationUuid, string email)
         {
             return _organizationService.GetPermissions(organizationUuid)
                 .Match(permissions =>
@@ -224,12 +224,7 @@ namespace Core.ApplicationServices
                     {
                         return _repository.AsQueryable().FirstOrDefault(u =>
                             u.Email == email);
-                    })
-                .Match<Result<User, OperationError>>(x => x == null
-                        ? new OperationError("User was not found!",
-                            OperationFailure.NotFound)
-                        : x,
-                    error => error);
+                    });
         }
 
         public Result<User, OperationError> GetUserByUuid(Guid userUuid)

@@ -34,7 +34,7 @@ namespace Core.ApplicationServices
         Result<IQueryable<User>, OperationError> SearchAllKitosUsers(params IDomainQuery<User>[] queries);
         Result<UserAdministrationPermissions, OperationError> GetAdministrativePermissions(Guid organizationUuid);
         bool IsEmailInUse(string email);
-        Result<User, OperationError> GetUserByEmail(Guid organizationUuid, string email);
+        Result<User?, OperationError> GetUserByEmail(Guid organizationUuid, string email);
         Result<User, OperationError> GetUserByUuid(Guid userUuid);
         Result<User, OperationError> GetGlobalAdmin();
         Result<OrganizationUnit, OperationError> GetDefaultOrganizationUnit(Guid organizationUuid, Guid userUuid);
