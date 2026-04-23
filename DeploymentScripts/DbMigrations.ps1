@@ -134,12 +134,16 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     }
 
     # Verify TCP connectivity before proceeding with any sqlcmd or migration operations.
+    # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
     $parts = ConvertTo-SqlConnectionParts $connectionString
     $rawServer = $parts.Server -replace '^tcp:', ''
     $splitParts = $rawServer -split ',', 2
     $sqlHost = $splitParts[0].Trim()
-    $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
-    Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
+    $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+    if (-not $isLocalServer) {
+        $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
+        Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
+    }
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"

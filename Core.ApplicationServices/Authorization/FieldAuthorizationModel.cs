@@ -18,8 +18,8 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
     }
 
     public bool AuthorizeUpdate(
-        IEntityOwnedByOrganization entity,
-        ISupplierAssociatedEntityUpdateParameters parameters)
+        IEntityOwnedByOrganization? entity,
+        ISupplierAssociatedEntityUpdateParameters? parameters)
     {
         if (entity == null || parameters == null) return false;
 
@@ -28,14 +28,14 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
         var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
         if (!organizationHasSuppliers) return _authorizationContext.AllowModify(entity);
 
-        var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
+        var supplierIds = entityOrganization!.Suppliers.ToHashSet().Select(x => x.SupplierId);
         var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
          return userHasSupplierApiAccess
             ? CheckForSupplierApiUser(entity, parameters)
             : CheckForNonSupplierApiUser(entity, parameters);
     }
 
-    public bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization parent, TChild child) where TChild : class
+    public bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization? parent, TChild? child) where TChild : class
     {
         if (parent == null || child == null) return false;
 
@@ -44,7 +44,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
         var organizationHasSuppliers = entityOrganization?.HasSuppliers() ?? false;
         if (!organizationHasSuppliers) return _authorizationContext.AllowModify(parent);
 
-        var supplierIds = entityOrganization.Suppliers.ToHashSet().Select(x => x.SupplierId);
+        var supplierIds = entityOrganization!.Suppliers.ToHashSet().Select(x => x.SupplierId);
         var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
         var requestsDeleteForSupplierControlledEntity = _supplierAssociatedFieldsService.RequestsDeleteToEntity(child);
         return userHasSupplierApiAccess

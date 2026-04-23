@@ -8,7 +8,7 @@ namespace Core.DomainServices.Mapping
     {
         public static string MapItSystemName(this ItSystemUsage systemUsage)
         {
-            return systemUsage.ItSystem.FromNullable().Select(system => system.MapItSystemName()).GetValueOrDefault();
+            return systemUsage.ItSystem.FromNullable().Select(system => system.MapItSystemName()).GetValueOrDefault() ?? string.Empty;
         }
 
         public static string MapItSystemName(this ItSystem system)
