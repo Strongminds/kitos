@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Linq;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
@@ -23,16 +24,16 @@ using Core.DomainModel.Notification;
 using Core.DomainModel.PublicMessage;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
-using Infrastructure.DataAccess.Tools;
 
 namespace Infrastructure.DataAccess
 {
     public class KitosContext : DbContext
     {
-        public KitosContext() : this(new DbContextOptionsBuilder<KitosContext>()
-            .UseLazyLoadingProxies()
-            .UseSqlServer(ConnectionStringTools.GetConnectionString("KitosContext"))
-            .Options) { }
+        static KitosContext()
+        {
+            // Keep PostgreSQL timestamp handling compatible with existing non-UTC DateTime usage.
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        }
 
         public KitosContext(DbContextOptions<KitosContext> options) : base(options) { }
 
@@ -175,6 +176,19 @@ namespace Infrastructure.DataAccess
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(KitosContext).Assembly);
 
             ConfigureLocalOptionTypes(modelBuilder);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var ignorePendingModelChangesWarning =
+                string.Equals(Environment.GetEnvironmentVariable("IgnorePendingModelChangesWarning"), "true", StringComparison.OrdinalIgnoreCase);
+
+            if (ignorePendingModelChangesWarning)
+            {
+                optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+            }
+
+            base.OnConfiguring(optionsBuilder);
         }
 
         private static void ConfigureLocalOptionTypes(ModelBuilder modelBuilder)

@@ -409,13 +409,24 @@ namespace Presentation.Web.Infrastructure.DI
         {
             var connectionString = configuration.GetConnectionString("KitosContext")
                 ?? throw new InvalidOperationException("KitosContext connection string is required");
+            var provider = configuration["Database:Provider"];
+            var usePostgreSql = IsPostgreSqlProvider(provider);
 
             services.AddDbContext<KitosContext>((sp, options) =>
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                options.UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString)
-                    .AddInterceptors(new EFEntityInterceptor(
+                options.UseLazyLoadingProxies();
+
+                if (usePostgreSql)
+                {
+                    options.UseNpgsql(connectionString);
+                }
+                else
+                {
+                    options.UseSqlServer(connectionString);
+                }
+
+                options.AddInterceptors(new EFEntityInterceptor(
                         operationClock: () =>
                             httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()
                             ?? new OperationClock(),
@@ -477,6 +488,13 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IAuthorizationContext>(sp =>
                 sp.GetRequiredService<IAuthorizationContextFactory>().Create(
                     sp.GetRequiredService<IOrganizationalUserContext>()));
+        }
+
+        private static bool IsPostgreSqlProvider(string? provider)
+        {
+            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void RegisterDomainEventsEngine(IServiceCollection services)

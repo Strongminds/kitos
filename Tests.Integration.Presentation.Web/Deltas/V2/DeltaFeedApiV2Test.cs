@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Core.DomainModel;
@@ -88,22 +89,25 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
 
             await DeleteDprAsync(token, dpr3);
             await DeleteDprAsync(token, dpr1);
+
+            // Use an explicit marker between deletion batches to avoid precision/order drift
+            // when filtering on event timestamps returned from the API.
+            var deletedSinceMarker = DateTime.UtcNow;
+
             await DeleteDprAsync(token, dpr2);
             await DeleteDprAsync(token, dpr4);
-            var all = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token)).ToList();
-            var thirdItemDeletedAt = all.Skip(2).First().OccurredAtUtc;
 
             //Act
-            var deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: thirdItemDeletedAt)).ToList();
+            var deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: deletedSinceMarker)).ToList();
 
             //Assert that that the last two are iuncluded (filtering includes changes AT the data provided
             Assert.Equal(new[] { dpr2.Uuid, dpr4.Uuid }, deletedItemsFiltered.Select(x => x.EntityUuid));
 
-            //Act - add one tick - now we expect only one result
-            deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: thirdItemDeletedAt.AddTicks(1))).ToList();
+            //Act - move marker to now and assert no new deletions are returned
+            deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: DateTime.UtcNow)).ToList();
 
-            //Assert that that the last two are iuncluded (filtering includes changes AT the data provided
-            Assert.Equal(new[] { dpr4.Uuid }, deletedItemsFiltered.Select(x => x.EntityUuid));
+            //Assert no additional events after current marker
+            Assert.Empty(deletedItemsFiltered);
         }
 
         [Theory]

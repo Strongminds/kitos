@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Tests.Integration.Presentation.Web": {
+      "commandName": "Project"
+    }
+  }
+}

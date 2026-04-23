@@ -197,7 +197,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
                 .GetOrganizationUnits(organizationUuid, queries.ToArray())
                 .Select(units => units.OrderApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty))
                 .Select(units => units.Page(paginationQuery))
-                .Select(units => units.AsEnumerable().Select(ToOrganizationUnitResponseDto).ToList())
+                .Select(units => units.ToList().Select(ToOrganizationUnitResponseDto).ToList())
                 .Match(Ok, FromOperationError);
         }
 

@@ -33,7 +33,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hangfire.PostgreSql;
 using Hangfire.SqlServer;
+using Npgsql;
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
@@ -47,6 +49,10 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
     return System.IO.File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
 };
 
+// Npgsql 6+ requires DateTime.Kind=Utc for 'timestamp with time zone' columns by default.
+// Enable legacy behaviour so that Unspecified/Local datetimes are accepted, matching
+// prior SQL Server behaviour while we progressively normalise datetime kinds.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -223,14 +229,26 @@ services.AddSwaggerGen(c =>
 // Hangfire
 var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
     ?? throw new InvalidOperationException("kitos_HangfireDB connection string is required");
+var hangfireProvider = configuration["Hangfire:Provider"] ?? configuration["Database:Provider"];
 
-EnsureHangfireDatabaseCreated(hangfireConnectionString);
+EnsureHangfireDatabaseCreated(hangfireConnectionString, hangfireProvider);
 
-services.AddHangfire(config => config
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UseSqlServerStorage(hangfireConnectionString));
+services.AddHangfire(config =>
+{
+    config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings();
+
+    if (IsPostgreSqlProvider(hangfireProvider))
+    {
+        config.UsePostgreSqlStorage(hangfireConnectionString);
+    }
+    else
+    {
+        config.UseSqlServerStorage(hangfireConnectionString);
+    }
+});
 
 services.AddSingleton<IBackgroundProcess>(provider => new KeepReadModelsInSyncProcess(provider));
 services.AddHangfireServer();
@@ -458,17 +476,50 @@ void InitializeHangfire(IRecurringJobManager recurringJobManager)
         timeZone: TimeZoneInfo.Local);
 }
 
-static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
+static void EnsureHangfireDatabaseCreated(string hangfireConnectionString, string? provider)
 {
-    var csb = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(hangfireConnectionString);
-    var databaseName = csb.InitialCatalog;
-    csb.InitialCatalog = "master";
+    if (IsPostgreSqlProvider(provider))
+    {
+        var csb = new NpgsqlConnectionStringBuilder(hangfireConnectionString);
+        var databaseName = csb.Database;
+        if (string.IsNullOrWhiteSpace(databaseName))
+            throw new InvalidOperationException("Hangfire PostgreSQL connection string must include a database name.");
 
-    using var connection = new Microsoft.Data.SqlClient.SqlConnection(csb.ConnectionString);
-    connection.Open();
-    using var cmd = connection.CreateCommand();
-    cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{databaseName}') CREATE DATABASE [{databaseName}]";
+        csb.Database = "postgres";
+
+        using var connection = new NpgsqlConnection(csb.ConnectionString);
+        connection.Open();
+        using var existsCmd = connection.CreateCommand();
+        existsCmd.CommandText = "SELECT 1 FROM pg_database WHERE datname = @dbName";
+        existsCmd.Parameters.AddWithValue("dbName", databaseName);
+
+        var exists = existsCmd.ExecuteScalar() != null;
+        if (!exists)
+        {
+            using var createCmd = connection.CreateCommand();
+            createCmd.CommandText = $"CREATE DATABASE \"{databaseName.Replace("\"", "\"\"")}\"";
+            createCmd.ExecuteNonQuery();
+        }
+
+        return;
+    }
+
+    var sqlCsb = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(hangfireConnectionString);
+    var sqlDatabaseName = sqlCsb.InitialCatalog;
+    sqlCsb.InitialCatalog = "master";
+
+    using var sqlConnection = new Microsoft.Data.SqlClient.SqlConnection(sqlCsb.ConnectionString);
+    sqlConnection.Open();
+    using var cmd = sqlConnection.CreateCommand();
+    cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{sqlDatabaseName}') CREATE DATABASE [{sqlDatabaseName}]";
     cmd.ExecuteNonQuery();
+}
+
+static bool IsPostgreSqlProvider(string? provider)
+{
+    return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
 }
 
 /// <summary>

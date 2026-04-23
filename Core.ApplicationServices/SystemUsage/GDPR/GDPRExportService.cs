@@ -43,11 +43,10 @@ namespace Core.ApplicationServices.SystemUsage.GDPR
             if (_authorizationContext.GetOrganizationReadAccessLevel(organizationId) != OrganizationDataReadAccessLevel.All)
                 return new OperationError(OperationFailure.Forbidden);
 
-            var systemUsages = _systemUsageRepository.GetSystemUsagesFromOrganization(organizationId);
+            var systemUsages = _systemUsageRepository.GetSystemUsagesFromOrganization(organizationId).ToList();
             var sensitivePersonalDataTypes = _sensitivePersonalDataTypeRepository.GetSensitivePersonalDataTypes();
 
             var gdpExportReports = systemUsages
-                .AsEnumerable()
                 .Select(systemUsage => Map(systemUsage, _itSystemUsageAttachedOptionRepository.GetBySystemUsageId(systemUsage.Id), sensitivePersonalDataTypes))
                 .ToList();
 

@@ -15,6 +15,7 @@ namespace Infrastructure.DataAccess
     public class KitosContextDesignTimeFactory : IDesignTimeDbContextFactory<KitosContext>
     {
         private const string EnvVar = "ConnectionStrings__KitosContext";
+        private const string ProviderEnvVar = "Database__Provider";
 
         public KitosContext CreateDbContext(string[] args)
         {
@@ -25,10 +26,27 @@ namespace Infrastructure.DataAccess
                     $"Design-time DB context requires the '{EnvVar}' environment variable to be set. " +
                     "Example: $env:ConnectionStrings__KitosContext = \"Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True\"");
 
+            var provider = Environment.GetEnvironmentVariable(ProviderEnvVar);
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
-            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(connectionString);
+            optionsBuilder.UseLazyLoadingProxies();
+
+            if (IsPostgreSqlProvider(provider))
+            {
+                optionsBuilder.UseNpgsql(connectionString);
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
 
             return new KitosContext(optionsBuilder.Options);
+        }
+
+        private static bool IsPostgreSqlProvider(string? provider)
+        {
+            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
