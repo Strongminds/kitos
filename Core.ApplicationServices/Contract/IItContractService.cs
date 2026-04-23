@@ -14,7 +14,6 @@ namespace Core.ApplicationServices.Contract
     public interface IItContractService
     {
         Result<ItContract, OperationError> Create(int organizationId, string name);
-        Result<IQueryable<ItContract>,OperationError> GetAllByOrganization(int orgId, string optionalNameSearch = null);
         Result<ItContract, OperationFailure> Delete(int id);
 
         Result<DataProcessingRegistration, OperationError> AssignDataProcessingRegistration(int id, int dataProcessingRegistrationId);

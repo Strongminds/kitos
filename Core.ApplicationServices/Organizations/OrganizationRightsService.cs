@@ -78,14 +78,14 @@ namespace Core.ApplicationServices.Organizations
                 .Where(r => r.Role == role && r.UserId == userId)
                 .FirstOrDefault();
 
-            return RemoveRight(right);
+            return right == null ? OperationFailure.NotFound : RemoveRight(right);
         }
 
         public Result<OrganizationRight, OperationFailure> RemoveRole(int rightId)
         {
             var right = _organizationRightRepository.GetByKey(rightId);
 
-            return RemoveRight(right);
+            return right == null ? OperationFailure.NotFound : RemoveRight(right);
         }
 
         public Maybe<OperationError> RemoveUnitRightsByIds(Guid organizationUuid, Guid unitUuid, IEnumerable<int> rightIds)

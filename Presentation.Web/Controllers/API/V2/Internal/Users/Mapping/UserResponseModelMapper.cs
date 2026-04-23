@@ -22,7 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
         {
             return _organizationService.GetOrganization(organizationUuid)
                 .Bind(organization =>
-                    Result<OrganizationUnit, OperationError>.Success(
+                    Result<OrganizationUnit?, OperationError>.Success(
                         _organizationService.GetDefaultUnit(organization, user)))
                 .Select(defaultUnit =>
                 {

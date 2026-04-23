@@ -207,11 +207,12 @@ namespace Tests.Unit.Presentation.Web.Authorization
             else
             {
                 var noChangesParameters = new UpdatedDataProcessingRegistrationOversightDateParameters
-                    {
-                        CompletedAt = OptionalValueChange<DateTime>.None,
-                        Remark = OptionalValueChange<string>.None,
-                        OversightReportLink = OptionalValueChange<string>.None
-                    };
+                {
+                    CompletedAt = OptionalValueChange<DateTime>.None,
+                    Remark = OptionalValueChange<string>.None,
+                    OversightReportLink = OptionalValueChange<string>.None,
+                    OversightReportLinkName = OptionalValueChange<string>.None
+                };
 
 
                 var keys = ExpectMapParametersReturns(noChangesParameters.GetChangedPropertyKeys(), _existingDpr).ToList();
@@ -249,7 +250,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 CompletedAt = OptionalValueChange<DateTime>.None,
                 OversightReportLink = OptionalValueChange<string>.None,
-                Remark = OptionalValueChange<string>.None
+                Remark = OptionalValueChange<string>.None,
+                OversightReportLinkName = OptionalValueChange<string>.None
             };
             var parametersList = new List<UpdatedDataProcessingRegistrationOversightDateParameters>()
             {
@@ -319,7 +321,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 CompletedAt = OptionalValueChange<DateTime>.None,
                 Remark = OptionalValueChange<string>.None,
-                OversightReportLink = OptionalValueChange<string>.None
+                OversightReportLink = OptionalValueChange<string>.None,
+                OversightReportLinkName = OptionalValueChange<string>.None
             };
             if (completedAt)
                 parameters.CompletedAt = A<DateTime>().AsChangedValue();

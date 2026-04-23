@@ -264,18 +264,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return parameters;
         }
-        private static SystemUsageJournalPeriodUpdate MapNewJournalPeriod(JournalPeriodDTO newJournalPeriod)
+        private SystemUsageJournalPeriodUpdate MapNewJournalPeriod(JournalPeriodDTO newJournalPeriod)
         {
-            var update = new SystemUsageJournalPeriodUpdate();
-            MapJournalPeriodProperties(newJournalPeriod, update);
+            var update = MapBaseJournalPeriodProperties(newJournalPeriod);
             return update;
         }
 
-        private static SystemUsageJournalPeriodUpdate MapUpdatedJournalPeriod(JournalPeriodUpdateRequestDTO journalPeriodUpdate)
+        private SystemUsageJournalPeriodUpdate MapUpdatedJournalPeriod(JournalPeriodUpdateRequestDTO journalPeriodUpdate)
         {
-            var update = new SystemUsageJournalPeriodUpdate();
+            var update = MapBaseJournalPeriodProperties(journalPeriodUpdate);
             update.Uuid = journalPeriodUpdate.Uuid;
-            MapJournalPeriodProperties(journalPeriodUpdate, update);
             return update;
         }
 
@@ -286,17 +284,18 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
         public SystemUsageJournalPeriodProperties MapJournalPeriodProperties(JournalPeriodDTO input)
         {
-            var properties = new SystemUsageJournalPeriodProperties();
-            MapJournalPeriodProperties(input, properties);
-            return properties;
+            return MapBaseJournalPeriodProperties(input);
         }
 
-        private static void MapJournalPeriodProperties(JournalPeriodDTO journalPeriod, SystemUsageJournalPeriodProperties update)
+        private SystemUsageJournalPeriodUpdate MapBaseJournalPeriodProperties(JournalPeriodDTO journalPeriod)
         {
-            update.Approved = journalPeriod.Approved;
-            update.ArchiveId = journalPeriod.ArchiveId;
-            update.EndDate = journalPeriod.EndDate;
-            update.StartDate = journalPeriod.StartDate;
+            return new SystemUsageJournalPeriodUpdate
+            {
+                Approved = journalPeriod.Approved,
+                ArchiveId = journalPeriod.ArchiveId,
+                EndDate = journalPeriod.EndDate,
+                StartDate = journalPeriod.StartDate,
+            };
         }
 
         private IEnumerable<UpdatedExternalReferenceProperties> MapReferences(IEnumerable<ExternalReferenceDataWriteRequestDTO> references)

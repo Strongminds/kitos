@@ -10,7 +10,7 @@ namespace Core.ApplicationServices.Authorization
     {
         private static readonly ModuleFieldsPermissionsResult Empty = new (){Fields = new List<FieldPermissionsResult>()};
 
-        public IEnumerable<FieldPermissionsResult> Fields { get; set; }
+        public required IEnumerable<FieldPermissionsResult> Fields { get; set; }
 
         public static ModuleFieldsPermissionsResult Create(IEnumerable<FieldPermissionsResult> fields)
         {
