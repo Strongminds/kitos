@@ -58,52 +58,56 @@ internal sealed class MigrationRunner
 
             if (isInteractive)
             {
-                var adjustedOptions = await RecreateTargetIfUserRequestsItAsync(sourceConnection, targetConnection, effectiveOptions);
-                if (!ReferenceEquals(adjustedOptions, effectiveOptions))
+                // If user explicitly passed --resume or --allow-non-empty-target, skip interactive prompts
+                if (!effectiveOptions.Resume && !effectiveOptions.AllowNonEmptyTarget)
                 {
-                    await targetConnection.CloseAsync();
-                    await targetConnection.DisposeAsync();
-                    targetConnection = await OpenTargetConnectionAsync(options.TargetConnectionString);
-                    effectiveOptions = adjustedOptions;
-                    freshTargetPrepared = true;
-                }
-
-                if (!freshTargetPrepared)
-                {
-                    var strategyChoice = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Choose [green]migration strategy[/]")
-                            .PageSize(10)
-                            .AddChoices(
-                                "Start fresh (recreate target database)",
-                                "Continue from previous run (resume)",
-                                "Use current settings"));
-
-                    if (strategyChoice == "Start fresh (recreate target database)")
+                    var adjustedOptions = await RecreateTargetIfUserRequestsItAsync(sourceConnection, targetConnection, effectiveOptions);
+                    if (!ReferenceEquals(adjustedOptions, effectiveOptions))
                     {
-                        var prepareResult = await RunPrepareTargetAsync(sourceConnection, effectiveOptions.TargetConnectionString, requireConfirmation: true);
-                        if (prepareResult != 0)
-                        {
-                            return prepareResult;
-                        }
-
                         await targetConnection.CloseAsync();
                         await targetConnection.DisposeAsync();
                         targetConnection = await OpenTargetConnectionAsync(options.TargetConnectionString);
-
-                        effectiveOptions = effectiveOptions with
-                        {
-                            AllowNonEmptyTarget = false,
-                            Resume = false
-                        };
+                        effectiveOptions = adjustedOptions;
+                        freshTargetPrepared = true;
                     }
-                    else if (strategyChoice == "Continue from previous run (resume)")
+
+                    if (!freshTargetPrepared)
                     {
-                        effectiveOptions = effectiveOptions with
+                        var strategyChoice = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                                .Title("Choose [green]migration strategy[/]")
+                                .PageSize(10)
+                                .AddChoices(
+                                    "Start fresh (recreate target database)",
+                                    "Continue from previous run (resume)",
+                                    "Use current settings"));
+
+                        if (strategyChoice == "Start fresh (recreate target database)")
                         {
-                            AllowNonEmptyTarget = true,
-                            Resume = true
-                        };
+                            var prepareResult = await RunPrepareTargetAsync(sourceConnection, effectiveOptions.TargetConnectionString, requireConfirmation: true);
+                            if (prepareResult != 0)
+                            {
+                                return prepareResult;
+                            }
+
+                            await targetConnection.CloseAsync();
+                            await targetConnection.DisposeAsync();
+                            targetConnection = await OpenTargetConnectionAsync(options.TargetConnectionString);
+
+                            effectiveOptions = effectiveOptions with
+                            {
+                                AllowNonEmptyTarget = false,
+                                Resume = false
+                            };
+                        }
+                        else if (strategyChoice == "Continue from previous run (resume)")
+                        {
+                            effectiveOptions = effectiveOptions with
+                            {
+                                AllowNonEmptyTarget = true,
+                                Resume = true
+                            };
+                        }
                     }
                 }
             }
@@ -385,6 +389,7 @@ internal sealed class MigrationRunner
                     try
                     {
                         var targetTable = sourceTableLookup[table];
+                        CliConsole.Info($"Mapping: {table} → {targetTable}");
                         await MigrationJournal.MarkStartedAsync(targetConnection, targetTable);
                         var rowsCopied = await CopyTableAsync(sourceConnection, targetConnection, table, targetTable);
                         await ReseedSequenceIfPresentAsync(targetConnection, targetTable);

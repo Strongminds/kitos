@@ -19,7 +19,7 @@ internal static class Program
         {
             var isInteractive = CommandLineParser.IsInteractiveRequested(args);
             var options = isInteractive
-                ? InteractivePrompt.PromptForOptions()
+                ? InteractivePrompt.PromptForOptions(args)
                 : CommandLineParser.Parse(args);
 
             var runner = new MigrationRunner();

@@ -210,7 +210,6 @@ WHERE childTable.is_ms_shipped = 0 AND parentTable.is_ms_shipped = 0;";
 
             var targetTable = candidates.FirstOrDefault(candidate =>
                 candidate.Schema.Equals(sourceTable.Schema, StringComparison.OrdinalIgnoreCase))
-                ?? candidates.FirstOrDefault(candidate => candidate.Schema.Equals("public", StringComparison.OrdinalIgnoreCase))
                 ?? candidates.First();
 
             matches.Add(new TableMatch(sourceTable, targetTable));

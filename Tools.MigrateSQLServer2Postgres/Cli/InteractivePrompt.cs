@@ -5,11 +5,53 @@ namespace Tools.MigrateSQLServer2Postgres.Cli;
 
 internal static class InteractivePrompt
 {
-    public static CommandLineOptions PromptForOptions()
+    public static CommandLineOptions PromptForOptions(string[]? args = null)
     {
         CliConsole.RenderHeader();
 
+        // Extract command-line flags for interactive mode
+        var cliFlags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (args != null)
+        {
+            foreach (var arg in args)
+            {
+                if (arg.Equals("--resume", StringComparison.OrdinalIgnoreCase))
+                    cliFlags.Add("Resume successful tables");
+                else if (arg.Equals("--allow-non-empty-target", StringComparison.OrdinalIgnoreCase))
+                    cliFlags.Add("Allow non-empty target");
+                else if (arg.Equals("--continue-on-error", StringComparison.OrdinalIgnoreCase))
+                    cliFlags.Add("Continue on table error");
+                else if (arg.Equals("--disable-foreign-key-checks", StringComparison.OrdinalIgnoreCase))
+                    cliFlags.Add("Disable foreign key checks during execute");
+            }
+        }
+
         var savedDefaults = InteractiveSettingsStore.Load();
+
+        // If CLI flags are provided, skip profile selection and use saved defaults (or create empty)
+        if (cliFlags.Count > 0)
+        {
+            var presetDefaults = savedDefaults ?? InteractiveSettingsStore.CreateEmptyDefaults();
+            var presetOptions = presetDefaults with
+            {
+                AllowNonEmptyTarget = cliFlags.Contains("Allow non-empty target") || presetDefaults.AllowNonEmptyTarget,
+                Resume = cliFlags.Contains("Resume successful tables") || presetDefaults.Resume,
+                ContinueOnError = cliFlags.Contains("Continue on table error") || presetDefaults.ContinueOnError,
+                DisableForeignKeyChecks = cliFlags.Contains("Disable foreign key checks during execute") || presetDefaults.DisableForeignKeyChecks
+            };
+            
+            // Resume mode requires allowing non-empty target
+            if (presetOptions.Resume)
+            {
+                presetOptions = presetOptions with { AllowNonEmptyTarget = true };
+            }
+            
+            CliConsole.Info("Using saved connection settings with command-line flags.");
+            AnsiConsole.Write(BuildSummaryTable(presetOptions));
+            return presetOptions;
+        }
+
+        // No CLI flags: show profile selection
         var profileChoices = new List<string>();
         if (savedDefaults is not null)
         {
@@ -63,6 +105,12 @@ internal static class InteractivePrompt
                 .Validate(value => string.IsNullOrWhiteSpace(value) ? ValidationResult.Error() : ValidationResult.Success()));
 
             var selectedFlagLookup = PromptForFlags(defaults);
+            
+            // Merge CLI flags with user-selected flags (CLI flags take precedence)
+            foreach (var cliFlag in cliFlags)
+            {
+                selectedFlagLookup.Add(cliFlag);
+            }
 
         var options = new CommandLineOptions(
             sourceConnectionString,
@@ -72,16 +120,21 @@ internal static class InteractivePrompt
             selectedFlagLookup.Contains("Continue on table error"),
             selectedFlagLookup.Contains("Disable foreign key checks during execute"));
 
-        AnsiConsole.Write(BuildSummaryTable(options));
+        // Resume mode requires allowing non-empty target
+        var finalOptions = options.Resume && !options.AllowNonEmptyTarget
+            ? options with { AllowNonEmptyTarget = true }
+            : options;
+
+        AnsiConsole.Write(BuildSummaryTable(finalOptions));
 
         if (!AnsiConsole.Confirm("Proceed with these settings?", true))
         {
             throw new CommandLineException("Interactive setup cancelled.");
         }
 
-        InteractiveSettingsStore.Save(options);
+        InteractiveSettingsStore.Save(finalOptions);
 
-        return options;
+        return finalOptions;
     }
 
     private static HashSet<string> PromptForFlags(CommandLineOptions defaults)
