@@ -173,6 +173,11 @@ namespace Infrastructure.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (string.Equals(Database.ProviderName, "Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.Ordinal))
+            {
+                modelBuilder.HasDefaultSchema("dbo");
+            }
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(KitosContext).Assembly);
 
             ConfigureLocalOptionTypes(modelBuilder);
