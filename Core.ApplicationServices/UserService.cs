@@ -114,7 +114,7 @@ namespace Core.ApplicationServices
 
             var savedUser = _userRepository.Get(u => u.Id == user.Id).FirstOrDefault();
 
-            _domainEvents.Raise(new EntityCreatedEvent<User>(savedUser));
+            _domainEvents.Raise(new EntityCreatedEvent<User>(savedUser!));
 
             if (sendMailOnCreation)
                 IssueAdvisMail(savedUser, false, orgId);
@@ -135,7 +135,7 @@ namespace Core.ApplicationServices
             }
         }
 
-        public void IssueAdvisMail(User user, bool reminder, int orgId)
+        public void IssueAdvisMail(User? user, bool reminder, int orgId)
         {
             if (user == null || _userRepository.GetByKey(user.Id) == null)
                 throw new ArgumentNullException(nameof(user));
@@ -148,7 +148,7 @@ namespace Core.ApplicationServices
             var subject = (reminder ? "Påmindelse: " : string.Empty) + "Oprettelse som ny bruger i KITOS " + _mailSuffix;
             var content = "<h2>Kære " + user.Name + "</h2>" +
                           "<p>Du er blevet oprettet, som bruger i KITOS (Kommunernes IT Overblikssystem) under organisationen " +
-                          org.Name + ".</p>" +
+                          org!.Name + ".</p>" +
                           "<p>Du bedes klikke <a href='" + resetLink +
                           "'>her</a>, hvor du første gang bliver bedt om at indtaste et nyt password for din KITOS profil.</p>" +
                           "<p>Linket udløber om " + _ttl.TotalDays + " dage. <a href='" + resetLink + "'>Klik her</a>, " +
@@ -163,7 +163,7 @@ namespace Core.ApplicationServices
             _userRepository.Save();
         }
 
-        public PasswordResetRequest IssuePasswordReset(User user, string subject, string content)
+        public PasswordResetRequest IssuePasswordReset(User user, string? subject, string? content)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -208,7 +208,7 @@ namespace Core.ApplicationServices
             return matchingEmails.Any();
         }
 
-        public Result<User, OperationError> GetUserByEmail(Guid organizationUuid, string email)
+        public Result<User?, OperationError> GetUserByEmail(Guid organizationUuid, string email)
         {
             return _organizationService.GetPermissions(organizationUuid)
                 .Match(permissions =>
@@ -219,7 +219,7 @@ namespace Core.ApplicationServices
                             OperationFailure.Forbidden);
                     return Maybe<OperationError>.None;
                 }, error => error)
-                .Match<Result<User, OperationError>>(error => error,
+                .Match<Result<User?, OperationError>>(error => error,
                     () =>
                     {
                         return _repository.AsQueryable().FirstOrDefault(u =>
@@ -269,7 +269,7 @@ namespace Core.ApplicationServices
             return request;
         }
 
-        public PasswordResetRequest GetPasswordReset(string hash)
+        public PasswordResetRequest? GetPasswordReset(string hash)
         {
             var passwordReset = _passwordResetRequestRepository.Get(req => req.Hash == hash).FirstOrDefault();
 
@@ -451,7 +451,7 @@ namespace Core.ApplicationServices
 
             using var transaction = _transactionManager.Begin();
             var operationErrorMaybe = hasOrganizationIdValue
-                ? DeleteUser(scopedToOrganizationId.Value, user)
+                ? DeleteUser(scopedToOrganizationId!.Value, user)
                 : DeleteUserFromKitos(user);
             if (!operationErrorMaybe.HasValue)
             {
