@@ -60,7 +60,8 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
             return Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
         }
 
-        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable();
+        return dprAfter.SystemUsages?.Select(usage => GetEventFromUsage(usage, dprAfter)).FromNullable()
+               ?? Maybe<IEnumerable<SystemChangeEventBodyModel>>.None;
     }
 
     private static SystemChangeEventBodyModel GetEventFromUsage(ItSystemUsage usage, DataProcessingRegistration dpr)
@@ -69,8 +70,8 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         return new SystemChangeEventBodyModel
         {
             SystemUuid = usage.ItSystem.Uuid,
-            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue(),
-            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+            DataProcessorUuid = dataProcessor.Select(x => x.Uuid).AsChangedValue()!,
+            DataProcessorName = dataProcessor.Select(x => x.Name).GetValueOrDefault().AsChangedValue()!
         };
     }
 
