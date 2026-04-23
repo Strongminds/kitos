@@ -1,3 +1,29 @@
+Function Wait-ForTcpPort {
+    param(
+        [Parameter(Mandatory = $true)][string]$Hostname,
+        [Parameter(Mandatory = $true)][int]$Port,
+        [int]$MaxAttempts = 12,
+        [int]$DelaySeconds = 5
+    )
+
+    for ($i = 1; $i -le $MaxAttempts; $i++) {
+        Write-Host "Checking TCP connectivity to $Hostname`:$Port (attempt $i/$MaxAttempts) ..."
+
+        $ok = Test-NetConnection -ComputerName $Hostname -Port $Port -InformationLevel Quiet -WarningAction SilentlyContinue
+
+        if ($ok) {
+            Write-Host "TCP connectivity OK ($Hostname`:$Port)"
+            return
+        }
+
+        if ($i -lt $MaxAttempts) {
+            Start-Sleep -Seconds $DelaySeconds
+        }
+    }
+
+    throw "TCP connectivity was not established to $Hostname`:$Port after $MaxAttempts attempts."
+}
+
 Function ConvertTo-SqlConnectionParts([string]$connectionString) {
     $cs = @{}
     ($connectionString -split ';') | Where-Object { $_ -match '=' } | ForEach-Object {
@@ -79,7 +105,9 @@ END
 "@
 
     $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
-    $sql | Set-Content -Path $tmpFile -Encoding UTF8
+    # Write without BOM — PowerShell 5.x Set-Content -Encoding UTF8 emits a BOM which
+    # causes sqlcmd to fail parsing the file on some versions.
+    [System.IO.File]::WriteAllText($tmpFile, $sql, (New-Object System.Text.UTF8Encoding $false))
     try {
         & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $tmpFile -b
         if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed initializing EF Core migration history" }
@@ -103,6 +131,18 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # Only applied for fresh (local dev) databases - production runs on a server with a trusted certificate.
     if ($newDb -eq $true -and $connectionString -notmatch "TrustServerCertificate\s*=\s*True") {
         $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
+    }
+
+    # Verify TCP connectivity before proceeding with any sqlcmd or migration operations.
+    # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
+    $parts = ConvertTo-SqlConnectionParts $connectionString
+    $rawServer = $parts.Server -replace '^tcp:', ''
+    $splitParts = $rawServer -split ',', 2
+    $sqlHost = $splitParts[0].Trim()
+    $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+    if (-not $isLocalServer) {
+        $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
+        Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
     }
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."

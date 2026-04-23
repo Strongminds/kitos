@@ -6869,7 +6869,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ExternalUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("Organization_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -6878,7 +6878,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ExternalUuid");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("Organization_Id");
 
                     b.ToTable("SsoOrganizationIdentities");
                 });
@@ -7140,7 +7140,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ExternalUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("User_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -7149,7 +7149,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ExternalUuid");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User_Id");
 
                     b.ToTable("SsoUserIdentities");
                 });
@@ -9298,7 +9298,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", "ToSystemUsage")
                         .WithMany("UsedByRelations")
                         .HasForeignKey("ToSystemUsageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.ItSystem.RelationFrequencyType", "UsageFrequency")
@@ -10448,7 +10448,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany("StsOrganizationIdentities")
-                        .HasForeignKey("OrganizationId")
+                        .HasForeignKey("Organization_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -10577,8 +10577,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.User", "User")
                         .WithMany("SsoIdentities")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("User");

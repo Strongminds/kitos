@@ -17,7 +17,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.6")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -121,7 +121,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("AdviceSents");
+                    b.ToTable("AdviceSents", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Advice.AdviceUserRelation", b =>
@@ -2738,7 +2738,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ArchiveLocations");
+                    b.ToTable("ArchiveLocations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.ArchivePeriod", b =>
@@ -2835,7 +2835,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("ArchiveTestLocations");
+                    b.ToTable("ArchiveTestLocations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.ArchiveType", b =>
@@ -3697,7 +3697,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemUsageId");
 
-                    b.ToTable("ItSystemUsagePersonalDatas");
+                    b.ToTable("ItSystemUsagePersonalDatas", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.GDPR.ItSystemUsageSensitiveDataLevel", b =>
@@ -3784,6 +3784,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("HostedAt")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IsSociallyCritical")
                         .HasColumnType("int");
 
                     b.Property<int?>("ItSystemCategoriesId")
@@ -4202,6 +4205,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<bool>("IsHoldingDocument")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("IsSociallyCritical")
+                        .HasColumnType("int");
 
                     b.Property<int?>("ItSystemBusinessTypeId")
                         .HasColumnType("int");
@@ -4724,7 +4730,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewUsedBySystemUsageReadModels");
+                    b.ToTable("ItSystemUsageOverviewUsedBySystemUsageReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewUsingSystemUsageReadModel", b =>
@@ -4922,7 +4928,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("KendoOrganizationalConfigurationId");
 
-                    b.ToTable("KendoColumnConfigurations");
+                    b.ToTable("KendoColumnConfigurations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.KendoConfig.KendoOrganizationalConfiguration", b =>
@@ -6875,7 +6881,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ExternalUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("Organization_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -6884,9 +6890,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ExternalUuid");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("Organization_Id");
 
-                    b.ToTable("StsOrganizationIdentities");
+                    b.ToTable("StsOrganizationIdentities", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.TaskRef", b =>
@@ -7097,7 +7103,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentReport_Id");
 
-                    b.ToTable("BrokenLinkInExternalReferences");
+                    b.ToTable("BrokenLinkInExternalReferences", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Qa.References.BrokenLinkInInterface", b =>
@@ -7132,7 +7138,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentReport_Id");
 
-                    b.ToTable("BrokenLinkInInterfaces");
+                    b.ToTable("BrokenLinkInInterfaces", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.SSO.SsoUserIdentity", b =>
@@ -7436,7 +7442,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("DataProcessingCountryOption_Id");
 
-                    b.ToTable("DataProcessingRegistrationDataProcessingCountryOptions");
+                    b.ToTable("DataProcessingRegistrationDataProcessingCountryOptions", (string)null);
                 });
 
             modelBuilder.Entity("DataProcessingOversightOptionDataProcessingRegistration", b =>
@@ -7451,7 +7457,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("DataProcessingOversightOption_Id");
 
-                    b.ToTable("DataProcessingRegistrationDataProcessingOversightOptions");
+                    b.ToTable("DataProcessingRegistrationDataProcessingOversightOptions", (string)null);
                 });
 
             modelBuilder.Entity("DataProcessingRegistrationItContract", b =>
@@ -7466,7 +7472,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("DataProcessingRegistration_Id");
 
-                    b.ToTable("ItContractDataProcessingRegistrations");
+                    b.ToTable("ItContractDataProcessingRegistrations", (string)null);
                 });
 
             modelBuilder.Entity("DataProcessingRegistrationItSystemUsage", b =>
@@ -7481,7 +7487,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemUsage_Id");
 
-                    b.ToTable("DataProcessingRegistrationItSystemUsages");
+                    b.ToTable("DataProcessingRegistrationItSystemUsages", (string)null);
                 });
 
             modelBuilder.Entity("DataProcessingRegistrationOrganization", b =>
@@ -7496,7 +7502,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("Organization_Id");
 
-                    b.ToTable("DataProcessingRegistrationOrganizations");
+                    b.ToTable("DataProcessingRegistrationOrganizations", (string)null);
                 });
 
             modelBuilder.Entity("ItSystemTaskRef", b =>
@@ -7511,7 +7517,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("TaskRef_Id");
 
-                    b.ToTable("TaskRefItSystems");
+                    b.ToTable("TaskRefItSystems", (string)null);
                 });
 
             modelBuilder.Entity("ItSystemUsageTaskRef", b =>
@@ -7526,7 +7532,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("TaskRef_Id");
 
-                    b.ToTable("TaskRefItSystemUsages");
+                    b.ToTable("TaskRefItSystemUsages", (string)null);
                 });
 
             modelBuilder.Entity("ItSystemUsageTaskRef1", b =>
@@ -9014,7 +9020,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", "ItSystemUsage")
                         .WithMany("SensitiveDataLevels")
                         .HasForeignKey("ItSystemUsage_Id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("ItSystemUsage");
@@ -9304,7 +9310,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", "ToSystemUsage")
                         .WithMany("UsedByRelations")
                         .HasForeignKey("ToSystemUsageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.ItSystem.RelationFrequencyType", "UsageFrequency")
@@ -10454,7 +10460,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany("StsOrganizationIdentities")
-                        .HasForeignKey("OrganizationId")
+                        .HasForeignKey("Organization_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -10584,7 +10590,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.User", "User")
                         .WithMany("SsoIdentities")
                         .HasForeignKey("User_Id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -10725,15 +10731,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             modelBuilder.Entity("DataProcessingRegistrationItContract", b =>
                 {
-                    b.HasOne("Core.DomainModel.ItContract.ItContract", null)
-                        .WithMany()
-                        .HasForeignKey("ItContract_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingRegistration", null)
                         .WithMany()
                         .HasForeignKey("DataProcessingRegistration_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.ItContract.ItContract", null)
+                        .WithMany()
+                        .HasForeignKey("ItContract_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
