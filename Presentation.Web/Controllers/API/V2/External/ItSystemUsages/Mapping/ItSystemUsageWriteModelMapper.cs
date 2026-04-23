@@ -424,6 +424,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityNotes = rule.MustUpdate(x => x.General.WebAccessibilityNotes)
                     ? source.WebAccessibilityNotes.AsChangedValue()
                     : OptionalValueChange<string>.None,
+
+                IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
+                    ? MapYesNoDontKnow(source.IsSociallyCritical)
+                    : OptionalValueChange<DataOptions?>.None,
             };
         }
 
