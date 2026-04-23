@@ -199,7 +199,7 @@ namespace Core.DomainServices.GDPR
             });
         }
 
-        private static string GetNameOfOption<TOption>(
+        private static string? GetNameOfOption<TOption>(
             DataProcessingRegistration parent,
             TOption optionEntity,
             IOptionsService<DataProcessingRegistration, TOption> service)

@@ -259,6 +259,23 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+// Suppress OperationCanceledException from client disconnects.
+// These occur when a client aborts mid-response (e.g. during large OData serialization)
+// and are not server errors — logging them as 500 is misleading noise.
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next(context);
+    }
+    catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+    {
+        // Client disconnected — not a server fault, no action needed.
+        if (!context.Response.HasStarted)
+            context.Response.StatusCode = 499; // Client Closed Request
+    }
+});
+
 // Enable buffering early so the body stream can be rewound and re-read by WriteModelMapperBase
 // (CurrentRequestStream.GetInputStreamCopy sets Position=0; only works if stream is buffered)
 app.Use(async (context, next) =>

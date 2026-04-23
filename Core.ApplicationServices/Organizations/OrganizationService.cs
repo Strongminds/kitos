@@ -73,7 +73,7 @@ namespace Core.ApplicationServices.Organizations
 
         //returns the default org unit for that user inside that organization
         //or null if none has been chosen
-        public OrganizationUnit GetDefaultUnit(Organization organization, User user)
+        public OrganizationUnit? GetDefaultUnit(Organization organization, User user)
         {
             return _orgRightRepository
                 .Get(r => r.OrganizationId == organization.Id && r.UserId == user.Id)

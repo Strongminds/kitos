@@ -14,6 +14,7 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasOne(x => x.Organization)
                 .WithMany(x => x.StsOrganizationIdentities)
+                .HasForeignKey("Organization_Id")
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }
