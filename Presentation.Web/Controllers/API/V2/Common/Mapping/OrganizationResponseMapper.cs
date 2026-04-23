@@ -24,7 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 
         public UIRootConfigResponseDTO ToUIRootConfigDTO(Config config)
         {
-            return new()
+            return new UIRootConfigResponseDTO
             {
                 ShowDataProcessing = config.ShowDataProcessing,
                 ShowItSystemModule = config.ShowItSystemModule,
@@ -34,7 +34,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 
         public OrganizationResponseDTO ToOrganizationDTO(Organization organization)
         {
-            return new(organization.Uuid, organization.Name, organization.GetActiveCvr(),
+            return new OrganizationResponseDTO(organization.Uuid, organization.Name, organization.GetActiveCvr(),
                 _organizationTypeMapper.MapOrganizationType(organization.Type), organization.IsSupplier, organization.Disabled);
         }
 
@@ -43,7 +43,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
             var contactPersonDto = ToContactPersonDTO(roles.ContactPerson);
             var dataResponsibleDto = ToDataResponsibleDTO(roles.DataResponsible);
             var dataProtectionAdvisor = ToDataProtectionAdvisorDTO(roles.DataProtectionAdvisor);
-            return new OrganizationMasterDataRolesResponseDTO()
+            return new OrganizationMasterDataRolesResponseDTO
             {
                 OrganizationUuid = roles.OrganizationUuid,
                 ContactPerson = contactPersonDto,
@@ -52,10 +52,9 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
             };
         }
         
-
         private static ContactPersonResponseDTO ToContactPersonDTO(ContactPerson contactPerson)
         {
-            return new()
+            return new ContactPersonResponseDTO
             {
                 Email = contactPerson.Email,
                 Id = contactPerson.Id,
@@ -67,7 +66,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 
         private static DataResponsibleResponseDTO ToDataResponsibleDTO(DataResponsible dataResponsible)
         {
-            return new()
+            return new DataResponsibleResponseDTO
             {
                 Email = dataResponsible.Email,
                 Id = dataResponsible.Id,
@@ -81,7 +80,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
         private static DataProtectionAdvisorResponseDTO ToDataProtectionAdvisorDTO(
             DataProtectionAdvisor dataProtectionAdvisor)
         {
-            return new()
+            return new DataProtectionAdvisorResponseDTO
             {
                 Email = dataProtectionAdvisor.Email,
                 Id = dataProtectionAdvisor.Id,
@@ -107,7 +106,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 
         public OrganizationPermissionsResponseDTO ToPermissionsDTO(OrganizationPermissionsResult permissions)
         {
-            return new()
+            return new OrganizationPermissionsResponseDTO
             {
                 Read = permissions.Read,
                 Modify = permissions.Modify,
@@ -118,21 +117,21 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 
         public UIModuleCustomizationResponseDTO ToUIModuleCustomizationResponseDTO(UIModuleCustomization uiModuleCustomization)
         {
-            return new()
+            return new UIModuleCustomizationResponseDTO
             {
                 Module = uiModuleCustomization.Module,
                 Nodes = ToCustomizedUINodeDTOs(uiModuleCustomization.Nodes).ToList()
             };
         }
 
-        private IEnumerable<CustomizedUINodeResponseDTO> ToCustomizedUINodeDTOs(ICollection<CustomizedUINode> nodes)
+        private static IEnumerable<CustomizedUINodeResponseDTO> ToCustomizedUINodeDTOs(ICollection<CustomizedUINode> nodes)
         {
             return nodes.Select(ToCustomizedUINodeDTO);
         }
 
-        private CustomizedUINodeResponseDTO ToCustomizedUINodeDTO(CustomizedUINode node)
+        private static CustomizedUINodeResponseDTO ToCustomizedUINodeDTO(CustomizedUINode node)
         {
-            return new()
+            return new CustomizedUINodeResponseDTO
             {
                 Key = node.Key,
                 Enabled = node.Enabled
