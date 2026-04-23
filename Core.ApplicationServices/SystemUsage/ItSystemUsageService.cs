@@ -183,7 +183,7 @@ namespace Core.ApplicationServices.SystemUsage
             return itSystemUsage;
         }
 
-        public ItSystemUsage GetByOrganizationAndSystemId(int organizationId, int systemId)
+        public ItSystemUsage? GetByOrganizationAndSystemId(int organizationId, int systemId)
         {
             return _usageRepository
                 .AsQueryable()
@@ -191,7 +191,7 @@ namespace Core.ApplicationServices.SystemUsage
                 .FirstOrDefault(u => u.ItSystemId == systemId);
         }
 
-        public ItSystemUsage GetById(int usageId)
+        public ItSystemUsage? GetById(int usageId)
         {
             return _usageRepository.GetByKey(usageId);
         }

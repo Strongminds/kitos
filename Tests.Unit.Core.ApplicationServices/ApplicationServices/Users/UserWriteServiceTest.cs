@@ -1,25 +1,26 @@
-﻿using System;
-using Core.ApplicationServices.Organizations;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices;
-using Core.ApplicationServices.Model.Users.Write;
-using Core.ApplicationServices.Users.Write;
-using Core.DomainModel;
-using Infrastructure.Services.DataAccess;
-using Moq;
-using Tests.Toolkit.Patterns;
-using Xunit;
-using Core.DomainModel.Organization;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Extensions;
-using Core.ApplicationServices.Rights;
-using Core.DomainServices.Generic;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Users;
+using Core.ApplicationServices.Model.Users.Write;
+using Core.ApplicationServices.Organizations;
+using Core.ApplicationServices.Rights;
+using Core.ApplicationServices.Users.Write;
+using Core.DomainModel;
+using Core.DomainModel.Organization;
 using Core.DomainServices;
+using Core.DomainServices.Generic;
+using Infrastructure.Services.DataAccess;
+using Moq;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Tests.Toolkit.Patterns;
+using Xunit;
 
 namespace Tests.Unit.Core.ApplicationServices.Users
 {
@@ -329,9 +330,18 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var updateParameters = new UpdateUserParameters
             {
                 Roles = new List<OrganizationRole>
-                {
-                    role
-                }.AsEnumerable().AsChangedValue(),
+                    {
+                        role
+                    }.AsEnumerable()
+                    .AsChangedValue(),
+                Email = OptionalValueChange<string>.None,
+                FirstName = OptionalValueChange<string>.None,
+                LastName = OptionalValueChange<string>.None,
+                PhoneNumber = OptionalValueChange<string>.None,
+                DefaultUserStartPreference = OptionalValueChange<string>.None,
+                HasApiAccess = OptionalValueChange<bool>.None,
+                HasStakeHolderAccess = OptionalValueChange<bool>.None,
+                DefaultOrganizationUnitUuid = OptionalValueChange<Guid>.None,
             };
 
             ExpectGetUserByUuid(user.Uuid, user);

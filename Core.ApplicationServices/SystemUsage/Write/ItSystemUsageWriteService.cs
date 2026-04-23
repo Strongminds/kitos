@@ -749,6 +749,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Match(result =>
                 {
                     var usage = _systemUsageService.GetByOrganizationAndSystemId(result.organization.Id, result.system.Id);
+                    if (usage == null) return new OperationError($"It System Usage for system with Id: {result.system.Id} and organization with Id: {result.organization.Id} was not found", OperationFailure.NotFound);
                     return DeleteUsage(usage);
                 }, error => error);
         }
