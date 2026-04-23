@@ -664,7 +664,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noLifeCycleStatus,
             bool noValidFrom,
             bool noValidTo,
-            bool noMainContractUuid)
+            bool noMainContractUuid,
+            bool noIsSociallyCritical)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -678,7 +679,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noLifeCycleStatus,
                 noValidFrom,
                 noValidTo,
-                noMainContractUuid);
+                noMainContractUuid,
+                noIsSociallyCritical);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
@@ -695,6 +697,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noValidFrom, generalSection.ValidFrom.IsUnchanged);
             Assert.Equal(noValidTo, generalSection.ValidTo.IsUnchanged);
             Assert.Equal(noMainContractUuid, generalSection.MainContractUuid.IsUnchanged);
+            Assert.Equal(noIsSociallyCritical, generalSection.IsSociallyCritical.IsUnchanged);
         }
 
 
@@ -710,7 +713,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noLifeCycleStatus,
             bool noValidFrom,
             bool noValidTo,
-            bool noMainContractUuid)
+            bool noMainContractUuid,
+            bool noIsSociallyCritical)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -724,7 +728,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noLifeCycleStatus,
                 noValidFrom,
                 noValidTo,
-                noMainContractUuid);
+                noMainContractUuid,
+                noIsSociallyCritical);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
@@ -741,6 +746,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(generalSection.ValidFrom.HasChange);
             Assert.True(generalSection.ValidTo.HasChange);
             Assert.True(generalSection.MainContractUuid.HasChange);
+            Assert.True(generalSection.IsSociallyCritical.HasChange);
         }
 
         [Theory]
@@ -1116,7 +1122,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(10);
+            return CreateGetUndefinedSectionsInput(11);
         }
 
         public static IEnumerable<object[]> GetUndefinedOrganizationUsageSectionsInput()
@@ -1259,7 +1265,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noLifeCycleStatus,
             bool noValidFrom,
             bool noValidTo,
-            bool noMainContractUuid)
+            bool noMainContractUuid,
+            bool noIsSociallyCritical)
         {
             var generalProperties = GetAllInputPropertyNames<GeneralDataUpdateRequestDTO>();
             if (noLocalCallName) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.LocalCallName));
@@ -1269,6 +1276,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noSystemVersion) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemVersion));
             if (noNumberOfExpectedUsers) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.NumberOfExpectedUsers));
             if (noMainContractUuid) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.MainContractUuid));
+            if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
             if (noLifeCycleStatus) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.LifeCycleStatus));
@@ -1324,6 +1332,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.WebAccessibilityCompliance, AssertPropertyContainsDataChange(output.WebAccessibilityCompliance).ToYesNoPartiallyChoice());
             Assert.Equal(input.LastWebAccessibilityCheck, AssertPropertyContainsDataChange(output.LastWebAccessibilityCheck));
             Assert.Equal(input.WebAccessibilityNotes, AssertPropertyContainsDataChange(output.WebAccessibilityNotes));
+            Assert.Equal(input.IsSociallyCritical, AssertPropertyContainsDataChange(output.IsSociallyCritical)?.ToYesNoDontKnowChoice());
         }
 
         private static void AssertContainsAiTechnology(YesNoUndecidedChoice? expected, OptionalValueChange<Maybe<YesNoUndecidedOption>> actual)
