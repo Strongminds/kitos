@@ -6,7 +6,7 @@ namespace Core.Abstractions.Helpers
 {
     public class ObjectHelper
     {
-        public static string GetPropertyPath<T>(Expression<Func<T, object>> expression)
+        public static string GetPropertyPath<T>(Expression<Func<T, object?>> expression)
         {
             var path = new List<string>();
             var expr = expression.Body;

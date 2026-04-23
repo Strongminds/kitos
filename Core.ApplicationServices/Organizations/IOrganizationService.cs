@@ -14,7 +14,7 @@ namespace Core.ApplicationServices.Organizations
     {
         //returns the default org unit for that user inside that organization
         //or null if none has been chosen
-        OrganizationUnit GetDefaultUnit(Organization organization, User user);
+        OrganizationUnit? GetDefaultUnit(Organization organization, User user);
 
         void SetDefaultOrgUnit(User user, int orgId, int orgUnitId);
 

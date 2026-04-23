@@ -25,7 +25,7 @@ namespace Infrastructure.Ninject.DomainServices
                 .AsQueryable()
                 .ById(dbId)
                 .FromNullable()
-                .Select(x => x.Uuid);
+                .Select(x => x!.Uuid);
         }
 
         public Maybe<int> ResolveDbId<T>(Guid uuid) where T : class, IHasUuid, IHasId
@@ -35,7 +35,7 @@ namespace Infrastructure.Ninject.DomainServices
                 .AsQueryable()
                 .ByUuid(uuid)
                 .FromNullable()
-                .Select(x => x.Id);
+                .Select(x => x!.Id);
         }
     }
 }
