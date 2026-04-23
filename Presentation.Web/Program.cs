@@ -73,7 +73,6 @@ services.AddControllersWithViews(options =>
         options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-        options.SerializerSettings.Converters.Add(new StringEnumConverter());
     })
     .AddOData(options =>
     {
