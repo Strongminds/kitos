@@ -281,7 +281,7 @@ namespace Core.DomainServices.SystemUsage
                 .Where(x => x.GetValueOrDefault(YesNoIrrelevantOption.UNDECIDED) != YesNoIrrelevantOption.UNDECIDED)
                 .ToList();
 
-            destination.DataProcessingRegistrationsConcludedAsCsv = string.Join(", ", isAgreementConcludedList.Select(x => x.Value.GetReadableName()));
+            destination.DataProcessingRegistrationsConcludedAsCsv = string.Join(", ", isAgreementConcludedList.Select(x => x!.Value.GetReadableName()));
 
             destination.RiskAssessmentDate = source.riskAssesmentDate;
             destination.PlannedRiskAssessmentDate = source.PlannedRiskAssessmentDate;
@@ -669,11 +669,11 @@ namespace Core.DomainServices.SystemUsage
             });
         }
 
-        private static string GetNameOfItSystemOption<TOption>(
+        private static string? GetNameOfItSystemOption<TOption>(
             ItSystem parent,
             TOption optionEntity,
             IOptionsService<ItSystem, TOption> service)
-            where TOption : OptionEntity<ItSystem>
+            where TOption : OptionEntity<ItSystem>?
         {
             if (optionEntity != null)
             {
@@ -688,7 +688,7 @@ namespace Core.DomainServices.SystemUsage
             return null;
         }
 
-        private static string GetUserFullName(User user)
+        private static string? GetUserFullName(User user)
         {
             var fullName = user?.GetFullName()?.TrimEnd();
             return fullName?.Substring(0, Math.Min(fullName.Length, UserConstraints.MaxNameLength));

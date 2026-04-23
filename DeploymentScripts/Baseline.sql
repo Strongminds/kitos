@@ -1376,9 +1376,9 @@ CREATE TABLE [OrganizationUnit] (
 CREATE TABLE [StsOrganizationIdentities] (
     [Id] int NOT NULL IDENTITY,
     [ExternalUuid] uniqueidentifier NOT NULL,
-    [OrganizationId] int NOT NULL,
+    [Organization_Id] int NOT NULL,
     CONSTRAINT [PK_StsOrganizationIdentities] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_StsOrganizationIdentities_Organization_OrganizationId] FOREIGN KEY ([OrganizationId]) REFERENCES [Organization] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [FK_StsOrganizationIdentities_Organization_Organization_Id] FOREIGN KEY ([Organization_Id]) REFERENCES [Organization] ([Id]) ON DELETE CASCADE
 );
 
 CREATE TABLE [StsOrganizationConnections] (
@@ -3565,7 +3565,7 @@ CREATE INDEX [IX_SensitivePersonalDataTypes_LastChangedByUserId] ON [SensitivePe
 
 CREATE INDEX [IX_SensitivePersonalDataTypes_ObjectOwnerId] ON [SensitivePersonalDataTypes] ([ObjectOwnerId]);
 
-CREATE INDEX [IX_StsOrganizationIdentities_OrganizationId] ON [StsOrganizationIdentities] ([OrganizationId]);
+CREATE INDEX [IX_StsOrganizationIdentities_Organization_Id] ON [StsOrganizationIdentities] ([Organization_Id]);
 
 CREATE UNIQUE INDEX [UX_ExternalUuid] ON [StsOrganizationIdentities] ([ExternalUuid]);
 

@@ -6879,7 +6879,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ExternalUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("Organization_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -6888,7 +6888,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ExternalUuid");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("Organization_Id");
 
                     b.ToTable("StsOrganizationIdentities", (string)null);
                 });
@@ -10458,7 +10458,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany("StsOrganizationIdentities")
-                        .HasForeignKey("OrganizationId")
+                        .HasForeignKey("Organization_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -55,7 +55,7 @@ namespace Core.ApplicationServices.LocalOptions
                 {
                     optionToAdd.ResetLocalOptionAvailability();
                     var localOptionExists = localOptions.TryGetValue(optionToAdd.Id, out var localOption);
-                    if (localOptionExists) updateLocalOptionValues(optionToAdd, localOption);
+                    if (localOptionExists) updateLocalOptionValues(optionToAdd, localOption!);
                     return optionToAdd;
                 });
         }
@@ -70,7 +70,7 @@ namespace Core.ApplicationServices.LocalOptions
                     var localOption = GetLocalOptionsAsQueryable(organizationUuid)
                         .FirstOrDefault(x => x.OptionId == option.Id);
 
-                    updateLocalOptionValues(option, localOption);
+                    updateLocalOptionValues(option, localOption!);
                     option.UpdateLocalOptionValues(localOption);
 
                     return Result<TOptionType, OperationError>.Success(option);
@@ -121,7 +121,7 @@ namespace Core.ApplicationServices.LocalOptions
             Guid globalOptionUuid,
             TUpdateParameters parameters,
             Action<TOptionType, TLocalOptionType> updateLocalOptionValues,
-            Func<TLocalOptionType, TUpdateParameters, Maybe<OperationError>> updateExtraParameters = null) where TUpdateParameters : LocalOptionUpdateParameters
+            Func<TLocalOptionType, TUpdateParameters, Maybe<OperationError>>? updateExtraParameters = null) where TUpdateParameters : LocalOptionUpdateParameters
         {
             return GetLocalOptionMaybe(organizationUuid, globalOptionUuid)
                 .Match(localOption => ValidateModify(localOption)

@@ -6,7 +6,7 @@ namespace Core.Abstractions.Extensions
 {
     public static class ObjectExtensions
     {
-        public static Maybe<T> FromNullable<T>(this T src)
+        public static Maybe<T> FromNullable<T>(this T? src)
         {
             return src == null ? Maybe<T>.None : Maybe<T>.Some(src);
         }
