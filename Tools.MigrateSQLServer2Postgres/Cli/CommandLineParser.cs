@@ -1,0 +1,90 @@
+namespace Tools.MigrateSQLServer2Postgres.Cli;
+
+internal static class CommandLineParser
+{
+    public static IReadOnlyList<(string Argument, string Description)> HelpItems { get; } =
+    [
+        ("--source <sqlServerConnectionString>", "SQL Server source connection string."),
+        ("--target <postgresConnectionString>", "PostgreSQL target connection string."),
+        ("--allow-non-empty-target", "Allow migration into a non-empty PostgreSQL target database."),
+        ("--resume", "Skip tables already marked as successful in the target migration journal."),
+        ("--continue-on-error", "Continue to next table when a table migration fails."),
+        ("--disable-foreign-key-checks", "Temporarily set session_replication_role=replica during execute mode."),
+        ("--interactive", "Launch interactive wizard with arrow-key navigation."),
+        ("--help", "Show help.")
+    ];
+
+    public static bool IsHelpRequested(string[] args)
+    {
+        return args.Any(arg => arg.Equals("--help", StringComparison.OrdinalIgnoreCase) || arg.Equals("-h", StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static bool IsInteractiveRequested(string[] args)
+    {
+        return args.Length == 0 || args.Any(arg => arg.Equals("--interactive", StringComparison.OrdinalIgnoreCase) || arg.Equals("-i", StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static CommandLineOptions Parse(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            throw new CommandLineException("Missing required arguments.");
+        }
+
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var flags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        for (var i = 0; i < args.Length; i++)
+        {
+            var arg = args[i];
+            if (!arg.StartsWith("--", StringComparison.Ordinal))
+            {
+                throw new CommandLineException($"Unexpected argument '{arg}'. Use --help to see supported arguments.");
+            }
+
+            if (arg.Equals("--interactive", StringComparison.OrdinalIgnoreCase) || arg.Equals("-i", StringComparison.OrdinalIgnoreCase))
+            {
+                flags.Add(arg);
+                continue;
+            }
+
+            if (i + 1 < args.Length && !args[i + 1].StartsWith("--", StringComparison.Ordinal))
+            {
+                values[arg] = args[i + 1];
+                i++;
+            }
+            else
+            {
+                flags.Add(arg);
+            }
+        }
+
+        var sourceConnectionString = GetRequired(values, "--source");
+        var targetConnectionString = GetRequired(values, "--target");
+
+        var allowNonEmptyTarget = flags.Contains("--allow-non-empty-target");
+        var resume = flags.Contains("--resume");
+        var continueOnError = flags.Contains("--continue-on-error");
+        var disableForeignKeyChecks = flags.Contains("--disable-foreign-key-checks");
+
+        return new CommandLineOptions(
+            sourceConnectionString,
+            targetConnectionString,
+            allowNonEmptyTarget,
+            resume,
+            continueOnError,
+            disableForeignKeyChecks);
+    }
+
+    private static string GetRequired(IReadOnlyDictionary<string, string> values, string key)
+    {
+        if (values.TryGetValue(key, out var value) && string.IsNullOrWhiteSpace(value) == false)
+        {
+            return value;
+        }
+
+        throw new CommandLineException($"Missing required argument '{key}'.");
+    }
+}
+
+internal sealed class CommandLineException(string message) : Exception(message);
