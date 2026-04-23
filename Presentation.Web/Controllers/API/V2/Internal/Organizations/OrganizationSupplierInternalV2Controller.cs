@@ -24,6 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             _organizationSupplierService = organizationSupplierService;
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/suppliers")]
         public IActionResult GetSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
@@ -32,6 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/suppliers/available")]
         public IActionResult GetAvailableSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
