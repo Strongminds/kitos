@@ -1,7 +1,6 @@
 ﻿using System;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared;
-using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
 
@@ -24,7 +23,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<YesNoPartiallyOption>> WebAccessibilityCompliance { get; set; } = OptionalValueChange<Maybe<YesNoPartiallyOption>>.None;
         public OptionalValueChange<Maybe<DateTime>> LastWebAccessibilityCheck { get; set; } = OptionalValueChange<Maybe<DateTime>>.None;
         public OptionalValueChange<string> WebAccessibilityNotes { get; set; } = OptionalValueChange<string>.None;
-        public OptionalValueChange<DataOptions?> IsSociallyCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
         public UpdatedCriticalityInfoProperties CriticalityInfo { get; set; } = new();
     }
 }

@@ -94,8 +94,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itSystemUsage.WebAccessibilityCompliance, dto.General.WebAccessibilityCompliance?.ToYesNoPartiallyOption());
             Assert.Equal(itSystemUsage.LastWebAccessibilityCheck, dto.General.LastWebAccessibilityCheck);
             Assert.Equal(itSystemUsage.WebAccessibilityNotes, dto.General.WebAccessibilityNotes);
-            Assert.Equal(itSystemUsage.IsSociallyCritical?.ToYesNoDontKnowChoice(), dto.General.IsSociallyCritical);
-            AssertYesNoExtended(dto.General.CriticalitySection.BusinessCritical, itSystemUsage.CriticalitySection.isBusinessCritical);
+            AssertYesNoExtended(dto.General.CriticalityInfo.IsSociallyCritical, itSystemUsage.CriticalityInfo.IsSociallyCritical);
+            AssertYesNoExtended(dto.General.CriticalityInfo.BusinessCritical, itSystemUsage.CriticalityInfo.isBusinessCritical);
         }
 
         [Fact]

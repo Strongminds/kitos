@@ -5,6 +5,6 @@ namespace Core.DomainModel.ItSystemUsage
     public class ItSystemUsageCriticalityInfo
     {
         public DataOptions? isBusinessCritical { get; set; }
-
+        public DataOptions? IsSociallyCritical { get; set; }
     }
 }

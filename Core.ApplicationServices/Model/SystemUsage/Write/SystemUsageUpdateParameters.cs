@@ -75,10 +75,10 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.LastWebAccessibilityCheck));
             if (general.WebAccessibilityNotes.HasChange)
                 changed.Add(nameof(general.WebAccessibilityNotes));
-            if (general.IsSociallyCritical.HasChange)
-                changed.Add(nameof(general.IsSociallyCritical));
             if (general.CriticalityInfo.BusinessCritical.HasChange)
                 changed.Add(nameof(general.CriticalityInfo.BusinessCritical));
+            if (general.CriticalityInfo.IsSociallyCritical.HasChange)
+                changed.Add(nameof(general.CriticalityInfo.IsSociallyCritical));
             return changed;
         }
 

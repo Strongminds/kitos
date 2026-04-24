@@ -108,6 +108,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.OwnsOne(x => x.CriticalityInfo, owned =>
             {
                 owned.Property(p => p.isBusinessCritical).HasColumnName("isBusinessCritical");
+                owned.Property(p => p.IsSociallyCritical).HasColumnName("IsSociallyCritical");
             });
 
             builder.Property(x => x.Uuid).IsRequired();

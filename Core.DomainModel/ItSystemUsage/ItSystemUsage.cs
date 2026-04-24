@@ -272,8 +272,6 @@ namespace Core.DomainModel.ItSystemUsage
 
         #region GDPR
         public string GeneralPurpose { get; set; }
-        public DataOptions? IsSociallyCritical { get; set; }
-
         public string LinkToDirectoryUrl { get; set; }
         public string LinkToDirectoryUrlName { get; set; }
 

@@ -32,7 +32,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(GetAllInputPropertyNames<CreateItSystemUsageRequestDTO>());
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(GetAllInputPropertyNames<UpdateItSystemUsageRequestDTO>());
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.General).WrapAsEnumerable().AsParameterMatch())).Returns(GetAllInputPropertyNames<GeneralDataUpdateRequestDTO>());
-            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateItSystemUsageRequestDTO.General), nameof(GeneralDataUpdateRequestDTO.CriticalitySection) }.AsParameterMatch())).Returns(GetAllInputPropertyNames<CriticalitySectionWriteRequestDTO>());
+            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateItSystemUsageRequestDTO.General), nameof(GeneralDataUpdateRequestDTO.CriticalityInfo) }.AsParameterMatch())).Returns(GetAllInputPropertyNames<CriticalityInfoWriteRequestDTO>());
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateItSystemUsageRequestDTO.General), nameof(UpdateItSystemUsageRequestDTO.General.Validity) }.AsParameterMatch())).Returns(GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>());
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.Archiving).WrapAsEnumerable().AsParameterMatch())).Returns(GetAllInputPropertyNames<UpdatedSystemUsageArchivingParameters>());
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(CreateItSystemUsageRequestDTO.Archiving).WrapAsEnumerable().AsParameterMatch())).Returns(GetAllInputPropertyNames<ArchivingCreationRequestDTO>());
@@ -698,8 +698,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noValidFrom, generalSection.ValidFrom.IsUnchanged);
             Assert.Equal(noValidTo, generalSection.ValidTo.IsUnchanged);
             Assert.Equal(noMainContractUuid, generalSection.MainContractUuid.IsUnchanged);
-            Assert.Equal(noIsSociallyCritical, generalSection.IsSociallyCritical.IsUnchanged);
-            Assert.Equal(noBusinessCritical, generalSection.CriticalitySection.BusinessCritical.IsUnchanged);
+            Assert.Equal(noIsSociallyCritical, generalSection.CriticalityInfo.IsSociallyCritical.IsUnchanged);
+            Assert.False(generalSection.CriticalityInfo.BusinessCritical.IsUnchanged);
         }
 
 
@@ -748,8 +748,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(generalSection.ValidFrom.HasChange);
             Assert.True(generalSection.ValidTo.HasChange);
             Assert.True(generalSection.MainContractUuid.HasChange);
-            Assert.True(generalSection.IsSociallyCritical.HasChange);
-            Assert.True(generalSection.CriticalitySection.BusinessCritical.HasChange);
+            Assert.True(generalSection.CriticalityInfo.IsSociallyCritical.HasChange);
+            Assert.True(generalSection.CriticalityInfo.BusinessCritical.HasChange);
         }
 
         [Theory]
@@ -1279,11 +1279,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noSystemVersion) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemVersion));
             if (noNumberOfExpectedUsers) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.NumberOfExpectedUsers));
             if (noMainContractUuid) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.MainContractUuid));
-            if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
 
-            var criticalitySectionProperties = noBusinessCritical
-                ? new HashSet<string>()
-                : GetAllInputPropertyNames<CriticalitySectionWriteRequestDTO>();
+            var criticalityInfoProperties = GetAllInputPropertyNames<CriticalityInfoWriteRequestDTO>();
+            if (noIsSociallyCritical) criticalityInfoProperties.Remove(nameof(CriticalityInfoWriteRequestDTO.IsSociallyCritical));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
             if (noLifeCycleStatus) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.LifeCycleStatus));
@@ -1291,7 +1289,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noValidTo) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.ValidTo));
 
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.General).WrapAsEnumerable().AsParameterMatch())).Returns(generalProperties);
-            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateItSystemUsageRequestDTO.General), nameof(GeneralDataUpdateRequestDTO.CriticalitySection) }.AsParameterMatch())).Returns(criticalitySectionProperties);
+            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateItSystemUsageRequestDTO.General), nameof(GeneralDataUpdateRequestDTO.CriticalityInfo) }.AsParameterMatch())).Returns(criticalityInfoProperties);
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(new[] { nameof(UpdateItSystemUsageRequestDTO.General), nameof(UpdateItSystemUsageRequestDTO.General.Validity) }.AsParameterMatch())).Returns(validityProperties);
         }
 
@@ -1340,8 +1338,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.WebAccessibilityCompliance, AssertPropertyContainsDataChange(output.WebAccessibilityCompliance).ToYesNoPartiallyChoice());
             Assert.Equal(input.LastWebAccessibilityCheck, AssertPropertyContainsDataChange(output.LastWebAccessibilityCheck));
             Assert.Equal(input.WebAccessibilityNotes, AssertPropertyContainsDataChange(output.WebAccessibilityNotes));
-            Assert.Equal(input.IsSociallyCritical, AssertPropertyContainsDataChange(output.IsSociallyCritical)?.ToYesNoDontKnowChoice());
-            Assert.Equal(input.CriticalitySection?.BusinessCritical, AssertPropertyContainsDataChange(output.CriticalitySection.BusinessCritical)?.ToYesNoDontKnowChoice());
+            Assert.Equal(input.CriticalityInfo?.IsSociallyCritical, AssertPropertyContainsDataChange(output.CriticalityInfo.IsSociallyCritical)?.ToYesNoDontKnowChoice());
+            Assert.Equal(input.CriticalityInfo?.BusinessCritical, AssertPropertyContainsDataChange(output.CriticalityInfo.BusinessCritical)?.ToYesNoDontKnowChoice());
         }
 
         private static void AssertContainsAiTechnology(YesNoUndecidedChoice? expected, OptionalValueChange<Maybe<YesNoUndecidedOption>> actual)

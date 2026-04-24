@@ -425,14 +425,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.WebAccessibilityNotes.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
-                    ? MapYesNoDontKnow(source.IsSociallyCritical)
-                    : OptionalValueChange<DataOptions?>.None,
-
                 CriticalityInfo = new UpdatedCriticalityInfoProperties
                 {
                     BusinessCritical = rule.MustUpdate(x => x.General.CriticalityInfo.BusinessCritical)
                         ? MapYesNoDontKnow(source.CriticalityInfo?.BusinessCritical)
+                        : OptionalValueChange<DataOptions?>.None,
+                    IsSociallyCritical = rule.MustUpdate(x => x.General.CriticalityInfo.IsSociallyCritical)
+                        ? MapYesNoDontKnow(source.CriticalityInfo?.IsSociallyCritical)
                         : OptionalValueChange<DataOptions?>.None,
                 },
             };

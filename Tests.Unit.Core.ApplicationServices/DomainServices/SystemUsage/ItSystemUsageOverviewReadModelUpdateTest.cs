@@ -344,7 +344,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.WebAccessibilityCompliance, readModel.WebAccessibilityCompliance);
             Assert.Equal(systemUsage.LastWebAccessibilityCheck, readModel.LastWebAccessibilityCheck);
             Assert.Equal(systemUsage.WebAccessibilityNotes, readModel.WebAccessibilityNotes);
-            Assert.Equal(systemUsage.IsSociallyCritical, readModel.IsSociallyCritical);
+            Assert.Equal(systemUsage.CriticalityInfo.IsSociallyCritical, readModel.IsSociallyCritical);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
