@@ -716,7 +716,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 },
                 WebAccessibilityCompliance = A<YesNoPartiallyChoice>(),
                 LastWebAccessibilityCheck = A<DateTime>(),
-                WebAccessibilityNotes = A<string>()
+                WebAccessibilityNotes = A<string>(),
+                IsSociallyCritical = A<YesNoDontKnowChoice>(),
             });
 
             //Act
@@ -738,6 +739,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
             Assert.Equal(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
             Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
+            Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
         }
 
         [Fact]
