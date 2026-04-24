@@ -223,7 +223,7 @@ services.AddSwaggerGen(c =>
     c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
 
     c.SchemaFilter<SupplierFieldSchemaFilter>();
-
+    c.SchemaFilter<StringEnumSchemaFilter>();
     c.UseAllOfToExtendReferenceSchemas();
 });
 
