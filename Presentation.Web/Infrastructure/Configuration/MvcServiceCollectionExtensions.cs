@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Query.Expressions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.UriParser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web.Infrastructure.Attributes;
@@ -29,7 +30,10 @@ namespace Presentation.Web.Infrastructure.Configuration
                 .AddOData(options =>
                 {
                     options.AddRouteComponents("odata", ODataModelConfig.GetEdmModel(), odataServices =>
-                        odataServices.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>());
+                    {
+                        services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>();
+                        services.AddSingleton<ODataUriResolver>(_ => new StringAsEnumResolver { EnableCaseInsensitive = true });
+                    });
                     options.EnableQueryFeatures();
                 });
 
