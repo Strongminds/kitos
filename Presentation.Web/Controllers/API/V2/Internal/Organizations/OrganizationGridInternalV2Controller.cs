@@ -33,7 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{overviewType}/save")]
-        public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
+        public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, OverviewType overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -46,7 +46,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{overviewType}/delete")]
-        public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType)
+        public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, OverviewType overviewType)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -60,7 +60,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{overviewType}/get")]
-        public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType)
+        public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, OverviewType overviewType)
         {
             if (!ModelState.IsValid) 
                 return BadRequest(ModelState);

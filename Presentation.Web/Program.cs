@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Presentation.Web;
 using Presentation.Web.Controllers.API.V1.Auth;
@@ -34,6 +35,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire.SqlServer;
+using Microsoft.OData.UriParser;
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
@@ -77,7 +79,10 @@ services.AddControllersWithViews(options =>
     .AddOData(options =>
     {
         options.AddRouteComponents("odata", ODataModelConfig.GetEdmModel(), services =>
-            services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>());
+            {
+                services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>();
+                services.AddSingleton<ODataUriResolver>(_ => new StringAsEnumResolver() { EnableCaseInsensitive = true });
+            });
         options.EnableQueryFeatures();
     });
 
@@ -218,7 +223,11 @@ services.AddSwaggerGen(c =>
     c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
 
     c.SchemaFilter<SupplierFieldSchemaFilter>();
+
+    c.UseAllOfToExtendReferenceSchemas();
 });
+
+services.AddSwaggerGenNewtonsoftSupport();
 
 // Hangfire
 var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
