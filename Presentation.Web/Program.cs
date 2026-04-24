@@ -38,7 +38,7 @@ var services = builder.Services;
 services.AddKitosMvc();
 services.AddRouting();
 var signingKey = services.AddKitosAuthentication(configuration);
-services.AddKitosSwagger(builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Integration"));
+services.AddKitosSwagger(!builder.Environment.IsProduction());
 services.AddKitosHangfire(configuration);
 
 // AutoMapper - using explicit assembly scanning
