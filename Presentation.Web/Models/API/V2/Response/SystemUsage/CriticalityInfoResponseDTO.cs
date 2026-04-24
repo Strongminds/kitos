@@ -1,11 +1,11 @@
 ﻿using Presentation.Web.Models.API.V2.Types.Shared;
 
-namespace Presentation.Web.Models.API.V2.Request.SystemUsage
+namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {
-    public class CriticalitySectionWriteRequestDTO
+    public class CriticalityInfoResponseDTO
     {
         /// <summary>
-        /// Whether the system is considered business critical.
+        /// Whether this system is considered business critical.
         /// </summary>
         public YesNoDontKnowChoice? BusinessCritical { get; set; }
     }

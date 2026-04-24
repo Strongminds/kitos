@@ -73,6 +73,6 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// <summary>
         /// Criticality-related properties for this system usage.
         /// </summary>
-        public CriticalitySectionWriteRequestDTO? CriticalitySection { get; set; }
+        public CriticalityInfoWriteRequestDTO? CriticalityInfo { get; set; }
     }
 }

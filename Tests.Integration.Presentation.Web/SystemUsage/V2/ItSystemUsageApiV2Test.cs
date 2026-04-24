@@ -2519,7 +2519,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.LocalSystemId, actual.LocalSystemId);
             Assert.Equal(expected.SystemVersion, actual.SystemVersion);
             Assert.Equal(expected.Notes, actual.Notes);
-            Assert.Equal(expected.CriticalitySection?.BusinessCritical, actual.CriticalitySection?.BusinessCritical);
+            Assert.Equal(expected.CriticalityInfo?.BusinessCritical, actual.CriticalityInfo?.BusinessCritical);
             if (hasData)
             {
                 Assert.Equal(expected.NumberOfExpectedUsers.LowerBound, actual.NumberOfExpectedUsers.LowerBound);
@@ -2642,7 +2642,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                     ValidFrom = DateTime.UtcNow.Date,
                     ValidTo = DateTime.UtcNow.Date.AddDays(Math.Abs(A<short>()))
                 },
-                CriticalitySection = new CriticalitySectionWriteRequestDTO
+                CriticalityInfo = new CriticalityInfoWriteRequestDTO
                 {
                     BusinessCritical = A<YesNoDontKnowChoice?>()
                 },

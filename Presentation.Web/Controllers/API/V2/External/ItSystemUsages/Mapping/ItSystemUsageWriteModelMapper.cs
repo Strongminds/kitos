@@ -431,8 +431,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
                 CriticalityInfo = new UpdatedCriticalityInfoProperties
                 {
-                    BusinessCritical = rule.MustUpdate(x => x.General.CriticalitySection.BusinessCritical)
-                        ? MapYesNoDontKnow(source.CriticalitySection?.BusinessCritical)
+                    BusinessCritical = rule.MustUpdate(x => x.General.CriticalityInfo.BusinessCritical)
+                        ? MapYesNoDontKnow(source.CriticalityInfo?.BusinessCritical)
                         : OptionalValueChange<DataOptions?>.None,
                 },
             };
