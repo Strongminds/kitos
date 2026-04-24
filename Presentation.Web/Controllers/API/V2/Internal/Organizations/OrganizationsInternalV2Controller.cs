@@ -40,6 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             _uiModuleCustomizationService = uiModuleCustomizationService;
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/ui-root-config")]
         public IActionResult GetUIRootConfig([NonEmptyGuid] Guid organizationUuid)
         {
@@ -61,6 +62,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/permissions")]
         public IActionResult GetPermissions([NonEmptyGuid] Guid organizationUuid)
         {
@@ -157,6 +159,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/master-data")]
         public IActionResult GetOrganizationMasterData([FromRoute] [NonEmptyGuid] Guid organizationUuid)
         {
@@ -167,6 +170,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
         [Route("{organizationUuid}/master-data/roles")]
         public IActionResult GetOrganizationMasterDataRoles([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
