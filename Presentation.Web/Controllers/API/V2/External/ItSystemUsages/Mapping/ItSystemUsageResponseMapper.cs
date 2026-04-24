@@ -68,7 +68,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return new GDPRRegistrationsResponseDTO
             {
                 Purpose = systemUsage.GeneralPurpose,
-                BusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
+                BusinessCritical = MapYesNoExtended(systemUsage.CriticalityInfo.isBusinessCritical),
                 DPIAConducted = MapYesNoExtended(systemUsage.DPIA),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),
@@ -196,7 +196,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 IsSociallyCritical = MapYesNoExtended(systemUsage.IsSociallyCritical),
                 CriticalitySection = new CriticalitySectionResponseDTO
                 {
-                    BusinessCritical = MapYesNoExtended(systemUsage.CriticalitySection.isBusinessCritical),
+                    BusinessCritical = MapYesNoExtended(systemUsage.CriticalityInfo.isBusinessCritical),
                 },
             };
         }

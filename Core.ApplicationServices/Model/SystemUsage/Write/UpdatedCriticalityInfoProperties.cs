@@ -3,7 +3,7 @@ using Core.DomainModel.ItSystem.DataTypes;
 
 namespace Core.ApplicationServices.Model.SystemUsage.Write
 {
-    public class UpdatedCriticalitySectionProperties
+    public class UpdatedCriticalityInfoProperties
     {
         public OptionalValueChange<DataOptions?> BusinessCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
     }

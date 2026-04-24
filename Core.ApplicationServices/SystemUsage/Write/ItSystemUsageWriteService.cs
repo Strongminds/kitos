@@ -237,7 +237,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             //General GDPR registrations
             return itSystemUsage.WithOptionalUpdate(parameters.Purpose, (usage, newPurpose) => usage.GeneralPurpose = newPurpose)
-                .Bind(usage => usage.WithOptionalUpdate(parameters.BusinessCritical, (systemUsage, businessCritical) => systemUsage.isBusinessCritical = businessCritical))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.BusinessCritical, (systemUsage, businessCritical) => systemUsage.CriticalityInfo.isBusinessCritical = businessCritical))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DirectoryDocumentation, (systemUsage, newLink) =>
                    {
@@ -641,7 +641,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.LastWebAccessibilityCheck, (systemUsage, lastWebAccessibilityCheck) => systemUsage.UpdateLastWebAccessibilityCheck(lastWebAccessibilityCheck)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.IsSociallyCritical, (systemUsage, isSociallyCritical) => systemUsage.IsSociallyCritical = isSociallyCritical))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalitySection.BusinessCritical, (systemUsage, businessCritical) => systemUsage.CriticalitySection.isBusinessCritical = businessCritical));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityInfo.BusinessCritical, (systemUsage, businessCritical) => systemUsage.CriticalityInfo.isBusinessCritical = businessCritical));
         }
 
         private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)

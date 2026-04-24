@@ -2,7 +2,7 @@
 
 namespace Core.DomainModel.ItSystemUsage
 {
-    public class ItSystemUsageCriticalitySection
+    public class ItSystemUsageCriticalityInfo
     {
         public DataOptions? isBusinessCritical { get; set; }
 

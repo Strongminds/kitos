@@ -339,7 +339,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.ItSystem.PreviousName, readModel.SystemPreviousName);
             Assert.Equal(systemUsage.ItSystem.Description, readModel.SystemDescription);
             Assert.Equal(systemUsage.DPIA, readModel.DPIAConducted);
-            Assert.Equal(systemUsage.CriticalitySection.isBusinessCritical, readModel.IsBusinessCritical);
+            Assert.Equal(systemUsage.CriticalityInfo.isBusinessCritical, readModel.IsBusinessCritical);
             Assert.Equal(systemUsage.ContainsAITechnology, readModel.ContainsAITechnology);
             Assert.Equal(systemUsage.WebAccessibilityCompliance, readModel.WebAccessibilityCompliance);
             Assert.Equal(systemUsage.LastWebAccessibilityCheck, readModel.LastWebAccessibilityCheck);

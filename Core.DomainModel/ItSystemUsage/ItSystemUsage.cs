@@ -208,7 +208,7 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
         public virtual ICollection<ExternalReference> ExternalReferences { get; set; }
-        public ItSystemUsageCriticalitySection CriticalitySection { get; set; } = new();
+        public ItSystemUsageCriticalityInfo CriticalityInfo { get; set; } = new();
 
         public ReferenceRootType GetRootType()
         {
@@ -272,7 +272,6 @@ namespace Core.DomainModel.ItSystemUsage
 
         #region GDPR
         public string GeneralPurpose { get; set; }
-        public DataOptions? isBusinessCritical { get; set; }
         public DataOptions? IsSociallyCritical { get; set; }
 
         public string LinkToDirectoryUrl { get; set; }

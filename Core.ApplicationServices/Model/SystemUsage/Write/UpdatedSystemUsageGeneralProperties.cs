@@ -25,6 +25,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<DateTime>> LastWebAccessibilityCheck { get; set; } = OptionalValueChange<Maybe<DateTime>>.None;
         public OptionalValueChange<string> WebAccessibilityNotes { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<DataOptions?> IsSociallyCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
-        public UpdatedCriticalitySectionProperties CriticalitySection { get; set; } = new();
+        public UpdatedCriticalityInfoProperties CriticalityInfo { get; set; } = new();
     }
 }

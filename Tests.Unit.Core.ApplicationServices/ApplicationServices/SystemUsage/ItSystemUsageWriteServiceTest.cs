@@ -1528,7 +1528,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    CriticalitySection = new UpdatedCriticalitySectionProperties
+                    CriticalityInfo = new UpdatedCriticalityInfoProperties
                     {
                         BusinessCritical = businessCritical.AsChangedValue()
                     }
@@ -1541,7 +1541,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Same(itSystemUsage, createResult.Value);
             AssertTransactionCommitted(transactionMock);
             Assert.Equal(purpose, itSystemUsage.GeneralPurpose);
-            Assert.Equal(businessCritical, itSystemUsage.CriticalitySection.isBusinessCritical);
+            Assert.Equal(businessCritical, itSystemUsage.CriticalityInfo.isBusinessCritical);
             Assert.Equal(hostedAt, itSystemUsage.HostedAt);
             AssertLink(directoryDoc, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);
             Assert.Equal(sensitiveDataLevels.OrderBy(x => x), itSystemUsage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).OrderBy(x => x));
@@ -3001,6 +3001,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(generalProperties.LocalSystemId.NewValue, actual.LocalSystemId);
             Assert.Equal(generalProperties.SystemVersion.NewValue, actual.Version);
             Assert.Equal(generalProperties.Notes.NewValue, actual.Note);
+            Assert.Equal(generalProperties.CriticalityInfo.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
 
             if (shouldBeEmpty)
             {
@@ -3014,7 +3015,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
-            Assert.Equal(generalProperties.CriticalitySection.BusinessCritical.NewValue, actual.CriticalitySection.isBusinessCritical);
+            Assert.Equal(generalProperties.CriticalityInfo.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
 
             //Archiving
             var archiving = expected.Archiving.Value;
@@ -3027,7 +3028,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //GDPR
             var gdpr = expected.GDPR.Value;
             Assert.Equal(gdpr.Purpose.NewValue, actual.GeneralPurpose);
-            Assert.Equal(gdpr.BusinessCritical.NewValue, actual.isBusinessCritical);
             Assert.Equal(gdpr.HostedAt.NewValue, actual.HostedAt);
             Assert.Equal(gdpr.TechnicalPrecautionsInPlace.NewValue, actual.precautions);
             Assert.Equal(gdpr.UserSupervision.NewValue, actual.UserSupervision);
@@ -3088,7 +3088,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = Maybe<DateTime>.Some(DateTime.Now).AsChangedValue(),
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
-                    CriticalitySection = new UpdatedCriticalitySectionProperties
+                    CriticalityInfo = new UpdatedCriticalityInfoProperties
                     {
                         BusinessCritical = A<DataOptions?>().AsChangedValue(),
                     },
@@ -3143,7 +3143,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
-                    CriticalitySection = new UpdatedCriticalitySectionProperties
+                    CriticalityInfo = new UpdatedCriticalityInfoProperties
                     {
                         BusinessCritical = new ChangedValue<DataOptions?>(null)
                     }

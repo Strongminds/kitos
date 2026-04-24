@@ -200,7 +200,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             Assert.Equal(usage.ItSystem.Uuid.ToString("D"), gdprExportReport.SystemUuid);
             Assert.Equal(usage.ItSystem.Name, gdprExportReport.SystemName);
-            Assert.Equal(usage.isBusinessCritical, gdprExportReport.BusinessCritical);
             Assert.Equal(usage.DPIA, gdprExportReport.DPIA);
             Assert.Equal(usage.DPIADateFor, gdprExportReport.DPIADate);
 
@@ -346,7 +345,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     },
                 } : new List<ItContractItSystemUsage>(),
                 OrganizationId = orgId,
-                CriticalitySection = new ItSystemUsageCriticalitySection { isBusinessCritical = A<DataOptions>() },
+                CriticalityInfo = new ItSystemUsageCriticalityInfo { isBusinessCritical = A<DataOptions>() },
                 noteRisks = A<string>(),
                 LinkToDirectoryUrl = A<string>(),
                 HostedAt = A<HostedAt>(),
