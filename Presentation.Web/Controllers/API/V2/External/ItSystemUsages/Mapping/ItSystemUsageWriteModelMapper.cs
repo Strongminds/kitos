@@ -421,12 +421,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.WebAccessibilityNotes.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                IsSociallyCritical = rule.MustUpdate(x => x.General.SociallyCritical)
-                    ? MapYesNoDontKnow(source.SociallyCritical)
+                IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
+                    ? MapYesNoDontKnow(source.IsSociallyCritical)
                     : OptionalValueChange<DataOptions?>.None,
 
-                BusinessCritical = rule.MustUpdate(x => x.General.BusinessCritical)
-                    ? MapYesNoDontKnow(source.BusinessCritical)
+                BusinessCritical = rule.MustUpdate(x => x.General.IsBusinessCritical)
+                    ? MapYesNoDontKnow(source.IsBusinessCritical)
                     : OptionalValueChange<DataOptions?>.None,
             };
         }

@@ -69,10 +69,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// <summary>
         /// Whether the system is considered socially critical.
         /// </summary>
-        public YesNoDontKnowChoice? SociallyCritical { get; set; }
+        public YesNoDontKnowChoice? IsSociallyCritical { get; set; }
         /// <summary>
         /// Whether the system is considered business critical.
         /// </summary>
-        public YesNoDontKnowChoice? BusinessCritical { get; set; }
+        public YesNoDontKnowChoice? IsBusinessCritical { get; set; }
     }
 }

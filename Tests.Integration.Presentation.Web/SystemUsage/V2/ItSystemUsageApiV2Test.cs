@@ -717,7 +717,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 WebAccessibilityCompliance = A<YesNoPartiallyChoice>(),
                 LastWebAccessibilityCheck = A<DateTime>(),
                 WebAccessibilityNotes = A<string>(),
-                SociallyCritical = A<YesNoDontKnowChoice>(),
+                IsSociallyCritical = A<YesNoDontKnowChoice>(),
             });
 
             //Act
@@ -739,7 +739,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
             Assert.Equal(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
             Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
-            Assert.Equal(request.General.SociallyCritical, freshReadDTO.General.SociallyCritical);
+            Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
         }
 
         [Fact]
@@ -2519,7 +2519,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.LocalSystemId, actual.LocalSystemId);
             Assert.Equal(expected.SystemVersion, actual.SystemVersion);
             Assert.Equal(expected.Notes, actual.Notes);
-            Assert.Equal(expected.BusinessCritical, actual.BusinessCritical);
+            Assert.Equal(expected.IsBusinessCritical, actual.IsBusinessCritical);
             if (hasData)
             {
                 Assert.Equal(expected.NumberOfExpectedUsers.LowerBound, actual.NumberOfExpectedUsers.LowerBound);
@@ -2642,7 +2642,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                     ValidFrom = DateTime.UtcNow.Date,
                     ValidTo = DateTime.UtcNow.Date.AddDays(Math.Abs(A<short>()))
                 },
-                BusinessCritical = A<YesNoDontKnowChoice?>(),
+                IsBusinessCritical = A<YesNoDontKnowChoice?>(),
             };
         }
 
