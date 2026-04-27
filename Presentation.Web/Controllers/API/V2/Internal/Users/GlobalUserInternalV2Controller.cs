@@ -20,6 +20,7 @@ using Core.DomainModel.Organization;
 using Core.ApplicationServices.Rights;
 using Microsoft.AspNetCore.Mvc;
 using Core.ApplicationServices.Model.RightsHolder;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users
@@ -121,7 +122,12 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         public IActionResult GetAllLocalAdmins()
         {
             return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.LocalAdmin)
-                    .Select(users => users.ToList().SelectMany(InternalDtoModelV2MappingExtensions.MapUserToMultipleLocalAdminResponse).ToList())
+                    .Select(users => users
+                        .Include(user => user.OrganizationRights)
+                        .ThenInclude(right => right.Organization)
+                        .ToList()
+                        .SelectMany(InternalDtoModelV2MappingExtensions.MapUserToMultipleLocalAdminResponse)
+                        .ToList())
                     .Match(Ok, FromOperationError);
         }
 

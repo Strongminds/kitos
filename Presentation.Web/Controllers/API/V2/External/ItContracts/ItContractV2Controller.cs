@@ -21,6 +21,7 @@ using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts
 {
@@ -113,6 +114,40 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
 
             return _itContractService
                 .Query(conditions.ToArray())
+                .Include(contract => contract.Parent)
+                .Include(contract => contract.Organization)
+                .Include(contract => contract.ObjectOwner)
+                .Include(contract => contract.LastChangedByUser)
+                .Include(contract => contract.Supplier)
+                .Include(contract => contract.ResponsibleOrganizationUnit)
+                    .ThenInclude(unit => unit.Parent)
+                .Include(contract => contract.ProcurementStrategy)
+                .Include(contract => contract.PurchaseForm)
+                .Include(contract => contract.ContractTemplate)
+                .Include(contract => contract.ContractType)
+                .Include(contract => contract.Criticality)
+                .Include(contract => contract.OptionExtend)
+                .Include(contract => contract.TerminationDeadline)
+                .Include(contract => contract.PaymentModel)
+                .Include(contract => contract.PaymentFreqency)
+                .Include(contract => contract.PriceRegulation)
+                .Include(contract => contract.AssociatedSystemUsages)
+                    .ThenInclude(association => association.ItSystemUsage)
+                .Include(contract => contract.DataProcessingRegistrations)
+                .Include(contract => contract.AssociatedAgreementElementTypes)
+                    .ThenInclude(element => element.AgreementElementType)
+                .Include(contract => contract.Rights)
+                    .ThenInclude(right => right.Role)
+                .Include(contract => contract.Rights)
+                    .ThenInclude(right => right.User)
+                .Include(contract => contract.ExternEconomyStreams)
+                    .ThenInclude(stream => stream.OrganizationUnit)
+                        .ThenInclude(unit => unit.Parent)
+                .Include(contract => contract.InternEconomyStreams)
+                    .ThenInclude(stream => stream.OrganizationUnit)
+                        .ThenInclude(unit => unit.Parent)
+                .Include(contract => contract.ExternalReferences)
+                .AsSplitQuery()
                 .OrderApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty)
                 .Page(paginationQuery)
                 .ToList()

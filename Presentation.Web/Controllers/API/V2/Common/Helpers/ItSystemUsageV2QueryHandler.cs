@@ -9,6 +9,7 @@ using Presentation.Web.Extensions;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Web.Controllers.API.V2.Common.Helpers
 {
@@ -54,6 +55,35 @@ namespace Presentation.Web.Controllers.API.V2.Common.Helpers
 
             return service
                 .Query(conditions.ToArray())
+                .Include(usage => usage.ItSystem)
+                .Include(usage => usage.Organization)
+                .Include(usage => usage.ObjectOwner)
+                .Include(usage => usage.LastChangedByUser)
+                .Include(usage => usage.ExternalReferences)
+                .Include(usage => usage.ItSystemCategories)
+                .Include(usage => usage.ArchiveLocation)
+                .Include(usage => usage.ArchiveTestLocation)
+                .Include(usage => usage.ArchiveType)
+                .Include(usage => usage.ArchiveSupplier)
+                .Include(usage => usage.MainContract)
+                    .ThenInclude(mainContract => mainContract.ItContract)
+                .Include(usage => usage.ResponsibleUsage)
+                    .ThenInclude(responsibleUsage => responsibleUsage.OrganizationUnit)
+                .Include(usage => usage.UsedBy)
+                    .ThenInclude(usedBy => usedBy.OrganizationUnit)
+                .Include(usage => usage.TaskRefs)
+                .Include(usage => usage.TaskRefsOptOut)
+                .Include(usage => usage.ArchivePeriods)
+                .Include(usage => usage.Rights)
+                    .ThenInclude(right => right.Role)
+                .Include(usage => usage.Rights)
+                    .ThenInclude(right => right.User)
+                .Include(usage => usage.UsageRelations)
+                    .ThenInclude(relation => relation.ToSystemUsage)
+                .Include(usage => usage.SensitiveDataLevels)
+                .Include(usage => usage.PersonalDataOptions)
+                    .ThenInclude(personalData => personalData.PersonalData)
+                .AsSplitQuery()
                 .OrderSystemUsageApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty)
                 .Page(paginationQuery).ToList();
         }
