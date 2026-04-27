@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Net;
 using Core.Abstractions.Types;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Model.Organizations;
@@ -9,10 +6,15 @@ using Core.DomainModel;
 using Core.DomainModel.KendoConfig;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
-using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Models.API.V2.Types.KendoGrid;
+using System;
+using System.Linq;
+using System.Net;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
@@ -33,26 +35,26 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{overviewType}/save")]
-        public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
+        public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return MapUuidToId(organizationUuid)
-                    .Bind(id => _kendoOrganizationalConfigurationService.CreateOrUpdate(id, overviewType, config.VisibleColumns.Select(MapColumnConfigRequestToKendoColumnConfig)))
+                    .Bind(id => _kendoOrganizationalConfigurationService.CreateOrUpdate(id, overviewType.ToDomain(), config.VisibleColumns.Select(MapColumnConfigRequestToKendoColumnConfig)))
                     .Bind(MapKendoConfigToGridConfig)
                     .Match(Ok, FromOperationError);
         }
 
         [HttpDelete]
         [Route("{overviewType}/delete")]
-        public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType)
+        public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return MapUuidToId(organizationUuid)
-                .Bind(id => _kendoOrganizationalConfigurationService.Delete(id, overviewType))
+                .Bind(id => _kendoOrganizationalConfigurationService.Delete(id, overviewType.ToDomain()))
                 .Bind(MapKendoConfigToGridConfig)
                 .Match(Ok, FromOperationError);
 
@@ -60,13 +62,13 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{overviewType}/get")]
-        public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromQuery] OverviewType overviewType)
+        public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType)
         {
             if (!ModelState.IsValid) 
                 return BadRequest(ModelState);
 
             return MapUuidToId(organizationUuid)
-                .Bind(id => _kendoOrganizationalConfigurationService.Get(id, overviewType))
+                .Bind(id => _kendoOrganizationalConfigurationService.Get(id, overviewType.ToDomain()))
                 .Bind(MapKendoConfigToGridConfig)
                 .Match(Ok, FromOperationError);
         }

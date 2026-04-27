@@ -16,6 +16,10 @@ namespace Infrastructure.DataAccess.Mapping
                 .HasForeignKey(x => x.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => new { x.ObjectId, x.RoleId, x.UserId })
+                .IsUnique()
+                .HasDatabaseName("UX_ItSystemRight_ObjectId_RoleId_UserId");
         }
     }
 }

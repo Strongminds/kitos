@@ -9,6 +9,8 @@ namespace Infrastructure.DataAccess.Mapping
     {
         public void Configure(EntityTypeBuilder<ItSystemUsageOverviewUsedBySystemUsageReadModel> builder)
         {
+            builder.ToTable("ItSystemUsageOverviewUsedBySystemUsageReadModels");
+
             builder.HasKey(x => x.Id);
 
             builder.HasOne(x => x.Parent)

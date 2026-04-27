@@ -17,7 +17,7 @@ namespace Digst.OioIdws.Soap.MessageInspectors
         /// <summary>
         /// This method is called on the server when a request is received from the client.
         /// </summary>
-        public object AfterReceiveRequest(ref Message request,
+        public object? AfterReceiveRequest(ref Message request,
                IClientChannel channel, InstanceContext instanceContext)
         {
             ValidateWsAddressingHeadersCommon(request);
@@ -43,7 +43,7 @@ namespace Digst.OioIdws.Soap.MessageInspectors
         /// <summary>
         /// This method will be called from the client side just before any method is called.
         /// </summary>
-        public object BeforeSendRequest(ref Message request, IClientChannel channel)
+        public object? BeforeSendRequest(ref Message request, IClientChannel channel)
         {
             return null;
         }

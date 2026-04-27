@@ -55,7 +55,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithOne(t => t.ItContract)
                 .HasForeignKey(t => t.ItContract_Id)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(t => t.ResponsibleOrganizationUnit)
                 .WithMany(t => t.ResponsibleForItContracts)
@@ -74,7 +74,11 @@ namespace Infrastructure.DataAccess.Mapping
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(x => x.DataProcessingRegistrations)
-                .WithMany(x => x.AssociatedContracts);
+                .WithMany(x => x.AssociatedContracts)
+                .UsingEntity(
+                    l => l.HasOne(typeof(Core.DomainModel.GDPR.DataProcessingRegistration)).WithMany().HasForeignKey("DataProcessingRegistration_Id"),
+                    r => r.HasOne(typeof(ItContract)).WithMany().HasForeignKey("ItContract_Id"),
+                    j => { j.ToTable("ItContractDataProcessingRegistrations"); j.HasKey("ItContract_Id", "DataProcessingRegistration_Id"); });
 
             builder.HasMany(t => t.DataProcessingRegistrationsWhereContractIsMainContract)
                 .WithOne(t => t.MainContract)

@@ -9,7 +9,7 @@ namespace Infrastructure.DataAccess.Mapping
         public override void Configure(EntityTypeBuilder<AdviceSent> builder)
         {
             base.Configure(builder);
-            builder.ToTable("AdviceSent");
+            builder.ToTable("AdviceSents");
         }
     }
 }

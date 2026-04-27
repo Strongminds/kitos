@@ -11,11 +11,13 @@ namespace Core.ApplicationServices.SSO.State
 {
     public class InitialFlowState : AbstractState
     {
+        private readonly string _samlKitosReadAccessRoleIdentifier;
         private readonly Saml20IdentityParser _parser;
         private readonly ISsoStateFactory _stateFactory;
         private readonly ILogger _logger;
 
         public InitialFlowState(
+            SsoFlowConfiguration configuration,
             Saml20IdentityParser parser,
 
             ISsoStateFactory stateFactory,
@@ -24,6 +26,7 @@ namespace Core.ApplicationServices.SSO.State
             _parser = parser;
             _stateFactory = stateFactory;
             _logger = logger;
+            _samlKitosReadAccessRoleIdentifier = $"{configuration.PrivilegePrefix}/roles/usersystemrole/readaccess/1";
         }
 
         public override void Handle(FlowEvent @event, FlowContext context)
@@ -83,10 +86,10 @@ namespace Core.ApplicationServices.SSO.State
         private bool CurrentUserHasKitosPrivilege()
         {
             // For local testing using Korsbaek Kommune users, uncomment the following line
-            return true;
-            // return _parser
-            //     .MatchPrivilege(_samlKitosReadAccessRoleIdentifier)
-            //     .HasValue;
+            //return true;
+            return _parser
+                .MatchPrivilege(_samlKitosReadAccessRoleIdentifier)
+                .HasValue;
         }
     }
 }

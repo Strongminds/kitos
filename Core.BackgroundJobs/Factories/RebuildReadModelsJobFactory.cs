@@ -35,7 +35,7 @@ namespace Core.BackgroundJobs.Factories
         public IAsyncBackgroundJob CreateRebuildJob(ReadModelRebuildScope scope)
         {
             string id;
-            Func<IEnumerable<int>> getIds = null;
+            Func<IEnumerable<int>>? getIds = null;
             PendingReadModelUpdateSourceCategory updateSourceCategory;
             switch (scope)
             {

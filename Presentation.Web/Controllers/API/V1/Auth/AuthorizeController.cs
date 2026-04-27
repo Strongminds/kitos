@@ -111,7 +111,7 @@ namespace Presentation.Web.Controllers.API.V1.Auth
             var dto = new OrganizationAndDefaultUnitDTO
             {
                 Organization = Map<Organization, OrganizationDTO>(org),
-                DefaultOrgUnit = Map<OrganizationUnit, OrgUnitSimpleDTO>(defaultUnit)
+                DefaultOrgUnit = defaultUnit != null ? Map<OrganizationUnit, OrgUnitSimpleDTO>(defaultUnit) : null
             };
             return Ok(dto);
         }

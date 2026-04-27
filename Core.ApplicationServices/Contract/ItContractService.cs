@@ -113,7 +113,7 @@ namespace Core.ApplicationServices.Contract
             return itContract;
         }
 
-        public Result<IQueryable<ItContract>, OperationError> GetAllByOrganization(int orgId, string optionalNameSearch = null)
+        private Result<IQueryable<ItContract>, OperationError> GetAllByOrganization(int orgId, string? optionalNameSearch = null)
         {
             if (_authorizationContext.GetOrganizationReadAccessLevel(orgId) != OrganizationDataReadAccessLevel.All)
             {
@@ -187,12 +187,9 @@ namespace Core.ApplicationServices.Contract
             using var transaction = _transactionManager.Begin();
             try
             {
-                //Delete the economy streams to prevent them from being orphaned
-                foreach (var economyStream in contract.GetAllPayments())
-                {
-                    _economyStreamRepository.DeleteWithReferencePreload(economyStream);
-                }
-                _economyStreamRepository.Save();
+                DeleteDependingEconomyStreams(contract);
+                DeleteDependingAssociatedAgreementElementTypes(contract);
+                
 
                 //Delete the contract
                 var deleteByContractId = _referenceService.DeleteByContractId(id);
@@ -446,6 +443,20 @@ namespace Core.ApplicationServices.Contract
                 return new OperationError(OperationFailure.Forbidden);
 
             return authorizedAction(contract);
+        }
+
+        private void DeleteDependingEconomyStreams(ItContract contract)
+        {
+            foreach (var economyStream in contract.GetAllPayments())
+            {
+                _economyStreamRepository.DeleteWithReferencePreload(economyStream);
+            }
+            _economyStreamRepository.Save();
+        }
+
+        private void DeleteDependingAssociatedAgreementElementTypes(ItContract contract)
+        {
+            contract.AssociatedAgreementElementTypes.Clear();
         }
     }
 }

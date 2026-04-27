@@ -5,6 +5,7 @@ using Core.Abstractions.Caching;
 using Core.Abstractions.Types;
 using Infrastructure.DataAccess.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
 using Core.ApplicationServices.Authorization;
@@ -149,7 +150,7 @@ namespace Presentation.Web.Infrastructure.DI
 {
     public static class KitosServiceRegistration
     {
-        public static void Register(IServiceCollection services, IConfiguration configuration)
+        public static void Register(IServiceCollection services, IConfiguration configuration, SecurityKey signingKey)
         {
             // Middleware (IMiddleware implementations must be registered in DI)
             services.AddScoped<CorrelationIdMiddleware>();
@@ -182,7 +183,7 @@ namespace Presentation.Web.Infrastructure.DI
             var mailSuffix = appSettings["MailSuffix"] ?? "@test.dk";
             var defaultUserPassword = appSettings["DefaultUserPassword"] ?? "";
             var useDefaultUserPassword = bool.Parse(appSettings["UseDefaultUserPassword"] ?? "false");
-            var resetPasswordTtl = TimeSpan.FromHours(double.Parse(appSettings["ResetPasswordTTL"] ?? "24"));
+            var resetPasswordTtl = TimeSpan.Parse(appSettings["ResetPasswordTTL"] ?? "24:00:00");
 
             services.AddSingleton(_ => new KitosUrl(new Uri(baseUrl)));
             services.AddScoped<IMailClient>(_ =>
@@ -199,7 +200,9 @@ namespace Presentation.Web.Infrastructure.DI
                 }
                 else
                 {
-                    var host = smtpSection["Host"] ?? throw new InvalidOperationException("Smtp:Host is required when DeliveryMethod is Network");
+                    var host = smtpSection["Host"];
+                    if (string.IsNullOrWhiteSpace(host))
+                        throw new InvalidOperationException("Smtp:Host is required when DeliveryMethod is Network");
                     var port = int.Parse(smtpSection["Port"] ?? "25");
                     var ssl = bool.Parse(smtpSection["EnableSsl"] ?? "false");
                     inner = new SingleThreadedMailClient(host, port, ssl);
@@ -314,7 +317,7 @@ namespace Presentation.Web.Infrastructure.DI
                 sp.GetRequiredService<IKitosInternalTokenIssuer>(),
                 pubSubBaseUrl));
 
-            services.AddScoped<ITokenValidator>(sp => new TokenValidator(baseUrl));
+            services.AddScoped<ITokenValidator>(sp => new TokenValidator(baseUrl, signingKey));
             services.AddScoped<IKitosInternalTokenIssuer, KitosInternalTokenIssuer>();
 
             // STS Organization

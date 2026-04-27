@@ -142,7 +142,7 @@ namespace Core.ApplicationServices.System
             return Maybe<IDomainQuery<ItSystem>>.None;
         }
 
-        public IQueryable<ItSystem> GetAvailableSystems(int organizationId, string optionalNameSearch = null)
+        public IQueryable<ItSystem> GetAvailableSystems(int organizationId, string? optionalNameSearch = null)
         {
             var itSystems = _itSystemRepository.GetSystems(
                 new OrganizationDataQueryParameters(
@@ -587,7 +587,7 @@ namespace Core.ApplicationServices.System
                 .ToList()
                 .AsReadOnly();
         }
-        private Result<ItSystem, OperationError> Mutate(int systemId, Predicate<ItSystem> performUpdateTo, Action<ItSystem> updateWith = null, Func<ItSystem, Result<ItSystem, OperationError>> updateWithResult = null)
+        private Result<ItSystem, OperationError> Mutate(int systemId, Predicate<ItSystem> performUpdateTo, Action<ItSystem>? updateWith = null, Func<ItSystem, Result<ItSystem, OperationError>>? updateWithResult = null)
         {
             if (updateWith == null && updateWithResult == null)
                 throw new ArgumentException("No mutations provided");

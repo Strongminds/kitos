@@ -143,7 +143,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             {
                 if (mandatory)
                 {
-                    throw new ArgumentException($"Error: No environment variable value found for mandatory variable '{variable}'");
+                    throw new ArgumentException($"Error: No environment variable value found for mandatory variable '{name}'");
                 }
 
                 return defaultValue;

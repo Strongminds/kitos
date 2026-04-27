@@ -1,20 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
     <RootNamespace>Presentation.Web</RootNamespace>
     <AssemblyName>Presentation.Web</AssemblyName>
-    <!-- Copy App.config → Presentation.Web.dll.config so ConfigurationManager finds the SAML sections -->
+  </PropertyGroup>
+    <!-- AppConfig points MSBuild at the right file for local builds (dotnet build / run).
+      For publish/deploy, PreparePackage.ps1 updates App.config with environment-specific SAML
+      values and copies it to Presentation.Web.dll.config, because ConfigurationManager on .NET
+      Core reads <AssemblyName>.dll.config, not Web.config. Web.config remains IIS-only. -->
+  <PropertyGroup>
     <AppConfig>App.config</AppConfig>
   </PropertyGroup>
   <ItemGroup>
     <!-- Core packages -->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -27,11 +33,12 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.17.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.17.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="10.1.7" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
     <PackageReference Include="Polly" Version="8.6.6" />
     <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.10" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.5" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.7" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
   </ItemGroup>
@@ -90,4 +97,3 @@
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.WscCore.dll" />
   </ItemGroup>
 </Project>
-

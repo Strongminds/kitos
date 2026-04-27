@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         [EnableQuery]
         [Route("odata/Organizations({orgKey})/ItSystems")]
         [RequireTopOnOdataThroughKitosToken]
-        public IActionResult GetItSystems(int orgKey)
+        public IActionResult GetOrganizationItSystems(int orgKey)
         {
             var readAccessLevel = GetOrganizationReadAccessLevel(orgKey);
             if (readAccessLevel == OrganizationDataReadAccessLevel.None)

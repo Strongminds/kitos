@@ -33,6 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
         }
 
         [HttpDelete]
+        [Consumes("application/json")]
         public IActionResult RemoveRegistrations(Guid organizationUuid, Guid unitUuid, [FromBody] ChangeOrganizationUnitRegistrationV2RequestDTO requestDto)
         {
             var changeParameters = ToChangeParameters(requestDto);

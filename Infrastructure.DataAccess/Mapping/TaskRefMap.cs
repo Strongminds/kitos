@@ -24,14 +24,25 @@ namespace Infrastructure.DataAccess.Mapping
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(t => t.ItSystems)
-                .WithMany(t => t.TaskRefs);
+                .WithMany(t => t.TaskRefs)
+                .UsingEntity(
+                    l => l.HasOne(typeof(Core.DomainModel.ItSystem.ItSystem)).WithMany().HasForeignKey("ItSystem_Id"),
+                    r => r.HasOne(typeof(TaskRef)).WithMany().HasForeignKey("TaskRef_Id"),
+                    j => { j.ToTable("TaskRefItSystems"); j.HasKey("ItSystem_Id", "TaskRef_Id"); });
 
             builder.HasMany(t => t.ItSystemUsages)
-                .WithMany(t => t.TaskRefs);
+                .WithMany(t => t.TaskRefs)
+                .UsingEntity(
+                    l => l.HasOne(typeof(Core.DomainModel.ItSystemUsage.ItSystemUsage)).WithMany().HasForeignKey("ItSystemUsage_Id"),
+                    r => r.HasOne(typeof(TaskRef)).WithMany().HasForeignKey("TaskRef_Id"),
+                    j => { j.ToTable("TaskRefItSystemUsages"); j.HasKey("ItSystemUsage_Id", "TaskRef_Id"); });
 
             builder.HasMany(t => t.ItSystemUsagesOptOut)
                 .WithMany(t => t.TaskRefsOptOut)
-                .UsingEntity(j => j.ToTable("TaskRefItSystemUsageOptOut"));
+                .UsingEntity(
+                    l => l.HasOne(typeof(Core.DomainModel.ItSystemUsage.ItSystemUsage)).WithMany().HasForeignKey("ItSystemUsage_Id").OnDelete(DeleteBehavior.NoAction),
+                    r => r.HasOne(typeof(TaskRef)).WithMany().HasForeignKey("TaskRef_Id").OnDelete(DeleteBehavior.NoAction),
+                    j => { j.ToTable("TaskRefItSystemUsageOptOut"); j.HasKey("ItSystemUsage_Id", "TaskRef_Id"); });
 
             builder.Property(x => x.TaskKey)
                 .HasMaxLength(TaskRef.MaxTaskKeyLength);

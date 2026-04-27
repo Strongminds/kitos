@@ -25,45 +25,51 @@ namespace Presentation.Web.Swagger
             if (!relativePath.IsExternalApiPath())
                 return;
 
-            // Clear and set explicit content types for external API paths
-            if (operation.RequestBody != null)
-                operation.RequestBody.Content.Clear();
+            var httpMethod = context.ApiDescription.HttpMethod?.ToUpperInvariant() ?? string.Empty;
+
+            // Save the body schema before clearing so it can be re-attached after.
+            // Swashbuckle generates the correct schema from the [FromBody] parameter; we must not lose it.
+            IOpenApiSchema? existingBodySchema = null;
+            if (httpMethod != "DELETE")
+            {
+                OpenApiMediaType? existingJsonContent = null;
+                operation.RequestBody?.Content?.TryGetValue(Json, out existingJsonContent);
+                existingBodySchema = existingJsonContent?.Schema;
+
+                if (operation.RequestBody != null)
+                    operation.RequestBody.Content?.Clear();
+            }
 
             foreach (var response in operation.Responses.Values)
                 response.Content?.Clear();
 
-            var httpMethod = context.ApiDescription.HttpMethod?.ToUpperInvariant() ?? string.Empty;
             switch (httpMethod)
             {
                 case "POST":
                 case "PUT":
-                    EnsureRequestBodyContent(operation, Json);
+                    EnsureRequestBodyContent(operation, Json, existingBodySchema);
                     EnsureResponseContent(operation, Json);
                     break;
                 case "PATCH":
-                    EnsureRequestBodyContent(operation, JsonMergePatch);
-                    EnsureRequestBodyContent(operation, Json);
+                    EnsureRequestBodyContent(operation, JsonMergePatch, existingBodySchema);
+                    EnsureRequestBodyContent(operation, Json, existingBodySchema);
                     EnsureResponseContent(operation, Json);
                     break;
                 case "GET":
                     EnsureResponseContent(operation, Json);
                     break;
-                case "DELETE":
                 default:
                     break;
             }
         }
 
-        private static void EnsureRequestBodyContent(OpenApiOperation operation, string mediaType)
+        private static void EnsureRequestBodyContent(OpenApiOperation operation, string mediaType, IOpenApiSchema? schema = null)
         {
-            if (operation.RequestBody == null)
-            {
-                operation.RequestBody = new OpenApiRequestBody
-                {
-                    Content = new Dictionary<string, OpenApiMediaType>()
-                };
-            }
-            operation.RequestBody.Content.TryAdd(mediaType, new OpenApiMediaType());
+            // Only add content to an existing request body; never fabricate one.
+            // Endpoints without a [FromBody] parameter have no request body and must not get one injected.
+            if (operation.RequestBody == null) return;
+
+            operation.RequestBody.Content?.TryAdd(mediaType, new OpenApiMediaType { Schema = schema });
         }
 
         private static void EnsureResponseContent(OpenApiOperation operation, string mediaType)

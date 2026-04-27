@@ -639,7 +639,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.ContainsAITechnology, (systemUsage, containsAITechnology) => systemUsage.UpdateContainsAITechnology(containsAITechnology)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityCompliance, (systemUsage, webAccessibilityCompliance) => systemUsage.UpdateWebAccessibilityCompliance(webAccessibilityCompliance)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.LastWebAccessibilityCheck, (systemUsage, lastWebAccessibilityCheck) => systemUsage.UpdateLastWebAccessibilityCheck(lastWebAccessibilityCheck)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.IsSociallyCritical, (systemUsage, isSociallyCritical) => systemUsage.IsSociallyCritical = isSociallyCritical));
         }
 
         private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)
@@ -748,6 +749,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Match(result =>
                 {
                     var usage = _systemUsageService.GetByOrganizationAndSystemId(result.organization.Id, result.system.Id);
+                    if (usage == null) return new OperationError($"It System Usage for system with Id: {result.system.Id} and organization with Id: {result.organization.Id} was not found", OperationFailure.NotFound);
                     return DeleteUsage(usage);
                 }, error => error);
         }

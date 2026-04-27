@@ -84,7 +84,7 @@ namespace Presentation.Web.Infrastructure.Filters
             }
         }
 
-        private static bool IsSendAdvice(StateContext context)
+        private static bool IsSendAdvice(ElectStateContext context)
         {
             return context.BackgroundJob?.Job?.Type?.FullName?.Equals(MatchType) == true &&
                    context.BackgroundJob?.Job?.Method?.Name?.Equals(MatchMethod) == true;

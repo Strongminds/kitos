@@ -328,6 +328,7 @@ namespace Core.DomainServices.Contract
 
         private static void PatchItSystemUsage(ItContractOverviewReadModelItSystemUsage readModel, ItSystemUsage newItem)
         {
+            readModel.ItSystemUsageUuid = newItem.Uuid;
             readModel.ItSystemUsageName = newItem.ItSystem.Name;
             readModel.ItSystemUsageSystemUuid = newItem.ItSystem.Uuid.ToString("D");
             readModel.ItSystemIsDisabled = newItem.ItSystem.Disabled;
@@ -431,7 +432,7 @@ namespace Core.DomainServices.Contract
             }
         }
 
-        private static string GetUserFullName(User user)
+        private static string? GetUserFullName(User user)
         {
             var fullName = user?.GetFullName()?.TrimEnd();
             return fullName?.Substring(0, Math.Min(fullName.Length, UserConstraints.MaxNameLength));
