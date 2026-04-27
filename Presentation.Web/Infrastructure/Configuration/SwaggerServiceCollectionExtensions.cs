@@ -80,6 +80,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                 c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();
 
                 c.SchemaFilter<SupplierFieldSchemaFilter>();
+                c.SchemaFilter<StringEnumSchemaFilter>();
             });
 
             return services;
