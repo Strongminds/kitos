@@ -2,11 +2,11 @@ using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Presentation.Web;
 using Presentation.Web.Infrastructure.Configuration;
 using Presentation.Web.Infrastructure.DI;
+using Presentation.Web.Models.Application.RuntimeEnv;
 using Serilog;
 using System;
 
@@ -38,7 +38,8 @@ var services = builder.Services;
 services.AddKitosMvc();
 services.AddRouting();
 var signingKey = services.AddKitosAuthentication(configuration);
-services.AddKitosSwagger(!builder.Environment.IsProduction());
+var kitosEnv = KitosEnvironmentConfiguration.FromConfiguration(configuration).Environment;
+services.AddKitosSwagger(kitosEnv is not (KitosEnvironment.Production or KitosEnvironment.Staging));
 services.AddKitosHangfire(configuration);
 
 // AutoMapper - using explicit assembly scanning
