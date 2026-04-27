@@ -31,8 +31,8 @@ namespace Presentation.Web.Infrastructure.Configuration
                 {
                     options.AddRouteComponents("odata", ODataModelConfig.GetEdmModel(), odataServices =>
                     {
-                        services.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>();
-                        services.AddSingleton<ODataUriResolver>(_ => new StringAsEnumResolver { EnableCaseInsensitive = true });
+                        odataServices.AddSingleton<IFilterBinder, CaseInsensitiveContainsFilterBinder>();
+                        odataServices.AddSingleton<ODataUriResolver>(_ => new StringAsEnumResolver { EnableCaseInsensitive = true });
                     });
                     options.EnableQueryFeatures();
                 });
