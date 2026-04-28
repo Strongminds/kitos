@@ -23,8 +23,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// User who created the system usage
         /// </summary>
-        [Required]
-        public IdentityNamePairResponseDTO CreatedBy { get; set; }
+        public IdentityNamePairResponseDTO? CreatedBy { get; set; }
         /// <summary>
         /// UTC timestamp of latest modification
         /// </summary>
@@ -33,8 +32,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// Responsible for last modification
         /// </summary>
-        [Required]
-        public IdentityNamePairResponseDTO LastModifiedBy { get; set; }
+        public IdentityNamePairResponseDTO? LastModifiedBy { get; set; }
         /// <summary>
         /// IT-System which this organizational usage is based on
         /// </summary>

@@ -1496,7 +1496,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
                 Purpose = purpose.AsChangedValue(),
-                BusinessCritical = businessCritical.AsChangedValue(),
                 HostedAt = hostedAt.AsChangedValue(),
                 DirectoryDocumentation = directoryDoc.FromNullable().AsChangedValue(),
                 DataSensitivityLevels = sensitiveDataLevels.FromNullable<IEnumerable<SensitiveDataLevel>>().AsChangedValue(),
@@ -1526,6 +1525,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Act
             var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters
             {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    BusinessCritical = businessCritical.AsChangedValue()
+                },
                 GDPR = gdprInput
             }));
 
@@ -3007,6 +3010,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
+            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.isBusinessCritical);
 
             //Archiving
             var archiving = expected.Archiving.Value;
@@ -3019,7 +3023,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //GDPR
             var gdpr = expected.GDPR.Value;
             Assert.Equal(gdpr.Purpose.NewValue, actual.GeneralPurpose);
-            Assert.Equal(gdpr.BusinessCritical.NewValue, actual.isBusinessCritical);
             Assert.Equal(gdpr.HostedAt.NewValue, actual.HostedAt);
             Assert.Equal(gdpr.TechnicalPrecautionsInPlace.NewValue, actual.precautions);
             Assert.Equal(gdpr.UserSupervision.NewValue, actual.UserSupervision);
@@ -3080,6 +3083,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = Maybe<DateTime>.Some(DateTime.Now).AsChangedValue(),
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
+                    BusinessCritical = A<DataOptions?>().AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3092,7 +3096,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
                     Purpose = A<string>().AsChangedValue(),
-                    BusinessCritical = A<DataOptions?>().AsChangedValue(),
                     HostedAt = A<HostedAt?>().AsChangedValue(),
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
@@ -3130,7 +3133,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     LifeCycleStatus = new ChangedValue<LifeCycleStatusType?>(null),
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
-                    ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None)
+                    ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
+                    BusinessCritical = new ChangedValue<DataOptions?>(null)
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3143,7 +3147,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
                     Purpose = "".AsChangedValue(),
-                    BusinessCritical = new ChangedValue<DataOptions?>(null),
                     HostedAt = new ChangedValue<HostedAt?>(null),
                     DirectoryDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     TechnicalPrecautionsInPlace = new ChangedValue<DataOptions?>(null),
