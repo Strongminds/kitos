@@ -77,6 +77,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.WebAccessibilityNotes));
             if (general.IsSociallyCritical.HasChange)
                 changed.Add(nameof(general.IsSociallyCritical));
+            if (general.BusinessCritical.HasChange)
+                changed.Add(nameof(general.BusinessCritical));
             return changed;
         }
 
@@ -117,8 +119,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
             var gdpr = GDPR.Value;
             if (gdpr.Purpose.HasChange)
                 changed.Add(nameof(gdpr.Purpose));
-            if (gdpr.BusinessCritical.HasChange)
-                changed.Add(nameof(gdpr.BusinessCritical));
             if (gdpr.HostedAt.HasChange)
                 changed.Add(nameof(gdpr.HostedAt));
             if (gdpr.DirectoryDocumentation.HasChange)

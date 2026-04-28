@@ -46,7 +46,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 PersonalData = gdprReport.PersonalData,
                 SensitiveData = gdprReport.SensitiveData,
                 LegalData = gdprReport.LegalData,
-                BusinessCritical = gdprReport.BusinessCritical?.ToYesNoDontKnowChoice(),
                 DataProcessingAgreementConcluded = gdprReport.DataProcessingAgreementConcluded,
                 LinkToDirectory = gdprReport.LinkToDirectory,
                 SensitiveDataTypes = gdprReport.SensitiveDataTypes,
