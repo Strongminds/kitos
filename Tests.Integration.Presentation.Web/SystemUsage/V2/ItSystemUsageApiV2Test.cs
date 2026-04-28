@@ -717,10 +717,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 WebAccessibilityCompliance = A<YesNoPartiallyChoice>(),
                 LastWebAccessibilityCheck = A<DateTime>(),
                 WebAccessibilityNotes = A<string>(),
-                CriticalityInfo = new CriticalityInfoWriteRequestDTO
-                {
-                    IsSociallyCritical = A<YesNoDontKnowChoice>()
-                },
+                IsSociallyCritical = A<YesNoDontKnowChoice>(),
+                BusinessCritical = A<YesNoDontKnowChoice>(),
             });
 
             //Act
@@ -742,7 +740,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
             Assert.Equal(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
             Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
-            Assert.Equal(request.General.CriticalityInfo?.IsSociallyCritical, freshReadDTO.General.CriticalityInfo?.IsSociallyCritical);
+            Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
+            Assert.Equal(request.General.BusinessCritical, freshReadDTO.General.BusinessCritical);
+
+            Assert.NotNull(freshReadDTO.General.LastChanged);
         }
 
         [Fact]
@@ -2522,7 +2523,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.LocalSystemId, actual.LocalSystemId);
             Assert.Equal(expected.SystemVersion, actual.SystemVersion);
             Assert.Equal(expected.Notes, actual.Notes);
-            Assert.Equal(expected.CriticalityInfo?.BusinessCritical, actual.CriticalityInfo?.BusinessCritical);
+            Assert.Equal(expected.BusinessCritical, actual.BusinessCritical);
             if (hasData)
             {
                 Assert.Equal(expected.NumberOfExpectedUsers.LowerBound, actual.NumberOfExpectedUsers.LowerBound);
@@ -2645,10 +2646,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                     ValidFrom = DateTime.UtcNow.Date,
                     ValidTo = DateTime.UtcNow.Date.AddDays(Math.Abs(A<short>()))
                 },
-                CriticalityInfo = new CriticalityInfoWriteRequestDTO
-                {
-                    BusinessCritical = A<YesNoDontKnowChoice?>()
-                },
+                BusinessCritical = A<YesNoDontKnowChoice?>(),
+                IsSociallyCritical = A<YesNoDontKnowChoice?>()
             };
         }
 

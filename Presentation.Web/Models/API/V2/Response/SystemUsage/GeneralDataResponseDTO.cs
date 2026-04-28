@@ -57,9 +57,14 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         public string WebAccessibilityNotes { get; set; }
         /// <summary>
-        /// Criticality-related properties for this system usage.
+        /// Whether this system is considered business critical.
         /// </summary>
-        [Required]
-        public CriticalityInfoResponseDTO CriticalityInfo { get; set; }
+        public YesNoDontKnowChoice? BusinessCritical { get; set; }
+
+        /// <summary>
+        /// Whether this system is considered socially critical.
+        /// </summary>
+        public YesNoDontKnowChoice? IsSociallyCritical { get; set; }
+        public DateTime? LastChanged { get; set; }
     }
 }

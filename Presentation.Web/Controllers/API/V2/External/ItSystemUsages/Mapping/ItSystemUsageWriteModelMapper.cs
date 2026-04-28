@@ -420,11 +420,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityNotes = rule.MustUpdate(x => x.General.WebAccessibilityNotes)
                     ? source.WebAccessibilityNotes.AsChangedValue()
                     : OptionalValueChange<string>.None,
-                BusinessCritical = rule.MustUpdate(x => x.General.CriticalityInfo.BusinessCritical)
-                    ? MapYesNoDontKnow(source.CriticalityInfo?.BusinessCritical)
+                BusinessCritical = rule.MustUpdate(x => x.General.BusinessCritical)
+                    ? MapYesNoDontKnow(source.BusinessCritical)
                     : OptionalValueChange<DataOptions?>.None,
-                IsSociallyCritical = rule.MustUpdate(x => x.General.CriticalityInfo.IsSociallyCritical)
-                    ? MapYesNoDontKnow(source.CriticalityInfo?.IsSociallyCritical)
+                IsSociallyCritical = rule.MustUpdate(x => x.General.IsSociallyCritical)
+                    ? MapYesNoDontKnow(source.IsSociallyCritical)
                     : OptionalValueChange<DataOptions?>.None,            
             };
         }
