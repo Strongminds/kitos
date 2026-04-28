@@ -145,5 +145,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public DateTime? LastWebAccessibilityCheck { get; set; }
         public string WebAccessibilityNotes { get; set; }
         public DataOptions? IsSociallyCritical { get; set; }
+        public DateTime? CriticalityFieldsLastChanged { get; set; }
     }
 }

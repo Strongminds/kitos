@@ -64,5 +64,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// Whether this system is considered business critical.
         /// </summary>
         public YesNoDontKnowChoice? IsBusinessCritical { get; set; }
+        /// <summary>
+        /// Last time IsBusinessCritical or IsSociallyCritical was changed. Backend-calculated.
+        /// </summary>
+        public DateTime? CriticalityFieldsLastChanged { get; set; }
     }
 }

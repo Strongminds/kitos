@@ -96,6 +96,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itSystemUsage.WebAccessibilityNotes, dto.General.WebAccessibilityNotes);
             Assert.Equal(itSystemUsage.IsSociallyCritical?.ToYesNoDontKnowChoice(), dto.General.IsSociallyCritical);
             AssertYesNoExtended(dto.General.BusinessCritical, itSystemUsage.isBusinessCritical);
+            Assert.Equal(itSystemUsage.CriticalityFieldsLastChanged, dto.General.CriticalityFieldsLastChanged);
         }
 
         [Fact]
@@ -692,7 +693,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.WebAccessibilityCompliance = A<YesNoPartiallyOption>();
             itSystemUsage.LastWebAccessibilityCheck = A<DateTime>();
             itSystemUsage.WebAccessibilityNotes = A<string>();
-            itSystemUsage.isBusinessCritical = A<DataOptions>();
+            itSystemUsage.UpdateIsBusinessCritical(A<DataOptions>());
 
         }
 

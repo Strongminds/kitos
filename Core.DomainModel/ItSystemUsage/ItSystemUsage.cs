@@ -267,9 +267,23 @@ namespace Core.DomainModel.ItSystemUsage
 
         public YesNoUndecidedOption? ContainsAITechnology { get; set; }
 
-        public DataOptions? isBusinessCritical { get; set; }
-        
-        public DataOptions? IsSociallyCritical { get; set; }
+        public DataOptions? isBusinessCritical { get; private set; }
+
+        public DataOptions? IsSociallyCritical { get; private set; }
+
+        public DateTime? CriticalityFieldsLastChanged { get; private set; }
+
+        public void UpdateIsBusinessCritical(DataOptions? value)
+        {
+            isBusinessCritical = value;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void UpdateIsSociallyCritical(DataOptions? value)
+        {
+            IsSociallyCritical = value;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
 
         #region GDPR
         public string GeneralPurpose { get; set; }
