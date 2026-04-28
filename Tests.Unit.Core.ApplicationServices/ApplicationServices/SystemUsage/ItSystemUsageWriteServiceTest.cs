@@ -1527,10 +1527,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    CriticalityInfo = new UpdatedCriticalityInfoProperties
-                    {
-                        BusinessCritical = businessCritical.AsChangedValue()
-                    }
+                    BusinessCritical = businessCritical.AsChangedValue()
+                    
                 },
                 GDPR = gdprInput
             }));
@@ -3000,7 +2998,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(generalProperties.LocalSystemId.NewValue, actual.LocalSystemId);
             Assert.Equal(generalProperties.SystemVersion.NewValue, actual.Version);
             Assert.Equal(generalProperties.Notes.NewValue, actual.Note);
-            Assert.Equal(generalProperties.CriticalityInfo.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
+            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
 
             if (shouldBeEmpty)
             {
@@ -3014,7 +3012,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
-            Assert.Equal(generalProperties.CriticalityInfo.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
+            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
 
             //Archiving
             var archiving = expected.Archiving.Value;
@@ -3087,10 +3085,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = Maybe<DateTime>.Some(DateTime.Now).AsChangedValue(),
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
-                    CriticalityInfo = new UpdatedCriticalityInfoProperties
-                    {
-                        BusinessCritical = A<DataOptions?>().AsChangedValue(),
-                    },
+                    BusinessCritical = A<DataOptions?>().AsChangedValue(), 
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3141,10 +3136,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
-                    CriticalityInfo = new UpdatedCriticalityInfoProperties
-                    {
-                        BusinessCritical = new ChangedValue<DataOptions?>(null)
-                    }
+                    BusinessCritical = new ChangedValue<DataOptions?>(null)                                
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
