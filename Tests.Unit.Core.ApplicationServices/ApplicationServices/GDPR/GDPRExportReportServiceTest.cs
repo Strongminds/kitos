@@ -345,7 +345,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                     },
                 } : new List<ItContractItSystemUsage>(),
                 OrganizationId = orgId,
-                CriticalityInfo = new ItSystemUsageCriticalityInfo { isBusinessCritical = A<DataOptions>() },
+                CriticalityInfo = new ItSystemUsageCriticalityInfo(),
                 noteRisks = A<string>(),
                 LinkToDirectoryUrl = A<string>(),
                 HostedAt = A<HostedAt>(),
@@ -367,6 +367,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             usage.UpdateRiskAssessmentDate(A<DateTime>());
             usage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
             usage.UpdateRiskAssessmentLevel(A<RiskLevel>());
+            usage.CriticalityInfo.UpdateIsBusinessCritical(A<DataOptions?>());
             return usage;
         }
     }
