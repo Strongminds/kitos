@@ -337,7 +337,8 @@ namespace Tests.Unit.Core.DomainServices.Contract
                 Supplier = isNull ? null : new Organization()
                 {
                     Id = A<int>(),
-                    Name = A<string>()
+                    Name = A<string>(),
+                    Disabled = A<bool>()
                 }
             };
             var itContractOverviewReadModel = new ItContractOverviewReadModel();
@@ -350,11 +351,13 @@ namespace Tests.Unit.Core.DomainServices.Contract
             {
                 Assert.Null(itContractOverviewReadModel.SupplierId);
                 Assert.Null(itContractOverviewReadModel.SupplierName);
+                Assert.False(itContractOverviewReadModel.IsSupplierDisabled);
             }
             else
             {
                 Assert.Equal(itContract.Supplier.Id, itContractOverviewReadModel.SupplierId);
                 Assert.Equal(itContract.Supplier.Name, itContractOverviewReadModel.SupplierName);
+                Assert.Equal(itContract.Supplier.Disabled, itContractOverviewReadModel.IsSupplierDisabled);
             }
         }
 

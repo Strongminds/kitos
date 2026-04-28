@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260422062424_Add_UniqueIndex_ItSystemRight_And_ItSystemUsage")]
-    partial class Add_UniqueIndex_ItSystemRight_And_ItSystemUsage
+    [Migration("20260424111021_AddSupplierDisabledToReadModel")]
+    partial class AddSupplierDisabledToReadModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2186,6 +2186,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsSupplierDisabled")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ItSystemUsagesCsv")
                         .HasColumnType("nvarchar(max)");
 
@@ -3419,15 +3422,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("LastChangedByUserId");
 
+                    b.HasIndex("ObjectId");
+
                     b.HasIndex("ObjectOwnerId");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("ObjectId", "RoleId", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemRight_ObjectId_RoleId_UserId");
 
                     b.ToTable("ItSystemRights");
                 });
@@ -3940,6 +3941,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemCategoriesId");
 
+                    b.HasIndex("ItSystemId");
+
                     b.HasIndex("LastChangedByUserId");
 
                     b.HasIndex("LifeCycleStatus")
@@ -3973,10 +3976,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("Version")
                         .HasDatabaseName("ItSystemUsage_Index_Version");
-
-                    b.HasIndex("ItSystemId", "OrganizationId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemUsage_ItSystemId_OrganizationId");
 
                     b.ToTable("ItSystemUsage", (string)null);
                 });
@@ -6882,7 +6881,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ExternalUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("Organization_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -6891,7 +6890,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ExternalUuid");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("Organization_Id");
 
                     b.ToTable("StsOrganizationIdentities", (string)null);
                 });
@@ -10461,7 +10460,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany("StsOrganizationIdentities")
-                        .HasForeignKey("OrganizationId")
+                        .HasForeignKey("Organization_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

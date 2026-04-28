@@ -2183,6 +2183,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsSupplierDisabled")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ItSystemUsagesCsv")
                         .HasColumnType("nvarchar(max)");
 
@@ -3422,9 +3425,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("ObjectId", "RoleId", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemRight_ObjectId_RoleId_UserId");
+                    b.HasIndex("ObjectId")
+                        .HasDatabaseName("IX_ItSystemRights_ObjectId");
 
                     b.ToTable("ItSystemRights");
                 });
@@ -3974,9 +3976,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("Version")
                         .HasDatabaseName("ItSystemUsage_Index_Version");
 
-                    b.HasIndex("ItSystemId", "OrganizationId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemUsage_ItSystemId_OrganizationId");
+                    b.HasIndex("ItSystemId")
+                        .HasDatabaseName("IX_ItSystemUsage_ItSystemId");
 
                     b.ToTable("ItSystemUsage", (string)null);
                 });
