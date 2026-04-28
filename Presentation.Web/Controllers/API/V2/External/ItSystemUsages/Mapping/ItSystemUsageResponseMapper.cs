@@ -68,7 +68,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return new GDPRRegistrationsResponseDTO
             {
                 Purpose = systemUsage.GeneralPurpose,
-                BusinessCritical = MapYesNoExtended(systemUsage.CriticalityInfo.isBusinessCritical),
                 DPIAConducted = MapYesNoExtended(systemUsage.DPIA),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),

@@ -171,7 +171,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <summary>
         /// Creates an IT-System usage
         /// </summary>
-        /// <param name="systemUsageUuid"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("")]
@@ -191,6 +191,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Note: PUT expects a full version of the system usage. For partial updates, please use PATCH.
         /// </summary>
         /// <param name="systemUsageUuid"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}")]
@@ -214,6 +215,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// At the moment we only manage PATCH at the root level so all levels below that must be provided in it's entirety.
         /// </summary>
         /// <param name="systemUsageUuid"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}")]
@@ -246,6 +248,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
                 .Match(Ok, FromOperationError);
         }
 
+        /// <summary>
         /// Add role assignment to the it-system usage
         /// Constraint: Duplicates are not allowed (existing assignment of the same user/role)
         /// </summary>

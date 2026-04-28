@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260422062424_Add_UniqueIndex_ItSystemRight_And_ItSystemUsage")]
+    partial class Add_UniqueIndex_ItSystemRight_And_ItSystemUsage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3788,9 +3791,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("HostedAt")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IsSociallyCritical")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ItSystemCategoriesId")
                         .HasColumnType("int");
 
@@ -4209,9 +4209,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<bool>("IsHoldingDocument")
                         .HasColumnType("bit");
-
-                    b.Property<int?>("IsSociallyCritical")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ItSystemBusinessTypeId")
                         .HasColumnType("int");
@@ -6885,7 +6882,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ExternalUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Organization_Id")
+                    b.Property<int>("OrganizationId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -6894,7 +6891,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ExternalUuid");
 
-                    b.HasIndex("Organization_Id");
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("StsOrganizationIdentities", (string)null);
                 });
@@ -10464,7 +10461,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany("StsOrganizationIdentities")
-                        .HasForeignKey("Organization_Id")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -68,7 +68,6 @@ namespace Core.ApplicationServices.SystemUsage.GDPR
             return new()
             {
                 SystemUuid = input.ItSystem.Uuid.ToString("D"),
-                BusinessCritical = input.CriticalityInfo.isBusinessCritical,
                 DataProcessingAgreementConcluded = input.HasDataProcessingAgreement(),
                 DPIA = input.DPIA,
                 HostedAt = input.HostedAt,

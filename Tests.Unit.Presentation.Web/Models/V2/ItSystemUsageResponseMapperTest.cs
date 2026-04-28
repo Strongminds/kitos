@@ -265,7 +265,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             Assert.Equal(dto.GDPR.Purpose, itSystemUsage.GeneralPurpose);
-            AssertYesNoExtended(dto.GDPR.BusinessCritical, itSystemUsage.isBusinessCritical);
             AssertYesNoExtended(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             AssertSimpleLink(dto.GDPR.DPIADocumentation, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
             AssertHostedAt(dto.GDPR.HostedAt, itSystemUsage.HostedAt);
@@ -451,7 +450,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         private (IReadOnlyList<SensitivePersonalDataType> sensitivePersonData, IReadOnlyList<RegisterType> registerTypeData) AssignGDPR(ItSystemUsage itSystemUsage, bool withCrossReferences)
         {
             itSystemUsage.GeneralPurpose = A<string>();
-            itSystemUsage.isBusinessCritical = A<DataOptions>();
             itSystemUsage.UpdateDPIAConducted(DataOptions.YES);
             itSystemUsage.UpdateDPIADate(A<DateTime>());
             itSystemUsage.UpdateDPIADocumentation(A<string>(), A<string>());

@@ -1496,7 +1496,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
                 Purpose = purpose.AsChangedValue(),
-                BusinessCritical = businessCritical.AsChangedValue(),
                 HostedAt = hostedAt.AsChangedValue(),
                 DirectoryDocumentation = directoryDoc.FromNullable().AsChangedValue(),
                 DataSensitivityLevels = sensitiveDataLevels.FromNullable<IEnumerable<SensitiveDataLevel>>().AsChangedValue(),
@@ -3104,7 +3103,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
                     Purpose = A<string>().AsChangedValue(),
-                    BusinessCritical = A<DataOptions?>().AsChangedValue(),
                     HostedAt = A<HostedAt?>().AsChangedValue(),
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
@@ -3159,7 +3157,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
                     Purpose = "".AsChangedValue(),
-                    BusinessCritical = new ChangedValue<DataOptions?>(null),
                     HostedAt = new ChangedValue<HostedAt?>(null),
                     DirectoryDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     TechnicalPrecautionsInPlace = new ChangedValue<DataOptions?>(null),

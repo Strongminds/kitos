@@ -237,7 +237,6 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             //General GDPR registrations
             return itSystemUsage.WithOptionalUpdate(parameters.Purpose, (usage, newPurpose) => usage.GeneralPurpose = newPurpose)
-                .Bind(usage => usage.WithOptionalUpdate(parameters.BusinessCritical, (systemUsage, businessCritical) => systemUsage.CriticalityInfo.isBusinessCritical = businessCritical))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DirectoryDocumentation, (systemUsage, newLink) =>
                    {

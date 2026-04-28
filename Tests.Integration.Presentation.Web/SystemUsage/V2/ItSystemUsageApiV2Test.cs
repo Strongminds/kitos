@@ -2655,7 +2655,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static void AssertGDPR(GDPRWriteRequestDTO gdprInput, GDPRRegistrationsResponseDTO gdprResponse)
         {
             Assert.Equal(gdprInput.Purpose, gdprResponse.Purpose);
-            Assert.Equal(gdprInput.BusinessCritical, gdprResponse.BusinessCritical);
             Assert.Equal(gdprInput.HostedAt, gdprResponse.HostedAt);
             (gdprInput.DirectoryDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.DirectoryDocumentation);
             Assert.Equal((gdprInput.DataSensitivityLevels ?? new List<DataSensitivityLevelChoice>()).OrderBy(x => x), gdprResponse.DataSensitivityLevels.OrderBy(x => x));

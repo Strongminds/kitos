@@ -269,6 +269,9 @@ namespace Core.DomainModel.ItSystemUsage
 
         public YesNoUndecidedOption? ContainsAITechnology { get; set; }
 
+        public DataOptions? isBusinessCritical { get; set; }
+        
+        public DataOptions? IsSociallyCritical { get; set; }
 
         #region GDPR
         public string GeneralPurpose { get; set; }

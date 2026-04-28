@@ -371,6 +371,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var fromSystemUsage = await TakeSystemIntoUsageAsync(fromSystem.Uuid, organization.Uuid);
             var toSystem = await CreateItSystemAsync(organization.Uuid, CreateName());
             var toSystemUsage = await TakeSystemIntoUsageAsync(toSystem.Uuid, organization.Uuid);
+            var migrateToItSystem = await CreateItSystemAsync(organization.Uuid, CreateName());
 
             var contract = await CreateItContractAsync(organization.Uuid);
             await ItContractV2Helper.SendPatchSystemUsagesAsync(await GetGlobalToken(), contract.Uuid,
@@ -394,7 +395,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 });
 
             //Act
-            await ItSystemUsageMigrationV2Helper.ExecuteMigration(fromSystemUsage.Uuid, toSystem.Uuid);
+            await ItSystemUsageMigrationV2Helper.ExecuteMigration(fromSystemUsage.Uuid, migrateToItSystem.Uuid);
 
             //Assert
             await AssertSystemUsageAssociationExistsInContract(contract, fromSystemUsage);
@@ -427,6 +428,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             var fromSystemUsage = await TakeSystemIntoUsageAsync(fromSystem.Uuid, organization.Uuid);
             var toSystem = await CreateItSystemAsync(organization.Uuid, CreateName());
             var toSystemUsage = await TakeSystemIntoUsageAsync(toSystem.Uuid, organization.Uuid);
+            var migrateToItSystem = await CreateItSystemAsync(organization.Uuid, CreateName());
 
             var interfaceDto = await CreateItInterfaceAsync(organization.Uuid);
             await InterfaceV2Helper.PatchExposedBySystemAsync(interfaceDto.Uuid, toSystem.Uuid);
@@ -439,7 +441,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 });
 
             //Act
-            await ItSystemUsageMigrationV2Helper.ExecuteMigration(fromSystemUsage.Uuid, toSystem.Uuid);
+            await ItSystemUsageMigrationV2Helper.ExecuteMigration(fromSystemUsage.Uuid, migrateToItSystem.Uuid);
 
             //Assert
             await AssertRelationExists(relation, fromSystemUsage, true);
