@@ -1538,7 +1538,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Same(itSystemUsage, createResult.Value);
             AssertTransactionCommitted(transactionMock);
             Assert.Equal(purpose, itSystemUsage.GeneralPurpose);
-            Assert.Equal(businessCritical, itSystemUsage.CriticalityInfo.isBusinessCritical);
+            Assert.Equal(businessCritical, itSystemUsage.CriticalityInfo.IsBusinessCritical);
             Assert.Equal(hostedAt, itSystemUsage.HostedAt);
             AssertLink(directoryDoc, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);
             Assert.Equal(sensitiveDataLevels.OrderBy(x => x), itSystemUsage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).OrderBy(x => x));
@@ -2998,7 +2998,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(generalProperties.LocalSystemId.NewValue, actual.LocalSystemId);
             Assert.Equal(generalProperties.SystemVersion.NewValue, actual.Version);
             Assert.Equal(generalProperties.Notes.NewValue, actual.Note);
-            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
+            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalityInfo.IsBusinessCritical);
 
             if (shouldBeEmpty)
             {
@@ -3012,7 +3012,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ValidTo.NewValue.Value.Date, actual.ExpirationDate);
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
-            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalityInfo.isBusinessCritical);
+            Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.CriticalityInfo.IsBusinessCritical);
 
             //Archiving
             var archiving = expected.Archiving.Value;

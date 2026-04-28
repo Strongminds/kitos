@@ -743,7 +743,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
             Assert.Equal(request.General.BusinessCritical, freshReadDTO.General.BusinessCritical);
 
-            Assert.NotNull(freshReadDTO.General.LastChanged);
+            Assert.NotNull(freshReadDTO.General.CriticalityFieldsLastChanged);
         }
 
         [Fact]

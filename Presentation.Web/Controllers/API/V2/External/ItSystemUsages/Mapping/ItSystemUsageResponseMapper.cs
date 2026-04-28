@@ -192,9 +192,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityCompliance = systemUsage.WebAccessibilityCompliance?.ToYesNoPartiallyChoice(),
                 LastWebAccessibilityCheck = systemUsage.LastWebAccessibilityCheck,
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes,
-                BusinessCritical = MapYesNoExtended(systemUsage.CriticalityInfo.isBusinessCritical),
+                BusinessCritical = MapYesNoExtended(systemUsage.CriticalityInfo.IsBusinessCritical),
                 IsSociallyCritical = MapYesNoExtended(systemUsage.CriticalityInfo.IsSociallyCritical),
-                LastChanged = systemUsage.CriticalityInfo.LastChanged   
+                CriticalityFieldsLastChanged = systemUsage.CriticalityInfo.LastChanged   
             };
         }
 

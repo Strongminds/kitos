@@ -5,12 +5,12 @@ namespace Core.DomainModel.ItSystemUsage
 {
     public class ItSystemUsageCriticalityInfo
     {
-        public DataOptions? isBusinessCritical { get; private set; }
+        public DataOptions? IsBusinessCritical { get; private set; }
         public DataOptions? IsSociallyCritical { get; private set; }
         public DateTime? LastChanged { get; set; }
 
         public void UpdateIsBusinessCritical(DataOptions? value) {
-            isBusinessCritical = value;
+            IsBusinessCritical = value;
             LastChanged = DateTime.UtcNow;
         }
 
