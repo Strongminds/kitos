@@ -1,4 +1,5 @@
-﻿using Core.DomainServices;
+using Core.DomainServices;
+using System.Net;
 using System.Net.Mail;
 using Core.Abstractions.Types;
 
@@ -32,9 +33,17 @@ namespace Core.ApplicationServices
         /// <param name="host">The host.</param>
         /// <param name="port">The port.</param>
         /// <param name="enableSsl">if set to <c>true</c> [enable SSL].</param>
-        public SingleThreadedMailClient(string host, int port, bool enableSsl = false)
+        /// <param name="userName">Optional SMTP username for authentication.</param>
+        /// <param name="password">Optional SMTP password for authentication.</param>
+        public SingleThreadedMailClient(string host, int port, bool enableSsl = false, string userName = null, string password = null)
         {
-            _clientFactory = () => new SmtpClient(host, port) { EnableSsl = enableSsl };
+            _clientFactory = () =>
+            {
+                var client = new SmtpClient(host, port) { EnableSsl = enableSsl };
+                if (!string.IsNullOrWhiteSpace(userName))
+                    client.Credentials = new NetworkCredential(userName, password);
+                return client;
+            };
         }
 
         /// <summary>
