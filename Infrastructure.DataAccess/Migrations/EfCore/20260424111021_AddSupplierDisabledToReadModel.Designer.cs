@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260424111021_AddSupplierDisabledToReadModel")]
+    partial class AddSupplierDisabledToReadModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3419,15 +3422,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("LastChangedByUserId");
 
+                    b.HasIndex("ObjectId");
+
                     b.HasIndex("ObjectOwnerId");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("ObjectId", "RoleId", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemRight_ObjectId_RoleId_UserId");
 
                     b.ToTable("ItSystemRights");
                 });
@@ -3791,9 +3792,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("HostedAt")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IsSociallyCritical")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ItSystemCategoriesId")
                         .HasColumnType("int");
 
@@ -3943,6 +3941,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemCategoriesId");
 
+                    b.HasIndex("ItSystemId");
+
                     b.HasIndex("LastChangedByUserId");
 
                     b.HasIndex("LifeCycleStatus")
@@ -3976,10 +3976,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("Version")
                         .HasDatabaseName("ItSystemUsage_Index_Version");
-
-                    b.HasIndex("ItSystemId", "OrganizationId")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemUsage_ItSystemId_OrganizationId");
 
                     b.ToTable("ItSystemUsage", (string)null);
                 });
@@ -4212,9 +4208,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<bool>("IsHoldingDocument")
                         .HasColumnType("bit");
-
-                    b.Property<int?>("IsSociallyCritical")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ItSystemBusinessTypeId")
                         .HasColumnType("int");

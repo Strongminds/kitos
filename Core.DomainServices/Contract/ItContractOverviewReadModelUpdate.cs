@@ -56,6 +56,7 @@ namespace Core.DomainServices.Contract
             //Supplier
             destination.SupplierId = source.Supplier?.Id;
             destination.SupplierName = source.Supplier?.Name;
+            destination.IsSupplierDisabled = source.Supplier?.Disabled ?? false;
 
             //Parent contract
             destination.ParentContractUuid = source.Parent?.Uuid;
