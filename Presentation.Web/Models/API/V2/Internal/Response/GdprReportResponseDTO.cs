@@ -13,7 +13,6 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public bool PersonalData { get; set; }
         public bool SensitiveData { get; set; }
         public bool LegalData { get; set; }
-        public YesNoDontKnowChoice? BusinessCritical { get; set; }
         public bool DataProcessingAgreementConcluded { get; set; }
         public bool LinkToDirectory { get; set; }
         public IEnumerable<string> SensitiveDataTypes { get; set; }
