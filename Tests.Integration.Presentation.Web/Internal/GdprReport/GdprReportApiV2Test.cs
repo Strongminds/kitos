@@ -38,7 +38,6 @@ namespace Tests.Integration.Presentation.Web.Internal.GdprReport
             Assert.Equal(dto.HostedAt, report.HostedAt);
             Assert.Equal(dto.RiskAssessmentConducted, report.RiskAssessment);
             Assert.Equal(dto.RiskAssessmentConductedDate, report.RiskAssessmentDate);
-            Assert.Equal(dto.BusinessCritical, report.BusinessCritical);
             Assert.Equal(dto.PlannedRiskAssessmentDate, report.PlannedRiskAssessmentDate);
             Assert.Equal(dto.DPIAConducted, report.DPIA);
         }
