@@ -85,6 +85,7 @@ namespace Presentation.Web.Infrastructure.Configuration
 
         public static WebApplication MapKitosEndpoints(this WebApplication app)
         {
+            app.UseHangfireDashboard();
             app.MapControllers();
             // Conventional route for MVC controllers (e.g. HomeController → "/" redirects to "/ui",
             // OldHomeController renders the legacy AngularJS shell at "/old")
