@@ -3788,6 +3788,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("HostedAt")
                         .HasColumnType("int");
 
+                    b.Property<int?>("IsSociallyCritical")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ItSystemCategoriesId")
                         .HasColumnType("int");
 
@@ -3889,6 +3892,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("answeringDataDPIA")
                         .HasColumnType("int");
 
+                    b.Property<int?>("isBusinessCritical")
+                        .HasColumnType("int");
+
                     b.Property<string>("noteRisks")
                         .HasColumnType("nvarchar(max)");
 
@@ -3972,7 +3978,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ItSystemUsage_ItSystemId_OrganizationId");
 
-                    b.ToTable("ItSystemUsage", (string)null);
+                    b.ToTable("ItSystemUsage", null, t =>
+                        {
+                            t.Property("IsSociallyCritical")
+                                .HasColumnName("ItSystemUsage_IsSociallyCritical");
+
+                            t.Property("isBusinessCritical")
+                                .HasColumnName("ItSystemUsage_isBusinessCritical");
+                        });
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.ItSystemUsageOrgUnitUsage", b =>
@@ -9087,16 +9100,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                             b1.Property<int>("ItSystemUsageId")
                                 .HasColumnType("int");
 
-                            b1.Property<int?>("IsBusinessCritical")
-                                .HasColumnType("int")
-                                .HasColumnName("isBusinessCritical");
-
                             b1.Property<int?>("IsSociallyCritical")
                                 .HasColumnType("int")
                                 .HasColumnName("IsSociallyCritical");
 
                             b1.Property<DateTime?>("LastChanged")
                                 .HasColumnType("datetime2");
+
+                            b1.Property<int?>("isBusinessCritical")
+                                .HasColumnType("int")
+                                .HasColumnName("isBusinessCritical");
 
                             b1.HasKey("ItSystemUsageId");
 
