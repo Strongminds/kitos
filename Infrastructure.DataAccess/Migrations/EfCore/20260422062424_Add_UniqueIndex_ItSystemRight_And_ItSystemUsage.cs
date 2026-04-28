@@ -10,13 +10,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_ItSystemUsage_ItSystemId",
-                table: "ItSystemUsage");
+            migrationBuilder.Sql(@"
+                IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ItSystemUsage_ItSystemId' AND object_id = OBJECT_ID('dbo.ItSystemUsage'))
+                    DROP INDEX IX_ItSystemUsage_ItSystemId ON ItSystemUsage;");
 
-            migrationBuilder.DropIndex(
-                name: "IX_ItSystemRights_ObjectId",
-                table: "ItSystemRights");
+            migrationBuilder.Sql(@"
+                IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ItSystemRights_ObjectId' AND object_id = OBJECT_ID('dbo.ItSystemRights'))
+                    DROP INDEX IX_ItSystemRights_ObjectId ON ItSystemRights;");
 
             migrationBuilder.CreateIndex(
                 name: "UX_ItSystemUsage_ItSystemId_OrganizationId",
