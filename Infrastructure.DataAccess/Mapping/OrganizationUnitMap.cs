@@ -12,7 +12,7 @@ namespace Infrastructure.DataAccess.Mapping
             base.Configure(builder);
 
             builder.Property(x => x.LocalId).HasMaxLength(OrganizationUnit.MaxNameLength);
-            builder.HasIndex(x => new { x.OrganizationId, x.LocalId }).IsUnique().HasDatabaseName("UX_LocalId");
+            builder.HasIndex(x => new { x.OrganizationId, x.LocalId }).HasDatabaseName("IX_LocalId");
 
             builder.ToTable("OrganizationUnit");
 
