@@ -54,6 +54,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveType>> _archiveTypeOptionsServiceMock;
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveLocation>> _archiveLocationOptionsServiceMock;
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveTestLocation>> _archiveTestLocationOptionsServiceMock;
+        private readonly Mock<IOptionsService<ItSystemUsage, GdprCriticality>> _gdprCriticalityOptionsServiceMock;
         private readonly Mock<IItContractService> _contractServiceMock;
         private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IRoleAssignmentService<ItSystemRight, ItSystemRole, ItSystemUsage>> _roleAssignmentService;
@@ -78,6 +79,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _archiveTypeOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveType>>();
             _archiveLocationOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveLocation>>();
             _archiveTestLocationOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveTestLocation>>();
+            _gdprCriticalityOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, GdprCriticality>>();
             _contractServiceMock = new Mock<IItContractService>();
             _domainEventsMock = new Mock<IDomainEvents>();
             _kleServiceMock = new Mock<IKLEApplicationService>();
@@ -101,7 +103,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _archiveTestLocationOptionsServiceMock.Object,
                 _systemUsageRelationServiceMock.Object,
                 _identityResolverMock.Object,
-                _personalDataOptionsRepository.Object);
+                _personalDataOptionsRepository.Object,
+                _gdprCriticalityOptionsServiceMock.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
@@ -1492,7 +1495,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var nextEvaluationDate = A<DateTime?>();
             var evaluationFrequency = A<int?>();
             DataOptions? retentionPeriodDefined = DataOptions.YES;
-            GdprCriticality? gdprCriticality = GdprCriticality.NotCritical;
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
                 Purpose = purpose.AsChangedValue(),
@@ -1519,7 +1521,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                 NextDataRetentionEvaluationDate = nextEvaluationDate.AsChangedValue(),
                 DataRetentionEvaluationFrequencyInMonths = evaluationFrequency.AsChangedValue(),
-                GdprCriticality = gdprCriticality.AsChangedValue()
+                GdprCriticalityUuid = Maybe<Guid>.None.AsChangedValue()
             };
 
             //Act
@@ -1562,7 +1564,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(retentionPeriodDefined, itSystemUsage.answeringDataDPIA);
             Assert.Equal(nextEvaluationDate, itSystemUsage.DPIAdeleteDate);
             Assert.Equal(evaluationFrequency, itSystemUsage.numberDPIA);
-            Assert.Equal(gdprCriticality, itSystemUsage.GdprCriticality);
+            Assert.Null(itSystemUsage.GdprCriticality);
         }
 
         [Fact]
@@ -3037,7 +3039,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(gdpr.DPIADate.NewValue, actual.DPIADateFor);
             Assert.Equal(gdpr.RetentionPeriodDefined.NewValue, actual.answeringDataDPIA);
             Assert.Equal(gdpr.NextDataRetentionEvaluationDate.NewValue, actual.DPIAdeleteDate);
-            Assert.Equal(gdpr.GdprCriticality.NewValue, actual.GdprCriticality);
+            Assert.Null(actual.GdprCriticality);
 
             if (shouldBeEmpty)
             {
@@ -3116,7 +3118,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                     NextDataRetentionEvaluationDate = A<DateTime?>().AsChangedValue(),
                     DataRetentionEvaluationFrequencyInMonths = A<int?>().AsChangedValue(),
-                    GdprCriticality = A<GdprCriticality?>().AsChangedValue()
+                    GdprCriticalityUuid = Maybe<Guid>.None.AsChangedValue()
                 }
             };
         }
@@ -3167,7 +3169,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RetentionPeriodDefined = new ChangedValue<DataOptions?>(null),
                     NextDataRetentionEvaluationDate = new ChangedValue<DateTime?>(null),
                     DataRetentionEvaluationFrequencyInMonths = new ChangedValue<int?>(null),
-                    GdprCriticality = new ChangedValue<GdprCriticality?>(null)
+                    GdprCriticalityUuid = Maybe<Guid>.None.AsChangedValue()
                 }
             };
         }

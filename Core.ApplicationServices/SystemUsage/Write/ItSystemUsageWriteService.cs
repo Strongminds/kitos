@@ -43,6 +43,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private readonly IOptionsService<ItSystemUsage, ArchiveType> _archiveTypeOptionsService;
         private readonly IOptionsService<ItSystemUsage, ArchiveLocation> _archiveLocationOptionsService;
         private readonly IOptionsService<ItSystemUsage, ArchiveTestLocation> _archiveTestLocationOptionsService;
+        private readonly IOptionsService<ItSystemUsage, GdprCriticality> _gdprCriticalityOptionsService;
         private readonly IItsystemUsageRelationsService _systemUsageRelationsService;
         private readonly IEntityIdentityResolver _identityResolver;
         private readonly IItContractService _contractService;
@@ -79,7 +80,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
             IOptionsService<ItSystemUsage, ArchiveTestLocation> archiveTestLocationOptionsService,
             IItsystemUsageRelationsService systemUsageRelationsService,
             IEntityIdentityResolver identityResolver,
-            IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository)
+            IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository,
+            IOptionsService<ItSystemUsage, GdprCriticality> gdprCriticalityOptionsService)
         {
             _systemUsageService = systemUsageService;
             _transactionManager = transactionManager;
@@ -103,6 +105,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             _systemUsageRelationsService = systemUsageRelationsService;
             _identityResolver = identityResolver;
             _personalDataOptionsRepository = personalDataOptionsRepository;
+            _gdprCriticalityOptionsService = gdprCriticalityOptionsService;
         }
 
         public Result<ItSystemUsage, OperationError> Create(SystemUsageCreationParameters parameters)
@@ -243,7 +246,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
                        systemUsage.LinkToDirectoryUrl = newLink.Select(x => x.Url).GetValueOrDefault();
                    }))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.GdprCriticality, (systemUsage, gdprCriticality) => systemUsage.GdprCriticality = gdprCriticality))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.GdprCriticalityUuid, UpdateGdprCriticality))
 
                 //Registered data sensitivity
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DataSensitivityLevels, (systemUsage, levels) => UpdateSensitivityLevels(levels, systemUsage)))
@@ -525,6 +528,28 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 return new OperationError("ArchiveLocation is not available in the organization.", OperationFailure.BadInput);
 
             return systemUsage.UpdateArchiveLocation(optionByUuid.Value.option);
+        }
+
+        private Maybe<OperationError> UpdateGdprCriticality(ItSystemUsage systemUsage, Maybe<Guid> gdprCriticalityUuid)
+        {
+            if (gdprCriticalityUuid.IsNone)
+            {
+                systemUsage.ResetGdprCriticality();
+                return Maybe<OperationError>.None;
+            }
+
+            var optionByUuid = _gdprCriticalityOptionsService.GetOptionByUuid(systemUsage.OrganizationId, gdprCriticalityUuid.Value);
+
+            if (optionByUuid.IsNone)
+                return new OperationError("Invalid GdprCriticality Uuid", OperationFailure.BadInput);
+
+            if (systemUsage.GdprCriticalityId != null && systemUsage.GdprCriticalityId == optionByUuid.Value.option.Id)
+                return Maybe<OperationError>.None;
+
+            if (!optionByUuid.Value.available)
+                return new OperationError($"GdprCriticality with uuid {gdprCriticalityUuid} is not available in this organization.", OperationFailure.BadInput);
+
+            return systemUsage.UpdateGdprCriticality(optionByUuid.Value.option);
         }
 
         private Maybe<OperationError> UpdateArchiveType(ItSystemUsage systemUsage, Maybe<Guid> archiveType)

@@ -296,7 +296,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.DataRetentionEvaluationFrequencyInMonths, AssertPropertyContainsDataChange(mappedGdpr.DataRetentionEvaluationFrequencyInMonths));
             AssertLinkMapping(input.DPIADocumentation, mappedGdpr.DPIADocumentation);
             Assert.Equal(input.SpecificPersonalData.ToList(), AssertPropertyContainsDataChange(mappedGdpr.PersonalDataOptions).Select(x => x.ToGDPRPersonalDataChoice()));
-            Assert.Equal(input.GdprCriticality, AssertPropertyContainsDataChange(mappedGdpr.GdprCriticality)?.ToGdprCriticalityChoice());
+            Assert.Equal(input.GdprCriticalityUuid, AssertPropertyContainsDataChange(mappedGdpr.GdprCriticalityUuid));
         }
 
         [Fact]
@@ -1018,7 +1018,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noNextDataRetentionEvaluationDate, gdprSection.NextDataRetentionEvaluationDate.IsUnchanged);
             Assert.Equal(noDataRetentionEvaluationFrequencyInMonths, gdprSection.DataRetentionEvaluationFrequencyInMonths.IsUnchanged);
             Assert.Equal(noPersonalData, gdprSection.PersonalDataOptions.IsUnchanged);
-            Assert.Equal(noGdprCriticality, gdprSection.GdprCriticality.IsUnchanged);
+            Assert.Equal(noGdprCriticality, gdprSection.GdprCriticalityUuid.IsUnchanged);
         }
 
         [Theory]
@@ -1111,7 +1111,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(gdprSection.NextDataRetentionEvaluationDate.HasChange);
             Assert.True(gdprSection.DataRetentionEvaluationFrequencyInMonths.HasChange);
             Assert.True(gdprSection.PersonalDataOptions.HasChange);
-            Assert.True(gdprSection.GdprCriticality.HasChange);
+            Assert.True(gdprSection.GdprCriticalityUuid.HasChange);
         }
 
         public static IEnumerable<object[]> GetUndefinedSectionsInput()
@@ -1198,7 +1198,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noNextDataRetentionEvaluationDate) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.NextDataRetentionEvaluationDate));
             if (noDataRetentionEvaluationFrequencyInMonths) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DataRetentionEvaluationFrequencyInMonths));
             if (noPersonalData) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.SpecificPersonalData));
-            if (noGdprCriticality) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.GdprCriticality));
+            if (noGdprCriticality) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.GdprCriticalityUuid));
 
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.GDPR).WrapAsEnumerable().AsParameterMatch())).Returns(GDPRProperties);
         }

@@ -36,6 +36,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<DataOptions?> RetentionPeriodDefined { get; set; } = OptionalValueChange<DataOptions?>.None;
         public OptionalValueChange<DateTime?> NextDataRetentionEvaluationDate { get; set; } = OptionalValueChange<DateTime?>.None;
         public OptionalValueChange<int?> DataRetentionEvaluationFrequencyInMonths { get; set; } = OptionalValueChange<int?>.None;
-        public OptionalValueChange<GdprCriticality?> GdprCriticality { get; set; } = OptionalValueChange<GdprCriticality?>.None;
+        public OptionalValueChange<Maybe<Guid>> GdprCriticalityUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
     }
 }

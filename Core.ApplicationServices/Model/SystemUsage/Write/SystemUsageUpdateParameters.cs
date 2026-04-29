@@ -167,8 +167,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(gdpr.NextDataRetentionEvaluationDate));
             if (gdpr.DataRetentionEvaluationFrequencyInMonths.HasChange)
                 changed.Add(nameof(gdpr.DataRetentionEvaluationFrequencyInMonths));
-            if (gdpr.GdprCriticality.HasChange)
-                changed.Add(nameof(gdpr.GdprCriticality));
+            if (gdpr.GdprCriticalityUuid.HasChange)
+                changed.Add(nameof(gdpr.GdprCriticalityUuid));
             return changed;
         }
 

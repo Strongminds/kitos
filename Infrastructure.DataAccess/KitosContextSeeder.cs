@@ -76,6 +76,9 @@ namespace Infrastructure.DataAccess
                 "Frederikssund", "Frederikshavn", "Fredensborg", "Faxe", "Esbjerg", "Egedal",
                 "Dragør", "Brøndby", "Bornholm", "Billund");
 
+            AddOptions<GdprCriticality, ItSystemUsage>(context, context.GdprCriticalityTypes, globalAdmin,
+                "TestCriticality1", "TestCriticality2", "TestCriticality3");
+
             AddOptions<DataType, DataRow>(context, context.DataTypes, globalAdmin,
                 "Person", "Virksomhed", "Sag", "Dokument", "Organisation", "Klassikfikation",
                 "Ejendom", "GIS", "Andet");

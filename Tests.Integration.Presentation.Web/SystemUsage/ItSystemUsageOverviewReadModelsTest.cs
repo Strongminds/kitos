@@ -128,7 +128,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var generalPurpose = A<string>();
             var hostedAt = A<HostedAt>();
             var userCount = A<UserCount>();
-            var gdprCriticality = A<GdprCriticality?>();
+            var gdprCriticality = A<Guid?>();
 
             var contract1Name = A<string>();
             var contract2Name = A<string>();
@@ -183,7 +183,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 RiskAssessmentConducted = riskAssessment,
                 PlannedRiskAssessmentDate = riskAssessmentDate,
                 DataSensitivityLevels = sensitiveDataLevel.WrapAsEnumerable(),
-                GdprCriticality = gdprCriticality?.ToGdprCriticalityChoice()
+                GdprCriticalityUuid = gdprCriticality
 
             }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
@@ -322,7 +322,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(generalPurpose, readModel.GeneralPurpose);
             Assert.Equal(hostedAt, readModel.HostedAt);
             Assert.Equal(userCount, readModel.UserCount);
-            Assert.Equal(gdprCriticality, readModel.GdprCriticality);
+            Assert.Equal(gdprCriticality, readModel.GdprCriticalityUuid);
 
             if (riskAssessment == YesNoDontKnowChoice.Yes)
             {

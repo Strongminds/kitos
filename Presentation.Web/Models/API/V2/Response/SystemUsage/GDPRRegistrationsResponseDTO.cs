@@ -45,6 +45,6 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
         public int? DataRetentionEvaluationFrequencyInMonths { get; set; }
         [SupplierField]
-        public GdprCriticalityChoice? GdprCriticality { get; set; }
+        public IdentityNamePairResponseDTO? GdprCriticality { get; set; }
     }
 }

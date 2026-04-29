@@ -22,7 +22,7 @@ namespace Core.ApplicationServices.Mapping.Authorization
         private readonly Dictionary<string, string> _usageParameterToSupplierFieldMap = new()
         {
             { nameof(UpdatedSystemUsageGeneralProperties.ContainsAITechnology), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology) },
-            { nameof(UpdatedSystemUsageGDPRProperties.GdprCriticality), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality) },
+            { nameof(UpdatedSystemUsageGDPRProperties.GdprCriticalityUuid), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality) },
             { nameof(UpdatedSystemUsageGDPRProperties.RiskAssessmentResult), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment) },
             { nameof(UpdatedSystemUsageGDPRProperties.RiskAssessmentConducted), ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment) },
         };

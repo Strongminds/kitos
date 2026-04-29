@@ -259,7 +259,8 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ArchiveTestLocation ArchiveTestLocation { get; set; }
 
         public int? ItSystemCategoriesId { get; set; }
-        public GdprCriticality? GdprCriticality { get; set; }
+        public int? GdprCriticalityId { get; set; }
+        public virtual GdprCriticality GdprCriticality { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
@@ -893,6 +894,25 @@ namespace Core.DomainModel.ItSystemUsage
             if (ArchiveLocation == null || ArchiveLocation.Id != newValue.Id)
             {
                 ArchiveLocation = newValue;
+            }
+
+            return Maybe<OperationError>.None;
+        }
+
+        public void ResetGdprCriticality()
+        {
+            GdprCriticality.Track();
+            GdprCriticality = null;
+        }
+
+        public Maybe<OperationError> UpdateGdprCriticality(GdprCriticality newValue)
+        {
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+
+            if (GdprCriticality == null || GdprCriticality.Id != newValue.Id)
+            {
+                GdprCriticality = newValue;
             }
 
             return Maybe<OperationError>.None;
