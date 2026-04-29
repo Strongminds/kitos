@@ -21,6 +21,7 @@
     <PackageReference Include="Serilog" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Presentation.Web\Presentation.Web.csproj" />
     <ProjectReference Include="..\Tests.Toolkit\Tests.Toolkit.csproj" />
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
     <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj" />
@@ -28,56 +29,5 @@
     <ProjectReference Include="..\Core.DomainServices\Core.DomainServices.csproj" />
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Pre-specified exclusions: files using Presentation.Web.*, System.Web.*, Owin, System.Web.Http -->
-    <Compile Remove="Authorization\ChildEntityCrudAuthorizationTest.cs" />
-    <Compile Remove="Authorization\ContextBasedAuthorizationStrategyTest.cs" />
-    <Compile Remove="Authorization\RootEntityCrudAuthorizationTest.cs" />
-    <Compile Remove="Context\OwinAuthenticationContextFactoryTest.cs" />
-    <Compile Remove="Extensions\QueryableApiResponseOrderingExtensionsTest.cs" />
-    <Compile Remove="Extensions\SystemDeleteReturnConflictMapperTest.cs" />
-    <Compile Remove="Helpers\KitosRestControllerApiTestWithAutofixture.cs" />
-    <Compile Remove="Infrastructure\CurrentAspNetRequestTest.cs" />
-    <Compile Remove="Infrastructure\NonEmptyGuidAttributeTest.cs" />
-    <Compile Remove="Infrastructure\SimpleLinkNameMaxLengthAttributeTest.cs" />
-    <Compile Remove="Models\EntityWithDeactivatedStatusMapperTest.cs" />
-    <!-- Additional files requiring Presentation.Web.* or other legacy types -->
-    <Compile Remove="Authorization\GlobalReadAccessPolicyTest.cs" />
-    <Compile Remove="Helpers\UserMock.cs" />
-    <Compile Remove="WebHomeController.cs" />
-    <Compile Remove="Models\V2\BaseResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\CommandPermissionsResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\DataProcessingRegistrationResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\DataProcessingRegistrationWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\Enums\ItInterfaceDeletionConflictMappingExtensionsTest.cs" />
-    <Compile Remove="Models\V2\Enums\LifeCycleStatusMappingTest.cs" />
-    <Compile Remove="Models\V2\Enums\SystemDeletionConflictMappingExtensionsTest.cs" />
-    <Compile Remove="Models\V2\ExternalReferenceResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\GlobalOptionTypeResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\GlobalOptionTypeWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\HelpTextResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\HelpTextWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\LocalOptionTypeWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\UserResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\Internal\UserWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\ItContractResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\ItContractWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\ItInterfaceResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\ItInterfaceWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\ItSystemResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\ItSystemUsageMigrationResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\ItSystemUsageResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\ItSystemUsageWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\ItSystemWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\LegalPropertyWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\LocalOptionTypeResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\NotificationResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\NotificationWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\OrganizationResponseMapperTest.cs" />
-    <Compile Remove="Models\V2\OrganizationTypeMapperTest.cs" />
-    <Compile Remove="Models\V2\OrganizationUnitWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\OrganizationWriteModelMapperTest.cs" />
-    <Compile Remove="Models\V2\PublicMessagesWriteModelMapperTest.cs" />
   </ItemGroup>
 </Project>
