@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using AutoMapper;
+using Npgsql;
 using Core.Abstractions.Caching;
 using Core.Abstractions.Types;
 using Infrastructure.DataAccess.Interceptors;
@@ -419,7 +420,12 @@ namespace Presentation.Web.Infrastructure.DI
 
                 if (usePostgreSql)
                 {
-                    options.UseNpgsql(connectionString);
+                    // Include public in search_path so the citext extension type is discoverable.
+                    // HasDefaultSchema("dbo") causes Npgsql to set search_path=dbo on connect,
+                    // which would exclude public (where citext is installed) unless we override it here.
+                    var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
+                    options.UseNpgsql(pgCsb.ConnectionString,
+                        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
                 }
                 else
                 {

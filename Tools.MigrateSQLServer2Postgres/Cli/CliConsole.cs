@@ -65,9 +65,9 @@ internal static class CliConsole
             .AddColumn("Check")
             .AddColumn("Result");
 
-        summary.AddRow("Source tables", sourceTableCount.ToString());
-        summary.AddRow("Target tables", targetTableCount.ToString());
-        summary.AddRow("Common tables", commonTableCount.ToString());
+        summary.AddRow("Source candidate tables", sourceTableCount.ToString());
+        summary.AddRow("Target candidate tables", targetTableCount.ToString());
+        summary.AddRow("Resolved matched tables", commonTableCount.ToString());
         summary.AddRow("Target empty", targetIsEmpty ? "[green]Yes[/]" : "[yellow]No[/]");
 
         if (firstNonEmptyTable is not null)
@@ -134,7 +134,8 @@ internal static class CliConsole
             .Border(TableBorder.Rounded)
             .AddColumn("Table")
             .AddColumn("Status")
-            .AddColumn("Rows")
+            .AddColumn("Source rows")
+            .AddColumn("Copied rows")
             .AddColumn("Detail");
 
         foreach (var result in results)
@@ -147,10 +148,20 @@ internal static class CliConsole
                 _ => Markup.Escape(result.Status.ToString())
             };
 
+            var mismatch = result.SourceRowCount.HasValue
+                && result.RowsCopied.HasValue
+                && result.SourceRowCount.Value != result.RowsCopied.Value;
+
+            var sourceRowsMarkup = result.SourceRowCount?.ToString() ?? "-";
+            var copiedRowsMarkup = mismatch
+                ? $"[red]{result.RowsCopied}[/]"
+                : (result.RowsCopied?.ToString() ?? "-");
+
             resultTable.AddRow(
                 Markup.Escape(result.Table.ToString()),
                 statusMarkup,
-                result.RowsCopied?.ToString() ?? "-",
+                sourceRowsMarkup,
+                copiedRowsMarkup,
                 Markup.Escape(result.Detail ?? string.Empty));
         }
 

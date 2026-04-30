@@ -14,24 +14,25 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
             {
                 migrationBuilder.Sql(@"
+CREATE SCHEMA IF NOT EXISTS dbo;
 DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public'
+        WHERE table_schema = 'dbo'
           AND table_name = 'ItContractOverviewReadModels'
           AND column_name = 'ExternalPaymentOrganizationUnitsCsv'
     ) THEN
-        ALTER TABLE ""ItContractOverviewReadModels"" ADD COLUMN ""ExternalPaymentOrganizationUnitsCsv"" text;
+        ALTER TABLE dbo.""ItContractOverviewReadModels"" ADD COLUMN ""ExternalPaymentOrganizationUnitsCsv"" text;
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public'
+        WHERE table_schema = 'dbo'
           AND table_name = 'ItContractOverviewReadModels'
           AND column_name = 'InternalPaymentOrganizationUnitsCsv'
     ) THEN
-        ALTER TABLE ""ItContractOverviewReadModels"" ADD COLUMN ""InternalPaymentOrganizationUnitsCsv"" text;
+        ALTER TABLE dbo.""ItContractOverviewReadModels"" ADD COLUMN ""InternalPaymentOrganizationUnitsCsv"" text;
     END IF;
 END $$;");
 
@@ -56,24 +57,25 @@ END");
             if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
             {
                 migrationBuilder.Sql(@"
+CREATE SCHEMA IF NOT EXISTS dbo;
 DO $$
 BEGIN
     IF EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public'
+        WHERE table_schema = 'dbo'
           AND table_name = 'ItContractOverviewReadModels'
           AND column_name = 'ExternalPaymentOrganizationUnitsCsv'
     ) THEN
-        ALTER TABLE ""ItContractOverviewReadModels"" DROP COLUMN ""ExternalPaymentOrganizationUnitsCsv"";
+        ALTER TABLE dbo.""ItContractOverviewReadModels"" DROP COLUMN ""ExternalPaymentOrganizationUnitsCsv"";
     END IF;
 
     IF EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public'
+        WHERE table_schema = 'dbo'
           AND table_name = 'ItContractOverviewReadModels'
           AND column_name = 'InternalPaymentOrganizationUnitsCsv'
     ) THEN
-        ALTER TABLE ""ItContractOverviewReadModels"" DROP COLUMN ""InternalPaymentOrganizationUnitsCsv"";
+        ALTER TABLE dbo.""ItContractOverviewReadModels"" DROP COLUMN ""InternalPaymentOrganizationUnitsCsv"";
     END IF;
 END $$;");
 

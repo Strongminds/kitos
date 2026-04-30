@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Npgsql;
 
 namespace Infrastructure.DataAccess
 {
@@ -32,7 +33,9 @@ namespace Infrastructure.DataAccess
 
             if (IsPostgreSqlProvider(provider))
             {
-                optionsBuilder.UseNpgsql(connectionString);
+                var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
+                optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
+                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
             }
             else
             {

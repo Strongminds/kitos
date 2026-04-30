@@ -240,15 +240,21 @@ Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString, [st
     if (-not $migrationFiles) { return }
 
     $historySqlBuilder = New-Object System.Text.StringBuilder
-    [void]$historySqlBuilder.AppendLine('CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (')
+    # EF Core is configured with MigrationsHistoryTable("__EFMigrationsHistory", "dbo"), so the
+    # history table must be created and populated in the dbo schema to match.
+    [void]$historySqlBuilder.AppendLine('CREATE SCHEMA IF NOT EXISTS dbo;')
+    [void]$historySqlBuilder.AppendLine('CREATE TABLE IF NOT EXISTS dbo."__EFMigrationsHistory" (')
     [void]$historySqlBuilder.AppendLine('    "MigrationId" character varying(150) NOT NULL,')
     [void]$historySqlBuilder.AppendLine('    "ProductVersion" character varying(32) NOT NULL,')
     [void]$historySqlBuilder.AppendLine('    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")')
     [void]$historySqlBuilder.AppendLine(');')
 
-    foreach ($migrationFile in $migrationFiles) {
-        $migrationId = $migrationFile.BaseName.Replace("'", "''")
-        [void]$historySqlBuilder.AppendLine("INSERT INTO `"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('$migrationId', '10.0.6') ON CONFLICT DO NOTHING;")
+    # Only pre-mark the InitialBaseline migration. Post-baseline migrations run normally so that
+    # new schema changes (e.g. column type conversions) are applied on every fresh database.
+    $baselineMigration = $migrationFiles | Where-Object { $_.BaseName -match '_InitialBaseline$' } | Select-Object -First 1
+    if ($baselineMigration) {
+        $migrationId = $baselineMigration.BaseName.Replace("'", "''")
+        [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('$migrationId', '10.0.6') ON CONFLICT DO NOTHING;")
     }
 
     $parts = ConvertTo-PostgresConnectionParts $connectionString

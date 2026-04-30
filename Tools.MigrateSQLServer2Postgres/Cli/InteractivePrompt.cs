@@ -15,14 +15,10 @@ internal static class InteractivePrompt
         {
             foreach (var arg in args)
             {
-                if (arg.Equals("--resume", StringComparison.OrdinalIgnoreCase))
-                    cliFlags.Add("Resume successful tables");
-                else if (arg.Equals("--allow-non-empty-target", StringComparison.OrdinalIgnoreCase))
+                if (arg.Equals("--allow-non-empty-target", StringComparison.OrdinalIgnoreCase))
                     cliFlags.Add("Allow non-empty target");
                 else if (arg.Equals("--continue-on-error", StringComparison.OrdinalIgnoreCase))
                     cliFlags.Add("Continue on table error");
-                else if (arg.Equals("--disable-foreign-key-checks", StringComparison.OrdinalIgnoreCase))
-                    cliFlags.Add("Disable foreign key checks during execute");
             }
         }
 
@@ -35,16 +31,8 @@ internal static class InteractivePrompt
             var presetOptions = presetDefaults with
             {
                 AllowNonEmptyTarget = cliFlags.Contains("Allow non-empty target") || presetDefaults.AllowNonEmptyTarget,
-                Resume = cliFlags.Contains("Resume successful tables") || presetDefaults.Resume,
-                ContinueOnError = cliFlags.Contains("Continue on table error") || presetDefaults.ContinueOnError,
-                DisableForeignKeyChecks = cliFlags.Contains("Disable foreign key checks during execute") || presetDefaults.DisableForeignKeyChecks
+                ContinueOnError = cliFlags.Contains("Continue on table error") || presetDefaults.ContinueOnError
             };
-            
-            // Resume mode requires allowing non-empty target
-            if (presetOptions.Resume)
-            {
-                presetOptions = presetOptions with { AllowNonEmptyTarget = true };
-            }
             
             CliConsole.Info("Using saved connection settings with command-line flags.");
             AnsiConsole.Write(BuildSummaryTable(presetOptions));
@@ -116,25 +104,18 @@ internal static class InteractivePrompt
             sourceConnectionString,
             targetConnectionString,
             selectedFlagLookup.Contains("Allow non-empty target"),
-            selectedFlagLookup.Contains("Resume successful tables"),
-            selectedFlagLookup.Contains("Continue on table error"),
-            selectedFlagLookup.Contains("Disable foreign key checks during execute"));
+            selectedFlagLookup.Contains("Continue on table error"));
 
-        // Resume mode requires allowing non-empty target
-        var finalOptions = options.Resume && !options.AllowNonEmptyTarget
-            ? options with { AllowNonEmptyTarget = true }
-            : options;
-
-        AnsiConsole.Write(BuildSummaryTable(finalOptions));
+        AnsiConsole.Write(BuildSummaryTable(options));
 
         if (!AnsiConsole.Confirm("Proceed with these settings?", true))
         {
             throw new CommandLineException("Interactive setup cancelled.");
         }
 
-        InteractiveSettingsStore.Save(finalOptions);
+        InteractiveSettingsStore.Save(options);
 
-        return finalOptions;
+        return options;
     }
 
     private static HashSet<string> PromptForFlags(CommandLineOptions defaults)
@@ -142,9 +123,7 @@ internal static class InteractivePrompt
         var availableFlags = new[]
         {
             "Allow non-empty target",
-            "Resume successful tables",
-            "Continue on table error",
-            "Disable foreign key checks during execute"
+            "Continue on table error"
         };
 
         if (availableFlags.Length == 0)
@@ -164,19 +143,9 @@ internal static class InteractivePrompt
             flagPrompt.Select("Allow non-empty target");
         }
 
-        if (defaults.Resume && availableFlags.Contains("Resume successful tables", StringComparer.Ordinal))
-        {
-            flagPrompt.Select("Resume successful tables");
-        }
-
         if (defaults.ContinueOnError && availableFlags.Contains("Continue on table error", StringComparer.Ordinal))
         {
             flagPrompt.Select("Continue on table error");
-        }
-
-        if (defaults.DisableForeignKeyChecks && availableFlags.Contains("Disable foreign key checks during execute", StringComparer.Ordinal))
-        {
-            flagPrompt.Select("Disable foreign key checks during execute");
         }
 
         var selectedFlags = AnsiConsole.Prompt(flagPrompt);
@@ -189,9 +158,7 @@ internal static class InteractivePrompt
         summary.AddRow("Source", TruncateForDisplay(options.SourceConnectionString));
         summary.AddRow("Target", TruncateForDisplay(options.TargetConnectionString));
         summary.AddRow("Allow non-empty target", options.AllowNonEmptyTarget ? "Yes" : "No");
-        summary.AddRow("Resume", options.Resume ? "Yes" : "No");
         summary.AddRow("Continue on error", options.ContinueOnError ? "Yes" : "No");
-        summary.AddRow("Disable foreign key checks", options.DisableForeignKeyChecks ? "Yes" : "No");
         return summary;
     }
 
@@ -255,8 +222,6 @@ internal static class InteractiveSettingsStore
             "Server=.\\SQLEXPRESS;Database=Kitos;Integrated Security=true;TrustServerCertificate=true",
             "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=postgres",
             false,
-            false,
-            false,
             false);
     }
 
@@ -265,8 +230,6 @@ internal static class InteractiveSettingsStore
         return new CommandLineOptions(
             string.Empty,
             string.Empty,
-            false,
-            false,
             false,
             false);
     }

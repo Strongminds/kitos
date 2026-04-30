@@ -14,8 +14,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             // This migration is a placeholder - the Up() body does nothing, and the migration history
             // entry is pre-inserted via sqlcmd in DbMigrations.ps1.
             //
-            // For PostgreSQL: Use the pre-generated Baseline.PostgreSql.sql script which contains
-            // all table creation DDL. This migration is marked as applied without executing Up().
+            // For PostgreSQL: bootstrap the database from DeploymentScripts/Baseline.PostgreSql.FullModel.sql,
+            // pre-mark this migration in dbo.__EFMigrationsHistory, and then run the later EF Core
+            // migrations normally. This migration is marked as applied without executing Up().
             //
             // Existing EF6-migrated databases also have this migration pre-marked without executing Up().
             

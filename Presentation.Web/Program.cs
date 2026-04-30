@@ -320,6 +320,13 @@ app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyModificationsTh
 app.UseMiddleware<Presentation.Web.Infrastructure.Middleware.DenyTooLargeQueriesMiddleware>();
 
 app.MapControllers();
+
+// Hangfire dashboard — localhost only (enforced by LocalRequestsOnlyAuthorizationFilter)
+app.MapHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new Hangfire.Dashboard.LocalRequestsOnlyAuthorizationFilter() }
+});
+
 // Conventional route for MVC controllers (e.g. HomeController → "/" redirects to "/ui",
 // OldHomeController renders the legacy AngularJS shell at "/old")
 app.MapControllerRoute(

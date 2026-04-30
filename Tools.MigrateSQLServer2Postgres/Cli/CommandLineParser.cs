@@ -7,9 +7,7 @@ internal static class CommandLineParser
         ("--source <sqlServerConnectionString>", "SQL Server source connection string."),
         ("--target <postgresConnectionString>", "PostgreSQL target connection string."),
         ("--allow-non-empty-target", "Allow migration into a non-empty PostgreSQL target database."),
-        ("--resume", "Skip tables already marked as successful in the target migration journal."),
         ("--continue-on-error", "Continue to next table when a table migration fails."),
-        ("--disable-foreign-key-checks", "Temporarily set session_replication_role=replica during execute mode."),
         ("--interactive", "Launch interactive wizard with arrow-key navigation."),
         ("--help", "Show help.")
     ];
@@ -63,17 +61,13 @@ internal static class CommandLineParser
         var targetConnectionString = GetRequired(values, "--target");
 
         var allowNonEmptyTarget = flags.Contains("--allow-non-empty-target");
-        var resume = flags.Contains("--resume");
         var continueOnError = flags.Contains("--continue-on-error");
-        var disableForeignKeyChecks = flags.Contains("--disable-foreign-key-checks");
 
         return new CommandLineOptions(
             sourceConnectionString,
             targetConnectionString,
             allowNonEmptyTarget,
-            resume,
-            continueOnError,
-            disableForeignKeyChecks);
+            continueOnError);
     }
 
     private static string GetRequired(IReadOnlyDictionary<string, string> values, string key)

@@ -20,30 +20,32 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
             {
                 migrationBuilder.Sql(@"
+CREATE SCHEMA IF NOT EXISTS dbo;
 DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'ItSystem' AND column_name = 'SensitivePersonalDataTypeId'
+        WHERE table_schema = 'dbo' AND table_name = 'ItSystem' AND column_name = 'SensitivePersonalDataTypeId'
     ) THEN
-        ALTER TABLE ""ItSystem"" ADD COLUMN ""SensitivePersonalDataTypeId"" integer NULL;
-        ALTER TABLE ""ItSystem"" ADD CONSTRAINT ""FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId""
-            FOREIGN KEY (""SensitivePersonalDataTypeId"") REFERENCES ""SensitivePersonalDataTypes"" (""Id"");
-        CREATE INDEX ""IX_ItSystem_SensitivePersonalDataTypeId"" ON ""ItSystem"" (""SensitivePersonalDataTypeId"");
+        ALTER TABLE dbo.""ItSystem"" ADD COLUMN ""SensitivePersonalDataTypeId"" integer NULL;
+        ALTER TABLE dbo.""ItSystem"" ADD CONSTRAINT ""FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId""
+            FOREIGN KEY (""SensitivePersonalDataTypeId"") REFERENCES dbo.""SensitivePersonalDataTypes"" (""Id"");
+        CREATE INDEX ""IX_ItSystem_SensitivePersonalDataTypeId"" ON dbo.""ItSystem"" (""SensitivePersonalDataTypeId"");
     END IF;
 END $$;");
 
                 migrationBuilder.Sql(@"
+CREATE SCHEMA IF NOT EXISTS dbo;
 DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'ItSystemUsage' AND column_name = 'RegisterTypeId'
+        WHERE table_schema = 'dbo' AND table_name = 'ItSystemUsage' AND column_name = 'RegisterTypeId'
     ) THEN
-        ALTER TABLE ""ItSystemUsage"" ADD COLUMN ""RegisterTypeId"" integer NULL;
-        ALTER TABLE ""ItSystemUsage"" ADD CONSTRAINT ""FK_ItSystemUsage_RegisterTypes_RegisterTypeId""
-            FOREIGN KEY (""RegisterTypeId"") REFERENCES ""RegisterTypes"" (""Id"");
-        CREATE INDEX ""IX_ItSystemUsage_RegisterTypeId"" ON ""ItSystemUsage"" (""RegisterTypeId"");
+        ALTER TABLE dbo.""ItSystemUsage"" ADD COLUMN ""RegisterTypeId"" integer NULL;
+        ALTER TABLE dbo.""ItSystemUsage"" ADD CONSTRAINT ""FK_ItSystemUsage_RegisterTypes_RegisterTypeId""
+            FOREIGN KEY (""RegisterTypeId"") REFERENCES dbo.""RegisterTypes"" (""Id"");
+        CREATE INDEX ""IX_ItSystemUsage_RegisterTypeId"" ON dbo.""ItSystemUsage"" (""RegisterTypeId"");
     END IF;
 END $$;");
 
@@ -75,28 +77,30 @@ END");
             if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
             {
                 migrationBuilder.Sql(@"
+CREATE SCHEMA IF NOT EXISTS dbo;
 DO $$
 BEGIN
     IF EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'ItSystemUsage' AND column_name = 'RegisterTypeId'
+        WHERE table_schema = 'dbo' AND table_name = 'ItSystemUsage' AND column_name = 'RegisterTypeId'
     ) THEN
-        DROP INDEX IF EXISTS ""IX_ItSystemUsage_RegisterTypeId"";
-        ALTER TABLE ""ItSystemUsage"" DROP CONSTRAINT IF EXISTS ""FK_ItSystemUsage_RegisterTypes_RegisterTypeId"";
-        ALTER TABLE ""ItSystemUsage"" DROP COLUMN ""RegisterTypeId"";
+        DROP INDEX IF EXISTS dbo.""IX_ItSystemUsage_RegisterTypeId"";
+        ALTER TABLE dbo.""ItSystemUsage"" DROP CONSTRAINT IF EXISTS ""FK_ItSystemUsage_RegisterTypes_RegisterTypeId"";
+        ALTER TABLE dbo.""ItSystemUsage"" DROP COLUMN ""RegisterTypeId"";
     END IF;
 END $$;");
 
                 migrationBuilder.Sql(@"
+CREATE SCHEMA IF NOT EXISTS dbo;
 DO $$
 BEGIN
     IF EXISTS (
         SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = 'ItSystem' AND column_name = 'SensitivePersonalDataTypeId'
+        WHERE table_schema = 'dbo' AND table_name = 'ItSystem' AND column_name = 'SensitivePersonalDataTypeId'
     ) THEN
-        DROP INDEX IF EXISTS ""IX_ItSystem_SensitivePersonalDataTypeId"";
-        ALTER TABLE ""ItSystem"" DROP CONSTRAINT IF EXISTS ""FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId"";
-        ALTER TABLE ""ItSystem"" DROP COLUMN ""SensitivePersonalDataTypeId"";
+        DROP INDEX IF EXISTS dbo.""IX_ItSystem_SensitivePersonalDataTypeId"";
+        ALTER TABLE dbo.""ItSystem"" DROP CONSTRAINT IF EXISTS ""FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId"";
+        ALTER TABLE dbo.""ItSystem"" DROP COLUMN ""SensitivePersonalDataTypeId"";
     END IF;
 END $$;");
 

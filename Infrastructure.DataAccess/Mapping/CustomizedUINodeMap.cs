@@ -9,7 +9,7 @@ namespace Infrastructure.DataAccess.Mapping
     {
         public void Configure(EntityTypeBuilder<CustomizedUINode> builder)
         {
-            builder.ToTable("CustomizedUINodes");
+            builder.ToTable("CustomizedUiNodes");
 
             builder.Property(x => x.Key)
                 .IsRequired();

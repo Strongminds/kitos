@@ -7,6 +7,6 @@ internal enum TableExecutionStatus
     Failed
 }
 
-internal sealed record TableExecutionResult(TableRef Table, TableExecutionStatus Status, long? RowsCopied = null, string? Detail = null);
+internal sealed record TableExecutionResult(TableRef Table, TableExecutionStatus Status, long? SourceRowCount = null, long? RowsCopied = null, string? Detail = null);
 
 internal sealed record ValidationMismatch(TableRef Table, long SourceRowCount, long TargetRowCount);

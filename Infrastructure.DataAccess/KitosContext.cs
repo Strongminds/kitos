@@ -24,11 +24,26 @@ using Core.DomainModel.Notification;
 using Core.DomainModel.PublicMessage;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Collections.Generic;
 
 namespace Infrastructure.DataAccess
 {
     public class KitosContext : DbContext
     {
+        private const string NpgsqlProviderName = "Npgsql.EntityFrameworkCore.PostgreSQL";
+        private const string CaseInsensitiveTextColumnType = "citext";
+
+        private static readonly HashSet<Type> CaseInsensitiveNameTypes = new HashSet<Type>
+        {
+            typeof(ItSystem),
+            typeof(ItInterface),
+            typeof(ItContract),
+            typeof(Organization),
+            typeof(OrganizationUnit),
+            typeof(DataProcessingRegistration)
+        };
+
         static KitosContext()
         {
             // Keep PostgreSQL timestamp handling compatible with existing non-UTC DateTime usage.
@@ -173,14 +188,20 @@ namespace Infrastructure.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (string.Equals(Database.ProviderName, "Npgsql.EntityFrameworkCore.PostgreSQL", StringComparison.Ordinal))
+            if (IsNpgsqlProvider())
             {
                 modelBuilder.HasDefaultSchema("dbo");
+                modelBuilder.HasPostgresExtension(CaseInsensitiveTextColumnType);
             }
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(KitosContext).Assembly);
 
             ConfigureLocalOptionTypes(modelBuilder);
+
+            if (IsNpgsqlProvider())
+            {
+                ConfigureCaseInsensitiveTextColumns(modelBuilder);
+            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -240,6 +261,58 @@ namespace Infrastructure.DataAccess
             modelBuilder.Entity<T>()
                 .ToTable(tableName)
                 .Ignore("Option");
+        }
+
+        private bool IsNpgsqlProvider()
+        {
+            return string.Equals(Database.ProviderName, NpgsqlProviderName, StringComparison.Ordinal);
+        }
+
+        private static void ConfigureCaseInsensitiveTextColumns(ModelBuilder modelBuilder)
+        {
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                if (!ShouldApplyCaseInsensitiveNameConvention(entity))
+                {
+                    continue;
+                }
+
+                var nameProperty = entity.GetProperties()
+                    .FirstOrDefault(property =>
+                        property.ClrType == typeof(string)
+                        && string.Equals(property.Name, nameof(IHasName.Name), StringComparison.Ordinal));
+
+                nameProperty?.SetColumnType(CaseInsensitiveTextColumnType);
+            }
+        }
+
+        private static bool ShouldApplyCaseInsensitiveNameConvention(IMutableEntityType entity)
+        {
+            var clrType = entity.ClrType;
+            if (clrType == null)
+            {
+                return false;
+            }
+
+            if (CaseInsensitiveNameTypes.Contains(clrType))
+            {
+                return true;
+            }
+
+            return IsDerivedFromGenericType(clrType, typeof(OptionEntity<>));
+        }
+
+        private static bool IsDerivedFromGenericType(Type candidateType, Type genericBaseType)
+        {
+            for (var type = candidateType; type != null && type != typeof(object); type = type.BaseType)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == genericBaseType)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

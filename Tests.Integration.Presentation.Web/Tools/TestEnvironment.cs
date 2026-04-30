@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Tests.Integration.Presentation.Web.Tools.Model;
 
 namespace Tests.Integration.Presentation.Web.Tools
@@ -140,7 +141,9 @@ namespace Tests.Integration.Presentation.Web.Tools
 
             if (IsPostgreSqlProvider(DatabaseProvider))
             {
-                optionsBuilder.UseNpgsql(ConnectionString);
+                var pgCsb = new NpgsqlConnectionStringBuilder(ConnectionString) { SearchPath = "dbo,public" };
+                optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
+                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
             }
             else
             {
