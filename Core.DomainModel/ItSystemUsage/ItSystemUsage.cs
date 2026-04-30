@@ -262,7 +262,7 @@ namespace Core.DomainModel.ItSystemUsage
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
 
-        public SimpleLink CriticalityLevelDocumentation { get; set; }
+        public virtual SimpleLink CriticalityLevelDocumentation { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
