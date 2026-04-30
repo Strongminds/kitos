@@ -177,10 +177,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         v.Name, v.IsLocallyAvailable, v.IsObligatory, NULL, v.IsEnabled, v.Priority, NEWID()
                     FROM (VALUES
                         (N'Ikke kritisk', 1, 0, 1, 0),
-                        (N'Lavt',         1, 0, 1, 1),
+                        (N'Lav',         1, 0, 1, 1),
                         (N'Mellem',       1, 0, 1, 2),
-                        (N'Højt',         1, 0, 1, 3),
-                        (N'Meget højt',   1, 0, 1, 4)
+                        (N'Høj',         1, 0, 1, 3),
+                        (N'Meget høj',   1, 0, 1, 4)
                     ) AS v(Name, IsLocallyAvailable, IsObligatory, IsEnabled, Priority);
                 END
 
