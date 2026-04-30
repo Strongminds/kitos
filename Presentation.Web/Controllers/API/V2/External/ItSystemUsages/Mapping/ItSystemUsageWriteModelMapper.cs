@@ -426,6 +426,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 SystemUsageCriticalityLevelUuid = rule.MustUpdate(x => x.General.SystemUsageCriticalityLevelUuid)
                     ? (source.SystemUsageCriticalityLevelUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<Guid>>.None,
+
+                CriticalityLevelDocumentation = rule.MustUpdate(x => x.General.CriticalityLevelDocumentation)
+                    ? MapLink(source.CriticalityLevelDocumentation)
+                    : OptionalValueChange<Maybe<NamedLink>>.None,
             };
         }
 
@@ -470,7 +474,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return MapEnumChoice(choice, DataOptionsMappingExtensions.ToDataOptions);
         }
 
-        private static ChangedValue<Maybe<NamedLink>> MapLink(SimpleLinkDTO simpleLinkDto)
+        private static ChangedValue<Maybe<NamedLink>> MapLink(SimpleLinkDTO? simpleLinkDto)
         {
             return (simpleLinkDto?.FromNullable().Select(linkDto => new NamedLink(linkDto.Name, linkDto.Url)) ?? Maybe<NamedLink>.None).AsChangedValue();
         }

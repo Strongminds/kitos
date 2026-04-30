@@ -79,5 +79,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// </summary>
         [SupplierField]
         public Guid? SystemUsageCriticalityLevelUuid { get; set; }
+        /// <summary>
+        /// Documentation link for the criticality level assessment of this system usage.
+        /// </summary>
+        [SupplierField]
+        public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
     }
 }

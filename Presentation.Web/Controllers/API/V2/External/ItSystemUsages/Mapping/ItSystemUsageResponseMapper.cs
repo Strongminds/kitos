@@ -195,6 +195,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 IsBusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
                 CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel.MapIdentityNamePairDTO(),
+                CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentation?.Name, systemUsage.CriticalityLevelDocumentation?.Url),
             };
         }
 
@@ -218,7 +219,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return systemUsage.HostedAt?.ToHostingChoice();
         }
 
-        private static SimpleLinkDTO MapSimpleLink(string name, string url)
+        private static SimpleLinkDTO MapSimpleLink(string? name, string? url)
         {
             return new()
             {

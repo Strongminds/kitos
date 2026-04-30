@@ -22,6 +22,7 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainModel.References;
+using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
@@ -665,7 +666,15 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.IsSociallyCritical, (systemUsage, isSociallyCritical) => systemUsage.UpdateIsSociallyCritical(isSociallyCritical)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)));
+        }
+
+        private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)
+        {
+            var value = newLink.Select(link => new SimpleLink { Name = link.Name, Url = link.Url }).GetValueOrDefault();
+            usage.UpdateCriticalityLevelDocumentation(value);
+            return usage;
         }
 
         private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)

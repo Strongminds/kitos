@@ -100,6 +100,8 @@ namespace Core.DomainServices.SystemUsage
             destination.IsSociallyCritical = source.IsSociallyCritical;
             destination.CriticalityFieldsLastChanged = source.CriticalityFieldsLastChanged;
             destination.SystemUsageCriticalityLevelUuid = source.SystemUsageCriticalityLevel?.Uuid;
+            destination.CriticalityLevelDocumentationUrl = source.CriticalityLevelDocumentation?.Url;
+            destination.CriticalityLevelDocumentationUrlName = source.CriticalityLevelDocumentation?.Name;
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);

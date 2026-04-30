@@ -262,6 +262,8 @@ namespace Core.DomainModel.ItSystemUsage
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
 
+        public SimpleLink CriticalityLevelDocumentation { get; set; }
+
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
         public UserCount? UserCount { get; set; }
@@ -285,6 +287,12 @@ namespace Core.DomainModel.ItSystemUsage
         {
             if (value == IsSociallyCritical) return;
             IsSociallyCritical = value;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void UpdateCriticalityLevelDocumentation(SimpleLink? value) {
+            if (value == CriticalityLevelDocumentation) return;
+            CriticalityLevelDocumentation = value;
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
