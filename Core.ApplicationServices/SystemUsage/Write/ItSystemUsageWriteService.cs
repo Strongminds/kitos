@@ -547,7 +547,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 return Maybe<OperationError>.None;
 
             if (!optionByUuid.Value.available)
-                return new OperationError($"SystemUsageCriticalityLevel with uuid {systemUsageCriticalityLevelUuid} is not available in this organization.", OperationFailure.BadInput);
+                return new OperationError($"SystemUsageCriticalityLevel with uuid {systemUsageCriticalityLevelUuid.Value} is not available in this organization.", OperationFailure.BadInput);
 
             return systemUsage.UpdateSystemUsageCriticalityLevel(optionByUuid.Value.option);
         }
