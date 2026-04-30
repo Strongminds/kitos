@@ -11,19 +11,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
-    [Route("api/v2/it-system-usage-gdpr-criticality-types")]
-    public class ItSystemUsageGdprCriticalityTypeV2Controller : BaseRegularOptionTypeV2Controller<ItSystemUsage, GdprCriticality>
+    [Route("api/v2/it-system-usage-criticality-level-types")]
+    public class ItSystemUsageSystemUsageCriticalityLevelTypeV2Controller : BaseRegularOptionTypeV2Controller<ItSystemUsage, SystemUsageCriticalityLevel>
     {
-        public ItSystemUsageGdprCriticalityTypeV2Controller(IOptionsApplicationService<ItSystemUsage, GdprCriticality> optionService)
+        public ItSystemUsageSystemUsageCriticalityLevelTypeV2Controller(IOptionsApplicationService<ItSystemUsage, SystemUsageCriticalityLevel> optionService)
             : base(optionService)
         {
         }
 
         /// <summary>
-        /// Returns It-System Usage GDPR criticality options which are available for new registrations within the organization
+        /// Returns It-System Usage criticality level options which are available for new registrations within the organization
         /// </summary>
-        /// <param name="organizationUuid">organization context for the GDPR criticality types availability</param>
-        /// <returns>A list of available It-System Usage GDPR criticality types</returns>
+        /// <param name="organizationUuid">organization context for the criticality level types availability</param>
+        /// <returns>A list of available It-System Usage criticality level types</returns>
         [HttpGet]
         [Route("")]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
@@ -32,16 +32,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
 
         /// <summary>
-        /// Returns requested It-System Usage GDPR criticality type
+        /// Returns requested It-System Usage criticality level type
         /// </summary>
-        /// <param name="gdprCriticalityTypeUuid">GDPR criticality type identifier</param>
-        /// <param name="organizationUuid">organization context for the GDPR criticality type availability</param>
-        /// <returns>A uuid and name pair with boolean to mark if the GDPR criticality type is available in the organization</returns>
+        /// <param name="criticalityLevelTypeUuid">Criticality level type identifier</param>
+        /// <param name="organizationUuid">organization context for the criticality level type availability</param>
+        /// <returns>A uuid and name pair with boolean to mark if the criticality level type is available in the organization</returns>
         [HttpGet]
-        [Route("{gdprCriticalityTypeUuid}")]
-        public IActionResult Get([NonEmptyGuid] Guid gdprCriticalityTypeUuid, [NonEmptyGuid] Guid organizationUuid)
+        [Route("{criticalityLevelTypeUuid}")]
+        public IActionResult Get([NonEmptyGuid] Guid criticalityLevelTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
-            return GetSingle(gdprCriticalityTypeUuid, organizationUuid);
+            return GetSingle(criticalityLevelTypeUuid, organizationUuid);
         }
     }
 }

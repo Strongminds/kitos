@@ -99,7 +99,7 @@ namespace Core.DomainServices.SystemUsage
             destination.WebAccessibilityNotes = source.WebAccessibilityNotes;
             destination.IsSociallyCritical = source.IsSociallyCritical;
             destination.CriticalityFieldsLastChanged = source.CriticalityFieldsLastChanged;
-            destination.GdprCriticalityUuid = source.GdprCriticality?.Uuid;
+            destination.SystemUsageCriticalityLevelUuid = source.SystemUsageCriticalityLevel?.Uuid;
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);

@@ -71,9 +71,9 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithMany(t => t.References)
                 .HasForeignKey(d => d.ItSystemCategoriesId);
 
-            builder.HasOne(t => t.GdprCriticality)
+            builder.HasOne(t => t.SystemUsageCriticalityLevel)
                 .WithMany(t => t.References)
-                .HasForeignKey(d => d.GdprCriticalityId);
+                .HasForeignKey(d => d.SystemUsageCriticalityLevelId);
 
             builder.HasOne(t => t.ArchiveSupplier)
                 .WithMany(t => t.ArchiveSupplierForItSystems)

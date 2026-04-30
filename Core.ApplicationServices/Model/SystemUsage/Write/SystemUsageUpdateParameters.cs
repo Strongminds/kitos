@@ -79,6 +79,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.IsSociallyCritical));
             if (general.BusinessCritical.HasChange)
                 changed.Add(nameof(general.BusinessCritical));
+            if (general.SystemUsageCriticalityLevelUuid.HasChange)
+                changed.Add(nameof(general.SystemUsageCriticalityLevelUuid));
             return changed;
         }
 
@@ -167,8 +169,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(gdpr.NextDataRetentionEvaluationDate));
             if (gdpr.DataRetentionEvaluationFrequencyInMonths.HasChange)
                 changed.Add(nameof(gdpr.DataRetentionEvaluationFrequencyInMonths));
-            if (gdpr.GdprCriticalityUuid.HasChange)
-                changed.Add(nameof(gdpr.GdprCriticalityUuid));
             return changed;
         }
 

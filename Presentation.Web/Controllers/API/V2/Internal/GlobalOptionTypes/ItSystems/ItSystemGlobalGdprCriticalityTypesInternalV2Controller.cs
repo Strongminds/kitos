@@ -10,13 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSystems
 {
-    [Route("api/v2/internal/it-systems/global-option-types/gdpr-criticality-types")]
-    public class ItSystemGlobalGdprCriticalityTypesInternalV2Controller : BaseGlobalRegularOptionTypesInternalV2Controller<
+    [Route("api/v2/internal/it-systems/global-option-types/system-usage-criticality-level-types")]
+    public class ItSystemGlobalSystemUsageCriticalityLevelTypesInternalV2Controller : BaseGlobalRegularOptionTypesInternalV2Controller<
         ItSystemUsage,
-        GdprCriticality>
+        SystemUsageCriticalityLevel>
     {
-        public ItSystemGlobalGdprCriticalityTypesInternalV2Controller(
-            IGlobalRegularOptionsService<GdprCriticality, ItSystemUsage> globalRegularOptionsService,
+        public ItSystemGlobalSystemUsageCriticalityLevelTypesInternalV2Controller(
+            IGlobalRegularOptionsService<SystemUsageCriticalityLevel, ItSystemUsage> globalRegularOptionsService,
             IGlobalOptionTypeResponseMapper responseMapper, IGlobalOptionTypeWriteModelMapper writeModelMapper) : base(
             globalRegularOptionsService, responseMapper, writeModelMapper)
         {
@@ -24,21 +24,21 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetGdprCriticalityTypes()
+        public IActionResult GetSystemUsageCriticalityLevelTypes()
         {
             return GetAll();
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateGdprCriticalityType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
+        public IActionResult CreateSystemUsageCriticalityLevelType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGdprCriticalityType([NonEmptyGuid] [FromRoute] Guid optionUuid,
+        public IActionResult PatchSystemUsageCriticalityLevelType([NonEmptyGuid] [FromRoute] Guid optionUuid,
             [FromBody] GlobalRegularOptionUpdateRequestDTO dto)
         {
             return Patch(optionUuid, dto);

@@ -85,7 +85,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             {
                 RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
                 RiskAssessmentResult = A<RiskLevelChoice>(),
-                GdprCriticalityUuid = A<Guid?>()
             };
             using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, updateGdprRequest);
             Assert.True(updateUsageGdpr.IsSuccessStatusCode);

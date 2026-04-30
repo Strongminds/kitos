@@ -10,41 +10,41 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
-    [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/gdpr-criticality-types")]
-    public class ItSystemLocalGdprCriticalityTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalGdprCriticality, ItSystemUsage, GdprCriticality>
+    [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/system-usage-criticality-level-types")]
+    public class ItSystemLocalSystemUsageCriticalityLevelTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalSystemUsageCriticalityLevel, ItSystemUsage, SystemUsageCriticalityLevel>
     {
-        public ItSystemLocalGdprCriticalityTypesInternalV2Controller(
-            IGenericLocalOptionsService<LocalGdprCriticality, ItSystemUsage, GdprCriticality> localGdprCriticalityTypeService,
+        public ItSystemLocalSystemUsageCriticalityLevelTypesInternalV2Controller(
+            IGenericLocalOptionsService<LocalSystemUsageCriticalityLevel, ItSystemUsage, SystemUsageCriticalityLevel> localSystemUsageCriticalityLevelTypeService,
             ILocalOptionTypeResponseMapper responseMapper,
             ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localGdprCriticalityTypeService, responseMapper, writeModelMapper)
+            : base(localSystemUsageCriticalityLevelTypeService, responseMapper, writeModelMapper)
         {
         }
 
         [HttpGet]
         [Route("")]
-        public IActionResult GetLocalGdprCriticalityTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
+        public IActionResult GetLocalSystemUsageCriticalityLevelTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
         }
 
         [HttpGet]
         [Route("{optionUuid}")]
-        public IActionResult GetLocalGdprCriticalityTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
+        public IActionResult GetLocalSystemUsageCriticalityLevelTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
         }
 
         [HttpPost]
         [Route("")]
-        public IActionResult CreateGdprCriticalityType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
+        public IActionResult CreateSystemUsageCriticalityLevelType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
         }
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        public IActionResult PatchGdprCriticalityType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+        public IActionResult PatchSystemUsageCriticalityLevelType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
         {
@@ -53,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        public IActionResult DeleteGdprCriticalityType([NonEmptyGuid][FromRoute] Guid organizationUuid,
+        public IActionResult DeleteSystemUsageCriticalityLevelType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {
             return Delete(organizationUuid, optionUuid);

@@ -188,9 +188,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 DataRetentionEvaluationFrequencyInMonths = rule.MustUpdate(x => x.GDPR.DataRetentionEvaluationFrequencyInMonths)
                     ? source.DataRetentionEvaluationFrequencyInMonths.AsChangedValue()
                     : OptionalValueChange<int?>.None,
-                GdprCriticalityUuid = rule.MustUpdate(x => x.GDPR.GdprCriticalityUuid)
-                ? (source.GdprCriticalityUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
-                : OptionalValueChange<Maybe<Guid>>.None,
             };
         }
 
@@ -425,6 +422,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 BusinessCritical = rule.MustUpdate(x => x.General.IsBusinessCritical)
                     ? MapYesNoDontKnow(source.IsBusinessCritical)
                     : OptionalValueChange<DataOptions?>.None,
+
+                SystemUsageCriticalityLevelUuid = rule.MustUpdate(x => x.General.SystemUsageCriticalityLevelUuid)
+                    ? (source.SystemUsageCriticalityLevelUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<Guid>>.None,
             };
         }
 

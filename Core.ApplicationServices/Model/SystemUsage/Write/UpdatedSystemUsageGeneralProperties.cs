@@ -26,5 +26,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<string> WebAccessibilityNotes { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<DataOptions?> IsSociallyCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
         public OptionalValueChange<DataOptions?> BusinessCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
+        public OptionalValueChange<Maybe<Guid>> SystemUsageCriticalityLevelUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
+
     }
 }

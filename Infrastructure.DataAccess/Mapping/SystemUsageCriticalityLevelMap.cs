@@ -5,12 +5,12 @@ namespace Infrastructure.DataAccess.Mapping
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    public class GdprCriticalityMap : OptionEntityMap<GdprCriticality, ItSystemUsage>
+    public class SystemUsageCriticalityLevelMap : OptionEntityMap<SystemUsageCriticalityLevel, ItSystemUsage>
     {
-        public override void Configure(EntityTypeBuilder<GdprCriticality> builder)
+        public override void Configure(EntityTypeBuilder<SystemUsageCriticalityLevel> builder)
         {
             base.Configure(builder);
-            builder.ToTable("GdprCriticalityTypes");
+            builder.ToTable("SystemUsageCriticalityLevelTypes");
         }
     }
 }

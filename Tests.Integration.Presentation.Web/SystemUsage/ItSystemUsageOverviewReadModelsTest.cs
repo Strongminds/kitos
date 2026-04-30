@@ -128,7 +128,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var generalPurpose = A<string>();
             var hostedAt = A<HostedAt>();
             var userCount = A<UserCount>();
-            var gdprCriticality = A<Guid?>();
 
             var contract1Name = A<string>();
             var contract2Name = A<string>();
@@ -174,6 +173,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var dataClassification = await
                 OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageDataClassification,
                     organizationUuid);
+            var criticalityLevel = await
+                OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageCriticalityTypes,
+                    organizationUuid);
 
             await ItSystemUsageV2Helper.SendPatchGDPR(await GetGlobalToken(), systemUsage.Uuid, new GDPRWriteRequestDTO
             {
@@ -183,7 +185,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 RiskAssessmentConducted = riskAssessment,
                 PlannedRiskAssessmentDate = riskAssessmentDate,
                 DataSensitivityLevels = sensitiveDataLevel.WrapAsEnumerable(),
-                GdprCriticalityUuid = gdprCriticality
 
             }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
@@ -238,6 +239,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                     },
                     NumberOfExpectedUsers = UserIntervalDtoFromUerCount(userCount),
                     DataClassificationUuid = dataClassification.Uuid,
+                    SystemUsageCriticalityLevelUuid = criticalityLevel.Uuid,
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // ArchivePeriods
@@ -322,7 +324,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(generalPurpose, readModel.GeneralPurpose);
             Assert.Equal(hostedAt, readModel.HostedAt);
             Assert.Equal(userCount, readModel.UserCount);
-            Assert.Equal(gdprCriticality, readModel.GdprCriticalityUuid);
+            Assert.Equal(criticalityLevel.Uuid, readModel.SystemUsageCriticalityLevelUuid);
 
             if (riskAssessment == YesNoDontKnowChoice.Yes)
             {

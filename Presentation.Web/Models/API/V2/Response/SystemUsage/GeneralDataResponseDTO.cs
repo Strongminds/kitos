@@ -68,5 +68,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// The latest time where fields related to system criticality were changed.
         /// </summary>
         public DateTime? CriticalityFieldsLastChanged { get; set; }
+        /// <summary>
+        /// The criticality level of this system usage.
+        /// </summary>
+        [SupplierField]
+        public IdentityNamePairResponseDTO SystemUsageCriticalityLevel { get; set; }
     }
 }

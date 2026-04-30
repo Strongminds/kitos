@@ -100,10 +100,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.LifeCycleStatus).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_LifeCycleStatus");
             builder.HasIndex(x => x.Concluded).HasDatabaseName("IX_Concluded");
             builder.HasIndex(x => x.ExpirationDate).HasDatabaseName("IX_ExpirationDate");
-            builder.HasIndex(x => x.GdprCriticalityId).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_GdprCriticalityId");
-            builder.HasIndex(x => x.GdprCriticalityUuid).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_GdprCriticalityUuid");
-            builder.Property(x => x.GdprCriticalityName).HasMaxLength(Organization.MaxNameLength);
-            builder.HasIndex(x => x.GdprCriticalityName).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_GdprCriticalityName");
+            builder.HasIndex(x => x.SystemUsageCriticalityLevelUuid).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemUsageCriticalityLevelUuid");
             builder.HasIndex(x => x.SystemActive).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemActive");
             builder.HasIndex(x => x.RiskAssessmentDate).HasDatabaseName("IX_RiskAssessmentDate");
             builder.HasIndex(x => x.PlannedRiskAssessmentDate).HasDatabaseName("IX_PlannedRiskAssessmentDate");

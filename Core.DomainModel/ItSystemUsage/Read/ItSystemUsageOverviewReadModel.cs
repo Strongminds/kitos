@@ -121,7 +121,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string GeneralPurpose { get; set; }
         public HostedAt HostedAt { get; set; }
         public UserCount UserCount { get; set; }
-        public Guid? GdprCriticalityUuid { get; set; }
+        public Guid? SystemUsageCriticalityLevelUuid { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }

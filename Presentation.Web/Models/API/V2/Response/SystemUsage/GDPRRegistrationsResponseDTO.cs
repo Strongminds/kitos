@@ -44,7 +44,5 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public YesNoDontKnowChoice? RetentionPeriodDefined { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
         public int? DataRetentionEvaluationFrequencyInMonths { get; set; }
-        [SupplierField]
-        public IdentityNamePairResponseDTO? GdprCriticality { get; set; }
     }
 }

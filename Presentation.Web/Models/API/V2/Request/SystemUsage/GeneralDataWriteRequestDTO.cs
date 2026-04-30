@@ -74,5 +74,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Whether the system is considered business critical.
         /// </summary>
         public YesNoDontKnowChoice? IsBusinessCritical { get; set; }
+        /// <summary>
+        /// How critical this system usage is considered to be in general.
+        /// </summary>
+        [SupplierField]
+        public Guid? SystemUsageCriticalityLevelUuid { get; set; }
     }
 }
