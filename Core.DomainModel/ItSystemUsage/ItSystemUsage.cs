@@ -262,7 +262,8 @@ namespace Core.DomainModel.ItSystemUsage
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
 
-        public virtual SimpleLink CriticalityLevelDocumentation { get; set; }
+        public virtual string? CriticalityLevelDocumentationUrl { get; set; }
+        public virtual string? CriticalityLevelDocumentationName { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
@@ -290,9 +291,16 @@ namespace Core.DomainModel.ItSystemUsage
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
-        public void UpdateCriticalityLevelDocumentation(SimpleLink? value) {
-            if (value == CriticalityLevelDocumentation) return;
-            CriticalityLevelDocumentation = value;
+        public void UpdateCriticalityLevelDocumentationUrl(string? value) {
+            if (value == CriticalityLevelDocumentationUrl) return;
+            CriticalityLevelDocumentationUrl = value;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void UpdateCriticalityLevelDocumentationName(string? value)
+        {
+            if (value == CriticalityLevelDocumentationName) return;
+            CriticalityLevelDocumentationName = value;
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 

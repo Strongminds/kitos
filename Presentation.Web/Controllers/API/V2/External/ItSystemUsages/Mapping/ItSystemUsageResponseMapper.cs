@@ -195,7 +195,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 IsBusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
                 CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel.MapIdentityNamePairDTO(),
-                CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentation?.Name, systemUsage.CriticalityLevelDocumentation?.Url),
+                CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
             };
         }
 
