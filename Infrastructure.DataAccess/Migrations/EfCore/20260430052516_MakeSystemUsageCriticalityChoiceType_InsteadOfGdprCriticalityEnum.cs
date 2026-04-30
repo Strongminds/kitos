@@ -165,7 +165,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.Sql(@"
-                -- If a global admin user exists, seed the five criticality level option types, mirroring the old GdprCriticality enum values.
+                -- If a global admin user exists, seed option types and remap old enum values.
+                -- On a fresh empty database (no users yet) the whole block is skipped;
+                -- the application-level option type seeder handles that case on first startup.
                 IF EXISTS (SELECT 1 FROM dbo.[User] WHERE IsGlobalAdmin = 1)
                 BEGIN
                     INSERT INTO dbo.SystemUsageCriticalityLevelTypes
@@ -177,32 +179,32 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         v.Name, v.IsLocallyAvailable, v.IsObligatory, NULL, v.IsEnabled, v.Priority, NEWID()
                     FROM (VALUES
                         (N'Ikke kritisk', 1, 0, 1, 0),
-                        (N'Lav',         1, 0, 1, 1),
+                        (N'Lav',          1, 0, 1, 1),
                         (N'Mellem',       1, 0, 1, 2),
-                        (N'Høj',         1, 0, 1, 3),
-                        (N'Meget høj',   1, 0, 1, 4)
+                        (N'Høj',          1, 0, 1, 3),
+                        (N'Meget høj',    1, 0, 1, 4)
                     ) AS v(Name, IsLocallyAvailable, IsObligatory, IsEnabled, Priority);
+
+                    -- Remap old enum integers to new option type FK IDs
+                    UPDATE isu
+                    SET isu.SystemUsageCriticalityLevelId = opt.Id
+                    FROM dbo.ItSystemUsage isu
+                    INNER JOIN dbo.SystemUsageCriticalityLevelTypes opt
+                        ON opt.Name = CASE isu.SystemUsageCriticalityLevelId
+                            WHEN 0 THEN N'Ikke kritisk'
+                            WHEN 1 THEN N'Lav'
+                            WHEN 2 THEN N'Mellem'
+                            WHEN 3 THEN N'Høj'
+                            WHEN 4 THEN N'Meget høj'
+                        END
+                    WHERE isu.SystemUsageCriticalityLevelId IS NOT NULL;
+
+                    -- Null out any rows whose value was not a recognised enum integer (defensive cleanup)
+                    UPDATE dbo.ItSystemUsage
+                    SET SystemUsageCriticalityLevelId = NULL
+                    WHERE SystemUsageCriticalityLevelId IS NOT NULL
+                      AND SystemUsageCriticalityLevelId NOT IN (SELECT Id FROM dbo.SystemUsageCriticalityLevelTypes);
                 END
-
-                -- Remap old enum integers to new option type FK IDs
-                UPDATE isu
-                SET isu.SystemUsageCriticalityLevelId = opt.Id
-                FROM dbo.ItSystemUsage isu
-                INNER JOIN dbo.SystemUsageCriticalityLevelTypes opt
-                    ON opt.Name = CASE isu.SystemUsageCriticalityLevelId
-                        WHEN 0 THEN N'Ikke kritisk'
-                        WHEN 1 THEN N'Lavt'
-                        WHEN 2 THEN N'Mellem'
-                        WHEN 3 THEN N'Højt'
-                        WHEN 4 THEN N'Meget højt'
-                    END
-                WHERE isu.SystemUsageCriticalityLevelId IS NOT NULL;
-
-                -- Null out any rows whose value was not a recognised enum integer (defensive cleanup)
-                UPDATE dbo.ItSystemUsage
-                SET SystemUsageCriticalityLevelId = NULL
-                WHERE SystemUsageCriticalityLevelId IS NOT NULL
-                  AND SystemUsageCriticalityLevelId NOT IN (SELECT Id FROM dbo.SystemUsageCriticalityLevelTypes);
                 ");
 
             migrationBuilder.AddForeignKey(
