@@ -1460,6 +1460,120 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
+        public void Can_Create_With_SystemUsageCriticalityLevel()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var criticalityLevelUuid = A<Guid>();
+            var criticalityLevel = new SystemUsageCriticalityLevel() { Id = A<int>(), Uuid = criticalityLevelUuid };
+            ExpectGetSystemUsageCriticalityLevelReturns(organization.Id, criticalityLevelUuid, (criticalityLevel, true));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    SystemUsageCriticalityLevelUuid = criticalityLevelUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(criticalityLevel, createResult.Value.SystemUsageCriticalityLevel);
+        }
+
+        [Fact]
+        public void Cannot_Create_With_SystemUsageCriticalityLevel_If_Uuid_Not_Exists()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var criticalityLevelUuid = A<Guid>();
+            ExpectGetSystemUsageCriticalityLevelReturns(organization.Id, criticalityLevelUuid, Maybe<(SystemUsageCriticalityLevel, bool)>.None);
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    SystemUsageCriticalityLevelUuid = criticalityLevelUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Failed);
+            Assert.Equal(OperationFailure.BadInput, createResult.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Cannot_Create_With_SystemUsageCriticalityLevel_If_Not_Available_In_Org()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var criticalityLevelUuid = A<Guid>();
+            var criticalityLevel = new SystemUsageCriticalityLevel() { Id = A<int>(), Uuid = criticalityLevelUuid };
+            ExpectGetSystemUsageCriticalityLevelReturns(organization.Id, criticalityLevelUuid, (criticalityLevel, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    SystemUsageCriticalityLevelUuid = criticalityLevelUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Failed);
+            Assert.Equal(OperationFailure.BadInput, createResult.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Can_Create_With_SystemUsageCriticalityLevel_If_Not_Available_In_Org_But_Value_Is_Not_Changed()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
+
+            var criticalityLevelUuid = A<Guid>();
+            var criticalityLevel = new SystemUsageCriticalityLevel() { Id = A<int>(), Uuid = criticalityLevelUuid };
+            itSystemUsage.SystemUsageCriticalityLevelId = criticalityLevel.Id;
+            itSystemUsage.SystemUsageCriticalityLevel = criticalityLevel;
+
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+            ExpectGetSystemUsageCriticalityLevelReturns(organization.Id, criticalityLevelUuid, (criticalityLevel, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    SystemUsageCriticalityLevelUuid = criticalityLevelUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(criticalityLevel, createResult.Value.SystemUsageCriticalityLevel);
+        }
+
+        [Fact]
         public void Can_Create_With_GDPR()
         {
             //Arrange
@@ -3317,6 +3431,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void ExpectGetArchiveTypeReturns(int organizationId, Guid archiveTypeUuid, Maybe<(ArchiveType, bool)> result)
         {
             _archiveTypeOptionsServiceMock.Setup(x => x.GetOptionByUuid(organizationId, archiveTypeUuid)).Returns(result);
+        }
+
+        private void ExpectGetSystemUsageCriticalityLevelReturns(int organizationId, Guid criticalityLevelUuid, Maybe<(SystemUsageCriticalityLevel, bool)> result)
+        {
+            _systemUsageCriticalityLevelOptionsServiceMock.Setup(x => x.GetOptionByUuid(organizationId, criticalityLevelUuid)).Returns(result);
         }
 
         private SystemUsageUpdateParameters SetupKLEInputExpectations(IReadOnlyCollection<TaskRef> additionalTaskRefs, IReadOnlyCollection<TaskRef> tasksToRemove)
