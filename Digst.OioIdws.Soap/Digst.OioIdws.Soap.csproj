@@ -26,8 +26,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Runtime.Caching" Version="10.0.5" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
+    <PackageReference Include="System.Runtime.Caching" Version="10.0.7" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
   </ItemGroup>
   <ItemGroup>
     <!-- WCF XML config extension types (BehaviorExtensionElement, StandardBindingElement, etc.)

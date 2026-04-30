@@ -59,17 +59,18 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <param name="nameOrCvrContent">Optional query which will query both name and CVR number using OR logic</param>
         /// <param name="uuid">Optional query by organization uuid</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="pagination">Optional pagination</param>
         /// <returns>A list of organizations</returns>
         [HttpGet]
         [Route("organizations")]
         public IActionResult GetOrganizations(
             bool onlyWhereUserHasMembership = false,
-            string nameContent = null,
-            string cvrContent = null,
-            string nameOrCvrContent = null,
+            string? nameContent = null,
+            string? cvrContent = null,
+            string? nameOrCvrContent = null,
             [NonEmptyGuid] Guid? uuid = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery pagination = null)
+            [FromQuery] BoundedPaginationQuery? pagination = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -110,7 +111,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
                 return BadRequest(ModelState);
 
             return _organizationService
-                .GetOrganization(organizationUuid, null)
+                .GetOrganization(organizationUuid)
                 .Select(_organizationResponseMapper.ToOrganizationDTO)
                 .Match(Ok, FromOperationError);
         }
@@ -122,16 +123,17 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <param name="nameOrEmailQuery">Query by text in name or email</param>
         /// <param name="roleQuery">Query by role assignment</param>
         /// <param name="orderByProperty">Property to order by</param>
+        /// <param name="paginationQuery">Optional pagination query</param>
         /// <returns>A list og users in a specific organizational context</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users")]
         public IActionResult GetOrganizationUsers(
             [NonEmptyGuid] Guid organizationUuid,
-            string nameOrEmailQuery = null,
-            string emailQuery = null,
+            string? nameOrEmailQuery = null,
+            string? emailQuery = null,
             OrganizationUserRole? roleQuery = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             var queries = new List<IDomainQuery<User>>();
 
@@ -176,15 +178,16 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="nameQuery">Query by text in name</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="paginationQuery">Optional pagination query</param>
         /// <returns>A list og organization unit representations</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units")]
         public IActionResult GetOrganizationUnits(
             [NonEmptyGuid] Guid organizationUuid,
-            string nameQuery = null,
+            string? nameQuery = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             var queries = new List<IDomainQuery<OrganizationUnit>>();
 
@@ -227,7 +230,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/organizations")]
-        public IActionResult GetOrganizationsAsRightsHolder([FromQuery] BoundedPaginationQuery pagination = null)
+        public IActionResult GetOrganizationsAsRightsHolder([FromQuery] BoundedPaginationQuery? pagination = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -248,14 +251,14 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
                 Name = unit.Name,
                 UnitId = unit.LocalId,
                 Ean = unit.Ean,
-                ParentOrganizationUnit = unit.Parent?.Transform(parent => parent.MapIdentityNamePairDTO()),
+                ParentOrganizationUnit = unit.Parent?.Transform(parent => parent?.MapIdentityNamePairDTO()),
                 Origin = unit.Origin.ToOrganizationUnitOriginChoice()
             };
         }
 
         private OrganizationUserResponseDTO ToUserResponseDTO((Guid organizationUuid, User user) context)
         {
-            return new()
+            return new OrganizationUserResponseDTO
             {
                 Uuid = context.user.Uuid,
                 Name = context.user.GetFullName(),

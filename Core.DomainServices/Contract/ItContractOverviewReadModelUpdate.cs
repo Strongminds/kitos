@@ -56,6 +56,7 @@ namespace Core.DomainServices.Contract
             //Supplier
             destination.SupplierId = source.Supplier?.Id;
             destination.SupplierName = source.Supplier?.Name;
+            destination.IsSupplierDisabled = source.Supplier?.Disabled ?? false;
 
             //Parent contract
             destination.ParentContractUuid = source.Parent?.Uuid;
@@ -432,7 +433,7 @@ namespace Core.DomainServices.Contract
             }
         }
 
-        private static string GetUserFullName(User user)
+        private static string? GetUserFullName(User user)
         {
             var fullName = user?.GetFullName()?.TrimEnd();
             return fullName?.Substring(0, Math.Min(fullName.Length, UserConstraints.MaxNameLength));

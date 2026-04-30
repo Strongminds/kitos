@@ -107,6 +107,9 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.Property(x => x.Uuid).IsRequired();
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ItSystemUsage_Uuid");
+
+            builder.HasIndex(x => x.ItSystemId)
+                .HasDatabaseName("IX_ItSystemUsage_ItSystemId");
         }
     }
 }

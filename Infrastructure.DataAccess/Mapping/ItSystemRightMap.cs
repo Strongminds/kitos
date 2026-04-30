@@ -16,6 +16,9 @@ namespace Infrastructure.DataAccess.Mapping
                 .HasForeignKey(x => x.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.ObjectId)
+                .HasDatabaseName("IX_ItSystemRights_ObjectId");
         }
     }
 }

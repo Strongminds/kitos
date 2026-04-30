@@ -113,7 +113,7 @@ namespace Core.ApplicationServices.Contract
             return itContract;
         }
 
-        public Result<IQueryable<ItContract>, OperationError> GetAllByOrganization(int orgId, string optionalNameSearch = null)
+        private Result<IQueryable<ItContract>, OperationError> GetAllByOrganization(int orgId, string? optionalNameSearch = null)
         {
             if (_authorizationContext.GetOrganizationReadAccessLevel(orgId) != OrganizationDataReadAccessLevel.All)
             {

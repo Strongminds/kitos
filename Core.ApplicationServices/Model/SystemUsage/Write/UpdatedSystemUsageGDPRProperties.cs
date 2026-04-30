@@ -12,7 +12,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
     public class UpdatedSystemUsageGDPRProperties
     {
         public OptionalValueChange<string> Purpose { get; set; } = OptionalValueChange<string>.None;
-        public OptionalValueChange<DataOptions?> BusinessCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
         public OptionalValueChange<HostedAt?> HostedAt { get; set; } = OptionalValueChange<HostedAt?>.None;
         public OptionalValueChange<Maybe<NamedLink>> DirectoryDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
         public OptionalValueChange<Maybe<IEnumerable<SensitiveDataLevel>>> DataSensitivityLevels { get; set; } = OptionalValueChange<Maybe<IEnumerable<SensitiveDataLevel>>>.None;

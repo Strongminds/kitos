@@ -716,7 +716,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 },
                 WebAccessibilityCompliance = A<YesNoPartiallyChoice>(),
                 LastWebAccessibilityCheck = A<DateTime>(),
-                WebAccessibilityNotes = A<string>()
+                WebAccessibilityNotes = A<string>(),
+                IsSociallyCritical = A<YesNoDontKnowChoice>(),
             });
 
             //Act
@@ -738,6 +739,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
             AssertTimestampEqual(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
             Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
+            Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
         }
 
         [Fact]
@@ -2550,6 +2552,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.LocalSystemId, actual.LocalSystemId);
             Assert.Equal(expected.SystemVersion, actual.SystemVersion);
             Assert.Equal(expected.Notes, actual.Notes);
+            Assert.Equal(expected.IsBusinessCritical, actual.IsBusinessCritical);
             if (hasData)
             {
                 Assert.Equal(expected.NumberOfExpectedUsers.LowerBound, actual.NumberOfExpectedUsers.LowerBound);
@@ -2672,13 +2675,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                     ValidFrom = DateTime.UtcNow.Date,
                     ValidTo = DateTime.UtcNow.Date.AddDays(Math.Abs(A<short>()))
                 },
+                IsBusinessCritical = A<YesNoDontKnowChoice?>(),
             };
         }
 
         private static void AssertGDPR(GDPRWriteRequestDTO gdprInput, GDPRRegistrationsResponseDTO gdprResponse)
         {
             Assert.Equal(gdprInput.Purpose, gdprResponse.Purpose);
-            Assert.Equal(gdprInput.BusinessCritical, gdprResponse.BusinessCritical);
             Assert.Equal(gdprInput.HostedAt, gdprResponse.HostedAt);
             (gdprInput.DirectoryDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.DirectoryDocumentation);
             Assert.Equal((gdprInput.DataSensitivityLevels ?? new List<DataSensitivityLevelChoice>()).OrderBy(x => x), gdprResponse.DataSensitivityLevels.OrderBy(x => x));

@@ -134,6 +134,9 @@ namespace Tests.Unit.Presentation.Web.Services
             var updateParameters = new OrganizationMasterDataUpdateParameters
             {
                 Cvr = newCvr,
+                Phone = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                Address = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                Email = OptionalValueChange<Maybe<string>>.With(A<string>()),
             };
 
             var result = _sut.PatchMasterData(organizationUuid, updateParameters);
@@ -154,6 +157,9 @@ namespace Tests.Unit.Presentation.Web.Services
             var updateParameters = new OrganizationMasterDataUpdateParameters
             {
                 Cvr = newCvr,
+                Phone = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                Address = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                Email = OptionalValueChange<Maybe<string>>.With(A<string>()),
             };
 
             var result = _sut.PatchMasterData(invalidOrganizationUuid, updateParameters);
@@ -236,7 +242,12 @@ namespace Tests.Unit.Presentation.Web.Services
             _organizationService.Setup(_ => _.GetOrganization(invalidOrganizationUuid, null)).Returns(new OperationError(OperationFailure.NotFound));
 
             var result =
-                _sut.PatchOrganizationMasterDataRoles(invalidOrganizationUuid, new OrganizationMasterDataRolesUpdateParameters());
+                _sut.PatchOrganizationMasterDataRoles(invalidOrganizationUuid, new OrganizationMasterDataRolesUpdateParameters
+                {
+                    ContactPerson = Maybe<ContactPersonUpdateParameters>.None,
+                    DataResponsible = Maybe<DataResponsibleUpdateParameters>.None,
+                    DataProtectionAdvisor = Maybe<DataProtectionAdvisorUpdateParameters>.None
+                });
 
             Assert.True(result.Failed);
             var error = result.Error;
@@ -459,10 +470,14 @@ namespace Tests.Unit.Presentation.Web.Services
             _authorizationContext.Setup(_ => _.AllowModify(org)).Returns(true);
             _organizationService.Setup(_ => _.CanActiveUserModifyCvr(org.Uuid)).Returns(false);
             SetupRepositoryReturnsCountryCode();
-            var updateParams = new OrganizationBaseParameters()
+            var updateParams = new OrganizationBaseParameters
             {
-                Cvr = OptionalValueChange<Maybe<string>>.With(A<string>().AsCvr()),
-                Name = OptionalValueChange<Maybe<string>>.With(A<string>())
+                Cvr = OptionalValueChange<Maybe<string>>.With(A<string>()
+                    .AsCvr()),
+                Name = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                TypeId = OptionalValueChange<int>.With(A<int>()),
+                ForeignCountryCodeUuid = OptionalValueChange<Guid?>.With(A<Guid>()),
+                IsSupplier = OptionalValueChange<bool>.With(A<bool>())
             };
 
             var result = _sut.PatchOrganization(org.Uuid, updateParams);
@@ -483,7 +498,10 @@ namespace Tests.Unit.Presentation.Web.Services
             var updateParams = new OrganizationBaseParameters()
             {
                 Cvr = OptionalValueChange<Maybe<string>>.With(A<string>().AsCvr()),
-                Name = OptionalValueChange<Maybe<string>>.With(A<string>())
+                Name = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                TypeId = OptionalValueChange<int>.With(A<int>()),
+                ForeignCountryCodeUuid = OptionalValueChange<Guid?>.With(A<Guid>()),
+                IsSupplier = OptionalValueChange<bool>.With(A<bool>())
             };
 
             var result = _sut.PatchOrganization(org.Uuid, updateParams);
@@ -539,7 +557,10 @@ namespace Tests.Unit.Presentation.Web.Services
             var updateParams = new OrganizationBaseParameters()
             {
                 Cvr = OptionalValueChange<Maybe<string>>.With(A<string>().AsCvr()),
-                Name = OptionalValueChange<Maybe<string>>.With(A<string>())
+                Name = OptionalValueChange<Maybe<string>>.With(A<string>()),
+                TypeId = OptionalValueChange<int>.With(A<int>()),
+                ForeignCountryCodeUuid = OptionalValueChange<Guid?>.With(A<Guid>()),
+                IsSupplier = OptionalValueChange<bool>.With(A<bool>())
             };
 
             var result = _sut.PatchOrganization(org.Uuid, updateParams);
