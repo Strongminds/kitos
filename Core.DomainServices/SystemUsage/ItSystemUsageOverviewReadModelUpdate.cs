@@ -98,7 +98,11 @@ namespace Core.DomainServices.SystemUsage
             destination.LastWebAccessibilityCheck = source.LastWebAccessibilityCheck;
             destination.WebAccessibilityNotes = source.WebAccessibilityNotes;
             destination.IsSociallyCritical = source.IsSociallyCritical;
-            destination.GdprCriticality = source.GdprCriticality;
+            destination.CriticalityFieldsLastChanged = source.CriticalityFieldsLastChanged;
+            destination.SystemUsageCriticalityLevelUuid = source.SystemUsageCriticalityLevel?.Uuid;
+            destination.SystemUsageCriticalityLevelName = source.SystemUsageCriticalityLevel?.Name;
+            destination.CriticalityLevelDocumentationUrl = source.CriticalityLevelDocumentationUrl;
+            destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);

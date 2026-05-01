@@ -44,6 +44,7 @@ namespace Infrastructure.DataAccess
         public DbSet<ArchiveType> ArchiveTypes { get; set; }
         public DbSet<ArchiveLocation> ArchiveLocation { get; set; }
         public DbSet<ArchiveTestLocation> ArchiveTestLocation { get; set; }
+        public DbSet<SystemUsageCriticalityLevel> SystemUsageCriticalityLevelTypes { get; set; }
         public DbSet<BusinessType> BusinessTypes { get; set; }
         public DbSet<Config> Configs { get; set; }
         public DbSet<ItContractTemplateType> ItContractTemplateTypes { get; set; }
@@ -91,6 +92,7 @@ namespace Infrastructure.DataAccess
         public DbSet<LocalArchiveType> LocalArchiveTypes { get; set; }
         public DbSet<LocalArchiveLocation> LocalArchiveLocation { get; set; }
         public DbSet<LocalArchiveTestLocation> LocalArchiveTestLocation { get; set; }
+        public DbSet<LocalSystemUsageCriticalityLevel> LocalSystemUsageCriticalityLevelTypes { get; set; }
         public DbSet<LocalBusinessType> LocalBusinessTypes { get; set; }
         public DbSet<LocalDataType> LocalDataTypes { get; set; }
         public DbSet<LocalRelationFrequencyType> LocalRelationFrequencyTypes { get; set; }
@@ -189,6 +191,7 @@ namespace Infrastructure.DataAccess
             ConfigureLocalOptionType<LocalArchiveType>(modelBuilder, "LocalArchiveTypes");
             ConfigureLocalOptionType<LocalBusinessType>(modelBuilder, "LocalBusinessTypes");
             ConfigureLocalOptionType<LocalCriticalityType>(modelBuilder, "LocalCriticalityTypes");
+            ConfigureLocalOptionType<LocalSystemUsageCriticalityLevel>(modelBuilder, "LocalSystemUsageCriticalityLevelTypes");
             ConfigureLocalOptionType<LocalDataProcessingBasisForTransferOption>(modelBuilder, "LocalDataProcessingBasisForTransferOptions");
             ConfigureLocalOptionType<LocalDataProcessingCountryOption>(modelBuilder, "LocalDataProcessingCountryOptions");
             ConfigureLocalOptionType<LocalDataProcessingDataResponsibleOption>(modelBuilder, "LocalDataProcessingDataResponsibleOptions");
