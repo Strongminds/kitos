@@ -257,6 +257,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SourceId")
                         .HasDatabaseName("IX_SourceId");
 
+                    b.HasIndex("Category", "Id")
+                        .HasDatabaseName("IX_Category_Id");
+
                     b.ToTable("PendingReadModelUpdates");
                 });
 
@@ -3419,14 +3422,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("LastChangedByUserId");
 
+                    b.HasIndex("ObjectId")
+                        .HasDatabaseName("IX_ItSystemRights_ObjectId");
+
                     b.HasIndex("ObjectOwnerId");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("ObjectId")
-                        .HasDatabaseName("IX_ItSystemRights_ObjectId");
 
                     b.ToTable("ItSystemRights");
                 });
@@ -3942,6 +3945,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemCategoriesId");
 
+                    b.HasIndex("ItSystemId")
+                        .HasDatabaseName("IX_ItSystemUsage_ItSystemId");
+
                     b.HasIndex("LastChangedByUserId");
 
                     b.HasIndex("LifeCycleStatus")
@@ -3975,9 +3981,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("Version")
                         .HasDatabaseName("ItSystemUsage_Index_Version");
-
-                    b.HasIndex("ItSystemId")
-                        .HasDatabaseName("IX_ItSystemUsage_ItSystemId");
 
                     b.ToTable("ItSystemUsage", (string)null);
                 });
@@ -7296,7 +7299,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("CustomizedUiNodes");
+                    b.ToTable("CustomizedUiNodes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.UIModuleCustomization", b =>

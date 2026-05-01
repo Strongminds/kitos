@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Run settings for local development against SQL Server.
+     Activate via: Test - Configure Run Settings - Select Solution Wide runsettings File -->
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <!-- Use local environment (no remote credentials needed) -->
+      <KitosTestEnvironment>Local</KitosTestEnvironment>
+
+      <!-- Database provider - both variables are checked by TestEnvironment.cs -->
+      <KitosDbProvider>SqlServer</KitosDbProvider>
+      <Database__Provider>SqlServer</Database__Provider>
+
+      <!-- Connection string - defaults to below value when not set, but explicit here for clarity.
+           Override if your local SQL Server uses a different instance name or credentials. -->
+      <ConnectionStrings__KitosContext>Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True</ConnectionStrings__KitosContext>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

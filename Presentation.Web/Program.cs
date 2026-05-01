@@ -10,6 +10,7 @@ using Presentation.Web.Models.Application.RuntimeEnv;
 using Serilog;
 using System;
 
+
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
 // and the AppContext.BaseDirectory fallback can fail under some hosting models (IIS,
@@ -22,6 +23,10 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
     return System.IO.File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
 };
 
+// Npgsql 6+ requires DateTime.Kind=Utc for 'timestamp with time zone' columns by default.
+// Enable legacy behaviour so that Unspecified/Local datetimes are accepted, matching
+// prior SQL Server behaviour while we progressively normalise datetime kinds.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,4 +69,3 @@ app.MapKitosEndpoints();
 app.InitializeHangfireJobs();
 
 app.Run();
-

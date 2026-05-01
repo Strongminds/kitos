@@ -28,6 +28,15 @@ $ErrorActionPreference = "Stop"
 #-------------------------------------------------------------
 .$PSScriptRoot\DbMigrations.ps1
 
+$databaseProvider = Get-DatabaseProvider
+if (Is-PostgreSqlProvider $databaseProvider) {
+    $kitosDbConnectionString = Normalize-PostgresConnectionString -connectionString $kitosDbConnectionString
+    $hangfireDbConnectionString = Normalize-PostgresConnectionString -connectionString $hangfireDbConnectionString
+}
+
+$Env:Database__Provider = $databaseProvider
+$Env:ConnectionStrings__KitosContext = $kitosDbConnectionString
+
 function Stop-WebHostForDatabaseReset {
     $state = @{
         W3SvcWasRunning = $false

@@ -27,7 +27,7 @@ namespace Tests.Integration.Presentation.Web.KLE.V2
         {
             //Arrange
             var token = await HttpApi.GetTokenAsync(OrganizationRole.User);
-            var date = A<DateTime>().Date;
+            var date = NormalizeTimestamp(A<DateTime>().Date);
             SetLatestUpdatedDate(date);
 
             //Act
@@ -224,10 +224,23 @@ namespace Tests.Integration.Presentation.Web.KLE.V2
         {
             DatabaseAccess.MutateEntitySet<KLEUpdateHistoryItem>(items =>
             {
-                items.AsQueryable().ToList().ForEach(existing => items.DeleteByKey(existing.Id));
+                items.AsQueryable().Select(existing => existing.Id).ToList().ForEach(id => items.DeleteByKey(id));
                 items.Save();
-                items.Insert(new KLEUpdateHistoryItem(date));
+                items.Insert(new KLEUpdateHistoryItem(NormalizeTimestamp(date)));
             });
+        }
+
+        private static DateTime NormalizeTimestamp(DateTime value)
+        {
+            var utcValue = value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
+
+            var truncatedTicks = utcValue.Ticks - (utcValue.Ticks % 10);
+            return new DateTime(truncatedTicks, DateTimeKind.Utc);
         }
 
         private string CreateDescription(string content)

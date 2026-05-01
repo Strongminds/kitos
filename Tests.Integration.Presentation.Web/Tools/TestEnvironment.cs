@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Tests.Integration.Presentation.Web.Tools.Model;
 
 namespace Tests.Integration.Presentation.Web.Tools
@@ -18,9 +19,13 @@ namespace Tests.Integration.Presentation.Web.Tools
         public const int SecondOrganizationId = 2;
         public const int DefaultUserId = 1;
         private static readonly string ConnectionString;
+        private static readonly string DatabaseProvider;
 
         static TestEnvironment()
         {
+            // Configure Npgsql timestamp compatibility as early as possible in the test process.
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             var testEnvironment = GetEnvironmentVariable("KitosTestEnvironment", false);
             if (string.IsNullOrWhiteSpace(testEnvironment))
             {
@@ -37,7 +42,9 @@ namespace Tests.Integration.Presentation.Web.Tools
                 Console.Out.WriteLine("Running locally. Loading all configuration in-line");
                 const string localDevUserPassword = "localNoSecret";
                 DefaultUserPassword = "arne123";
-                ConnectionString = @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True";
+                DatabaseProvider = GetEnvironmentVariable("KitosDbProvider", false,
+                    GetEnvironmentVariable("Database__Provider", false, "SqlServer"));
+                ConnectionString = ResolveLocalConnectionString(DatabaseProvider);
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
                     {
@@ -81,6 +88,8 @@ namespace Tests.Integration.Presentation.Web.Tools
                 //Loading users from environment
                 Console.Out.WriteLine("Tests running towards remote target. Loading configuration from environment.");
                 DefaultUserPassword = GetEnvironmentVariable("DefaultUserPassword");
+                DatabaseProvider = GetEnvironmentVariable("KitosDbProvider", false,
+                    GetEnvironmentVariable("Database__Provider", false, "SqlServer"));
                 ConnectionString = GetEnvironmentVariable("KitosDbConnectionStringForTeamCity");
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
@@ -127,11 +136,41 @@ namespace Tests.Integration.Presentation.Web.Tools
         }
         public static KitosContext GetDatabase()
         {
-            var options = new DbContextOptionsBuilder<KitosContext>()
-                .UseLazyLoadingProxies()
-                .UseSqlServer(ConnectionString)
-                .Options;
+            var optionsBuilder = new DbContextOptionsBuilder<KitosContext>()
+                .UseLazyLoadingProxies();
+
+            if (IsPostgreSqlProvider(DatabaseProvider))
+            {
+                var pgCsb = new NpgsqlConnectionStringBuilder(ConnectionString) { SearchPath = "dbo,public" };
+                optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
+                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(ConnectionString);
+            }
+
+            var options = optionsBuilder.Options;
             return new KitosContext(options);
+        }
+
+        private static bool IsPostgreSqlProvider(string provider)
+        {
+            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string ResolveLocalConnectionString(string provider)
+        {
+            if (IsPostgreSqlProvider(provider))
+            {
+                return GetEnvironmentVariable("ConnectionStrings__KitosContext", false,
+                    @"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres");
+            }
+
+            return GetEnvironmentVariable("ConnectionStrings__KitosContext", false,
+                @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True");
         }
 
         private static string GetEnvironmentVariable(string name, bool mandatory = true, string defaultValue = null)

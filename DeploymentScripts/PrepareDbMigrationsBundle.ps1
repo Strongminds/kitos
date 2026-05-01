@@ -2,11 +2,12 @@ param([string]$buildConfiguration = "Release")
 
 $ErrorActionPreference = "Stop"
 
-$repoRoot   = Resolve-Path "$PSScriptRoot\.."
-$infraProject  = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
+$repoRoot = Resolve-Path "$PSScriptRoot\.."
+$infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
 $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
-$bundleDir  = "$repoRoot\Output\MigrationsBundle"
-$bundleExe  = "$bundleDir\efbundle.exe"
+$bundleDir = "$repoRoot\MigrationsBundle"
+$sqlServerBundleExe = "$bundleDir\efbundle.exe"
+$postgresBundleExe = "$bundleDir\efbundle.postgresql.exe"
 
 New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
 
@@ -18,19 +19,46 @@ if ($LASTEXITCODE -ne 0) { Throw "Failed to install/update dotnet-ef tool" }
 # PATH yet in this agent session - add it so the 'dotnet ef' command can be resolved.
 $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
 
-# Supply a dummy connection string so the design-time factory can instantiate KitosContext
-# during bundle creation. The real connection string is passed at runtime via --connection.
-$Env:ConnectionStrings__KitosContext = "Server=.;Database=Kitos;Trusted_Connection=True;TrustServerCertificate=True"
+function New-MigrationsBundle(
+    [string]$provider,
+    [string]$connectionString,
+    [string]$outputPath
+) {
+    Write-Host "Creating EF Core migrations bundle for $provider at $outputPath"
 
-Write-Host "Creating EF Core migrations bundle ($buildConfiguration)..."
+    $env:Database__Provider = $provider
+    $env:ConnectionStrings__KitosContext = $connectionString
 
-dotnet ef migrations bundle `
-    --project "$infraProject" `
-    --startup-project "$startupProject" `
-    --output "$bundleExe" `
-    --configuration $buildConfiguration `
-    --force
+    dotnet ef migrations bundle `
+        --project "$infraProject" `
+        --startup-project "$startupProject" `
+        --output "$outputPath" `
+        --configuration $buildConfiguration `
+        --force
 
-if ($LASTEXITCODE -ne 0) { Throw "Failed to create EF Core migrations bundle" }
+    if ($LASTEXITCODE -ne 0) {
+        Throw "Failed to create EF Core migrations bundle for $provider"
+    }
+}
 
-Write-Host "Migrations bundle created at $bundleExe"
+try {
+    # Supply dummy connection strings so the design-time factory can instantiate KitosContext
+    # during bundle creation. The real connection string is passed at runtime via --connection.
+    New-MigrationsBundle `
+        -provider "SqlServer" `
+        -connectionString "Server=.;Database=Kitos;Trusted_Connection=True;TrustServerCertificate=True" `
+        -outputPath $sqlServerBundleExe
+
+    New-MigrationsBundle `
+        -provider "PostgreSql" `
+        -connectionString "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=postgres" `
+        -outputPath $postgresBundleExe
+}
+finally {
+    Remove-Item Env:Database__Provider -ErrorAction SilentlyContinue
+    Remove-Item Env:ConnectionStrings__KitosContext -ErrorAction SilentlyContinue
+}
+
+Write-Host "Migrations bundles created at:"
+Write-Host "  $sqlServerBundleExe"
+Write-Host "  $postgresBundleExe"

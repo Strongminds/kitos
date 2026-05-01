@@ -23,6 +23,7 @@ using Presentation.Web.Models.API.V2.Types.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Serilog;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Web.Controllers.API.V2.External.Organizations
 {
@@ -198,9 +199,10 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
 
             return _organizationService
                 .GetOrganizationUnits(organizationUuid, queries.ToArray())
+                .Select(units => units.Include(unit => unit.Parent))
                 .Select(units => units.OrderApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty))
                 .Select(units => units.Page(paginationQuery))
-                .Select(units => units.AsEnumerable().Select(ToOrganizationUnitResponseDto).ToList())
+                .Select(units => units.ToList().Select(ToOrganizationUnitResponseDto).ToList())
                 .Match(Ok, FromOperationError);
         }
 

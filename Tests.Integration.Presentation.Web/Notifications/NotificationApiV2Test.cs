@@ -218,9 +218,9 @@ namespace Tests.Integration.Presentation.Web.Notifications
             NotificationResponseDTO actual)
         {
             Assert.Equal(expected.RepetitionFrequency, actual.RepetitionFrequency);
-            Assert.Equal(expected.ToDate, actual.ToDate);
+            AssertTimestampEqual(expected.ToDate, actual.ToDate);
             Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.ToDate, actual.ToDate);
+            AssertTimestampEqual(expected.ToDate, actual.ToDate);
             Assert.Equal(expected.Uuid, actual.Uuid);
             Assert.Equal(expected.NotificationType, actual.NotificationType);
             Assert.Equal(expected.Body, actual.Body);
@@ -232,15 +232,38 @@ namespace Tests.Integration.Presentation.Web.Notifications
         private static void AssertScheduledNotification(ScheduledNotificationWriteRequestDTO expected, NotificationResponseDTO actual, NotificationSendType notificationType, Guid relationUuid, Guid notificationUuid)
         {
             Assert.Equal(expected.RepetitionFrequency, actual.RepetitionFrequency);
-            Assert.Equal(expected.ToDate, actual.ToDate);
+            AssertTimestampEqual(expected.ToDate, actual.ToDate);
             AssertUpdateScheduledNotification(expected, actual, notificationType, relationUuid, notificationUuid);
         }
 
         private static void AssertUpdateScheduledNotification<T>(T expected, NotificationResponseDTO actual, NotificationSendType notificationType, Guid relationUuid, Guid notificationUuid) where T : class, IHasBaseWriteProperties, IHasName, IHasToDate
         {
             Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.ToDate, actual.ToDate);
+            AssertTimestampEqual(expected.ToDate, actual.ToDate);
             AssertBaseNotification(expected, actual, notificationType, relationUuid, notificationUuid);
+        }
+
+        private static void AssertTimestampEqual(DateTime? expected, DateTime? actual)
+        {
+            Assert.Equal(NormalizeTimestamp(expected), NormalizeTimestamp(actual));
+        }
+
+        private static DateTime? NormalizeTimestamp(DateTime? value)
+        {
+            if (!value.HasValue)
+            {
+                return null;
+            }
+
+            var utcValue = value.Value.Kind switch
+            {
+                DateTimeKind.Utc => value.Value,
+                DateTimeKind.Local => value.Value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+            };
+
+            var truncatedTicks = utcValue.Ticks - (utcValue.Ticks % 10);
+            return new DateTime(truncatedTicks, DateTimeKind.Utc);
         }
 
         private static void AssertBaseNotification<T>(T expected, NotificationResponseDTO actual, NotificationSendType notificationType, Guid relationUuid, Guid notificationUuid) where T : class, IHasBaseWriteProperties
