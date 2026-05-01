@@ -104,6 +104,7 @@ using Core.DomainServices.Time;
 using Core.DomainServices.Tracking;
 using Core.DomainServices.Suppliers;
 using Infrastructure.DataAccess;
+using Infrastructure.DataAccess.Repositories.SystemUsage;
 using Infrastructure.DataAccess.Services;
 using Infrastructure.Ninject.ApplicationServices;
 using Infrastructure.Services.KLEDataBridge;
@@ -454,6 +455,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IItSystemRepository, ItSystemRepository>();
             services.AddScoped<IItSystemUsageRepository, ItSystemUsageRepository>();
+            services.AddScoped<IItSystemUsageBatchLoadRepository, ItSystemUsageBatchLoadRepository>();
             services.AddScoped<IOrganizationUnitRepository, OrganizationUnitRepository>();
             services.AddScoped<IAdviceRepository, AdviceRepository>();
             services.AddScoped<IItContractRepository, ItContractRepository>();

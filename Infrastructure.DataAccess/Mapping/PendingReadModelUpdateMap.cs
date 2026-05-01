@@ -16,6 +16,8 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.HasIndex(x => x.CreatedAt).HasDatabaseName("IX_CreatedAt");
+
+            builder.HasIndex(x => new { x.Category, x.Id }).HasDatabaseName("IX_Category_Id");
         }
     }
 }
