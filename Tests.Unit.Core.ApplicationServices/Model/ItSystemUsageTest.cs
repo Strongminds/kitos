@@ -39,6 +39,22 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
+        public void ResetCriticalityLevelDocumentation_SetsLastChanged_AndSetsValuesToNull()
+        {
+            _sut.UpdateCriticalityLevelDocumentationUrl(A<string>());
+            _sut.UpdateCriticalityLevelDocumentationName(A<string>());
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+            Assert.NotNull(_sut.CriticalityLevelDocumentationUrl);
+            Assert.NotNull(_sut.CriticalityLevelDocumentationName);
+
+            _sut.ResetCriticalityLevelDocumentation();
+
+            Assert.Null(_sut.CriticalityLevelDocumentationUrl);
+            Assert.Null(_sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
         public void UpdateIsBusinessCritical_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
         {
             _sut.UpdateIsBusinessCritical(DataOptions.NO);

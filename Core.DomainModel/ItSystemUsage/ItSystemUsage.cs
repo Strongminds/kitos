@@ -304,6 +304,13 @@ namespace Core.DomainModel.ItSystemUsage
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
+        public void ResetCriticalityLevelDocumentation()
+        {
+            CriticalityLevelDocumentationUrl = null;
+            CriticalityLevelDocumentationName = null;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
         #region GDPR
         public string GeneralPurpose { get; set; }
 

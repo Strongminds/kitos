@@ -672,6 +672,12 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)
         {
+            if (newLink.IsNone)
+            {
+                usage.ResetCriticalityLevelDocumentation();
+                return usage;
+            }
+
             var value = newLink.Value;
             usage.UpdateCriticalityLevelDocumentationUrl(value?.Url);
             usage.UpdateCriticalityLevelDocumentationName(value?.Name);

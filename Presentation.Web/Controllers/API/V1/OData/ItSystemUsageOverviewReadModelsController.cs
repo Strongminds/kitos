@@ -1,15 +1,12 @@
 using System.Linq;
 using System;
-using System.Net;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.SystemUsage.ReadModels;
-using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
 using Presentation.Web.Infrastructure.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace Presentation.Web.Controllers.API.V1.OData
 {
