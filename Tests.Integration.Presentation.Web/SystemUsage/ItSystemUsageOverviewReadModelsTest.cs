@@ -325,6 +325,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(hostedAt, readModel.HostedAt);
             Assert.Equal(userCount, readModel.UserCount);
             Assert.Equal(criticalityLevel.Uuid, readModel.SystemUsageCriticalityLevelUuid);
+            Assert.Equal(criticalityLevel.Name, readModel.SystemUsageCriticalityLevelName);
 
             if (riskAssessment == YesNoDontKnowChoice.Yes)
             {
