@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
 
 #nullable disable
 
@@ -17,111 +16,67 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             // as shadow property names — so existing EF6 databases already have the correct column names
             // and no renaming is required here.
 
-            if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
-            {
-                migrationBuilder.Sql(@"
-CREATE SCHEMA IF NOT EXISTS dbo;
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'dbo' AND table_name = 'ItSystem' AND column_name = 'SensitivePersonalDataTypeId'
-    ) THEN
-        ALTER TABLE dbo.""ItSystem"" ADD COLUMN ""SensitivePersonalDataTypeId"" integer NULL;
-        ALTER TABLE dbo.""ItSystem"" ADD CONSTRAINT ""FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId""
-            FOREIGN KEY (""SensitivePersonalDataTypeId"") REFERENCES dbo.""SensitivePersonalDataTypes"" (""Id"");
-        CREATE INDEX ""IX_ItSystem_SensitivePersonalDataTypeId"" ON dbo.""ItSystem"" (""SensitivePersonalDataTypeId"");
-    END IF;
-END $$;");
+            migrationBuilder.AddColumn<int>(
+                name: "SensitivePersonalDataTypeId",
+                table: "ItSystem",
+                nullable: true);
 
-                migrationBuilder.Sql(@"
-CREATE SCHEMA IF NOT EXISTS dbo;
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'dbo' AND table_name = 'ItSystemUsage' AND column_name = 'RegisterTypeId'
-    ) THEN
-        ALTER TABLE dbo.""ItSystemUsage"" ADD COLUMN ""RegisterTypeId"" integer NULL;
-        ALTER TABLE dbo.""ItSystemUsage"" ADD CONSTRAINT ""FK_ItSystemUsage_RegisterTypes_RegisterTypeId""
-            FOREIGN KEY (""RegisterTypeId"") REFERENCES dbo.""RegisterTypes"" (""Id"");
-        CREATE INDEX ""IX_ItSystemUsage_RegisterTypeId"" ON dbo.""ItSystemUsage"" (""RegisterTypeId"");
-    END IF;
-END $$;");
+            migrationBuilder.AddForeignKey(
+                name: "FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId",
+                table: "ItSystem",
+                column: "SensitivePersonalDataTypeId",
+                principalTable: "SensitivePersonalDataTypes",
+                principalColumn: "Id");
 
-                return;
-            }
+            migrationBuilder.CreateIndex(
+                name: "IX_ItSystem_SensitivePersonalDataTypeId",
+                table: "ItSystem",
+                column: "SensitivePersonalDataTypeId");
 
-            migrationBuilder.Sql(@"
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItSystem') AND name = 'SensitivePersonalDataTypeId')
-BEGIN
-    ALTER TABLE [ItSystem] ADD [SensitivePersonalDataTypeId] int NULL;
-    ALTER TABLE [ItSystem] ADD CONSTRAINT [FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId]
-        FOREIGN KEY ([SensitivePersonalDataTypeId]) REFERENCES [SensitivePersonalDataTypes] ([Id]);
-    CREATE INDEX [IX_ItSystem_SensitivePersonalDataTypeId] ON [ItSystem] ([SensitivePersonalDataTypeId]);
-END");
+            migrationBuilder.AddColumn<int>(
+                name: "RegisterTypeId",
+                table: "ItSystemUsage",
+                nullable: true);
 
-            migrationBuilder.Sql(@"
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItSystemUsage') AND name = 'RegisterTypeId')
-BEGIN
-    ALTER TABLE [ItSystemUsage] ADD [RegisterTypeId] int NULL;
-    ALTER TABLE [ItSystemUsage] ADD CONSTRAINT [FK_ItSystemUsage_RegisterTypes_RegisterTypeId]
-        FOREIGN KEY ([RegisterTypeId]) REFERENCES [RegisterTypes] ([Id]);
-    CREATE INDEX [IX_ItSystemUsage_RegisterTypeId] ON [ItSystemUsage] ([RegisterTypeId]);
-END");
+            migrationBuilder.AddForeignKey(
+                name: "FK_ItSystemUsage_RegisterTypes_RegisterTypeId",
+                table: "ItSystemUsage",
+                column: "RegisterTypeId",
+                principalTable: "RegisterTypes",
+                principalColumn: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItSystemUsage_RegisterTypeId",
+                table: "ItSystemUsage",
+                column: "RegisterTypeId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
-            {
-                migrationBuilder.Sql(@"
-CREATE SCHEMA IF NOT EXISTS dbo;
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'dbo' AND table_name = 'ItSystemUsage' AND column_name = 'RegisterTypeId'
-    ) THEN
-        DROP INDEX IF EXISTS dbo.""IX_ItSystemUsage_RegisterTypeId"";
-        ALTER TABLE dbo.""ItSystemUsage"" DROP CONSTRAINT IF EXISTS ""FK_ItSystemUsage_RegisterTypes_RegisterTypeId"";
-        ALTER TABLE dbo.""ItSystemUsage"" DROP COLUMN ""RegisterTypeId"";
-    END IF;
-END $$;");
+            migrationBuilder.DropIndex(
+                name: "IX_ItSystemUsage_RegisterTypeId",
+                table: "ItSystemUsage");
 
-                migrationBuilder.Sql(@"
-CREATE SCHEMA IF NOT EXISTS dbo;
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_schema = 'dbo' AND table_name = 'ItSystem' AND column_name = 'SensitivePersonalDataTypeId'
-    ) THEN
-        DROP INDEX IF EXISTS dbo.""IX_ItSystem_SensitivePersonalDataTypeId"";
-        ALTER TABLE dbo.""ItSystem"" DROP CONSTRAINT IF EXISTS ""FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId"";
-        ALTER TABLE dbo.""ItSystem"" DROP COLUMN ""SensitivePersonalDataTypeId"";
-    END IF;
-END $$;");
+            migrationBuilder.DropForeignKey(
+                name: "FK_ItSystemUsage_RegisterTypes_RegisterTypeId",
+                table: "ItSystemUsage");
 
-                return;
-            }
+            migrationBuilder.DropColumn(
+                name: "RegisterTypeId",
+                table: "ItSystemUsage");
 
-            migrationBuilder.Sql(@"
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItSystemUsage') AND name = 'RegisterTypeId')
-BEGIN
-    DROP INDEX [IX_ItSystemUsage_RegisterTypeId] ON [ItSystemUsage];
-    ALTER TABLE [ItSystemUsage] DROP CONSTRAINT [FK_ItSystemUsage_RegisterTypes_RegisterTypeId];
-    ALTER TABLE [ItSystemUsage] DROP COLUMN [RegisterTypeId];
-END");
+            migrationBuilder.DropIndex(
+                name: "IX_ItSystem_SensitivePersonalDataTypeId",
+                table: "ItSystem");
 
-            migrationBuilder.Sql(@"
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ItSystem') AND name = 'SensitivePersonalDataTypeId')
-BEGIN
-    DROP INDEX [IX_ItSystem_SensitivePersonalDataTypeId] ON [ItSystem];
-    ALTER TABLE [ItSystem] DROP CONSTRAINT [FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId];
-    ALTER TABLE [ItSystem] DROP COLUMN [SensitivePersonalDataTypeId];
-END");
+            migrationBuilder.DropForeignKey(
+                name: "FK_ItSystem_SensitivePersonalDataTypes_SensitivePersonalDataTypeId",
+                table: "ItSystem");
+
+            migrationBuilder.DropColumn(
+                name: "SensitivePersonalDataTypeId",
+                table: "ItSystem");
         }
     }
 }

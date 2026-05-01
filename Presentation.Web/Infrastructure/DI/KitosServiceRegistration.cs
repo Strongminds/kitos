@@ -6,6 +6,7 @@ using Core.Abstractions.Caching;
 using Core.Abstractions.Types;
 using Infrastructure.DataAccess.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
@@ -425,7 +426,8 @@ namespace Presentation.Web.Infrastructure.DI
                     // which would exclude public (where citext is installed) unless we override it here.
                     var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
                     options.UseNpgsql(pgCsb.ConnectionString,
-                        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
+                        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"))
+                        .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
                 }
                 else
                 {

@@ -46,28 +46,92 @@ internal sealed class PostgresTargetBootstrapper
 
     private static async Task InitializeBaselineHistoryAsync(string targetConnectionString, RepositoryLayout repositoryLayout)
     {
-        var baselineMigrationId = GetInitialBaselineMigrationId(repositoryLayout.EfCoreMigrationsDirectoryPath);
         var productVersion = GetEfCoreProductVersion(repositoryLayout.DbMigrationsScriptPath);
-        var sql = $@"
+        var coverageCutoff = GetBaselineCoverageCutoff(repositoryLayout.PostgresBaselineScriptPath);
+        var coveredMigrationIds = GetMigrationIdsCoveredByBaseline(repositoryLayout.EfCoreMigrationsDirectoryPath, coverageCutoff);
+
+        var tableSetup = $@"
 CREATE SCHEMA IF NOT EXISTS {SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistorySchema)};
 CREATE TABLE IF NOT EXISTS {SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistorySchema)}.{SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistoryTable)}
 (
     ""MigrationId"" character varying(150) NOT NULL,
     ""ProductVersion"" character varying(32) NOT NULL,
     CONSTRAINT ""PK___EFMigrationsHistory"" PRIMARY KEY (""MigrationId"")
-);
-INSERT INTO {SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistorySchema)}.{SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistoryTable)}
-(""MigrationId"", ""ProductVersion"")
-VALUES (@migrationId, @productVersion)
-ON CONFLICT DO NOTHING;";
+);";
 
         await using var targetConnection = new NpgsqlConnection(targetConnectionString);
         await targetConnection.OpenAsync();
 
-        await using var command = new NpgsqlCommand(sql, targetConnection);
-        command.Parameters.AddWithValue("@migrationId", baselineMigrationId);
-        command.Parameters.AddWithValue("@productVersion", productVersion);
-        await command.ExecuteNonQueryAsync();
+        await using (var setupCommand = new NpgsqlCommand(tableSetup, targetConnection))
+        {
+            await setupCommand.ExecuteNonQueryAsync();
+        }
+
+        foreach (var migrationId in coveredMigrationIds)
+        {
+            var insertSql = $@"INSERT INTO {SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistorySchema)}.{SchemaDiscovery.QuotePostgresIdentifier(EfMigrationsHistoryTable)}
+(""MigrationId"", ""ProductVersion"")
+VALUES (@migrationId, @productVersion)
+ON CONFLICT DO NOTHING;";
+            await using var insertCommand = new NpgsqlCommand(insertSql, targetConnection);
+            insertCommand.Parameters.AddWithValue("@migrationId", migrationId);
+            insertCommand.Parameters.AddWithValue("@productVersion", productVersion);
+            await insertCommand.ExecuteNonQueryAsync();
+        }
+    }
+
+    /// <summary>
+    /// Reads the optional <c>-- baseline-covers-to: &lt;timestamp&gt;</c> marker from the
+    /// first few lines of the baseline SQL file. Returns the timestamp string (e.g. "20260420093000")
+    /// if present, otherwise null (only the InitialBaseline migration will be pre-marked).
+    /// </summary>
+    private static string? GetBaselineCoverageCutoff(string baselineScriptPath)
+    {
+        foreach (var line in File.ReadLines(baselineScriptPath).Take(10))
+        {
+            var match = Regex.Match(line, @"--\s*baseline-covers-to:\s*(\d+)", RegexOptions.CultureInvariant);
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Returns all migration IDs (filenames without extension) whose leading timestamp is
+    /// less than or equal to <paramref name="coverageCutoff"/>.
+    /// If <paramref name="coverageCutoff"/> is null, only the InitialBaseline migration is returned.
+    /// </summary>
+    private static IReadOnlyList<string> GetMigrationIdsCoveredByBaseline(
+        string efCoreMigrationsDirectoryPath,
+        string? coverageCutoff)
+    {
+        var allMigrationIds = Directory
+            .GetFiles(efCoreMigrationsDirectoryPath, "*.cs")
+            .Select(Path.GetFileNameWithoutExtension)
+            .OfType<string>()
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Where(name => !name.EndsWith(".Designer", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (coverageCutoff is null)
+        {
+            var baseline = allMigrationIds.FirstOrDefault(id =>
+                id.EndsWith("_InitialBaseline", StringComparison.Ordinal));
+            return baseline is null ? [] : [baseline];
+        }
+
+        return allMigrationIds
+            .Where(id =>
+            {
+                // Migration filenames begin with a 14-digit timestamp prefix (yyyyMMddHHmmss)
+                var timestamp = id.Length >= 14 ? id[..14] : id;
+                return string.Compare(timestamp, coverageCutoff, StringComparison.Ordinal) <= 0;
+            })
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToList();
     }
 
     private static async Task ApplyPendingEfCoreMigrationsAsync(string targetConnectionString, RepositoryLayout repositoryLayout)
@@ -255,24 +319,6 @@ ON CONFLICT DO NOTHING;";
                 return variant;
             }
         }
-    }
-
-    private static string GetInitialBaselineMigrationId(string efCoreMigrationsDirectoryPath)
-    {
-        var baselineMigrationId = Directory
-            .GetFiles(efCoreMigrationsDirectoryPath, "*.cs")
-            .Select(path => Path.GetFileNameWithoutExtension(path))
-            .OfType<string>()
-            .Where(fileName => !string.IsNullOrWhiteSpace(fileName))
-            .Where(fileName => !fileName.EndsWith(".Designer", StringComparison.OrdinalIgnoreCase))
-            .FirstOrDefault(fileName => fileName.EndsWith("_InitialBaseline", StringComparison.Ordinal));
-
-        if (string.IsNullOrWhiteSpace(baselineMigrationId))
-        {
-            throw new InvalidOperationException("Could not find the EF Core InitialBaseline migration id.");
-        }
-
-        return baselineMigrationId;
     }
 
     private static string GetEfCoreProductVersion(string dbMigrationsScriptPath)
