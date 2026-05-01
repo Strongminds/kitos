@@ -122,8 +122,9 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public HostedAt HostedAt { get; set; }
         public UserCount UserCount { get; set; }
         public Guid? SystemUsageCriticalityLevelUuid { get; set; }
+        public string? SystemUsageCriticalityLevelName { get; set; }
         public string CriticalityLevelDocumentationUrl { get; set; }
-        public string CriticalityLevelDocumentationUrlName { get; set; }
+        public string CriticalityLevelDocumentationName { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }
