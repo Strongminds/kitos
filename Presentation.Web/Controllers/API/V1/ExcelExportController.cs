@@ -8,7 +8,7 @@ namespace Presentation.Web.Controllers.API.V1
 {
     [InternalApi]
     [Route("api/excel")]
-    public class ExcelExportController : BaseApiController
+    public class ExcelExportController : ExtendedApiController
     {
         private readonly IExcelService _excelService;
 
