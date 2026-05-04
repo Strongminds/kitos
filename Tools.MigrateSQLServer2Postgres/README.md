@@ -6,18 +6,16 @@ The design goal is safety: SQL Server remains authoritative while PostgreSQL is 
 
 The CLI supports both scripted execution and an interactive Spectre.Console wizard with arrow-key navigation.
 
-The tool now runs as one pipeline:
-
-1. connection checks (SQL Server + PostgreSQL)
-2. target readiness handling (create/recreate target when needed)
-3. readiness checks (schema overlap and target emptiness guard)
-4. data migration
-5. validation
+1. Connection checks (SQL Server + PostgreSQL)
+2. Target readiness handling (create/recreate target when needed)
+3. Readiness checks (schema overlap and target emptiness guard)
+4. Data migration
+5. Validation
 
 Fresh PostgreSQL targets are bootstrapped from the same canonical artifacts as the normal deployment flow:
 
 * `DeploymentScripts/Baseline.PostgreSql.FullModel.sql`
-* `dbo.__EFMigrationsHistory` initialized with `InitialBaseline`
+* `dbo.__EFMigrationsHistory` pre-populated with all EF Core migrations whose timestamp falls within the baseline's coverage window (determined by the `baseline-covers-to:` marker in the baseline SQL file; falls back to only `InitialBaseline` when the marker is absent)
 * post-baseline EF Core migrations applied afterwards
 
 This keeps the migration target aligned with the runtime application schema instead of rebuilding a PostgreSQL-shaped schema from SQL Server metadata.
@@ -25,11 +23,11 @@ When a PostgreSQL migrations bundle is available, the tool will only use it if i
 
 Interactive mode can:
 
-* reuse the last saved interactive settings
-* start from a local development preset for SQL Server Express and local PostgreSQL
-* prompt with editable defaults before execution
-* choose migration strategy before copy stage: start fresh, resume, or use current settings
-* confirm overwriting an existing target database before recreation
+* Reuse the last saved interactive settings
+* Start from a local development preset for SQL Server Express and local PostgreSQL
+* Prompt with editable defaults before execution
+* Choose migration strategy before copy stage: start fresh or use current settings
+* Confirm overwriting an existing target database before recreation
 
 ## Usage
 
@@ -119,9 +117,7 @@ Important: `POSTGRES\_USER`, `POSTGRES\_PASSWORD`, and `POSTGRES\_DB` are only a
 ## Flags
 
 * `--allow-non-empty-target`: allows running against a non-empty PostgreSQL target
-* `--resume`: skips tables already marked as successful
 * `--continue-on-error`: keeps migrating remaining tables after a table failure during the data copy stage
-* `--disable-foreign-key-checks`: sets `session\_replication\_role = replica` during the data copy stage
 * `--interactive`: launches an interactive wizard with arrow-key navigation
 
 Interactive settings are stored under the current user's application data folder so the next interactive run can reuse them.
@@ -137,8 +133,11 @@ This table stores per-table status (`Started`, `Succeeded`, `Failed`), timestamp
 ## Important behaviour
 
 * Source SQL Server data is never modified by this tool.
+* Tables are copied in topological order derived from both SQL Server and PostgreSQL foreign key edges, so parent tables are always inserted before their children.
+* Foreign key checks are always disabled for the duration of the data copy stage via `session_replication_role = replica` and unconditionally restored afterwards.
+* Non-primary-key unique indexes and unique constraints are dropped before the copy and recreated afterwards. Recreation failures are reported as warnings rather than hard errors; they indicate genuine duplicate values in the source that must be investigated before going live.
 * Target PostgreSQL is copied into using per-table transactions.
-* On a table failure, that table transaction is rolled back.
+* On a table failure, that table's transaction is rolled back.
 * Application cutover is not part of this tool.
 * Errors, warnings, and success messages are colour-coded in the terminal.
 * PostgreSQL is prepared to the current runtime schema, while SQL Server is allowed to be an older legacy-shaped source when the tool has a known compatibility mapping.
@@ -161,11 +160,101 @@ Read-model data should be rebuilt after a successful migration instead of copied
 
 The tool can resolve a limited set of legacy SQL Server shapes into the current PostgreSQL schema:
 
-* known table renames such as `SsoOrganizationIdentities -> StsOrganizationIdentities`
-* known column renames such as `ArchiveSupplierId <- SupplierId`
+* Known table renames such as `LocalFrequencyTypes -> LocalRelationFrequencyTypes` and `SsoOrganizationIdentities -> StsOrganizationIdentities`
+* Known column renames such as `ArchiveSupplierId <- SupplierId`
 * EF6-style foreign key names such as `SensitivePersonalDataType_Id -> SensitivePersonalDataTypeId`
-* bridge-column fallbacks when both old and new SQL Server columns exist, using the new column first and the legacy column when the new column is null
+* Bridge-column fallbacks when both old and new SQL Server columns exist, using the new column first and the legacy column when the new column is null
 
 If a source table or column cannot be resolved through those rules, readiness still fails fast.
 
 Self-referencing foreign keys, such as `User.ObjectOwnerId` and `User.LastChangedByUserId`, are copied in two phases: the table rows are inserted first, and the self-referencing columns are updated afterwards once all rows exist in PostgreSQL.
+
+## Switching the application runtime between SQL Server and PostgreSQL
+
+The KITOS web application selects a database provider at startup through the `Database:Provider` configuration key. The two provider values are `SqlServer` (default) and `PostgreSql`.
+
+### Option 1 – ASP.NET Core environment overlay (recommended for local development)
+
+`Presentation.Web/appsettings.json` configures SQL Server by default.
+`Presentation.Web/appsettings.PostgreSql.json` overlays the PostgreSQL provider and connection string.
+
+The overlay is activated by setting `ASPNETCORE_ENVIRONMENT` to `PostgreSql` before starting the application.
+
+`launchSettings.json` already contains profiles for both:
+
+| Profile | Environment | Provider |
+|---|---|---|
+| `Presentation.Web` | `Development` | SQL Server |
+| `IIS Express` | `PostgreSql` | PostgreSQL |
+
+Select the profile in Visual Studio, or pass it on the command line:
+
+```powershell
+# SQL Server (default)
+dotnet run --project Presentation.Web/Presentation.Web.csproj --launch-profile "Presentation.Web"
+
+# PostgreSQL
+dotnet run --project Presentation.Web/Presentation.Web.csproj --launch-profile "IIS Express"
+```
+
+### Option 2 – Environment variables (CI, containers, scripted deployments)
+
+Set the provider and connection string directly via environment variables. These take precedence over `appsettings.json`.
+
+```powershell
+# Switch to PostgreSQL
+$env:Database__Provider              = "PostgreSql"
+$env:ConnectionStrings__KitosContext = "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=postgres"
+
+# Switch back to SQL Server
+$env:Database__Provider              = "SqlServer"
+$env:ConnectionStrings__KitosContext = "Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True"
+```
+
+### Switching the provider in a deployed environment
+
+`DeploymentScripts/PreparePackage.ps1` stamps `appsettings.json` with runtime values before the deployment package is created. Setting the `KitosDbProvider` CI/CD environment variable to `PostgreSql` will make the script write that value into `Database.Provider` and `Hangfire.Provider` in the packaged `appsettings.json`; omitting the variable leaves the fields at their `SqlServer` defaults so existing SQL Server deployments are unaffected.
+
+The recommended transition sequence for each environment is:
+
+1. Run the migration tool against that environment's source SQL Server database to populate the PostgreSQL target.
+2. Set `KitosDbProvider = PostgreSql` alongside the PostgreSQL connection strings (`KitosDbConnectionStringForIIsApp`, `HangfireDbConnectionStringForIIsApp`) in the CI/CD pipeline for that environment.
+3. Deploy and validate. SQL Server remains untouched and can be used to roll back by reverting the three variables above.
+4. Once confidence is established, remove the SQL Server infrastructure for that environment and remove the `KitosDbProvider` variable — setting `SqlServer` as the hard-coded default in `appsettings.json` at that point makes the choice permanent.
+
+`DbMigrations.ps1` also reads `Database__Provider` to determine how to run EF Core migrations during deployment, so set that variable in the same pipeline step as `KitosDbProvider` when switching an environment.
+
+### Running integration tests against a specific provider
+
+Two `.runsettings` files are provided at the repository root:
+
+| File | Provider |
+|---|---|
+| `local-sqlserver.runsettings` | SQL Server |
+| `local-postgres.runsettings` | PostgreSQL |
+
+Activate one in Visual Studio via **Test → Configure Run Settings → Select Solution Wide runsettings File**, or pass it to `dotnet test`:
+
+```powershell
+# Run integration tests against PostgreSQL
+dotnet test Tests.Integration.Presentation.Web --settings local-postgres.runsettings
+
+# Run integration tests against SQL Server
+dotnet test Tests.Integration.Presentation.Web --settings local-sqlserver.runsettings
+```
+
+### Running EF Core migrations against a specific provider
+
+`dotnet ef` reads the provider and connection string from environment variables through `KitosContextDesignTimeFactory`:
+
+```powershell
+# PostgreSQL
+$env:Database__Provider              = "PostgreSql"
+$env:ConnectionStrings__KitosContext = "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=postgres"
+dotnet ef database update --project Infrastructure.DataAccess --startup-project Presentation.Web
+
+# SQL Server
+$env:Database__Provider              = "SqlServer"
+$env:ConnectionStrings__KitosContext = "Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True"
+dotnet ef database update --project Infrastructure.DataAccess --startup-project Presentation.Web
+```
