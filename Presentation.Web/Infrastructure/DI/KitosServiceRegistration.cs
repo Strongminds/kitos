@@ -205,7 +205,9 @@ namespace Presentation.Web.Infrastructure.DI
                         throw new InvalidOperationException("Smtp:Host is required when DeliveryMethod is Network");
                     var port = int.Parse(smtpSection["Port"] ?? "25");
                     var ssl = bool.Parse(smtpSection["EnableSsl"] ?? "false");
-                    inner = new SingleThreadedMailClient(host, port, ssl);
+                    var userName = smtpSection["UserName"];
+                    var password = smtpSection["Password"];
+                    inner = new SingleThreadedMailClient(host, port, ssl, userName, password);
                 }
 
                 return new DefaultFromAddressMailClient(inner, fromAddress);
