@@ -533,7 +533,7 @@ namespace Core.ApplicationServices
                 });
         }
 
-        private static string SanitizeFileNamePart(string value, Guid fallbackUuid)
+        private static string SanitizeFileNamePart(string? value, Guid fallbackUuid)
         {
             var fallback = fallbackUuid.ToString();
 
