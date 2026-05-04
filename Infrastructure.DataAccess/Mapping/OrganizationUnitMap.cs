@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Mapping
         public override void Configure(EntityTypeBuilder<OrganizationUnit> builder)
         {
             base.Configure(builder);
-            base.Configure(builder);
 
             builder.Property(x => x.LocalId).HasMaxLength(OrganizationUnit.MaxNameLength);
             builder.HasIndex(x => new { x.OrganizationId, x.LocalId }).HasDatabaseName("IX_LocalId");
