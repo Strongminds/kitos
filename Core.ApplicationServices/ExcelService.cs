@@ -527,10 +527,37 @@ namespace Core.ApplicationServices
                     var set = new DataSet();
                     set.Tables.Add(GetItSystemUsageTable(usage));
                     var exportedStream = _excelHandler.Create(set, stream);
-                    var systemName = usage.ItSystem?.Name ?? systemUsageUuid.ToString();
+                    var systemName = SanitizeFileNamePart(usage.ItSystem?.Name, systemUsageUuid);
                     var fileName = $"OS2KITOS IT System - {systemName}.xlsx";
                     return (exportedStream, fileName);
                 });
+        }
+
+        private static string SanitizeFileNamePart(string value, Guid fallbackUuid)
+        {
+            var fallback = fallbackUuid.ToString();
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return fallback;
+            }
+
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sanitizedChars = value
+                .Where(c => !char.IsControl(c) && !invalidChars.Contains(c))
+                .ToArray();
+
+            var sanitized = new string(sanitizedChars).Trim().Trim('.');
+
+            if (string.IsNullOrWhiteSpace(sanitized))
+            {
+                return fallback;
+            }
+
+            const int maxLength = 100;
+            return sanitized.Length > maxLength
+                ? sanitized.Substring(0, maxLength)
+                : sanitized;
         }
 
         private Result<int, OperationError> ResolveOrganizationId(Guid organizationUuid)
