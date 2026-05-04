@@ -815,22 +815,52 @@ namespace Core.ApplicationServices
 
         private static DataTable GetItSystemUsageTable(ItSystemUsage usage)
         {
-            var table = new DataTable("IT Anvendelsesprofil");
-            table.Columns.Add("Egenskab");
+            var table = new DataTable("IT System");
+            table.Columns.Add("Felt");
             table.Columns.Add("Værdi");
 
             void AddRow(string property, string? value) => table.Rows.Add(property, value ?? "");
 
+            //front-page
             AddRow("UUID", usage.Uuid.ToString());
-            AddRow("IT-system", usage.ItSystem?.Name);
+            AddRow("Navn", usage.ItSystem?.Name);
             AddRow("Organisation", usage.Organization?.Name);
-            AddRow("Lokalt system-id", usage.LocalSystemId);
-            AddRow("Lokalt systemnavn", usage.LocalCallName);
+            AddRow("Systemnavn (lokalt)", usage.LocalCallName);
+            AddRow("Systemnavn ID (lokalt)", usage.LocalSystemId);
             AddRow("Version", usage.Version);
-            AddRow("Notat", usage.Note);
-            AddRow("Livscyklusstatus", usage.LifeCycleStatus?.ToString());
+            AddRow("Antal brugere", usage.UserCount?.ToString());
+            AddRow("Klassifikation af data i systemet", usage.ItSystemCategories?.Name);
+            AddRow("Indeholder AI-teknologi?", usage.ContainsAITechnology?.ToString());
+            AddRow("Samfundkritisk IT-system", usage.IsSociallyCritical?.ToString());
+            AddRow("Forretningskritisk IT-system", usage.isBusinessCritical?.ToString());
+            AddRow("Note", usage.Note);
+            AddRow("Taget i anvendelse af", usage.ObjectOwner?.GetFullName() ?? "");
+            AddRow("Sidst redigeret (bruger)", usage.LastChangedByUser?.GetFullName() ?? "");
+            AddRow("Sidst redigeret (dato)", usage.LastChanged.ToShortDateString());
+            AddRow("Livscyklus", usage.LifeCycleStatus?.ToString());
             AddRow("Ibrugtagningsdato", usage.Concluded?.ToShortDateString());
             AddRow("Slutdato for anvendelse", usage.ExpirationDate?.ToShortDateString());
+            AddRow("Status", usage.CheckSystemValidity().Result ? "Systemet er aktivt" : "Systemet er ikke aktivt");
+            AddRow("Webtilgængelighed", usage.WebAccessibilityCompliance?.ToString());
+            AddRow("Hvornår leverandøren har udført gennemsynet", usage.LastWebAccessibilityCheck?.ToShortDateString());
+            AddRow("Webtilgængelighed noter", usage.WebAccessibilityNotes);
+
+            //Contracts
+            AddRow("Kontrakt der gør systemet aktivt", usage.MainContract?.ItContract.Name ?? "");
+            AddRow("Tilknyttede kontrakter", string.Join(", ", usage.Contracts.Select(x => x.ItContract?.Name ?? "")));
+
+            //DPRs
+            AddRow("Databehandlingsaftaler", string.Join(", ", usage.AssociatedDataProcessingRegistrations.Select(x => x.Name ?? "")));
+
+            //GDPR
+            AddRow("Systemets overordnede formål", usage.GeneralPurpose);
+            AddRow("IT-systemet driftes", usage.HostedAt?.ToString());
+            AddRow("Følsomme datatyper", string.Join(", ", usage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel.ToString())));
+            AddRow("Persondata-kategorier", string.Join(", ", usage.PersonalDataOptions.Select(x => x.PersonalData.ToString())));
+            AddRow("Logning af brugerkontrol", usage.UserSupervision?.ToString());
+            AddRow("Dato for seneste brugerkontrol", usage.UserSupervisionDate?.ToShortDateString());
+
+
             AddRow("Ansvarlig organisationsenhed", usage.ResponsibleUsage?.OrganizationUnit?.Name);
             AddRow("Relevante organisationsenheder", string.Join(", ", usage.UsedBy.Select(x => x.OrganizationUnit?.Name ?? "")));
             AddRow("Arkiveringspligt", usage.ArchiveDuty?.ToString());
@@ -839,20 +869,9 @@ namespace Core.ApplicationServices
             AddRow("Arkiveringssted", usage.ArchiveLocation?.Name);
             AddRow("Arkivleverandør", usage.ArchiveSupplier?.Name);
             AddRow("Arkivér fra system", usage.ArchiveFromSystem?.ToString());
-            AddRow("Følsomme datatyper", string.Join(", ", usage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel.ToString())));
-            AddRow("Persondata-kategorier", string.Join(", ", usage.PersonalDataOptions.Select(x => x.PersonalData.ToString())));
             AddRow("GDPR-kritikalitet", usage.GdprCriticality?.ToString());
-            AddRow("Formål", usage.GeneralPurpose);
-            AddRow("Driftsform", usage.HostedAt?.ToString());
-            AddRow("Antal brugere", usage.UserCount?.ToString());
             AddRow("AI-teknologi", usage.ContainsAITechnology?.ToString());
-            AddRow("Forretningskritisk", usage.isBusinessCritical?.ToString());
-            AddRow("Socialt kritisk", usage.IsSociallyCritical?.ToString());
-            AddRow("Webtilgængelighed", usage.WebAccessibilityCompliance?.ToString());
-            AddRow("Seneste webtilgængeligheds-tjek", usage.LastWebAccessibilityCheck?.ToShortDateString());
             AddRow("KLE-numre", string.Join(", ", usage.TaskRefs.Select(x => x.TaskKey)));
-            AddRow("Tilknyttede kontrakter", string.Join(", ", usage.Contracts.Select(x => x.ItContract?.Name ?? "")));
-            AddRow("Databehandlingsaftaler", string.Join(", ", usage.AssociatedDataProcessingRegistrations.Select(x => x.Name ?? "")));
             AddRow("Udgående systemrelationer", string.Join(", ", usage.UsageRelations.Select(x => x.ToSystemUsage?.ItSystem?.Name ?? "")));
             AddRow("Indgående systemrelationer", string.Join(", ", usage.UsedByRelations.Select(x => x.FromSystemUsage?.ItSystem?.Name ?? "")));
 

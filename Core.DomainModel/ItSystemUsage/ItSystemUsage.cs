@@ -639,13 +639,6 @@ namespace Core.DomainModel.ItSystemUsage
             return Maybe<OperationError>.None;
         }
 
-        public void ResetOrganizationalUsage()
-        {
-            UsedBy.Clear();
-            ResponsibleUsage.Track();
-            ResponsibleUsage = null;
-        }
-
         public Maybe<OperationError> UpdateOrganizationalUsage(IEnumerable<OrganizationUnit> usingOrganizationUnits, Maybe<OrganizationUnit> responsibleOrgUnit)
         {
             var organizationUnits = usingOrganizationUnits?.ToList();
