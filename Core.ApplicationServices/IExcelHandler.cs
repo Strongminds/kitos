@@ -8,5 +8,7 @@ namespace Core.ApplicationServices
         DataSet Import(Stream stream);
 
         Stream Export(DataSet data, Stream stream);
+
+        Stream Create(DataSet data, Stream stream);
     }
 }

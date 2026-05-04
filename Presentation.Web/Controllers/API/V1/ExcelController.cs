@@ -209,6 +209,22 @@ namespace Presentation.Web.Controllers.API.V1
 
         #endregion
 
+        #region Excel IT System Usages
+
+        [HttpGet]
+        [Route("it-system-usage/{systemUsageUuid}")]
+        public IActionResult GetItSystemUsageByUuid([NonEmptyGuid][FromRoute] Guid systemUsageUuid)
+        {
+            var stream = new MemoryStream();
+            return _excelService.ExportItSystemUsage(stream, systemUsageUuid)
+                .Match(
+                    result => GetFileResult(result.stream, result.fileName),
+                    FromOperationError
+                );
+        }
+
+        #endregion
+
         #region Helpers
 
         private delegate Stream ExportDelegate(Stream stream, int organizationId);

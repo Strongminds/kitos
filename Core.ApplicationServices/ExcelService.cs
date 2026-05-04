@@ -11,8 +11,10 @@ using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Contract.Write;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Contracts.Write;
+using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Extensions;
@@ -36,6 +38,7 @@ namespace Core.ApplicationServices
         private readonly IOrganizationRepository _organizationRepository;
         private readonly IAuthorizationContext _authorizationContext;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
+        private readonly IItSystemUsageService _itSystemUsageService;
 
         public ExcelService(IGenericRepository<OrganizationUnit> orgUnitRepository,
             IGenericRepository<User> userRepository,
@@ -47,7 +50,8 @@ namespace Core.ApplicationServices
             IItContractWriteService contractWriteService,
             IOrganizationRepository organizationRepository,
             IAuthorizationContext authorizationContext,
-            IEntityIdentityResolver entityIdentityResolver)
+            IEntityIdentityResolver entityIdentityResolver,
+            IItSystemUsageService itSystemUsageService)
         {
             _orgUnitRepository = orgUnitRepository;
             _userRepository = userRepository;
@@ -60,6 +64,7 @@ namespace Core.ApplicationServices
             _organizationRepository = organizationRepository;
             _authorizationContext = authorizationContext;
             _entityIdentityResolver = entityIdentityResolver;
+            _itSystemUsageService = itSystemUsageService;
         }
 
         /// <summary>
@@ -514,6 +519,20 @@ namespace Core.ApplicationServices
                     : new OperationError("User is not allowed to perform batch import", OperationFailure.Forbidden));
         }
 
+        public Result<(Stream stream, string fileName), OperationError> ExportItSystemUsage(Stream stream, Guid systemUsageUuid)
+        {
+            return _itSystemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
+                .Select(usage =>
+                {
+                    var set = new DataSet();
+                    set.Tables.Add(GetItSystemUsageTable(usage));
+                    var exportedStream = _excelHandler.Create(set, stream);
+                    var systemName = usage.ItSystem?.Name ?? systemUsageUuid.ToString();
+                    var fileName = $"OS2KITOS IT System - {systemName}.xlsx";
+                    return (exportedStream, fileName);
+                });
+        }
+
         private Result<int, OperationError> ResolveOrganizationId(Guid organizationUuid)
         {
             return _entityIdentityResolver.ResolveDbId<Organization>(organizationUuid)
@@ -766,6 +785,52 @@ namespace Core.ApplicationServices
         }
 
         #region Table Helpers
+
+        private static DataTable GetItSystemUsageTable(ItSystemUsage usage)
+        {
+            var table = new DataTable("IT Anvendelsesprofil");
+            table.Columns.Add("Egenskab");
+            table.Columns.Add("Værdi");
+
+            void AddRow(string property, string? value) => table.Rows.Add(property, value ?? "");
+
+            AddRow("UUID", usage.Uuid.ToString());
+            AddRow("IT-system", usage.ItSystem?.Name);
+            AddRow("Organisation", usage.Organization?.Name);
+            AddRow("Lokalt system-id", usage.LocalSystemId);
+            AddRow("Lokalt systemnavn", usage.LocalCallName);
+            AddRow("Version", usage.Version);
+            AddRow("Notat", usage.Note);
+            AddRow("Livscyklusstatus", usage.LifeCycleStatus?.ToString());
+            AddRow("Ibrugtagningsdato", usage.Concluded?.ToShortDateString());
+            AddRow("Slutdato for anvendelse", usage.ExpirationDate?.ToShortDateString());
+            AddRow("Ansvarlig organisationsenhed", usage.ResponsibleUsage?.OrganizationUnit?.Name);
+            AddRow("Relevante organisationsenheder", string.Join(", ", usage.UsedBy.Select(x => x.OrganizationUnit?.Name ?? "")));
+            AddRow("Arkiveringspligt", usage.ArchiveDuty?.ToString());
+            AddRow("Arkivnoter", usage.ArchiveNotes);
+            AddRow("Arkiveringsfrekvens (måneder)", usage.ArchiveFreq?.ToString());
+            AddRow("Arkiveringssted", usage.ArchiveLocation?.Name);
+            AddRow("Arkivleverandør", usage.ArchiveSupplier?.Name);
+            AddRow("Arkivér fra system", usage.ArchiveFromSystem?.ToString());
+            AddRow("Følsomme datatyper", string.Join(", ", usage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel.ToString())));
+            AddRow("Persondata-kategorier", string.Join(", ", usage.PersonalDataOptions.Select(x => x.PersonalData.ToString())));
+            AddRow("GDPR-kritikalitet", usage.GdprCriticality?.ToString());
+            AddRow("Formål", usage.GeneralPurpose);
+            AddRow("Driftsform", usage.HostedAt?.ToString());
+            AddRow("Antal brugere", usage.UserCount?.ToString());
+            AddRow("AI-teknologi", usage.ContainsAITechnology?.ToString());
+            AddRow("Forretningskritisk", usage.isBusinessCritical?.ToString());
+            AddRow("Socialt kritisk", usage.IsSociallyCritical?.ToString());
+            AddRow("Webtilgængelighed", usage.WebAccessibilityCompliance?.ToString());
+            AddRow("Seneste webtilgængeligheds-tjek", usage.LastWebAccessibilityCheck?.ToShortDateString());
+            AddRow("KLE-numre", string.Join(", ", usage.TaskRefs.Select(x => x.TaskKey)));
+            AddRow("Tilknyttede kontrakter", string.Join(", ", usage.Contracts.Select(x => x.ItContract?.Name ?? "")));
+            AddRow("Databehandlingsaftaler", string.Join(", ", usage.AssociatedDataProcessingRegistrations.Select(x => x.Name ?? "")));
+            AddRow("Udgående systemrelationer", string.Join(", ", usage.UsageRelations.Select(x => x.ToSystemUsage?.ItSystem?.Name ?? "")));
+            AddRow("Indgående systemrelationer", string.Join(", ", usage.UsedByRelations.Select(x => x.FromSystemUsage?.ItSystem?.Name ?? "")));
+
+            return table;
+        }
 
         private static DataTable GetOrganizationTable(IEnumerable<OrganizationUnit> orgUnits)
         {
