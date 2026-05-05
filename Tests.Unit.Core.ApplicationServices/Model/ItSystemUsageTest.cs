@@ -28,14 +28,17 @@ namespace Tests.Unit.Core.Model
             };
         }
 
-        private void AssertCriticalityFieldsLastChanged(DateTime? beforeChange, bool expectChange = true) {
-            if (expectChange)
-            {
-                Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
-            } else
-            {
-                Assert.Equal(_sut.CriticalityFieldsLastChanged, beforeChange);
-            }
+        [Fact]
+        public void ResetSystemUsageCriticalityLevel_SetsLastChanged_AndSetsValueToNull()
+        {
+            _sut.UpdateSystemUsageCriticalityLevel(new SystemUsageCriticalityLevel() { Uuid = A<Guid>(), Name = A<string>()});
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+            Assert.NotNull(_sut.SystemUsageCriticalityLevel);
+
+            _sut.ResetSystemUsageCriticalityLevel();
+
+            Assert.Null(_sut.SystemUsageCriticalityLevel);
+            AssertCriticalityFieldsLastChanged(beforeChange);
         }
 
         [Fact]
@@ -1405,6 +1408,18 @@ namespace Tests.Unit.Core.Model
 
             //Assert
             Assert.Equal(MainContractState.Inactive, state);
+        }
+
+        private void AssertCriticalityFieldsLastChanged(DateTime? beforeChange, bool expectChange = true)
+        {
+            if (expectChange)
+            {
+                Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+            }
+            else
+            {
+                Assert.Equal(_sut.CriticalityFieldsLastChanged, beforeChange);
+            }
         }
     }
 }
