@@ -36,6 +36,36 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
+        public void Get_Using_Organizations_Returns_NotFound_If_Supplier_Not_Found()
+        {
+            var supplierUuid = A<Guid>();
+            var supplierId = A<int>();
+            var usingOrganizationUuid = A<Guid>();
+            var usingOrganization = new Organization
+            {
+                Uuid = usingOrganizationUuid,
+                Id = A<int>()
+            };
+            _organizationSupplierRepository.Setup(x => x.AsQueryable()).Returns(new List<OrganizationSupplier>
+            {
+                new OrganizationSupplier
+                {
+                    Supplier = new Organization { Uuid = supplierUuid },
+                    SupplierId = supplierId,
+                    Organization = usingOrganization,
+                    OrganizationId = usingOrganization.Id,
+                }
+            }.AsQueryable());
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(supplierUuid)).Returns(Maybe<int>.None);
+
+            var result = _sut.GetUsingOrganizations(supplierUuid);
+
+            Assert.True(result.Failed);
+            var error = result.Error;
+            Assert.Equal(OperationFailure.NotFound, error.FailureType);
+        }
+
+        [Fact]
         public void Can_Get_Using_Organizations()
         {
             var supplierUuid = A<Guid>();
