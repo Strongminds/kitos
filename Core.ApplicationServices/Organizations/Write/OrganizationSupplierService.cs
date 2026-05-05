@@ -1,5 +1,4 @@
 ﻿using Core.Abstractions.Types;
-using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Generic;

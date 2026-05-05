@@ -17,7 +17,6 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
-using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Repositories.Organization;
 using Infrastructure.Services.DataAccess;
