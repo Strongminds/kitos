@@ -20,7 +20,7 @@ namespace Core.DomainServices.Suppliers
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark),
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology),
-                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality),
+                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment),
 
             };

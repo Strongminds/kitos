@@ -28,17 +28,98 @@ namespace Tests.Unit.Core.Model
             };
         }
 
+        private void AssertCriticalityFieldsLastChanged(DateTime? beforeChange, bool expectChange = true) {
+            if (expectChange)
+            {
+                Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+            } else
+            {
+                Assert.Equal(_sut.CriticalityFieldsLastChanged, beforeChange);
+            }
+        }
+
+        [Fact]
+        public void ResetCriticalityLevelDocumentation_SetsLastChanged_AndSetsValuesToNull()
+        {
+            _sut.UpdateCriticalityLevelDocumentationUrl(A<string>());
+            _sut.UpdateCriticalityLevelDocumentationName(A<string>());
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+            Assert.NotNull(_sut.CriticalityLevelDocumentationUrl);
+            Assert.NotNull(_sut.CriticalityLevelDocumentationName);
+
+            _sut.ResetCriticalityLevelDocumentation();
+
+            Assert.Null(_sut.CriticalityLevelDocumentationUrl);
+            Assert.Null(_sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
         [Fact]
         public void UpdateIsBusinessCritical_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
         {
             _sut.UpdateIsBusinessCritical(DataOptions.NO);
-            var expected = DataOptions.YES;
             var beforeChange = _sut.CriticalityFieldsLastChanged;
+            var expected = DataOptions.YES;
 
             _sut.UpdateIsBusinessCritical(expected);
 
             Assert.Equal(expected, _sut.isBusinessCritical);
-            Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationUrl_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationUrl(existingValue);
+            
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationUrl(existingValue);
+
+            Assert.Equal(existingValue, _sut.CriticalityLevelDocumentationUrl);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationName_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            var existing = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationName(existing);
+            var expected = A<string?>();
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationName(expected);
+
+            Assert.Equal(expected, _sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationName_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationName(existingValue);
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationName(existingValue);
+
+            Assert.Equal(existingValue, _sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationUrl_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            var existing = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationUrl(existing);
+            var expected = A<string?>();
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationUrl(expected);
+
+            Assert.Equal(expected, _sut.CriticalityLevelDocumentationUrl);
+            AssertCriticalityFieldsLastChanged(beforeChange);
         }
 
         [Fact]
@@ -46,13 +127,13 @@ namespace Tests.Unit.Core.Model
         {
             var existingValue = DataOptions.YES;
             _sut.UpdateIsBusinessCritical(existingValue);
-            
+
             var beforeChange = _sut.CriticalityFieldsLastChanged;
 
             _sut.UpdateIsBusinessCritical(existingValue);
 
             Assert.Equal(existingValue, _sut.isBusinessCritical);
-            Assert.Equal(beforeChange, _sut.CriticalityFieldsLastChanged);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
         }
 
         [Fact]
@@ -65,7 +146,7 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateIsSociallyCritical(expected);
 
             Assert.Equal(expected, _sut.IsSociallyCritical);
-            Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+            AssertCriticalityFieldsLastChanged(beforeChange);
         }
 
         [Fact]
@@ -79,9 +160,8 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateIsSociallyCritical(existingValue);
 
             Assert.Equal(existingValue, _sut.IsSociallyCritical);
-            Assert.Equal(beforeChange, _sut.CriticalityFieldsLastChanged);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
         }
-
 
         [Theory]
         [InlineData(DataOptions.DONTKNOW)]

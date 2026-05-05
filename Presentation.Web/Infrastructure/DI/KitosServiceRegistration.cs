@@ -585,6 +585,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterOptionsService<ItSystemUsage, ArchiveType, LocalArchiveType>(services);
             RegisterOptionsService<ItSystemUsage, ArchiveLocation, LocalArchiveLocation>(services);
             RegisterOptionsService<ItSystemUsage, ArchiveTestLocation, LocalArchiveTestLocation>(services);
+            RegisterOptionsService<ItSystemUsage, SystemUsageCriticalityLevel, LocalSystemUsageCriticalityLevel>(services);
             RegisterOptionsService<ItSystemUsage, RegisterType, LocalRegisterType>(services);
             RegisterOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(services);
             RegisterRoleOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(services);
@@ -705,6 +706,7 @@ namespace Presentation.Web.Infrastructure.DI
         {
             RegisterGlobalRegularOptionService<BusinessType, ItSystem>(services);
             RegisterGlobalRegularOptionService<ArchiveLocation, ItSystemUsage>(services);
+            RegisterGlobalRegularOptionService<SystemUsageCriticalityLevel, ItSystemUsage>(services);
             RegisterGlobalRoleOptionService<ItSystemRole, ItSystemRight>(services);
             RegisterGlobalRegularOptionService<SensitivePersonalDataType, ItSystem>(services);
             RegisterGlobalRegularOptionService<ItSystemRole, ItSystemRight>(services);
@@ -759,6 +761,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterLocalOptionService<LocalArchiveType, ItSystemUsage, ArchiveType>(services);
             RegisterLocalOptionService<LocalArchiveLocation, ItSystemUsage, ArchiveLocation>(services);
             RegisterLocalOptionService<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation>(services);
+            RegisterLocalOptionService<LocalSystemUsageCriticalityLevel, ItSystemUsage, SystemUsageCriticalityLevel>(services);
             RegisterLocalOptionService<LocalDataType, DataRow, DataType>(services);
             RegisterLocalOptionService<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType>(services);
             RegisterLocalOptionService<LocalInterfaceType, ItInterface, InterfaceType>(services);

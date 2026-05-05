@@ -22,6 +22,7 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainModel.References;
+using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
@@ -43,6 +44,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private readonly IOptionsService<ItSystemUsage, ArchiveType> _archiveTypeOptionsService;
         private readonly IOptionsService<ItSystemUsage, ArchiveLocation> _archiveLocationOptionsService;
         private readonly IOptionsService<ItSystemUsage, ArchiveTestLocation> _archiveTestLocationOptionsService;
+        private readonly IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> _systemUsageCriticalityLevelOptionsService;
         private readonly IItsystemUsageRelationsService _systemUsageRelationsService;
         private readonly IEntityIdentityResolver _identityResolver;
         private readonly IItContractService _contractService;
@@ -79,7 +81,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
             IOptionsService<ItSystemUsage, ArchiveTestLocation> archiveTestLocationOptionsService,
             IItsystemUsageRelationsService systemUsageRelationsService,
             IEntityIdentityResolver identityResolver,
-            IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository)
+            IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository,
+            IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> systemUsageCriticalityLevelOptionsService)
         {
             _systemUsageService = systemUsageService;
             _transactionManager = transactionManager;
@@ -103,6 +106,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             _systemUsageRelationsService = systemUsageRelationsService;
             _identityResolver = identityResolver;
             _personalDataOptionsRepository = personalDataOptionsRepository;
+            _systemUsageCriticalityLevelOptionsService = systemUsageCriticalityLevelOptionsService;
         }
 
         public Result<ItSystemUsage, OperationError> Create(SystemUsageCreationParameters parameters)
@@ -243,7 +247,6 @@ namespace Core.ApplicationServices.SystemUsage.Write
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
                        systemUsage.LinkToDirectoryUrl = newLink.Select(x => x.Url).GetValueOrDefault();
                    }))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.GdprCriticality, (systemUsage, gdprCriticality) => systemUsage.GdprCriticality = gdprCriticality))
 
                 //Registered data sensitivity
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DataSensitivityLevels, (systemUsage, levels) => UpdateSensitivityLevels(levels, systemUsage)))
@@ -527,6 +530,28 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return systemUsage.UpdateArchiveLocation(optionByUuid.Value.option);
         }
 
+        private Maybe<OperationError> UpdateSystemUsageCriticalityLevel(ItSystemUsage systemUsage, Maybe<Guid> systemUsageCriticalityLevelUuid)
+        {
+            if (systemUsageCriticalityLevelUuid.IsNone)
+            {
+                systemUsage.ResetSystemUsageCriticalityLevel();
+                return Maybe<OperationError>.None;
+            }
+
+            var optionByUuid = _systemUsageCriticalityLevelOptionsService.GetOptionByUuid(systemUsage.OrganizationId, systemUsageCriticalityLevelUuid.Value);
+
+            if (optionByUuid.IsNone)
+                return new OperationError("Invalid SystemUsageCriticalityLevel Uuid", OperationFailure.BadInput);
+
+            if (systemUsage.SystemUsageCriticalityLevelId != null && systemUsage.SystemUsageCriticalityLevelId == optionByUuid.Value.option.Id)
+                return Maybe<OperationError>.None;
+
+            if (!optionByUuid.Value.available)
+                return new OperationError($"SystemUsageCriticalityLevel with uuid {systemUsageCriticalityLevelUuid.Value} is not available in this organization.", OperationFailure.BadInput);
+
+            return systemUsage.UpdateSystemUsageCriticalityLevel(optionByUuid.Value.option);
+        }
+
         private Maybe<OperationError> UpdateArchiveType(ItSystemUsage systemUsage, Maybe<Guid> archiveType)
         {
             if (archiveType.IsNone)
@@ -640,7 +665,23 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.LastWebAccessibilityCheck, (systemUsage, lastWebAccessibilityCheck) => systemUsage.UpdateLastWebAccessibilityCheck(lastWebAccessibilityCheck)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.IsSociallyCritical, (systemUsage, isSociallyCritical) => systemUsage.UpdateIsSociallyCritical(isSociallyCritical)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)));
+        }
+
+        private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)
+        {
+            if (newLink.IsNone)
+            {
+                usage.ResetCriticalityLevelDocumentation();
+                return usage;
+            }
+
+            var value = newLink.Value;
+            usage.UpdateCriticalityLevelDocumentationUrl(value?.Url);
+            usage.UpdateCriticalityLevelDocumentationName(value?.Name);
+            return usage;
         }
 
         private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)

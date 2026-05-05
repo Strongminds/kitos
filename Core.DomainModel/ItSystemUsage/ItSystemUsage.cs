@@ -259,7 +259,11 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ArchiveTestLocation ArchiveTestLocation { get; set; }
 
         public int? ItSystemCategoriesId { get; set; }
-        public GdprCriticality? GdprCriticality { get; set; }
+        public int? SystemUsageCriticalityLevelId { get; set; }
+        public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
+
+        public virtual string? CriticalityLevelDocumentationUrl { get; set; }
+        public virtual string? CriticalityLevelDocumentationName { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
@@ -289,6 +293,26 @@ namespace Core.DomainModel.ItSystemUsage
 
         private void SetCriticalityFieldsLastChanged()
         {
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void UpdateCriticalityLevelDocumentationUrl(string? value) {
+            if (value == CriticalityLevelDocumentationUrl) return;
+            CriticalityLevelDocumentationUrl = value;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void UpdateCriticalityLevelDocumentationName(string? value)
+        {
+            if (value == CriticalityLevelDocumentationName) return;
+            CriticalityLevelDocumentationName = value;
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void ResetCriticalityLevelDocumentation()
+        {
+            CriticalityLevelDocumentationUrl = null;
+            CriticalityLevelDocumentationName = null;
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
@@ -898,6 +922,25 @@ namespace Core.DomainModel.ItSystemUsage
             if (ArchiveLocation == null || ArchiveLocation.Id != newValue.Id)
             {
                 ArchiveLocation = newValue;
+            }
+
+            return Maybe<OperationError>.None;
+        }
+
+        public void ResetSystemUsageCriticalityLevel()
+        {
+            SystemUsageCriticalityLevel.Track();
+            SystemUsageCriticalityLevel = null;
+        }
+
+        public Maybe<OperationError> UpdateSystemUsageCriticalityLevel(SystemUsageCriticalityLevel newValue)
+        {
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+
+            if (SystemUsageCriticalityLevel == null || SystemUsageCriticalityLevel.Id != newValue.Id)
+            {
+                SystemUsageCriticalityLevel = newValue;
             }
 
             return Maybe<OperationError>.None;
