@@ -5,6 +5,7 @@ using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
@@ -83,8 +84,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var updateGdprRequest = new
             {
                 RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
-                GdprCriticality = A<GdprCriticalityChoice>(),
-                RiskAssessmentResult = A<RiskLevelChoice>()
+                RiskAssessmentResult = A<RiskLevelChoice>(),
             };
             using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, updateGdprRequest);
             Assert.True(updateUsageGdpr.IsSuccessStatusCode);

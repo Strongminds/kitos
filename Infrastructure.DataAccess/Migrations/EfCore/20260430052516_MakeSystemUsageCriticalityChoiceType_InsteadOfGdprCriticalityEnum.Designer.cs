@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260430052516_MakeSystemUsageCriticalityChoiceType_InsteadOfGdprCriticalityEnum")]
+    partial class MakeSystemUsageCriticalityChoiceType_InsteadOfGdprCriticalityEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4238,10 +4241,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime?>("CriticalityFieldsLastChanged")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CriticalityLevelDocumentationName")
+                    b.Property<string>("CriticalityLevelDocumentationUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CriticalityLevelDocumentationUrl")
+                    b.Property<string>("CriticalityLevelDocumentationUrlName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("DPIAConducted")
@@ -4454,9 +4457,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SystemPreviousName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SystemUsageCriticalityLevelName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("SystemUsageCriticalityLevelUuid")
@@ -6728,7 +6728,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasDatabaseName("UX_OrganizationUnit_UUID");
 
                     b.HasIndex("OrganizationId", "LocalId")
-                        .HasDatabaseName("IX_LocalId");
+                        .IsUnique()
+                        .HasDatabaseName("UX_LocalId")
+                        .HasFilter("[LocalId] IS NOT NULL");
 
                     b.ToTable("OrganizationUnit", (string)null);
                 });

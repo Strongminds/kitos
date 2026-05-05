@@ -105,7 +105,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
                 UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
-                GdprCriticality = systemUsage.GdprCriticality?.ToGdprCriticalityChoice()
             };
         }
 
@@ -194,6 +193,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes,
                 IsSociallyCritical = MapYesNoExtended(systemUsage.IsSociallyCritical),
                 IsBusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
+                CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
+                SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
+                CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
             };
         }
 
@@ -217,7 +219,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return systemUsage.HostedAt?.ToHostingChoice();
         }
 
-        private static SimpleLinkDTO MapSimpleLink(string name, string url)
+        private static SimpleLinkDTO MapSimpleLink(string? name, string? url)
         {
             return new()
             {

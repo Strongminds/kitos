@@ -1217,7 +1217,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     x.ContainsAITechnology);
             var criticalityFieldKey =
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
-                    x.GdprCriticality);
+                    x.SystemUsageCriticalityLevel);
             var riskFieldKey =
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
                     x.preriskAssessment);
