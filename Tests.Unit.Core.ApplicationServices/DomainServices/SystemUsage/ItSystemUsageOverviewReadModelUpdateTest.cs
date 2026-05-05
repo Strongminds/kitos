@@ -348,6 +348,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.WebAccessibilityNotes, readModel.WebAccessibilityNotes);
             Assert.Equal(systemUsage.IsSociallyCritical, readModel.IsSociallyCritical);
             Assert.Equal(systemUsage.CriticalityFieldsLastChanged, readModel.CriticalityFieldsLastChanged);
+            Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Uuid, readModel.SystemUsageCriticalityLevelUuid);
+            Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);

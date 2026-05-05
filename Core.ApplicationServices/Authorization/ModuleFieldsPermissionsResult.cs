@@ -60,7 +60,7 @@ namespace Core.ApplicationServices.Authorization
                     fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper
                         .GetPropertyPath<ItSystemUsage>(
                             x => x.ContainsAITechnology)),
-                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.GdprCriticality)),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel)),
                     fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment))
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>

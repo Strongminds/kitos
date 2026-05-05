@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260501103523_AddCriticalityLevelName_ToUsageReadModel")]
+    partial class AddCriticalityLevelName_ToUsageReadModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6728,7 +6731,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasDatabaseName("UX_OrganizationUnit_UUID");
 
                     b.HasIndex("OrganizationId", "LocalId")
-                        .HasDatabaseName("IX_LocalId");
+                        .IsUnique()
+                        .HasDatabaseName("UX_LocalId")
+                        .HasFilter("[LocalId] IS NOT NULL");
 
                     b.ToTable("OrganizationUnit", (string)null);
                 });
