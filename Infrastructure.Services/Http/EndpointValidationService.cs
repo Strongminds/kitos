@@ -16,7 +16,6 @@ namespace Infrastructure.Services.Http
         private const string ChromeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
         private const string AnyMediaType = "*/*";
         private const string EXCEPTION_TEXT_CouldNotCreateSslTlsSecureChannel = "Could not create SSL/TLS secure channel";
-        private readonly string[] IgnoredProtocols = ["kmdsageraabn", "kmdedhvis", "sbsyslauncher"];
 
         private static readonly IEnumerable<string> ErrorContentWhichShouldNotBeRetried = new[]
         {
@@ -27,7 +26,7 @@ namespace Infrastructure.Services.Http
         };
 
         private readonly ILogger _logger;
-
+        private readonly IEndpointValidationConfiguration _configuration;
         private static readonly HttpClient Client;
         private static readonly IEnumerable<TimeSpan> BackOffDurations = CreateDurations(1, 5, 15).ToList().AsReadOnly();
 
@@ -52,9 +51,10 @@ namespace Infrastructure.Services.Http
             Client.DefaultRequestHeaders.UserAgent.ParseAdd(ChromeUserAgent);
         }
 
-        public EndpointValidationService(ILogger logger)
+        public EndpointValidationService(ILogger logger, IEndpointValidationConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task<EndpointValidation> ValidateAsync(string url)
@@ -63,7 +63,7 @@ namespace Infrastructure.Services.Http
             {
                 return new EndpointValidation(url, new EndpointValidationError(EndpointValidationErrorType.InvalidUriFormat));
             }
-            if (IgnoredProtocols.Any(protocol => url.StartsWith(protocol)))
+            if (_configuration.IgnoredProtocols.Any(protocol => url.StartsWith(protocol)))
             {
                 return Success(url);
             }

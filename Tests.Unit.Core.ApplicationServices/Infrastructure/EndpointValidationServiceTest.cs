@@ -1,5 +1,8 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
+using Infrastructure.Services;
 using Infrastructure.Services.Http;
 using Moq;
 using Serilog;
@@ -14,17 +17,20 @@ namespace Tests.Unit.Core.Infrastructure
             ServiceEndpointConfiguration.ConfigureValidationOfOutgoingConnections();
         }
 
-        [Theory]
-        [InlineData("kmdsageraabn:1")]
-        [InlineData("kmdedhvis link 2")]
-        [InlineData("sbsyslauncher 33")]
-        public async Task ValididateAsync_Skips_Urls_With_Ignored_Protocols(string url)
+        [Fact]
+        public async Task ValididateAsync_Skips_Urls_With_Ignored_Protocols()
         {
-            var sut = new EndpointValidationService(Mock.Of<ILogger>());
+            var configuration = new Mock<IEndpointValidationConfiguration>();
+            var sut = new EndpointValidationService(Mock.Of<ILogger>(), configuration.Object);
+            List<string> protocols = ["test1", "test2"];
+            configuration.SetupGet(c => c.IgnoredProtocols).Returns(protocols);
 
-            var validation = await sut.ValidateAsync(url).ConfigureAwait(false);
-
-            Assert.True(validation.Success);
+            foreach (var protocol in protocols)
+            {
+                var urlWithProtocol = $"{protocol}://example.com";
+                var validation = await sut.ValidateAsync(urlWithProtocol).ConfigureAwait(false);
+                Assert.True(validation.Success);
+            }
         }
 
         [Theory]
@@ -39,7 +45,8 @@ namespace Tests.Unit.Core.Infrastructure
         public async Task Validate_Returns(string candidate, bool success, EndpointValidationErrorType? expectedErrorType, HttpStatusCode? expectedStatusCode)
         {
             //Arrange
-            var sut = new EndpointValidationService(Mock.Of<ILogger>());
+            var configuration = new Mock<IEndpointValidationConfiguration>();
+            var sut = new EndpointValidationService(Mock.Of<ILogger>(), configuration.Object);
 
             //Act
             var validation = await sut.ValidateAsync(candidate).ConfigureAwait(false);
