@@ -1,20 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
 using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
-using Presentation.Web.Models.API.V2.Response.Options;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
     [Route("api/v2/it-system-usage-criticality-level-types")]
-    public class ItSystemUsageSystemUsageCriticalityLevelTypeV2Controller : BaseRegularOptionTypeV2Controller<ItSystemUsage, SystemUsageCriticalityLevel>
+    public class ItSystemUsageCriticalityLevelTypeV2Controller : BaseRegularOptionTypeV2Controller<ItSystemUsage, SystemUsageCriticalityLevel>
     {
-        public ItSystemUsageSystemUsageCriticalityLevelTypeV2Controller(IOptionsApplicationService<ItSystemUsage, SystemUsageCriticalityLevel> optionService)
+        public ItSystemUsageCriticalityLevelTypeV2Controller(IOptionsApplicationService<ItSystemUsage, SystemUsageCriticalityLevel> optionService)
             : base(optionService)
         {
         }
