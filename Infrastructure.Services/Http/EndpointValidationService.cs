@@ -16,6 +16,7 @@ namespace Infrastructure.Services.Http
         private const string ChromeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36";
         private const string AnyMediaType = "*/*";
         private const string EXCEPTION_TEXT_CouldNotCreateSslTlsSecureChannel = "Could not create SSL/TLS secure channel";
+        private readonly string[] IgnoredProtocols = ["kmdsageraabn", "kmdedhvis", "sbsyslauncher"];
 
         private static readonly IEnumerable<string> ErrorContentWhichShouldNotBeRetried = new[]
         {
@@ -62,6 +63,10 @@ namespace Infrastructure.Services.Http
             {
                 return new EndpointValidation(url, new EndpointValidationError(EndpointValidationErrorType.InvalidUriFormat));
             }
+            if (IgnoredProtocols.Any(protocol => url.StartsWith(protocol)))
+            {
+                return Success(url);
+            }
             try
             {
                 _logger.Debug("Checking Endpoint at: '{uri}'", url);
@@ -90,7 +95,7 @@ namespace Infrastructure.Services.Http
                         case 308: //Permanent redirect: https://tools.ietf.org/html/rfc7238
                         case (int)HttpStatusCode.MovedPermanently:
                             //Will result in pages being shown - redirect might be a "short link" which redirects to the real link
-                            return new EndpointValidation(url);
+                            return Success(url);
                         default:
                             return new EndpointValidation(url, new EndpointValidationError(EndpointValidationErrorType.ErrorResponseCode, response.StatusCode));
                     }
@@ -103,6 +108,11 @@ namespace Infrastructure.Services.Http
                 //This is typically where we end up if we get a connection timeout or other type of communication error where the http client is unable to proceed
                 return new EndpointValidation(url, new EndpointValidationError(MapExceptionError(e)));
             }
+        }
+
+        private EndpointValidation Success(string url)
+        {
+            return new EndpointValidation(url);
         }
 
         private static EndpointValidationErrorType MapExceptionError(Exception exception)

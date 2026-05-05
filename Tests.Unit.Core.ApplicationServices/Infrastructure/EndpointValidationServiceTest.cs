@@ -15,6 +15,19 @@ namespace Tests.Unit.Core.Infrastructure
         }
 
         [Theory]
+        [InlineData("kmdsageraabn:1")]
+        [InlineData("kmdedhvis link 2")]
+        [InlineData("sbsyslauncher 33")]
+        public async Task ValididateAsync_Skips_Urls_With_Ignored_Protocols(string url)
+        {
+            var sut = new EndpointValidationService(Mock.Of<ILogger>());
+
+            var validation = await sut.ValidateAsync(url).ConfigureAwait(false);
+
+            Assert.True(validation.Success);
+        }
+
+        [Theory]
         [InlineData("https://kitos.dk/should-not-be-here/", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
         [InlineData("http://kitos.dk", true, null, null)] //will upgrade to https
         [InlineData("https://kitos.dk", true, null, null)]
