@@ -109,5 +109,20 @@ namespace Core.ApplicationServices.Organizations.Write
 
             return orgIdResult.Value;
         }
+
+        public Result<IEnumerable<Organization>, OperationError> GetUsingOrganizations(Guid supplierUuid)
+        {
+            var supplierIdResult = _entityIdentityResolver.ResolveDbId<Organization>(supplierUuid);
+            if (supplierIdResult.IsNone)
+            {
+                return new OperationError($"Supplier organization with uuid {supplierUuid} not found", OperationFailure.NotFound);
+            }
+
+            var supplierId = supplierIdResult.Value;
+            return _organizationSupplierRepository.AsQueryable()
+                .Where(x => x.SupplierId == supplierId)
+                .Select(x => x.Organization)
+                .ToList();
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Organizations.Write;
-using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
@@ -34,6 +33,36 @@ namespace Tests.Unit.Presentation.Web.Services
             _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
                 _organizationService.Object, _entityIdentityResolver.Object, 
                 _transactionManager.Object);
+        }
+
+        [Fact]
+        public void Can_Get_Using_Organizations()
+        {
+            var supplierUuid = A<Guid>();
+            var supplierId = A<int>();
+            var usingOrganizationUuid = A<Guid>();
+            var usingOrganization = new Organization
+            {
+                Uuid = usingOrganizationUuid,
+                Id = A<int>()
+            };
+            _organizationSupplierRepository.Setup(x => x.AsQueryable()).Returns(new List<OrganizationSupplier>
+            {
+                new OrganizationSupplier
+                {
+                    Supplier = new Organization { Uuid = supplierUuid },
+                    SupplierId = supplierId,
+                    Organization = usingOrganization,
+                    OrganizationId = usingOrganization.Id,
+                }
+            }.AsQueryable());
+            _entityIdentityResolver.Setup(x => x.ResolveDbId<Organization>(supplierUuid)).Returns(supplierId);
+
+            var result = _sut.GetUsingOrganizations(supplierUuid);
+
+            Assert.True(result.Ok);
+            var value = Assert.Single(result.Value);
+            Assert.Equal(usingOrganizationUuid, value.Uuid);
         }
 
         [Fact]
