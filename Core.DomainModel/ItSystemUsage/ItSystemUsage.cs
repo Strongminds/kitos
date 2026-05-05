@@ -277,13 +277,18 @@ namespace Core.DomainModel.ItSystemUsage
         {
             if (value == isBusinessCritical) return;
             isBusinessCritical = value;
-            CriticalityFieldsLastChanged = DateTime.UtcNow;
+            SetCriticalityFieldsLastChanged();
         }
 
         public void UpdateIsSociallyCritical(DataOptions? value)
         {
             if (value == IsSociallyCritical) return;
             IsSociallyCritical = value;
+            SetCriticalityFieldsLastChanged();
+        }
+
+        private void SetCriticalityFieldsLastChanged()
+        {
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
