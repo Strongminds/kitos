@@ -76,7 +76,6 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// Documentation link for the criticality level assessment of this system usage.
         /// </summary>
-        [SupplierField]
         public SimpleLinkDTO CriticalityLevelDocumentation { get; set; }
     }
 }
