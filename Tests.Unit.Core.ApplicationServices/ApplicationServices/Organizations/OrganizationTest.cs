@@ -26,6 +26,27 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
         }
 
         [Fact]
+        public void ClearUsedAsSupplierByOrganizations_Clears_Collection() {
+            _sut.UsedAsSupplierByOrganizations.Add(new OrganizationSupplier());
+            Assert.Single(_sut.UsedAsSupplierByOrganizations);
+
+            _sut.ClearUsedAsSupplierByOrganizations();
+
+            Assert.Empty(_sut.UsedAsSupplierByOrganizations);
+        }
+
+        [Fact]
+        public void ClearSuppliers_Clears_Collection()
+        {
+            _sut.Suppliers.Add(new OrganizationSupplier());
+            Assert.Single(_sut.Suppliers);
+
+            _sut.ClearSuppliers();
+
+            Assert.Empty(_sut.Suppliers);
+        }
+
+        [Fact]
         public void GivenNullSuppliers_HasSuppliers_Returns_False()
         {
             _sut.Suppliers = null;
