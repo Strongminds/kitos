@@ -27,7 +27,7 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
 
         [Fact]
         public void ClearUsedAsSupplierByOrganizations_Clears_Collection() {
-            _sut.UsedAsSupplierByOrganizations.Add(new OrganizationSupplier());
+            _sut.UsedAsSupplierByOrganizations = new List<OrganizationSupplier>() { new() };
             Assert.Single(_sut.UsedAsSupplierByOrganizations);
 
             _sut.ClearUsedAsSupplierByOrganizations();
@@ -38,7 +38,7 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
         [Fact]
         public void ClearSuppliers_Clears_Collection()
         {
-            _sut.Suppliers.Add(new OrganizationSupplier());
+            _sut.Suppliers = new List<OrganizationSupplier>() { new() };
             Assert.Single(_sut.Suppliers);
 
             _sut.ClearSuppliers();

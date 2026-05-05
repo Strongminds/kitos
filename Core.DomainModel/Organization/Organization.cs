@@ -172,12 +172,12 @@ namespace Core.DomainModel.Organization
 
         public void ClearUsedAsSupplierByOrganizations()
         {
-            UsedAsSupplierByOrganizations.Clear();
+            UsedAsSupplierByOrganizations?.Clear();
         }
 
         public void ClearSuppliers()
         {
-            Suppliers.Clear();
+            Suppliers?.Clear();
         }
 
         public bool HasSuppliers()

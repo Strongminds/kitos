@@ -810,7 +810,7 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
-        public void Delete_Returns_Ok_Of_No_Conflicts()
+        public void Delete_Returns_Ok_If_No_Conflicts()
         {
             //Arrange
             var organization = SetupConflictCalculationPrerequisites(true, true, true);
