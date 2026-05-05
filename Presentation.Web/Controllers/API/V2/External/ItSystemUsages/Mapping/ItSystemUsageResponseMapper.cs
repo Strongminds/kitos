@@ -194,6 +194,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes,
                 IsSociallyCritical = MapYesNoExtended(systemUsage.IsSociallyCritical),
                 IsBusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
+                CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
             };
         }
 

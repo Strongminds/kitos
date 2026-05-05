@@ -1538,6 +1538,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             AssertTransactionCommitted(transactionMock);
             Assert.Equal(purpose, itSystemUsage.GeneralPurpose);
             Assert.Equal(businessCritical, itSystemUsage.isBusinessCritical);
+            Assert.NotNull(itSystemUsage.CriticalityFieldsLastChanged);
             Assert.Equal(hostedAt, itSystemUsage.HostedAt);
             AssertLink(directoryDoc, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);
             Assert.Equal(sensitiveDataLevels.OrderBy(x => x), itSystemUsage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).OrderBy(x => x));

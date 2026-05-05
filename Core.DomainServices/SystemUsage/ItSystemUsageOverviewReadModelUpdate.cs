@@ -98,6 +98,7 @@ namespace Core.DomainServices.SystemUsage
             destination.LastWebAccessibilityCheck = source.LastWebAccessibilityCheck;
             destination.WebAccessibilityNotes = source.WebAccessibilityNotes;
             destination.IsSociallyCritical = source.IsSociallyCritical;
+            destination.CriticalityFieldsLastChanged = source.CriticalityFieldsLastChanged;
             destination.GdprCriticality = source.GdprCriticality;
 
             PatchParentSystemInformation(source, destination);

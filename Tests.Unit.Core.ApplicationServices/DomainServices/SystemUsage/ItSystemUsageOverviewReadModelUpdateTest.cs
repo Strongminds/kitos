@@ -300,6 +300,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             systemUsage.WebAccessibilityCompliance = A<YesNoPartiallyOption>();
             systemUsage.LastWebAccessibilityCheck = A<DateTime>();
             systemUsage.WebAccessibilityNotes = A<string>();
+            systemUsage.UpdateIsBusinessCritical(A<DataOptions>());
+            systemUsage.UpdateIsSociallyCritical(A<DataOptions>());
 
             var readModel = new ItSystemUsageOverviewReadModel();
 
@@ -345,6 +347,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.LastWebAccessibilityCheck, readModel.LastWebAccessibilityCheck);
             Assert.Equal(systemUsage.WebAccessibilityNotes, readModel.WebAccessibilityNotes);
             Assert.Equal(systemUsage.IsSociallyCritical, readModel.IsSociallyCritical);
+            Assert.Equal(systemUsage.CriticalityFieldsLastChanged, readModel.CriticalityFieldsLastChanged);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);

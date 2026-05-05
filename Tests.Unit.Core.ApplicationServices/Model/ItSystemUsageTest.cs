@@ -28,6 +28,60 @@ namespace Tests.Unit.Core.Model
             };
         }
 
+        [Fact]
+        public void UpdateIsBusinessCritical_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            _sut.UpdateIsBusinessCritical(DataOptions.NO);
+            var expected = DataOptions.YES;
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsBusinessCritical(expected);
+
+            Assert.Equal(expected, _sut.isBusinessCritical);
+            Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+        }
+
+        [Fact]
+        public void UpdateIsBusinessCritical_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = DataOptions.YES;
+            _sut.UpdateIsBusinessCritical(existingValue);
+            
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsBusinessCritical(existingValue);
+
+            Assert.Equal(existingValue, _sut.isBusinessCritical);
+            Assert.Equal(beforeChange, _sut.CriticalityFieldsLastChanged);
+        }
+
+        [Fact]
+        public void UpdateIsSociallyCritical_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            _sut.UpdateIsSociallyCritical(DataOptions.NO);
+            var expected = DataOptions.YES;
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsSociallyCritical(expected);
+
+            Assert.Equal(expected, _sut.IsSociallyCritical);
+            Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+        }
+
+        [Fact]
+        public void UpdateIsSociallyCritical_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = DataOptions.YES;
+            _sut.UpdateIsSociallyCritical(existingValue);
+
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsSociallyCritical(existingValue);
+
+            Assert.Equal(existingValue, _sut.IsSociallyCritical);
+            Assert.Equal(beforeChange, _sut.CriticalityFieldsLastChanged);
+        }
+
 
         [Theory]
         [InlineData(DataOptions.DONTKNOW)]
