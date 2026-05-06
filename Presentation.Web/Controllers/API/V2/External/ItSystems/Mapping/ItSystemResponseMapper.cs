@@ -42,8 +42,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 Scope = itSystem.AccessModifier.ToChoice(),
                 OrganizationContext = itSystem.Organization?.MapShallowOrganizationResponseDTO(),
                 LegalName = itSystem.LegalName,
-                LegalDataProcessorName = itSystem.LegalDataProcessorName,
-                LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels)
+                LegalDataProcessorName = itSystem.LegalDataProcessorName
             };
 
             MapBaseInformation(itSystem, dto);
@@ -80,31 +79,32 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             return arg.ToChoice();
         }
 
-        private void MapBaseInformation<T>(ItSystem arg, T dto) where T : BaseItSystemResponseDTO
+        private void MapBaseInformation<T>(ItSystem itSystem, T dto) where T : BaseItSystemResponseDTO
         {
-            dto.Uuid = arg.Uuid;
-            dto.ExternalUuid = arg.ExternalUuid;
-            dto.Name = arg.Name;
-            dto.RightsHolder = arg.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
-            dto.BusinessType = arg.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
-            dto.Description = arg.Description;
-            dto.CreatedBy = arg.ObjectOwner?.MapIdentityNamePairDTO();
-            dto.Created = arg.Created;
-            dto.Deactivated = arg.Disabled;
-            dto.FormerName = arg.PreviousName;
-            dto.ParentSystem = arg.Parent?.Transform(parent => parent.MapIdentityNamePairDTO());
-            dto.ExternalReferences = _referenceResponseMapper.MapExternalReferences(arg.ExternalReferences).ToList();
-            dto.RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(arg.ArchiveDutyComment, arg.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided);
-            dto.KLE = arg
+            dto.Uuid = itSystem.Uuid;
+            dto.ExternalUuid = itSystem.ExternalUuid;
+            dto.Name = itSystem.Name;
+            dto.RightsHolder = itSystem.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
+            dto.BusinessType = itSystem.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
+            dto.Description = itSystem.Description;
+            dto.CreatedBy = itSystem.ObjectOwner?.MapIdentityNamePairDTO();
+            dto.Created = itSystem.Created;
+            dto.Deactivated = itSystem.Disabled;
+            dto.FormerName = itSystem.PreviousName;
+            dto.ParentSystem = itSystem.Parent?.Transform(parent => parent.MapIdentityNamePairDTO());
+            dto.ExternalReferences = _referenceResponseMapper.MapExternalReferences(itSystem.ExternalReferences).ToList();
+            dto.RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided);
+            dto.KLE = itSystem
                 .TaskRefs
                 .Select(taskRef => taskRef.MapIdentityNamePairDTO())
                 .ToList();
             dto.MainContractSuppliers =
-                arg.Usages.Select(x => x.MainContract?.ItContract.Supplier)
+                itSystem.Usages.Select(x => x.MainContract?.ItContract.Supplier)
                     .Where(x => x != null)
                     .DistinctBy(x => x.Uuid)
                     .Select(x => x.MapShallowOrganizationResponseDTO())
                     .ToList();
+            dto.LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels);
         }
     }
 }
