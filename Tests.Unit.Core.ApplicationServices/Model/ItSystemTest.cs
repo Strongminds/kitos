@@ -1,6 +1,7 @@
 ﻿using Core.Abstractions.Types;
 using Core.DomainModel;
 using Core.DomainModel.ItSystem;
+using System.Linq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -15,66 +16,29 @@ namespace Tests.Unit.Core.Model
             _sut = new ItSystem();
         }
 
-        [Theory]
-        [InlineData(LicensingAndCodeModel.Proprietary)]
-        [InlineData(LicensingAndCodeModel.Freeware)]
-        [InlineData(LicensingAndCodeModel.OpenSource)]
-        public void RemoveLicensingAndCodeModel_Can_Remove_Value(LicensingAndCodeModel value)
+        [Fact]
+        public void SetLicensingAndCodeModels_Returns_Conflict_If_Proprietary_And_Other_Are_Present()
         {
-            _sut.AddLicensingAndCodeModel(value);
+            var models = new[] { LicensingAndCodeModel.OpenSource, LicensingAndCodeModel.Proprietary };
 
-            _sut.RemoveLicensingAndCodeModel(value);
+            var result = _sut.SetLicensingAndCodeModels(models);
 
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Conflict, result.Value.FailureType);
             Assert.Empty(_sut.LicensingAndCodeModels);
         }
 
         [Fact]
-        public void AddLicensingAndCodeModel_Can_Add_Both_OpenSource_And_Freeware()
+        public void SetLicensingAndCodeModels_Does_Not_Add_Duplicates()
         {
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.OpenSource);
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Freeware);
+            var values = new[] { LicensingAndCodeModel.OpenSource, LicensingAndCodeModel.Freeware, LicensingAndCodeModel.Freeware };
+            var uniqueValuesCount = values.ToHashSet().Count;
+            _sut.SetLicensingAndCodeModels(values);
 
-            Assert.Contains(LicensingAndCodeModel.OpenSource, _sut.LicensingAndCodeModels);
-            Assert.Contains(LicensingAndCodeModel.Freeware, _sut.LicensingAndCodeModels);
-        }
+            var result = _sut.SetLicensingAndCodeModels(values);
 
-        [Fact]
-        public void AddLicensingAndCodeModel_Cannot_Add_Duplicates()
-        {
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.OpenSource);
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Freeware);
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.OpenSource);
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Freeware);
-
-            Assert.Equal(2, _sut.LicensingAndCodeModels.Count);
-            Assert.Contains(LicensingAndCodeModel.OpenSource, _sut.LicensingAndCodeModels);
-            Assert.Contains(LicensingAndCodeModel.Freeware, _sut.LicensingAndCodeModels);
-        }
-
-        [Fact]
-        public void AddLicensingAndCodeModel_Adding_Proprietary_Overrides_Other_Values()
-        {
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.OpenSource);
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Freeware);
-            Assert.Equal(2, _sut.LicensingAndCodeModels.Count);
-
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Proprietary);
-
-            Assert.Single(_sut.LicensingAndCodeModels);
-            Assert.Contains(LicensingAndCodeModel.Proprietary, _sut.LicensingAndCodeModels);
-        }
-
-        [Fact]
-        public void AddLicensingAndCodeModel_Cannot_Add_NonProprietary_Values_After_Proprietary()
-        { 
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Proprietary);
-            Assert.Single(_sut.LicensingAndCodeModels);
-
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.OpenSource);
-            _sut.AddLicensingAndCodeModel(LicensingAndCodeModel.Freeware);
-
-            Assert.Single(_sut.LicensingAndCodeModels);
-            Assert.Contains(LicensingAndCodeModel.Proprietary, _sut.LicensingAndCodeModels);
+            Assert.True(result.IsNone);
+            Assert.Equal(uniqueValuesCount, _sut.LicensingAndCodeModels.Count);
         }
 
         [Theory]

@@ -311,19 +311,13 @@ namespace Core.DomainModel.ItSystem
             };
         }
 
-        public void AddLicensingAndCodeModel(LicensingAndCodeModel value)
-        {
-            if (LicensingAndCodeModels.Contains(LicensingAndCodeModel.Proprietary)) return;
+        public Maybe<OperationError> SetLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> newModels) {
+            if (newModels.Any(x => x == LicensingAndCodeModel.Proprietary) && newModels.Any(y => y != LicensingAndCodeModel.Proprietary)) 
+                return new OperationError($"The Proprietary licensing and code model cannot be set on the same system as another model", OperationFailure.Conflict);
 
-            if (value == LicensingAndCodeModel.Proprietary) LicensingAndCodeModels.Clear();
+            LicensingAndCodeModels = [.. newModels.Distinct()];
 
-            if (!LicensingAndCodeModels.Contains(value))
-                LicensingAndCodeModels.Add(value);
-        }
-
-        public void RemoveLicensingAndCodeModel(LicensingAndCodeModel value)
-        {
-            LicensingAndCodeModels.Remove(value);
+            return Maybe<OperationError>.None;
         }
 
         public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; }

@@ -6,7 +6,6 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Types.System;
 using System;
 using System.Collections.Generic;
@@ -76,7 +75,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             });
         }
         
-
         private static Models.API.V2.Types.System.SystemDeletionConflict MapConflict(Core.ApplicationServices.Model.System.SystemDeletionConflict arg)
         {
             return arg.ToChoice();
