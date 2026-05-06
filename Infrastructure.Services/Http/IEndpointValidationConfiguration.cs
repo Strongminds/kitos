@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services.Http;
+
+public interface IEndpointValidationConfiguration
 {
-    public interface IEndpointValidationConfiguration
-    {
-        IEnumerable<string> IgnoredProtocols { get; }
-    }
+    IEnumerable<string> IgnoredProtocols { get; }
 }
