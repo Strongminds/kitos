@@ -18,7 +18,7 @@ namespace Tests.Unit.Core.Infrastructure
         }
 
         [Fact]
-        public async Task ValididateAsync_Skips_Urls_With_Ignored_Protocols()
+        public async Task ValidateAsync_Skips_Urls_With_Ignored_Protocols()
         {
             var configuration = new Mock<IEndpointValidationConfiguration>();
             var sut = new EndpointValidationService(Mock.Of<ILogger>(), configuration.Object);
@@ -42,7 +42,7 @@ namespace Tests.Unit.Core.Infrastructure
         [InlineData("htt:/google.com", false, EndpointValidationErrorType.InvalidWebsiteUri, null)]
         [InlineData("https://d724FF4EE-EA34-4941-88C3-D567958976FF.com", false, EndpointValidationErrorType.DnsLookupFailed, null)]
         [InlineData("https://google.com/icannotbefound1337.com", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
-        public async Task Validate_Returns(string candidate, bool success, EndpointValidationErrorType? expectedErrorType, HttpStatusCode? expectedStatusCode)
+        public async Task ValidateAsync_Returns(string candidate, bool success, EndpointValidationErrorType? expectedErrorType, HttpStatusCode? expectedStatusCode)
         {
             //Arrange
             var configuration = new Mock<IEndpointValidationConfiguration>();
