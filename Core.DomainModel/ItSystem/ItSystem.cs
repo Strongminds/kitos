@@ -25,7 +25,6 @@ namespace Core.DomainModel.ItSystem
             TaskRefs = new List<TaskRef>();
             Usages = new List<ItSystemUsage.ItSystemUsage>();
             ExternalReferences = new List<ExternalReference>();
-            LicensingAndCodeModels = new List<LicensingAndCodeModel>();
         }
 
         public int? BelongsToId { get; set; }
@@ -320,6 +319,6 @@ namespace Core.DomainModel.ItSystem
             return Maybe<OperationError>.None;
         }
 
-        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; }
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; } = new List<LicensingAndCodeModel>();
     }
 }

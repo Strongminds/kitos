@@ -14,7 +14,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LicensingAndCodeModels",
                 table: "ItSystem",
                 type: "nvarchar(max)",
-                nullable: true);
+                nullable: false,
+                defaultValue: "[]");
         }
 
         /// <inheritdoc />
