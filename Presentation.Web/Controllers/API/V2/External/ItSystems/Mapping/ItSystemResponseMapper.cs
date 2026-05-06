@@ -7,6 +7,9 @@ using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Models.API.V2.Types.System;
+using System;
+using System.Collections.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {
@@ -40,7 +43,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 Scope = itSystem.AccessModifier.ToChoice(),
                 OrganizationContext = itSystem.Organization?.MapShallowOrganizationResponseDTO(),
                 LegalName = itSystem.LegalName,
-                LegalDataProcessorName = itSystem.LegalDataProcessorName
+                LegalDataProcessorName = itSystem.LegalDataProcessorName,
+                LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels)
             };
 
             MapBaseInformation(itSystem, dto);
@@ -60,7 +64,20 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             };
         }
 
-        private static Presentation.Web.Models.API.V2.Types.System.SystemDeletionConflict MapConflict(SystemDeletionConflict arg)
+        private static IEnumerable<LicensingAndCodeModelChoice> MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> domainModels)
+        {
+            return domainModels.Select(domain => 
+                 domain switch
+                 {
+                    LicensingAndCodeModel.OpenSource => LicensingAndCodeModelChoice.OpenSource,
+                    LicensingAndCodeModel.Freeware => LicensingAndCodeModelChoice.Freeware,
+                    LicensingAndCodeModel.Proprietary => LicensingAndCodeModelChoice.Proprietary,
+                    _ => throw new ArgumentOutOfRangeException(nameof(domainModels), $"Invalid value provided for enum conversion: {domainModels}"),    
+            });
+        }
+        
+
+        private static Models.API.V2.Types.System.SystemDeletionConflict MapConflict(Core.ApplicationServices.Model.System.SystemDeletionConflict arg)
         {
             return arg.ToChoice();
         }
