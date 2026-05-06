@@ -63,7 +63,7 @@ namespace Infrastructure.Services.Http
             {
                 return new EndpointValidation(url, new EndpointValidationError(EndpointValidationErrorType.InvalidUriFormat));
             }
-            if (_configuration.IgnoredProtocols.Any(protocol => url.StartsWith(protocol)))
+            if (_configuration.IgnoredProtocols.Any(protocol => url.StartsWith(protocol, StringComparison.InvariantCultureIgnoreCase)))
             {
                 return Success(url);
             }

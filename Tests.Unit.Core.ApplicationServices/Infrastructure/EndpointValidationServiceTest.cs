@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Infrastructure.Services;
 using Infrastructure.Services.Http;
 using Moq;
 using Serilog;
@@ -30,6 +28,10 @@ namespace Tests.Unit.Core.Infrastructure
                 var urlWithProtocol = $"{protocol}://example.com";
                 var validation = await sut.ValidateAsync(urlWithProtocol).ConfigureAwait(false);
                 Assert.True(validation.Success);
+
+                var withUppercase = urlWithProtocol.ToUpper();
+                var validationWithUppercase = await sut.ValidateAsync(withUppercase).ConfigureAwait(false);
+                Assert.True(validationWithUppercase.Success);
             }
         }
 
