@@ -321,6 +321,11 @@ namespace Core.DomainModel.ItSystem
                 LicensingAndCodeModels.Add(value);
         }
 
+        public void RemoveLicensingAndCodeModel(LicensingAndCodeModel value)
+        {
+            LicensingAndCodeModels.Remove(value);
+        }
+
         public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; }
     }
 }

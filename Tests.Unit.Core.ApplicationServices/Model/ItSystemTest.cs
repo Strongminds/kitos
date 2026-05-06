@@ -15,6 +15,19 @@ namespace Tests.Unit.Core.Model
             _sut = new ItSystem();
         }
 
+        [Theory]
+        [InlineData(LicensingAndCodeModel.Proprietary)]
+        [InlineData(LicensingAndCodeModel.Freeware)]
+        [InlineData(LicensingAndCodeModel.OpenSource)]
+        public void RemoveLicensingAndCodeModel_Can_Remove_Value(LicensingAndCodeModel value)
+        {
+            _sut.AddLicensingAndCodeModel(value);
+
+            _sut.RemoveLicensingAndCodeModel(value);
+
+            Assert.Empty(_sut.LicensingAndCodeModels);
+        }
+
         [Fact]
         public void AddLicensingAndCodeModel_Can_Add_Both_OpenSource_And_Freeware()
         {
