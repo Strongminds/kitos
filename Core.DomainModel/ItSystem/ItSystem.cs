@@ -25,6 +25,7 @@ namespace Core.DomainModel.ItSystem
             TaskRefs = new List<TaskRef>();
             Usages = new List<ItSystemUsage.ItSystemUsage>();
             ExternalReferences = new List<ExternalReference>();
+            LicensingAndCodeModels = new List<LicensingAndCodeModel>();
         }
 
         public int? BelongsToId { get; set; }
@@ -309,5 +310,17 @@ namespace Core.DomainModel.ItSystem
                 Name = Name
             };
         }
+
+        public void AddLicensingAndCodeModel(LicensingAndCodeModel value)
+        {
+            if (LicensingAndCodeModels.Contains(LicensingAndCodeModel.Proprietary)) return;
+
+            if (value == LicensingAndCodeModel.Proprietary) LicensingAndCodeModels.Clear();
+
+            if (!LicensingAndCodeModels.Contains(value))
+                LicensingAndCodeModels.Add(value);
+        }
+
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; }
     }
 }
