@@ -84,5 +84,6 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// </summary>
         [SupplierField]
         public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
+        public string? Purpose { get; set; }
     }
 }

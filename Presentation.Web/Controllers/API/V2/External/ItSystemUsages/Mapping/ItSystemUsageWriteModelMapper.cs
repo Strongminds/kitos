@@ -89,10 +89,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return new UpdatedSystemUsageGDPRProperties
             {
-                Purpose = rule.MustUpdate(x => x.GDPR.Purpose)
-                    ? source.Purpose.AsChangedValue()
-                    : OptionalValueChange<string>.None,
-
                 HostedAt = rule.MustUpdate(x => x.GDPR.HostedAt)
                     ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
                     : OptionalValueChange<HostedAt?>.None,
@@ -430,6 +426,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 CriticalityLevelDocumentation = rule.MustUpdate(x => x.General.CriticalityLevelDocumentation)
                     ? MapLink(source.CriticalityLevelDocumentation)
                     : OptionalValueChange<Maybe<NamedLink>>.None,
+
+                Purpose = rule.MustUpdate(x => x.General.Purpose)
+                    ? source.Purpose?.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+
             };
         }
 
