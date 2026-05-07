@@ -1,7 +1,6 @@
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Core.Abstractions.Types;
 using Core.DomainModel.ItSystemUsage;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -17,7 +16,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 (LifeCycleStatusChoice.NotInUse, LifeCycleStatusType.NotInUse),
                 (LifeCycleStatusChoice.PhasingIn, LifeCycleStatusType.PhasingIn),
                 (LifeCycleStatusChoice.Operational, LifeCycleStatusType.Operational),
-                (LifeCycleStatusChoice.PhasingOut, LifeCycleStatusType.PhasingOut)
+                (LifeCycleStatusChoice.PhasingOut, LifeCycleStatusType.PhasingOut),
+                (LifeCycleStatusChoice.Pilot, LifeCycleStatusType.Pilot)
             );
         }
 

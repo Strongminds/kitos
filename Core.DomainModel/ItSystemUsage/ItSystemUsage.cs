@@ -1287,7 +1287,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         private Maybe<ItSystemUsageValidationError> CheckLifeCycleValidity()
         {
-            return LifeCycleStatus == LifeCycleStatusType.NotInUse
+            return LifeCycleStatus is (LifeCycleStatusType.NotInUse or LifeCycleStatusType.Pilot)
                 ? ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle
                 : Maybe<ItSystemUsageValidationError>.None;
         }

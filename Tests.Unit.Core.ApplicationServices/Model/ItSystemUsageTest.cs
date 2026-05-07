@@ -1149,6 +1149,99 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
+        public void Invalid_When_StartDate_Not_Passed_And_EndDate_Is_Also_In_Future()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                Concluded = DateTime.UtcNow.AddDays(1),
+                ExpirationDate = DateTime.UtcNow.AddDays(30)
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.StartDateNotPassed }, validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Invalid_When_EndDate_Passed_And_LifeCycle_Is_Invalid()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                ExpirationDate = DateTime.UtcNow.AddDays(-1),
+                LifeCycleStatus = LifeCycleStatusType.NotInUse
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(
+                new List<ItSystemUsageValidationError>
+                {
+                    ItSystemUsageValidationError.EndDatePassed,
+                    ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle
+                },
+                validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Invalid_When_EndDate_Passed_And_MainContract_Is_Inactive()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                ExpirationDate = DateTime.UtcNow.AddDays(-1),
+                MainContract = new ItContractItSystemUsage { ItContract = new ItContract { Terminated = DateTime.UtcNow.AddDays(-1) } }
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(
+                new List<ItSystemUsageValidationError>
+                {
+                    ItSystemUsageValidationError.EndDatePassed,
+                    ItSystemUsageValidationError.MainContractNotActive
+                },
+                validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Invalid_When_All_Validation_Sources_Have_Errors()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                ExpirationDate = DateTime.UtcNow.AddDays(-1),
+                LifeCycleStatus = LifeCycleStatusType.NotInUse,
+                MainContract = new ItContractItSystemUsage { ItContract = new ItContract { Terminated = DateTime.UtcNow.AddDays(-1) } }
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(
+                new List<ItSystemUsageValidationError>
+                {
+                    ItSystemUsageValidationError.EndDatePassed,
+                    ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle,
+                    ItSystemUsageValidationError.MainContractNotActive
+                },
+                validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Valid_When_MainContract_Is_Set_But_ItContract_Is_Null()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                MainContract = new ItContractItSystemUsage { ItContract = null }
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.True(validity.Result);
+        }
+
+        [Fact]
         public void AddPersonalData_Adds_PersonalData()
         {
             //Arrange
@@ -1228,6 +1321,11 @@ namespace Tests.Unit.Core.Model
             new object[]
             {
                 LifeCycleStatusType.NotInUse, null,
+                new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
+            },
+            new object[]
+            {
+                LifeCycleStatusType.Pilot, null,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
             },
             new object[]
