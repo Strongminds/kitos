@@ -261,6 +261,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItSystemUsageMigrationService, ItSystemUsageMigrationService>();
             services.AddScoped<IReferenceService, ReferenceService>();
             services.AddScoped<IEndpointValidationService, EndpointValidationService>();
+            services.AddScoped<IEndpointValidationConfiguration, EndpointValidationConfiguration>();
             services.AddScoped<IBrokenExternalReferencesReportService, BrokenExternalReferencesReportService>();
             services.AddScoped<IGDPRExportService, GDPRExportService>();
             services.AddScoped<IFallbackUserResolver, FallbackUserResolver>();
