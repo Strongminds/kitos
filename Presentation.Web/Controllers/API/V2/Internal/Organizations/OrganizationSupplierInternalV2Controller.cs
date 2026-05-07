@@ -42,6 +42,15 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
+        [Route("suppliers/{supplierUuid}/using-organizations")]
+        public IActionResult GetUsingOrganizations([NonEmptyGuid] Guid supplierUuid)
+        {
+            return _organizationSupplierService.GetUsingOrganizations(supplierUuid)
+                .Select(MapOrganizations)
+                .Match(Ok, FromOperationError);
+        }
+
         [HttpPost]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
         public IActionResult AddSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)

@@ -9,6 +9,7 @@ namespace Core.ApplicationServices.Organizations.Write
     {
         Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(Guid organizationUuid);
         Result<IEnumerable<Organization>, OperationError> GetAvailableSuppliers(Guid organizationUuid);
+        Result<IEnumerable<Organization>, OperationError> GetUsingOrganizations(Guid supplierUuid);
         Result<OrganizationSupplier, OperationError> AddSupplierToOrganization(Guid organizationUuid, Guid supplierUuid);
         Maybe<OperationError> RemoveSupplierFromOrganization(Guid organizationUuid, Guid supplierUuid);
     }

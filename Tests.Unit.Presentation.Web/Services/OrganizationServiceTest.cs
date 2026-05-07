@@ -17,7 +17,6 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
-using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Repositories.Organization;
 using Infrastructure.Services.DataAccess;
@@ -810,7 +809,7 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
-        public void Delete_Returns_Ok_Of_No_Conflicts()
+        public void Delete_Returns_Ok_If_No_Conflicts()
         {
             //Arrange
             var organization = SetupConflictCalculationPrerequisites(true, true, true);
