@@ -1,11 +1,9 @@
 using System;
-using System.Net;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Organizations.Write;
 using Core.ApplicationServices.UIConfiguration;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
-using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;

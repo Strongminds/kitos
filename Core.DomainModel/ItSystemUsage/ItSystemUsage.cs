@@ -299,21 +299,21 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateCriticalityLevelDocumentationUrl(string? value) {
             if (value == CriticalityLevelDocumentationUrl) return;
             CriticalityLevelDocumentationUrl = value;
-            CriticalityFieldsLastChanged = DateTime.UtcNow;
+            SetCriticalityFieldsLastChanged();
         }
 
         public void UpdateCriticalityLevelDocumentationName(string? value)
         {
             if (value == CriticalityLevelDocumentationName) return;
             CriticalityLevelDocumentationName = value;
-            CriticalityFieldsLastChanged = DateTime.UtcNow;
+            SetCriticalityFieldsLastChanged();
         }
 
         public void ResetCriticalityLevelDocumentation()
         {
             CriticalityLevelDocumentationUrl = null;
             CriticalityLevelDocumentationName = null;
-            CriticalityFieldsLastChanged = DateTime.UtcNow;
+            SetCriticalityFieldsLastChanged();
         }
 
         #region GDPR
@@ -931,6 +931,7 @@ namespace Core.DomainModel.ItSystemUsage
         {
             SystemUsageCriticalityLevel.Track();
             SystemUsageCriticalityLevel = null;
+            SetCriticalityFieldsLastChanged();
         }
 
         public Maybe<OperationError> UpdateSystemUsageCriticalityLevel(SystemUsageCriticalityLevel newValue)
@@ -941,6 +942,7 @@ namespace Core.DomainModel.ItSystemUsage
             if (SystemUsageCriticalityLevel == null || SystemUsageCriticalityLevel.Id != newValue.Id)
             {
                 SystemUsageCriticalityLevel = newValue;
+                SetCriticalityFieldsLastChanged();
             }
 
             return Maybe<OperationError>.None;
