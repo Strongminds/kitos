@@ -179,7 +179,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
 
             await ItSystemUsageV2Helper.SendPatchGDPR(await GetGlobalToken(), systemUsage.Uuid, new GDPRWriteRequestDTO
             {
-                Purpose = generalPurpose,
                 DirectoryDocumentation = new SimpleLinkDTO { Name = linkToDirectoryUrlName, Url = linkToDirectoryUrl },
                 UserSupervisionDocumentation = new SimpleLinkDTO { Name = riskSupervisionDocumentationUrlName, Url = riskSupervisionDocumentationUrl },
                 RiskAssessmentConducted = riskAssessment,
@@ -240,6 +239,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                     NumberOfExpectedUsers = UserIntervalDtoFromUerCount(userCount),
                     DataClassificationUuid = dataClassification.Uuid,
                     SystemUsageCriticalityLevelUuid = criticalityLevel.Uuid,
+                    Purpose = generalPurpose,
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // ArchivePeriods
