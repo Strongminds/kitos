@@ -170,6 +170,16 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<OrganizationSupplier> UsedAsSupplierByOrganizations { get; set; }
         public virtual ICollection<OrganizationSupplier> Suppliers { get; set; }
 
+        public void ClearUsedAsSupplierByOrganizations()
+        {
+            UsedAsSupplierByOrganizations?.Clear();
+        }
+
+        public void ClearSuppliers()
+        {
+            Suppliers?.Clear();
+        }
+
         public bool HasSuppliers()
         {
             return Suppliers is { Count: > 0 };
