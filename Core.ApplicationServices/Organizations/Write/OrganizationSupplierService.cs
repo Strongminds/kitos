@@ -1,5 +1,4 @@
 ﻿using Core.Abstractions.Types;
-using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
@@ -83,6 +82,15 @@ namespace Core.ApplicationServices.Organizations.Write
                         return Maybe<OperationError>.None;
                     },
                     error => error);
+        }
+
+        public Result<IEnumerable<Organization>, OperationError> GetUsingOrganizations(Guid supplierUuid)
+        {
+            return ResolveOrganizationId(supplierUuid)
+                .Select(supplierId => _organizationSupplierRepository.AsQueryable()
+                .Where(x => x.SupplierId == supplierId)
+                .Select(x => x.Organization)
+                .AsEnumerable());
         }
 
         private Result<OrganizationSupplier?, OperationError> GetByUuids(Guid organizationUuid, Guid supplierUuid)
