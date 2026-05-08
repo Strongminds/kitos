@@ -65,13 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
         private static IList<LicensingAndCodeModelChoice> MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> domainModels)
         {
             return domainModels.Select(domain => 
-                 domain switch
-                 {
-                    LicensingAndCodeModel.OpenSource => LicensingAndCodeModelChoice.OpenSource,
-                    LicensingAndCodeModel.Freeware => LicensingAndCodeModelChoice.Freeware,
-                    LicensingAndCodeModel.Proprietary => LicensingAndCodeModelChoice.Proprietary,
-                    _ => throw new ArgumentOutOfRangeException(nameof(domainModels), $"Invalid value provided for enum conversion: {domainModels}"),    
-            }).ToList();
+                 domain.ToChoice()).ToList();
         }
         
         private static Models.API.V2.Types.System.SystemDeletionConflict MapConflict(Core.ApplicationServices.Model.System.SystemDeletionConflict arg)
