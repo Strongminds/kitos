@@ -1208,13 +1208,15 @@ namespace Tests.Unit.Core.Model
                 validity.ValidationErrors);
         }
 
-        [Fact]
-        public void Invalid_When_All_Validation_Sources_Have_Errors()
+        [Theory]
+        [InlineData(LifeCycleStatusType.NotInUse)]
+        [InlineData(LifeCycleStatusType.Pilot)]
+        public void Invalid_When_All_Validation_Sources_Have_Errors(LifeCycleStatusType status)
         {
             var itSystemUsage = new ItSystemUsage
             {
                 ExpirationDate = DateTime.UtcNow.AddDays(-1),
-                LifeCycleStatus = LifeCycleStatusType.NotInUse,
+                LifeCycleStatus = status,
                 MainContract = new ItContractItSystemUsage { ItContract = new ItContract { Terminated = DateTime.UtcNow.AddDays(-1) } }
             };
 
