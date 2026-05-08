@@ -272,6 +272,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             var mappedGdpr = AssertPropertyContainsDataChange(output.GDPR);
+            Assert.Equal(input.ProcessingPurpose, AssertPropertyContainsDataChange(mappedGdpr.ProcessingPurpose));
             Assert.Equal(input.HostedAt, AssertPropertyContainsDataChange(mappedGdpr.HostedAt)?.ToHostingChoice());
             AssertLinkMapping(input.DirectoryDocumentation, mappedGdpr.DirectoryDocumentation);
             Assert.Equal(input.DataSensitivityLevels.ToList(), AssertPropertyContainsDataChange(mappedGdpr.DataSensitivityLevels).Select(x => x.ToDataSensitivityLevelChoice()));
@@ -941,6 +942,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [Theory]
         [MemberData(nameof(GetUndefinedGDPRSectionsInput))]
         public void FromPATCH_Ignores_Undefined_Properties_In_GDPRSection(
+            bool noProcessingPurpose,
             bool noHostedAt,
             bool noDirectoryDocumentation,
             bool noDataSensitivityLevels,
@@ -969,6 +971,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
             ConfigureGDPRDataProperties(
+                noProcessingPurpose,
                 noHostedAt,
                 noDirectoryDocumentation,
                 noDataSensitivityLevels,
@@ -999,6 +1002,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert that all GDPR properties are mapped correctly
             var gdprSection = output.GDPR.Value;
+            Assert.Equal(noProcessingPurpose, gdprSection.ProcessingPurpose.IsUnchanged);
             Assert.Equal(noHostedAt, gdprSection.HostedAt.IsUnchanged);
             Assert.Equal(noDirectoryDocumentation, gdprSection.DirectoryDocumentation.IsUnchanged);
             Assert.Equal(noDataSensitivityLevels, gdprSection.DataSensitivityLevels.IsUnchanged);
@@ -1028,6 +1032,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [Theory]
         [MemberData(nameof(GetUndefinedGDPRSectionsInput))]
         public void FromPUT_Enforces_Undefined_Properties_In_GDPRSection(
+            bool noProcessingPurpose,
             bool noHostedAt,
             bool noDirectoryDocumentation,
             bool noDataSensitivityLevels,
@@ -1056,6 +1061,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
             ConfigureGDPRDataProperties(
+                noProcessingPurpose,
                 noHostedAt,
                 noDirectoryDocumentation,
                 noDataSensitivityLevels,
@@ -1086,6 +1092,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert that all GDPR properties are mapped correctly
             var gdprSection = output.GDPR.Value;
+            Assert.True(gdprSection.ProcessingPurpose.HasChange);
             Assert.True(gdprSection.HostedAt.HasChange);
             Assert.True(gdprSection.DirectoryDocumentation.HasChange);
             Assert.True(gdprSection.DataSensitivityLevels.HasChange);
@@ -1139,10 +1146,11 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGDPRSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(24);
+            return CreateGetUndefinedSectionsInput(25);
         }
 
         private void ConfigureGDPRDataProperties(
+            bool noProcessingPurpose,
             bool noHostedAt,
             bool noDirectoryDocumentation,
             bool noDataSensitivityLevels,
@@ -1169,6 +1177,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noPersonalData)
         {
             var GDPRProperties = GetAllInputPropertyNames<GDPRWriteRequestDTO>();
+            if (noProcessingPurpose) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.ProcessingPurpose));
             if (noHostedAt) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.HostedAt));
             if (noDirectoryDocumentation) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DirectoryDocumentation));
             if (noDataSensitivityLevels) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DataSensitivityLevels));

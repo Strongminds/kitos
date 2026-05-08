@@ -22,7 +22,6 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainModel.References;
-using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
@@ -241,6 +240,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             //General GDPR registrations
             return itSystemUsage.WithOptionalUpdate(parameters.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt)
+                .Bind(usage => usage.WithOptionalUpdate(parameters.ProcessingPurpose, (systemUsage, processingPurpose) => systemUsage.ProcessingPurpose = processingPurpose))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DirectoryDocumentation, (systemUsage, newLink) =>
                    {
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();

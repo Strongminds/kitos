@@ -8,6 +8,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
 {
     public class GDPRWriteRequestDTO
     {
+        public string? ProcessingPurpose { get; set; }
         public HostingChoice? HostedAt { get; set; }
         /// <summary>
         /// Constraints: Name: 150 characters

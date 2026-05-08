@@ -89,6 +89,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return new UpdatedSystemUsageGDPRProperties
             {
+                ProcessingPurpose = rule.MustUpdate(x => x.GDPR!.ProcessingPurpose)
+                    ? source.ProcessingPurpose!.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+
                 HostedAt = rule.MustUpdate(x => x.GDPR!.HostedAt)
                     ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
                     : OptionalValueChange<HostedAt?>.None,

@@ -123,6 +123,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         {
             var changed = new List<string>();
             var gdpr = GDPR.Value;
+            if (gdpr.ProcessingPurpose.HasChange)
+                changed.Add(nameof(gdpr.ProcessingPurpose));
             if (gdpr.HostedAt.HasChange)
                 changed.Add(nameof(gdpr.HostedAt));
             if (gdpr.DirectoryDocumentation.HasChange)
