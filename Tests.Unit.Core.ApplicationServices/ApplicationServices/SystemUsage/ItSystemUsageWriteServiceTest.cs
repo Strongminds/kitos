@@ -55,6 +55,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveLocation>> _archiveLocationOptionsServiceMock;
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveTestLocation>> _archiveTestLocationOptionsServiceMock;
         private readonly Mock<IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel>> _systemUsageCriticalityLevelOptionsServiceMock;
+        private readonly Mock<IOptionsService<ItSystemUsage, TechnicalSystemType>> _technicalSystemTypeOptionsServiceMock;
         private readonly Mock<IItContractService> _contractServiceMock;
         private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IRoleAssignmentService<ItSystemRight, ItSystemRole, ItSystemUsage>> _roleAssignmentService;
@@ -80,6 +81,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _archiveLocationOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveLocation>>();
             _archiveTestLocationOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveTestLocation>>();
             _systemUsageCriticalityLevelOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel>>();
+            _technicalSystemTypeOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, TechnicalSystemType>>();
             _contractServiceMock = new Mock<IItContractService>();
             _domainEventsMock = new Mock<IDomainEvents>();
             _kleServiceMock = new Mock<IKLEApplicationService>();
@@ -104,7 +106,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _systemUsageRelationServiceMock.Object,
                 _identityResolverMock.Object,
                 _personalDataOptionsRepository.Object,
-                _systemUsageCriticalityLevelOptionsServiceMock.Object);
+                _systemUsageCriticalityLevelOptionsServiceMock.Object,
+                _technicalSystemTypeOptionsServiceMock.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
@@ -1571,6 +1574,120 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.True(createResult.Ok);
             AssertTransactionCommitted(transactionMock);
             Assert.Same(criticalityLevel, createResult.Value.SystemUsageCriticalityLevel);
+        }
+
+        [Fact]
+        public void Can_Create_With_TechnicalSystemType()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, true));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(technicalSystemType, createResult.Value.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void Cannot_Create_With_TechnicalSystemType_If_Uuid_Not_Exists()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, Maybe<(TechnicalSystemType, bool)>.None);
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Failed);
+            Assert.Equal(OperationFailure.BadInput, createResult.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Cannot_Create_With_TechnicalSystemType_If_Not_Available_In_Org()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Failed);
+            Assert.Equal(OperationFailure.BadInput, createResult.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Can_Create_With_TechnicalSystemType_If_Not_Available_In_Org_But_Value_Is_Not_Changed()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
+            itSystemUsage.TechnicalSystemType = technicalSystemType;
+
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(technicalSystemType, createResult.Value.TechnicalSystemType);
         }
 
         [Fact]
@@ -3436,6 +3553,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void ExpectGetSystemUsageCriticalityLevelReturns(int organizationId, Guid criticalityLevelUuid, Maybe<(SystemUsageCriticalityLevel, bool)> result)
         {
             _systemUsageCriticalityLevelOptionsServiceMock.Setup(x => x.GetOptionByUuid(organizationId, criticalityLevelUuid)).Returns(result);
+        }
+
+        private void ExpectGetTechnicalSystemTypeReturns(int organizationId, Guid technicalSystemTypeUuid, Maybe<(TechnicalSystemType, bool)> result)
+        {
+            _technicalSystemTypeOptionsServiceMock.Setup(x => x.GetOptionByUuid(organizationId, technicalSystemTypeUuid)).Returns(result);
         }
 
         private SystemUsageUpdateParameters SetupKLEInputExpectations(IReadOnlyCollection<TaskRef> additionalTaskRefs, IReadOnlyCollection<TaskRef> tasksToRemove)

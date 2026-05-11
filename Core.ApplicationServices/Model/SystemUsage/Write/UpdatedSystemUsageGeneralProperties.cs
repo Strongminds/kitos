@@ -28,6 +28,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<DataOptions?> BusinessCritical { get; set; } = OptionalValueChange<DataOptions?>.None;
         public OptionalValueChange<Maybe<Guid>> SystemUsageCriticalityLevelUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
         public OptionalValueChange<Maybe<NamedLink>> CriticalityLevelDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
+        public OptionalValueChange<Maybe<Guid>> TechnicalSystemTypeUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
 
     }
 }

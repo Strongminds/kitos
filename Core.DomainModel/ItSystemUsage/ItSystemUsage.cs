@@ -262,6 +262,9 @@ namespace Core.DomainModel.ItSystemUsage
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
 
+        public int? TechnicalSystemTypeId { get; set; }
+        public virtual TechnicalSystemType TechnicalSystemType { get; set; }
+
         public virtual string? CriticalityLevelDocumentationUrl { get; set; }
         public virtual string? CriticalityLevelDocumentationName { get; set; }
 
@@ -943,6 +946,25 @@ namespace Core.DomainModel.ItSystemUsage
             {
                 SystemUsageCriticalityLevel = newValue;
                 SetCriticalityFieldsLastChanged();
+            }
+
+            return Maybe<OperationError>.None;
+        }
+
+        public void ResetTechnicalSystemType()
+        {
+            TechnicalSystemType.Track();
+            TechnicalSystemType = null;
+        }
+
+        public Maybe<OperationError> UpdateTechnicalSystemType(TechnicalSystemType newValue)
+        {
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+
+            if (TechnicalSystemType == null || TechnicalSystemType.Id != newValue.Id)
+            {
+                TechnicalSystemType = newValue;
             }
 
             return Maybe<OperationError>.None;

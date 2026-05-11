@@ -84,5 +84,11 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// </summary>
         [SupplierField]
         public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
+        /// <summary>
+        /// The technical system type classification of this system usage.
+        /// Constraint: If an update changes this field, the option identified must be currently available in the organization context
+        /// </summary>
+        [NonEmptyGuid]
+        public Guid? TechnicalSystemTypeUuid { get; set; }
     }
 }

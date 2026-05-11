@@ -77,5 +77,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// Documentation link for the criticality level assessment of this system usage.
         /// </summary>
         public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
+        /// <summary>
+        /// The technical system type of this system usage.
+        /// </summary>
+        public IdentityNamePairResponseDTO TechnicalSystemType { get; set; }
     }
 }

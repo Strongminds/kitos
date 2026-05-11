@@ -196,6 +196,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
                 CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
+                TechnicalSystemType = systemUsage.TechnicalSystemType?.MapIdentityNamePairDTO(),
             };
         }
 

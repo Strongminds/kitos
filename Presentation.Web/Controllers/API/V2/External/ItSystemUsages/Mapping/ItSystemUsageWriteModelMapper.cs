@@ -430,6 +430,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 CriticalityLevelDocumentation = rule.MustUpdate(x => x.General.CriticalityLevelDocumentation)
                     ? MapLink(source.CriticalityLevelDocumentation)
                     : OptionalValueChange<Maybe<NamedLink>>.None,
+
+                TechnicalSystemTypeUuid = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuid)
+                    ? (source.TechnicalSystemTypeUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<Guid>>.None,
             };
         }
 

@@ -83,6 +83,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.SystemUsageCriticalityLevelUuid));
             if (general.CriticalityLevelDocumentation.HasChange)
                 changed.Add(nameof(general.CriticalityLevelDocumentation));
+            if (general.TechnicalSystemTypeUuid.HasChange)
+                changed.Add(nameof(general.TechnicalSystemTypeUuid));
             return changed;
         }
 
