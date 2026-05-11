@@ -4683,6 +4683,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SystemUsageCriticalityLevelUuid")
                         .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemUsageCriticalityLevelUuid");
 
+                    b.HasIndex("TechnicalSystemTypeUuid")
+                        .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_TechnicalSystemTypeUuid");
+
                     b.HasIndex("UserCount")
                         .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_UserCount");
 
