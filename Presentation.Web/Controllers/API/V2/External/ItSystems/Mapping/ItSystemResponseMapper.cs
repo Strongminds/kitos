@@ -6,7 +6,9 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Models.API.V2.Types.System;
+using System;
+using System.Collections.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {
@@ -60,36 +62,43 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             };
         }
 
-        private static Presentation.Web.Models.API.V2.Types.System.SystemDeletionConflict MapConflict(SystemDeletionConflict arg)
+        private static IList<LicensingAndCodeModelChoice> MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> domainModels)
+        {
+            return domainModels.Select(domain => 
+                 domain.ToChoice()).ToList();
+        }
+        
+        private static Models.API.V2.Types.System.SystemDeletionConflict MapConflict(Core.ApplicationServices.Model.System.SystemDeletionConflict arg)
         {
             return arg.ToChoice();
         }
 
-        private void MapBaseInformation<T>(ItSystem arg, T dto) where T : BaseItSystemResponseDTO
+        private void MapBaseInformation<T>(ItSystem itSystem, T dto) where T : BaseItSystemResponseDTO
         {
-            dto.Uuid = arg.Uuid;
-            dto.ExternalUuid = arg.ExternalUuid;
-            dto.Name = arg.Name;
-            dto.RightsHolder = arg.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
-            dto.BusinessType = arg.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
-            dto.Description = arg.Description;
-            dto.CreatedBy = arg.ObjectOwner?.MapIdentityNamePairDTO();
-            dto.Created = arg.Created;
-            dto.Deactivated = arg.Disabled;
-            dto.FormerName = arg.PreviousName;
-            dto.ParentSystem = arg.Parent?.Transform(parent => parent.MapIdentityNamePairDTO());
-            dto.ExternalReferences = _referenceResponseMapper.MapExternalReferences(arg.ExternalReferences).ToList();
-            dto.RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(arg.ArchiveDutyComment, arg.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided);
-            dto.KLE = arg
+            dto.Uuid = itSystem.Uuid;
+            dto.ExternalUuid = itSystem.ExternalUuid;
+            dto.Name = itSystem.Name;
+            dto.RightsHolder = itSystem.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
+            dto.BusinessType = itSystem.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
+            dto.Description = itSystem.Description;
+            dto.CreatedBy = itSystem.ObjectOwner?.MapIdentityNamePairDTO();
+            dto.Created = itSystem.Created;
+            dto.Deactivated = itSystem.Disabled;
+            dto.FormerName = itSystem.PreviousName;
+            dto.ParentSystem = itSystem.Parent?.Transform(parent => parent.MapIdentityNamePairDTO());
+            dto.ExternalReferences = _referenceResponseMapper.MapExternalReferences(itSystem.ExternalReferences).ToList();
+            dto.RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided);
+            dto.KLE = itSystem
                 .TaskRefs
                 .Select(taskRef => taskRef.MapIdentityNamePairDTO())
                 .ToList();
             dto.MainContractSuppliers =
-                arg.Usages.Select(x => x.MainContract?.ItContract.Supplier)
+                itSystem.Usages.Select(x => x.MainContract?.ItContract.Supplier)
                     .Where(x => x != null)
                     .DistinctBy(x => x.Uuid)
                     .Select(x => x.MapShallowOrganizationResponseDTO())
                     .ToList();
+            dto.LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels);
         }
     }
 }
