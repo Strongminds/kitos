@@ -240,7 +240,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             //General GDPR registrations
             return itSystemUsage.WithOptionalUpdate(parameters.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt)
-                .Bind(usage => usage.WithOptionalUpdate(parameters.ProcessingPurpose, (systemUsage, processingPurpose) => systemUsage.ProcessingPurpose = processingPurpose))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.ProcessingPurpose, (systemUsage, processingPurpose) => systemUsage.UpdateProcessingPurpose(processingPurpose)))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DirectoryDocumentation, (systemUsage, newLink) =>
                    {
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
@@ -667,7 +667,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.GeneralPurpose = newPurpose));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)));
         }
 
         private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)

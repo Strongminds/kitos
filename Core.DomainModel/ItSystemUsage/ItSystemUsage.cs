@@ -1465,5 +1465,15 @@ namespace Core.DomainModel.ItSystemUsage
         {
             return UpdateWithPrecondition(HasDataRetention() || dataRetentionEvaluationFrequencyInMonths == 0, () => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
         }
+
+        public void UpdateGeneralPurpose(string purpose)
+        {
+            GeneralPurpose = purpose;
+        }
+
+        public void UpdateProcessingPurpose(string purpose)
+        {
+            ProcessingPurpose = purpose;
+        }
     }
 }
