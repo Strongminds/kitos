@@ -216,7 +216,8 @@ namespace Core.ApplicationServices.System.Write
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.ArchivingRecommendation, UpdateUpdateRecommendedArchiveDuty))
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.RightsHolderUuid, (itSystem, newValue) => _systemService.UpdateRightsHolder(itSystem.Id, newValue)))
                 .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Scope, (itSystem, newValue) => _systemService.UpdateAccessModifier(itSystem.Id, newValue)))
-                .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Deactivated, HandleDeactivatedState));
+                .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.Deactivated, HandleDeactivatedState))
+                .Bind(updatedSystem => updatedSystem.WithOptionalUpdate(updates.LicensingAndCodeModels, (itSystem, newValue) => itSystem.SetLicensingAndCodeModels(newValue)));
         }
 
         private static Result<ItSystem, OperationError> ApplyLegalPropertyUpdates(ItSystem itSystem, LegalUpdateParameters parameters)

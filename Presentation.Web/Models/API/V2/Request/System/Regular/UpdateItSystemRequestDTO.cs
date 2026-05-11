@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Presentation.Web.Infrastructure.Attributes;
+﻿using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.System.Shared;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.System;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Web.Models.API.V2.Request.System.Regular
 {
@@ -68,5 +69,9 @@ namespace Presentation.Web.Models.API.V2.Request.System.Regular
         /// </summary>
         public RegistrationScopeChoice? Scope { get; set; }
         public RecommendedArchiveDutyRequestDTO? RecommendedArchiveDuty { get; set; }
+        /// <summary>
+        /// The licensing and code model used for this system. Existing models will be replaced by the input data.
+        /// </summary>
+        public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
     }
 }
