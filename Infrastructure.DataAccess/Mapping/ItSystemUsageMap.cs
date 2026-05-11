@@ -71,6 +71,10 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithMany(t => t.References)
                 .HasForeignKey(d => d.ItSystemCategoriesId);
 
+            builder.HasOne(t => t.SystemUsageCriticalityLevel)
+                .WithMany(t => t.References)
+                .HasForeignKey(d => d.SystemUsageCriticalityLevelId);
+
             builder.HasOne(t => t.ArchiveSupplier)
                 .WithMany(t => t.ArchiveSupplierForItSystems)
                 .HasForeignKey(d => d.ArchiveSupplierId);
@@ -103,7 +107,9 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasIndex(x => x.LifeCycleStatus).HasDatabaseName("ItSystemUsage_Index_LifeCycleStatus");
 
-            builder.HasIndex(x => x.GdprCriticality).HasDatabaseName("ItSystemUsage_Index_GdprCriticality");
+            builder.Property(x => x.CriticalityFieldsLastChanged);
+
+            builder.Property(x => x.CriticalityFieldsLastChanged);
 
             builder.Property(x => x.Uuid).IsRequired();
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ItSystemUsage_Uuid");

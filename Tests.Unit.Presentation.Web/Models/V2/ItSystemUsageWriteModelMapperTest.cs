@@ -272,7 +272,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             var mappedGdpr = AssertPropertyContainsDataChange(output.GDPR);
-            Assert.Equal(input.Purpose, AssertPropertyContainsDataChange(mappedGdpr.Purpose));
+            Assert.Equal(input.ProcessingPurpose, AssertPropertyContainsDataChange(mappedGdpr.ProcessingPurpose));
             Assert.Equal(input.HostedAt, AssertPropertyContainsDataChange(mappedGdpr.HostedAt)?.ToHostingChoice());
             AssertLinkMapping(input.DirectoryDocumentation, mappedGdpr.DirectoryDocumentation);
             Assert.Equal(input.DataSensitivityLevels.ToList(), AssertPropertyContainsDataChange(mappedGdpr.DataSensitivityLevels).Select(x => x.ToDataSensitivityLevelChoice()));
@@ -296,7 +296,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.DataRetentionEvaluationFrequencyInMonths, AssertPropertyContainsDataChange(mappedGdpr.DataRetentionEvaluationFrequencyInMonths));
             AssertLinkMapping(input.DPIADocumentation, mappedGdpr.DPIADocumentation);
             Assert.Equal(input.SpecificPersonalData.ToList(), AssertPropertyContainsDataChange(mappedGdpr.PersonalDataOptions).Select(x => x.ToGDPRPersonalDataChoice()));
-            Assert.Equal(input.GdprCriticality, AssertPropertyContainsDataChange(mappedGdpr.GdprCriticality)?.ToGdprCriticalityChoice());
         }
 
         [Fact]
@@ -654,6 +653,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [Theory]
         [MemberData(nameof(GetUndefinedGeneralSectionsInput))]
         public void FromPATCH_Ignores_Undefined_Properties_In_GeneralSection(
+            bool noPurpose,
             bool noLocalCallName,
             bool noLocalSystemId,
             bool noDataClassificationUuid,
@@ -665,11 +665,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noValidTo,
             bool noMainContractUuid,
             bool noIsSociallyCritical,
-            bool noBusinessCritical)
+            bool noBusinessCritical,
+            bool noSystemUsageCriticalityLevel)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
             ConfigureGeneralDataProperties(
+                noPurpose,
                 noLocalCallName,
                 noLocalSystemId,
                 noDataClassificationUuid,
@@ -680,14 +682,16 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noValidFrom,
                 noValidTo,
                 noMainContractUuid,
-                noIsSociallyCritical,              
-                noBusinessCritical);
+                noIsSociallyCritical,
+                noBusinessCritical,
+                noSystemUsageCriticalityLevel);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
 
             //Assert that all general properties are mapped correctly
             var generalSection = output.GeneralProperties.Value;
+            Assert.Equal(noPurpose, generalSection.Purpose.IsUnchanged);
             Assert.Equal(noLocalCallName, generalSection.LocalCallName.IsUnchanged);
             Assert.Equal(noLocalSystemId, generalSection.LocalSystemId.IsUnchanged);
             Assert.Equal(noDataClassificationUuid, generalSection.DataClassificationUuid.IsUnchanged);
@@ -700,12 +704,14 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noMainContractUuid, generalSection.MainContractUuid.IsUnchanged);
             Assert.Equal(noIsSociallyCritical, generalSection.IsSociallyCritical.IsUnchanged);
             Assert.Equal(noBusinessCritical, generalSection.BusinessCritical.IsUnchanged);
+            Assert.Equal(noSystemUsageCriticalityLevel, generalSection.SystemUsageCriticalityLevelUuid.IsUnchanged);
         }
 
 
         [Theory]
         [MemberData(nameof(GetUndefinedGeneralSectionsInput))]
         public void FromPUT_Enforces_Undefined_Properties_In_GeneralSection(
+            bool noPurpose,
             bool noLocalCallName,
             bool noLocalSystemId,
             bool noDataClassificationUuid,
@@ -717,11 +723,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noValidTo,
             bool noMainContractUuid,
             bool noIsSociallyCritical,
-            bool noBusinessCritical)
+            bool noBusinessCritical,
+            bool noSystemUsageCriticalityLevel)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
             ConfigureGeneralDataProperties(
+                noPurpose,
                 noLocalCallName,
                 noLocalSystemId,
                 noDataClassificationUuid,
@@ -733,13 +741,15 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noValidTo,
                 noMainContractUuid,
                 noIsSociallyCritical,
-                noBusinessCritical);
+                noBusinessCritical,
+                noSystemUsageCriticalityLevel);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
 
             //Assert that all general properties are mapped correctly
             var generalSection = output.GeneralProperties.Value;
+            Assert.True(generalSection.Purpose.HasChange);
             Assert.True(generalSection.LocalCallName.HasChange);
             Assert.True(generalSection.LocalSystemId.HasChange);
             Assert.True(generalSection.DataClassificationUuid.HasChange);
@@ -752,6 +762,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(generalSection.MainContractUuid.HasChange);
             Assert.True(generalSection.IsSociallyCritical.HasChange);
             Assert.True(generalSection.BusinessCritical.HasChange);
+            Assert.True(generalSection.SystemUsageCriticalityLevelUuid.HasChange);
         }
 
         [Theory]
@@ -931,7 +942,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [Theory]
         [MemberData(nameof(GetUndefinedGDPRSectionsInput))]
         public void FromPATCH_Ignores_Undefined_Properties_In_GDPRSection(
-            bool noPurpose,
+            bool noProcessingPurpose,
             bool noHostedAt,
             bool noDirectoryDocumentation,
             bool noDataSensitivityLevels,
@@ -955,13 +966,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRetentionPeriodDefined,
             bool noNextDataRetentionEvaluationDate,
             bool noDataRetentionEvaluationFrequencyInMonths,
-            bool noPersonalData,
-            bool noGdprCriticality)
+            bool noPersonalData)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
             ConfigureGDPRDataProperties(
-                noPurpose,
+                noProcessingPurpose,
                 noHostedAt,
                 noDirectoryDocumentation,
                 noDataSensitivityLevels,
@@ -985,15 +995,14 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noRetentionPeriodDefined,
                 noNextDataRetentionEvaluationDate,
                 noDataRetentionEvaluationFrequencyInMonths,
-                noPersonalData,
-                noGdprCriticality);
+                noPersonalData);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
 
             //Assert that all GDPR properties are mapped correctly
             var gdprSection = output.GDPR.Value;
-            Assert.Equal(noPurpose, gdprSection.Purpose.IsUnchanged);
+            Assert.Equal(noProcessingPurpose, gdprSection.ProcessingPurpose.IsUnchanged);
             Assert.Equal(noHostedAt, gdprSection.HostedAt.IsUnchanged);
             Assert.Equal(noDirectoryDocumentation, gdprSection.DirectoryDocumentation.IsUnchanged);
             Assert.Equal(noDataSensitivityLevels, gdprSection.DataSensitivityLevels.IsUnchanged);
@@ -1018,13 +1027,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noNextDataRetentionEvaluationDate, gdprSection.NextDataRetentionEvaluationDate.IsUnchanged);
             Assert.Equal(noDataRetentionEvaluationFrequencyInMonths, gdprSection.DataRetentionEvaluationFrequencyInMonths.IsUnchanged);
             Assert.Equal(noPersonalData, gdprSection.PersonalDataOptions.IsUnchanged);
-            Assert.Equal(noGdprCriticality, gdprSection.GdprCriticality.IsUnchanged);
         }
 
         [Theory]
         [MemberData(nameof(GetUndefinedGDPRSectionsInput))]
         public void FromPUT_Enforces_Undefined_Properties_In_GDPRSection(
-            bool noPurpose,
+            bool noProcessingPurpose,
             bool noHostedAt,
             bool noDirectoryDocumentation,
             bool noDataSensitivityLevels,
@@ -1048,13 +1056,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRetentionPeriodDefined,
             bool noNextDataRetentionEvaluationDate,
             bool noDataRetentionEvaluationFrequencyInMonths,
-            bool noPersonalData,
-            bool noGdprCriticality)
+            bool noPersonalData)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
             ConfigureGDPRDataProperties(
-                noPurpose,
+                noProcessingPurpose,
                 noHostedAt,
                 noDirectoryDocumentation,
                 noDataSensitivityLevels,
@@ -1078,15 +1085,14 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noRetentionPeriodDefined,
                 noNextDataRetentionEvaluationDate,
                 noDataRetentionEvaluationFrequencyInMonths,
-                noPersonalData,
-                noGdprCriticality);
+                noPersonalData);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
 
             //Assert that all GDPR properties are mapped correctly
             var gdprSection = output.GDPR.Value;
-            Assert.True(gdprSection.Purpose.HasChange);
+            Assert.True(gdprSection.ProcessingPurpose.HasChange);
             Assert.True(gdprSection.HostedAt.HasChange);
             Assert.True(gdprSection.DirectoryDocumentation.HasChange);
             Assert.True(gdprSection.DataSensitivityLevels.HasChange);
@@ -1111,7 +1117,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(gdprSection.NextDataRetentionEvaluationDate.HasChange);
             Assert.True(gdprSection.DataRetentionEvaluationFrequencyInMonths.HasChange);
             Assert.True(gdprSection.PersonalDataOptions.HasChange);
-            Assert.True(gdprSection.GdprCriticality.HasChange);
         }
 
         public static IEnumerable<object[]> GetUndefinedSectionsInput()
@@ -1121,7 +1126,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(11);
+            return CreateGetUndefinedSectionsInput(13);
         }
 
         public static IEnumerable<object[]> GetUndefinedOrganizationUsageSectionsInput()
@@ -1141,11 +1146,11 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGDPRSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(26);
+            return CreateGetUndefinedSectionsInput(25);
         }
 
         private void ConfigureGDPRDataProperties(
-            bool noPurpose,
+            bool noProcessingPurpose,
             bool noHostedAt,
             bool noDirectoryDocumentation,
             bool noDataSensitivityLevels,
@@ -1169,11 +1174,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRetentionPeriodDefined,
             bool noNextDataRetentionEvaluationDate,
             bool noDataRetentionEvaluationFrequencyInMonths,
-            bool noPersonalData,
-            bool noGdprCriticality)
+            bool noPersonalData)
         {
             var GDPRProperties = GetAllInputPropertyNames<GDPRWriteRequestDTO>();
-            if (noPurpose) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.Purpose));
+            if (noProcessingPurpose) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.ProcessingPurpose));
             if (noHostedAt) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.HostedAt));
             if (noDirectoryDocumentation) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DirectoryDocumentation));
             if (noDataSensitivityLevels) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DataSensitivityLevels));
@@ -1198,7 +1202,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noNextDataRetentionEvaluationDate) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.NextDataRetentionEvaluationDate));
             if (noDataRetentionEvaluationFrequencyInMonths) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.DataRetentionEvaluationFrequencyInMonths));
             if (noPersonalData) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.SpecificPersonalData));
-            if (noGdprCriticality) GDPRProperties.Remove(nameof(GDPRWriteRequestDTO.GdprCriticality));
 
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.GDPR).WrapAsEnumerable().AsParameterMatch())).Returns(GDPRProperties);
         }
@@ -1253,20 +1256,23 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         }
 
         private void ConfigureGeneralDataProperties(
-            bool noLocalCallName,
-            bool noLocalSystemId,
-            bool noDataClassificationUuid,
-            bool noNotes,
-            bool noSystemVersion,
-            bool noNumberOfExpectedUsers,
-            bool noLifeCycleStatus,
-            bool noValidFrom,
-            bool noValidTo,
-            bool noMainContractUuid,
-            bool noIsSociallyCritical,
-            bool noBusinessCritical = false)
+            bool noPurpose = false,
+            bool noLocalCallName = false,
+            bool noLocalSystemId = false,
+            bool noDataClassificationUuid = false,
+            bool noNotes = false,
+            bool noSystemVersion = false,
+            bool noNumberOfExpectedUsers = false,
+            bool noLifeCycleStatus = false,
+            bool noValidFrom = false,
+            bool noValidTo = false,
+            bool noMainContractUuid = false,
+            bool noIsSociallyCritical = false,
+            bool noBusinessCritical = false,
+            bool noSystemUsageCriticalityLevel = false)
         {
             var generalProperties = GetAllInputPropertyNames<GeneralDataUpdateRequestDTO>();
+            if (noPurpose) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.Purpose));
             if (noLocalCallName) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.LocalCallName));
             if (noLocalSystemId) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.LocalSystemId));
             if (noDataClassificationUuid) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.DataClassificationUuid));
@@ -1276,6 +1282,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noMainContractUuid) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.MainContractUuid));
             if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
             if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.BusinessCritical));
+            if (noSystemUsageCriticalityLevel) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemUsageCriticalityLevelUuid));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
             if (noLifeCycleStatus) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.LifeCycleStatus));
@@ -1333,6 +1340,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.WebAccessibilityNotes, AssertPropertyContainsDataChange(output.WebAccessibilityNotes));
             Assert.Equal(input.IsSociallyCritical, AssertPropertyContainsDataChange(output.IsSociallyCritical)?.ToYesNoDontKnowChoice());
             Assert.Equal(input.BusinessCritical, AssertPropertyContainsDataChange(output.BusinessCritical)?.ToYesNoDontKnowChoice());
+            Assert.Equal(input.Purpose, AssertPropertyContainsDataChange(output.Purpose));
         }
 
         private static void AssertContainsAiTechnology(YesNoUndecidedChoice? expected, OptionalValueChange<Maybe<YesNoUndecidedOption>> actual)

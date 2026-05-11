@@ -91,6 +91,9 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.GeneralPurpose).HasMaxLength(ItSystemUsage.LongProperyMaxLength);
             builder.HasIndex(x => x.GeneralPurpose).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_GeneralPurpose");
 
+            builder.Property(x => x.ProcessingPurpose).HasMaxLength(ItSystemUsage.LongProperyMaxLength);
+            builder.HasIndex(x => x.ProcessingPurpose).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_ProcessingPurpose");
+
             builder.HasIndex(x => x.HostedAt).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_HostedAt");
             builder.HasIndex(x => x.UserCount).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_UserCount");
             builder.HasIndex(x => x.DPIAConducted).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_DPIAConducted");
@@ -100,7 +103,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.LifeCycleStatus).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_LifeCycleStatus");
             builder.HasIndex(x => x.Concluded).HasDatabaseName("IX_Concluded");
             builder.HasIndex(x => x.ExpirationDate).HasDatabaseName("IX_ExpirationDate");
-            builder.HasIndex(x => x.GdprCriticality).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_GdprCriticality");
+            builder.HasIndex(x => x.SystemUsageCriticalityLevelUuid).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemUsageCriticalityLevelUuid");
             builder.HasIndex(x => x.SystemActive).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemActive");
             builder.HasIndex(x => x.RiskAssessmentDate).HasDatabaseName("IX_RiskAssessmentDate");
             builder.HasIndex(x => x.PlannedRiskAssessmentDate).HasDatabaseName("IX_PlannedRiskAssessmentDate");

@@ -259,7 +259,11 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ArchiveTestLocation ArchiveTestLocation { get; set; }
 
         public int? ItSystemCategoriesId { get; set; }
-        public GdprCriticality? GdprCriticality { get; set; }
+        public int? SystemUsageCriticalityLevelId { get; set; }
+        public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
+
+        public virtual string? CriticalityLevelDocumentationUrl { get; set; }
+        public virtual string? CriticalityLevelDocumentationName { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
@@ -267,12 +271,54 @@ namespace Core.DomainModel.ItSystemUsage
 
         public YesNoUndecidedOption? ContainsAITechnology { get; set; }
 
-        public DataOptions? isBusinessCritical { get; set; }
-        
-        public DataOptions? IsSociallyCritical { get; set; }
+        public DataOptions? isBusinessCritical { get; private set; }
+
+        public DataOptions? IsSociallyCritical { get; private set; }
+
+        public DateTime? CriticalityFieldsLastChanged { get; private set; }
+
+        public void UpdateIsBusinessCritical(DataOptions? value)
+        {
+            if (value == isBusinessCritical) return;
+            isBusinessCritical = value;
+            SetCriticalityFieldsLastChanged();
+        }
+
+        public void UpdateIsSociallyCritical(DataOptions? value)
+        {
+            if (value == IsSociallyCritical) return;
+            IsSociallyCritical = value;
+            SetCriticalityFieldsLastChanged();
+        }
+
+        private void SetCriticalityFieldsLastChanged()
+        {
+            CriticalityFieldsLastChanged = DateTime.UtcNow;
+        }
+
+        public void UpdateCriticalityLevelDocumentationUrl(string? value) {
+            if (value == CriticalityLevelDocumentationUrl) return;
+            CriticalityLevelDocumentationUrl = value;
+            SetCriticalityFieldsLastChanged();
+        }
+
+        public void UpdateCriticalityLevelDocumentationName(string? value)
+        {
+            if (value == CriticalityLevelDocumentationName) return;
+            CriticalityLevelDocumentationName = value;
+            SetCriticalityFieldsLastChanged();
+        }
+
+        public void ResetCriticalityLevelDocumentation()
+        {
+            CriticalityLevelDocumentationUrl = null;
+            CriticalityLevelDocumentationName = null;
+            SetCriticalityFieldsLastChanged();
+        }
 
         #region GDPR
         public string GeneralPurpose { get; set; }
+        public string ProcessingPurpose { get; set; }
 
         public string LinkToDirectoryUrl { get; set; }
         public string LinkToDirectoryUrlName { get; set; }
@@ -875,6 +921,27 @@ namespace Core.DomainModel.ItSystemUsage
             return Maybe<OperationError>.None;
         }
 
+        public void ResetSystemUsageCriticalityLevel()
+        {
+            SystemUsageCriticalityLevel.Track();
+            SystemUsageCriticalityLevel = null;
+            SetCriticalityFieldsLastChanged();
+        }
+
+        public Maybe<OperationError> UpdateSystemUsageCriticalityLevel(SystemUsageCriticalityLevel newValue)
+        {
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+
+            if (SystemUsageCriticalityLevel == null || SystemUsageCriticalityLevel.Id != newValue.Id)
+            {
+                SystemUsageCriticalityLevel = newValue;
+                SetCriticalityFieldsLastChanged();
+            }
+
+            return Maybe<OperationError>.None;
+        }
+
         public void ResetArchiveTestLocation()
         {
             ArchiveTestLocation.Track();
@@ -1216,7 +1283,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         private Maybe<ItSystemUsageValidationError> CheckLifeCycleValidity()
         {
-            return LifeCycleStatus == LifeCycleStatusType.NotInUse
+            return LifeCycleStatus is (LifeCycleStatusType.NotInUse or LifeCycleStatusType.Pilot)
                 ? ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle
                 : Maybe<ItSystemUsageValidationError>.None;
         }
@@ -1390,6 +1457,16 @@ namespace Core.DomainModel.ItSystemUsage
         public Maybe<OperationError> UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
         {
             return UpdateWithPrecondition(HasDataRetention() || dataRetentionEvaluationFrequencyInMonths == 0, () => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
+        }
+
+        public void UpdateGeneralPurpose(string purpose)
+        {
+            GeneralPurpose = purpose;
+        }
+
+        public void UpdateProcessingPurpose(string purpose)
+        {
+            ProcessingPurpose = purpose;
         }
     }
 }

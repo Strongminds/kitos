@@ -2648,7 +2648,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private static void AssertGDPR(GDPRWriteRequestDTO gdprInput, GDPRRegistrationsResponseDTO gdprResponse)
         {
-            Assert.Equal(gdprInput.Purpose, gdprResponse.Purpose);
+            Assert.Equal(gdprInput.ProcessingPurpose, gdprResponse.ProcessingPurpose);
             Assert.Equal(gdprInput.HostedAt, gdprResponse.HostedAt);
             (gdprInput.DirectoryDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.DirectoryDocumentation);
             Assert.Equal((gdprInput.DataSensitivityLevels ?? new List<DataSensitivityLevelChoice>()).OrderBy(x => x), gdprResponse.DataSensitivityLevels.OrderBy(x => x));
@@ -2673,7 +2673,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(gdprInput.NextDataRetentionEvaluationDate, gdprResponse.NextDataRetentionEvaluationDate);
             Assert.Equal(gdprInput.DataRetentionEvaluationFrequencyInMonths ?? 0, gdprResponse.DataRetentionEvaluationFrequencyInMonths);
             Assert.Equal(gdprInput.SpecificPersonalData ?? new List<GDPRPersonalDataChoice>().OrderBy(x => x), gdprResponse.SpecificPersonalData.OrderBy(x => x));
-            Assert.Equal(gdprInput.GdprCriticality, gdprResponse.GdprCriticality);
         }
 
         private static ItSystemUsageValidityWriteRequestDTO CreateValidityInput(DateTime baseDate, LifeCycleStatusChoice lifeCycleStatus)

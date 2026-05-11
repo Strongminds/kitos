@@ -309,5 +309,16 @@ namespace Core.DomainModel.ItSystem
                 Name = Name
             };
         }
+
+        public Maybe<OperationError> SetLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> newModels) {
+            if (newModels.Any(x => x == LicensingAndCodeModel.Proprietary) && newModels.Any(y => y != LicensingAndCodeModel.Proprietary)) 
+                return new OperationError($"The Proprietary licensing and code model cannot be set on the same system as another model", OperationFailure.Conflict);
+
+            LicensingAndCodeModels = [.. newModels.Distinct()];
+
+            return Maybe<OperationError>.None;
+        }
+
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; } = new List<LicensingAndCodeModel>();
     }
 }

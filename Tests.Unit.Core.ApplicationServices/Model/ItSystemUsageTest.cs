@@ -28,6 +28,143 @@ namespace Tests.Unit.Core.Model
             };
         }
 
+        [Fact]
+        public void ResetSystemUsageCriticalityLevel_SetsLastChanged_AndSetsValueToNull()
+        {
+            _sut.UpdateSystemUsageCriticalityLevel(new SystemUsageCriticalityLevel() { Uuid = A<Guid>(), Name = A<string>()});
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+            Assert.NotNull(_sut.SystemUsageCriticalityLevel);
+
+            _sut.ResetSystemUsageCriticalityLevel();
+
+            Assert.Null(_sut.SystemUsageCriticalityLevel);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void ResetCriticalityLevelDocumentation_SetsLastChanged_AndSetsValuesToNull()
+        {
+            _sut.UpdateCriticalityLevelDocumentationUrl(A<string>());
+            _sut.UpdateCriticalityLevelDocumentationName(A<string>());
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+            Assert.NotNull(_sut.CriticalityLevelDocumentationUrl);
+            Assert.NotNull(_sut.CriticalityLevelDocumentationName);
+
+            _sut.ResetCriticalityLevelDocumentation();
+
+            Assert.Null(_sut.CriticalityLevelDocumentationUrl);
+            Assert.Null(_sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateIsBusinessCritical_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            _sut.UpdateIsBusinessCritical(DataOptions.NO);
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+            var expected = DataOptions.YES;
+
+            _sut.UpdateIsBusinessCritical(expected);
+
+            Assert.Equal(expected, _sut.isBusinessCritical);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationUrl_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationUrl(existingValue);
+            
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationUrl(existingValue);
+
+            Assert.Equal(existingValue, _sut.CriticalityLevelDocumentationUrl);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationName_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            var existing = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationName(existing);
+            var expected = A<string?>();
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationName(expected);
+
+            Assert.Equal(expected, _sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationName_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationName(existingValue);
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationName(existingValue);
+
+            Assert.Equal(existingValue, _sut.CriticalityLevelDocumentationName);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
+        }
+
+        [Fact]
+        public void UpdateCriticalityLevelDocumentationUrl_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            var existing = A<string?>();
+            _sut.UpdateCriticalityLevelDocumentationUrl(existing);
+            var expected = A<string?>();
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateCriticalityLevelDocumentationUrl(expected);
+
+            Assert.Equal(expected, _sut.CriticalityLevelDocumentationUrl);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateIsBusinessCritical_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = DataOptions.YES;
+            _sut.UpdateIsBusinessCritical(existingValue);
+
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsBusinessCritical(existingValue);
+
+            Assert.Equal(existingValue, _sut.isBusinessCritical);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
+        }
+
+        [Fact]
+        public void UpdateIsSociallyCritical_UpdatesCriticalityFieldsLastChanged_WhenNewValue()
+        {
+            _sut.UpdateIsSociallyCritical(DataOptions.NO);
+            var expected = DataOptions.YES;
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsSociallyCritical(expected);
+
+            Assert.Equal(expected, _sut.IsSociallyCritical);
+            AssertCriticalityFieldsLastChanged(beforeChange);
+        }
+
+        [Fact]
+        public void UpdateIsSociallyCritical_DoesNotUpdateCriticalityFieldsLastChanged_WhenNotNewValue()
+        {
+            var existingValue = DataOptions.YES;
+            _sut.UpdateIsSociallyCritical(existingValue);
+
+            var beforeChange = _sut.CriticalityFieldsLastChanged;
+
+            _sut.UpdateIsSociallyCritical(existingValue);
+
+            Assert.Equal(existingValue, _sut.IsSociallyCritical);
+            AssertCriticalityFieldsLastChanged(beforeChange, false);
+        }
 
         [Theory]
         [InlineData(DataOptions.DONTKNOW)]
@@ -1015,6 +1152,101 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
+        public void Invalid_When_StartDate_Not_Passed_And_EndDate_Is_Also_In_Future()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                Concluded = DateTime.UtcNow.AddDays(1),
+                ExpirationDate = DateTime.UtcNow.AddDays(30)
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.StartDateNotPassed }, validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Invalid_When_EndDate_Passed_And_LifeCycle_Is_Invalid()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                ExpirationDate = DateTime.UtcNow.AddDays(-1),
+                LifeCycleStatus = LifeCycleStatusType.NotInUse
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(
+                new List<ItSystemUsageValidationError>
+                {
+                    ItSystemUsageValidationError.EndDatePassed,
+                    ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle
+                },
+                validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Invalid_When_EndDate_Passed_And_MainContract_Is_Inactive()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                ExpirationDate = DateTime.UtcNow.AddDays(-1),
+                MainContract = new ItContractItSystemUsage { ItContract = new ItContract { Terminated = DateTime.UtcNow.AddDays(-1) } }
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(
+                new List<ItSystemUsageValidationError>
+                {
+                    ItSystemUsageValidationError.EndDatePassed,
+                    ItSystemUsageValidationError.MainContractNotActive
+                },
+                validity.ValidationErrors);
+        }
+
+        [Theory]
+        [InlineData(LifeCycleStatusType.NotInUse)]
+        [InlineData(LifeCycleStatusType.Pilot)]
+        public void Invalid_When_All_Validation_Sources_Have_Errors(LifeCycleStatusType status)
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                ExpirationDate = DateTime.UtcNow.AddDays(-1),
+                LifeCycleStatus = status,
+                MainContract = new ItContractItSystemUsage { ItContract = new ItContract { Terminated = DateTime.UtcNow.AddDays(-1) } }
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.False(validity.Result);
+            Assert.Equal(
+                new List<ItSystemUsageValidationError>
+                {
+                    ItSystemUsageValidationError.EndDatePassed,
+                    ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle,
+                    ItSystemUsageValidationError.MainContractNotActive
+                },
+                validity.ValidationErrors);
+        }
+
+        [Fact]
+        public void Valid_When_MainContract_Is_Set_But_ItContract_Is_Null()
+        {
+            var itSystemUsage = new ItSystemUsage
+            {
+                MainContract = new ItContractItSystemUsage { ItContract = null }
+            };
+
+            var validity = itSystemUsage.CheckSystemValidity();
+
+            Assert.True(validity.Result);
+        }
+
+        [Fact]
         public void AddPersonalData_Adds_PersonalData()
         {
             //Arrange
@@ -1094,6 +1326,11 @@ namespace Tests.Unit.Core.Model
             new object[]
             {
                 LifeCycleStatusType.NotInUse, null,
+                new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
+            },
+            new object[]
+            {
+                LifeCycleStatusType.Pilot, null,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
             },
             new object[]
@@ -1271,6 +1508,18 @@ namespace Tests.Unit.Core.Model
 
             //Assert
             Assert.Equal(MainContractState.Inactive, state);
+        }
+
+        private void AssertCriticalityFieldsLastChanged(DateTime? beforeChange, bool expectChange = true)
+        {
+            if (expectChange)
+            {
+                Assert.True(_sut.CriticalityFieldsLastChanged > beforeChange);
+            }
+            else
+            {
+                Assert.Equal(_sut.CriticalityFieldsLastChanged, beforeChange);
+            }
         }
     }
 }

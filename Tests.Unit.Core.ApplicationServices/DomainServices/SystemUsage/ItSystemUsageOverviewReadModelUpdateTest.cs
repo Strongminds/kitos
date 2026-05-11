@@ -235,6 +235,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                     dataProcessingRegistration
                 },
                 GeneralPurpose = A<string>(),
+                ProcessingPurpose = A<string>(),
                 HostedAt = A<HostedAt>(),
                 UserCount = A<UserCount>(),
                 UsageRelations = new List<SystemRelation>
@@ -300,6 +301,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             systemUsage.WebAccessibilityCompliance = A<YesNoPartiallyOption>();
             systemUsage.LastWebAccessibilityCheck = A<DateTime>();
             systemUsage.WebAccessibilityNotes = A<string>();
+            systemUsage.UpdateIsBusinessCritical(A<DataOptions>());
+            systemUsage.UpdateIsSociallyCritical(A<DataOptions>());
 
             var readModel = new ItSystemUsageOverviewReadModel();
 
@@ -332,6 +335,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.LinkToDirectoryUrlName, readModel.LinkToDirectoryName);
             Assert.Equal(systemUsage.LinkToDirectoryUrl, readModel.LinkToDirectoryUrl);
             Assert.Equal(systemUsage.GeneralPurpose, readModel.GeneralPurpose);
+            Assert.Equal(systemUsage.ProcessingPurpose, readModel.ProcessingPurpose);
             Assert.Equal(systemUsage.HostedAt, readModel.HostedAt);
             Assert.Equal(systemUsage.UserCount, readModel.UserCount);
             Assert.Equal(systemUsage.riskAssesmentDate, readModel.RiskAssessmentDate);
@@ -345,6 +349,9 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.LastWebAccessibilityCheck, readModel.LastWebAccessibilityCheck);
             Assert.Equal(systemUsage.WebAccessibilityNotes, readModel.WebAccessibilityNotes);
             Assert.Equal(systemUsage.IsSociallyCritical, readModel.IsSociallyCritical);
+            Assert.Equal(systemUsage.CriticalityFieldsLastChanged, readModel.CriticalityFieldsLastChanged);
+            Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Uuid, readModel.SystemUsageCriticalityLevelUuid);
+            Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);

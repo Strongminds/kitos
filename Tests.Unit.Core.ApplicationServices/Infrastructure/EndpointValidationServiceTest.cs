@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Infrastructure.Services.Http;
 using Moq;
@@ -14,6 +15,26 @@ namespace Tests.Unit.Core.Infrastructure
             ServiceEndpointConfiguration.ConfigureValidationOfOutgoingConnections();
         }
 
+        [Fact]
+        public async Task ValidateAsync_Skips_Urls_With_Ignored_Protocols()
+        {
+            var configuration = new Mock<IEndpointValidationConfiguration>();
+            var sut = new EndpointValidationService(Mock.Of<ILogger>(), configuration.Object);
+            List<string> protocols = ["test1", "test2"];
+            configuration.SetupGet(c => c.IgnoredProtocols).Returns(protocols);
+
+            foreach (var protocol in protocols)
+            {
+                var urlWithProtocol = $"{protocol}://example.com";
+                var validation = await sut.ValidateAsync(urlWithProtocol).ConfigureAwait(false);
+                Assert.True(validation.Success);
+
+                var withUppercase = urlWithProtocol.ToUpper();
+                var validationWithUppercase = await sut.ValidateAsync(withUppercase).ConfigureAwait(false);
+                Assert.True(validationWithUppercase.Success);
+            }
+        }
+
         [Theory]
         [InlineData("https://kitos.dk/should-not-be-here/", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
         [InlineData("http://kitos.dk", true, null, null)] //will upgrade to https
@@ -23,10 +44,11 @@ namespace Tests.Unit.Core.Infrastructure
         [InlineData("htt:/google.com", false, EndpointValidationErrorType.InvalidWebsiteUri, null)]
         [InlineData("https://d724FF4EE-EA34-4941-88C3-D567958976FF.com", false, EndpointValidationErrorType.DnsLookupFailed, null)]
         [InlineData("https://google.com/icannotbefound1337.com", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
-        public async Task Validate_Returns(string candidate, bool success, EndpointValidationErrorType? expectedErrorType, HttpStatusCode? expectedStatusCode)
+        public async Task ValidateAsync_Returns(string candidate, bool success, EndpointValidationErrorType? expectedErrorType, HttpStatusCode? expectedStatusCode)
         {
             //Arrange
-            var sut = new EndpointValidationService(Mock.Of<ILogger>());
+            var configuration = new Mock<IEndpointValidationConfiguration>();
+            var sut = new EndpointValidationService(Mock.Of<ILogger>(), configuration.Object);
 
             //Act
             var validation = await sut.ValidateAsync(candidate).ConfigureAwait(false);

@@ -1,0 +1,47 @@
+using Core.ApplicationServices.GlobalOptions;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Controllers.API.V2.Internal.Mapping;
+using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Internal.Request.Options;
+using System;
+using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystemUsage;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSystems
+{
+    [Route("api/v2/internal/it-systems/global-option-types/system-usage-criticality-level-types")]
+    public class ItSystemGlobalSystemUsageCriticalityLevelTypesInternalV2Controller : BaseGlobalRegularOptionTypesInternalV2Controller<
+        ItSystemUsage,
+        SystemUsageCriticalityLevel>
+    {
+        public ItSystemGlobalSystemUsageCriticalityLevelTypesInternalV2Controller(
+            IGlobalRegularOptionsService<SystemUsageCriticalityLevel, ItSystemUsage> globalRegularOptionsService,
+            IGlobalOptionTypeResponseMapper responseMapper, IGlobalOptionTypeWriteModelMapper writeModelMapper) : base(
+            globalRegularOptionsService, responseMapper, writeModelMapper)
+        {
+        }
+
+        [HttpGet]
+        [Route("")]
+        public IActionResult GetSystemUsageCriticalityLevelTypes()
+        {
+            return GetAll();
+        }
+
+        [HttpPost]
+        [Route("")]
+        public IActionResult CreateSystemUsageCriticalityLevelType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
+        {
+            return Create(dto);
+        }
+
+        [HttpPatch]
+        [Route("{optionUuid}")]
+        public IActionResult PatchSystemUsageCriticalityLevelType([NonEmptyGuid] [FromRoute] Guid optionUuid,
+            [FromBody] GlobalRegularOptionUpdateRequestDTO dto)
+        {
+            return Patch(optionUuid, dto);
+        }
+    }
+}

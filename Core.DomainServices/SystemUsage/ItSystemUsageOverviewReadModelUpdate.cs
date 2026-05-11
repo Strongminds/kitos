@@ -98,7 +98,11 @@ namespace Core.DomainServices.SystemUsage
             destination.LastWebAccessibilityCheck = source.LastWebAccessibilityCheck;
             destination.WebAccessibilityNotes = source.WebAccessibilityNotes;
             destination.IsSociallyCritical = source.IsSociallyCritical;
-            destination.GdprCriticality = source.GdprCriticality;
+            destination.CriticalityFieldsLastChanged = source.CriticalityFieldsLastChanged;
+            destination.SystemUsageCriticalityLevelUuid = source.SystemUsageCriticalityLevel?.Uuid;
+            destination.SystemUsageCriticalityLevelName = source.SystemUsageCriticalityLevel?.Name;
+            destination.CriticalityLevelDocumentationUrl = source.CriticalityLevelDocumentationUrl;
+            destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
@@ -114,6 +118,7 @@ namespace Core.DomainServices.SystemUsage
             PatchRiskSupervisionDocumentation(source, destination);
             PatchDataProcessingRegistrations(source, destination);
             PatchGeneralPurposeRegistrations(source, destination);
+            PatchProcessingPurposeRegistrations(source, destination);
             PatchDependsOnInterfaces(source, destination);
             PatchRelatedItSystemUsages(
                 () => new ItSystemUsageOverviewUsedBySystemUsageReadModel(),
@@ -272,6 +277,12 @@ namespace Core.DomainServices.SystemUsage
         {
             var generalPurpose = source.GeneralPurpose?.TrimEnd();
             destination.GeneralPurpose = generalPurpose?.Substring(0, Math.Min(generalPurpose.Length, ItSystemUsage.LongProperyMaxLength));
+        }
+
+        private static void PatchProcessingPurposeRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
+            var processingPurpose = source.ProcessingPurpose?.TrimEnd();
+            destination.ProcessingPurpose = processingPurpose?.Substring(0, Math.Min(processingPurpose.Length, ItSystemUsage.LongProperyMaxLength));
         }
 
         private void PatchDataProcessingRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
