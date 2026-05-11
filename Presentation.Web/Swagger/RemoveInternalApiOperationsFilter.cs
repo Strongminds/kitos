@@ -24,6 +24,21 @@ namespace Presentation.Web.Swagger
                     swaggerDoc.Paths.Remove(route);
                 }
             }
+
+            // Remove tag definitions that are no longer referenced by any remaining operation.
+            // Without this, internal controllers leave behind empty groups in the Swagger UI.
+            var usedTagNames = swaggerDoc.Paths
+                .SelectMany(p => p.Value.Operations.Values)
+                .SelectMany(op => op.Tags)
+                .Select(t => t.Name)
+                .ToHashSet();
+
+            var tagsToRemove = swaggerDoc.Tags
+                .Where(t => !usedTagNames.Contains(t.Name))
+                .ToList();
+
+            foreach (var tag in tagsToRemove)
+                swaggerDoc.Tags.Remove(tag);
         }
 
         private static bool IsActionInternal(Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription apiDescription)

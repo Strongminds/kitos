@@ -1,11 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
-using Infrastructure.DataAccess.Mapping;
-using System;
 using Core.DomainModel.Advice;
 using Core.DomainModel.Organization;
 using Core.DomainModel.LocalOptions;
