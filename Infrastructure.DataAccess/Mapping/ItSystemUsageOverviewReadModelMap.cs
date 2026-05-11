@@ -91,6 +91,9 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.GeneralPurpose).HasMaxLength(ItSystemUsage.LongProperyMaxLength);
             builder.HasIndex(x => x.GeneralPurpose).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_GeneralPurpose");
 
+            builder.Property(x => x.ProcessingPurpose).HasMaxLength(ItSystemUsage.LongProperyMaxLength);
+            builder.HasIndex(x => x.ProcessingPurpose).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_ProcessingPurpose");
+
             builder.HasIndex(x => x.HostedAt).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_HostedAt");
             builder.HasIndex(x => x.UserCount).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_UserCount");
             builder.HasIndex(x => x.DPIAConducted).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_DPIAConducted");

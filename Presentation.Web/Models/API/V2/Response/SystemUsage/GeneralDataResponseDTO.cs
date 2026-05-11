@@ -78,6 +78,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
         /// <summary>
+        /// Gets or sets the purpose associated with the system usage.
+        /// </summary>
+        public string? Purpose { get; set; }
+        /// <summary>
         /// The technical system type of this system usage.
         /// </summary>
         public IdentityNamePairResponseDTO? TechnicalSystemType { get; set; }

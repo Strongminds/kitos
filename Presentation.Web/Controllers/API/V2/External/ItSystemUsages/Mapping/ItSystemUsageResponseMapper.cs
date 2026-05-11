@@ -65,7 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return new GDPRRegistrationsResponseDTO
             {
-                Purpose = systemUsage.GeneralPurpose,
+                ProcessingPurpose = systemUsage.ProcessingPurpose,
                 DPIAConducted = MapYesNoExtended(systemUsage.DPIA),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),
@@ -119,7 +119,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 TestLocation = systemUsage.ArchiveTestLocation?.MapIdentityNamePairDTO(),
                 Type = systemUsage.ArchiveType?.MapIdentityNamePairDTO(),
                 Supplier = systemUsage.ArchiveSupplier?.MapShallowOrganizationResponseDTO(),
-                JournalPeriods = systemUsage.ArchivePeriods.Select(period => MapJournalPeriodResponseDto(period)).ToList()
+                JournalPeriods = systemUsage.ArchivePeriods.Select(MapJournalPeriodResponseDto).ToList()
             };
         }
 
@@ -194,7 +194,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
                 CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
-                TechnicalSystemType = systemUsage.TechnicalSystemType?.MapIdentityNamePairDTO(),
+                Purpose = systemUsage.GeneralPurpose,
+                TechnicalSystemType = systemUsage.TechnicalSystemType?.MapIdentityNamePairDTO()
             };
         }
 
@@ -295,7 +296,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             };
         }
 
-        private static ExpectedUsersIntervalDTO MapExpectedUsers(ItSystemUsage systemUsage)
+        private static ExpectedUsersIntervalDTO? MapExpectedUsers(ItSystemUsage systemUsage)
         {
             return systemUsage.UserCount switch
             {

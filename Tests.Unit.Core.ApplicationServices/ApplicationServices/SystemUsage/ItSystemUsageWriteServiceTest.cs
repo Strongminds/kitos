@@ -1728,7 +1728,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? retentionPeriodDefined = DataOptions.YES;
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
-                Purpose = purpose.AsChangedValue(),
                 HostedAt = hostedAt.AsChangedValue(),
                 DirectoryDocumentation = directoryDoc.FromNullable().AsChangedValue(),
                 DataSensitivityLevels = sensitiveDataLevels.FromNullable<IEnumerable<SensitiveDataLevel>>().AsChangedValue(),
@@ -1759,6 +1758,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
+                    Purpose = purpose.AsChangedValue(),
                     BusinessCritical = businessCritical.AsChangedValue(),
                     SystemUsageCriticalityLevelUuid = Maybe<Guid>.None.AsChangedValue()
                 },
@@ -3254,9 +3254,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(archiving.ArchiveFrequencyInMonths.NewValue, actual.ArchiveFreq);
             Assert.Equal(archiving.ArchiveNotes.NewValue, actual.ArchiveNotes);
 
+            Assert.Equal(generalProperties.Purpose.NewValue, actual.GeneralPurpose);
+
             //GDPR
             var gdpr = expected.GDPR.Value;
-            Assert.Equal(gdpr.Purpose.NewValue, actual.GeneralPurpose);
             Assert.Equal(gdpr.HostedAt.NewValue, actual.HostedAt);
             Assert.Equal(gdpr.TechnicalPrecautionsInPlace.NewValue, actual.precautions);
             Assert.Equal(gdpr.UserSupervision.NewValue, actual.UserSupervision);
@@ -3318,6 +3319,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
                     BusinessCritical = A<DataOptions?>().AsChangedValue(),
+                    Purpose = A<string>().AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3329,7 +3331,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 },
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
-                    Purpose = A<string>().AsChangedValue(),
                     HostedAt = A<HostedAt?>().AsChangedValue(),
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
@@ -3367,7 +3368,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
-                    BusinessCritical = new ChangedValue<DataOptions?>(null)
+                    BusinessCritical = new ChangedValue<DataOptions?>(null),
+                    Purpose = "".AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3379,7 +3381,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 },
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
-                    Purpose = "".AsChangedValue(),
                     HostedAt = new ChangedValue<HostedAt?>(null),
                     DirectoryDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     TechnicalPrecautionsInPlace = new ChangedValue<DataOptions?>(null),

@@ -85,6 +85,11 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         [SupplierField]
         public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
         /// <summary>
+        /// The general purpose of this system usage.
+        /// </summary>
+        [MaxLength(ItSystemUsage.LongProperyMaxLength)]
+        public string? Purpose { get; set; }
+        /// <summary>
         /// The technical system type classification of this system usage.
         /// Constraint: If an update changes this field, the option identified must be currently available in the organization context
         /// </summary>
