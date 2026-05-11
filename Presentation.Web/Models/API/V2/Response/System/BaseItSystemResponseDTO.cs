@@ -5,6 +5,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.SharedProperties;
+using Presentation.Web.Models.API.V2.Types.System;
 
 namespace Presentation.Web.Models.API.V2.Response.System
 {
@@ -93,5 +94,10 @@ namespace Presentation.Web.Models.API.V2.Response.System
         /// </summary>
         [Required]
         public IEnumerable<ShallowOrganizationResponseDTO> MainContractSuppliers { get; set; }
+
+        /// <summary>
+        /// The licensing and code models used for this system.
+        /// </summary>
+        public IEnumerable<LicensingAndCodeModelChoice> LicensingAndCodeModels { get; set; }
     }
 }
