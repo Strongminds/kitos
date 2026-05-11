@@ -26,7 +26,20 @@ namespace Presentation.Web.Infrastructure.OData
             var parameters = node.Parameters.ToList();
             var left = Bind(parameters[0], context);
             var right = Bind(parameters[1], context);
-            return Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);
+
+            Expression containsCall = Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);
+
+            // Guard against NullReferenceException when the property is null during in-memory filter
+            // evaluation (e.g. after ToList()). OData semantics: contains(null, 'x') = false.
+            if (!left.Type.IsValueType)
+            {
+                containsCall = Expression.Condition(
+                    Expression.Equal(left, Expression.Default(left.Type)),
+                    Expression.Constant(false),
+                    containsCall);
+            }
+
+            return containsCall;
         }
 
     }
