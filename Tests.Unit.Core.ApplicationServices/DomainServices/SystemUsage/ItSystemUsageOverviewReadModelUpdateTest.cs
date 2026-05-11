@@ -235,6 +235,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                     dataProcessingRegistration
                 },
                 GeneralPurpose = A<string>(),
+                ProcessingPurpose = A<string>(),
                 HostedAt = A<HostedAt>(),
                 UserCount = A<UserCount>(),
                 UsageRelations = new List<SystemRelation>
@@ -334,6 +335,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.LinkToDirectoryUrlName, readModel.LinkToDirectoryName);
             Assert.Equal(systemUsage.LinkToDirectoryUrl, readModel.LinkToDirectoryUrl);
             Assert.Equal(systemUsage.GeneralPurpose, readModel.GeneralPurpose);
+            Assert.Equal(systemUsage.ProcessingPurpose, readModel.ProcessingPurpose);
             Assert.Equal(systemUsage.HostedAt, readModel.HostedAt);
             Assert.Equal(systemUsage.UserCount, readModel.UserCount);
             Assert.Equal(systemUsage.riskAssesmentDate, readModel.RiskAssessmentDate);

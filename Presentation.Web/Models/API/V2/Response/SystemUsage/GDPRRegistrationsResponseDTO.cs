@@ -10,7 +10,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {
     public class GDPRRegistrationsResponseDTO
     {
-        public string? Purpose { get; set; }
+        public string? ProcessingPurpose { get; set; }
         public HostingChoice? HostedAt { get; set; }
         public SimpleLinkDTO? DirectoryDocumentation { get; set; }
         [Required]
