@@ -1,11 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using Core.DomainModel;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
-using Infrastructure.DataAccess.Mapping;
-using System;
 using Core.DomainModel.Advice;
 using Core.DomainModel.Organization;
 using Core.DomainModel.LocalOptions;
@@ -45,6 +42,7 @@ namespace Infrastructure.DataAccess
         public DbSet<ArchiveLocation> ArchiveLocation { get; set; }
         public DbSet<ArchiveTestLocation> ArchiveTestLocation { get; set; }
         public DbSet<SystemUsageCriticalityLevel> SystemUsageCriticalityLevelTypes { get; set; }
+        public DbSet<TechnicalSystemType> TechnicalSystemTypes { get; set; }
         public DbSet<BusinessType> BusinessTypes { get; set; }
         public DbSet<Config> Configs { get; set; }
         public DbSet<ItContractTemplateType> ItContractTemplateTypes { get; set; }
@@ -93,6 +91,7 @@ namespace Infrastructure.DataAccess
         public DbSet<LocalArchiveLocation> LocalArchiveLocation { get; set; }
         public DbSet<LocalArchiveTestLocation> LocalArchiveTestLocation { get; set; }
         public DbSet<LocalSystemUsageCriticalityLevel> LocalSystemUsageCriticalityLevelTypes { get; set; }
+        public DbSet<LocalTechnicalSystemType> LocalTechnicalSystemTypes { get; set; }
         public DbSet<LocalBusinessType> LocalBusinessTypes { get; set; }
         public DbSet<LocalDataType> LocalDataTypes { get; set; }
         public DbSet<LocalRelationFrequencyType> LocalRelationFrequencyTypes { get; set; }
@@ -192,6 +191,7 @@ namespace Infrastructure.DataAccess
             ConfigureLocalOptionType<LocalBusinessType>(modelBuilder, "LocalBusinessTypes");
             ConfigureLocalOptionType<LocalCriticalityType>(modelBuilder, "LocalCriticalityTypes");
             ConfigureLocalOptionType<LocalSystemUsageCriticalityLevel>(modelBuilder, "LocalSystemUsageCriticalityLevelTypes");
+            ConfigureLocalOptionType<LocalTechnicalSystemType>(modelBuilder, "LocalTechnicalSystemTypes");
             ConfigureLocalOptionType<LocalDataProcessingBasisForTransferOption>(modelBuilder, "LocalDataProcessingBasisForTransferOptions");
             ConfigureLocalOptionType<LocalDataProcessingCountryOption>(modelBuilder, "LocalDataProcessingCountryOptions");
             ConfigureLocalOptionType<LocalDataProcessingDataResponsibleOption>(modelBuilder, "LocalDataProcessingDataResponsibleOptions");

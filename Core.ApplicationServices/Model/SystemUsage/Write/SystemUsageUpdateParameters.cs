@@ -83,6 +83,10 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.SystemUsageCriticalityLevelUuid));
             if (general.CriticalityLevelDocumentation.HasChange)
                 changed.Add(nameof(general.CriticalityLevelDocumentation));
+            if (general.Purpose.HasChange)
+                changed.Add(nameof(general.Purpose));
+            if (general.TechnicalSystemTypeUuid.HasChange)
+                changed.Add(nameof(general.TechnicalSystemTypeUuid));
             return changed;
         }
 
@@ -121,8 +125,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         {
             var changed = new List<string>();
             var gdpr = GDPR.Value;
-            if (gdpr.Purpose.HasChange)
-                changed.Add(nameof(gdpr.Purpose));
+            if (gdpr.ProcessingPurpose.HasChange)
+                changed.Add(nameof(gdpr.ProcessingPurpose));
             if (gdpr.HostedAt.HasChange)
                 changed.Add(nameof(gdpr.HostedAt));
             if (gdpr.DirectoryDocumentation.HasChange)

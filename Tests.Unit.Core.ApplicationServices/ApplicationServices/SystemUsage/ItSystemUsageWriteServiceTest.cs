@@ -55,6 +55,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveLocation>> _archiveLocationOptionsServiceMock;
         private readonly Mock<IOptionsService<ItSystemUsage, ArchiveTestLocation>> _archiveTestLocationOptionsServiceMock;
         private readonly Mock<IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel>> _systemUsageCriticalityLevelOptionsServiceMock;
+        private readonly Mock<IOptionsService<ItSystemUsage, TechnicalSystemType>> _technicalSystemTypeOptionsServiceMock;
         private readonly Mock<IItContractService> _contractServiceMock;
         private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IRoleAssignmentService<ItSystemRight, ItSystemRole, ItSystemUsage>> _roleAssignmentService;
@@ -80,6 +81,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _archiveLocationOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveLocation>>();
             _archiveTestLocationOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, ArchiveTestLocation>>();
             _systemUsageCriticalityLevelOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel>>();
+            _technicalSystemTypeOptionsServiceMock = new Mock<IOptionsService<ItSystemUsage, TechnicalSystemType>>();
             _contractServiceMock = new Mock<IItContractService>();
             _domainEventsMock = new Mock<IDomainEvents>();
             _kleServiceMock = new Mock<IKLEApplicationService>();
@@ -104,7 +106,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _systemUsageRelationServiceMock.Object,
                 _identityResolverMock.Object,
                 _personalDataOptionsRepository.Object,
-                _systemUsageCriticalityLevelOptionsServiceMock.Object);
+                _systemUsageCriticalityLevelOptionsServiceMock.Object,
+                _technicalSystemTypeOptionsServiceMock.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
@@ -1574,6 +1577,272 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
+        public void Can_Create_With_TechnicalSystemType()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, true));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(technicalSystemType, createResult.Value.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void Cannot_Create_With_TechnicalSystemType_If_Uuid_Not_Exists()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, Maybe<(TechnicalSystemType, bool)>.None);
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Failed);
+            Assert.Equal(OperationFailure.BadInput, createResult.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Cannot_Create_With_TechnicalSystemType_If_Not_Available_In_Org()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Failed);
+            Assert.Equal(OperationFailure.BadInput, createResult.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Can_Create_With_TechnicalSystemType_If_Not_Available_In_Org_But_Value_Is_Not_Changed()
+        {
+            //Arrange
+            var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
+            itSystemUsage.TechnicalSystemType = technicalSystemType;
+
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, input));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(technicalSystemType, createResult.Value.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void Can_Update_With_TechnicalSystemType()
+        {
+            //Arrange
+            var (_, _, transactionMock, organization, _, itSystemUsage) = CreateBasicTestVariables();
+            ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
+            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, true));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var result = _sut.Update(itSystemUsage.Uuid, input);
+
+            //Assert
+            Assert.True(result.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(technicalSystemType, result.Value.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void Cannot_Update_With_TechnicalSystemType_If_Uuid_Not_Exists()
+        {
+            //Arrange
+            var (_, _, transactionMock, organization, _, itSystemUsage) = CreateBasicTestVariables();
+            ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
+            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
+
+            var technicalSystemTypeUuid = A<Guid>();
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, Maybe<(TechnicalSystemType, bool)>.None);
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var result = _sut.Update(itSystemUsage.Uuid, input);
+
+            //Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Cannot_Update_With_TechnicalSystemType_If_Not_Available_In_Org()
+        {
+            //Arrange
+            var (_, _, transactionMock, organization, _, itSystemUsage) = CreateBasicTestVariables();
+            ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
+            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var result = _sut.Update(itSystemUsage.Uuid, input);
+
+            //Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+            AssertTransactionNotCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Can_Update_With_TechnicalSystemType_If_Not_Available_In_Org_But_Value_Is_Not_Changed()
+        {
+            //Arrange
+            var (_, _, transactionMock, organization, _, itSystemUsage) = CreateBasicTestVariables();
+
+            var technicalSystemTypeUuid = A<Guid>();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
+            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
+            itSystemUsage.TechnicalSystemType = technicalSystemType;
+
+            ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
+            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                }
+            };
+
+            //Act
+            var result = _sut.Update(itSystemUsage.Uuid, input);
+
+            //Assert
+            Assert.True(result.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Same(technicalSystemType, result.Value.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void Can_Reset_TechnicalSystemType()
+        {
+            //Arrange
+            var (_, _, transactionMock, _, _, itSystemUsage) = CreateBasicTestVariables();
+            var technicalSystemType = new TechnicalSystemType() { Id = A<int>() };
+            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
+            itSystemUsage.TechnicalSystemType = technicalSystemType;
+
+            ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
+            ExpectAllowModifyReturns(itSystemUsage, true);
+            SetupAuthorizationModelReturns();
+
+            var input = new SystemUsageUpdateParameters
+            {
+                GeneralProperties = new UpdatedSystemUsageGeneralProperties
+                {
+                    TechnicalSystemTypeUuid = Maybe<Guid>.None.AsChangedValue()
+                }
+            };
+
+            //Act
+            var result = _sut.Update(itSystemUsage.Uuid, input);
+
+            //Assert
+            Assert.True(result.Ok);
+            AssertTransactionCommitted(transactionMock);
+            Assert.Null(result.Value.TechnicalSystemType);
+        }
+
+        [Fact]
         public void Can_Create_With_GDPR()
         {
             //Arrange
@@ -1611,7 +1880,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? retentionPeriodDefined = DataOptions.YES;
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
-                Purpose = purpose.AsChangedValue(),
                 HostedAt = hostedAt.AsChangedValue(),
                 DirectoryDocumentation = directoryDoc.FromNullable().AsChangedValue(),
                 DataSensitivityLevels = sensitiveDataLevels.FromNullable<IEnumerable<SensitiveDataLevel>>().AsChangedValue(),
@@ -1642,6 +1910,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
+                    Purpose = purpose.AsChangedValue(),
                     BusinessCritical = businessCritical.AsChangedValue(),
                     SystemUsageCriticalityLevelUuid = Maybe<Guid>.None.AsChangedValue()
                 },
@@ -3137,9 +3406,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(archiving.ArchiveFrequencyInMonths.NewValue, actual.ArchiveFreq);
             Assert.Equal(archiving.ArchiveNotes.NewValue, actual.ArchiveNotes);
 
+            Assert.Equal(generalProperties.Purpose.NewValue, actual.GeneralPurpose);
+
             //GDPR
             var gdpr = expected.GDPR.Value;
-            Assert.Equal(gdpr.Purpose.NewValue, actual.GeneralPurpose);
             Assert.Equal(gdpr.HostedAt.NewValue, actual.HostedAt);
             Assert.Equal(gdpr.TechnicalPrecautionsInPlace.NewValue, actual.precautions);
             Assert.Equal(gdpr.UserSupervision.NewValue, actual.UserSupervision);
@@ -3201,6 +3471,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidTo = Maybe<DateTime>.Some(DateTime.Now.AddDays(Math.Abs(A<short>()))).AsChangedValue(),
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
                     BusinessCritical = A<DataOptions?>().AsChangedValue(),
+                    Purpose = A<string>().AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3212,7 +3483,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 },
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
-                    Purpose = A<string>().AsChangedValue(),
                     HostedAt = A<HostedAt?>().AsChangedValue(),
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
@@ -3250,7 +3520,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ValidFrom = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ValidTo = new ChangedValue<Maybe<DateTime>>(Maybe<DateTime>.None),
                     ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
-                    BusinessCritical = new ChangedValue<DataOptions?>(null)
+                    BusinessCritical = new ChangedValue<DataOptions?>(null),
+                    Purpose = "".AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3262,7 +3533,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 },
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
-                    Purpose = "".AsChangedValue(),
                     HostedAt = new ChangedValue<HostedAt?>(null),
                     DirectoryDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     TechnicalPrecautionsInPlace = new ChangedValue<DataOptions?>(null),
@@ -3436,6 +3706,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void ExpectGetSystemUsageCriticalityLevelReturns(int organizationId, Guid criticalityLevelUuid, Maybe<(SystemUsageCriticalityLevel, bool)> result)
         {
             _systemUsageCriticalityLevelOptionsServiceMock.Setup(x => x.GetOptionByUuid(organizationId, criticalityLevelUuid)).Returns(result);
+        }
+
+        private void ExpectGetTechnicalSystemTypeReturns(int organizationId, Guid technicalSystemTypeUuid, Maybe<(TechnicalSystemType, bool)> result)
+        {
+            _technicalSystemTypeOptionsServiceMock.Setup(x => x.GetOptionByUuid(organizationId, technicalSystemTypeUuid)).Returns(result);
         }
 
         private SystemUsageUpdateParameters SetupKLEInputExpectations(IReadOnlyCollection<TaskRef> additionalTaskRefs, IReadOnlyCollection<TaskRef> tasksToRemove)

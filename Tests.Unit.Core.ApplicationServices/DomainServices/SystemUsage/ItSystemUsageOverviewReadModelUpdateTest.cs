@@ -235,6 +235,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                     dataProcessingRegistration
                 },
                 GeneralPurpose = A<string>(),
+                ProcessingPurpose = A<string>(),
                 HostedAt = A<HostedAt>(),
                 UserCount = A<UserCount>(),
                 UsageRelations = new List<SystemRelation>
@@ -334,6 +335,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.LinkToDirectoryUrlName, readModel.LinkToDirectoryName);
             Assert.Equal(systemUsage.LinkToDirectoryUrl, readModel.LinkToDirectoryUrl);
             Assert.Equal(systemUsage.GeneralPurpose, readModel.GeneralPurpose);
+            Assert.Equal(systemUsage.ProcessingPurpose, readModel.ProcessingPurpose);
             Assert.Equal(systemUsage.HostedAt, readModel.HostedAt);
             Assert.Equal(systemUsage.UserCount, readModel.UserCount);
             Assert.Equal(systemUsage.riskAssesmentDate, readModel.RiskAssessmentDate);
@@ -350,6 +352,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.CriticalityFieldsLastChanged, readModel.CriticalityFieldsLastChanged);
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Uuid, readModel.SystemUsageCriticalityLevelUuid);
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
+            Assert.Equal(systemUsage.TechnicalSystemType?.Uuid, readModel.TechnicalSystemTypeUuid);
+            Assert.Equal(systemUsage.TechnicalSystemType?.Name, readModel.TechnicalSystemTypeName);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);

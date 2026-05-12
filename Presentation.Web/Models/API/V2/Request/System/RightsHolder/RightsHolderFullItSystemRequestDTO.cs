@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
+using Presentation.Web.Models.API.V2.Types.System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Presentation.Web.Infrastructure.Attributes;
-using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 
 namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
 {
@@ -71,5 +72,9 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// UUID's for KLE numbers categorizing this IT-System
         /// </summary>
         public IEnumerable<Guid>? KLEUuids { get; set; }
+        /// <summary>
+        /// The licensing and code model used for this system. Existing models will be replaced by the input data.
+        /// </summary>
+        public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
     }
 }
