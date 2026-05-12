@@ -100,7 +100,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 RiskAssessmentNotes = systemUsage.noteRisks,
                 RiskAssessmentResult = MapRiskAssessment(systemUsage),
                 PlannedRiskAssessmentDate = systemUsage.PlannedRiskAssessmentDate,
-                UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),v
+                UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
                 UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
                 IsDataProcessingAgreementRequired = MapIsDataProcessingAgreementRequired(systemUsage.IsDataProcessingAgreementRequired)
