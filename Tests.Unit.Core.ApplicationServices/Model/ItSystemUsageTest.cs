@@ -1510,6 +1510,60 @@ namespace Tests.Unit.Core.Model
             Assert.Equal(MainContractState.Inactive, state);
         }
 
+        [Fact]
+        public void ResetTechnicalSystemType_SetsValueToNull()
+        {
+            _sut.UpdateTechnicalSystemType(new TechnicalSystemType { Id = A<int>() });
+            Assert.NotNull(_sut.TechnicalSystemType);
+
+            _sut.ResetTechnicalSystemType();
+
+            Assert.Null(_sut.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void UpdateTechnicalSystemType_SetsValue_WhenNew()
+        {
+            var newValue = new TechnicalSystemType { Id = A<int>() };
+
+            var error = _sut.UpdateTechnicalSystemType(newValue);
+
+            Assert.True(error.IsNone);
+            Assert.Same(newValue, _sut.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void UpdateTechnicalSystemType_SetsValue_WhenDifferentId()
+        {
+            var initial = new TechnicalSystemType { Id = A<int>() };
+            _sut.UpdateTechnicalSystemType(initial);
+
+            var newValue = new TechnicalSystemType { Id = A<int>() };
+            var error = _sut.UpdateTechnicalSystemType(newValue);
+
+            Assert.True(error.IsNone);
+            Assert.Same(newValue, _sut.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void UpdateTechnicalSystemType_DoesNotChangeValue_WhenSameId()
+        {
+            var existing = new TechnicalSystemType { Id = A<int>() };
+            _sut.UpdateTechnicalSystemType(existing);
+
+            var sameIdValue = new TechnicalSystemType { Id = existing.Id };
+            var error = _sut.UpdateTechnicalSystemType(sameIdValue);
+
+            Assert.True(error.IsNone);
+            Assert.Same(existing, _sut.TechnicalSystemType);
+        }
+
+        [Fact]
+        public void UpdateTechnicalSystemType_Throws_WhenNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => _sut.UpdateTechnicalSystemType(null));
+        }
+
         private void AssertCriticalityFieldsLastChanged(DateTime? beforeChange, bool expectChange = true)
         {
             if (expectChange)
