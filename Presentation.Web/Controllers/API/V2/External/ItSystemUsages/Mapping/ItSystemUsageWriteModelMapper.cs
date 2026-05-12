@@ -435,6 +435,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.Purpose!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
+
+                TechnicalSystemTypeUuid = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuid)
+                    ? (source.TechnicalSystemTypeUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<Guid>>.None,
             };
         }
 
