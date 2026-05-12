@@ -265,7 +265,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var dto = _sut.MapSystemUsageDTO(itSystemUsage);
 
             //Assert
-            Assert.Equal(dto.GDPR.Purpose, itSystemUsage.GeneralPurpose);
+            Assert.Equal(dto.GDPR.ProcessingPurpose, itSystemUsage.ProcessingPurpose);
             AssertYesNoExtended(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             AssertSimpleLink(dto.GDPR.DPIADocumentation, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
             AssertHostedAt(dto.GDPR.HostedAt, itSystemUsage.HostedAt);
