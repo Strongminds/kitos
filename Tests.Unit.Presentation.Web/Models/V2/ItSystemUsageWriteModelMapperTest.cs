@@ -666,7 +666,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noMainContractUuid,
             bool noIsSociallyCritical,
             bool noBusinessCritical,
-            bool noSystemUsageCriticalityLevel)
+            bool noSystemUsageCriticalityLevel,
+            bool noTechnicalSystemType)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -684,7 +685,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noMainContractUuid,
                 noIsSociallyCritical,
                 noBusinessCritical,
-                noSystemUsageCriticalityLevel);
+                noSystemUsageCriticalityLevel,
+                noTechnicalSystemType);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
@@ -705,6 +707,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noIsSociallyCritical, generalSection.IsSociallyCritical.IsUnchanged);
             Assert.Equal(noBusinessCritical, generalSection.BusinessCritical.IsUnchanged);
             Assert.Equal(noSystemUsageCriticalityLevel, generalSection.SystemUsageCriticalityLevelUuid.IsUnchanged);
+            Assert.Equal(noTechnicalSystemType, generalSection.TechnicalSystemTypeUuid.IsUnchanged);
         }
 
 
@@ -724,7 +727,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noMainContractUuid,
             bool noIsSociallyCritical,
             bool noBusinessCritical,
-            bool noSystemUsageCriticalityLevel)
+            bool noSystemUsageCriticalityLevel,
+            bool noTechnicalSystemType)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -742,7 +746,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noMainContractUuid,
                 noIsSociallyCritical,
                 noBusinessCritical,
-                noSystemUsageCriticalityLevel);
+                noSystemUsageCriticalityLevel,
+                noTechnicalSystemType);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
@@ -763,6 +768,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(generalSection.IsSociallyCritical.HasChange);
             Assert.True(generalSection.BusinessCritical.HasChange);
             Assert.True(generalSection.SystemUsageCriticalityLevelUuid.HasChange);
+            Assert.True(generalSection.TechnicalSystemTypeUuid.HasChange);
         }
 
         [Theory]
@@ -1269,7 +1275,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noMainContractUuid = false,
             bool noIsSociallyCritical = false,
             bool noBusinessCritical = false,
-            bool noSystemUsageCriticalityLevel = false)
+            bool noSystemUsageCriticalityLevel = false,
+            bool noTechnicalSystemType = false)
         {
             var generalProperties = GetAllInputPropertyNames<GeneralDataUpdateRequestDTO>();
             if (noPurpose) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.Purpose));
@@ -1283,6 +1290,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
             if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.BusinessCritical));
             if (noSystemUsageCriticalityLevel) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemUsageCriticalityLevelUuid));
+            if (noTechnicalSystemType) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.TechnicalSystemTypeUuid));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
             if (noLifeCycleStatus) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.LifeCycleStatus));
