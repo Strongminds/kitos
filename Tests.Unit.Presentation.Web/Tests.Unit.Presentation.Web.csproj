@@ -30,10 +30,4 @@
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
     <ProjectReference Include="..\Presentation.Web\Presentation.Web.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- Pre-specified exclusions: files using System.Web.Http -->
-    <Compile Remove="Helpers\KitosRestControllerApiTestWithAutofixture.cs" />
-    <!-- Helper for old OData (Microsoft.AspNet.OData) - replaced by Microsoft.AspNetCore.OData -->
-    <Compile Remove="Helpers\UserMock.cs" />
-  </ItemGroup>
 </Project>
