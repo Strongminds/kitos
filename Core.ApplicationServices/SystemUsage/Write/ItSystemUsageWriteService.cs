@@ -22,7 +22,6 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Organization;
 using Core.DomainModel.References;
-using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Options;
@@ -247,6 +246,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
                        systemUsage.LinkToDirectoryUrl = newLink.Select(x => x.Url).GetValueOrDefault();
                    }))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.IsDataProcessingAgreementRequired, (systemUsage, isDataProcessingAgreementRequired) => systemUsage.IsDataProcessingAgreementRequired = isDataProcessingAgreementRequired))
 
                 //Registered data sensitivity
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DataSensitivityLevels, (systemUsage, levels) => UpdateSensitivityLevels(levels, systemUsage)))
