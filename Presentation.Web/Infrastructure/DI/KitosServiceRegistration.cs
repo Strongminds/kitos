@@ -208,7 +208,9 @@ namespace Presentation.Web.Infrastructure.DI
                         throw new InvalidOperationException("Smtp:Host is required when DeliveryMethod is Network");
                     var port = int.Parse(smtpSection["Port"] ?? "25");
                     var ssl = bool.Parse(smtpSection["EnableSsl"] ?? "false");
-                    inner = new SingleThreadedMailClient(host, port, ssl);
+                    var userName = smtpSection["UserName"];
+                    var password = smtpSection["Password"];
+                    inner = new SingleThreadedMailClient(host, port, ssl, userName, password);
                 }
 
                 return new DefaultFromAddressMailClient(inner, fromAddress);
@@ -262,6 +264,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItSystemUsageMigrationService, ItSystemUsageMigrationService>();
             services.AddScoped<IReferenceService, ReferenceService>();
             services.AddScoped<IEndpointValidationService, EndpointValidationService>();
+            services.AddScoped<IEndpointValidationConfiguration, EndpointValidationConfiguration>();
             services.AddScoped<IBrokenExternalReferencesReportService, BrokenExternalReferencesReportService>();
             services.AddScoped<IGDPRExportService, GDPRExportService>();
             services.AddScoped<IFallbackUserResolver, FallbackUserResolver>();
@@ -611,6 +614,8 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterOptionsService<ItSystemUsage, ArchiveType, LocalArchiveType>(services);
             RegisterOptionsService<ItSystemUsage, ArchiveLocation, LocalArchiveLocation>(services);
             RegisterOptionsService<ItSystemUsage, ArchiveTestLocation, LocalArchiveTestLocation>(services);
+            RegisterOptionsService<ItSystemUsage, SystemUsageCriticalityLevel, LocalSystemUsageCriticalityLevel>(services);
+            RegisterOptionsService<ItSystemUsage, TechnicalSystemType, LocalTechnicalSystemType>(services);
             RegisterOptionsService<ItSystemUsage, RegisterType, LocalRegisterType>(services);
             RegisterOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(services);
             RegisterRoleOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(services);
@@ -731,6 +736,8 @@ namespace Presentation.Web.Infrastructure.DI
         {
             RegisterGlobalRegularOptionService<BusinessType, ItSystem>(services);
             RegisterGlobalRegularOptionService<ArchiveLocation, ItSystemUsage>(services);
+            RegisterGlobalRegularOptionService<SystemUsageCriticalityLevel, ItSystemUsage>(services);
+            RegisterGlobalRegularOptionService<TechnicalSystemType, ItSystemUsage>(services);
             RegisterGlobalRoleOptionService<ItSystemRole, ItSystemRight>(services);
             RegisterGlobalRegularOptionService<SensitivePersonalDataType, ItSystem>(services);
             RegisterGlobalRegularOptionService<ItSystemRole, ItSystemRight>(services);
@@ -785,6 +792,8 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterLocalOptionService<LocalArchiveType, ItSystemUsage, ArchiveType>(services);
             RegisterLocalOptionService<LocalArchiveLocation, ItSystemUsage, ArchiveLocation>(services);
             RegisterLocalOptionService<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation>(services);
+            RegisterLocalOptionService<LocalSystemUsageCriticalityLevel, ItSystemUsage, SystemUsageCriticalityLevel>(services);
+            RegisterLocalOptionService<LocalTechnicalSystemType, ItSystemUsage, TechnicalSystemType>(services);
             RegisterLocalOptionService<LocalDataType, DataRow, DataType>(services);
             RegisterLocalOptionService<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType>(services);
             RegisterLocalOptionService<LocalInterfaceType, ItInterface, InterfaceType>(services);

@@ -95,7 +95,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itSystemUsage.LastWebAccessibilityCheck, dto.General.LastWebAccessibilityCheck);
             Assert.Equal(itSystemUsage.WebAccessibilityNotes, dto.General.WebAccessibilityNotes);
             Assert.Equal(itSystemUsage.IsSociallyCritical?.ToYesNoDontKnowChoice(), dto.General.IsSociallyCritical);
-            AssertYesNoExtended(dto.General.BusinessCritical, itSystemUsage.isBusinessCritical);
+            AssertYesNoExtended(dto.General.IsBusinessCritical, itSystemUsage.isBusinessCritical);
+            Assert.Equal(itSystemUsage.CriticalityFieldsLastChanged, dto.General.CriticalityFieldsLastChanged);
         }
 
         [Fact]
@@ -264,7 +265,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var dto = _sut.MapSystemUsageDTO(itSystemUsage);
 
             //Assert
-            Assert.Equal(dto.GDPR.Purpose, itSystemUsage.GeneralPurpose);
+            Assert.Equal(dto.GDPR.ProcessingPurpose, itSystemUsage.ProcessingPurpose);
             AssertYesNoExtended(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             AssertSimpleLink(dto.GDPR.DPIADocumentation, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
             AssertHostedAt(dto.GDPR.HostedAt, itSystemUsage.HostedAt);
@@ -287,7 +288,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(dto.GDPR.RiskAssessmentNotes, itSystemUsage.noteRisks);
             AssertRiskLevel(dto.GDPR.RiskAssessmentResult, itSystemUsage.preriskAssessment);
             Assert.Equal(dto.GDPR.PlannedRiskAssessmentDate, itSystemUsage.PlannedRiskAssessmentDate);
-            Assert.Equal(dto.GDPR.GdprCriticality, itSystemUsage.GdprCriticality?.ToGdprCriticalityChoice());
+            Assert.Equal(dto.General.SystemUsageCriticalityLevel?.Uuid, itSystemUsage.SystemUsageCriticalityLevel?.Uuid);
 
             Assert.Equal(dto.GDPR.SpecificPersonalData.Count(), itSystemUsage.PersonalDataOptions.Count);
             foreach (var dataOption in dto.GDPR.SpecificPersonalData)
@@ -692,7 +693,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.WebAccessibilityCompliance = A<YesNoPartiallyOption>();
             itSystemUsage.LastWebAccessibilityCheck = A<DateTime>();
             itSystemUsage.WebAccessibilityNotes = A<string>();
-            itSystemUsage.isBusinessCritical = A<DataOptions>();
+            itSystemUsage.UpdateIsBusinessCritical(A<DataOptions>());
 
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.DomainModel.ItSystem.DataTypes;
-using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 
 namespace Core.DomainModel.ItSystemUsage.Read
@@ -120,9 +119,15 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string DataProcessingRegistrationNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewDataProcessingRegistrationReadModel> DataProcessingRegistrations { get; set; }
         public string GeneralPurpose { get; set; }
+        public string ProcessingPurpose { get; set; }
         public HostedAt HostedAt { get; set; }
         public UserCount UserCount { get; set; }
-        public GdprCriticality? GdprCriticality { get; set; }
+        public Guid? SystemUsageCriticalityLevelUuid { get; set; }
+        public string? SystemUsageCriticalityLevelName { get; set; }
+        public string CriticalityLevelDocumentationUrl { get; set; }
+        public string CriticalityLevelDocumentationName { get; set; }
+        public Guid? TechnicalSystemTypeUuid { get; set; }
+        public string? TechnicalSystemTypeName { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }
@@ -145,5 +150,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public DateTime? LastWebAccessibilityCheck { get; set; }
         public string WebAccessibilityNotes { get; set; }
         public DataOptions? IsSociallyCritical { get; set; }
+        public DateTime? CriticalityFieldsLastChanged { get; set; }
     }
 }

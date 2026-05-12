@@ -11,7 +11,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
 {
     public class UpdatedSystemUsageGDPRProperties
     {
-        public OptionalValueChange<string> Purpose { get; set; } = OptionalValueChange<string>.None;
+        public OptionalValueChange<string> ProcessingPurpose { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<HostedAt?> HostedAt { get; set; } = OptionalValueChange<HostedAt?>.None;
         public OptionalValueChange<Maybe<NamedLink>> DirectoryDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
         public OptionalValueChange<Maybe<IEnumerable<SensitiveDataLevel>>> DataSensitivityLevels { get; set; } = OptionalValueChange<Maybe<IEnumerable<SensitiveDataLevel>>>.None;
@@ -36,6 +36,5 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<DataOptions?> RetentionPeriodDefined { get; set; } = OptionalValueChange<DataOptions?>.None;
         public OptionalValueChange<DateTime?> NextDataRetentionEvaluationDate { get; set; } = OptionalValueChange<DateTime?>.None;
         public OptionalValueChange<int?> DataRetentionEvaluationFrequencyInMonths { get; set; } = OptionalValueChange<int?>.None;
-        public OptionalValueChange<GdprCriticality?> GdprCriticality { get; set; } = OptionalValueChange<GdprCriticality?>.None;
     }
 }

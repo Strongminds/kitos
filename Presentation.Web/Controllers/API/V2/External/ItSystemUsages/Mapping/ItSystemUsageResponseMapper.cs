@@ -6,7 +6,6 @@ using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
-using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Repositories.GDPR;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
@@ -15,7 +14,6 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -67,7 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return new GDPRRegistrationsResponseDTO
             {
-                Purpose = systemUsage.GeneralPurpose,
+                ProcessingPurpose = systemUsage.ProcessingPurpose,
                 DPIAConducted = MapYesNoExtended(systemUsage.DPIA),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),
@@ -105,7 +103,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
                 UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
-                GdprCriticality = systemUsage.GdprCriticality?.ToGdprCriticalityChoice()
             };
         }
 
@@ -122,7 +119,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 TestLocation = systemUsage.ArchiveTestLocation?.MapIdentityNamePairDTO(),
                 Type = systemUsage.ArchiveType?.MapIdentityNamePairDTO(),
                 Supplier = systemUsage.ArchiveSupplier?.MapShallowOrganizationResponseDTO(),
-                JournalPeriods = systemUsage.ArchivePeriods.Select(period => MapJournalPeriodResponseDto(period)).ToList()
+                JournalPeriods = systemUsage.ArchivePeriods.Select(MapJournalPeriodResponseDto).ToList()
             };
         }
 
@@ -194,6 +191,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes,
                 IsSociallyCritical = MapYesNoExtended(systemUsage.IsSociallyCritical),
                 IsBusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
+                CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
+                SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
+                CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
+                Purpose = systemUsage.GeneralPurpose,
+                TechnicalSystemType = systemUsage.TechnicalSystemType?.MapIdentityNamePairDTO()
             };
         }
 
@@ -217,7 +219,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return systemUsage.HostedAt?.ToHostingChoice();
         }
 
-        private static SimpleLinkDTO MapSimpleLink(string name, string url)
+        private static SimpleLinkDTO MapSimpleLink(string? name, string? url)
         {
             return new()
             {
@@ -294,7 +296,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             };
         }
 
-        private static ExpectedUsersIntervalDTO MapExpectedUsers(ItSystemUsage systemUsage)
+        private static ExpectedUsersIntervalDTO? MapExpectedUsers(ItSystemUsage systemUsage)
         {
             return systemUsage.UserCount switch
             {

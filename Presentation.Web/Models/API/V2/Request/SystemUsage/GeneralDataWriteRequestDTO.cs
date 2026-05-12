@@ -74,5 +74,26 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Whether the system is considered business critical.
         /// </summary>
         public YesNoDontKnowChoice? IsBusinessCritical { get; set; }
+        /// <summary>
+        /// How critical this system usage is considered to be in general.
+        /// </summary>
+        [SupplierField]
+        public Guid? SystemUsageCriticalityLevelUuid { get; set; }
+        /// <summary>
+        /// Documentation link for the criticality level assessment of this system usage.
+        /// </summary>
+        [SupplierField]
+        public SimpleLinkDTO? CriticalityLevelDocumentation { get; set; }
+        /// <summary>
+        /// The general purpose of this system usage.
+        /// </summary>
+        [MaxLength(ItSystemUsage.LongProperyMaxLength)]
+        public string? Purpose { get; set; }
+        /// <summary>
+        /// The technical system type classification of this system usage.
+        /// Constraint: If an update changes this field, the option identified must be currently available in the organization context
+        /// </summary>
+        [NonEmptyGuid]
+        public Guid? TechnicalSystemTypeUuid { get; set; }
     }
 }

@@ -126,9 +126,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var linkToDirectoryUrl = A<string>();
             var linkToDirectoryUrlName = A<string>();
             var generalPurpose = A<string>();
+            var processingPurpose = A<string>();
             var hostedAt = A<HostedAt>();
             var userCount = A<UserCount>();
-            var gdprCriticality = A<GdprCriticality?>();
 
             var contract1Name = A<string>();
             var contract2Name = A<string>();
@@ -174,16 +174,18 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var dataClassification = await
                 OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageDataClassification,
                     organizationUuid);
+            var criticalityLevel = await
+                OptionV2ApiHelper.GetRandomOptionAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageCriticalityTypes,
+                    organizationUuid);
 
             await ItSystemUsageV2Helper.SendPatchGDPR(await GetGlobalToken(), systemUsage.Uuid, new GDPRWriteRequestDTO
             {
-                Purpose = generalPurpose,
+                ProcessingPurpose = processingPurpose,
                 DirectoryDocumentation = new SimpleLinkDTO { Name = linkToDirectoryUrlName, Url = linkToDirectoryUrl },
                 UserSupervisionDocumentation = new SimpleLinkDTO { Name = riskSupervisionDocumentationUrlName, Url = riskSupervisionDocumentationUrl },
                 RiskAssessmentConducted = riskAssessment,
                 PlannedRiskAssessmentDate = riskAssessmentDate,
                 DataSensitivityLevels = sensitiveDataLevel.WrapAsEnumerable(),
-                GdprCriticality = gdprCriticality?.ToGdprCriticalityChoice()
 
             }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
@@ -238,6 +240,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                     },
                     NumberOfExpectedUsers = UserIntervalDtoFromUerCount(userCount),
                     DataClassificationUuid = dataClassification.Uuid,
+                    SystemUsageCriticalityLevelUuid = criticalityLevel.Uuid,
+                    Purpose = generalPurpose,
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             // ArchivePeriods
@@ -320,9 +324,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(linkToDirectoryUrlName, readModel.LinkToDirectoryName);
             Assert.Equal(linkToDirectoryUrl, readModel.LinkToDirectoryUrl);
             Assert.Equal(generalPurpose, readModel.GeneralPurpose);
+            Assert.Equal(processingPurpose, readModel.ProcessingPurpose);
             Assert.Equal(hostedAt, readModel.HostedAt);
             Assert.Equal(userCount, readModel.UserCount);
-            Assert.Equal(gdprCriticality, readModel.GdprCriticality);
+            Assert.Equal(criticalityLevel.Uuid, readModel.SystemUsageCriticalityLevelUuid);
+            Assert.Equal(criticalityLevel.Name, readModel.SystemUsageCriticalityLevelName);
 
             if (riskAssessment == YesNoDontKnowChoice.Yes)
             {

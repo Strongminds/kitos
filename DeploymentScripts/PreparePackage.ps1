@@ -123,9 +123,10 @@
 	$appSettings.Smtp.Port           = $Env:SmtpNetworkPort
 	$appSettings.Smtp.UserName       = $Env:SmtpUserName
 	$appSettings.Smtp.Password       = $Env:SmtpPassword
+	if ($Env:SmtpEnableSsl) { $appSettings.Smtp.EnableSsl = $Env:SmtpEnableSsl }
 
 	# Serilog
-	$appSettings.Serilog.MinimumLevel = $Env:LogLevel
+	$appSettings.Serilog.MinimumLevel.Default = $Env:LogLevel
 
 	# AppSettings
 	$appSettings.AppSettings.SecurityKeyString                    = $Env:SecurityKeyString

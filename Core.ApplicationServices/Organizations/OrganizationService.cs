@@ -358,6 +358,8 @@ namespace Core.ApplicationServices.Organizations
             try
             {
                 _domainEvents.Raise(new EntityBeingDeletedEvent<Organization>(organization));
+                organization.ClearUsedAsSupplierByOrganizations();
+                organization.ClearSuppliers();
                 _orgRepository.DeleteWithReferencePreload(organization);
                 _orgRepository.Save();
                 transaction.Commit();

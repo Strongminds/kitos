@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Presentation.Web.Models.API.V2.Types.System;
+using System;
 using System.Collections.Generic;
 
 namespace Presentation.Web.Models.API.V2.Request.System.Shared
@@ -8,8 +9,10 @@ namespace Presentation.Web.Models.API.V2.Request.System.Shared
         public Guid? ParentUuid { get; set; }
         public string Name { get; set; }
         public string PreviousName { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } 
         public Guid? BusinessTypeUuid { get; set; }
         public IEnumerable<Guid> KLEUuids { get; set; }
+        public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
+
     }
 }
