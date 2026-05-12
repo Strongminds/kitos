@@ -268,6 +268,7 @@ namespace Core.DomainModel.ItSystemUsage
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
         public UserCount? UserCount { get; set; }
+        public IsDataProcessingAgreementRequired IsDataProcessingAgreementRequired { get; set; }
 
         public YesNoUndecidedOption? ContainsAITechnology { get; set; }
 
