@@ -103,6 +103,7 @@ namespace Core.DomainServices.SystemUsage
             destination.SystemUsageCriticalityLevelName = source.SystemUsageCriticalityLevel?.Name;
             destination.CriticalityLevelDocumentationUrl = source.CriticalityLevelDocumentationUrl;
             destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
+            destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
