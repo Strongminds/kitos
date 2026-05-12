@@ -11,10 +11,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "UX_LocalId",
-                table: "OrganizationUnit");
-
             migrationBuilder.AddColumn<string>(
                 name: "TechnicalSystemTypeName",
                 table: "ItSystemUsageOverviewReadModels",
@@ -103,11 +99,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalId",
-                table: "OrganizationUnit",
-                columns: new[] { "OrganizationId", "LocalId" });
-
-            migrationBuilder.CreateIndex(
                 name: "ItSystemUsageOverviewReadModel_Index_TechnicalSystemTypeUuid",
                 table: "ItSystemUsageOverviewReadModels",
                 column: "TechnicalSystemTypeUuid");
@@ -170,10 +161,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TechnicalSystemTypes");
 
             migrationBuilder.DropIndex(
-                name: "IX_LocalId",
-                table: "OrganizationUnit");
-
-            migrationBuilder.DropIndex(
                 name: "ItSystemUsageOverviewReadModel_Index_TechnicalSystemTypeUuid",
                 table: "ItSystemUsageOverviewReadModels");
 
@@ -193,12 +180,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TechnicalSystemTypeId",
                 table: "ItSystemUsage");
 
-            migrationBuilder.CreateIndex(
-                name: "UX_LocalId",
-                table: "OrganizationUnit",
-                columns: new[] { "OrganizationId", "LocalId" },
-                unique: true,
-                filter: "[LocalId] IS NOT NULL");
         }
     }
 }
