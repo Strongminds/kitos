@@ -103,8 +103,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
                 UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
-                IsDataProcessingAgreementRequired = systemUsage.IsDataProcessingAgreementRequired.ToChoice()
+                IsDataProcessingAgreementRequired = MapIsDataProcessingAgreementRequired(systemUsage.IsDataProcessingAgreementRequired)
             };
+        }
+
+        private IsDataProcessingAgreementRequiredChoice? MapIsDataProcessingAgreementRequired(IsDataProcessingAgreementRequired? source) {
+            if (source is null) return null;
+            return source.Value.ToChoice();
         }
 
         private ArchivingRegistrationsResponseDTO MapArchiving(ItSystemUsage systemUsage)
