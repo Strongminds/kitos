@@ -318,6 +318,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         #region GDPR
         public string GeneralPurpose { get; set; }
+        public string ProcessingPurpose { get; set; }
 
         public string LinkToDirectoryUrl { get; set; }
         public string LinkToDirectoryUrlName { get; set; }
@@ -1463,6 +1464,16 @@ namespace Core.DomainModel.ItSystemUsage
         public Maybe<OperationError> UpdateDataRetentionEvaluationFrequencyInMonths(int dataRetentionEvaluationFrequencyInMonths)
         {
             return UpdateWithPrecondition(HasDataRetention() || dataRetentionEvaluationFrequencyInMonths == 0, () => numberDPIA = dataRetentionEvaluationFrequencyInMonths);
+        }
+
+        public void UpdateGeneralPurpose(string purpose)
+        {
+            GeneralPurpose = purpose;
+        }
+
+        public void UpdateProcessingPurpose(string purpose)
+        {
+            ProcessingPurpose = purpose;
         }
     }
 }
