@@ -120,6 +120,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string DataProcessingRegistrationNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewDataProcessingRegistrationReadModel> DataProcessingRegistrations { get; set; }
         public string GeneralPurpose { get; set; }
+        public string ProcessingPurpose { get; set; }
         public HostedAt HostedAt { get; set; }
         public UserCount UserCount { get; set; }
         public Guid? SystemUsageCriticalityLevelUuid { get; set; }

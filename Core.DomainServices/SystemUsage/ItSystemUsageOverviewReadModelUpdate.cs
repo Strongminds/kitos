@@ -119,6 +119,7 @@ namespace Core.DomainServices.SystemUsage
             PatchRiskSupervisionDocumentation(source, destination);
             PatchDataProcessingRegistrations(source, destination);
             PatchGeneralPurposeRegistrations(source, destination);
+            PatchProcessingPurposeRegistrations(source, destination);
             PatchDependsOnInterfaces(source, destination);
             PatchRelatedItSystemUsages(
                 () => new ItSystemUsageOverviewUsedBySystemUsageReadModel(),
@@ -277,6 +278,12 @@ namespace Core.DomainServices.SystemUsage
         {
             var generalPurpose = source.GeneralPurpose?.TrimEnd();
             destination.GeneralPurpose = generalPurpose?.Substring(0, Math.Min(generalPurpose.Length, ItSystemUsage.LongProperyMaxLength));
+        }
+
+        private static void PatchProcessingPurposeRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
+            var processingPurpose = source.ProcessingPurpose?.TrimEnd();
+            destination.ProcessingPurpose = processingPurpose?.Substring(0, Math.Min(processingPurpose.Length, ItSystemUsage.LongProperyMaxLength));
         }
 
         private void PatchDataProcessingRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
