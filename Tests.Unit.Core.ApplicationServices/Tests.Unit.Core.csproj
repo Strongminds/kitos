@@ -37,9 +37,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <!-- Uses Presentation.Web.* types - cannot reference .NET Framework 4.8 project -->
-    <Compile Remove="ApplicationServices\GDPR\DataProcessingRegistrationApplicationServiceTest.cs" />
-    <!-- Uses old Ninject API (StandardKernel) which is replaced by MEDI -->
-    <Compile Remove="Infrastructure\StsTokenFetcherTest.cs" />
+    <ProjectReference Include="..\Presentation.Web\Presentation.Web.csproj" />
   </ItemGroup>
 </Project>
