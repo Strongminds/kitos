@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260511112554_AddTechnicalSystemType")]
+    partial class AddTechnicalSystemType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3268,9 +3271,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.PrimitiveCollection<string>("LicensingAndCodeModels")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -3953,9 +3953,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProcessingPurpose")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("ReferenceId")
                         .HasColumnType("int");
 
@@ -4474,10 +4471,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProcessingPurpose")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("RelevantOrganizationUnitNamesAsCsv")
                         .HasColumnType("nvarchar(max)");
 
@@ -4666,9 +4659,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("PlannedRiskAssessmentDate")
                         .HasDatabaseName("IX_PlannedRiskAssessmentDate");
-
-                    b.HasIndex("ProcessingPurpose")
-                        .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_ProcessingPurpose");
 
                     b.HasIndex("ResponsibleOrganizationUnitId")
                         .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_ResponsibleOrganizationId");

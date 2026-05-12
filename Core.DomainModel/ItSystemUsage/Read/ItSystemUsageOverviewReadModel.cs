@@ -127,6 +127,8 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string? SystemUsageCriticalityLevelName { get; set; }
         public string CriticalityLevelDocumentationUrl { get; set; }
         public string CriticalityLevelDocumentationName { get; set; }
+        public Guid? TechnicalSystemTypeUuid { get; set; }
+        public string? TechnicalSystemTypeName { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }

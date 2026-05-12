@@ -44,6 +44,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private readonly IOptionsService<ItSystemUsage, ArchiveLocation> _archiveLocationOptionsService;
         private readonly IOptionsService<ItSystemUsage, ArchiveTestLocation> _archiveTestLocationOptionsService;
         private readonly IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> _systemUsageCriticalityLevelOptionsService;
+        private readonly IOptionsService<ItSystemUsage, TechnicalSystemType> _technicalSystemTypeOptionsService;
         private readonly IItsystemUsageRelationsService _systemUsageRelationsService;
         private readonly IEntityIdentityResolver _identityResolver;
         private readonly IItContractService _contractService;
@@ -81,7 +82,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
             IItsystemUsageRelationsService systemUsageRelationsService,
             IEntityIdentityResolver identityResolver,
             IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository,
-            IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> systemUsageCriticalityLevelOptionsService)
+            IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> systemUsageCriticalityLevelOptionsService,
+            IOptionsService<ItSystemUsage, TechnicalSystemType> technicalSystemTypeOptionsService)
         {
             _systemUsageService = systemUsageService;
             _transactionManager = transactionManager;
@@ -106,6 +108,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             _identityResolver = identityResolver;
             _personalDataOptionsRepository = personalDataOptionsRepository;
             _systemUsageCriticalityLevelOptionsService = systemUsageCriticalityLevelOptionsService;
+            _technicalSystemTypeOptionsService = technicalSystemTypeOptionsService;
         }
 
         public Result<ItSystemUsage, OperationError> Create(SystemUsageCreationParameters parameters)
@@ -552,6 +555,28 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return systemUsage.UpdateSystemUsageCriticalityLevel(optionByUuid.Value.option);
         }
 
+        private Maybe<OperationError> UpdateTechnicalSystemType(ItSystemUsage systemUsage, Maybe<Guid> technicalSystemTypeUuid)
+        {
+            if (technicalSystemTypeUuid.IsNone)
+            {
+                systemUsage.ResetTechnicalSystemType();
+                return Maybe<OperationError>.None;
+            }
+
+            var optionByUuid = _technicalSystemTypeOptionsService.GetOptionByUuid(systemUsage.OrganizationId, technicalSystemTypeUuid.Value);
+
+            if (optionByUuid.IsNone)
+                return new OperationError("Invalid TechnicalSystemType Uuid", OperationFailure.BadInput);
+
+            if (systemUsage.TechnicalSystemTypeId != null && systemUsage.TechnicalSystemTypeId == optionByUuid.Value.option.Id)
+                return Maybe<OperationError>.None;
+
+            if (!optionByUuid.Value.available)
+                return new OperationError($"TechnicalSystemType with uuid {technicalSystemTypeUuid.Value} is not available in this organization.", OperationFailure.BadInput);
+
+            return systemUsage.UpdateTechnicalSystemType(optionByUuid.Value.option);
+        }
+
         private Maybe<OperationError> UpdateArchiveType(ItSystemUsage systemUsage, Maybe<Guid> archiveType)
         {
             if (archiveType.IsNone)
@@ -668,7 +693,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuid, (systemUsage, technicalSystemTypeUuid) => UpdateTechnicalSystemType(systemUsage, technicalSystemTypeUuid)));
         }
 
         private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)
