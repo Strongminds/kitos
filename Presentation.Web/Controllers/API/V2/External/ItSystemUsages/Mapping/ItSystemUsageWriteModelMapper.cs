@@ -185,11 +185,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.NextDataRetentionEvaluationDate.AsChangedValue()
                     : OptionalValueChange<DateTime?>.None,
 
-                DataRetentionEvaluationFrequencyInMonths = rule.MustUpdate(x => x.GDPR.DataRetentionEvaluationFrequencyInMonths)
+                DataRetentionEvaluationFrequencyInMonths = rule.MustUpdate(x => x.GDPR!.DataRetentionEvaluationFrequencyInMonths)
                     ? source.DataRetentionEvaluationFrequencyInMonths.AsChangedValue()
                     : OptionalValueChange<int?>.None,
 
-                IsDataProcessingAgreementRequired = rule.MustUpdate(x => x.GDPR.IsDataProcessingAgreementRequired)
+                IsDataProcessingAgreementRequired = rule.MustUpdate(x => x.GDPR!.IsDataProcessingAgreementRequired)
                 ? MapEnumChoice(source.IsDataProcessingAgreementRequired, IsDataProcessingAgreementRequiredMappingExtensions.FromChoice)
                 : OptionalValueChange<IsDataProcessingAgreementRequired?>.None
             };
