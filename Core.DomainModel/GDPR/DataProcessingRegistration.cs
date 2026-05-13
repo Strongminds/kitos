@@ -130,7 +130,7 @@ namespace Core.DomainModel.GDPR
         {
             if (dataProcessor == null) throw new ArgumentNullException(nameof(dataProcessor));
 
-            HasSubDataProcessors = YesNoUndecidedOption.Yes;
+            SetHasSubDataProcessors(YesNoUndecidedOption.Yes);
 
             var subDataProcessor = GetSubDataProcessor(dataProcessor);
             if (subDataProcessor.HasValue)
