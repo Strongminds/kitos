@@ -1132,7 +1132,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(13);
+            return CreateGetUndefinedSectionsInput(15);
         }
 
         public static IEnumerable<object[]> GetUndefinedOrganizationUsageSectionsInput()
@@ -1288,7 +1288,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noNumberOfExpectedUsers) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.NumberOfExpectedUsers));
             if (noMainContractUuid) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.MainContractUuid));
             if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
-            if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.BusinessCritical));
+            if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsBusinessCritical));
             if (noSystemUsageCriticalityLevel) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemUsageCriticalityLevelUuid));
             if (noTechnicalSystemType) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.TechnicalSystemTypeUuid));
 
@@ -1347,7 +1347,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.LastWebAccessibilityCheck, AssertPropertyContainsDataChange(output.LastWebAccessibilityCheck));
             Assert.Equal(input.WebAccessibilityNotes, AssertPropertyContainsDataChange(output.WebAccessibilityNotes));
             Assert.Equal(input.IsSociallyCritical, AssertPropertyContainsDataChange(output.IsSociallyCritical)?.ToYesNoDontKnowChoice());
-            Assert.Equal(input.BusinessCritical, AssertPropertyContainsDataChange(output.BusinessCritical)?.ToYesNoDontKnowChoice());
+            Assert.Equal(input.IsBusinessCritical, AssertPropertyContainsDataChange(output.BusinessCritical)?.ToYesNoDontKnowChoice());
             Assert.Equal(input.Purpose, AssertPropertyContainsDataChange(output.Purpose));
         }
 

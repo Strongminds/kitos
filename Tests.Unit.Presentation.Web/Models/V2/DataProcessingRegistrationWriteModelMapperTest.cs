@@ -222,7 +222,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
            bool noReferences)
         {
             //Arrange
-            var input = new CreateDataProcessingRegistrationRequestDTO();
+            var input = new CreateDataProcessingRegistrationRequestDTO { Name = A<string>() };
             ConfigureRootProperties(noName, noGeneralData, noSystems, noOversight, noRoles, noReferences);
 
             //Act
@@ -294,7 +294,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
            bool noResponsibleUnit)
         {
             //Arrange
-            var input = new CreateDataProcessingRegistrationRequestDTO();
+            var input = new CreateDataProcessingRegistrationRequestDTO { Name = A<string>() };
             ConfigureGeneralDataInputContext(noDataResponsible, noDataResponsibleRemark, noAgreementConcluded, noAgreementConcludedRemark, noAgreementConcludedAt, noBasisForTransfer, noTransferToInsecureCountries, noInsecureCountries, noDataProcessors, noHasSubDataProcessors, noSubDataProcessors, noMainContract, noResponsibleUnit);
 
             //Act
@@ -396,7 +396,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noOversightDates)
         {
             //Arrange
-            var input = new CreateDataProcessingRegistrationRequestDTO();
+            var input = new CreateDataProcessingRegistrationRequestDTO { Name = A<string>() };
 
             ConfigureOversightRequestContext(noOversightOptionUuids, noOversightOptionRemark, noOversightInterval, noOversightIntervalRemark, noIsOversightCompleted, noOversightCompletedRemark, noOversightScheduledInspectionDate, noOversightDates);
 
