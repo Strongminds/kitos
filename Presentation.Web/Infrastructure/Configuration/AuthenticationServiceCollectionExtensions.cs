@@ -42,7 +42,11 @@ namespace Presentation.Web.Infrastructure.Configuration
                     options.ForwardDefaultSelector = context =>
                     {
                         var auth = context.Request.Headers[Microsoft.Net.Http.Headers.HeaderNames.Authorization].FirstOrDefault();
-                        if (!string.IsNullOrEmpty(auth) && auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        // Route to JWT Bearer whenever an Authorization header is present.
+                        // Cookie auth never uses the Authorization header, so this is safe.
+                        // This also handles the Swagger UI ApiKey scheme which sends the raw token
+                        // without the "Bearer " prefix.
+                        if (!string.IsNullOrEmpty(auth))
                             return JwtBearerDefaults.AuthenticationScheme;
                         return CookieAuthenticationDefaults.AuthenticationScheme;
                     };
@@ -64,6 +68,18 @@ namespace Presentation.Web.Infrastructure.Configuration
                         // JsonWebTokenHandler does not apply inbound claim type mapping, so the JWT "name"
                         // claim stays as "name". Setting NameClaimType ensures Identity.Name resolves it.
                         NameClaimType = "name",
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var auth = context.Request.Headers[Microsoft.Net.Http.Headers.HeaderNames.Authorization].FirstOrDefault();
+                            // If the token is sent without "Bearer " prefix (e.g. from Swagger UI),
+                            // extract it directly so JWT validation still works.
+                            if (!string.IsNullOrEmpty(auth) && !auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                                context.Token = auth;
+                            return Task.CompletedTask;
+                        }
                     };
                 })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
