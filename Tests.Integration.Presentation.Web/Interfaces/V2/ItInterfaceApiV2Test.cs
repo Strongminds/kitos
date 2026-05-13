@@ -80,8 +80,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
                 var dbInterface = x.AsQueryable().ByUuid(itInterface.Uuid);
                 BaseItInterfaceResponseDTODBCheck(dbInterface, itInterfaceDTO);
 
-                Assert.Equal(dbInterface.LastChanged, itInterfaceDTO.LastModified);
-                Assert.Equal(dbInterface.LastChanged, itInterfaceDTO.LastModified);
+                DateTimeTestHelper.AssertEqual(dbInterface.LastChanged, itInterfaceDTO.LastModified);
 
                 Assert.Equal(dbInterface.LastChangedByUser.Uuid, itInterfaceDTO.LastModifiedBy.Uuid);
                 Assert.Equal(dbInterface.LastChangedByUser.GetFullName(), itInterfaceDTO.LastModifiedBy.Name);
@@ -131,7 +130,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
                 await InterfaceV2Helper.PatchExposedBySystemAsync(interfaceDto.Uuid, system.Uuid);
             }
 
-            var interface3LastModified = DatabaseAccess.MapFromEntitySet<ItInterface, DateTime>(x => x.AsQueryable().ByUuid(itInterface3.Uuid).LastChanged.Transform(dt => DateTime.SpecifyKind(dt, DateTimeKind.Utc)));
+            var interface3LastModified = DatabaseAccess.MapFromEntitySet<ItInterface, DateTime>(x => x.AsQueryable().ByUuid(itInterface3.Uuid).LastChanged.Transform(DateTimeTestHelper.Normalize));
 
             //Act
             var dtos = (await InterfaceV2Helper.GetInterfacesAsync(token, changedSinceGtEq: interface3LastModified, exposedBySystemUuid: system.Uuid, pageNumber: 0, pageSize: 10)).ToList();
@@ -251,10 +250,11 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var otherOrganization = await CreateOrganization("99887766");
             var systemInThisOrganization = await CreateItSystemAsync(organization.Uuid);
             var systemInOtherOrganization = await CreateItSystemAsync(otherOrganization.Uuid);
+            var uniqueNameMarker = A<string>();
 
-            var publicInterface = await CreateItInterfaceAsync(organization.Uuid);
-            var localInterfaceInThisOrg = await CreateItInterfaceAsync(organization.Uuid, scope: RegistrationScopeChoice.Local);
-            var localInterfaceInOtherOrg = await CreateItInterfaceAsync(otherOrganization.Uuid, scope: RegistrationScopeChoice.Local);
+            var publicInterface = await CreateItInterfaceAsync(organization.Uuid, $"{uniqueNameMarker}-public");
+            var localInterfaceInThisOrg = await CreateItInterfaceAsync(organization.Uuid, $"{uniqueNameMarker}-local-this-org", scope: RegistrationScopeChoice.Local);
+            var localInterfaceInOtherOrg = await CreateItInterfaceAsync(otherOrganization.Uuid, $"{uniqueNameMarker}-local-other-org", scope: RegistrationScopeChoice.Local);
 
             await TakeSystemIntoUsageAsync(systemInThisOrganization.Uuid, organization.Uuid);
             await TakeSystemIntoUsageAsync(systemInOtherOrganization.Uuid, otherOrganization.Uuid);
@@ -264,7 +264,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             await InterfaceV2Helper.PatchExposedBySystemAsync(localInterfaceInOtherOrg.Uuid, systemInThisOrganization.Uuid);
 
             var dtos = (await InterfaceV2Helper.GetInterfacesAsync(token,
-                availableInOrganizationUuid: organization.Uuid, pageNumber: 0, pageSize: 200)).ToList();
+                availableInOrganizationUuid: organization.Uuid, nameContains: uniqueNameMarker, pageNumber: 0, pageSize: 200)).ToList();
 
             Assert.Contains(dtos, (dto) => dto.Uuid == publicInterface.Uuid);
             Assert.Contains(dtos, (dto) => dto.Uuid == localInterfaceInThisOrg.Uuid);

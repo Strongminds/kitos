@@ -288,7 +288,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
                 Assert.Empty(createdSystem.KLE);
 
             Assert.Equal(input.ParentUuid, createdSystem.ParentSystem?.Uuid);
-            Assert.Equal(DateTime.UtcNow.Date, createdSystem.Created.GetValueOrDefault().Date);
+            Assert.Equal(DateTime.UtcNow.Date, DateTimeTestHelper.Normalize(createdSystem.Created.GetValueOrDefault()).Date);
             Assert.Equal(createdOrganization.Uuid, createdSystem.RightsHolder.Uuid);
             Assert.Equal(createdOrganization.Name, createdSystem.RightsHolder.Name);
             Assert.Equal(createdOrganization.Cvr, createdSystem.RightsHolder.Cvr);
@@ -296,6 +296,8 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(user.GetFullName(), createdSystem.CreatedBy.Name);
 
             //Check the fetched system
+            DateTimeTestHelper.AssertEqual(createdSystem.Created, fetchedSystem.Created);
+            createdSystem.Created = fetchedSystem.Created;
             createdSystem.ToExpectedObject().ShouldMatch(fetchedSystem);
         }
 
@@ -474,7 +476,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             //Assert
             Assert.Equal(createdSystem.Uuid, updatedSystem.Uuid); //No changes expected
-            Assert.Equal(createdSystem.Created, updatedSystem.Created); //No changes expected
+            DateTimeTestHelper.AssertEqual(createdSystem.Created, updatedSystem.Created); //No changes expected
             createdSystem.RightsHolder.ToExpectedObject().ShouldMatch(updatedSystem.RightsHolder); //No changes expected
             Assert.Equal(update.Name, updatedSystem.Name);
             Assert.Equal(update.Description, updatedSystem.Description);
@@ -523,7 +525,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             //Assert that only the patched properties have changed
             Assert.Equal(createdSystem.Uuid, updatedSystem.Uuid); //No changes expected
-            Assert.Equal(createdSystem.Created, updatedSystem.Created); //No changes expected
+            DateTimeTestHelper.AssertEqual(createdSystem.Created, updatedSystem.Created); //No changes expected
             createdSystem.RightsHolder.ToExpectedObject().ShouldMatch(updatedSystem.RightsHolder); //No changes expected
             Assert.Equal(updateName ? changes[nameof(RightsHolderFullItSystemRequestDTO.Name)] : createdSystem.Name, updatedSystem.Name);
             Assert.Equal(updateFormerName ? changes[nameof(RightsHolderFullItSystemRequestDTO.PreviousName)] : createdSystem.FormerName, updatedSystem.FormerName);

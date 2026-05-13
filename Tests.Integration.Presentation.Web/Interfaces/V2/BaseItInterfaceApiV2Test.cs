@@ -56,7 +56,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             Assert.Equal(itInterface.Version, itInterfaceDTO.Version);
             Assert.Equal(itInterface.Disabled, itInterfaceDTO.Deactivated);
 
-            Assert.Equal(itInterface.Created, itInterfaceDTO.Created);
+            DateTimeTestHelper.AssertEqual(itInterface.Created, itInterfaceDTO.Created.GetValueOrDefault());
             Assert.Equal(itInterface.ObjectOwner.Uuid, itInterfaceDTO.CreatedBy.Uuid);
             Assert.Equal(itInterface.ObjectOwner.GetFullName(), itInterfaceDTO.CreatedBy.Name);
 

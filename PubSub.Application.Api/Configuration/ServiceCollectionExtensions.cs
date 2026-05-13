@@ -54,12 +54,28 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDatabaseServices(this IServiceCollection services, ConfigurationManager configuration)
     {
+        var provider = configuration["Database:Provider"];
+
         services.AddDbContext<PubSubContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            options.UseSqlServer(connectionString);
+            if (IsPostgreSqlProvider(provider))
+            {
+                options.UseNpgsql(connectionString);
+            }
+            else
+            {
+                options.UseSqlServer(connectionString);
+            }
         });
         return services;
+    }
+
+    private static bool IsPostgreSqlProvider(string? provider)
+    {
+        return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
     }
 
     public static IServiceCollection AddAuthenticationServices(this IServiceCollection services,
