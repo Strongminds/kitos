@@ -3556,6 +3556,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RetentionPeriodDefined = new ChangedValue<DataOptions?>(null),
                     NextDataRetentionEvaluationDate = new ChangedValue<DateTime?>(null),
                     DataRetentionEvaluationFrequencyInMonths = new ChangedValue<int?>(null),
+                    IsDataProcessingAgreementRequired = new ChangedValue<IsDataProcessingAgreementRequired?>(null)
                 }
             };
         }
