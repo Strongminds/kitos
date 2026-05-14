@@ -1,7 +1,6 @@
 using Core.Abstractions.Types;
 using Core.DomainModel;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
