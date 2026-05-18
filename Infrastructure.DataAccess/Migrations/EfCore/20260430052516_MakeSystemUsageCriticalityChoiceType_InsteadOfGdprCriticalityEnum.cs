@@ -164,7 +164,51 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "Uuid",
                 unique: true);
 
-            migrationBuilder.Sql(@"
+            var seedAndRemapSql = ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase)
+                ? @"
+                DO $$
+                BEGIN
+                    -- If a global admin user exists, seed option types and remap old enum values.
+                    -- On a fresh empty database (no users yet) the whole block is skipped;
+                    -- the application-level option type seeder handles that case on first startup.
+                    IF EXISTS (SELECT 1 FROM dbo.""User"" WHERE ""IsGlobalAdmin"" = TRUE) THEN
+                        INSERT INTO dbo.""SystemUsageCriticalityLevelTypes""
+                            (""ObjectOwnerId"", ""LastChanged"", ""LastChangedByUserId"", ""Name"", ""IsLocallyAvailable"", ""IsObligatory"", ""Description"", ""IsEnabled"", ""Priority"", ""Uuid"")
+                        SELECT
+                            (SELECT ""Id"" FROM dbo.""User"" WHERE ""IsGlobalAdmin"" = TRUE ORDER BY ""Id"" LIMIT 1),
+                            NOW() AT TIME ZONE 'UTC',
+                            (SELECT ""Id"" FROM dbo.""User"" WHERE ""IsGlobalAdmin"" = TRUE ORDER BY ""Id"" LIMIT 1),
+                            v.""Name"", v.""IsLocallyAvailable"", v.""IsObligatory"", NULL, v.""IsEnabled"", v.""Priority"", md5(random()::text || clock_timestamp()::text || v.""Name"")::uuid
+                        FROM (VALUES
+                            ('Ikke kritisk', TRUE, FALSE, TRUE, 0),
+                            ('Lav',          TRUE, FALSE, TRUE, 1),
+                            ('Mellem',       TRUE, FALSE, TRUE, 2),
+                            ('Høj',          TRUE, FALSE, TRUE, 3),
+                            ('Meget høj',    TRUE, FALSE, TRUE, 4)
+                        ) AS v(""Name"", ""IsLocallyAvailable"", ""IsObligatory"", ""IsEnabled"", ""Priority"");
+
+                        -- Remap old enum integers to new option type FK IDs
+                        UPDATE dbo.""ItSystemUsage"" AS isu
+                        SET ""SystemUsageCriticalityLevelId"" = opt.""Id""
+                        FROM dbo.""SystemUsageCriticalityLevelTypes"" AS opt
+                        WHERE isu.""SystemUsageCriticalityLevelId"" IS NOT NULL
+                          AND opt.""Name"" = CASE isu.""SystemUsageCriticalityLevelId""
+                              WHEN 0 THEN 'Ikke kritisk'
+                              WHEN 1 THEN 'Lav'
+                              WHEN 2 THEN 'Mellem'
+                              WHEN 3 THEN 'Høj'
+                              WHEN 4 THEN 'Meget høj'
+                          END;
+
+                        -- Null out any rows whose value was not a recognised enum integer (defensive cleanup)
+                        UPDATE dbo.""ItSystemUsage""
+                        SET ""SystemUsageCriticalityLevelId"" = NULL
+                        WHERE ""SystemUsageCriticalityLevelId"" IS NOT NULL
+                          AND ""SystemUsageCriticalityLevelId"" NOT IN (SELECT ""Id"" FROM dbo.""SystemUsageCriticalityLevelTypes"");
+                    END IF;
+                END
+                $$;"
+                : @"
                 -- If a global admin user exists, seed option types and remap old enum values.
                 -- On a fresh empty database (no users yet) the whole block is skipped;
                 -- the application-level option type seeder handles that case on first startup.
@@ -205,7 +249,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     WHERE SystemUsageCriticalityLevelId IS NOT NULL
                       AND SystemUsageCriticalityLevelId NOT IN (SELECT Id FROM dbo.SystemUsageCriticalityLevelTypes);
                 END
-                ");
+                ";
+
+            migrationBuilder.Sql(seedAndRemapSql);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ItSystemUsage_SystemUsageCriticalityLevelTypes_SystemUsageCriticalityLevelId",
