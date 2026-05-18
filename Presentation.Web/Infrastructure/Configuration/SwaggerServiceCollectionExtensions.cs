@@ -1,3 +1,4 @@
+using Infrastructure.Services.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
@@ -47,9 +48,9 @@ namespace Presentation.Web.Infrastructure.Configuration
 
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition(AuthenticationSchemes.Bearer, new OpenApiSecurityScheme
                 {
-                    Name = "Bearer",
+                    Name = AuthenticationSchemes.Bearer,
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
@@ -59,7 +60,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                 // Apply the Bearer scheme globally so Swagger UI sends the Authorization header on every request.
                 c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
                 {
-                    { new OpenApiSecuritySchemeReference("Bearer", document), new List<string>() }
+                    { new OpenApiSecuritySchemeReference(AuthenticationSchemes.Bearer, document), new List<string>() }
                 });
 
                 c.DocumentFilter<FilterByApiVersionFilter>(

@@ -1,3 +1,4 @@
+using Infrastructure.Services.Http;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Presentation.Web.Swagger
             operation.Security ??= new List<OpenApiSecurityRequirement>();
             operation.Security.Add(new OpenApiSecurityRequirement
             {
-                { new OpenApiSecuritySchemeReference("Bearer", context.Document), new List<string>() }
+                { new OpenApiSecuritySchemeReference(AuthenticationSchemes.Bearer, context.Document), new List<string>() }
             });
         }
     }
