@@ -82,7 +82,6 @@ namespace Presentation.Web.Controllers.API.V2.Common.Helpers
                     .ThenInclude(relation => relation.ToSystemUsage)
                 .Include(usage => usage.SensitiveDataLevels)
                 .Include(usage => usage.PersonalDataOptions)
-                    .ThenInclude(personalData => personalData.PersonalData)
                 .AsSplitQuery()
                 .OrderSystemUsageApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty)
                 .Page(paginationQuery).ToList();
