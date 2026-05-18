@@ -125,12 +125,12 @@ namespace Core.DomainModel.GDPR
 
             return dataProcessor;
         }
+
         public Result<SubDataProcessor, OperationError> AssignSubDataProcessor(Organization.Organization dataProcessor)
         {
             if (dataProcessor == null) throw new ArgumentNullException(nameof(dataProcessor));
 
-            if (HasSubDataProcessors != YesNoUndecidedOption.Yes)
-                return new OperationError("To Add new sub data processors, enable sub data processors", OperationFailure.BadInput);
+            SetHasSubDataProcessors(YesNoUndecidedOption.Yes);
 
             var subDataProcessor = GetSubDataProcessor(dataProcessor);
             if (subDataProcessor.HasValue)

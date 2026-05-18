@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.DomainModel.ItSystem.DataTypes;
+using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 
 namespace Core.DomainModel.ItSystemUsage.Read
@@ -151,5 +152,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string WebAccessibilityNotes { get; set; }
         public DataOptions? IsSociallyCritical { get; set; }
         public DateTime? CriticalityFieldsLastChanged { get; set; }
+        public IsDataProcessingAgreementRequired? IsDataProcessingAgreementRequired { get; set; }
     }
 }

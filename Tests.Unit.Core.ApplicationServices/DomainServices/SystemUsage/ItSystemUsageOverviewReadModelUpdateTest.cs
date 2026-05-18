@@ -246,7 +246,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 {
                     incomingRelation
                 },
-                LifeCycleStatus = A<LifeCycleStatusType>()
+                LifeCycleStatus = A<LifeCycleStatusType>(),
+                IsDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequired?>(),
             };
 
             systemUsage.UpdateRiskAssessment(DataOptions.YES);
@@ -354,6 +355,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
             Assert.Equal(systemUsage.TechnicalSystemType?.Uuid, readModel.TechnicalSystemTypeUuid);
             Assert.Equal(systemUsage.TechnicalSystemType?.Name, readModel.TechnicalSystemTypeName);
+            Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
