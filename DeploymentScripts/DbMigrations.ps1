@@ -12,7 +12,7 @@ Function Is-PostgreSqlProvider([string]$provider) {
 }
 
 Function ConvertTo-PostgresConnectionParts([string]$connectionString) {
-    $cs = @{ Host = $null; Server = $null; Port = $null; Database = $null; UserId = $null; Username = $null; Password = $null }
+    $cs = @{ Host = $null; Server = $null; Port = $null; Database = $null; UserId = $null; Username = $null; Password = $null; "SSL Mode" = $null }
     ($connectionString -split ';') | Where-Object { $_ -match '=' } | ForEach-Object {
         $kv = $_ -split '=', 2
         $cs[$kv[0].Trim()] = $kv[1].Trim()
@@ -29,6 +29,7 @@ Function ConvertTo-PostgresConnectionParts([string]$connectionString) {
         Database = $pgDatabase
         Username = $pgUsername
         Password = $cs['Password']
+        SslMode  = $cs['SSL Mode']
     }
 }
 
@@ -48,7 +49,8 @@ Function Normalize-PostgresConnectionString([string]$connectionString) {
         $parts.Host
     }
 
-    return "Host=$normalizedHost;Port=$($parts.Port);Database=$normalizedDatabase;Username=$($parts.Username);Password=$($parts.Password)"
+    $sslPart = if ($parts.SslMode) { ";SSL Mode=$($parts.SslMode)" } else { "" }
+    return "Host=$normalizedHost;Port=$($parts.Port);Database=$normalizedDatabase;Username=$($parts.Username);Password=$($parts.Password)$sslPart"
 }
 
 Function Get-PostgresCliPath {
