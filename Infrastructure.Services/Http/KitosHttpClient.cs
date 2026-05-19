@@ -28,7 +28,7 @@ public class KitosHttpClient : IKitosHttpClient
             Content = payload
         };
 
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Headers.Authorization = new AuthenticationHeaderValue(AuthenticationSchemes.Bearer, token);
         try
         {
             return await _httpClient.SendAsync(request);
