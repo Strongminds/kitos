@@ -457,7 +457,7 @@ namespace Core.DomainServices.SystemUsage
         {
             destination.ItSystemRightsHolderId = source.ItSystem.BelongsTo?.Id;
             destination.ItSystemRightsHolderName = source.ItSystem.BelongsTo?.Name;
-            destination.ItSystemRightsholderCvr = source.ItSystem.BelongsTo?.Cvr;
+            destination.ItSystemRightsHolderCvr = source.ItSystem.BelongsTo?.Cvr;
         }
 
         private void PatchKLE(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
