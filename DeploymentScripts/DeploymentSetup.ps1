@@ -52,7 +52,28 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     if($loadTcHangfireConnectionString -eq $true) {
         $Env:HangfireDbConnectionStringForTeamCity = $parameters["HangfireDbConnectionStringForTeamCity"]
     }
-    
+
+    # When the DB provider is Postgres, override connection strings with values from
+    # the Postgres-specific SSM path (e.g. /kitos/postgre-dev/) so that SQL Server
+    # and Postgres connection strings can be maintained independently.
+    if ($Env:KitosDbProvider -eq "Postgres") {
+        $pgEnvName = "postgre-$envName"
+        Write-Host "KitosDbProvider is Postgres - loading DB connection strings from SSM path: /kitos/$pgEnvName/"
+        $pgParameters = Get-SSM-Parameters -environmentName "$pgEnvName"
+
+        if ($pgParameters.Count -eq 0) {
+            throw "No parameters found for Postgres environment $pgEnvName"
+        }
+
+        $Env:KitosDbConnectionStringForIIsApp    = $pgParameters["KitosDbConnectionStringForIIsApp"]
+        $Env:HangfireDbConnectionStringForIIsApp = $pgParameters["HangfireDbConnectionStringForIIsApp"]
+        $Env:KitosDbConnectionStringForTeamCity  = $pgParameters["KitosDbConnectionStringForTeamCity"]
+
+        if ($loadTcHangfireConnectionString -eq $true) {
+            $Env:HangfireDbConnectionStringForTeamCity = $pgParameters["HangfireDbConnectionStringForTeamCity"]
+        }
+    }
+
     if($loadTestUsers -eq $true) {
         $Env:TestUserGlobalAdmin = $parameters["TestUserGlobalAdmin"]
         $Env:TestUserGlobalAdminPw = $parameters["TestUserGlobalAdminPw"]
