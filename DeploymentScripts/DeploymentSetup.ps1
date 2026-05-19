@@ -57,7 +57,7 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     # the Postgres-specific SSM path (e.g. /kitos/postgre-dev/) so that SQL Server
     # and Postgres connection strings can be maintained independently.
     if ($Env:KitosDbProvider -eq "Postgres") {
-        $pgEnvName = "postgre-$envName"
+        $pgEnvName = "postgres-$envName"
         Write-Host "KitosDbProvider is Postgres - loading DB connection strings from SSM path: /kitos/$pgEnvName/"
         $pgParameters = Get-SSM-Parameters -environmentName "$pgEnvName"
 
