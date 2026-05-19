@@ -28,6 +28,10 @@ $ErrorActionPreference = "Stop"
 #-------------------------------------------------------------
 .$PSScriptRoot\DbMigrations.ps1
 
+if (-not $Env:Database__Provider -and $Env:KitosDbProvider) {
+    $Env:Database__Provider = $Env:KitosDbProvider
+}
+
 $databaseProvider = Get-DatabaseProvider
 if (Is-PostgreSqlProvider $databaseProvider) {
     $kitosDbConnectionString = Normalize-PostgresConnectionString -connectionString $kitosDbConnectionString
