@@ -181,7 +181,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 BelongsTo = new Organization
                 {
                     Id = A<int>(),
-                    Name = A<string>()
+                    Name = A<string>(),
+                    Cvr = A<string>()
                 },
                 BusinessType = new BusinessType
                 {
@@ -369,6 +370,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(system.ExternalUuid, readModel.ExternalSystemUuid);
             Assert.Equal(system.BelongsTo.Id, readModel.ItSystemRightsHolderId);
             Assert.Equal(system.BelongsTo.Name, readModel.ItSystemRightsHolderName);
+            Assert.Equal(system.BelongsTo.Cvr, readModel.ItSystemRightsholderCvr);
             Assert.Equal(systemUsage.ItSystemCategories.Uuid, readModel.ItSystemCategoriesUuid);
             Assert.Equal(systemUsage.ItSystemCategories.Id, readModel.ItSystemCategoriesId);
             Assert.Equal(systemUsage.ItSystemCategories.Name, readModel.ItSystemCategoriesName);

@@ -84,6 +84,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string ItSystemBusinessTypeName { get; set; }
         public int? ItSystemRightsHolderId { get; set; }
         public string ItSystemRightsHolderName { get; set; }
+        public string ItSystemRightsholderCvr { get; set; }
         public int? ItSystemCategoriesId { get; set; }
         public Guid? ItSystemCategoriesUuid { get; set; }
         public string ItSystemCategoriesName { get; set; }
