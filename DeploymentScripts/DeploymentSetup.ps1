@@ -65,6 +65,8 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
             throw "No parameters found for Postgres environment $pgEnvName"
         }
 
+        $Env:HostName    = $pgParameters["HostName"]
+        $Env:MsDeployUrl    = $pgParameters["MsDeployUrl"]
         $Env:KitosDbConnectionStringForIIsApp    = $pgParameters["KitosDbConnectionStringForIIsApp"]
         $Env:HangfireDbConnectionStringForIIsApp = $pgParameters["HangfireDbConnectionStringForIIsApp"]
         $Env:KitosDbConnectionStringForTeamCity  = $pgParameters["KitosDbConnectionStringForTeamCity"]
