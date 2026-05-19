@@ -260,13 +260,7 @@ Function Invoke-PostgresSqlFile([string]$connectionString, [string]$sqlFilePath)
     Invoke-PostgresSqlFileInternal -parts $parts -sqlFilePath $sqlFilePath
 }
 
-Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString, [string]$migrationsPath) {
-    $migrationFiles = Get-ChildItem -Path $migrationsPath -Filter "*.cs" |
-        Where-Object { $_.BaseName -match '^\d+_.+' -and $_.BaseName -notlike '*Designer' } |
-        Sort-Object Name
-
-    if (-not $migrationFiles) { return }
-
+Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString) {
     $historySqlBuilder = New-Object System.Text.StringBuilder
     # EF Core is configured with MigrationsHistoryTable("__EFMigrationsHistory", "dbo"), so the
     # history table must be created and populated in the dbo schema to match.
@@ -279,11 +273,7 @@ Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString, [st
 
     # Only pre-mark the InitialBaseline migration. Post-baseline migrations run normally so that
     # new schema changes (e.g. column type conversions) are applied on every fresh database.
-    $baselineMigration = $migrationFiles | Where-Object { $_.BaseName -match '_InitialBaseline$' } | Select-Object -First 1
-    if ($baselineMigration) {
-        $migrationId = $baselineMigration.BaseName.Replace("'", "''")
-        [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('$migrationId', '10.0.6') ON CONFLICT DO NOTHING;")
-    }
+    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260413095837_InitialBaseline', '10.0.6') ON CONFLICT DO NOTHING;")
 
     $parts = ConvertTo-PostgresConnectionParts $connectionString
     Invoke-PostgresSql -parts $parts -database $parts.Database -sql $historySqlBuilder.ToString()
@@ -383,8 +373,7 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
             $baselineSql = "$repoRoot\DeploymentScripts\Baseline.PostgreSql.FullModel.sql"
             Invoke-PostgresSqlFile -connectionString $connectionString -sqlFilePath $baselineSql
 
-            $migrationsPath = "$repoRoot\Infrastructure.DataAccess\Migrations\EfCore"
-            Initialize-EFCoreHistoryForNewPostgresDb -connectionString $connectionString -migrationsPath $migrationsPath
+            Initialize-EFCoreHistoryForNewPostgresDb -connectionString $connectionString
         } else {
             # New database: apply the extracted baseline SQL script which creates the full schema
             # and inserts the InitialBaseline record into __EFMigrationsHistory.
