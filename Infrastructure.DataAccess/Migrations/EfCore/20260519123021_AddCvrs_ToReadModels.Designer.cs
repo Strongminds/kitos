@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260519092726_AddRightsHolderCvr_ToSystemUsageReadModel")]
-    partial class AddRightsHolderCvr_ToSystemUsageReadModel
+    [Migration("20260519123021_AddCvrs_ToReadModels")]
+    partial class AddCvrs_ToReadModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2301,6 +2301,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<Guid>("SourceEntityUuid")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupplierCvr")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SupplierId")
                         .HasColumnType("int");
