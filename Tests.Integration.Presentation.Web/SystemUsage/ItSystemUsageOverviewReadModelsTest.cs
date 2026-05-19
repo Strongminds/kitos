@@ -360,6 +360,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(dataClassification.Name, readModel.ItSystemCategoriesName);
             Assert.Equal(organizationId, readModel.ItSystemRightsHolderId);
             Assert.Equal(organizationName, readModel.ItSystemRightsHolderName);
+            Assert.Equal(TestCvr, readModel.ItSystemRightsHolderCvr);
             Assert.Equal(taskRef.Description, readModel.ItSystemKLENamesAsCsv);
             var readTaskRef = Assert.Single(readModel.ItSystemTaskRefs);
             Assert.Equal(taskRef.KleNumber, readTaskRef.KLEId);
@@ -575,6 +576,43 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read model found");
 
             Assert.Equal(organizationName2, readModel.ItSystemRightsHolderName);
+        }
+
+        [Fact]
+        public async Task ReadModels_ItSystemRightsHolderCvr_Is_Updated_When_OrganizationCvr_Is_Changed()
+        {
+            //Arrange
+            var systemName = A<string>();
+            var organizationName1 = A<string>();
+            var cvr1 = CreateCvr();
+            var cvr2 = CreateCvr();
+            Assert.NotEqual(cvr1, cvr2);
+            var organizationUuid = DefaultOrgUuid;
+
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
+
+            var organization1 = await CreateOrganizationAsync(organizationName1, cvr1);
+
+            await ItSystemV2Helper.SendPatchRightsHolderAsync(await GetGlobalToken(), system.Uuid, organization1.Uuid).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
+            //Wait for read model to rebuild (wait for the LAST mutation)
+            await WaitForReadModelQueueDepletion();
+            Console.Out.WriteLine("Read models are up to date");
+
+            //Act 
+            await OrganizationInternalV2Helper.PatchOrganization(organization1.Uuid,
+                new OrganizationUpdateRequestDTO { Cvr = cvr2, Type = OrganizationType.Municipality }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            //Wait for read model to rebuild (wait for the LAST mutation)
+            await WaitForReadModelQueueDepletion();
+            Console.Out.WriteLine("Read models are up to date");
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
+
+            //Assert
+            var readModel = Assert.Single(readModels);
+            Console.Out.WriteLine("Read model found");
+
+            Assert.Equal(cvr2, readModel.ItSystemRightsHolderCvr);
         }
 
         [Fact]
