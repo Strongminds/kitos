@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path "$PSScriptRoot\.."
 $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
 $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
-$bundleDir = "$repoRoot\MigrationsBundle"
+$bundleDir = "$repoRoot\Output\MigrationsBundle"
 $sqlServerBundleExe = "$bundleDir\efbundle.exe"
 $postgresBundleExe = "$bundleDir\efbundle.postgresql.exe"
 
