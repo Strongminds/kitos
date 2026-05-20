@@ -114,15 +114,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var archiveDuty = A<ArchiveDutyChoice>();
 
             var riskAssessment = A<YesNoDontKnowChoice>();
-            var riskAssessmentDate = A<DateTime?>();
-            var riskSupervisionDocumentationUrl = A<string>();
-            var riskSupervisionDocumentationUrlName = A<string>();
-            if (riskAssessment != YesNoDontKnowChoice.Yes)
-            {
-                riskAssessmentDate = null;
-                riskSupervisionDocumentationUrl = null;
-                riskSupervisionDocumentationUrlName = null;
-            }
+            var hasRiskAssessment = riskAssessment == YesNoDontKnowChoice.Yes;
+            var riskAssessmentDate = hasRiskAssessment ? A<DateTime?>(): null;
+            var riskAssessmentResult = hasRiskAssessment ? A<RiskLevel?>() : null;
+            var riskSupervisionDocumentationUrl = hasRiskAssessment ? A<string>(): null;
+            var riskSupervisionDocumentationUrlName = hasRiskAssessment ? A<string>(): null;
+
             var linkToDirectoryUrl = A<string>();
             var linkToDirectoryUrlName = A<string>();
             var generalPurpose = A<string>();
@@ -336,12 +333,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 Assert.Equal(riskSupervisionDocumentationUrlName, readModel.RiskSupervisionDocumentationName);
                 Assert.Equal(riskSupervisionDocumentationUrl, readModel.RiskSupervisionDocumentationUrl);
                 Assert.Equal(riskAssessmentDate, readModel.RiskAssessmentDate);
+                Assert.Equal(riskAssessmentResult, readModel.RiskAssessmentResult);
             }
             else
             {
                 Assert.Null(readModel.RiskSupervisionDocumentationName);
                 Assert.Null(readModel.RiskSupervisionDocumentationUrl);
                 Assert.Null(readModel.RiskAssessmentDate);
+                Assert.Null(readModel.RiskAssessmentResult);
             }
 
             // Sensitive Data Level
