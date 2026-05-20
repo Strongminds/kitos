@@ -70,6 +70,7 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
         $Env:KitosDbConnectionStringForIIsApp    = $pgParameters["KitosDbConnectionStringForIIsApp"]
         $Env:HangfireDbConnectionStringForIIsApp = $pgParameters["HangfireDbConnectionStringForIIsApp"]
         $Env:KitosDbConnectionStringForTeamCity  = $pgParameters["KitosDbConnectionStringForTeamCity"]
+        $Env:KitosDbProvider = "Postgres"
 
         if ($loadTcHangfireConnectionString -eq $true) {
             $Env:HangfireDbConnectionStringForTeamCity = $pgParameters["HangfireDbConnectionStringForTeamCity"]
