@@ -1,4 +1,16 @@
+Function LooksLikePostgreSqlConnectionString([string]$connectionString) {
+    return $connectionString -and (
+        $connectionString -imatch 'Host=' -or
+        $connectionString -imatch 'Username=' -or
+        $connectionString -imatch 'User ID='
+    )
+}
+
 Function Get-DatabaseProvider {
+    param([string]$connectionString = $null)
+    # Connection string format is authoritative: a PostgreSQL-formatted connection string
+    # cannot be used with SQL Server, so detect from it first.
+    if ($connectionString -and (LooksLikePostgreSqlConnectionString $connectionString)) { return "PostgreSql" }
     if ($Env:Database__Provider) { return $Env:Database__Provider }
     return "SqlServer"
 }
@@ -271,9 +283,25 @@ Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString) {
     [void]$historySqlBuilder.AppendLine('    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")')
     [void]$historySqlBuilder.AppendLine(');')
 
-    # Only pre-mark the InitialBaseline migration. Post-baseline migrations run normally so that
-    # new schema changes (e.g. column type conversions) are applied on every fresh database.
-    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260413095837_InitialBaseline', '10.0.6') ON CONFLICT DO NOTHING;")
+    # Pre-mark migrations whose schema is already included in the PostgreSQL baseline SQL.
+    # Any migration added here must have its full schema captured in Baseline.PostgreSql.FullModel.sql.
+    #
+    # - InitialBaseline: always (the full baseline schema).
+    # - AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel: columns already in baseline;
+    #   re-applying would fail with "column already exists".
+    # - BridgeMissingColumnsFromEF6: uses T-SQL IF NOT EXISTS syntax that cannot run on PostgreSQL;
+    #   the bridged columns (SensitivePersonalDataTypeId, RegisterTypeId) are already in baseline.
+    # - EnableCitextForCaseInsensitiveNameColumns: citext columns already applied in baseline;
+    #   running again is harmless but pre-marking keeps history consistent with the baseline state.
+    $migrationsToPreMark = @(
+        "20260413095837_InitialBaseline",
+        "20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel",
+        "20260420093000_BridgeMissingColumnsFromEF6",
+        "20260427113000_EnableCitextForCaseInsensitiveNameColumns"
+    )
+    foreach ($migrationId in $migrationsToPreMark) {
+        [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('$migrationId', '10.0.6') ON CONFLICT DO NOTHING;")
+    }
 
     $parts = ConvertTo-PostgresConnectionParts $connectionString
     Invoke-PostgresSql -parts $parts -database $parts.Database -sql $historySqlBuilder.ToString()
@@ -325,7 +353,7 @@ END
 
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [string]$buildConfiguration = "Release") {
     Write-Host "Executing db migrations"
-    $provider = Get-DatabaseProvider
+    $provider = Get-DatabaseProvider -connectionString $connectionString
     $isPostgreSql = Is-PostgreSqlProvider $provider
     Write-Host "Database provider: $provider"
 

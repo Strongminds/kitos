@@ -32,7 +32,7 @@ if (-not $Env:Database__Provider -and $Env:KitosDbProvider) {
     $Env:Database__Provider = $Env:KitosDbProvider
 }
 
-$databaseProvider = Get-DatabaseProvider
+$databaseProvider = Get-DatabaseProvider -connectionString $kitosDbConnectionString
 if (Is-PostgreSqlProvider $databaseProvider) {
     $kitosDbConnectionString = Normalize-PostgresConnectionString -connectionString $kitosDbConnectionString
     $hangfireDbConnectionString = Normalize-PostgresConnectionString -connectionString $hangfireDbConnectionString

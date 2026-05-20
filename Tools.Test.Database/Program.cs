@@ -215,13 +215,20 @@ namespace Tools.Test.Database
 
         private static string ResolveDatabaseProvider(string connectionString)
         {
+            // Connection string format is authoritative: a PostgreSQL-formatted connection string
+            // (Host=, Username=, etc.) cannot be used with SQL Server, so detect provider from it first.
+            if (LooksLikePostgreSqlConnectionString(connectionString))
+            {
+                return "PostgreSql";
+            }
+
             var provider = Environment.GetEnvironmentVariable("Database__Provider");
             if (string.IsNullOrWhiteSpace(provider) == false)
             {
                 return provider;
             }
 
-            return LooksLikePostgreSqlConnectionString(connectionString) ? "PostgreSql" : "SqlServer";
+            return "SqlServer";
         }
 
         private static bool IsPostgreSqlProvider(string provider)
