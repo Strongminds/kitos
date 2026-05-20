@@ -300,6 +300,7 @@ namespace Core.DomainServices.SystemUsage
 
             destination.RiskAssessmentDate = source.riskAssesmentDate;
             destination.PlannedRiskAssessmentDate = source.PlannedRiskAssessmentDate;
+            destination.RiskAssessmentResult = source.preriskAssessment;
 
             static string CreateDataProcessingRegistrationKey(int Id) => $"I:{Id}";
 

@@ -108,6 +108,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string SensitiveDataLevelsAsCsv { get; set; }
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
+        public RiskLevel? RiskAssessmentResult { get; set; }
         public virtual ICollection<ItSystemUsageOverviewSensitiveDataLevelReadModel> SensitiveDataLevels { get; set; }
         public ArchiveDutyTypes? ArchiveDuty { get; set; }
         public bool IsHoldingDocument { get; set; }

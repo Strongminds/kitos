@@ -341,6 +341,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.HostedAt, readModel.HostedAt);
             Assert.Equal(systemUsage.UserCount, readModel.UserCount);
             Assert.Equal(systemUsage.riskAssesmentDate, readModel.RiskAssessmentDate);
+            Assert.Equal(systemUsage.preriskAssessment, readModel.RiskAssessmentResult);
             Assert.Equal(systemUsage.PlannedRiskAssessmentDate, readModel.PlannedRiskAssessmentDate);
             Assert.Equal(systemUsage.ItSystem.PreviousName, readModel.SystemPreviousName);
             Assert.Equal(systemUsage.ItSystem.Description, readModel.SystemDescription);
