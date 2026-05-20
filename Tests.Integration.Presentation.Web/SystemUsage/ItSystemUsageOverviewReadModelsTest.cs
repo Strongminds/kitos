@@ -96,7 +96,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
-            var organizationName = TestEnvironment.DefaultOrganizationName;
+            var organizationName = "test company";
 
             var systemName = A<string>();
             var systemPreviousName = A<string>();
@@ -167,6 +167,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 new(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.Uuid.WrapAsEnumerable())
             };
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
+            var newRightsHolder = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), organizationUuid);
 
             // Parent system 
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), systemParent.Uuid, new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemParentDisabled));
@@ -359,8 +360,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(dataClassification.Uuid, readModel.ItSystemCategoriesUuid);
             Assert.Equal(dataClassification.Name, readModel.ItSystemCategoriesName);
             Assert.Equal(organizationId, readModel.ItSystemRightsHolderId);
-            Assert.Equal(organizationName, readModel.ItSystemRightsHolderName);
-            Assert.Equal(TestCvr, readModel.ItSystemRightsHolderCvr);
+            Assert.Equal(newRightsHolder.Name, readModel.ItSystemRightsHolderName);
+           Assert.Equal(newRightsHolder.Cvr, readModel.ItSystemRightsHolderCvr);
             Assert.Equal(taskRef.Description, readModel.ItSystemKLENamesAsCsv);
             var readTaskRef = Assert.Single(readModel.ItSystemTaskRefs);
             Assert.Equal(taskRef.KleNumber, readTaskRef.KLEId);
@@ -395,7 +396,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // Main Contract
             Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0)); //also MainContractUuid
             Assert.Equal(organizationId, readModel.MainContractSupplierId);
-            Assert.Equal(organizationName, readModel.MainContractSupplierName);
+            Assert.Equal(newRightsHolder.Name, readModel.MainContractSupplierName);
             Assert.Equal(MainContractState.Active, readModel.MainContractIsActive);
 
             // Associated contracts
@@ -1118,7 +1119,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 OrganizationUuid = organization.Uuid,
                 Name = systemName,
                 PreviousName = systemPreviousName,
-                Description = systemDescription
+                Description = systemDescription,
             });
             return system;
         }
