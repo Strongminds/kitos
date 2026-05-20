@@ -293,18 +293,26 @@ Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString) {
     #   the bridged columns (SensitivePersonalDataTypeId, RegisterTypeId) are already in baseline.
     # - EnableCitextForCaseInsensitiveNameColumns: citext columns already applied in baseline;
     #   running again is harmless but pre-marking keeps history consistent with the baseline state.
-    $migrationsToPreMark = @(
-        "20260413095837_InitialBaseline",
-        "20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel",
-        "20260420093000_BridgeMissingColumnsFromEF6",
-        "20260427113000_EnableCitextForCaseInsensitiveNameColumns"
-    )
-    foreach ($migrationId in $migrationsToPreMark) {
-        [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('$migrationId', '10.0.6') ON CONFLICT DO NOTHING;")
-    }
+    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260413095837_InitialBaseline', '10.0.6') ON CONFLICT DO NOTHING;")
+    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel', '10.0.6') ON CONFLICT DO NOTHING;")
+    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260420093000_BridgeMissingColumnsFromEF6', '10.0.6') ON CONFLICT DO NOTHING;")
+    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260427113000_EnableCitextForCaseInsensitiveNameColumns', '10.0.6') ON CONFLICT DO NOTHING;")
 
     $parts = ConvertTo-PostgresConnectionParts $connectionString
-    Invoke-PostgresSql -parts $parts -database $parts.Database -sql $historySqlBuilder.ToString()
+    # Write to a temp file and use psql -f for reliable multi-statement execution,
+    # matching the pattern used by Invoke-PostgresSqlFileInternal.
+    $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($tmpFile, $historySqlBuilder.ToString(), $utf8NoBom)
+    $psqlPath = Get-PostgresCliPath
+    $Env:PGPASSWORD = $parts.Password
+    try {
+        & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d $parts.Database -v ON_ERROR_STOP=1 -f $tmpFile
+        if ($LASTEXITCODE -ne 0) { throw "psql failed initializing EF Core migration history" }
+    } finally {
+        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+        Remove-Item $tmpFile -ErrorAction SilentlyContinue
+    }
 }
 
 # For existing databases (previously managed by EF6), pre-marks EF Core migrations as applied
