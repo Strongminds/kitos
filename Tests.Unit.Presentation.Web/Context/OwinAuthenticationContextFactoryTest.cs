@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Infrastructure.Services.Http;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Core.ApplicationServices.Authentication;
 using Core.DomainModel;
@@ -39,7 +40,7 @@ namespace Tests.Unit.Presentation.Web.Context
 
         [Theory]
         [InlineData(AuthenticationMethod.KitosToken, "JWT")]
-        [InlineData(AuthenticationMethod.KitosToken, "Bearer")]
+        [InlineData(AuthenticationMethod.KitosToken, AuthenticationSchemes.Bearer)]
         [InlineData(AuthenticationMethod.Forms, "Cookies")]
         public void Authenticated_User_Should_Return_AuthenticationContext_With_AuthenticationMethod(AuthenticationMethod authMethod, string authType)
         {
