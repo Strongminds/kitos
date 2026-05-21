@@ -327,6 +327,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(userCount, readModel.UserCount);
             Assert.Equal(criticalityLevel.Uuid, readModel.SystemUsageCriticalityLevelUuid);
             Assert.Equal(criticalityLevel.Name, readModel.SystemUsageCriticalityLevelName);
+            Assert.Equal(riskAssessment.FromChoice(), readModel.RiskAssessmentConducted);
 
             if (riskAssessment == YesNoDontKnowIrrelevantChoice.Yes)
             {
