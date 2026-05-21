@@ -10,15 +10,8 @@ Function Get-DatabaseProvider {
     param([string]$connectionString = $null)
     # Connection string format is authoritative: a PostgreSQL-formatted connection string
     # cannot be used with SQL Server, so detect from it first.
-    if ($connectionString -and (LooksLikePostgreSqlConnectionString $connectionString)) {
-        Write-Host "Database provider resolved to 'PostgreSql' (detected from connection string format)"
-        return "PostgreSql"
-    }
-    if ($Env:Database__Provider) {
-        Write-Host "Database provider resolved to '$($Env:Database__Provider)' (from env var Database__Provider)"
-        return $Env:Database__Provider
-    }
-    Write-Host "Database provider resolved to 'SqlServer' (default)"
+    if ($connectionString -and (LooksLikePostgreSqlConnectionString $connectionString)) { return "PostgreSql" }
+    if ($Env:Database__Provider) { return $Env:Database__Provider }
     return "SqlServer"
 }
 
@@ -368,8 +361,6 @@ END
 
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [string]$buildConfiguration = "Release") {
     Write-Host "Executing db migrations"
-    # Clear any stale provider env var so detection relies solely on the connection string format.
-    Remove-Item Env:Database__Provider -ErrorAction SilentlyContinue
     $provider = Get-DatabaseProvider -connectionString $connectionString
     $isPostgreSql = Is-PostgreSqlProvider $provider
     Write-Host "Database provider: $provider"

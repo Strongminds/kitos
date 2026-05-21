@@ -251,8 +251,7 @@ namespace Tools.Test.Database
             }
 
             return connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase)
-                   || connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase)
-                   || connectionString.Contains("User ID=", StringComparison.OrdinalIgnoreCase);
+                   || connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string GetArgument(string[] additionalArgs, int index, bool trimEnclosingQuotes = true)
