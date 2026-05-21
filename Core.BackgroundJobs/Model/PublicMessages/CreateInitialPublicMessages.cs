@@ -21,6 +21,11 @@ public class CreateInitialPublicMessages : IAsyncBackgroundJob
     public string Id => StandardJobIds.CreateInitialPublicMessages;
     public Task<Result<string, OperationError>> ExecuteAsync(CancellationToken token = default)
     {
+        if (_repository.AsQueryable().Any())
+        {
+            return Task.FromResult(Result<string, OperationError>.Success("Public messages already exist"));
+        }
+
         var transaction = _transactionManager.Begin();
         try
         {

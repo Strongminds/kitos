@@ -425,7 +425,11 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # Expose the connection string via the standard .NET env var so the
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
     $Env:ConnectionStrings__KitosContext = $connectionString
-    $Env:Database__Provider = $provider
+    if ($isPostgreSql) {
+        $Env:Database__Provider = $provider
+    } else {
+        $Env:Database__Provider = "SqlServer"
+    }
     $Env:IgnorePendingModelChangesWarning = "true"
 
     if (-not $isPostgreSql -and $newDb -eq $false) {
