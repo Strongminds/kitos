@@ -1,8 +1,11 @@
 Function LooksLikePostgreSqlConnectionString([string]$connectionString) {
-    return $connectionString -and (
+    if (-not $connectionString) { return $false }
+    # SQL Server-specific keys — cannot be a PostgreSQL connection string
+    if ($connectionString -imatch 'Initial Catalog=' -or $connectionString -imatch 'Data Source=') { return $false }
+    # PostgreSQL-specific keys (User ID= is ambiguous; it is also used by SQL Server)
+    return (
         $connectionString -imatch 'Host=' -or
-        $connectionString -imatch 'Username=' -or
-        $connectionString -imatch 'User ID='
+        $connectionString -imatch 'Username='
     )
 }
 
