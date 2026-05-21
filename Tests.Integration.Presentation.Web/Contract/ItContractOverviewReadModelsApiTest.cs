@@ -251,6 +251,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(concluded.Date, readModel.Concluded);
             Assert.Equal(expirationDate.Date, readModel.ExpirationDate);
             AssertReferencedEntity(_supplier.Name, readModel.SupplierName, _supplier.Uuid, DatabaseAccess.GetEntityUuid<Organization>(readModel.SupplierId ?? 0));
+            Assert.Equal(_supplier.Cvr, readModel.SupplierCvr);
             AssertReferencedEntity(parentContract.Name, readModel.ParentContractName, parentContract.Uuid, readModel.ParentContractUuid);
             AssertReferencedEntity(criticality.Name, readModel.CriticalityName, criticality.Uuid, readModel.CriticalityUuid);
             AssertReferencedEntity(organizationUnit.Name, readModel.ResponsibleOrgUnitName, organizationUnit.Uuid, DatabaseAccess.GetEntityUuid<OrganizationUnit>(readModel.ResponsibleOrgUnitId ?? 0));

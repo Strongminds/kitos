@@ -33,6 +33,7 @@ namespace Core.DomainModel.ItContract.Read
         public string ResponsibleOrgUnitName { get; set; } // For sorting
         public int? SupplierId { get; set; }
         public string SupplierName { get; set; }
+        public string SupplierCvr { get; set; }
         public bool IsSupplierDisabled { get; set; }
         public string ContractSigner { get; set; }
         public int? ContractTypeId { get; set; }     // For filtering
