@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.DomainModel.ItSystem.DataTypes;
+using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 
 namespace Core.DomainModel.ItSystemUsage.Read
@@ -83,6 +84,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string ItSystemBusinessTypeName { get; set; }
         public int? ItSystemRightsHolderId { get; set; }
         public string ItSystemRightsHolderName { get; set; }
+        public string ItSystemRightsHolderCvr { get; set; }
         public int? ItSystemCategoriesId { get; set; }
         public Guid? ItSystemCategoriesUuid { get; set; }
         public string ItSystemCategoriesName { get; set; }
@@ -151,5 +153,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string WebAccessibilityNotes { get; set; }
         public DataOptions? IsSociallyCritical { get; set; }
         public DateTime? CriticalityFieldsLastChanged { get; set; }
+        public IsDataProcessingAgreementRequired? IsDataProcessingAgreementRequired { get; set; }
     }
 }

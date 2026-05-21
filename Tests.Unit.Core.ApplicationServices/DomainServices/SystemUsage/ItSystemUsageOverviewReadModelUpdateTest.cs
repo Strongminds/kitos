@@ -181,7 +181,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 BelongsTo = new Organization
                 {
                     Id = A<int>(),
-                    Name = A<string>()
+                    Name = A<string>(),
+                    Cvr = A<string>()
                 },
                 BusinessType = new BusinessType
                 {
@@ -246,7 +247,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 {
                     incomingRelation
                 },
-                LifeCycleStatus = A<LifeCycleStatusType>()
+                LifeCycleStatus = A<LifeCycleStatusType>(),
+                IsDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequired?>(),
             };
 
             systemUsage.UpdateRiskAssessment(DataOptions.YES);
@@ -354,6 +356,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
             Assert.Equal(systemUsage.TechnicalSystemType?.Uuid, readModel.TechnicalSystemTypeUuid);
             Assert.Equal(systemUsage.TechnicalSystemType?.Name, readModel.TechnicalSystemTypeName);
+            Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
@@ -367,6 +370,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(system.ExternalUuid, readModel.ExternalSystemUuid);
             Assert.Equal(system.BelongsTo.Id, readModel.ItSystemRightsHolderId);
             Assert.Equal(system.BelongsTo.Name, readModel.ItSystemRightsHolderName);
+            Assert.Equal(system.BelongsTo.Cvr, readModel.ItSystemRightsHolderCvr);
             Assert.Equal(systemUsage.ItSystemCategories.Uuid, readModel.ItSystemCategoriesUuid);
             Assert.Equal(systemUsage.ItSystemCategories.Id, readModel.ItSystemCategoriesId);
             Assert.Equal(systemUsage.ItSystemCategories.Name, readModel.ItSystemCategoriesName);

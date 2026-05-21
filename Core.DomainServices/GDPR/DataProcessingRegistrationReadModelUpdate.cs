@@ -6,6 +6,7 @@ using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.Shared;
+using Core.DomainServices.Extensions;
 using Core.DomainServices.Mapping;
 using Core.DomainServices.Model;
 using Core.DomainServices.Options;
@@ -104,8 +105,13 @@ namespace Core.DomainServices.GDPR
 
         private static void PatchDataProcessors(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
-            destination.DataProcessorNamesAsCsv = string.Join(", ", source.DataProcessors.Select(x => x.Name));
-            destination.SubDataProcessorNamesAsCsv = string.Join(", ", source.AssignedSubDataProcessors.Select(x => x.Organization).Select(x => x.Name));
+            var dataProcessors = source.DataProcessors;
+            destination.DataProcessorNamesAsCsv = dataProcessors.Select(x => x.Name).ToStringWithDelimiter();
+            destination.DataProcessorCvrsAsCsv = dataProcessors.Select(x => x.Cvr).ToStringWithDelimiter();
+
+            var subDataProcessorOrganizations = source.AssignedSubDataProcessors.Select(x => x.Organization);
+            destination.SubDataProcessorNamesAsCsv = subDataProcessorOrganizations.Select(x => x.Name).ToStringWithDelimiter();
+            destination.SubDataProcessorCvrsAsCsv = subDataProcessorOrganizations.Select(x => x.Cvr).ToStringWithDelimiter();
         }
 
         private static void PatchIsAgreementConcluded(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)

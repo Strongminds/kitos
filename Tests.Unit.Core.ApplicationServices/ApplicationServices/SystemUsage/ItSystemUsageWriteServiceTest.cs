@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using AutoFixture;
 using Core.Abstractions.Extensions;
@@ -1878,6 +1877,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var nextEvaluationDate = A<DateTime?>();
             var evaluationFrequency = A<int?>();
             DataOptions? retentionPeriodDefined = DataOptions.YES;
+            IsDataProcessingAgreementRequired? isDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequired?>();
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
                 HostedAt = hostedAt.AsChangedValue(),
@@ -1903,6 +1903,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                 NextDataRetentionEvaluationDate = nextEvaluationDate.AsChangedValue(),
                 DataRetentionEvaluationFrequencyInMonths = evaluationFrequency.AsChangedValue(),
+                IsDataProcessingAgreementRequired = isDataProcessingAgreementRequired.AsChangedValue()
             };
 
             //Act
@@ -1948,6 +1949,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(nextEvaluationDate, itSystemUsage.DPIAdeleteDate);
             Assert.Equal(evaluationFrequency, itSystemUsage.numberDPIA);
             Assert.Null(itSystemUsage.SystemUsageCriticalityLevel);
+            Assert.Equal(isDataProcessingAgreementRequired, itSystemUsage.IsDataProcessingAgreementRequired);
         }
 
         [Fact]
@@ -3424,6 +3426,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(gdpr.RetentionPeriodDefined.NewValue, actual.answeringDataDPIA);
             Assert.Equal(gdpr.NextDataRetentionEvaluationDate.NewValue, actual.DPIAdeleteDate);
             Assert.Null(actual.SystemUsageCriticalityLevel);
+            Assert.Equal(gdpr.IsDataProcessingAgreementRequired.NewValue, actual.IsDataProcessingAgreementRequired);
 
             if (shouldBeEmpty)
             {
@@ -3502,6 +3505,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RetentionPeriodDefined = retentionPeriodDefined.AsChangedValue(),
                     NextDataRetentionEvaluationDate = A<DateTime?>().AsChangedValue(),
                     DataRetentionEvaluationFrequencyInMonths = A<int?>().AsChangedValue(),
+                    IsDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequired?>().AsChangedValue()
                 }
             };
         }
@@ -3552,6 +3556,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RetentionPeriodDefined = new ChangedValue<DataOptions?>(null),
                     NextDataRetentionEvaluationDate = new ChangedValue<DateTime?>(null),
                     DataRetentionEvaluationFrequencyInMonths = new ChangedValue<int?>(null),
+                    IsDataProcessingAgreementRequired = new ChangedValue<IsDataProcessingAgreementRequired?>(null)
                 }
             };
         }

@@ -96,7 +96,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
-            var organizationName = TestEnvironment.DefaultOrganizationName;
+            var organizationName = A<string>();
 
             var systemName = A<string>();
             var systemPreviousName = A<string>();
@@ -167,6 +167,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 new(nameof(UpdateItSystemRequestDTO.KLEUuids), taskRef.Uuid.WrapAsEnumerable())
             };
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), system.Uuid, systemChanges);
+            var newRightsHolder = await OrganizationV2Helper.GetOrganizationAsync(await GetGlobalToken(), organizationUuid);
 
             // Parent system 
             await ItSystemV2Helper.PatchSystemAsync(await GetGlobalToken(), systemParent.Uuid, new KeyValuePair<string, object>(nameof(UpdateItSystemRequestDTO.Deactivated), systemParentDisabled));
@@ -359,7 +360,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(dataClassification.Uuid, readModel.ItSystemCategoriesUuid);
             Assert.Equal(dataClassification.Name, readModel.ItSystemCategoriesName);
             Assert.Equal(organizationId, readModel.ItSystemRightsHolderId);
-            Assert.Equal(organizationName, readModel.ItSystemRightsHolderName);
+            Assert.Equal(newRightsHolder.Name, readModel.ItSystemRightsHolderName);
+           Assert.Equal(newRightsHolder.Cvr, readModel.ItSystemRightsHolderCvr);
             Assert.Equal(taskRef.Description, readModel.ItSystemKLENamesAsCsv);
             var readTaskRef = Assert.Single(readModel.ItSystemTaskRefs);
             Assert.Equal(taskRef.KleNumber, readTaskRef.KLEId);
@@ -394,7 +396,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             // Main Contract
             Assert.Equal(contract1.Uuid, DatabaseAccess.GetEntityUuid<ItContract>(readModel.MainContractId ?? 0)); //also MainContractUuid
             Assert.Equal(organizationId, readModel.MainContractSupplierId);
-            Assert.Equal(organizationName, readModel.MainContractSupplierName);
+            Assert.Equal(newRightsHolder.Name, readModel.MainContractSupplierName);
             Assert.Equal(MainContractState.Active, readModel.MainContractIsActive);
 
             // Associated contracts
@@ -575,6 +577,43 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Console.Out.WriteLine("Read model found");
 
             Assert.Equal(organizationName2, readModel.ItSystemRightsHolderName);
+        }
+
+        [Fact]
+        public async Task ReadModels_ItSystemRightsHolderCvr_Is_Updated_When_OrganizationCvr_Is_Changed()
+        {
+            //Arrange
+            var systemName = A<string>();
+            var organizationName1 = A<string>();
+            var cvr1 = CreateCvr();
+            var cvr2 = CreateCvr();
+            Assert.NotEqual(cvr1, cvr2);
+            var organizationUuid = DefaultOrgUuid;
+
+            var system = await CreateItSystemAsync(organizationUuid, name: systemName);
+            await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
+
+            var organization1 = await CreateOrganizationAsync(organizationName1, cvr1);
+
+            await ItSystemV2Helper.SendPatchRightsHolderAsync(await GetGlobalToken(), system.Uuid, organization1.Uuid).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+
+            //Wait for read model to rebuild (wait for the LAST mutation)
+            await WaitForReadModelQueueDepletion();
+            Console.Out.WriteLine("Read models are up to date");
+
+            //Act 
+            await OrganizationInternalV2Helper.PatchOrganization(organization1.Uuid,
+                new OrganizationUpdateRequestDTO { Cvr = cvr2, Type = OrganizationType.Municipality }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            //Wait for read model to rebuild (wait for the LAST mutation)
+            await WaitForReadModelQueueDepletion();
+            Console.Out.WriteLine("Read models are up to date");
+            var readModels = (await ItSystemUsageV2Helper.QueryReadModelByNameContent(organizationUuid, systemName, 1, 0)).ToList();
+
+            //Assert
+            var readModel = Assert.Single(readModels);
+            Console.Out.WriteLine("Read model found");
+
+            Assert.Equal(cvr2, readModel.ItSystemRightsHolderCvr);
         }
 
         [Fact]
@@ -1080,7 +1119,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 OrganizationUuid = organization.Uuid,
                 Name = systemName,
                 PreviousName = systemPreviousName,
-                Description = systemDescription
+                Description = systemDescription,
             });
             return system;
         }
