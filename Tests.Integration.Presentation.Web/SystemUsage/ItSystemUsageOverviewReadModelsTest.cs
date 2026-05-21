@@ -96,7 +96,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
-            var organizationName = "test company";
+            var organizationName = TestEnvironment.DefaultOrganizationName;
 
             var systemName = A<string>();
             var systemPreviousName = A<string>();
