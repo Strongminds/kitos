@@ -5,7 +5,7 @@
         No = 0,
         Yes = 1,
         DontKnow = 2,
-        Irrelevant = 3,
-        Undecided = 4
+        Undecided = 3,
+        Irrelevant = 4
     }
 }
