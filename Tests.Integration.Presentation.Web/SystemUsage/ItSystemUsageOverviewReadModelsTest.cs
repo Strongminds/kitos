@@ -113,8 +113,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemUsageExpirationDate = DateTime.UtcNow.AddDays(A<int>());
             var archiveDuty = A<ArchiveDutyChoice>();
 
-            var riskAssessment = A<YesNoDontKnowChoice>();
-            var hasRiskAssessment = riskAssessment == YesNoDontKnowChoice.Yes;
+            var riskAssessment = A<YesNoDontKnowIrrelevantChoice>();
+            var hasRiskAssessment = riskAssessment == YesNoDontKnowIrrelevantChoice.Yes;
             var riskAssessmentDate = hasRiskAssessment ? A<DateTime?>(): null;
             var riskAssessmentResult = hasRiskAssessment ? A<RiskLevel?>() : null;
             var riskSupervisionDocumentationUrl = hasRiskAssessment ? A<string>(): null;
@@ -328,7 +328,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(criticalityLevel.Uuid, readModel.SystemUsageCriticalityLevelUuid);
             Assert.Equal(criticalityLevel.Name, readModel.SystemUsageCriticalityLevelName);
 
-            if (riskAssessment == YesNoDontKnowChoice.Yes)
+            if (riskAssessment == YesNoDontKnowIrrelevantChoice.Yes)
             {
                 Assert.Equal(riskSupervisionDocumentationUrlName, readModel.RiskSupervisionDocumentationName);
                 Assert.Equal(riskSupervisionDocumentationUrl, readModel.RiskSupervisionDocumentationUrl);

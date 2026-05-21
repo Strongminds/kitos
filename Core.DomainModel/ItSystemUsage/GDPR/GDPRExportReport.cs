@@ -15,7 +15,7 @@ namespace Core.DomainModel.ItSystemUsage.GDPR
         public bool DataProcessingAgreementConcluded { get; set; }
         public bool LinkToDirectory { get; set; }
         public IEnumerable<string> SensitiveDataTypes { get; set; }
-        public DataOptions? RiskAssessment { get; set; }
+        public YesNoDontKnowIrrelevant? RiskAssessment { get; set; }
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
         public RiskLevel? PreRiskAssessment { get; set; }

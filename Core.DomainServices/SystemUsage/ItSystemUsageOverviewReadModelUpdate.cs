@@ -336,7 +336,7 @@ namespace Core.DomainServices.SystemUsage
 
         private static void PatchRiskSupervisionDocumentation(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            if (source.riskAssessment == DataOptions.YES)
+            if (source.riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 destination.RiskSupervisionDocumentationName = source.RiskSupervisionDocumentationUrlName;
                 destination.RiskSupervisionDocumentationUrl = source.RiskSupervisionDocumentationUrl;
