@@ -178,7 +178,7 @@ namespace Presentation.Web.Infrastructure.Configuration
             // by forwarding to the SAML sign-on endpoint with forceAuthn=true.
             app.MapGet("/LoginHandler.ashx", (HttpContext ctx) =>
             {
-                ctx.Response.Redirect("/Login.ashx?forceAuthn=true");
+                ctx.Response.Redirect("/Login.ashx?forceAuthn=false");
                 return Task.CompletedTask;
             }).AllowAnonymous();
 
