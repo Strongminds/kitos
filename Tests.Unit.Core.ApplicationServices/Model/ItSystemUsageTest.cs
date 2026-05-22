@@ -322,18 +322,19 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessmentDate_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        [InlineData(YesNoDontKnowIrrelevant.Yes)]
+        [InlineData(YesNoDontKnowIrrelevant.DontKnow)]
+        [InlineData(YesNoDontKnowIrrelevant.No)]
+        [InlineData(YesNoDontKnowIrrelevant.Undecided)]
+        [InlineData(YesNoDontKnowIrrelevant.Irrelevant)]
+        public void UpdateRiskAssessmentDate_Updates_If_RiskAssessment_Is_Yes(YesNoDontKnowIrrelevant riskAssessment)
         {
             _sut.UpdateRiskAssessment(riskAssessment);
             var date = A<DateTime>();
 
             _sut.UpdateRiskAssessmentDate(date);
 
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 Assert.Equal(date, _sut.riskAssesmentDate);
             }
@@ -344,18 +345,19 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessmentNotes_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        [InlineData(YesNoDontKnowIrrelevant.Yes)]
+        [InlineData(YesNoDontKnowIrrelevant.DontKnow)]
+        [InlineData(YesNoDontKnowIrrelevant.No)]
+        [InlineData(YesNoDontKnowIrrelevant.Undecided)]
+        [InlineData(YesNoDontKnowIrrelevant.Irrelevant)]
+        public void UpdateRiskAssessmentNotes_Updates_If_RiskAssessment_Is_Yes(YesNoDontKnowIrrelevant riskAssessment)
         {
             _sut.UpdateRiskAssessment(riskAssessment);
             var notes = A<string>();
 
             _sut.UpdateRiskAssessmentNotes(notes);
 
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 Assert.Equal(notes, _sut.noteRisks);
             }
@@ -376,18 +378,19 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessmentLevel_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        [InlineData(YesNoDontKnowIrrelevant.Yes)]
+        [InlineData(YesNoDontKnowIrrelevant.DontKnow)]
+        [InlineData(YesNoDontKnowIrrelevant.No)]
+        [InlineData(YesNoDontKnowIrrelevant.Undecided)]
+        [InlineData(YesNoDontKnowIrrelevant.Irrelevant)]
+        public void UpdateRiskAssessmentLevel_Updates_If_RiskAssessment_Is_Yes(YesNoDontKnowIrrelevant riskAssessment)
         {
             _sut.UpdateRiskAssessment(riskAssessment);
             var level = A<RiskLevel>();
 
             _sut.UpdateRiskAssessmentLevel(level);
 
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 Assert.Equal(level, _sut.preriskAssessment);
             }
@@ -398,18 +401,19 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessmentNote_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        [InlineData(YesNoDontKnowIrrelevant.Yes)]
+        [InlineData(YesNoDontKnowIrrelevant.DontKnow)]
+        [InlineData(YesNoDontKnowIrrelevant.No)]
+        [InlineData(YesNoDontKnowIrrelevant.Undecided)]
+        [InlineData(YesNoDontKnowIrrelevant.Irrelevant)]
+        public void UpdateRiskAssessmentNote_Updates_If_RiskAssessment_Is_Yes(YesNoDontKnowIrrelevant riskAssessment)
         {
             _sut.UpdateRiskAssessment(riskAssessment);
             var note = A<string>();
 
             _sut.UpdateRiskAssessmentNotes(note);
 
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 Assert.Equal(note, _sut.noteRisks);
             }
@@ -420,11 +424,12 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessmentDocumentation_Updates_If_RiskAssessment_Is_Yes(DataOptions riskAssessment)
+        [InlineData(YesNoDontKnowIrrelevant.Yes)]
+        [InlineData(YesNoDontKnowIrrelevant.DontKnow)]
+        [InlineData(YesNoDontKnowIrrelevant.No)]
+        [InlineData(YesNoDontKnowIrrelevant.Undecided)]
+        [InlineData(YesNoDontKnowIrrelevant.Irrelevant)]
+        public void UpdateRiskAssessmentDocumentation_Updates_If_RiskAssessment_Is_Yes(YesNoDontKnowIrrelevant riskAssessment)
         {
             _sut.UpdateRiskAssessment(riskAssessment);
             var url = A<string>();
@@ -433,7 +438,7 @@ namespace Tests.Unit.Core.Model
 
             _sut.UpdateRiskAssessmentDocumentation(url, name);
 
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 Assert.Equal(url, _sut.RiskSupervisionDocumentationUrl);
                 Assert.Equal(name, _sut.RiskSupervisionDocumentationUrlName);
@@ -447,11 +452,12 @@ namespace Tests.Unit.Core.Model
 
 
         [Theory]
-        [InlineData(DataOptions.DONTKNOW)]
-        [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.YES)]
-        [InlineData(DataOptions.UNDECIDED)]
-        public void UpdateRiskAssessment_Only_Clears_Related_Fields_If_Not_Yes(DataOptions riskAssessment)
+        [InlineData(YesNoDontKnowIrrelevant.No)]
+        [InlineData(YesNoDontKnowIrrelevant.DontKnow)]
+        [InlineData(YesNoDontKnowIrrelevant.Irrelevant)]
+        [InlineData(YesNoDontKnowIrrelevant.Undecided)]
+        [InlineData(YesNoDontKnowIrrelevant.Yes)]
+        public void UpdateRiskAssessment_Only_Clears_Related_Fields_If_Not_Yes(YesNoDontKnowIrrelevant riskAssessment)
         {
             var level = A<RiskLevel>();
             var riskAssessmentDate = A<DateTime>();
@@ -459,7 +465,7 @@ namespace Tests.Unit.Core.Model
             var urlName = A<string>();
             var notes = A<string>();
 
-            _sut.UpdateRiskAssessment(DataOptions.YES);
+            _sut.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
             _sut.UpdateRiskAssessmentLevel(level);
             _sut.UpdateRiskAssessmentDate(riskAssessmentDate);
             _sut.UpdateRiskAssessmentDocumentation(url, urlName);
@@ -468,7 +474,7 @@ namespace Tests.Unit.Core.Model
             _sut.UpdateRiskAssessment(riskAssessment);
 
             Assert.Equal(riskAssessment, _sut.riskAssessment);
-            if (riskAssessment == DataOptions.YES)
+            if (riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 Assert.Equal(level, _sut.preriskAssessment);
                 Assert.Equal(riskAssessmentDate, _sut.riskAssesmentDate);
@@ -488,9 +494,9 @@ namespace Tests.Unit.Core.Model
         }
 
         [Theory]
+        [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.DONTKNOW)]
         [InlineData(DataOptions.NO)]
-        [InlineData(DataOptions.YES)]
         [InlineData(DataOptions.UNDECIDED)]
         public void UpdateTechnicalPrecautionsInPlace_Only_Clears_Related_Fields_If_Not_Yes(DataOptions precautionsInPlace)
         {

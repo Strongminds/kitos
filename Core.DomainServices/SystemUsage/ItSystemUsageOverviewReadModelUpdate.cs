@@ -300,6 +300,8 @@ namespace Core.DomainServices.SystemUsage
 
             destination.RiskAssessmentDate = source.riskAssesmentDate;
             destination.PlannedRiskAssessmentDate = source.PlannedRiskAssessmentDate;
+            destination.RiskAssessmentResult = source.preriskAssessment;
+            destination.RiskAssessmentConducted = source.riskAssessment;
 
             static string CreateDataProcessingRegistrationKey(int Id) => $"I:{Id}";
 
@@ -335,7 +337,7 @@ namespace Core.DomainServices.SystemUsage
 
         private static void PatchRiskSupervisionDocumentation(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            if (source.riskAssessment == DataOptions.YES)
+            if (source.riskAssessment == YesNoDontKnowIrrelevant.Yes)
             {
                 destination.RiskSupervisionDocumentationName = source.RiskSupervisionDocumentationUrlName;
                 destination.RiskSupervisionDocumentationUrl = source.RiskSupervisionDocumentationUrl;
