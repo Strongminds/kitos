@@ -471,6 +471,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 YearMonthIntervalOption.Half_yearly => OversightIntervalChoice.BiYearly,
                 YearMonthIntervalOption.Yearly => OversightIntervalChoice.Yearly,
                 YearMonthIntervalOption.Every_second_year => OversightIntervalChoice.EveryOtherYear,
+                YearMonthIntervalOption.Every_third_year => OversightIntervalChoice.EveryThirdYear,
                 YearMonthIntervalOption.Other => OversightIntervalChoice.Other,
                 YearMonthIntervalOption.Undecided => OversightIntervalChoice.Undecided,
                 null => null,
