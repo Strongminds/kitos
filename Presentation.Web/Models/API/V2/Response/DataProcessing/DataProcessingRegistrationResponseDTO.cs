@@ -6,6 +6,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.SharedProperties;
+using Presentation.Web.Models.API.V2.Types.DataProcessing;
 
 namespace Presentation.Web.Models.API.V2.Response.DataProcessing
 {
@@ -31,7 +32,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Associated it-system-usage entities
         [Required]
-        public IEnumerable<IdentityNamePairResponseDTO> SystemUsages { get; set; }
+        public IEnumerable<ShallowItSystemUsageResponseDTO> SystemUsages { get; set; }
         [Required]
         public DataProcessingRegistrationOversightResponseDTO Oversight { get; set; }
         /// <summary>
