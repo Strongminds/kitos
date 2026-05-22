@@ -5,11 +5,17 @@
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     /// <inheritdoc />
-    public partial class AddUsageReadModel_RiskAssessmentResult : Migration
+    public partial class UpdateUsageReadModel_RiskAssessmentFields : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "RiskAssessmentConducted",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "int",
+                nullable: true);
+
             migrationBuilder.AddColumn<int>(
                 name: "RiskAssessmentResult",
                 table: "ItSystemUsageOverviewReadModels",
@@ -20,6 +26,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "RiskAssessmentConducted",
+                table: "ItSystemUsageOverviewReadModels");
+
             migrationBuilder.DropColumn(
                 name: "RiskAssessmentResult",
                 table: "ItSystemUsageOverviewReadModels");

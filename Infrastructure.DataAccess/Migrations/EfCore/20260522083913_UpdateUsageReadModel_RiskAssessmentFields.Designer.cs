@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260521051133_UpdateItSystemUsage_RiskAssessmentConducted_AddIrrelevantOption")]
-    partial class UpdateItSystemUsage_RiskAssessmentConducted_AddIrrelevantOption
+    [Migration("20260522083913_UpdateUsageReadModel_RiskAssessmentFields")]
+    partial class UpdateUsageReadModel_RiskAssessmentFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
