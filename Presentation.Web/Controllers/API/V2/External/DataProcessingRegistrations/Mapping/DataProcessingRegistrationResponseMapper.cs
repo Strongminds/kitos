@@ -109,6 +109,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 MainContract = dataProcessingRegistration.MainContract?.MapIdentityNamePairDTO(),
                 AssociatedContracts = dataProcessingRegistration.AssociatedContracts?.Select(x => x.MapIdentityNamePairDTO()).ToList(),
                 Valid = dataProcessingRegistration.IsActiveAccordingToMainContract,
+                EnforceInvalidity = dataProcessingRegistration.EnforceInvalidity,
                 ResponsibleOrganizationUnit = dataProcessingRegistration.ResponsibleOrganizationUnit?.MapIdentityNamePairDTO()
             };
         }
