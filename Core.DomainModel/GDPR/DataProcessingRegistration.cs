@@ -406,13 +406,13 @@ namespace Core.DomainModel.GDPR
             return AssociatedContracts.FirstOrDefault(c => c.Id == id);
         }
 
-        public bool EnforceInvalidity { get; set; }
+        public bool? EnforceInvalidity { get; set; }
 
         public DataProcessingRegistrationValidationResult CheckDprValidity()
         {
             var errors = new List<DataProcessingRegistrationValidationError>();
 
-            if (EnforceInvalidity) errors.Add(DataProcessingRegistrationValidationError.EnforcedInvalidity);
+            if (EnforceInvalidity == true) errors.Add(DataProcessingRegistrationValidationError.EnforcedInvalidity);
 
             var hasContractValidityError = CheckContractValidity();
 

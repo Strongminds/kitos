@@ -544,6 +544,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertNullableSubDataProcessorCollection(input.SubDataProcessors, output.SubDataProcessors);
             Assert.Equal(input.MainContractUuid, AssertPropertyContainsDataChange(output.MainContractUuid));
             Assert.Equal(input.ResponsibleOrganizationUnitUuid, AssertPropertyContainsDataChange(output.ResponsibleUnitUuid));
+            Assert.Equal(input.EnforceInvalidity, AssertPropertyContainsDataChange(output.EnforceInvalidity));
         }
 
         private static void AssertNullableSubDataProcessorCollection(IEnumerable<DataProcessorRegistrationSubDataProcessorWriteRequestDTO> inputSubDataProcessors, OptionalValueChange<Maybe<IEnumerable<SubDataProcessorParameter>>> outputSubDataProcessors)

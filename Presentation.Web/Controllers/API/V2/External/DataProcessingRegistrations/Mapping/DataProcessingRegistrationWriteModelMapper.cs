@@ -155,6 +155,10 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     ? dto.SubDataProcessors.FromNullable().Select<IEnumerable<SubDataProcessorParameter>>(sdps => sdps.Select(ToSubDataProcessorParameter).ToList()).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<SubDataProcessorParameter>>>.None,
 
+                EnforceInvalidity = rule.MustUpdate(x => x.General.EnforceInvalidity)
+                    ? dto.EnforceInvalidity.AsChangedValue()
+                    : OptionalValueChange<bool?>.None,
+
                 MainContractUuid = rule.MustUpdate(x => x.General.MainContractUuid)
                     ? dto.MainContractUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,

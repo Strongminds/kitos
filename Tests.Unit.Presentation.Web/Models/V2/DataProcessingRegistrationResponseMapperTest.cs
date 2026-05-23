@@ -57,6 +57,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var dpr = new DataProcessingRegistration();
+            dpr.EnforceInvalidity = A<bool>();
 
             //Act
             var dto = _sut.MapDataProcessingRegistrationDTO(dpr);
@@ -88,6 +89,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Null(general.MainContract);
             Assert.Empty(general.AssociatedContracts);
             Assert.True(general.Valid);
+            Assert.Equal(dpr.EnforceInvalidity, dto.General.EnforceInvalidity);
             Assert.Null(general.ResponsibleOrganizationUnit);
 
             var oversight = dto.Oversight;
