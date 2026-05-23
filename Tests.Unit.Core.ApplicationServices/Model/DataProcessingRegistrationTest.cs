@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
@@ -80,6 +82,73 @@ namespace Tests.Unit.Core.Model
             Assert.Null(dpr.MainContract);
         }
 
+        [Fact]
+        public void CheckDprValidity_Returns_Valid_When_Not_Enforced_And_MainContract_Is_Active()
+        {
+            var dpr = CreateDprWithActiveMainContract();
+
+            var result = dpr.CheckDprValidity();
+
+            AssertValidResult(result);
+        }
+
+        [Fact]
+        public void CheckDprValidity_Returns_EnforcedInvalidity_When_EnforceInvalidity_Is_True_And_MainContract_Is_Active()
+        {
+            var dpr = CreateDprWithActiveMainContract();
+            dpr.EnforceInvalidity = true;
+
+            var result = dpr.CheckDprValidity();
+
+            AssertInvalidResult(result, DataProcessingRegistrationValidationError.EnforcedInvalidity);
+        }
+
+        [Fact]
+        public void CheckDprValidity_Returns_MainContractNotActive_When_MainContract_Is_Null()
+        {
+            var dpr = CreateDprWithoutMainContract();
+
+            var result = dpr.CheckDprValidity();
+
+            AssertInvalidResult(result, DataProcessingRegistrationValidationError.MainContractNotActive);
+        }
+
+        [Fact]
+        public void CheckDprValidity_Returns_MainContractNotActive_When_MainContract_Is_Inactive()
+        {
+            var dpr = CreateDprWithInactiveMainContract();
+
+            var result = dpr.CheckDprValidity();
+
+            AssertInvalidResult(result, DataProcessingRegistrationValidationError.MainContractNotActive);
+        }
+
+        [Fact]
+        public void CheckDprValidity_Returns_Both_Errors_When_EnforceInvalidity_Is_True_And_MainContract_Is_Null()
+        {
+            var dpr = CreateDprWithoutMainContract();
+            dpr.EnforceInvalidity = true;
+
+            var result = dpr.CheckDprValidity();
+
+            AssertInvalidResult(result,
+                DataProcessingRegistrationValidationError.EnforcedInvalidity,
+                DataProcessingRegistrationValidationError.MainContractNotActive);
+        }
+
+        [Fact]
+        public void CheckDprValidity_Returns_Both_Errors_When_EnforceInvalidity_Is_True_And_MainContract_Is_Inactive()
+        {
+            var dpr = CreateDprWithInactiveMainContract();
+            dpr.EnforceInvalidity = true;
+
+            var result = dpr.CheckDprValidity();
+
+            AssertInvalidResult(result,
+                DataProcessingRegistrationValidationError.EnforcedInvalidity,
+                DataProcessingRegistrationValidationError.MainContractNotActive);
+        }
+
         private static DataProcessingRegistration CreateDprWithMainContract(int contractId)
         {
             return new DataProcessingRegistration
@@ -89,6 +158,45 @@ namespace Tests.Unit.Core.Model
                     Id = contractId
                 }
             };
+        }
+
+        private static DataProcessingRegistration CreateDprWithActiveMainContract()
+        {
+            return new DataProcessingRegistration
+            {
+                MainContract = new ItContract(),
+                EnforceInvalidity = false
+            };
+        }
+
+        private static DataProcessingRegistration CreateDprWithInactiveMainContract()
+        {
+            return new DataProcessingRegistration
+            {
+                MainContract = new ItContract { ExpirationDate = DateTime.Now.AddDays(-10) },
+                EnforceInvalidity = false
+            };
+        }
+
+        private static DataProcessingRegistration CreateDprWithoutMainContract()
+        {
+            return new DataProcessingRegistration
+            {
+                MainContract = null,
+                EnforceInvalidity = false
+            };
+        }
+
+        private static void AssertValidResult(DataProcessingRegistrationValidationResult result)
+        {
+            Assert.True(result.Result);
+            Assert.Empty(result.ValidationErrors);
+        }
+
+        private static void AssertInvalidResult(DataProcessingRegistrationValidationResult result, params DataProcessingRegistrationValidationError[] expectedErrors)
+        {
+            Assert.False(result.Result);
+            Assert.Equal(expectedErrors.OrderBy(e => e), result.ValidationErrors.OrderBy(e => e));
         }
     }
 }

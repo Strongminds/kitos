@@ -406,9 +406,13 @@ namespace Core.DomainModel.GDPR
             return AssociatedContracts.FirstOrDefault(c => c.Id == id);
         }
 
+        public bool EnforceInvalidity { get; set; }
+
         public DataProcessingRegistrationValidationResult CheckDprValidity()
         {
             var errors = new List<DataProcessingRegistrationValidationError>();
+
+            if (EnforceInvalidity) errors.Add(DataProcessingRegistrationValidationError.EnforcedInvalidity);
 
             var hasContractValidityError = CheckContractValidity();
 
@@ -422,10 +426,13 @@ namespace Core.DomainModel.GDPR
 
         private Maybe<DataProcessingRegistrationValidationError> CheckContractValidity()
         {
-            //Main contract is considered valid if it's null or if "IsActive" == true
-            return MainContract == null || MainContract.IsActive
+            return MainContractIsValid()
                 ? Maybe<DataProcessingRegistrationValidationError>.None
                 : DataProcessingRegistrationValidationError.MainContractNotActive;
+        }
+        private bool MainContractIsValid()
+        {
+            return MainContract != null && MainContract.IsActive;
         }
         
         public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
