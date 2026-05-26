@@ -175,7 +175,7 @@ namespace Presentation.Web.Infrastructure.Configuration
         private static void MapSSOEndpoints(WebApplication app)
         {
             // Legacy .ashx handler routes: LoginHandler.ashx initiates external (SAML SSO) login
-            // by forwarding to the SAML sign-on endpoint with forceAuthn=true.
+            // by forwarding to the SAML sign-on endpoint with forceAuthn=false.
             app.MapGet("/LoginHandler.ashx", (HttpContext ctx) =>
             {
                 ctx.Response.Redirect("/Login.ashx?forceAuthn=false");
