@@ -424,6 +424,8 @@ namespace Core.DomainModel.GDPR
             return new DataProcessingRegistrationValidationResult(errors);
         }
 
+        public bool IsValid => CheckDprValidity().Result;
+
         private Maybe<DataProcessingRegistrationValidationError> CheckContractValidity()
         {
             return MainContractIsValid()

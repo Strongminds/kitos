@@ -13,6 +13,40 @@ namespace Tests.Unit.Core.Model
     public class DataProcessingRegistrationTest : WithAutoFixture
     {
         [Fact]
+        public void IsValid_Returns_False_If_EnforceInvalidity()
+        {
+            var sut = new DataProcessingRegistration();
+            sut.EnforceInvalidity = true;
+
+            var result = sut.IsValid;
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void IsValid_Returns_False_If_MainContract_Is_Null()
+        {
+            var sut = new DataProcessingRegistration();
+            sut.EnforceInvalidity = false;
+            sut.MainContract = null;
+            var result = sut.IsValid;
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void IsValid_Returns_False_If_MainContract_Is_Invalid()
+        {
+            var sut = new DataProcessingRegistration();
+            sut.EnforceInvalidity = false;
+            sut.MainContract = new ItContract
+            {
+                ExpirationDate = DateTime.Now.AddDays(-1)
+            };
+            var result = sut.IsValid;
+            Assert.False(result);
+        }
+
+        [Fact]
         public void Can_AssignMainContract()
         {
             //Arrange
