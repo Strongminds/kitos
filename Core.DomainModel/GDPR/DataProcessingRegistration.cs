@@ -434,7 +434,7 @@ namespace Core.DomainModel.GDPR
         }
         private bool MainContractIsValid()
         {
-            return MainContract != null && MainContract.IsActive;
+            return MainContract == null && MainContract.IsActive;
         }
         
         public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
