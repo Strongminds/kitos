@@ -24,7 +24,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<DataOptions?> UserSupervision { get; set; } = OptionalValueChange<DataOptions?>.None;
         public OptionalValueChange<DateTime?> UserSupervisionDate { get; set; } = OptionalValueChange<DateTime?>.None;
         public OptionalValueChange<Maybe<NamedLink>> UserSupervisionDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
-        public OptionalValueChange<DataOptions?> RiskAssessmentConducted { get; set; } = OptionalValueChange<DataOptions?>.None;
+        public OptionalValueChange<YesNoDontKnowIrrelevant?> RiskAssessmentConducted { get; set; } = OptionalValueChange<YesNoDontKnowIrrelevant?>.None;
         public OptionalValueChange<DateTime?> RiskAssessmentConductedDate { get; set; } = OptionalValueChange<DateTime?>.None;
         public OptionalValueChange<RiskLevel?> RiskAssessmentResult { get; set; } = OptionalValueChange<RiskLevel?>.None;
         public OptionalValueChange<Maybe<NamedLink>> RiskAssessmentDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
