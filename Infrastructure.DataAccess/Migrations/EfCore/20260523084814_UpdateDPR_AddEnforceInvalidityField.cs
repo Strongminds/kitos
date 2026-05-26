@@ -13,7 +13,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<bool>(
                 name: "EnforceInvalidity",
                 table: "DataProcessingRegistrations",
-                type: "bit",
                 nullable: true);
         }
 
