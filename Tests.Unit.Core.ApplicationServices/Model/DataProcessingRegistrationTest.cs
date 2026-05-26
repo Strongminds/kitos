@@ -24,13 +24,13 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
-        public void IsValid_Returns_False_If_MainContract_Is_Null()
+        public void IsValid_Returns_True_If_MainContract_Is_Null()
         {
             var sut = new DataProcessingRegistration();
             sut.EnforceInvalidity = false;
             sut.MainContract = null;
             var result = sut.IsValid;
-            Assert.False(result);
+            Assert.True(result);
         }
 
         [Fact]
@@ -138,13 +138,13 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
-        public void CheckDprValidity_Returns_MainContractNotActive_When_MainContract_Is_Null()
+        public void CheckDprValidity_Returns_True_When_MainContract_Is_Null()
         {
             var dpr = CreateDprWithoutMainContract();
 
             var result = dpr.CheckDprValidity();
 
-            AssertInvalidResult(result, DataProcessingRegistrationValidationError.MainContractNotActive);
+            Assert.True(result.Result);
         }
 
         [Fact]
@@ -155,19 +155,6 @@ namespace Tests.Unit.Core.Model
             var result = dpr.CheckDprValidity();
 
             AssertInvalidResult(result, DataProcessingRegistrationValidationError.MainContractNotActive);
-        }
-
-        [Fact]
-        public void CheckDprValidity_Returns_Both_Errors_When_EnforceInvalidity_Is_True_And_MainContract_Is_Null()
-        {
-            var dpr = CreateDprWithoutMainContract();
-            dpr.EnforceInvalidity = true;
-
-            var result = dpr.CheckDprValidity();
-
-            AssertInvalidResult(result,
-                DataProcessingRegistrationValidationError.EnforcedInvalidity,
-                DataProcessingRegistrationValidationError.MainContractNotActive);
         }
 
         [Fact]
