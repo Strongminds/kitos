@@ -1865,7 +1865,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? userSupervision = DataOptions.YES;
             var supervisionDate = A<DateTime?>();
             var supervisionDoc = A<NamedLink>();
-            DataOptions? riskAssessmentConducted = DataOptions.YES;
+            YesNoDontKnowIrrelevant? riskAssessmentConducted = YesNoDontKnowIrrelevant.Yes;
             var riskAssessmentDate = A<DateTime?>();
             var riskAssessmentDoc = A<NamedLink>();
             var riskAssessmentNotes = A<string>();
@@ -3458,7 +3458,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             DataOptions? userSupervision = DataOptions.YES;
             DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
-            DataOptions? riskAssessment = DataOptions.YES;
+            YesNoDontKnowIrrelevant? riskAssessment = YesNoDontKnowIrrelevant.Yes;
             DataOptions? dpiaConcluded = DataOptions.YES;
             DataOptions? retentionPeriodDefined = DataOptions.YES;
             return new SystemUsageUpdateParameters
@@ -3544,7 +3544,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     UserSupervision = new ChangedValue<DataOptions?>(null),
                     UserSupervisionDate = new ChangedValue<DateTime?>(null),
                     UserSupervisionDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
-                    RiskAssessmentConducted = new ChangedValue<DataOptions?>(null),
+                    RiskAssessmentConducted = new ChangedValue<YesNoDontKnowIrrelevant?>(null),
                     RiskAssessmentConductedDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     RiskAssessmentNotes = new ChangedValue<string>(null),

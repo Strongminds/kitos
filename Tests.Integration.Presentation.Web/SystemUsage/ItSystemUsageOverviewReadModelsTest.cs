@@ -96,7 +96,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             //Arrange
             var organizationId = TestEnvironment.DefaultOrganizationId;
             var organizationUuid = DatabaseAccess.GetEntityUuid<Organization>(organizationId);
-            var organizationName = A<string>();
+            var organizationName = TestEnvironment.DefaultOrganizationName;
 
             var systemName = A<string>();
             var systemPreviousName = A<string>();
@@ -113,16 +113,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var systemUsageExpirationDate = DateTime.UtcNow.AddDays(A<int>());
             var archiveDuty = A<ArchiveDutyChoice>();
 
-            var riskAssessment = A<YesNoDontKnowChoice>();
-            var riskAssessmentDate = A<DateTime?>();
-            var riskSupervisionDocumentationUrl = A<string>();
-            var riskSupervisionDocumentationUrlName = A<string>();
-            if (riskAssessment != YesNoDontKnowChoice.Yes)
-            {
-                riskAssessmentDate = null;
-                riskSupervisionDocumentationUrl = null;
-                riskSupervisionDocumentationUrlName = null;
-            }
+            var riskAssessment = A<YesNoDontKnowIrrelevantChoice>();
+            var hasRiskAssessment = riskAssessment == YesNoDontKnowIrrelevantChoice.Yes;
+            var riskAssessmentDate = hasRiskAssessment ? A<DateTime?>(): null;
+            var riskAssessmentResult = hasRiskAssessment ? A<RiskLevel?>() : null;
+            var riskSupervisionDocumentationUrl = hasRiskAssessment ? A<string>(): null;
+            var riskSupervisionDocumentationUrlName = hasRiskAssessment ? A<string>(): null;
+
             var linkToDirectoryUrl = A<string>();
             var linkToDirectoryUrlName = A<string>();
             var generalPurpose = A<string>();
@@ -330,18 +327,21 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(userCount, readModel.UserCount);
             Assert.Equal(criticalityLevel.Uuid, readModel.SystemUsageCriticalityLevelUuid);
             Assert.Equal(criticalityLevel.Name, readModel.SystemUsageCriticalityLevelName);
+            Assert.Equal(riskAssessment.FromChoice(), readModel.RiskAssessmentConducted);
 
-            if (riskAssessment == YesNoDontKnowChoice.Yes)
+            if (riskAssessment == YesNoDontKnowIrrelevantChoice.Yes)
             {
                 Assert.Equal(riskSupervisionDocumentationUrlName, readModel.RiskSupervisionDocumentationName);
                 Assert.Equal(riskSupervisionDocumentationUrl, readModel.RiskSupervisionDocumentationUrl);
                 Assert.Equal(riskAssessmentDate, readModel.RiskAssessmentDate);
+                Assert.Equal(riskAssessmentResult, readModel.RiskAssessmentResult);
             }
             else
             {
                 Assert.Null(readModel.RiskSupervisionDocumentationName);
                 Assert.Null(readModel.RiskSupervisionDocumentationUrl);
                 Assert.Null(readModel.RiskAssessmentDate);
+                Assert.Null(readModel.RiskAssessmentResult);
             }
 
             // Sensitive Data Level
