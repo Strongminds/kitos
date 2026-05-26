@@ -362,7 +362,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             usage.UpdateDPIADate(A<DateTime>());
             usage.UpdateUserSupervisionDocumentation(A<string>(), A<string>());
             usage.UpdateTechnicalPrecautionsDocumentation(A<string>(), A<string>());
-            usage.UpdateRiskAssessment(DataOptions.YES);
+            usage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
             usage.UpdateRiskAssessmentDate(A<DateTime>());
             usage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
             usage.UpdateRiskAssessmentLevel(A<RiskLevel>());
