@@ -95,7 +95,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itSystemUsage.LastWebAccessibilityCheck, dto.General.LastWebAccessibilityCheck);
             Assert.Equal(itSystemUsage.WebAccessibilityNotes, dto.General.WebAccessibilityNotes);
             Assert.Equal(itSystemUsage.IsSociallyCritical?.ToYesNoDontKnowChoice(), dto.General.IsSociallyCritical);
-            AssertYesNoExtended(dto.General.IsBusinessCritical, itSystemUsage.isBusinessCritical);
+            AssertYesNoDontKnow(dto.General.IsBusinessCritical, itSystemUsage.isBusinessCritical);
             Assert.Equal(itSystemUsage.CriticalityFieldsLastChanged, dto.General.CriticalityFieldsLastChanged);
         }
 
@@ -266,23 +266,23 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             Assert.Equal(dto.GDPR.ProcessingPurpose, itSystemUsage.ProcessingPurpose);
-            AssertYesNoExtended(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
+            AssertYesNoDontKnow(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             AssertSimpleLink(dto.GDPR.DPIADocumentation, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
             AssertHostedAt(dto.GDPR.HostedAt, itSystemUsage.HostedAt);
             AssertSimpleLink(dto.GDPR.DirectoryDocumentation, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);
             Assert.Equal(dto.GDPR.DataSensitivityLevels.Select(MapDataSensitivity).OrderBy(x => x).ToList(), itSystemUsage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).OrderBy(x => x).ToList());
-            AssertYesNoExtended(dto.GDPR.TechnicalPrecautionsInPlace, itSystemUsage.precautions);
+            AssertYesNoDontKnow(dto.GDPR.TechnicalPrecautionsInPlace, itSystemUsage.precautions);
             AssertAppliedPrecautions(dto.GDPR.TechnicalPrecautionsApplied, itSystemUsage);
             AssertSimpleLink(dto.GDPR.TechnicalPrecautionsDocumentation, itSystemUsage.TechnicalSupervisionDocumentationUrlName, itSystemUsage.TechnicalSupervisionDocumentationUrl);
-            AssertYesNoExtended(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
+            AssertYesNoDontKnow(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             Assert.Equal(dto.GDPR.DPIADate, itSystemUsage.DPIADateFor);
-            AssertYesNoExtended(dto.GDPR.RetentionPeriodDefined, itSystemUsage.answeringDataDPIA);
+            AssertYesNoDontKnow(dto.GDPR.RetentionPeriodDefined, itSystemUsage.answeringDataDPIA);
             Assert.Equal(dto.GDPR.DataRetentionEvaluationFrequencyInMonths, itSystemUsage.numberDPIA);
             Assert.Equal(dto.GDPR.NextDataRetentionEvaluationDate, itSystemUsage.DPIAdeleteDate);
-            AssertYesNoExtended(dto.GDPR.UserSupervision, itSystemUsage.UserSupervision);
+            AssertYesNoDontKnow(dto.GDPR.UserSupervision, itSystemUsage.UserSupervision);
             Assert.Equal(dto.GDPR.UserSupervisionDate, itSystemUsage.UserSupervisionDate);
             AssertSimpleLink(dto.GDPR.UserSupervisionDocumentation, itSystemUsage.UserSupervisionDocumentationUrlName, itSystemUsage.UserSupervisionDocumentationUrl);
-            AssertYesNoExtended(dto.GDPR.RiskAssessmentConducted, itSystemUsage.riskAssessment);
+            AssertYesNoDontKnowIrrelevant(dto.GDPR.RiskAssessmentConducted, itSystemUsage.riskAssessment);
             Assert.Equal(dto.GDPR.RiskAssessmentConductedDate, itSystemUsage.riskAssesmentDate);
             AssertSimpleLink(dto.GDPR.RiskAssessmentDocumentation, itSystemUsage.RiskSupervisionDocumentationUrlName, itSystemUsage.RiskSupervisionDocumentationUrl);
             Assert.Equal(dto.GDPR.RiskAssessmentNotes, itSystemUsage.noteRisks);
@@ -464,7 +464,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.UpdateRetentionPeriodDefined(DataOptions.YES);
             itSystemUsage.UpdateNextDataRetentionEvaluationDate(A<DateTime>());
             itSystemUsage.UpdateDataRetentionEvaluationFrequencyInMonths(A<int>());
-            itSystemUsage.UpdateRiskAssessment(DataOptions.YES);
+            itSystemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
             itSystemUsage.UpdateRiskAssessmentDate(A<DateTime>()); 
             itSystemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             itSystemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
@@ -664,7 +664,22 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private static void AssertYesNoExtended(YesNoDontKnowChoice? actual, DataOptions? expectedFromSource)
+        private static void AssertYesNoDontKnowIrrelevant(YesNoDontKnowIrrelevantChoice? actual, YesNoDontKnowIrrelevant? expectedFromSource)
+        {
+            YesNoDontKnowIrrelevantChoice? expected = expectedFromSource switch
+            {
+                YesNoDontKnowIrrelevant.No => YesNoDontKnowIrrelevantChoice.No,
+                YesNoDontKnowIrrelevant.Yes => YesNoDontKnowIrrelevantChoice.Yes,
+                YesNoDontKnowIrrelevant.DontKnow => YesNoDontKnowIrrelevantChoice.DontKnow,
+                YesNoDontKnowIrrelevant.Irrelevant => YesNoDontKnowIrrelevantChoice.Irrelevant,
+                YesNoDontKnowIrrelevant.Undecided => YesNoDontKnowIrrelevantChoice.Undecided,
+                null => null,
+                _ => throw new ArgumentOutOfRangeException(nameof(expectedFromSource), expectedFromSource, null)
+            };
+            Assert.Equal(expected, actual);
+        }
+
+        private static void AssertYesNoDontKnow(YesNoDontKnowChoice? actual, DataOptions? expectedFromSource)
         {
             YesNoDontKnowChoice? expected = expectedFromSource switch
             {

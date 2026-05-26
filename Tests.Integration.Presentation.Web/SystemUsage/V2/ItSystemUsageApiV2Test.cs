@@ -2295,13 +2295,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var nonYesValues = new List<YesNoDontKnowChoice?>
                 { YesNoDontKnowChoice.No, YesNoDontKnowChoice.Undecided, YesNoDontKnowChoice.DontKnow, null };
 
+            var nonYesValuesWithIrrelevant = new List<YesNoDontKnowIrrelevantChoice?>
+                { YesNoDontKnowIrrelevantChoice.No, YesNoDontKnowIrrelevantChoice.Undecided, YesNoDontKnowIrrelevantChoice.DontKnow, YesNoDontKnowIrrelevantChoice.Irrelevant , null };
+
+
             return new List<object[]>
             {
                 new object[]
                 {
                     new GDPRWriteRequestDTO
                     {
-                        RiskAssessmentConducted = nonYesValues.RandomItem(),
+                        RiskAssessmentConducted = nonYesValuesWithIrrelevant.RandomItem(),
                         RiskAssessmentNotes     = fixture.Create<string>()
                     }
                 },
@@ -2361,14 +2365,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var token = await GetGlobalToken();
             var patchBefore = new GDPRWriteRequestDTO
             {
-                RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
+                RiskAssessmentConducted = YesNoDontKnowIrrelevantChoice.Yes,
                 RiskAssessmentConductedDate = A<DateTime>(),
                 RiskAssessmentNotes = A<string>(),
                 RiskAssessmentDocumentation = A<SimpleLinkDTO>(),
                 RiskAssessmentResult = A<RiskLevelChoice>()
             };
             await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, patchBefore).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
-            var resetRequest = new GDPRWriteRequestDTO { RiskAssessmentConducted = YesNoDontKnowChoice.No };
+            var resetRequest = new GDPRWriteRequestDTO { RiskAssessmentConducted = YesNoDontKnowIrrelevantChoice.No };
 
             var response = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, resetRequest);
 
