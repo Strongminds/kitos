@@ -88,7 +88,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Empty(general.SubDataProcessors);
             Assert.Null(general.MainContract);
             Assert.Empty(general.AssociatedContracts);
-            Assert.True(general.Valid);
+            Assert.False(general.Valid);
             Assert.Equal(dpr.EnforceInvalidity, dto.General.EnforceInvalidity);
             Assert.Null(general.ResponsibleOrganizationUnit);
 
