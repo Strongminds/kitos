@@ -94,7 +94,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
 
         private static DataProcessingRegistrationGeneralDataResponseDTO MapGeneral(DataProcessingRegistration dataProcessingRegistration)
         {
-            var x = new DataProcessingRegistrationGeneralDataResponseDTO
+            return new DataProcessingRegistrationGeneralDataResponseDTO
             {
                 DataResponsible = dataProcessingRegistration.DataResponsible?.MapIdentityNamePairDTO(),
                 DataResponsibleRemark = dataProcessingRegistration.DataResponsibleRemark,
@@ -113,7 +113,6 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 EnforceInvalidity = dataProcessingRegistration.EnforceInvalidity,
                 ResponsibleOrganizationUnit = dataProcessingRegistration.ResponsibleOrganizationUnit?.MapIdentityNamePairDTO()
             };
-            return x;
         }
 
         private static DataProcessorRegistrationSubDataProcessorResponseDTO ToSubDataProcessorDTO(SubDataProcessor organization)

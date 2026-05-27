@@ -40,13 +40,11 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Which insecure third countries are subject to data transfer as part of the data processing
         /// </summary>
-        [Required]
-        public IEnumerable<IdentityNamePairResponseDTO> InsecureCountriesSubjectToDataTransfer { get; set; }
+        public required IEnumerable<IdentityNamePairResponseDTO> InsecureCountriesSubjectToDataTransfer { get; set; }
         /// <summary>
         /// UUID's of the organization entities selected as data processors
         /// </summary>
-        [Required]
-        public IEnumerable<ShallowOrganizationResponseDTO> DataProcessors { get; set; }
+        public required IEnumerable<ShallowOrganizationResponseDTO> DataProcessors { get; set; }
         /// <summary>
         /// Determines if the data processing involves sub data processors
         /// </summary>
@@ -54,8 +52,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// UUID's of the organization entities selected as sub data processors
         /// </summary>
-        [Required]
-        public IEnumerable<DataProcessorRegistrationSubDataProcessorResponseDTO> SubDataProcessors { get; set; }
+        public required IEnumerable<DataProcessorRegistrationSubDataProcessorResponseDTO> SubDataProcessors { get; set; }
 
         /// <summary>
         /// Whether this registration should be considered invalid regardless of other properties.
@@ -65,8 +62,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// Determines if the entity is considered valid. Validity is determined by
         /// - the MainContract Validity.
         /// </summary>
-        [Required]
-        public bool Valid { get; set; }
+        public required bool Valid { get; set; }
         /// <summary>
         /// Defines the master contract for this data processing registration (many contracts can point to a data processing registration but only one can be the master contract)
         /// </summary>
