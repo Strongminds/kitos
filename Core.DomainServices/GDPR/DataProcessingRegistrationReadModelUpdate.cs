@@ -122,13 +122,14 @@ namespace Core.DomainServices.GDPR
 
         private static void PatchSystems(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
-            destination.SystemNamesAsCsv = string.Join(", ", source.SystemUsages.Select(usage => usage.MapItSystemName()));
-            destination.SystemUuidsAsCsv = string.Join(", ", source.SystemUsages.Select(x => x.ItSystem.Uuid));
+            destination.SystemNamesAsCsv = source.SystemUsages.Select(usage => usage.MapItSystemName()).ToStringWithDelimiter();
+            destination.SystemUuidsAsCsv = source.SystemUsages.Select(x => x.ItSystem.Uuid.ToString()).ToStringWithDelimiter();
+            destination.SystemValiditiesAsCsv = source.SystemUsages.Select(x => x.CheckSystemValidity().Result == true ? "Aktiv" : "Inaktiv").ToStringWithDelimiter();
         }
 
         private static void PatchContracts(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
-            destination.ContractNamesAsCsv = string.Join(", ", source.AssociatedContracts.Select(x => (x.Name)));
+            destination.ContractNamesAsCsv = source.AssociatedContracts.Select(x => (x.Name)).ToStringWithDelimiter();
         }
 
         private static void PatchActiveState(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
