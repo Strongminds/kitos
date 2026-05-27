@@ -110,59 +110,59 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             var rule = CreateChangeRule<DataProcessingRegistrationWriteRequestDTO>(enforceFallbackIfNotProvided);
             return new UpdatedDataProcessingRegistrationGeneralDataParameters
             {
-                DataResponsibleUuid = rule.MustUpdate(x => x.General.DataResponsibleUuid)
+                DataResponsibleUuid = rule.MustUpdate(x => x.General!.DataResponsibleUuid)
                     ? dto.DataResponsibleUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                DataResponsibleRemark = rule.MustUpdate(x => x.General.DataResponsibleRemark)
-                    ? dto.DataResponsibleRemark.AsChangedValue()
+                DataResponsibleRemark = rule.MustUpdate(x => x.General!.DataResponsibleRemark)
+                    ? dto.DataResponsibleRemark!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                IsAgreementConcluded = rule.MustUpdate(x => x.General.IsAgreementConcluded)
+                IsAgreementConcluded = rule.MustUpdate(x => x.General!.IsAgreementConcluded)
                     ? (dto.IsAgreementConcluded?.ToYesNoIrrelevantOption()).AsChangedValue()
                     : OptionalValueChange<YesNoIrrelevantOption?>.None,
 
-                IsAgreementConcludedRemark = rule.MustUpdate(x => x.General.IsAgreementConcludedRemark)
-                    ? dto.IsAgreementConcludedRemark.AsChangedValue()
+                IsAgreementConcludedRemark = rule.MustUpdate(x => x.General!.IsAgreementConcludedRemark)
+                    ? dto.IsAgreementConcludedRemark!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                AgreementConcludedAt = rule.MustUpdate(x => x.General.AgreementConcludedAt)
+                AgreementConcludedAt = rule.MustUpdate(x => x.General!.AgreementConcludedAt)
                     ? dto.AgreementConcludedAt.AsChangedValue()
                     : OptionalValueChange<DateTime?>.None,
 
-                BasisForTransferUuid = rule.MustUpdate(x => x.General.BasisForTransferUuid)
+                BasisForTransferUuid = rule.MustUpdate(x => x.General!.BasisForTransferUuid)
                     ? dto.BasisForTransferUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                TransferToInsecureThirdCountries = rule.MustUpdate(x => x.General.TransferToInsecureThirdCountries)
+                TransferToInsecureThirdCountries = rule.MustUpdate(x => x.General!.TransferToInsecureThirdCountries)
                     ? (dto.TransferToInsecureThirdCountries?.ToYesNoUndecidedOption()).AsChangedValue()
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
                 InsecureCountriesSubjectToDataTransferUuids =
-                    rule.MustUpdate(x => x.General.InsecureCountriesSubjectToDataTransferUuids)
+                    rule.MustUpdate(x => x.General!.InsecureCountriesSubjectToDataTransferUuids)
                         ? dto.InsecureCountriesSubjectToDataTransferUuids.FromNullable().AsChangedValue()
                         : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
 
-                DataProcessorUuids = rule.MustUpdate(x => x.General.DataProcessorUuids)
+                DataProcessorUuids = rule.MustUpdate(x => x.General!.DataProcessorUuids)
                     ? dto.DataProcessorUuids.FromNullable().AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
 
-                HasSubDataProcessors = rule.MustUpdate(x => x.General.HasSubDataProcessors)
+                HasSubDataProcessors = rule.MustUpdate(x => x.General!.HasSubDataProcessors)
                     ? (dto.HasSubDataProcessors?.ToYesNoUndecidedOption()).AsChangedValue()
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
-                SubDataProcessors = rule.MustUpdate(x => x.General.SubDataProcessors)
+                SubDataProcessors = rule.MustUpdate(x => x.General!.SubDataProcessors)
                     ? dto.SubDataProcessors.FromNullable().Select<IEnumerable<SubDataProcessorParameter>>(sdps => sdps.Select(ToSubDataProcessorParameter).ToList()).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<SubDataProcessorParameter>>>.None,
 
-                EnforceInvalidity = rule.MustUpdate(x => x.General.EnforceInvalidity)
+                EnforceInvalidity = rule.MustUpdate(x => x.General!.EnforceInvalidity)
                     ? dto.EnforceInvalidity.AsChangedValue()
                     : OptionalValueChange<bool?>.None,
 
-                MainContractUuid = rule.MustUpdate(x => x.General.MainContractUuid)
+                MainContractUuid = rule.MustUpdate(x => x.General!.MainContractUuid)
                     ? dto.MainContractUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
-                ResponsibleUnitUuid = rule.MustUpdate(x => x.General.ResponsibleOrganizationUnitUuid) ? dto.ResponsibleOrganizationUnitUuid.AsChangedValue() : OptionalValueChange<Guid?>.None
+                ResponsibleUnitUuid = rule.MustUpdate(x => x.General!.ResponsibleOrganizationUnitUuid) ? dto.ResponsibleOrganizationUnitUuid.AsChangedValue() : OptionalValueChange<Guid?>.None
             };
         }
 
@@ -181,35 +181,35 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
 
             return new UpdatedDataProcessingRegistrationOversightDataParameters
             {
-                OversightOptionUuids = rule.MustUpdate(x => x.Oversight.OversightOptionUuids)
+                OversightOptionUuids = rule.MustUpdate(x => x.Oversight!.OversightOptionUuids)
                     ? dto.OversightOptionUuids.FromNullable().AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
 
-                OversightOptionsRemark = rule.MustUpdate(x => x.Oversight.OversightOptionsRemark)
-                    ? dto.OversightOptionsRemark.AsChangedValue()
+                OversightOptionsRemark = rule.MustUpdate(x => x.Oversight!.OversightOptionsRemark)
+                    ? dto.OversightOptionsRemark!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                OversightInterval = rule.MustUpdate(x => x.Oversight.OversightInterval)
+                OversightInterval = rule.MustUpdate(x => x.Oversight!.OversightInterval)
                     ? (dto.OversightInterval?.ToIntervalOption()).AsChangedValue()
                     : OptionalValueChange<YearMonthIntervalOption?>.None,
 
-                OversightIntervalRemark = rule.MustUpdate(x => x.Oversight.OversightIntervalRemark)
-                    ? dto.OversightIntervalRemark.AsChangedValue()
+                OversightIntervalRemark = rule.MustUpdate(x => x.Oversight!.OversightIntervalRemark)
+                    ? dto.OversightIntervalRemark!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                IsOversightCompleted = rule.MustUpdate(x => x.Oversight.IsOversightCompleted)
+                IsOversightCompleted = rule.MustUpdate(x => x.Oversight!.IsOversightCompleted)
                     ? (dto.IsOversightCompleted?.ToYesNoUndecidedOption()).AsChangedValue()
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
-                OversightCompletedRemark = rule.MustUpdate(x => x.Oversight.OversightCompletedRemark)
-                    ? dto.OversightCompletedRemark.AsChangedValue()
+                OversightCompletedRemark = rule.MustUpdate(x => x.Oversight!.OversightCompletedRemark)
+                    ? dto.OversightCompletedRemark!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                OversightScheduledInspectionDate = rule.MustUpdate(x => x.Oversight.OversightScheduledInspectionDate)
+                OversightScheduledInspectionDate = rule.MustUpdate(x => x.Oversight!.OversightScheduledInspectionDate)
                     ? dto.OversightScheduledInspectionDate.AsChangedValue()
                     : OptionalValueChange<DateTime?>.None,
 
-                OversightDates = rule.MustUpdate(x => x.Oversight.OversightDates)
+                OversightDates = rule.MustUpdate(x => x.Oversight!.OversightDates)
                     ? dto.OversightDates
                         .FromNullable()
                         .Select(x => x
@@ -217,8 +217,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                             {
                                 CompletedAt = y.CompletedAt,
                                 Remark = y.Remark,
-                                OversightReportLink = y.OversightReportLink?.Url,
-                                OversightReportLinkName = y.OversightReportLink?.Name
+                                OversightReportLink = y.OversightReportLink?.Url!,
+                                OversightReportLinkName = y.OversightReportLink?.Name!
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
             };
@@ -237,10 +237,10 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     ? dto.Remark.AsChangedValue()
                     : OptionalValueChange<string>.None,
                 OversightReportLink = rule.MustUpdate(x => x.OversightReportLink.Url)
-                    ? dto.OversightReportLink?.Url.AsChangedValue()
+                    ? dto.OversightReportLink.Url!.AsChangedValue()
                     : OptionalValueChange<string>.None,
                 OversightReportLinkName = rule.MustUpdate(x => x.OversightReportLink.Name)
-                    ? dto.OversightReportLink?.Name.AsChangedValue()
+                    ? dto.OversightReportLink.Name!.AsChangedValue()
                     : OptionalValueChange<string>.None
             };
         }

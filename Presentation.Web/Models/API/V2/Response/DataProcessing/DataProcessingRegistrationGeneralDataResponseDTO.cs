@@ -12,7 +12,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Optional data responsible selection
         /// </summary>
-        public IdentityNamePairResponseDTO DataResponsible { get; set; }
+        public IdentityNamePairResponseDTO? DataResponsible { get; set; }
         /// <summary>
         /// Additional remark related to the data responsible
         /// </summary>
@@ -32,7 +32,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Optional basis for transfer selection
         /// </summary>
-        public IdentityNamePairResponseDTO BasisForTransfer { get; set; }
+        public IdentityNamePairResponseDTO? BasisForTransfer { get; set; }
         /// <summary>
         /// Determines if the data processing includes transfer to insecure third countries
         /// </summary>
@@ -70,7 +70,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Defines the master contract for this data processing registration (many contracts can point to a data processing registration but only one can be the master contract)
         /// </summary>
-        public IdentityNamePairResponseDTO MainContract { get; set; }
+        public IdentityNamePairResponseDTO? MainContract { get; set; }
         /// <summary>
         /// Defines the associated contracts with this data processing registration
         /// </summary>
@@ -78,7 +78,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// The organization unit responsible for this data processing registration
         /// </summary>
-        public IdentityNamePairResponseDTO ResponsibleOrganizationUnit { get; set; }
+        public IdentityNamePairResponseDTO? ResponsibleOrganizationUnit { get; set; }
 
     }
 }

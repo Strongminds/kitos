@@ -11,8 +11,6 @@ using Core.DomainModel.Organization;
 using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 
-
-
 namespace Core.DomainModel.GDPR
 {
     public class DataProcessingRegistration :
@@ -428,11 +426,11 @@ namespace Core.DomainModel.GDPR
 
         private Maybe<DataProcessingRegistrationValidationError> CheckContractValidity()
         {
-            return MainContractIsValid()
+            return IsMainContractValid()
                 ? Maybe<DataProcessingRegistrationValidationError>.None
                 : DataProcessingRegistrationValidationError.MainContractNotActive;
         }
-        private bool MainContractIsValid()
+        private bool IsMainContractValid()
         {
             return MainContract == null || MainContract.IsActive;
         }
