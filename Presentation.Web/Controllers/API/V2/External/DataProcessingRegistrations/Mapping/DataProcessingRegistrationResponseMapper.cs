@@ -86,9 +86,9 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             return new SimpleLinkDTO() { Name = name, Url = url };
         }
 
-        private static IEnumerable<ShallowItSystemUsageResponseDTO> MapSystemUsages(DataProcessingRegistration dataProcessingRegistration)
+        private static IEnumerable<IdentityNamePairResponseDTO> MapSystemUsages(DataProcessingRegistration dataProcessingRegistration)
         {
-            return dataProcessingRegistration.SystemUsages.Select(x => new ShallowItSystemUsageResponseDTO() { Name = x.ItSystem.Name, Uuid = x.Uuid, Valid = x.CheckSystemValidity().Result}).ToList();
+            return dataProcessingRegistration.SystemUsages.Select(x => x.MapIdentityNamePairDTO()).ToList();
         }
 
         private static DataProcessingRegistrationGeneralDataResponseDTO MapGeneral(DataProcessingRegistration dataProcessingRegistration)

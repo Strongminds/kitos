@@ -446,7 +446,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private void AssertSystemUsages(DataProcessingRegistration dpr, List<ShallowItSystemUsageResponseDTO> actual)
+        private void AssertSystemUsages(DataProcessingRegistration dpr, List<IdentityNamePairResponseDTO> actual)
         {
             Assert.Equal(dpr.SystemUsages.Count, actual.Count);
 
@@ -458,11 +458,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private static void AssertSystemUsage(ItSystemUsage expected, ShallowItSystemUsageResponseDTO actual)
+        private static void AssertSystemUsage(ItSystemUsage expected, IdentityNamePairResponseDTO actual)
         {
             Assert.Equal(expected.Uuid, actual.Uuid);
             Assert.Equal(expected.ItSystem.Name, actual.Name);
-            Assert.Equal(expected.CheckSystemValidity().Result, actual.Valid);
         }
 
         private static void AssertOversightInterval(YearMonthIntervalOption? expectedFromSource, OversightIntervalChoice? actual)
