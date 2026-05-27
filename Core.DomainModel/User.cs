@@ -38,6 +38,7 @@ namespace Core.DomainModel
            CreatedAt = DateTime.Now;
         }
         public DateTime? CreatedAt { get; init;  }
+        public DateTime? LatestLogin { get; set; }
 
         public string Name { get; set; }
         public string LastName { get; set; }

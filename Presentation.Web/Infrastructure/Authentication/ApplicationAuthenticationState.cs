@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using Core.ApplicationServices.Authentication;
 using Core.DomainModel;
+using Core.DomainModel.Events;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -11,10 +12,12 @@ namespace Presentation.Web.Infrastructure.Authentication
     public class ApplicationAuthenticationState : IApplicationAuthenticationState
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDomainEvents _domainEvents;
 
-        public ApplicationAuthenticationState(IHttpContextAccessor httpContextAccessor)
+        public ApplicationAuthenticationState(IHttpContextAccessor httpContextAccessor, IDomainEvents domainEvents)
         {
             _httpContextAccessor = httpContextAccessor;
+            _domainEvents = domainEvents;
         }
 
         public void SetAuthenticatedUser(User user, AuthenticationScope scope)
@@ -37,6 +40,8 @@ namespace Presentation.Web.Infrastructure.Authentication
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal,
                 properties).GetAwaiter().GetResult();
+
+            _domainEvents.Raise(new UserLoggedInEvent(user.Uuid));
         }
     }
 }

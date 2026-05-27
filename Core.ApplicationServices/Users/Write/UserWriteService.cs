@@ -574,5 +574,22 @@ namespace Core.ApplicationServices.Users.Write
 
             return user;
         }
+
+        public Maybe<OperationError> UpdateLatestLogin(Guid userUuid, DateTime latestLogin)
+        {
+            var userResult = _userService.GetUserByUuid(userUuid);
+            if (userResult.Failed)
+            {
+                return userResult.Error;
+            }
+            var user = userResult.Value;
+            
+            using var transaction = _transactionManager.Begin();
+            user.LatestLogin = latestLogin;
+            _userRepository.Update(user);
+            transaction.Commit();
+
+            return Maybe<OperationError>.None;
+        }
     }
 }
