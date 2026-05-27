@@ -23,6 +23,7 @@ namespace Core.DomainServices.SystemUsage
 
         private readonly IGenericRepository<ItSystemUsageOverviewRoleAssignmentReadModel> _roleAssignmentRepository;
         private readonly IGenericRepository<ItSystemUsageOverviewTaskRefReadModel> _taskRefRepository;
+        private readonly IGenericRepository<ItSystemUsageOverviewLocalTaskRefReadModel> _localTaskRefRepository;
         private readonly IGenericRepository<ItSystemUsageOverviewSensitiveDataLevelReadModel> _sensitiveDataLevelRepository;
         private readonly IGenericRepository<ItSystemUsageOverviewArchivePeriodReadModel> _archivePeriodReadModelRepository;
         private readonly IGenericRepository<ItSystemUsageOverviewDataProcessingRegistrationReadModel> _dataProcessingRegistrationReadModelRepository;
@@ -34,6 +35,7 @@ namespace Core.DomainServices.SystemUsage
         public ItSystemUsageOverviewReadModelUpdate(
             IGenericRepository<ItSystemUsageOverviewRoleAssignmentReadModel> roleAssignmentRepository,
             IGenericRepository<ItSystemUsageOverviewTaskRefReadModel> taskRefRepository,
+            IGenericRepository<ItSystemUsageOverviewLocalTaskRefReadModel> localTaskRefRepository,
             IGenericRepository<ItSystemUsageOverviewSensitiveDataLevelReadModel> sensitiveDataLevelRepository,
             IGenericRepository<ItSystemUsageOverviewArchivePeriodReadModel> archivePeriodReadModelRepository,
             IGenericRepository<ItSystemUsageOverviewDataProcessingRegistrationReadModel> dataProcessingRegistrationReadModelRepository,
@@ -46,6 +48,7 @@ namespace Core.DomainServices.SystemUsage
         {
             _roleAssignmentRepository = roleAssignmentRepository;
             _taskRefRepository = taskRefRepository;
+            _localTaskRefRepository = localTaskRefRepository;
             _sensitiveDataLevelRepository = sensitiveDataLevelRepository;
             _archivePeriodReadModelRepository = archivePeriodReadModelRepository;
             _dataProcessingRegistrationReadModelRepository = dataProcessingRegistrationReadModelRepository;
@@ -114,6 +117,7 @@ namespace Core.DomainServices.SystemUsage
             PatchItSystemCategories(source, destination);
             PatchItSystemRightsHolder(source, destination);
             PatchKLE(source, destination);
+            PatchLocalKLE(source, destination);
             PatchReference(source, destination);
             PatchMainContract(source, destination);
             PatchSensitiveDataLevels(source, destination);
@@ -498,6 +502,41 @@ namespace Core.DomainServices.SystemUsage
             }
         }
 
+        private void PatchLocalKLE(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
+            var kleIds = string.Join(", ", source.TaskRefs.Select(x => x.TaskKey).Where(k => k != null));
+            destination.LocalKleIdsAsCsv = string.IsNullOrEmpty(kleIds) ? null : kleIds;
+            var kleNames = string.Join(", ", source.TaskRefs.Select(x => x.Description).Where(d => d != null));
+            destination.LocalKleNamesAsCsv = string.IsNullOrEmpty(kleNames) ? null : kleNames;
+
+            static string CreateLocalTaskRefKey(string KLEId) => $"L:{KLEId}";
+
+            var incomingTaskRefs = source.TaskRefs.ToDictionary(x => CreateLocalTaskRefKey(x.TaskKey));
+
+            // Remove taskref which were removed
+            var taskRefsToBeRemoved =
+                destination.LocalItSystemTaskRefs
+                    .Where(x => incomingTaskRefs.ContainsKey(CreateLocalTaskRefKey(x.KLEId)) == false).ToList();
+
+            RemoveLocalTaskRefs(destination, taskRefsToBeRemoved);
+
+            var existingTaskRefs = destination.LocalItSystemTaskRefs.ToDictionary(x => CreateLocalTaskRefKey(x.KLEId));
+            foreach (var incomingTaskRef in source.TaskRefs.ToList())
+            {
+                if (!existingTaskRefs.TryGetValue(CreateLocalTaskRefKey(incomingTaskRef.TaskKey), out var taskRef))
+                {
+                    taskRef = new ItSystemUsageOverviewLocalTaskRefReadModel
+                    {
+                        Parent = destination
+                    };
+                    destination.LocalItSystemTaskRefs.Add(taskRef);
+                }
+
+                taskRef.KLEId = incomingTaskRef.TaskKey;
+                taskRef.KLEName = incomingTaskRef.Description;
+            }
+        }
+
         private void PatchOrganizationUnits(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
             PatchResponsibleOrgUnit(source, destination);
@@ -632,6 +671,15 @@ namespace Core.DomainServices.SystemUsage
             {
                 destination.ItSystemTaskRefs.Remove(taskRefToBeRemoved);
                 _taskRefRepository.Delete(taskRefToBeRemoved);
+            });
+        }
+
+        private void RemoveLocalTaskRefs(ItSystemUsageOverviewReadModel destination, List<ItSystemUsageOverviewLocalTaskRefReadModel> taskRefsToBeRemoved)
+        {
+            taskRefsToBeRemoved.ForEach(taskRefToBeRemoved =>
+            {
+                destination.LocalItSystemTaskRefs.Remove(taskRefToBeRemoved);
+                _localTaskRefRepository.Delete(taskRefToBeRemoved);
             });
         }
 
