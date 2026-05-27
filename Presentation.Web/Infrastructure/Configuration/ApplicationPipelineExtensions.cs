@@ -175,16 +175,16 @@ namespace Presentation.Web.Infrastructure.Configuration
         private static void MapSSOEndpoints(WebApplication app)
         {
             // Legacy .ashx handler routes: LoginHandler.ashx initiates external (SAML SSO) login
-            // by forwarding to the SAML sign-on endpoint with forceAuthn=false.
-            app.MapGet("/LoginHandler.ashx", (HttpContext ctx) =>
+            // by forwarding to the SAML sign-on endpoint.
+            app.MapGet("/LoginHandler.ashx", ctx =>
             {
-                ctx.Response.Redirect("/Login.ashx?forceAuthn=false");
+                ctx.Response.Redirect("/Login.ashx");
                 return Task.CompletedTask;
             }).AllowAnonymous();
 
             // SAML .ashx handlers — migrated to net10.0 in the local OIOSAML.Net project.
             // Login.ashx handles both the SP-initiated AuthnRequest (GET) and the IdP response (POST).
-            app.MapMethods("/Login.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
+            app.MapMethods("/Login.ashx", ["GET", "POST"], ctx =>
             {
                 try
                 {
@@ -205,7 +205,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                 return Task.CompletedTask;
             }).AllowAnonymous();
 
-            app.MapMethods("/Logout.ashx", new[] { "GET", "POST" }, (HttpContext ctx) =>
+            app.MapMethods("/Logout.ashx", ["GET", "POST"], ctx =>
             {
                 try
                 {
@@ -226,7 +226,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                 return Task.CompletedTask;
             }).AllowAnonymous();
 
-            app.MapGet("/Metadata.ashx", (HttpContext ctx) =>
+            app.MapGet("/Metadata.ashx", ctx =>
             {
                 try
                 {
