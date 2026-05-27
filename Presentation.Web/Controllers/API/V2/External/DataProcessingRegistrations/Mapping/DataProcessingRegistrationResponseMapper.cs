@@ -109,9 +109,19 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 SubDataProcessors = dataProcessingRegistration.AssignedSubDataProcessors?.Select(ToSubDataProcessorDTO).ToList()!,
                 MainContract = dataProcessingRegistration.MainContract?.MapIdentityNamePairDTO(),
                 AssociatedContracts = dataProcessingRegistration.AssociatedContracts?.Select(x => x.MapIdentityNamePairDTO()).ToList()!,
-                Valid = dataProcessingRegistration.IsValid,
-                EnforceInvalidity = dataProcessingRegistration.EnforceInvalidity,
+                Validity = MapValidity(dataProcessingRegistration),
                 ResponsibleOrganizationUnit = dataProcessingRegistration.ResponsibleOrganizationUnit?.MapIdentityNamePairDTO()
+            };
+        }
+
+        private static DataProcessingResgistrationValidityDTO MapValidity(DataProcessingRegistration dataProcessingRegistration)
+        {
+            var validationResult = dataProcessingRegistration.CheckDprValidity();
+            return new DataProcessingResgistrationValidityDTO
+            {
+                Valid = validationResult.Result,
+                EnforceInvalidity = dataProcessingRegistration.EnforceInvalidity ?? false,
+                ValidationErrors = validationResult.ValidationErrors.Select(x => x.ToDataProcessingRegistrationValidationErrorChoice()).ToList()
             };
         }
 

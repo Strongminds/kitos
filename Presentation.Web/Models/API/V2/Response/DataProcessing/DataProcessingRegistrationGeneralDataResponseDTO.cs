@@ -55,14 +55,10 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         public required IEnumerable<DataProcessorRegistrationSubDataProcessorResponseDTO> SubDataProcessors { get; set; }
 
         /// <summary>
-        /// Whether this registration should be considered invalid regardless of other properties.
+        /// Validity of the data processing registration
         /// </summary>
-        public bool? EnforceInvalidity { get; set; }
-        /// <summary>
-        /// Determines if the entity is considered valid. Validity is determined by
-        /// - the MainContract Validity.
-        /// </summary>
-        public required bool Valid { get; set; }
+        [Required]
+        public DataProcessingResgistrationValidityDTO Validity { get; set; }
         /// <summary>
         /// Defines the master contract for this data processing registration (many contracts can point to a data processing registration but only one can be the master contract)
         /// </summary>

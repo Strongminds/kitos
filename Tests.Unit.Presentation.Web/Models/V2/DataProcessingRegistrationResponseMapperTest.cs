@@ -88,8 +88,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Empty(general.SubDataProcessors);
             Assert.Null(general.MainContract);
             Assert.Empty(general.AssociatedContracts);
-            Assert.False(general.Valid);
-            Assert.Equal(dpr.EnforceInvalidity, dto.General.EnforceInvalidity);
+            Assert.False(general.Validity.Valid);
+            Assert.Equal(dpr.EnforceInvalidity, dto.General.Validity.EnforceInvalidity);
             Assert.Null(general.ResponsibleOrganizationUnit);
 
             var oversight = dto.Oversight;
@@ -131,7 +131,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertSubDataProcessors(dpr.AssignedSubDataProcessors, general.SubDataProcessors);
             AssertIdentity(dpr.MainContract, general.MainContract);
             AssertOptionalIdentities(dpr.AssociatedContracts, general.AssociatedContracts);
-            Assert.Equal(dpr.IsActiveAccordingToMainContract, general.Valid);
+            Assert.Equal(dpr.IsActiveAccordingToMainContract, general.Validity.Valid);
             Assert.Equal(dpr.ResponsibleOrganizationUnit.Uuid, general.ResponsibleOrganizationUnit.Uuid);
             Assert.Equal(dpr.ResponsibleOrganizationUnit.Name, general.ResponsibleOrganizationUnit.Name);
         }
