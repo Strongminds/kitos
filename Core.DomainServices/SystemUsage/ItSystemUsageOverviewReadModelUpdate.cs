@@ -475,7 +475,9 @@ namespace Core.DomainServices.SystemUsage
 
             static string CreateTaskRefKey(string KLEId) => $"I:{KLEId}";
 
-            var incomingTaskRefs = source.ItSystem.TaskRefs.ToDictionary(x => CreateTaskRefKey(x.TaskKey));
+            var incomingTaskRefs = source.ItSystem.TaskRefs
+                .Where(x => !string.IsNullOrEmpty(x.TaskKey))
+                .ToDictionary(x => CreateTaskRefKey(x.TaskKey));
 
             // Remove taskref which were removed
             var taskRefsToBeRemoved =
@@ -484,8 +486,10 @@ namespace Core.DomainServices.SystemUsage
 
             RemoveTaskRefs(destination, taskRefsToBeRemoved);
 
-            var existingTaskRefs = destination.ItSystemTaskRefs.ToDictionary(x => CreateTaskRefKey(x.KLEId));
-            foreach (var incomingTaskRef in source.ItSystem.TaskRefs.ToList())
+            var existingTaskRefs = destination.ItSystemTaskRefs
+                .Where(x => !string.IsNullOrEmpty(x.KLEId))
+                .ToDictionary(x => CreateTaskRefKey(x.KLEId));
+            foreach (var incomingTaskRef in source.ItSystem.TaskRefs.Where(x => !string.IsNullOrEmpty(x.TaskKey)).ToList())
             {
                 if (!existingTaskRefs.TryGetValue(CreateTaskRefKey(incomingTaskRef.TaskKey), out var taskRef))
                 {
@@ -511,17 +515,21 @@ namespace Core.DomainServices.SystemUsage
 
             static string CreateLocalTaskRefKey(string KLEId) => $"L:{KLEId}";
 
-            var incomingTaskRefs = source.TaskRefs.ToDictionary(x => CreateLocalTaskRefKey(x.TaskKey));
+            var incomingTaskRefs = source.TaskRefs
+                .Where(x => !string.IsNullOrEmpty(x.TaskKey))
+                .ToDictionary(x => CreateLocalTaskRefKey(x.TaskKey));
 
-            // Remove taskref which were removed
+            // Remove taskref which were removed (including any stale null-key rows)
             var taskRefsToBeRemoved =
                 destination.LocalItSystemTaskRefs
                     .Where(x => incomingTaskRefs.ContainsKey(CreateLocalTaskRefKey(x.KLEId)) == false).ToList();
 
             RemoveLocalTaskRefs(destination, taskRefsToBeRemoved);
 
-            var existingTaskRefs = destination.LocalItSystemTaskRefs.ToDictionary(x => CreateLocalTaskRefKey(x.KLEId));
-            foreach (var incomingTaskRef in source.TaskRefs.ToList())
+            var existingTaskRefs = destination.LocalItSystemTaskRefs
+                .Where(x => !string.IsNullOrEmpty(x.KLEId))
+                .ToDictionary(x => CreateLocalTaskRefKey(x.KLEId));
+            foreach (var incomingTaskRef in source.TaskRefs.Where(x => !string.IsNullOrEmpty(x.TaskKey)).ToList())
             {
                 if (!existingTaskRefs.TryGetValue(CreateLocalTaskRefKey(incomingTaskRef.TaskKey), out var taskRef))
                 {
