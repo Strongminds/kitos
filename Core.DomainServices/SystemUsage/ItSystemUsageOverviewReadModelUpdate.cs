@@ -11,6 +11,7 @@ using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Shared;
 using Core.DomainModel.Users;
+using Core.DomainServices.Extensions;
 using Core.DomainServices.Model;
 using Core.DomainServices.Options;
 
@@ -48,7 +49,6 @@ namespace Core.DomainServices.SystemUsage
         {
             _roleAssignmentRepository = roleAssignmentRepository;
             _taskRefRepository = taskRefRepository;
-            _localTaskRefRepository = localTaskRefRepository;
             _sensitiveDataLevelRepository = sensitiveDataLevelRepository;
             _archivePeriodReadModelRepository = archivePeriodReadModelRepository;
             _dataProcessingRegistrationReadModelRepository = dataProcessingRegistrationReadModelRepository;
@@ -508,11 +508,21 @@ namespace Core.DomainServices.SystemUsage
 
         private void PatchLocalKLE(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            var kleIds = string.Join(", ", source.TaskRefs.Select(x => x.TaskKey).Where(k => k != null));
-            destination.LocalKleIdsAsCsv = string.IsNullOrEmpty(kleIds) ? null : kleIds;
-            var kleNames = string.Join(", ", source.TaskRefs.Select(x => x.Description).Where(d => d != null));
-            destination.LocalKleNamesAsCsv = string.IsNullOrEmpty(kleNames) ? null : kleNames;
+            UpdateLocalKleCsvFields(source, destination);
+            SynchronizeLocalTaskRefs(source, destination);
+        }
 
+        private static void UpdateLocalKleCsvFields(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
+            var kleIds = source.TaskRefs.Select(x => x.TaskKey).Where(k => k != null).ToStringWithDelimiter();
+            destination.LocalKleIdsAsCsv = string.IsNullOrEmpty(kleIds) ? null : kleIds;
+
+            var kleNames = source.TaskRefs.Select(x => x.Description).Where(d => d != null).ToStringWithDelimiter();
+            destination.LocalKleNamesAsCsv = string.IsNullOrEmpty(kleNames) ? null : kleNames;
+        }
+
+        private void SynchronizeLocalTaskRefs(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
             static string CreateLocalTaskRefKey(string KLEId) => $"L:{KLEId}";
 
             var incomingTaskRefs = source.TaskRefs
@@ -529,6 +539,7 @@ namespace Core.DomainServices.SystemUsage
             var existingTaskRefs = destination.LocalItSystemTaskRefs
                 .Where(x => !string.IsNullOrEmpty(x.KLEId))
                 .ToDictionary(x => CreateLocalTaskRefKey(x.KLEId));
+
             foreach (var incomingTaskRef in source.TaskRefs.Where(x => !string.IsNullOrEmpty(x.TaskKey)).ToList())
             {
                 if (!existingTaskRefs.TryGetValue(CreateLocalTaskRefKey(incomingTaskRef.TaskKey), out var taskRef))
