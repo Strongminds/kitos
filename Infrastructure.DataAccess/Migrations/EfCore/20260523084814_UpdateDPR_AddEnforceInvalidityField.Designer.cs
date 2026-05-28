@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260523084814_UpdateDPR_AddEnforceInvalidityField")]
+    partial class UpdateDPR_AddEnforceInvalidityField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -649,7 +652,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("DataResponsible_Id")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("EnforceInvalidity");
+                    b.Property<bool?>("EnforceInvalidity")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("HasSubDataProcessors")
                         .HasColumnType("int");
@@ -4281,38 +4285,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.ToTable("ItSystemUsageOverviewItContractReadModels");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewLocalTaskRefReadModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("KLEId")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("KLEName")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int>("ParentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KLEId")
-                        .HasDatabaseName("ItSystemUsageOverviewLocalTaskRefReadModel_Index_KLEId");
-
-                    b.HasIndex("KLEName")
-                        .HasDatabaseName("ItSystemUsageOverviewLocalTaskRefReadModel_Index_KLEName");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("ItSystemUsageOverviewLocalTaskRefReadModels");
-                });
-
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewReadModel", b =>
                 {
                     b.Property<int>("Id")
@@ -4464,12 +4436,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("LocalKleIdsAsCsv")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LocalKleNamesAsCsv")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LocalReferenceDocumentId")
                         .HasColumnType("nvarchar(max)");
 
@@ -4549,14 +4515,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid?>("ResponsibleOrganizationUnitUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("RiskAssessmentConducted")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("RiskAssessmentDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("RiskAssessmentResult")
-                        .HasColumnType("int");
 
                     b.Property<string>("RiskSupervisionDocumentationName")
                         .HasMaxLength(150)
@@ -9527,17 +9487,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewLocalTaskRefReadModel", b =>
-                {
-                    b.HasOne("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewReadModel", "Parent")
-                        .WithMany("LocalItSystemTaskRefs")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Parent");
-                });
-
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewReadModel", b =>
                 {
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
@@ -11516,8 +11465,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("IncomingRelatedItSystemUsages");
 
                     b.Navigation("ItSystemTaskRefs");
-
-                    b.Navigation("LocalItSystemTaskRefs");
 
                     b.Navigation("OutgoingRelatedItSystemUsages");
 
