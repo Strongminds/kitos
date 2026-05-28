@@ -745,7 +745,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             if (contractResult.Failed)
                 return new OperationError($"Failure getting the contract:{contractResult.Error.Message.GetValueOrEmptyString()}", contractResult.Error.FailureType);
 
-            ValidityDependencyUpdated();
+            ValidityDependencyUpdated(systemUsage);
             return systemUsage.SetMainContract(contractResult.Value).Match<Result<ItSystemUsage, OperationError>>(error => error, () => systemUsage);
         }
 
