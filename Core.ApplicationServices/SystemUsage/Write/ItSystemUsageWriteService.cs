@@ -699,7 +699,6 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
         private void ValidityDependencyUpdated(ItSystemUsage usage) {
             _domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
-
         }
 
         private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus) {
