@@ -9,6 +9,9 @@ namespace Core.DomainServices.Mapping
 {
     public static class ReadModelMappingHelpers
     {
+        public const string ActiveNeuter = "(Aktivt)";
+        public const string InactiveNeuter = "(Ikke aktivt)";
+
         public static string MapItSystemName(this ItSystemUsage systemUsage)
         {
             return systemUsage.ItSystem.FromNullable().Select(system => system.MapItSystemName()).GetValueOrDefault() ?? string.Empty;
@@ -21,7 +24,7 @@ namespace Core.DomainServices.Mapping
 
         public static string MapDataProcessingRegistrationSystemUsages(this ICollection<ItSystemUsage> usages)
         {
-            return usages.Select(x => x.CheckSystemValidity().Result == true ? "(Aktivt)" : "(Ikke aktivt)").ToStringWithDelimiter();
+            return usages.Select(x => x.CheckSystemValidity().Result == true ? ActiveNeuter : InactiveNeuter).ToStringWithDelimiter();
         }
     }
 }
