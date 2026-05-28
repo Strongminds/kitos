@@ -13,7 +13,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "SystemValiditiesAsCsv",
                 table: "DataProcessingRegistrationReadModels",
-                type: "nvarchar(max)",
                 nullable: true);
         }
 
