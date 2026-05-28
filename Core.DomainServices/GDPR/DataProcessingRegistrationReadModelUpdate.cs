@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.GDPR.Read;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.Mapping;
 using Core.DomainServices.Model;
 using Core.DomainServices.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Core.DomainServices.GDPR
@@ -124,7 +125,7 @@ namespace Core.DomainServices.GDPR
         {
             destination.SystemNamesAsCsv = source.SystemUsages.Select(usage => usage.MapItSystemName()).ToStringWithDelimiter();
             destination.SystemUuidsAsCsv = source.SystemUsages.Select(x => x.ItSystem.Uuid.ToString()).ToStringWithDelimiter();
-            destination.SystemValiditiesAsCsv = source.SystemUsages.Select(x => x.CheckSystemValidity().Result == true ? "(Aktivt)" : "(Ikke aktivt)").ToStringWithDelimiter();
+            destination.SystemValiditiesAsCsv = source.SystemUsages.MapDataProcessingRegistrationSystemUsages();
         }
 
         private static void PatchContracts(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
