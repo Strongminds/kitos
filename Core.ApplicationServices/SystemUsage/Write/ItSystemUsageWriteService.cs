@@ -697,10 +697,14 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuid, (systemUsage, technicalSystemTypeUuid) => UpdateTechnicalSystemType(systemUsage, technicalSystemTypeUuid)));
         }
 
-        private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus) {
-            usage.LifeCycleStatus = lifeCycleStatus;
+        private void ValidityDependencyUpdated(ItSystemUsage usage) {
             _domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
 
+        }
+
+        private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus) {
+            usage.LifeCycleStatus = lifeCycleStatus;
+            ValidityDependencyUpdated(usage);
             return usage;
         }
 
@@ -725,7 +729,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
             var newValidFrom = generalProperties.ValidFrom.MapDateTimeOptionalChangeWithFallback(usage.Concluded);
             var newValidTo = generalProperties.ValidTo.MapDateTimeOptionalChangeWithFallback(usage.ExpirationDate);
-            _domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
+            ValidityDependencyUpdated(usage);
 
             return usage.UpdateSystemValidityPeriod(newValidFrom, newValidTo).Match<Result<ItSystemUsage, OperationError>>(error => error, () => usage);
         }
@@ -742,7 +746,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             if (contractResult.Failed)
                 return new OperationError($"Failure getting the contract:{contractResult.Error.Message.GetValueOrEmptyString()}", contractResult.Error.FailureType);
 
-            _domainEvents.Raise(new ItSystemUsageValidityUpdated(systemUsage));
+            ValidityDependencyUpdated();
             return systemUsage.SetMainContract(contractResult.Value).Match<Result<ItSystemUsage, OperationError>>(error => error, () => systemUsage);
         }
 
