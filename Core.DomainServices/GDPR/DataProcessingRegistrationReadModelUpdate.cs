@@ -124,7 +124,7 @@ namespace Core.DomainServices.GDPR
         {
             destination.SystemNamesAsCsv = source.SystemUsages.Select(usage => usage.MapItSystemName()).ToStringWithDelimiter();
             destination.SystemUuidsAsCsv = source.SystemUsages.Select(x => x.ItSystem.Uuid.ToString()).ToStringWithDelimiter();
-            destination.SystemValiditiesAsCsv = source.SystemUsages.Select(x => x.CheckSystemValidity().Result == true ? "Aktivt" : "Inaktivt").ToStringWithDelimiter();
+            destination.SystemValiditiesAsCsv = source.SystemUsages.Select(x => x.CheckSystemValidity().Result == true ? "(Aktivt)" : "(Inaktivt)").ToStringWithDelimiter();
         }
 
         private static void PatchContracts(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
