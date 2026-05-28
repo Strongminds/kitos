@@ -11,8 +11,6 @@ using Core.DomainModel.Organization;
 using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 
-
-
 namespace Core.DomainModel.GDPR
 {
     public class DataProcessingRegistration :
@@ -406,9 +404,13 @@ namespace Core.DomainModel.GDPR
             return AssociatedContracts.FirstOrDefault(c => c.Id == id);
         }
 
+        public bool? EnforceInvalidity { get; set; }
+
         public DataProcessingRegistrationValidationResult CheckDprValidity()
         {
             var errors = new List<DataProcessingRegistrationValidationError>();
+
+            if (EnforceInvalidity == true) errors.Add(DataProcessingRegistrationValidationError.EnforcedInvalidity);
 
             var hasContractValidityError = CheckContractValidity();
 
@@ -420,12 +422,17 @@ namespace Core.DomainModel.GDPR
             return new DataProcessingRegistrationValidationResult(errors);
         }
 
+        public bool IsValid => CheckDprValidity().Result;
+
         private Maybe<DataProcessingRegistrationValidationError> CheckContractValidity()
         {
-            //Main contract is considered valid if it's null or if "IsActive" == true
-            return MainContract == null || MainContract.IsActive
+            return IsMainContractValid()
                 ? Maybe<DataProcessingRegistrationValidationError>.None
                 : DataProcessingRegistrationValidationError.MainContractNotActive;
+        }
+        private bool IsMainContractValid()
+        {
+            return MainContract == null || MainContract.IsActive;
         }
         
         public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)

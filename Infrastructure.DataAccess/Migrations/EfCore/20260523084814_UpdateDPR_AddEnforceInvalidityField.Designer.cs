@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260523084814_UpdateDPR_AddEnforceInvalidityField")]
+    partial class UpdateDPR_AddEnforceInvalidityField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -649,7 +652,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("DataResponsible_Id")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("EnforceInvalidity");
+                    b.Property<bool?>("EnforceInvalidity")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("HasSubDataProcessors")
                         .HasColumnType("int");
@@ -4511,14 +4515,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid?>("ResponsibleOrganizationUnitUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("RiskAssessmentConducted")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("RiskAssessmentDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("RiskAssessmentResult")
-                        .HasColumnType("int");
 
                     b.Property<string>("RiskSupervisionDocumentationName")
                         .HasMaxLength(150)

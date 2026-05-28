@@ -529,6 +529,7 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Bind(r => r.WithOptionalUpdate(parameters.HasSubDataProcessors, (registration, newValue) => SetSubDataProcessorsState(registration.Id, newValue ?? YesNoUndecidedOption.Undecided)))
                 .Bind(r => r.WithOptionalUpdate(parameters.SubDataProcessors, UpdateSubDataProcessors))
                 .Bind(r => r.WithOptionalUpdate(parameters.MainContractUuid, UpdateMainContract))
+                .Bind(r => r.WithOptionalUpdate(parameters.EnforceInvalidity, (registration, newValue) => registration.EnforceInvalidity = newValue))
                 .Bind(r => r.WithOptionalUpdate(parameters.ResponsibleUnitUuid, UpdateResponsibleUnit));
         }
 
