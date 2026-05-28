@@ -649,8 +649,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("DataResponsible_Id")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("EnforceInvalidity")
-                        .HasColumnType("bit");
+                    b.Property<bool?>("EnforceInvalidity");
 
                     b.Property<int?>("HasSubDataProcessors")
                         .HasColumnType("int");
