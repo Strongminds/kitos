@@ -53,12 +53,10 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// UUID's of the organization entities selected as sub data processors
         /// </summary>
         public required IEnumerable<DataProcessorRegistrationSubDataProcessorResponseDTO> SubDataProcessors { get; set; }
-
         /// <summary>
         /// Validity of the data processing registration
         /// </summary>
-        [Required]
-        public DataProcessingResgistrationValidityDTO Validity { get; set; }
+        public required DataProcessingResgistrationValidityDTO Validity { get; set; }
         /// <summary>
         /// Defines the master contract for this data processing registration (many contracts can point to a data processing registration but only one can be the master contract)
         /// </summary>
@@ -66,7 +64,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Defines the associated contracts with this data processing registration
         /// </summary>
-        public IEnumerable<IdentityNamePairResponseDTO> AssociatedContracts { get; set; }
+        public required IEnumerable<IdentityNamePairResponseDTO> AssociatedContracts { get; set; }
         /// <summary>
         /// The organization unit responsible for this data processing registration
         /// </summary>
