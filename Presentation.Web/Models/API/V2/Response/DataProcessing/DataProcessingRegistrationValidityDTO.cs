@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Presentation.Web.Models.API.V2.Response.DataProcessing
 {
-    public class DataProcessingResgistrationValidityDTO
+    public class DataProcessingRegistrationValidityDTO
     {
         /// <summary>
         /// Determines if the entity is considered valid.

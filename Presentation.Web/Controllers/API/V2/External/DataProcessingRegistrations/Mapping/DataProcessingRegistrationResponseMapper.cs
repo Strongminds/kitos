@@ -114,10 +114,10 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             };
         }
 
-        private static DataProcessingResgistrationValidityDTO MapValidity(DataProcessingRegistration dataProcessingRegistration)
+        private static DataProcessingRegistrationValidityDTO MapValidity(DataProcessingRegistration dataProcessingRegistration)
         {
             var validationResult = dataProcessingRegistration.CheckDprValidity();
-            return new DataProcessingResgistrationValidityDTO
+            return new DataProcessingRegistrationValidityDTO
             {
                 Valid = validationResult.Result,
                 EnforceInvalidity = dataProcessingRegistration.EnforceInvalidity ?? false,

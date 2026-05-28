@@ -323,7 +323,11 @@ namespace Core.ApplicationServices.System
                             .Match
                             (
                                 onValue: namingError => namingError,
-                                onNone: () => Result<ItSystem, OperationError>.Success(system)
+                                onNone: () => {
+                                    _domainEvents.Raise(new NamedEntityChangedNameEvent<ItSystem>(system));
+                                    return Result<ItSystem, OperationError>.Success(system);
+
+                                }
                             )
                     );
             });

@@ -682,7 +682,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Notes, (systemUsage, notes) => systemUsage.Note = notes))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemVersion, (systemUsage, version) => systemUsage.UpdateSystemVersion(version)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.NumberOfExpectedUsersInterval, UpdateExpectedUsersInterval))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.LifeCycleStatus, (systemUsage, lifeCycleStatus) => systemUsage.LifeCycleStatus = lifeCycleStatus))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.LifeCycleStatus, (systemUsage, lifeCycleStatus) => UpdateLifecycleStatus(systemUsage, lifeCycleStatus)))
                 .Bind(usage => UpdateValidityPeriod(usage, generalProperties))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.MainContractUuid, UpdateMainContract))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.ContainsAITechnology, (systemUsage, containsAITechnology) => systemUsage.UpdateContainsAITechnology(containsAITechnology)))
@@ -695,6 +695,13 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuid, (systemUsage, technicalSystemTypeUuid) => UpdateTechnicalSystemType(systemUsage, technicalSystemTypeUuid)));
+        }
+
+        private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus) {
+            usage.LifeCycleStatus = lifeCycleStatus;
+            _domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
+
+            return usage;
         }
 
         private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)
@@ -711,13 +718,14 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return usage;
         }
 
-        private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)
+        private Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)
         {
             if (generalProperties.ValidFrom.IsUnchanged && generalProperties.ValidTo.IsUnchanged)
                 return usage; //Not changes provided
 
             var newValidFrom = generalProperties.ValidFrom.MapDateTimeOptionalChangeWithFallback(usage.Concluded);
             var newValidTo = generalProperties.ValidTo.MapDateTimeOptionalChangeWithFallback(usage.ExpirationDate);
+            _domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
 
             return usage.UpdateSystemValidityPeriod(newValidFrom, newValidTo).Match<Result<ItSystemUsage, OperationError>>(error => error, () => usage);
         }
@@ -734,6 +742,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             if (contractResult.Failed)
                 return new OperationError($"Failure getting the contract:{contractResult.Error.Message.GetValueOrEmptyString()}", contractResult.Error.FailureType);
 
+            _domainEvents.Raise(new ItSystemUsageValidityUpdated(systemUsage));
             return systemUsage.SetMainContract(contractResult.Value).Match<Result<ItSystemUsage, OperationError>>(error => error, () => systemUsage);
         }
 
