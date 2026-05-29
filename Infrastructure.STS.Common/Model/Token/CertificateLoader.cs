@@ -1,10 +1,25 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.STS.Common.Model.Token
 {
     public static class CertificateLoader
     {
+        /// <summary>
+        /// Loads a certificate from a PFX file. Use this overload when running in environments
+        /// without access to the Windows certificate store (e.g., Linux containers).
+        /// </summary>
+        public static X509Certificate2 LoadCertificateFromFile(string filePath, string password)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("Certificate file path must not be empty.", nameof(filePath));
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException($"Certificate file not found: '{filePath}'", filePath);
+
+            return new X509Certificate2(filePath, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.EphemeralKeySet);
+        }
+
         /// <summary>
         /// Loads a certificate by thumbprint, trying LocalMachine first and falling back to CurrentUser.
         /// Throws a descriptive exception if the certificate is not found or its private key container is missing.
@@ -46,6 +61,29 @@ namespace Infrastructure.STS.Common.Model.Token
             throw new ArgumentException(
                 $"No certificate with thumbprint '{thumbprint}' was found in {storeName} " +
                 $"(tried LocalMachine and CurrentUser). Install the certificate and retry.");
+        }
+
+        /// <summary>
+        /// Loads a certificate using file-based config if available, otherwise falls back to the Windows certificate store.
+        /// </summary>
+        /// <param name="certFilePath">Path to the PFX file (null/empty to skip file-based loading).</param>
+        /// <param name="certPassword">Password for the PFX file.</param>
+        /// <param name="storeName">Certificate store name for Windows fallback.</param>
+        /// <param name="storeLocation">Certificate store location for Windows fallback.</param>
+        /// <param name="thumbprint">Thumbprint for Windows certificate store lookup.</param>
+        public static X509Certificate2 LoadCertificateWithFallback(
+            string? certFilePath,
+            string? certPassword,
+            StoreName storeName,
+            StoreLocation storeLocation,
+            string thumbprint)
+        {
+            if (!string.IsNullOrWhiteSpace(certFilePath))
+            {
+                return LoadCertificateFromFile(certFilePath, certPassword ?? string.Empty);
+            }
+
+            return LoadCertificate(storeName, storeLocation, thumbprint);
         }
     }
 }
