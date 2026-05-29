@@ -18,7 +18,26 @@ public class TokenFetcher
     private readonly string _stsCertificateThumbprint;
     private readonly string _wspCertificateThumbprint;
 
-    public TokenFetcher(string clientCertificateThumbprint, string stsIssuer, string stsEndpoint, string stsCertificateAlias, string stsCertificateThumbprint, string wspCertificateThumbprint)
+    private readonly string? _ssoCertFilePath;
+    private readonly string? _ssoCertPassword;
+    private readonly string? _stsCertFilePath;
+    private readonly string? _stsCertPassword;
+    private readonly string? _stsOrganisationCertFilePath;
+    private readonly string? _stsOrganisationCertPassword;
+
+    public TokenFetcher(
+        string clientCertificateThumbprint,
+        string stsIssuer,
+        string stsEndpoint,
+        string stsCertificateAlias,
+        string stsCertificateThumbprint,
+        string wspCertificateThumbprint,
+        string? ssoCertFilePath = null,
+        string? ssoCertPassword = null,
+        string? stsCertFilePath = null,
+        string? stsCertPassword = null,
+        string? stsOrganisationCertFilePath = null,
+        string? stsOrganisationCertPassword = null)
     {
         _clientCertificateThumbprint = clientCertificateThumbprint;
         _stsIssuer = stsIssuer;
@@ -26,6 +45,12 @@ public class TokenFetcher
         _stsCertificateAlias = stsCertificateAlias;
         _stsCertificateThumbprint = stsCertificateThumbprint;
         _wspCertificateThumbprint = wspCertificateThumbprint;
+        _ssoCertFilePath = ssoCertFilePath;
+        _ssoCertPassword = ssoCertPassword;
+        _stsCertFilePath = stsCertFilePath;
+        _stsCertPassword = stsCertPassword;
+        _stsOrganisationCertFilePath = stsOrganisationCertFilePath;
+        _stsOrganisationCertPassword = stsOrganisationCertPassword;
     }
 
     /// <summary>
@@ -63,9 +88,15 @@ public class TokenFetcher
     /// </summary>
     public StsTokenServiceConfiguration BuildServiceConfig(string entityId, string wspEndpoint, string cvr)
     {
-        var clientCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _clientCertificateThumbprint);
-        var stsCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _stsCertificateThumbprint);
-        var wspCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
+        var clientCert = CertificateLoader.LoadCertificateWithFallback(
+            _ssoCertFilePath, _ssoCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _clientCertificateThumbprint);
+        var stsCert = CertificateLoader.LoadCertificateWithFallback(
+            _stsCertFilePath, _stsCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _stsCertificateThumbprint);
+        var wspCert = CertificateLoader.LoadCertificateWithFallback(
+            _stsOrganisationCertFilePath, _stsOrganisationCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
         var stsConfig = new StsConfiguration(_stsEndpoint, _stsIssuer, cvr, stsCert);
         var wspConfig = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
         return new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert)

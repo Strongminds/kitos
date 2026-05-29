@@ -343,9 +343,20 @@ namespace Presentation.Web.Infrastructure.DI
             var stsBrugerPort = appSettings["StsBrugerPort"] ?? "";
             var stsPersonPort = appSettings["StsPersonPort"] ?? "";
 
+            // Certificate file paths for container environments (empty = use Windows cert store)
+            var ssoCertFilePath = appSettings["SsoCertFilePath"] ?? "";
+            var ssoCertPassword = appSettings["SsoCertPassword"] ?? "";
+            var stsCertFilePath = appSettings["StsCertFilePath"] ?? "";
+            var stsCertPassword = appSettings["StsCertPassword"] ?? "";
+            var stsOrganisationCertFilePath = appSettings["StsOrganisationCertFilePath"] ?? "";
+            var stsOrganisationCertPassword = appSettings["StsOrganisationCertPassword"] ?? "";
+
             services.AddSingleton(_ => new TokenFetcher(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
-                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint));
+                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint,
+                ssoCertFilePath, ssoCertPassword,
+                stsCertFilePath, stsCertPassword,
+                stsOrganisationCertFilePath, stsOrganisationCertPassword));
             services.AddScoped<IStsOrganizationService, StsOrganizationService>();
             services.AddScoped<IStsOrganizationCompanyLookupService, StsOrganizationCompanyLookupService>();
             services.AddScoped<IStsOrganizationSystemService, StsOrganizationSystemService>();
