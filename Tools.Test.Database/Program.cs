@@ -28,7 +28,7 @@ namespace Tools.Test.Database
                 FailOnConnectionToProd(connectionString);
                 var dbOptions = new DbContextOptionsBuilder<KitosContext>()
                     .UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString)
+                    .UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120))
                     .Options;
                 using (var context = new KitosContext(dbOptions))
                 {

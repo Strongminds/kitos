@@ -417,7 +417,7 @@ namespace Presentation.Web.Infrastructure.DI
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
                 options.UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString)
+                    .UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120))
                     .AddInterceptors(new EFEntityInterceptor(
                         operationClock: () =>
                             httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()

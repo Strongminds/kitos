@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<PubSubContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            options.UseSqlServer(connectionString);
+            options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120));
         });
         return services;
     }

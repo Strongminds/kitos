@@ -28,7 +28,7 @@ namespace Infrastructure.DataAccess
     {
         public KitosContext() : this(new DbContextOptionsBuilder<KitosContext>()
             .UseLazyLoadingProxies()
-            .UseSqlServer(ConnectionStringTools.GetConnectionString("KitosContext"))
+            .UseSqlServer(ConnectionStringTools.GetConnectionString("KitosContext"), o => o.UseCompatibilityLevel(120))
             .Options) { }
 
         public KitosContext(DbContextOptions<KitosContext> options) : base(options) { }

@@ -10,7 +10,7 @@ namespace PubSub.Infrastructure.DataAccess.Factories
             var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION_STRING");
 
             var optionsBuilder = new DbContextOptionsBuilder<PubSubContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120));
             return new PubSubContext(optionsBuilder.Options);
         }
     }

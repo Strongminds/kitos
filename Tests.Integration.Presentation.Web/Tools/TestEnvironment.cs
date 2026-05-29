@@ -129,7 +129,7 @@ namespace Tests.Integration.Presentation.Web.Tools
         {
             var options = new DbContextOptionsBuilder<KitosContext>()
                 .UseLazyLoadingProxies()
-                .UseSqlServer(ConnectionString)
+                .UseSqlServer(ConnectionString, o => o.UseCompatibilityLevel(120))
                 .Options;
             return new KitosContext(options);
         }

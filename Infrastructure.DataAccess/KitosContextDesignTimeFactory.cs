@@ -26,7 +26,7 @@ namespace Infrastructure.DataAccess
                     "Example: $env:ConnectionStrings__KitosContext = \"Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True\"");
 
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
-            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(connectionString);
+            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120));
 
             return new KitosContext(optionsBuilder.Options);
         }
