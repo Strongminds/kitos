@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
@@ -82,8 +83,8 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         public string? Purpose { get; set; }
         /// <summary>
-        /// The technical system type of this system usage.
+        /// The technical system types of this system usage.
         /// </summary>
-        public IdentityNamePairResponseDTO? TechnicalSystemType { get; set; }
+        public IEnumerable<IdentityNamePairResponseDTO> TechnicalSystemTypes { get; set; }
     }
 }

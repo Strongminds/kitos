@@ -1590,7 +1590,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1600,7 +1600,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(createResult.Ok);
             AssertTransactionCommitted(transactionMock);
-            Assert.Same(technicalSystemType, createResult.Value.TechnicalSystemType);
+            Assert.Contains(technicalSystemType, createResult.Value.TechnicalSystemTypes);
         }
 
         [Fact]
@@ -1617,7 +1617,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1645,7 +1645,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1659,24 +1659,23 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
-        public void Can_Create_With_TechnicalSystemType_If_Not_Available_In_Org_But_Value_Is_Not_Changed()
+        public void Can_Create_With_TechnicalSystemType_If_Already_Assigned()
         {
             //Arrange
             var (systemUuid, organizationUuid, transactionMock, organization, itSystem, itSystemUsage) = CreateBasicTestVariables(true);
 
             var technicalSystemTypeUuid = A<Guid>();
             var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
-            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
-            itSystemUsage.TechnicalSystemType = technicalSystemType;
+            itSystemUsage.TechnicalSystemTypes.Add(technicalSystemType);
 
             SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
-            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, true));
 
             var input = new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1686,7 +1685,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(createResult.Ok);
             AssertTransactionCommitted(transactionMock);
-            Assert.Same(technicalSystemType, createResult.Value.TechnicalSystemType);
+            Assert.Contains(technicalSystemType, createResult.Value.TechnicalSystemTypes);
         }
 
         [Fact]
@@ -1706,7 +1705,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1716,7 +1715,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(result.Ok);
             AssertTransactionCommitted(transactionMock);
-            Assert.Same(technicalSystemType, result.Value.TechnicalSystemType);
+            Assert.Contains(technicalSystemType, result.Value.TechnicalSystemTypes);
         }
 
         [Fact]
@@ -1735,7 +1734,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1765,7 +1764,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1779,26 +1778,25 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
-        public void Can_Update_With_TechnicalSystemType_If_Not_Available_In_Org_But_Value_Is_Not_Changed()
+        public void Can_Update_With_TechnicalSystemType_When_Already_Assigned()
         {
             //Arrange
             var (_, _, transactionMock, organization, _, itSystemUsage) = CreateBasicTestVariables();
 
             var technicalSystemTypeUuid = A<Guid>();
             var technicalSystemType = new TechnicalSystemType() { Id = A<int>(), Uuid = technicalSystemTypeUuid };
-            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
-            itSystemUsage.TechnicalSystemType = technicalSystemType;
+            itSystemUsage.TechnicalSystemTypes.Add(technicalSystemType);
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
             ExpectAllowModifyReturns(itSystemUsage, true);
             SetupAuthorizationModelReturns();
-            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, false));
+            ExpectGetTechnicalSystemTypeReturns(organization.Id, technicalSystemTypeUuid, (technicalSystemType, true));
 
             var input = new SystemUsageUpdateParameters
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = technicalSystemTypeUuid.FromNullable().AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.Some(new[] { technicalSystemTypeUuid }).AsChangedValue()
                 }
             };
 
@@ -1808,17 +1806,16 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(result.Ok);
             AssertTransactionCommitted(transactionMock);
-            Assert.Same(technicalSystemType, result.Value.TechnicalSystemType);
+            Assert.Contains(technicalSystemType, result.Value.TechnicalSystemTypes);
         }
 
         [Fact]
-        public void Can_Reset_TechnicalSystemType()
+        public void Can_Reset_TechnicalSystemTypes()
         {
             //Arrange
             var (_, _, transactionMock, _, _, itSystemUsage) = CreateBasicTestVariables();
             var technicalSystemType = new TechnicalSystemType() { Id = A<int>() };
-            itSystemUsage.TechnicalSystemTypeId = technicalSystemType.Id;
-            itSystemUsage.TechnicalSystemType = technicalSystemType;
+            itSystemUsage.TechnicalSystemTypes.Add(technicalSystemType);
 
             ExpectGetSystemUsageReturns(itSystemUsage.Uuid, itSystemUsage);
             ExpectAllowModifyReturns(itSystemUsage, true);
@@ -1828,7 +1825,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 GeneralProperties = new UpdatedSystemUsageGeneralProperties
                 {
-                    TechnicalSystemTypeUuid = Maybe<Guid>.None.AsChangedValue()
+                    TechnicalSystemTypeUuids = Maybe<IEnumerable<Guid>>.None.AsChangedValue()
                 }
             };
 
@@ -1838,7 +1835,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.True(result.Ok);
             AssertTransactionCommitted(transactionMock);
-            Assert.Null(result.Value.TechnicalSystemType);
+            Assert.Empty(result.Value.TechnicalSystemTypes);
         }
 
         [Fact]
