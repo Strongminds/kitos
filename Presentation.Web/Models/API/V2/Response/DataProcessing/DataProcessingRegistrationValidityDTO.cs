@@ -16,6 +16,6 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Reasons as to why the registration is considered to be invalid
         /// </summary>
-        public IEnumerable<DataProcessingRegistrationValidationErrorChoice> ValidationErrors { get; set; }
+        public required IEnumerable<DataProcessingRegistrationValidationErrorChoice> ValidationErrors { get; set; }
     }
 }
