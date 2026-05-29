@@ -75,11 +75,21 @@ services:
       ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
       AppSettings__BaseUrl: "http://localhost:5000"
       AppSettings__PubSubBaseUrl: "http://pubsub-api:8080"
+      AppSettings__SsoCertFilePath: /etc/ssl/certs/sso-sp.pfx
+      AppSettings__SsoCertPassword: ${SSO_CERT_PASSWORD:-}
+      AppSettings__StsCertFilePath: /etc/ssl/certs/sts.pfx
+      AppSettings__StsCertPassword: ${STS_CERT_PASSWORD:-}
+      AppSettings__StsOrganisationCertFilePath: /etc/ssl/certs/sts-org.pfx
+      AppSettings__StsOrganisationCertPassword: ${STS_ORG_CERT_PASSWORD:-}
       Serilog__WriteTo__0__Args__path: "/var/log/kitos/kitos-.txt"
       Smtp__DeliveryMethod: SpecifiedPickupDirectory
       Smtp__PickupDirectoryLocation: "/tmp/maildrop/"
     ports:
       - "5000:8080"
+    volumes:
+      - ./certs/sso-sp.pfx:/etc/ssl/certs/sso-sp.pfx:ro
+      - ./certs/sts.pfx:/etc/ssl/certs/sts.pfx:ro
+      - ./certs/sts-org.pfx:/etc/ssl/certs/sts-org.pfx:ro
     depends_on:
       postgres:
         condition: service_healthy
