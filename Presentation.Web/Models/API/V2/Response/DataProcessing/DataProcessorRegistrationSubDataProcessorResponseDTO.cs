@@ -10,12 +10,11 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// The data processor's organization in KITOS
         /// </summary>
-        [Required]
-        public ShallowOrganizationResponseDTO DataProcessorOrganization { get; set; }
+        public required ShallowOrganizationResponseDTO DataProcessorOrganization { get; set; }
         /// <summary>
         /// Optional reference to selected basis for transfer option
         /// </summary>
-        public IdentityNamePairResponseDTO BasisForTransfer { get; set; }
+        public IdentityNamePairResponseDTO? BasisForTransfer { get; set; }
         /// <summary>
         /// Optionally info regarding whether transfer to insecure third countries occur
         /// </summary>
@@ -23,6 +22,6 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Optional reference to a specific insecure country, which is subject to data processing
         /// </summary>
-        public IdentityNamePairResponseDTO InsecureThirdCountrySubjectToDataProcessing { get; set; }
+        public IdentityNamePairResponseDTO? InsecureThirdCountrySubjectToDataProcessing { get; set; }
     }
 }
