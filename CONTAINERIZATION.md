@@ -131,3 +131,55 @@ Migrations run as a separate init step before the API starts (the `migrate-db` s
 # Run migrations manually against a running database
 docker compose run --rm migrate-db
 ```
+
+## Kubernetes Deployment
+
+Full Kubernetes manifests are available in the `k8s/` directory. See [`k8s/README.md`](k8s/README.md) for detailed instructions.
+
+### Quick Start
+
+```bash
+# Apply all manifests
+kubectl apply -f k8s/ --recursive
+
+# Or apply in order (recommended for first deployment)
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/postgres/
+kubectl apply -f k8s/rabbitmq/
+kubectl apply -f k8s/kitos-api/
+kubectl apply -f k8s/pubsub-api/
+kubectl apply -f k8s/ingress.yaml
+```
+
+### Architecture Overview
+
+The Kubernetes deployment includes:
+
+| Component | Image | Replicas | Notes |
+|-----------|-------|----------|-------|
+| postgres | postgres:17 | 1 | 10Gi PVC, init script creates 3 databases |
+| rabbitmq | rabbitmq:3-management | 1 | AMQP + management UI |
+| kitos-api | kitos-api:latest | 2 | Main API, serves legacy UI |
+| pubsub-api | pubsub-api:latest | 1 | Event subscription service |
+
+### Secrets Required
+
+Before deployment, create these secrets manually (they contain sensitive values not stored in git):
+
+- `postgres-credentials` — database password
+- `rabbitmq-credentials` — broker password
+- `kitos-api-secrets` — connection strings, JWT key, cert passwords
+- `kitos-sso-certificates` — PFX certificate files
+- `pubsub-api-secrets` — connection string, RabbitMQ password, API key
+- `kitos-tls` — TLS certificate for ingress
+
+### Migration Pattern
+
+Database schema migrations run as a Kubernetes Job before deployment:
+
+```bash
+kubectl apply -f k8s/kitos-api/migration-job.yaml
+kubectl wait --for=condition=complete job/kitos-api-migration -n kitos --timeout=120s
+# Then roll out new deployment
+kubectl apply -f k8s/kitos-api/deployment.yaml
+```

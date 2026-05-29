@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pubsub-api-config
+  namespace: kitos
+  labels:
+    app.kubernetes.io/name: pubsub-api
+    app.kubernetes.io/part-of: kitos
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  Database__Provider: "PostgreSql"
+  JwtValidation__ApiUrl: "http://kitos-api:8080"
+  RabbitMQ__HostName: "rabbitmq"
+  RabbitMQ__Port: "5672"
+  RabbitMQ__UserName: "kitos"
