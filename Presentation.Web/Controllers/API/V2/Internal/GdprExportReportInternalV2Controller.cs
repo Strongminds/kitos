@@ -49,7 +49,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 DataProcessingAgreementConcluded = gdprReport.DataProcessingAgreementConcluded,
                 LinkToDirectory = gdprReport.LinkToDirectory,
                 SensitiveDataTypes = gdprReport.SensitiveDataTypes,
-                RiskAssessment = gdprReport.RiskAssessment?.ToYesNoDontKnowChoice(),
+                RiskAssessment = gdprReport.RiskAssessment?.ToChoice(),
                 RiskAssessmentDate = gdprReport.RiskAssessmentDate,
                 PlannedRiskAssessmentDate = gdprReport.PlannedRiskAssessmentDate,
                 PreRiskAssessment = gdprReport.PreRiskAssessment?.ToRiskLevelChoice(),

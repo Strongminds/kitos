@@ -284,7 +284,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.UserSupervision, AssertPropertyContainsDataChange(mappedGdpr.UserSupervision)?.ToYesNoDontKnowChoice());
             Assert.Equal(input.UserSupervisionDate, AssertPropertyContainsDataChange(mappedGdpr.UserSupervisionDate));
             AssertLinkMapping(input.UserSupervisionDocumentation, mappedGdpr.UserSupervisionDocumentation);
-            Assert.Equal(input.RiskAssessmentConducted, AssertPropertyContainsDataChange(mappedGdpr.RiskAssessmentConducted)?.ToYesNoDontKnowChoice());
+            Assert.Equal(input.RiskAssessmentConducted, AssertPropertyContainsDataChange(mappedGdpr.RiskAssessmentConducted)?.ToChoice());
             Assert.Equal(input.RiskAssessmentNotes, AssertPropertyContainsDataChange(mappedGdpr.RiskAssessmentNotes));
             Assert.Equal(input.RiskAssessmentConductedDate, AssertPropertyContainsDataChange(mappedGdpr.RiskAssessmentConductedDate));
             AssertLinkMapping(input.RiskAssessmentDocumentation, mappedGdpr.RiskAssessmentDocumentation);
