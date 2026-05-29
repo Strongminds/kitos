@@ -555,26 +555,36 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return systemUsage.UpdateSystemUsageCriticalityLevel(optionByUuid.Value.option);
         }
 
-        private Maybe<OperationError> UpdateTechnicalSystemType(ItSystemUsage systemUsage, Maybe<Guid> technicalSystemTypeUuid)
+        private Maybe<OperationError> UpdateTechnicalSystemTypes(ItSystemUsage systemUsage, Maybe<IEnumerable<Guid>> technicalSystemTypeUuids)
         {
-            if (technicalSystemTypeUuid.IsNone)
+            if (technicalSystemTypeUuids.IsNone)
             {
-                systemUsage.ResetTechnicalSystemType();
+                systemUsage.ResetTechnicalSystemTypes();
                 return Maybe<OperationError>.None;
             }
 
-            var optionByUuid = _technicalSystemTypeOptionsService.GetOptionByUuid(systemUsage.OrganizationId, technicalSystemTypeUuid.Value);
-
-            if (optionByUuid.IsNone)
-                return new OperationError("Invalid TechnicalSystemType Uuid", OperationFailure.BadInput);
-
-            if (systemUsage.TechnicalSystemTypeId != null && systemUsage.TechnicalSystemTypeId == optionByUuid.Value.option.Id)
+            var uuids = technicalSystemTypeUuids.Value.ToList();
+            if (!uuids.Any())
+            {
+                systemUsage.ResetTechnicalSystemTypes();
                 return Maybe<OperationError>.None;
+            }
 
-            if (!optionByUuid.Value.available)
-                return new OperationError($"TechnicalSystemType with uuid {technicalSystemTypeUuid.Value} is not available in this organization.", OperationFailure.BadInput);
+            var resolvedTypes = new List<TechnicalSystemType>();
+            foreach (var uuid in uuids)
+            {
+                var optionByUuid = _technicalSystemTypeOptionsService.GetOptionByUuid(systemUsage.OrganizationId, uuid);
 
-            return systemUsage.UpdateTechnicalSystemType(optionByUuid.Value.option);
+                if (optionByUuid.IsNone)
+                    return new OperationError($"Invalid TechnicalSystemType Uuid: {uuid}", OperationFailure.BadInput);
+
+                if (!optionByUuid.Value.available)
+                    return new OperationError($"TechnicalSystemType with uuid {uuid} is not available in this organization.", OperationFailure.BadInput);
+
+                resolvedTypes.Add(optionByUuid.Value.option);
+            }
+
+            return systemUsage.UpdateTechnicalSystemTypes(resolvedTypes);
         }
 
         private Maybe<OperationError> UpdateArchiveType(ItSystemUsage systemUsage, Maybe<Guid> archiveType)
@@ -694,7 +704,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuid, (systemUsage, technicalSystemTypeUuid) => UpdateTechnicalSystemType(systemUsage, technicalSystemTypeUuid)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, (systemUsage, technicalSystemTypeUuids) => UpdateTechnicalSystemTypes(systemUsage, technicalSystemTypeUuids)));
         }
 
         private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)

@@ -147,6 +147,7 @@ namespace Infrastructure.DataAccess
         public DbSet<ItSystemUsageOverviewTaskRefReadModel> ItSystemUsageOverviewTaskRefReadModels { get; set; }
         public DbSet<ItSystemUsageOverviewLocalTaskRefReadModel> ItSystemUsageOverviewLocalTaskRefReadModels { get; set; }
         public DbSet<ItSystemUsageOverviewSensitiveDataLevelReadModel> ItSystemUsageOverviewSensitiveDataLevelReadModels { get; set; }
+        public DbSet<ItSystemUsageOverviewTechnicalSystemTypeReadModel> ItSystemUsageOverviewTechnicalSystemTypeReadModels { get; set; }
         public DbSet<ItSystemUsageOverviewArchivePeriodReadModel> ItSystemUsageOverviewArchivePeriodReadModels { get; set; }
         public DbSet<ItSystemUsageOverviewDataProcessingRegistrationReadModel> ItSystemUsageOverviewDataProcessingRegistrationReadModels { get; set; }
         public DbSet<ItSystemUsageOverviewInterfaceReadModel> ItSystemUsageOverviewInterfaceReadModels { get; set; }
