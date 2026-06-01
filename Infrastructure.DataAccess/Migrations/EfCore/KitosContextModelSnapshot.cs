@@ -4932,7 +4932,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("TechnicalSystemTypeUuid")
                         .HasDatabaseName("ItSystemUsageOverviewTechnicalSystemTypeReadModel_Index_Uuid");
 
-                    b.ToTable("ItSystemUsageOverviewTechnicalSystemTypeReadModels");
+                    b.ToTable("ItSystemUsageOverviewTechnicalSystemTypeReadModel", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewUsedBySystemUsageReadModel", b =>

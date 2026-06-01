@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260601063028_MakeTechnicalSystemTypeMultiChoice")]
+    [Migration("20260601082525_MakeTechnicalSystemTypeMultiChoice")]
     partial class MakeTechnicalSystemTypeMultiChoice
     {
         /// <inheritdoc />
@@ -4935,7 +4935,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("TechnicalSystemTypeUuid")
                         .HasDatabaseName("ItSystemUsageOverviewTechnicalSystemTypeReadModel_Index_Uuid");
 
-                    b.ToTable("ItSystemUsageOverviewTechnicalSystemTypeReadModels");
+                    b.ToTable("ItSystemUsageOverviewTechnicalSystemTypeReadModel", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewUsedBySystemUsageReadModel", b =>
