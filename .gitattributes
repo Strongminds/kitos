@@ -3,8 +3,9 @@
 ###############################################################################
 * text=auto
 
-# Shell scripts must always use LF line endings (required for Linux containers)
+# Shell scripts and Dockerfiles must always use LF line endings (required for Linux containers)
 *.sh text eol=lf
+Dockerfile* text eol=lf
 
 ###############################################################################
 # Set default behavior for command prompt diff.
