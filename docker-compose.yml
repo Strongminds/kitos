@@ -56,6 +56,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       Database__Provider: PostgreSql
+      Hangfire__Provider: PostgreSql
+      IgnorePendingModelChangesWarning: "true"
       ConnectionStrings__KitosContext: "Host=postgres;Port=5432;Database=kitos;Username=kitos;Password=kitos"
       ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
     depends_on:
