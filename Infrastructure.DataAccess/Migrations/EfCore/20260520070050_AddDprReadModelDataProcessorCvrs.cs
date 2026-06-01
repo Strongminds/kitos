@@ -10,16 +10,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
+            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
+
             migrationBuilder.AddColumn<string>(
                 name: "DataProcessorCvrsAsCsv",
                 table: "DataProcessingRegistrationReadModels",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "SubDataProcessorCvrsAsCsv",
                 table: "DataProcessingRegistrationReadModels",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: true);
         }
 
