@@ -16,7 +16,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public bool DataProcessingAgreementConcluded { get; set; }
         public bool LinkToDirectory { get; set; }
         public IEnumerable<string> SensitiveDataTypes { get; set; }
-        public YesNoDontKnowChoice? RiskAssessment { get; set; } 
+        public YesNoDontKnowIrrelevantChoice? RiskAssessment { get; set; } 
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
         public RiskLevelChoice? PreRiskAssessment { get; set; } 

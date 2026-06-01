@@ -393,7 +393,8 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     $parts = ConvertTo-SqlConnectionParts $connectionString
     $rawServer = $parts.Server -replace '^tcp:', ''
     $splitParts = $rawServer -split ',', 2
-    $sqlHost = $splitParts[0].Trim()
+    # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
+    $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
     $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
     if (-not $isLocalServer) {
         $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }

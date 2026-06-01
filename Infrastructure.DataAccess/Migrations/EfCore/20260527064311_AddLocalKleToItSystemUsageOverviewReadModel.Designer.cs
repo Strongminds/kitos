@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260527064311_AddLocalKleToItSystemUsageOverviewReadModel")]
+    partial class AddLocalKleToItSystemUsageOverviewReadModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,9 +259,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("SourceId")
                         .HasDatabaseName("IX_SourceId");
-
-                    b.HasIndex("Category", "Id")
-                        .HasDatabaseName("IX_Category_Id");
 
                     b.ToTable("PendingReadModelUpdates");
                 });
@@ -651,8 +651,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<int?>("DataResponsible_Id")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("EnforceInvalidity");
 
                     b.Property<int?>("HasSubDataProcessors")
                         .HasColumnType("int");
@@ -7594,7 +7592,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("CustomizedUiNodes", (string)null);
+                    b.ToTable("CustomizedUiNodes");
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.UIModuleCustomization", b =>
