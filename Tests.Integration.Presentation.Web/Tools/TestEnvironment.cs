@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Abstractions.Helpers;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -139,7 +140,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>()
                 .UseLazyLoadingProxies();
 
-            if (IsPostgreSqlProvider(DatabaseProvider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(DatabaseProvider))
             {
                 var pgCsb = new NpgsqlConnectionStringBuilder(ConnectionString) { SearchPath = "dbo,public" };
                 optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
@@ -154,16 +155,10 @@ namespace Tests.Integration.Presentation.Web.Tools
             return new KitosContext(options);
         }
 
-        private static bool IsPostgreSqlProvider(string provider)
-        {
-            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
 
         private static string ResolveLocalConnectionString(string provider)
         {
-            if (IsPostgreSqlProvider(provider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 return GetEnvironmentVariable("ConnectionStrings__KitosContext", false,
                     @"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres");

@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using Npgsql;
 using Core.Abstractions.Caching;
+using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Infrastructure.DataAccess.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -416,7 +417,7 @@ namespace Presentation.Web.Infrastructure.DI
             var connectionString = configuration.GetConnectionString("KitosContext")
                 ?? throw new InvalidOperationException("KitosContext connection string is required");
             var provider = configuration["Database:Provider"];
-            var usePostgreSql = IsPostgreSqlProvider(provider);
+            var usePostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider);
 
             services.AddDbContext<KitosContext>((sp, options) =>
             {
@@ -503,12 +504,6 @@ namespace Presentation.Web.Infrastructure.DI
                     sp.GetRequiredService<IOrganizationalUserContext>()));
         }
 
-        private static bool IsPostgreSqlProvider(string? provider)
-        {
-            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
 
         private static void RegisterDomainEventsEngine(IServiceCollection services)
         {

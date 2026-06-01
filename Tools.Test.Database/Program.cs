@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Core.Abstractions.Helpers;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.Data.SqlClient;
@@ -36,7 +37,7 @@ namespace Tools.Test.Database
                 var dbOptionsBuilder = new DbContextOptionsBuilder<KitosContext>()
                     .UseLazyLoadingProxies();
 
-                if (IsPostgreSqlProvider(provider))
+                if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
                 {
                     dbOptionsBuilder.UseNpgsql(connectionString);
                 }
@@ -194,7 +195,7 @@ namespace Tools.Test.Database
 
         private static string NormalizeConnectionString(string connectionString, string provider)
         {
-            if (IsPostgreSqlProvider(provider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 var builder = new NpgsqlConnectionStringBuilder(connectionString);
                 if (string.Equals(builder.Host, "localhost", StringComparison.OrdinalIgnoreCase))
@@ -231,17 +232,6 @@ namespace Tools.Test.Database
             return "SqlServer";
         }
 
-        private static bool IsPostgreSqlProvider(string provider)
-        {
-            if (string.IsNullOrWhiteSpace(provider))
-            {
-                return false;
-            }
-
-            return provider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase)
-                   || provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase)
-                   || provider.Equals("Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
 
         private static bool LooksLikePostgreSqlConnectionString(string connectionString)
         {

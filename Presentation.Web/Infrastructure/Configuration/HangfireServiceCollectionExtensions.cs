@@ -1,3 +1,4 @@
+using Core.Abstractions.Helpers;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.Server;
@@ -27,7 +28,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                     .UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings();
 
-                if (IsPostgreSqlProvider(hangfireProvider))
+                if (DatabaseProviderHelper.IsPostgreSqlProvider(hangfireProvider))
                 {
                     config.UsePostgreSqlStorage(hangfireConnectionString);
                 }
@@ -45,7 +46,7 @@ namespace Presentation.Web.Infrastructure.Configuration
 
         private static void EnsureHangfireDatabaseCreated(string hangfireConnectionString, string? provider)
         {
-            if (IsPostgreSqlProvider(provider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 var csb = new NpgsqlConnectionStringBuilder(hangfireConnectionString);
                 var databaseName = csb.Database;
@@ -82,11 +83,5 @@ namespace Presentation.Web.Infrastructure.Configuration
             cmd.ExecuteNonQuery();
         }
 
-        private static bool IsPostgreSqlProvider(string? provider)
-        {
-            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
     }
 }

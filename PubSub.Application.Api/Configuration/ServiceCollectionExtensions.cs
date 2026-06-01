@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Core.Abstractions.Helpers;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.ApplicationServices.Config;
 using RabbitMQ.Client;
@@ -59,7 +60,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<PubSubContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (IsPostgreSqlProvider(provider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 options.UseNpgsql(connectionString);
             }
@@ -71,12 +72,6 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static bool IsPostgreSqlProvider(string? provider)
-    {
-        return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-    }
 
     public static IServiceCollection AddAuthenticationServices(this IServiceCollection services,
         ConfigurationManager configuration)

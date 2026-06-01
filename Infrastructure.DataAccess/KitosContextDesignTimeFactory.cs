@@ -1,4 +1,5 @@
 using System;
+using Core.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -32,7 +33,7 @@ namespace Infrastructure.DataAccess
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
             optionsBuilder.UseLazyLoadingProxies();
 
-            if (IsPostgreSqlProvider(provider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
                 optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
@@ -47,11 +48,5 @@ namespace Infrastructure.DataAccess
             return new KitosContext(optionsBuilder.Options);
         }
 
-        private static bool IsPostgreSqlProvider(string? provider)
-        {
-            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
     }
 }
