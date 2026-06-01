@@ -32,6 +32,7 @@ namespace Core.DomainServices.SystemUsage
         private readonly IGenericRepository<ItSystemUsageOverviewUsedBySystemUsageReadModel> _itSystemUsageUsedByRelationReadModelRepository;
         private readonly IGenericRepository<ItSystemUsageOverviewUsingSystemUsageReadModel> _itSystemUsageUsingRelationReadModelRepository;
         private readonly IGenericRepository<ItSystemUsageOverviewItContractReadModel> _itSystemUsageOverviewContractReadModelsRepository;
+        private readonly IGenericRepository<ItSystemUsageOverviewTechnicalSystemTypeReadModel> _technicalSystemTypeReadModelRepository;
 
         public ItSystemUsageOverviewReadModelUpdate(
             IGenericRepository<ItSystemUsageOverviewRoleAssignmentReadModel> roleAssignmentRepository,
@@ -45,7 +46,8 @@ namespace Core.DomainServices.SystemUsage
             IGenericRepository<ItSystemUsageOverviewUsingSystemUsageReadModel> itSystemUsageUsingRelationReadModelRepository,
             IOptionsService<ItSystem, BusinessType> businessTypeService,
             IGenericRepository<ItSystemUsageOverviewRelevantOrgUnitReadModel> relevantOrgUnitsRepository,
-            IGenericRepository<ItSystemUsageOverviewItContractReadModel> itSystemUsageOverviewContractReadModelsRepository)
+            IGenericRepository<ItSystemUsageOverviewItContractReadModel> itSystemUsageOverviewContractReadModelsRepository,
+            IGenericRepository<ItSystemUsageOverviewTechnicalSystemTypeReadModel> technicalSystemTypeReadModelRepository)
         {
             _roleAssignmentRepository = roleAssignmentRepository;
             _taskRefRepository = taskRefRepository;
@@ -58,6 +60,8 @@ namespace Core.DomainServices.SystemUsage
             _businessTypeService = businessTypeService;
             _relevantOrgUnitsRepository = relevantOrgUnitsRepository;
             _itSystemUsageOverviewContractReadModelsRepository = itSystemUsageOverviewContractReadModelsRepository;
+            _technicalSystemTypeReadModelRepository = technicalSystemTypeReadModelRepository;
+            _localTaskRefRepository = localTaskRefRepository;
         }
 
         public void Apply(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
@@ -106,8 +110,6 @@ namespace Core.DomainServices.SystemUsage
             destination.SystemUsageCriticalityLevelName = source.SystemUsageCriticalityLevel?.Name;
             destination.CriticalityLevelDocumentationUrl = source.CriticalityLevelDocumentationUrl;
             destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
-            destination.TechnicalSystemTypeUuid = source.TechnicalSystemType?.Uuid;
-            destination.TechnicalSystemTypeName = source.TechnicalSystemType?.Name;
             destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
 
             PatchParentSystemInformation(source, destination);
@@ -127,6 +129,7 @@ namespace Core.DomainServices.SystemUsage
             PatchGeneralPurposeRegistrations(source, destination);
             PatchProcessingPurposeRegistrations(source, destination);
             PatchDependsOnInterfaces(source, destination);
+            PatchTechnicalSystemTypes(source, destination);
             PatchRelatedItSystemUsages(
                 () => new ItSystemUsageOverviewUsedBySystemUsageReadModel(),
                 source,
@@ -414,6 +417,34 @@ namespace Core.DomainServices.SystemUsage
                         SensitivityDataLevel = incomingSensitiveDataLevel
                     };
                     destination.SensitiveDataLevels.Add(sensitiveDataLevel);
+                }
+            }
+        }
+
+        private void PatchTechnicalSystemTypes(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
+            destination.TechnicalSystemTypeNamesAsCsv = string.Join(", ", source.TechnicalSystemTypes.Select(x => x.Name));
+
+            var incomingUuids = source.TechnicalSystemTypes.Select(x => x.Uuid).ToHashSet();
+
+            var toRemove = destination.TechnicalSystemTypes.Where(x => !incomingUuids.Contains(x.TechnicalSystemTypeUuid)).ToList();
+            toRemove.ForEach(item =>
+            {
+                destination.TechnicalSystemTypes.Remove(item);
+                _technicalSystemTypeReadModelRepository.Delete(item);
+            });
+
+            var existingUuids = destination.TechnicalSystemTypes.Select(x => x.TechnicalSystemTypeUuid).ToHashSet();
+            foreach (var technicalSystemType in source.TechnicalSystemTypes)
+            {
+                if (!existingUuids.Contains(technicalSystemType.Uuid))
+                {
+                    destination.TechnicalSystemTypes.Add(new ItSystemUsageOverviewTechnicalSystemTypeReadModel
+                    {
+                        Parent = destination,
+                        TechnicalSystemTypeUuid = technicalSystemType.Uuid,
+                        TechnicalSystemTypeName = technicalSystemType.Name
+                    });
                 }
             }
         }

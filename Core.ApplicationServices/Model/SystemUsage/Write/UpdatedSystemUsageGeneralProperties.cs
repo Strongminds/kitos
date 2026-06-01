@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared;
 using Core.DomainModel.ItSystem.DataTypes;
@@ -29,7 +30,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<Guid>> SystemUsageCriticalityLevelUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
         public OptionalValueChange<Maybe<NamedLink>> CriticalityLevelDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
         public OptionalValueChange<string> Purpose { get; set; } = OptionalValueChange<string>.None;
-        public OptionalValueChange<Maybe<Guid>> TechnicalSystemTypeUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
+        public OptionalValueChange<Maybe<IEnumerable<Guid>>> TechnicalSystemTypeUuids { get; set; } = OptionalValueChange<Maybe<IEnumerable<Guid>>>.None;
 
     }
 }
