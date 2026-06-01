@@ -23,11 +23,6 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
     return System.IO.File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
 };
 
-// Npgsql 6+ requires DateTime.Kind=Utc for 'timestamp with time zone' columns by default.
-// Enable legacy behaviour so that Unspecified/Local datetimes are accepted, matching
-// prior SQL Server behaviour while we progressively normalise datetime kinds.
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog
