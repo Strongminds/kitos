@@ -134,6 +134,15 @@ For complex queries (e.g., grid/list views), denormalized read models (e.g., `It
 - Mappers: `I{Domain}ResponseMapper` / `I{Domain}WriteModelMapper`
 - Tests: `{ClassUnderTest}Test`
 
+### Branch naming
+
+When creating branches, always use one of these formats:
+- `feature/{ticket-id}-{short-description}` – for new features (e.g., `feature/KITOS-1234-add-user-export`)
+- `bugfix/{ticket-id}-{short-description}` – for bug fixes with a ticket (e.g., `bugfix/KITOS-5678-fix-null-reference`)
+- `bugfix/{short-description}` – for bug fixes without a ticket (e.g., `bugfix/fix-login-redirect`)
+
+Use lowercase kebab-case for the short description. Keep it concise but descriptive.
+
 ### Danish domain terms
 
 - **KLE** – *Kommunernes Landsforenings Emnesystem*: task/topic classification system used by Danish municipalities
