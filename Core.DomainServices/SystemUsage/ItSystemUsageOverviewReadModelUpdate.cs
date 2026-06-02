@@ -113,7 +113,7 @@ namespace Core.DomainServices.SystemUsage
 
             var interfaces = source.GetExposedInterfaces();
             destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.Id.ToString()).ToStringWithDelimiter();
-            destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).ToStringWithDelimiter();
+            destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).Where(x => !x.IsWhiteSpace()).ToStringWithDelimiter();
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
