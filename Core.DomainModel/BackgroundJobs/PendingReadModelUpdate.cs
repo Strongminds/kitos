@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable InconsistentNaming
 
 namespace Core.DomainModel.BackgroundJobs
 {
@@ -13,7 +14,8 @@ namespace Core.DomainModel.BackgroundJobs
         DataProcessingRegistration_DataResponsible = 5,
         DataProcessingRegistration_OversightOption = 6,
         DataProcessingRegistration_ItContract = 7,
-        
+        DataProcessingRegistration_ItSystemUsage = 100,
+
         //IT-System usage
         ItSystemUsage = 8,
         ItSystemUsage_ItSystem = 9,

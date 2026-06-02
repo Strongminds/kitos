@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel.GDPR;
+using Core.DomainServices.Mapping;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
@@ -188,6 +189,9 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(contractName, readModel.ContractNamesAsCsv);
             Assert.Equal(systemName, readModel.SystemNamesAsCsv);
             Assert.Equal(itSystemDto.Uuid.ToString(), readModel.SystemUuidsAsCsv);
+            var validUsage = usage.General?.Validity?.Valid ?? false;
+            var expectedValidityInCsv = validUsage ? ReadModelMappingHelpers.ActiveNeuter : ReadModelMappingHelpers.InactiveNeuter;
+            Assert.Equal(expectedValidityInCsv, readModel.SystemValiditiesAsCsv);
             AssertDateEqual(oversightDate, readModel.LatestOversightDate);
             Assert.Equal(oversightRemark, readModel.LatestOversightRemark);
             Assert.Equal(oversightReportLink, readModel.LatestOversightReportLink);
