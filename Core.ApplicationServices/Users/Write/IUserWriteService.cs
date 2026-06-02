@@ -33,7 +33,5 @@ namespace Core.ApplicationServices.Users.Write
         void RequestPasswordReset(string email);
 
         Maybe<OperationError> SetDefaultOrgUnit(Guid userUuid, Guid organizationUuid, Guid organizationUnitUuid);
-
-        Maybe<OperationError> UpdateLatestLogin(Guid userUuid, DateTime latestLogin);
     }
 }
