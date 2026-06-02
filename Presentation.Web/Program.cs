@@ -10,6 +10,9 @@ using Presentation.Web.Models.Application.RuntimeEnv;
 using Serilog;
 using System;
 
+// Must be set before any Npgsql type is loaded (including Hangfire's PostgreSQL storage).
+// Allows writing DateTime with Kind=UTC to 'timestamp without time zone' columns.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
