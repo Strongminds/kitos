@@ -234,9 +234,7 @@ namespace Core.ApplicationServices
                     () => new OperationError("User is not member of the organization", OperationFailure.NotFound))
                 .Bind(user =>
                 {
-                    var x = _authorizationContext.AllowReads(user);
-                   if (x == false)
-                    // if (_authorizationContext.AllowReads(user) == false)
+                    if (_authorizationContext.AllowReads(user) == false)
                     {
                         return new OperationError($"Not allowed to read User with uuid: {userUuid}",
                             OperationFailure.Forbidden);
