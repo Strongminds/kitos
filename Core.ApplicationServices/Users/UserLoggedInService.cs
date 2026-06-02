@@ -10,7 +10,7 @@ namespace Core.ApplicationServices.Users
         public Maybe<OperationError> UpdateLatestLoginWithoutAuthenticating(Guid userUuid, DateTime latestLogin)
         {
             var userMaybe = userRepository.GetByUuid(userUuid);
-            if (userMaybe.IsNone) return Maybe<OperationError>.Some(new OperationError($"User with uuid {userUuid} not found", OperationFailure.NotFound));
+            if (userMaybe.IsNone) return new OperationError($"User with uuid {userUuid} not found", OperationFailure.NotFound);
             var user = userMaybe.Value;
 
             using var transaction = transactionManager.Begin();
