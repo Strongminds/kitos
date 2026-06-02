@@ -1148,6 +1148,8 @@ WHERE datname = @databaseName
                 continue;
             }
 
+            var isConventionAlias = IsLegacyForeignKeyConventionReason(compatibilityAlias.Reason);
+
             // Don't consume a fallback source column via COALESCE if the target schema also has a
             // column with that exact name — the fallback column is reserved for its own exact match.
             if (targetColumnNames.Contains(compatibleSourceColumn.Name)
@@ -1163,7 +1165,9 @@ WHERE datname = @databaseName
                     targetColumnName,
                     $"{exactSourceColumn.Name} ?? {compatibleSourceColumn.Name}",
                     [exactSourceColumn.Name, compatibleSourceColumn.Name],
-                    $"Using legacy SQL Server source column fallback {compatibleSourceColumn.Name} -> {targetColumnName}.");
+                    isConventionAlias
+                        ? null
+                        : $"Using legacy SQL Server source column fallback {compatibleSourceColumn.Name} -> {targetColumnName}.");
                 return true;
             }
 
@@ -1172,7 +1176,7 @@ WHERE datname = @databaseName
                 targetColumnName,
                 compatibleSourceColumn.Name,
                 [compatibleSourceColumn.Name],
-                compatibilityAlias.Reason);
+                isConventionAlias ? null : compatibilityAlias.Reason);
             return true;
         }
 
@@ -1189,6 +1193,11 @@ WHERE datname = @databaseName
 
         sourceColumn = new ColumnValueMapping(string.Empty, targetColumnName, string.Empty, [], null);
         return false;
+    }
+
+    private static bool IsLegacyForeignKeyConventionReason(string reason)
+    {
+        return reason.StartsWith("Using legacy SQL Server foreign-key naming convention", StringComparison.OrdinalIgnoreCase);
     }
 
     private static List<TableRef> GetCandidateTables(IEnumerable<TableRef> tables)
