@@ -14,7 +14,7 @@ namespace Core.ApplicationServices.Users
             var user = userMaybe.Value;
 
             using var transaction = transactionManager.Begin();
-            user.LatestLogin = latestLogin;
+            user.LastLogin = latestLogin;
             userRepository.Update(user);
             userRepository.Save();
             transaction.Commit();

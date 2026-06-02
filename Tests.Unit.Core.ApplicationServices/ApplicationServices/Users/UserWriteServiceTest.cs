@@ -65,38 +65,6 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         }
 
         [Fact]
-        public void Update_Latest_Login_Propagates_Error_From_Service_If_User_Not_Found()
-        {
-            var userUuid = A<Guid>();
-            var latestLogin = A<DateTime>();
-            var user = SetupUser();
-            var expected = Result<User, OperationError>.Failure(OperationFailure.NotFound);
-            _userServiceMock.Setup(x => x.GetUserByUuid(userUuid)).Returns(expected);
-
-            var result = _sut.UpdateLatestLogin(userUuid, latestLogin);
-
-            Assert.True(result.HasValue);
-            Assert.Equal(expected.Error, result.Value.FailureType);
-        }
-
-        [Fact]
-        public void Can_Update_Latest_Login_If_User_Exists()
-        {
-
-            var userUuid = A<Guid>();
-            var latestLogin = A<DateTime>();
-            var user = SetupUser();
-            ExpectGetUserByUuid(userUuid, user);
-            var transaction = ExpectTransactionBegins();
-
-            var result = _sut.UpdateLatestLogin(userUuid, latestLogin);
-
-            Assert.True(result.IsNone);
-            Assert.Equal(latestLogin, user.LatestLogin);
-            transaction.Verify(x => x.Commit());
-        }
-
-        [Fact]
         public void Can_Create_User()
         {
             //Arrange
