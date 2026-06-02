@@ -13,6 +13,7 @@ using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Core.DomainServices;
+using Core.DomainServices.Extensions;
 using Core.DomainServices.Options;
 using Core.DomainServices.SystemUsage;
 using Moq;
@@ -371,6 +372,9 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.TechnicalSystemType?.Uuid, readModel.TechnicalSystemTypeUuid);
             Assert.Equal(systemUsage.TechnicalSystemType?.Name, readModel.TechnicalSystemTypeName);
             Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
+            var expectedInterfaces = systemUsage.GetExposedInterfaces();
+            Assert.Equal(expectedInterfaces.Select(x => x.Id.ToString()).ToStringWithDelimiter(), readModel.ItInterfaceIdsAsCsv);
+            Assert.Equal(expectedInterfaces.Select(x => x.Version).ToStringWithDelimiter(), readModel.ItInterfaceIdsAsCsv);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);

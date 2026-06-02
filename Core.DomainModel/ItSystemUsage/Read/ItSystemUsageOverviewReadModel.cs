@@ -160,5 +160,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public DataOptions? IsSociallyCritical { get; set; }
         public DateTime? CriticalityFieldsLastChanged { get; set; }
         public IsDataProcessingAgreementRequired? IsDataProcessingAgreementRequired { get; set; }
+        public string ItInterfaceIdsAsCsv { get; set; }
+        public string ItInterfaceVersionsAsCsv { get; set; }
     }
 }

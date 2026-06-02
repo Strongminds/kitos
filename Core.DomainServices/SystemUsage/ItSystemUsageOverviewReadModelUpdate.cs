@@ -14,6 +14,7 @@ using Core.DomainModel.Users;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.Model;
 using Core.DomainServices.Options;
+using Core.DomainServices.Extensions;
 
 namespace Core.DomainServices.SystemUsage
 {
@@ -109,6 +110,10 @@ namespace Core.DomainServices.SystemUsage
             destination.TechnicalSystemTypeUuid = source.TechnicalSystemType?.Uuid;
             destination.TechnicalSystemTypeName = source.TechnicalSystemType?.Name;
             destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
+
+            var interfaces = source.GetExposedInterfaces();
+            destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.Id.ToString()).ToStringWithDelimiter();
+            destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).ToStringWithDelimiter();
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
