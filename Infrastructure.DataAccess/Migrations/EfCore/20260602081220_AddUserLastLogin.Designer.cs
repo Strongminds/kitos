@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260602044739_AddUserLatestLogin")]
-    partial class AddUserLatestLogin
+    [Migration("20260602081220_AddUserLastLogin")]
+    partial class AddUserLastLogin
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -7644,12 +7644,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("LastChangedByUserId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("LatestLogin")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LockedOutDate")
                         .HasColumnType("datetime2");

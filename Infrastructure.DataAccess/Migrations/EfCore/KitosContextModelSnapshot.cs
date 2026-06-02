@@ -7641,12 +7641,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("LastChangedByUserId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("LatestLogin")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LockedOutDate")
                         .HasColumnType("datetime2");

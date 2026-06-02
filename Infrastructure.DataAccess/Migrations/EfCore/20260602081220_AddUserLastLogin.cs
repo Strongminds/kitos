@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     /// <inheritdoc />
-    public partial class AddUserLatestLogin : Migration
+    public partial class AddUserLastLogin : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "LatestLogin",
+                name: "LastLogin",
                 table: "User",
                 type: "datetime2",
                 nullable: true);
@@ -22,7 +22,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "LatestLogin",
+                name: "LastLogin",
                 table: "User");
         }
     }
