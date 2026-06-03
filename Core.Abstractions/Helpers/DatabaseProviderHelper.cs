@@ -15,5 +15,16 @@ namespace Core.Abstractions.Helpers
                 || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
         }
+
+        public static bool LooksLikePostgreSqlConnectionString(string? connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return false;
+            }
+
+            return connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase)
+                   || connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

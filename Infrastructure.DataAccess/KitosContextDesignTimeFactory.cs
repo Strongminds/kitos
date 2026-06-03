@@ -30,10 +30,12 @@ namespace Infrastructure.DataAccess
                     "Example: $env:ConnectionStrings__KitosContext = \"Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True\"");
 
             var provider = Environment.GetEnvironmentVariable(ProviderEnvVar);
+            var usePostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider)
+                                || DatabaseProviderHelper.LooksLikePostgreSqlConnectionString(connectionString);
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
             optionsBuilder.UseLazyLoadingProxies();
 
-            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            if (usePostgreSql)
             {
                 var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
                 optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
