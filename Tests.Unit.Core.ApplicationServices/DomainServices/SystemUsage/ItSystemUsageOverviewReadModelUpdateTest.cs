@@ -374,7 +374,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
             var expectedInterfaces = systemUsage.GetExposedInterfaces();
             Assert.Equal(expectedInterfaces.Select(x => x.Id.ToString()).ToStringWithDelimiter(), readModel.ItInterfaceIdsAsCsv);
-            Assert.Equal(expectedInterfaces.Select(x => x.Version).ToStringWithDelimiter(), readModel.ItInterfaceIdsAsCsv);
+            Assert.Equal(expectedInterfaces.Select(x => x.Version).ToStringWithDelimiter(), readModel.ItInterfaceVersionsAsCsv);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
