@@ -1640,7 +1640,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(expected.OversightIntervalRemark, actual.OversightIntervalRemark);
             Assert.Equal(expected.IsOversightCompleted, actual.IsOversightCompleted);
             Assert.Equal(expected.OversightCompletedRemark, actual.OversightCompletedRemark);
-            Assert.Equal(expected.OversightScheduledInspectionDate, actual.OversightScheduledInspectionDate);
+            DateTimeTestHelper.AssertEqual(expected.OversightScheduledInspectionDate, actual.OversightScheduledInspectionDate);
             AssertOversightDates(expected.OversightDates, actual.OversightDates);
         }
 
@@ -1651,7 +1651,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(expectedOversightDates.Count, actualOversightDates.Count);
             for (var i = 0; i < expectedOversightDates.Count; i++)
             {
-                Assert.Equal(expectedOversightDates[i].CompletedAt, actualOversightDates[i].CompletedAt);
+                DateTimeTestHelper.AssertEqual(expectedOversightDates[i].CompletedAt, actualOversightDates[i].CompletedAt);
                 Assert.Equal(expectedOversightDates[i].Remark, actualOversightDates[i].Remark);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink.Url, actualOversightDates[i].OversightReportLink.Url);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink.Name, actualOversightDates[i].OversightReportLink.Name);
@@ -1670,7 +1670,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(input.DataResponsibleRemark, actual.General.DataResponsibleRemark);
             Assert.Equal(input.IsAgreementConcluded, actual.General.IsAgreementConcluded);
             Assert.Equal(input.IsAgreementConcludedRemark, actual.General.IsAgreementConcludedRemark);
-            Assert.Equal(input.AgreementConcludedAt, actual.General.AgreementConcludedAt);
+            DateTimeTestHelper.AssertEqual(input.AgreementConcludedAt, actual.General.AgreementConcludedAt);
             AssertCrossReference(inputBasisForTransfer, actual.General.BasisForTransfer);
             Assert.Equal(input.TransferToInsecureThirdCountries, actual.General.TransferToInsecureThirdCountries);
             AssertMultiAssignment(input.InsecureCountriesSubjectToDataTransferUuids, actual.General.InsecureCountriesSubjectToDataTransfer);

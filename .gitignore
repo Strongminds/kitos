@@ -196,3 +196,8 @@ Database/kitosdb_log.ldf
 
 # tmp folder from protractor beautiful reporter
 tmp/
+
+# EF Core migration bundles (compiled executables, platform-specific)
+**/efbundle.exe
+**/efbundle.postgresql.exe
+MigrationsBundle/

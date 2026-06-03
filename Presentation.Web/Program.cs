@@ -10,6 +10,10 @@ using Presentation.Web.Models.Application.RuntimeEnv;
 using Serilog;
 using System;
 
+// Must be set before any Npgsql type is loaded (including Hangfire's PostgreSQL storage).
+// Allows writing DateTime with Kind=UTC to 'timestamp without time zone' columns.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
 // and the AppContext.BaseDirectory fallback can fail under some hosting models (IIS,
@@ -21,7 +25,6 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
     var path = System.IO.Path.Combine(AppContext.BaseDirectory, name.Name + ".dll");
     return System.IO.File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
 };
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,4 +67,3 @@ app.MapKitosEndpoints();
 app.InitializeHangfireJobs();
 
 app.Run();
-
