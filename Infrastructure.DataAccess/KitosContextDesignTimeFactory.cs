@@ -1,6 +1,9 @@
 using System;
+using Core.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql;
 
 namespace Infrastructure.DataAccess
 {
@@ -15,6 +18,7 @@ namespace Infrastructure.DataAccess
     public class KitosContextDesignTimeFactory : IDesignTimeDbContextFactory<KitosContext>
     {
         private const string EnvVar = "ConnectionStrings__KitosContext";
+        private const string ProviderEnvVar = "Database__Provider";
 
         public KitosContext CreateDbContext(string[] args)
         {
@@ -25,10 +29,24 @@ namespace Infrastructure.DataAccess
                     $"Design-time DB context requires the '{EnvVar}' environment variable to be set. " +
                     "Example: $env:ConnectionStrings__KitosContext = \"Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True\"");
 
+            var provider = Environment.GetEnvironmentVariable(ProviderEnvVar);
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
-            optionsBuilder.UseLazyLoadingProxies().UseSqlServer(connectionString);
+            optionsBuilder.UseLazyLoadingProxies();
+
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            {
+                var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
+                optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
+                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"))
+                    .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
 
             return new KitosContext(optionsBuilder.Options);
         }
+
     }
 }

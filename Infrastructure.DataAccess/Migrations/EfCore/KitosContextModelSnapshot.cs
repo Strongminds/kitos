@@ -257,6 +257,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SourceId")
                         .HasDatabaseName("IX_SourceId");
 
+                    b.HasIndex("Category", "Id")
+                        .HasDatabaseName("IX_Category_Id");
+
                     b.ToTable("PendingReadModelUpdates");
                 });
 
@@ -994,6 +997,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SystemUuidsAsCsv")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SystemValiditiesAsCsv")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TransferToInsecureThirdCountries")
@@ -7609,7 +7615,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("CustomizedUiNodes");
+                    b.ToTable("CustomizedUiNodes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.UIModuleCustomization", b =>

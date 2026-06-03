@@ -13,13 +13,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "ExternalPaymentOrganizationUnitsCsv",
                 table: "ItContractOverviewReadModels",
-                type: "nvarchar(max)",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "InternalPaymentOrganizationUnitsCsv",
                 table: "ItContractOverviewReadModels",
-                type: "nvarchar(max)",
                 nullable: true);
         }
 

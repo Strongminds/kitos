@@ -1,17 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Core.Abstractions.Helpers;
 
 namespace PubSub.Infrastructure.DataAccess.Factories
 {
     public class PubSubContextFactory : IDesignTimeDbContextFactory<PubSubContext>
     {
+        private const string ProviderEnvVar = "Database__Provider";
+
         public PubSubContext CreateDbContext(string[] args)
         {
             var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION_STRING");
+            var provider = Environment.GetEnvironmentVariable(ProviderEnvVar);
 
             var optionsBuilder = new DbContextOptionsBuilder<PubSubContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            {
+                optionsBuilder.UseNpgsql(connectionString);
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+
             return new PubSubContext(optionsBuilder.Options);
         }
+
     }
 }

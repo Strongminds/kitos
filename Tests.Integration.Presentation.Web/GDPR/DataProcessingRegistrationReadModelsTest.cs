@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Core.Abstractions.Extensions;
 using Core.DomainModel.GDPR;
+using Core.DomainServices.Mapping;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
@@ -77,12 +78,12 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var isAgreementConcluded = A<YesNoIrrelevantChoice>();
             var oversightInterval = A<OversightIntervalChoice>();
             var oversightCompleted = YesNoUndecidedChoice.Yes;
-            var oversightDate = A<DateTime>();
+            var oversightDate = DateTime.SpecifyKind(A<DateTime>().Date.AddHours(12), DateTimeKind.Utc);
             var oversightRemark = A<string>();
             var oversightReportLink = A<string>();
             var oversightReportLinkName = A<string>();
             var transferToThirdCountries = A<YesNoUndecidedChoice>();
-            var oversightScheduledInspectionDate = A<DateTime>();
+            var oversightScheduledInspectionDate = DateTime.SpecifyKind(A<DateTime>().Date.AddHours(12), DateTimeKind.Utc);
 
             var dataProcessor = await CreateOrganizationAsync(dpName);
             var subDataProcessor = await CreateOrganizationAsync(subDpName);
@@ -175,7 +176,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(refUserAssignedId, readModel.MainReferenceUserAssignedId);
             Assert.Equal(oversightInterval.ToIntervalOption(), readModel.OversightInterval);
             Assert.Equal(oversightCompleted.ToYesNoUndecidedOption(), readModel.IsOversightCompleted);
-            Assert.Equal(oversightScheduledInspectionDate, readModel.OversightScheduledInspectionDate);
+            AssertDateEqual(oversightScheduledInspectionDate, readModel.OversightScheduledInspectionDate);
             Assert.Equal(dataProcessor.Name, readModel.DataProcessorNamesAsCsv);
             Assert.Equal(dataProcessor.Cvr, readModel.DataProcessorCvrsAsCsv);
             Assert.Equal(subDataProcessor.Name, readModel.SubDataProcessorNamesAsCsv);
@@ -188,7 +189,10 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(contractName, readModel.ContractNamesAsCsv);
             Assert.Equal(systemName, readModel.SystemNamesAsCsv);
             Assert.Equal(itSystemDto.Uuid.ToString(), readModel.SystemUuidsAsCsv);
-            Assert.Equal(oversightDate, readModel.LatestOversightDate);
+            var validUsage = usage.General?.Validity?.Valid ?? false;
+            var expectedValidityInCsv = validUsage ? ReadModelMappingHelpers.ActiveNeuter : ReadModelMappingHelpers.InactiveNeuter;
+            Assert.Equal(expectedValidityInCsv, readModel.SystemValiditiesAsCsv);
+            AssertDateEqual(oversightDate, readModel.LatestOversightDate);
             Assert.Equal(oversightRemark, readModel.LatestOversightRemark);
             Assert.Equal(oversightReportLink, readModel.LatestOversightReportLink);
             Assert.Equal(oversightReportLinkName, readModel.LatestOversightReportLinkName);
@@ -248,7 +252,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var name = A<string>();
             var organizationUuid = DefaultOrgUuid;
             var isAgreementConcluded = YesNoIrrelevantChoice.Yes;
-            var agreementConcludedAt = A<DateTime>();
+            var agreementConcludedAt = DateTime.SpecifyKind(A<DateTime>().Date.AddHours(12), DateTimeKind.Utc);
 
             var registration = await CreateDPRAsync(organizationUuid, name);
 
@@ -271,7 +275,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(registration.Uuid, readModel.SourceEntityUuid);
 
             Assert.Equal(isAgreementConcluded.ToYesNoIrrelevantOption(), readModel.IsAgreementConcluded);
-            Assert.Equal(agreementConcludedAt, readModel.AgreementConcludedAt);
+            AssertDateEqual(agreementConcludedAt, readModel.AgreementConcludedAt);
 
         }
 
@@ -335,6 +339,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
             Assert.Equal(newName, readModel.Name);
             Assert.Equal(registration.Uuid, readModel.SourceEntityUuid);
             Assert.Equal(DatabaseAccess.GetEntityId<User>(userUuid), readModel.LastChangedById);
+        }
+
+        private static void AssertDateEqual(DateTime? expected, DateTime? actual)
+        {
+            Assert.Equal(expected?.Date, actual?.Date);
         }
         private static async Task WaitForReadModelQueueDepletion()
         {

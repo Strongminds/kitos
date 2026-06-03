@@ -56,7 +56,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Validity of the data processing registration
         /// </summary>
-        public required DataProcessingResgistrationValidityDTO Validity { get; set; }
+        public required DataProcessingRegistrationValidityDTO Validity { get; set; }
         /// <summary>
         /// Defines the master contract for this data processing registration (many contracts can point to a data processing registration but only one can be the master contract)
         /// </summary>
