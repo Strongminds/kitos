@@ -139,16 +139,14 @@ using Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Infrastructure.Factories.Authentication;
-using Presentation.Web.Infrastructure.Authentication;
 using Presentation.Web.Infrastructure.Mail;
 using Presentation.Web.Infrastructure.Model.Request;
-using Infrastructure.DataAccess.Services;
-using Core.DomainServices.Repositories.Interface;
 using Serilog;
 using Core.ApplicationServices.Model.EventHandler;
 using dk.nita.saml20.identity;
 using Presentation.Web.Infrastructure.Middleware;
 using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
+using Core.ApplicationServices.Users;
 
 namespace Presentation.Web.Infrastructure.DI
 {
@@ -238,6 +236,7 @@ namespace Presentation.Web.Infrastructure.DI
             ));
 
             services.AddScoped<IUserWriteService, UserWriteService>();
+            services.AddScoped<IUserLoggedInService, UserLoggedInService>();
             services.AddScoped<IOrgUnitService, OrgUnitService>();
             services.AddScoped<IOrganizationRoleService, OrganizationRoleService>();
             services.AddScoped<IOrganizationRightsService, OrganizationRightsService>();
@@ -532,6 +531,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDomainEvent<PublishSystemChangesEventHandler>(services);
             RegisterDomainEvent<RaiseEntityUpdatedOnSnapshotEventsHandler<ItSystem, ItSystemSnapshot>>(services);
             RegisterDomainEvent<RaiseEntityUpdatedOnSnapshotEventsHandler<DataProcessingRegistration, DprSnapshot>>(services);
+            RegisterDomainEvent<UserLoggedInEventHandler>(services);
         }
 
         private static void RegisterDomainEvent<THandler>(IServiceCollection services)
