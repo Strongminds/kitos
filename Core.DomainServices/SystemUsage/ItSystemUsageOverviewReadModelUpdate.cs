@@ -396,7 +396,7 @@ namespace Core.DomainServices.SystemUsage
 
         private void PatchSensitiveDataLevels(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            destination.SensitiveDataLevelsAsCsv = string.Join(", ", source.SensitiveDataLevels.Select(x => x.SensitivityDataLevel.GetReadableName()));
+            destination.SensitiveDataLevelsAsCsv = source.SensitiveDataLevels.Select(x => x.SensitivityDataLevel.GetReadableName()).ToStringWithDelimiter();
 
             var incomingSensitiveDataLevels = source.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).ToList();
 
@@ -423,7 +423,7 @@ namespace Core.DomainServices.SystemUsage
 
         private void PatchTechnicalSystemTypes(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            destination.TechnicalSystemTypeNamesAsCsv = string.Join(", ", source.TechnicalSystemTypes.Select(x => x.Name));
+            destination.TechnicalSystemTypeNamesAsCsv = source.TechnicalSystemTypes.Select(x => x.Name).ToStringWithDelimiter();
 
             var incomingUuids = source.TechnicalSystemTypes.Select(x => x.Uuid).ToHashSet();
 
