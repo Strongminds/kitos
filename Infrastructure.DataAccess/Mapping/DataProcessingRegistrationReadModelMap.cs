@@ -23,6 +23,7 @@ namespace Infrastructure.DataAccess.Mapping
             //No index of this, length is unknown since no bounds on system assignment.
             builder.Property(x => x.SystemNamesAsCsv);
             builder.Property(x => x.SystemUuidsAsCsv);
+            builder.Property(x => x.SystemValiditiesAsCsv);
 
             builder.Property(x => x.MainReferenceUserAssignedId);
 
