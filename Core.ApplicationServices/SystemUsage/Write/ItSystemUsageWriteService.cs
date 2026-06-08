@@ -564,7 +564,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
             }
 
             var uuids = technicalSystemTypeUuids.Value.ToList();
-            if (!uuids.Any())
+            if (uuids.Count != uuids.Distinct().Count())
+                return new OperationError("It's not allowed to have duplicate uuids in TechnicalSystemTypeUuids.", OperationFailure.BadInput);
+            if (uuids.Count == 0)
             {
                 systemUsage.ResetTechnicalSystemTypes();
                 return Maybe<OperationError>.None;
@@ -701,10 +703,10 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.WebAccessibilityNotes, (systemUsage, webAccessibilityNotes) => systemUsage.UpdateWebAccessibilityNotes(webAccessibilityNotes)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.IsSociallyCritical, (systemUsage, isSociallyCritical) => systemUsage.UpdateIsSociallyCritical(isSociallyCritical)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, UpdateSystemUsageCriticalityLevel))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, (systemUsage, technicalSystemTypeUuids) => UpdateTechnicalSystemTypes(systemUsage, technicalSystemTypeUuids)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, UpdateTechnicalSystemTypes));
         }
 
         private void RaiseValidityUpdatedEvent(ItSystemUsage usage) {
