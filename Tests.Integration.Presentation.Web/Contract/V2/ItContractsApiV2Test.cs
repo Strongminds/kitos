@@ -2123,7 +2123,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
         private static void AssertTermination(ContractTerminationDataWriteRequestDTO expected, IdentityNamePairResponseDTO noticePeriodMonthsType, ContractTerminationDataResponseDTO actual)
         {
-            Assert.Equal(expected?.TerminatedAt, actual.TerminatedAt);
+            DateTimeTestHelper.AssertEqual(expected?.TerminatedAt, actual.TerminatedAt);
             Assert.Equal(expected?.Terms?.NoticePeriodExtendsCurrent, actual.Terms.NoticePeriodExtendsCurrent);
             Assert.Equal(expected?.Terms?.NoticeByEndOf, actual.Terms.NoticeByEndOf);
             AssertCrossReference(noticePeriodMonthsType, actual.Terms.NoticePeriodMonths);
@@ -2152,7 +2152,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
         private static void AssertPaymentModel(ContractPaymentModelDataWriteRequestDTO expected, IdentityNamePairResponseDTO paymentFrequencyType, IdentityNamePairResponseDTO paymentModelType, IdentityNamePairResponseDTO priceRegulationType, ContractPaymentModelDataResponseDTO actual)
         {
-            Assert.Equal(expected?.OperationsRemunerationStartedAt, actual.OperationsRemunerationStartedAt);
+            DateTimeTestHelper.AssertEqual(expected?.OperationsRemunerationStartedAt, actual.OperationsRemunerationStartedAt);
             AssertCrossReference(paymentFrequencyType, actual.PaymentFrequency);
             AssertCrossReference(paymentModelType, actual.PaymentModel);
             AssertCrossReference(priceRegulationType, actual.PriceRegulation);
@@ -2505,7 +2505,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             Assert.Equal(input.IsContinuous, freshDTO.IsContinuous);
             Assert.Equal(input.ExtensionOptionsUsed, freshDTO.ExtensionOptionsUsed);
             Assert.Equal(input.ExtensionOptionsUuid, freshDTO.ExtensionOptions?.Uuid);
-            Assert.Equal(input.IrrevocableUntil, freshDTO.IrrevocableUntil);
+            DateTimeTestHelper.AssertEqual(input.IrrevocableUntil, freshDTO.IrrevocableUntil);
         }
 
         private async Task<ContractAgreementPeriodDataWriteRequestDTO> CreateAgreementPeriodInput(bool hasExtensionOption, bool isContinuous, bool hasIrrevocableDate,

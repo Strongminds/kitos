@@ -96,6 +96,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var updateRequest = A<UpdateUserRequestDTO>();
             updateRequest.DefaultOrganizationUnitUuid = unit.Uuid;
             updateRequest.Email = CreateEmail();
+            updateRequest.Roles = new List<OrganizationRoleChoice> { OrganizationRoleChoice.LocalAdmin };
             var response = await UsersV2Helper.UpdateUser(organization.Uuid, user.Uuid, updateRequest);
 
             //Assert

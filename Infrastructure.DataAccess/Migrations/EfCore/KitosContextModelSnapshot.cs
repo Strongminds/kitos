@@ -257,6 +257,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SourceId")
                         .HasDatabaseName("IX_SourceId");
 
+                    b.HasIndex("Category", "Id")
+                        .HasDatabaseName("IX_Category_Id");
+
                     b.ToTable("PendingReadModelUpdates");
                 });
 
@@ -649,7 +652,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("DataResponsible_Id")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("EnforceInvalidity");
+                    b.Property<bool?>("EnforceInvalidity")
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("HasSubDataProcessors")
                         .HasColumnType("int");
@@ -7594,7 +7598,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("CustomizedUiNodes");
+                    b.ToTable("CustomizedUiNodes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.UIModuleCustomization", b =>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Run settings for local development against PostgreSQL.
+     Activate via: Test → Configure Run Settings → Select Solution Wide runsettings File -->
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <!-- Use local environment (no remote credentials needed) -->
+      <KitosTestEnvironment>Local</KitosTestEnvironment>
+
+      <!-- Database provider - both variables are checked by TestEnvironment.cs -->
+      <KitosDbProvider>PostgreSql</KitosDbProvider>
+      <Database__Provider>PostgreSql</Database__Provider>
+
+      <!-- Connection string - defaults to below value when not set, but explicit here for clarity.
+           Override if your local PostgreSQL uses different host/port/credentials. -->
+      <ConnectionStrings__KitosContext>Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres</ConnectionStrings__KitosContext>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

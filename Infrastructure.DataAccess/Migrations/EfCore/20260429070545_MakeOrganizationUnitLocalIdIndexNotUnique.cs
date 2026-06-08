@@ -27,12 +27,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "IX_LocalId",
                 table: "OrganizationUnit");
 
+            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
+            var filter = isSqlServer ? "[LocalId] IS NOT NULL" : "\"LocalId\" IS NOT NULL";
+
             migrationBuilder.CreateIndex(
                 name: "UX_LocalId",
                 table: "OrganizationUnit",
                 columns: new[] { "OrganizationId", "LocalId" },
                 unique: true,
-                filter: "[LocalId] IS NOT NULL");
+                filter: filter);
         }
     }
 }

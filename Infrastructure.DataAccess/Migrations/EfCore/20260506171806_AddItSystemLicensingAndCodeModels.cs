@@ -10,10 +10,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
+            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
+
             migrationBuilder.AddColumn<string>(
                 name: "LicensingAndCodeModels",
                 table: "ItSystem",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: false,
                 defaultValue: "[]");
         }
