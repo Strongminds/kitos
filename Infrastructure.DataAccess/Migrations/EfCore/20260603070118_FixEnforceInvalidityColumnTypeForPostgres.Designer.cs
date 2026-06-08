@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260603070118_FixEnforceInvalidityColumnTypeForPostgres")]
+    partial class FixEnforceInvalidityColumnTypeForPostgres
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,9 +259,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("SourceId")
                         .HasDatabaseName("IX_SourceId");
-
-                    b.HasIndex("Category", "Id")
-                        .HasDatabaseName("IX_Category_Id");
 
                     b.ToTable("PendingReadModelUpdates");
                 });
@@ -4005,6 +4005,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("TechnicalSupervisionDocumentationUrlName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("TechnicalSystemTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UserCount")
                         .HasColumnType("int");
 
@@ -4112,6 +4115,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SensitiveDataTypeId");
 
                     b.HasIndex("SystemUsageCriticalityLevelId");
+
+                    b.HasIndex("TechnicalSystemTypeId");
 
                     b.HasIndex("Uuid")
                         .IsUnique()
@@ -4596,8 +4601,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid?>("SystemUsageCriticalityLevelUuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TechnicalSystemTypeNamesAsCsv")
+                    b.Property<string>("TechnicalSystemTypeName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TechnicalSystemTypeUuid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("UserCount")
                         .HasColumnType("int");
@@ -4759,6 +4767,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SystemUsageCriticalityLevelUuid")
                         .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemUsageCriticalityLevelUuid");
 
+                    b.HasIndex("TechnicalSystemTypeUuid")
+                        .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_TechnicalSystemTypeUuid");
+
                     b.HasIndex("UserCount")
                         .HasDatabaseName("ItSystemUsageOverviewReadModel_Index_UserCount");
 
@@ -4911,34 +4922,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ParentId");
 
                     b.ToTable("ItSystemUsageOverviewTaskRefReadModels");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewTechnicalSystemTypeReadModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ParentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TechnicalSystemTypeName")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<Guid>("TechnicalSystemTypeUuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("TechnicalSystemTypeUuid")
-                        .HasDatabaseName("ItSystemUsageOverviewTechnicalSystemTypeReadModel_Index_Uuid");
-
-                    b.ToTable("ItSystemUsageOverviewTechnicalSystemTypeReadModel", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewUsedBySystemUsageReadModel", b =>
@@ -7615,7 +7598,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("CustomizedUiNodes", (string)null);
+                    b.ToTable("CustomizedUiNodes");
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.UIModuleCustomization", b =>
@@ -7878,21 +7861,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("TaskRef_Id");
 
                     b.ToTable("TaskRefItSystemUsageOptOut", (string)null);
-                });
-
-            modelBuilder.Entity("ItSystemUsageTechnicalSystemType", b =>
-                {
-                    b.Property<int>("ReferencesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TechnicalSystemTypesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReferencesId", "TechnicalSystemTypesId");
-
-                    b.HasIndex("TechnicalSystemTypesId");
-
-                    b.ToTable("ItSystemUsageTechnicalSystemTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Advice.Advice", b =>
@@ -9471,6 +9439,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .WithMany("References")
                         .HasForeignKey("SystemUsageCriticalityLevelId");
 
+                    b.HasOne("Core.DomainModel.ItSystem.TechnicalSystemType", "TechnicalSystemType")
+                        .WithMany("References")
+                        .HasForeignKey("TechnicalSystemTypeId");
+
                     b.Navigation("ArchiveLocation");
 
                     b.Navigation("ArchiveSupplier");
@@ -9494,6 +9466,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("SensitiveDataType");
 
                     b.Navigation("SystemUsageCriticalityLevel");
+
+                    b.Navigation("TechnicalSystemType");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.ItSystemUsageOrgUnitUsage", b =>
@@ -9633,17 +9607,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.HasOne("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewReadModel", "Parent")
                         .WithMany("ItSystemTaskRefs")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewTechnicalSystemTypeReadModel", b =>
-                {
-                    b.HasOne("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewReadModel", "Parent")
-                        .WithMany("TechnicalSystemTypes")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -11276,21 +11239,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ItSystemUsageTechnicalSystemType", b =>
-                {
-                    b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", null)
-                        .WithMany()
-                        .HasForeignKey("ReferencesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.ItSystem.TechnicalSystemType", null)
-                        .WithMany()
-                        .HasForeignKey("TechnicalSystemTypesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Core.DomainModel.Advice.Advice", b =>
                 {
                     b.Navigation("AdviceSent");
@@ -11534,6 +11482,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("References");
                 });
 
+            modelBuilder.Entity("Core.DomainModel.ItSystem.TechnicalSystemType", b =>
+                {
+                    b.Navigation("References");
+                });
+
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.ItSystemUsage", b =>
                 {
                     b.Navigation("ArchivePeriods");
@@ -11586,8 +11539,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("RoleAssignments");
 
                     b.Navigation("SensitiveDataLevels");
-
-                    b.Navigation("TechnicalSystemTypes");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.RegisterType", b =>
