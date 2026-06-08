@@ -246,10 +246,10 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(itContract.Uuid, readModel.SourceEntityUuid);
             Assert.Equal(contractSigner, readModel.ContractSigner); //Need to figure out why this fails
             Assert.Equal(procurementInitiated.ToYesNoUndecidedOption(), readModel.ProcurementInitiated);
-            DateTimeTestHelper.AssertEqual(irrevocableTo.Date, readModel.IrrevocableTo.GetValueOrDefault());
-            DateTimeTestHelper.AssertEqual(terminated.Date, readModel.TerminatedAt.GetValueOrDefault());
-            DateTimeTestHelper.AssertEqual(concluded.Date, readModel.Concluded.GetValueOrDefault());
-            DateTimeTestHelper.AssertEqual(expirationDate.Date, readModel.ExpirationDate.GetValueOrDefault());
+            Assert.Equal(irrevocableTo.Date, readModel.IrrevocableTo.GetValueOrDefault().Date);
+            Assert.Equal(terminated.Date, readModel.TerminatedAt.GetValueOrDefault().Date);
+            Assert.Equal(concluded.Date, readModel.Concluded.GetValueOrDefault().Date);
+            Assert.Equal(expirationDate.Date, readModel.ExpirationDate.GetValueOrDefault().Date);
             AssertReferencedEntity(_supplier.Name, readModel.SupplierName, _supplier.Uuid, DatabaseAccess.GetEntityUuid<Organization>(readModel.SupplierId ?? 0));
             Assert.Equal(_supplier.Cvr, readModel.SupplierCvr);
             AssertReferencedEntity(parentContract.Name, readModel.ParentContractName, parentContract.Uuid, readModel.ParentContractUuid);
@@ -276,7 +276,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(externalPaymentRequest.Acquisition, readModel.AccumulatedAcquisitionCost);
             Assert.Equal(externalPaymentRequest.Operation, readModel.AccumulatedOperationCost);
             Assert.Equal(externalPaymentRequest.Other, readModel.AccumulatedOtherCost);
-            DateTimeTestHelper.AssertEqual(externalPaymentRequest.AuditDate?.Date, readModel.LatestAuditDate);
+            Assert.Equal(externalPaymentRequest.AuditDate?.Date, readModel.LatestAuditDate?.Date);
             Assert.Equal(externalPaymentRequest.AuditStatus == PaymentAuditStatus.Green ? 1 : 0, readModel.AuditStatusGreen);
             Assert.Equal(externalPaymentRequest.AuditStatus == PaymentAuditStatus.White ? 1 : 0, readModel.AuditStatusWhite);
             Assert.Equal(externalPaymentRequest.AuditStatus == PaymentAuditStatus.Red ? 1 : 0, readModel.AuditStatusRed);
