@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Core.Abstractions.Helpers;
 
 namespace PubSub.Infrastructure.DataAccess.Factories
 {
@@ -14,7 +15,7 @@ namespace PubSub.Infrastructure.DataAccess.Factories
 
             var optionsBuilder = new DbContextOptionsBuilder<PubSubContext>();
 
-            if (IsPostgreSqlProvider(provider))
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 optionsBuilder.UseNpgsql(connectionString);
             }
@@ -26,11 +27,5 @@ namespace PubSub.Infrastructure.DataAccess.Factories
             return new PubSubContext(optionsBuilder.Options);
         }
 
-        private static bool IsPostgreSqlProvider(string? provider)
-        {
-            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
     }
 }

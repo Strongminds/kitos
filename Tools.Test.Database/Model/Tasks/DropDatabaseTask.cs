@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Core.Abstractions.Helpers;
 using Microsoft.Data.SqlClient;
 using Infrastructure.DataAccess;
 using Npgsql;
@@ -19,7 +20,7 @@ namespace Tools.Test.Database.Model.Tasks
 
         public override bool Execute(KitosContext context)
         {
-            return IsPostgreSqlProvider(_provider) ? DropPostgreSqlDatabase() : DropSqlServerDatabase();
+            return DatabaseProviderHelper.IsPostgreSqlProvider(_provider) ? DropPostgreSqlDatabase() : DropSqlServerDatabase();
         }
 
         private bool DropSqlServerDatabase()
@@ -155,12 +156,5 @@ namespace Tools.Test.Database.Model.Tasks
             throw new InvalidOperationException($"Failed to drop database '{dbName}' after {maxAttempts} attempts.");
         }
 
-        private static bool IsPostgreSqlProvider(string provider)
-        {
-            return string.IsNullOrWhiteSpace(provider) == false
-                   && (provider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase)
-                       || provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase)
-                       || provider.Equals("Npgsql", StringComparison.OrdinalIgnoreCase));
-        }
     }
 }

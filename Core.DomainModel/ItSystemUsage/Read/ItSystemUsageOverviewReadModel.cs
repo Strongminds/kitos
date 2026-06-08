@@ -15,6 +15,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         {
             RoleAssignments = new List<ItSystemUsageOverviewRoleAssignmentReadModel>();
             ItSystemTaskRefs = new List<ItSystemUsageOverviewTaskRefReadModel>();
+            LocalItSystemTaskRefs = new List<ItSystemUsageOverviewLocalTaskRefReadModel>();
             SensitiveDataLevels = new List<ItSystemUsageOverviewSensitiveDataLevelReadModel>();
             ArchivePeriods = new List<ItSystemUsageOverviewArchivePeriodReadModel>();
             DataProcessingRegistrations = new List<ItSystemUsageOverviewDataProcessingRegistrationReadModel>();
@@ -91,6 +92,9 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string ItSystemKLEIdsAsCsv { get; set; }
         public string ItSystemKLENamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewTaskRefReadModel> ItSystemTaskRefs { get; set; } // Adding TaskRefs as collection to enable indexed search
+        public string LocalKleIdsAsCsv { get; set; }
+        public string LocalKleNamesAsCsv { get; set; }
+        public virtual ICollection<ItSystemUsageOverviewLocalTaskRefReadModel> LocalItSystemTaskRefs { get; set; } // Local KLE deviations on the system usage
         public string LocalReferenceDocumentId { get; set; }
         public string LocalReferenceUrl { get; set; }
         public string LocalReferenceTitle { get; set; }
@@ -108,6 +112,8 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string SensitiveDataLevelsAsCsv { get; set; }
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
+        public RiskLevel? RiskAssessmentResult { get; set; }
+        public YesNoDontKnowIrrelevant? RiskAssessmentConducted { get; set; }
         public virtual ICollection<ItSystemUsageOverviewSensitiveDataLevelReadModel> SensitiveDataLevels { get; set; }
         public ArchiveDutyTypes? ArchiveDuty { get; set; }
         public bool IsHoldingDocument { get; set; }

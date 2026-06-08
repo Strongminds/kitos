@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Presentation.Web;
@@ -11,6 +10,9 @@ using Presentation.Web.Models.Application.RuntimeEnv;
 using Serilog;
 using System;
 
+// Must be set before any Npgsql type is loaded (including Hangfire's PostgreSQL storage).
+// Allows writing DateTime with Kind=UTC to 'timestamp without time zone' columns.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Digst.OioIdws.* assemblies are IL-patched local DLLs (not NuGet packages) referenced
 // as "type:reference" in deps.json. The runtime's assembly loader skips those entries
@@ -23,11 +25,6 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
     var path = System.IO.Path.Combine(AppContext.BaseDirectory, name.Name + ".dll");
     return System.IO.File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
 };
-
-// Npgsql 6+ requires DateTime.Kind=Utc for 'timestamp with time zone' columns by default.
-// Enable legacy behaviour so that Unspecified/Local datetimes are accepted, matching
-// prior SQL Server behaviour while we progressively normalise datetime kinds.
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,17 +56,6 @@ services.AddHttpContextAccessor();
 KitosServiceRegistration.Register(services, configuration, signingKey);
 
 var app = builder.Build();
-
-// Support --migrate-and-exit for running EF migrations in init-containers or compose services
-if (args.Contains("--migrate-and-exit", StringComparer.OrdinalIgnoreCase))
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<Infrastructure.DataAccess.KitosContext>();
-    Log.Information("Applying pending EF Core migrations...");
-    db.Database.Migrate();
-    Log.Information("Migrations applied successfully.");
-    return;
-}
 
 // Initialize the SAML library's static HTTP context accessor so it can access HttpContext.Current
 // during SAML flows without requiring DI injection into the (statically-instantiated) handler classes.

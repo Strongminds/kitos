@@ -326,7 +326,7 @@ ON CONFLICT DO NOTHING;";
         var scriptContents = File.ReadAllText(dbMigrationsScriptPath);
         var match = Regex.Match(
             scriptContents,
-            @"VALUES \('\$migrationId', '([^']+)'\)",
+            @"VALUES \('[^']+', '([^']+)'\)",
             RegexOptions.CultureInvariant);
 
         if (!match.Success)

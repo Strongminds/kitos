@@ -1,4 +1,5 @@
 using System;
+using Core.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -29,10 +30,12 @@ namespace Infrastructure.DataAccess
                     "Example: $env:ConnectionStrings__KitosContext = \"Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True\"");
 
             var provider = Environment.GetEnvironmentVariable(ProviderEnvVar);
+            var usePostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider)
+                                || DatabaseProviderHelper.LooksLikePostgreSqlConnectionString(connectionString);
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
             optionsBuilder.UseLazyLoadingProxies();
 
-            if (IsPostgreSqlProvider(provider))
+            if (usePostgreSql)
             {
                 var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
                 optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
@@ -47,11 +50,5 @@ namespace Infrastructure.DataAccess
             return new KitosContext(optionsBuilder.Options);
         }
 
-        private static bool IsPostgreSqlProvider(string? provider)
-        {
-            return string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(provider, "Npgsql", StringComparison.OrdinalIgnoreCase);
-        }
     }
 }

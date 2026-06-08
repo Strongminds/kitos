@@ -31,7 +31,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// (Shared Supplier Field)
         /// </summary>
-        public YesNoDontKnowChoice? RiskAssessmentConducted { get; set; }
+        public YesNoDontKnowIrrelevantChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
         [SupplierField]
         public RiskLevelChoice? RiskAssessmentResult { get; set; }

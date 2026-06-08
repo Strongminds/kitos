@@ -220,7 +220,6 @@ namespace Tests.Integration.Presentation.Web.Notifications
             Assert.Equal(expected.RepetitionFrequency, actual.RepetitionFrequency);
             AssertTimestampEqual(expected.ToDate, actual.ToDate);
             Assert.Equal(expected.Name, actual.Name);
-            AssertTimestampEqual(expected.ToDate, actual.ToDate);
             Assert.Equal(expected.Uuid, actual.Uuid);
             Assert.Equal(expected.NotificationType, actual.NotificationType);
             Assert.Equal(expected.Body, actual.Body);

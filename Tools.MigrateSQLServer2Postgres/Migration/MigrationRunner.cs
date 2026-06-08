@@ -891,9 +891,10 @@ WHERE datname = @databaseName
             var sourceLookup = sourceColumns.ToDictionary(column => column.Name, StringComparer.OrdinalIgnoreCase);
             var primaryKeyMappings = new List<ColumnValueMapping>();
             var usedPrimaryKeySourceColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var primaryKeyColumnNameSet = primaryKeyColumns.ToHashSet(StringComparer.OrdinalIgnoreCase);
             foreach (var primaryKeyColumn in primaryKeyColumns)
             {
-                if (!TryResolveSourceColumn(targetTable, primaryKeyColumn, sourceLookup, usedPrimaryKeySourceColumns, out var primaryKeyMapping))
+                if (!TryResolveSourceColumn(targetTable, primaryKeyColumn, sourceLookup, usedPrimaryKeySourceColumns, primaryKeyColumnNameSet, out var primaryKeyMapping))
                 {
                     throw new InvalidOperationException($"Target table {targetTable} primary key column {primaryKeyColumn} has no compatible SQL Server source column.");
                 }
@@ -998,12 +999,13 @@ WHERE datname = @databaseName
 
         var sourceLookup = sourceColumns.ToDictionary(column => column.Name, StringComparer.OrdinalIgnoreCase);
         var usedSourceColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var targetColumnNameSet = targetColumns.Select(c => c.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var sourceSelectExpressions = new List<string>();
         var targetColumnNames = new List<string>();
 
         foreach (var targetColumn in targetColumns.OrderBy(column => column.Ordinal))
         {
-            if (TryResolveSourceColumn(targetTable, targetColumn.Name, sourceLookup, usedSourceColumns, out var sourceColumn))
+            if (TryResolveSourceColumn(targetTable, targetColumn.Name, sourceLookup, usedSourceColumns, targetColumnNameSet, out var sourceColumn))
             {
                 foreach (var usedSourceColumn in sourceColumn.UsedSourceColumns)
                 {
@@ -1132,6 +1134,7 @@ WHERE datname = @databaseName
         string targetColumnName,
         IReadOnlyDictionary<string, SqlServerColumnDefinition> sourceLookup,
         ISet<string> usedSourceColumns,
+        IReadOnlySet<string> targetColumnNames,
         out ColumnValueMapping sourceColumn)
     {
         var exactSourceColumnExists = sourceLookup.TryGetValue(targetColumnName, out var exactSourceColumn)
@@ -1145,6 +1148,16 @@ WHERE datname = @databaseName
                 continue;
             }
 
+            var isConventionAlias = IsLegacyForeignKeyConventionReason(compatibilityAlias.Reason);
+
+            // Don't consume a fallback source column via COALESCE if the target schema also has a
+            // column with that exact name — the fallback column is reserved for its own exact match.
+            if (targetColumnNames.Contains(compatibleSourceColumn.Name)
+                && !string.Equals(compatibleSourceColumn.Name, targetColumnName, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             if (exactSourceColumnExists)
             {
                 sourceColumn = new ColumnValueMapping(
@@ -1152,7 +1165,9 @@ WHERE datname = @databaseName
                     targetColumnName,
                     $"{exactSourceColumn.Name} ?? {compatibleSourceColumn.Name}",
                     [exactSourceColumn.Name, compatibleSourceColumn.Name],
-                    $"Using legacy SQL Server source column fallback {compatibleSourceColumn.Name} -> {targetColumnName}.");
+                    isConventionAlias
+                        ? null
+                        : $"Using legacy SQL Server source column fallback {compatibleSourceColumn.Name} -> {targetColumnName}.");
                 return true;
             }
 
@@ -1161,7 +1176,7 @@ WHERE datname = @databaseName
                 targetColumnName,
                 compatibleSourceColumn.Name,
                 [compatibleSourceColumn.Name],
-                compatibilityAlias.Reason);
+                isConventionAlias ? null : compatibilityAlias.Reason);
             return true;
         }
 
@@ -1178,6 +1193,11 @@ WHERE datname = @databaseName
 
         sourceColumn = new ColumnValueMapping(string.Empty, targetColumnName, string.Empty, [], null);
         return false;
+    }
+
+    private static bool IsLegacyForeignKeyConventionReason(string reason)
+    {
+        return reason.StartsWith("Using legacy SQL Server foreign-key naming convention", StringComparison.OrdinalIgnoreCase);
     }
 
     private static List<TableRef> GetCandidateTables(IEnumerable<TableRef> tables)

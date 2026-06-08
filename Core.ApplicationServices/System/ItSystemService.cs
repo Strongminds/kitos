@@ -318,13 +318,16 @@ namespace Core.ApplicationServices.System
                     .Match
                     (
                         onValue: namingError => namingError,
-                        onNone: () => system
-                            .UpdateName(newName)
-                            .Match
-                            (
-                                onValue: namingError => namingError,
-                                onNone: () => Result<ItSystem, OperationError>.Success(system)
-                            )
+                        onNone: () => system.UpdateName(newName)
+                    )
+                    .Match
+                    (
+                        onValue: namingError => namingError,
+                        onNone: () =>
+                            {
+                                _domainEvents.Raise(new NamedEntityChangedNameEvent<ItSystem>(system));
+                                return Result<ItSystem, OperationError>.Success(system);
+                            }
                     );
             });
         }

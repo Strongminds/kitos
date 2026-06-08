@@ -11,16 +11,23 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
+            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
+            var varchar150Type = isSqlServer ? "nvarchar(150)" : "character varying(150)";
+            var datetimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
+            var uuidType = isSqlServer ? "uniqueidentifier" : "uuid";
+            var boolType = isSqlServer ? "bit" : "boolean";
+
             migrationBuilder.AddColumn<string>(
                 name: "TechnicalSystemTypeName",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
                 name: "TechnicalSystemTypeUuid",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "uniqueidentifier",
+                type: uuidType,
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
@@ -33,15 +40,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalTechnicalSystemTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = isSqlServer
+                        ? table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1")
+                        : table.Column<int>(type: "integer", nullable: false)
+                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: datetimeType, nullable: false),
                     LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: maxTextType, nullable: true),
                     OrganizationId = table.Column<int>(type: "int", nullable: false),
                     OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: boolType, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,18 +78,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TechnicalSystemTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = isSqlServer
+                        ? table.Column<int>(type: "int", nullable: false)
+                            .Annotation("SqlServer:Identity", "1, 1")
+                        : table.Column<int>(type: "integer", nullable: false)
+                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: datetimeType, nullable: false),
                     LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    Name = table.Column<string>(type: varchar150Type, maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: boolType, nullable: false),
+                    IsObligatory = table.Column<bool>(type: boolType, nullable: false),
+                    Description = table.Column<string>(type: maxTextType, nullable: true),
+                    IsEnabled = table.Column<bool>(type: boolType, nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Uuid = table.Column<Guid>(type: uuidType, nullable: false)
                 },
                 constraints: table =>
                 {
