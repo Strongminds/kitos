@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="KLEOnlineUrl" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">https://api.kle-online.dk/resources/kle</Value>
+      <Value Profile="(Default)">http://api.kle-online.dk/resources/kle</Value>
     </Setting>
   </Settings>
 </SettingsFile>
