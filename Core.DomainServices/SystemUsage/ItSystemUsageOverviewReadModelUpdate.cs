@@ -14,7 +14,6 @@ using Core.DomainModel.Users;
 using Core.DomainServices.Extensions;
 using Core.DomainServices.Model;
 using Core.DomainServices.Options;
-using Core.DomainServices.Extensions;
 
 namespace Core.DomainServices.SystemUsage
 {
@@ -112,7 +111,7 @@ namespace Core.DomainServices.SystemUsage
             destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
 
             var interfaces = source.GetExposedInterfaces();
-            destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.Id.ToString()).ToStringWithDelimiter();
+            destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.ItInterfaceId).ToStringWithDelimiter();
             destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).Where(x => !x.IsWhiteSpace()).ToStringWithDelimiter();
 
             PatchParentSystemInformation(source, destination);
