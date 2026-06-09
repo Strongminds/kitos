@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260601082525_MakeTechnicalSystemTypeMultiChoice")]
+    partial class MakeTechnicalSystemTypeMultiChoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,9 +259,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("SourceId")
                         .HasDatabaseName("IX_SourceId");
-
-                    b.HasIndex("Category", "Id")
-                        .HasDatabaseName("IX_Category_Id");
 
                     b.ToTable("PendingReadModelUpdates");
                 });
@@ -653,7 +653,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("int");
 
                     b.Property<bool?>("EnforceInvalidity")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<int?>("HasSubDataProcessors")
                         .HasColumnType("int");
@@ -997,9 +997,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SystemUuidsAsCsv")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SystemValiditiesAsCsv")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TransferToInsecureThirdCountries")
@@ -4396,10 +4393,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("IsSociallyCritical")
                         .HasColumnType("int");
 
-                    b.Property<string>("ItInterfaceIdsAsCsv");
-
-                    b.Property<string>("ItInterfaceVersionsAsCsv");
-
                     b.Property<int?>("ItSystemBusinessTypeId")
                         .HasColumnType("int");
 
@@ -7619,7 +7612,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("CustomizedUiNodes", (string)null);
+                    b.ToTable("CustomizedUiNodes");
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.UIModuleCustomization", b =>
@@ -7668,9 +7661,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("DefaultUserStartPreference")
                         .HasColumnType("nvarchar(max)");
 
@@ -7708,9 +7698,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<int?>("LastChangedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(100)
