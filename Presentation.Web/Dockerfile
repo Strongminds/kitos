@@ -25,6 +25,7 @@ RUN dotnet publish "Presentation.Web/Presentation.Web.csproj" -c Release -o out 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
+COPY --from=build /app/DeploymentScripts/Baseline.PostgreSql.FullModel.sql .
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
