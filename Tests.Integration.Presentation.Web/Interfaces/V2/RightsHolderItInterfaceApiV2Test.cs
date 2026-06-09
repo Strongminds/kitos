@@ -149,7 +149,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
                 await InterfaceV2Helper.PatchExposedBySystemAsync(interfaceDto.Uuid, system.Uuid);
             }
 
-            var interface3LastModified = DatabaseAccess.MapFromEntitySet<ItInterface, DateTime>(x => x.AsQueryable().ByUuid(itInterface3.Uuid).LastChanged.Transform(dt => DateTime.SpecifyKind(dt, DateTimeKind.Utc)));
+            var interface3LastModified = DatabaseAccess.MapFromEntitySet<ItInterface, DateTime>(x => x.AsQueryable().ByUuid(itInterface3.Uuid).LastChanged.Transform(DateTimeTestHelper.Normalize));
 
             //Act
             var dtos = (await InterfaceV2Helper.GetRightsholderInterfacesAsync(token, changedSinceGtEq: interface3LastModified, pageNumber: 0, pageSize: 10)).ToList();

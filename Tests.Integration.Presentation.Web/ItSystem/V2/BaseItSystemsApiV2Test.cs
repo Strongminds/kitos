@@ -24,7 +24,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             Assert.Equal(dbSystem.Description, systemDTO.Description);
             Assert.Equal(dbSystem.PreviousName, systemDTO.FormerName);
             Assert.Equal(dbSystem.Disabled, systemDTO.Deactivated);
-            Assert.Equal(dbSystem.Created, systemDTO.Created);
+            DateTimeTestHelper.AssertEqual(dbSystem.Created, systemDTO.Created.GetValueOrDefault());
             Assert.Equal(dbSystem.ObjectOwner.Uuid, systemDTO.CreatedBy.Uuid);
             Assert.Equal(dbSystem.ObjectOwner.GetFullName(), systemDTO.CreatedBy.Name);
             Assert.Equal(dbSystem.ArchiveDuty?.ToString("G"), systemDTO.RecommendedArchiveDuty.Id.ToString("G"));
