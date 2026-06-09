@@ -42,12 +42,24 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "TechnicalSystemTypesId");
 
             // Migrate existing single-choice data to the new join table
-            migrationBuilder.Sql(@"
-                INSERT INTO ItSystemUsageTechnicalSystemTypes (ReferencesId, TechnicalSystemTypesId)
-                SELECT Id, TechnicalSystemTypeId
-                FROM ItSystemUsage
-                WHERE TechnicalSystemTypeId IS NOT NULL
-            ");
+            if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
+            {
+                migrationBuilder.Sql(@"
+                    INSERT INTO dbo.""ItSystemUsageTechnicalSystemTypes"" (""ReferencesId"", ""TechnicalSystemTypesId"")
+                    SELECT ""Id"", ""TechnicalSystemTypeId""
+                    FROM dbo.""ItSystemUsage""
+                    WHERE ""TechnicalSystemTypeId"" IS NOT NULL
+                ");
+            }
+            else
+            {
+                migrationBuilder.Sql(@"
+                    INSERT INTO ItSystemUsageTechnicalSystemTypes (ReferencesId, TechnicalSystemTypesId)
+                    SELECT Id, TechnicalSystemTypeId
+                    FROM ItSystemUsage
+                    WHERE TechnicalSystemTypeId IS NOT NULL
+                ");
+            }
 
             // Drop the old FK and column from ItSystemUsage
             migrationBuilder.DropForeignKey(
@@ -153,16 +165,32 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 nullable: true);
 
             // Migrate data back from join table (take first entry per usage)
-            migrationBuilder.Sql(@"
-                UPDATE u
-                SET u.TechnicalSystemTypeId = jt.TechnicalSystemTypesId
-                FROM ItSystemUsage u
-                INNER JOIN (
-                    SELECT ReferencesId, MIN(TechnicalSystemTypesId) AS TechnicalSystemTypesId
-                    FROM ItSystemUsageTechnicalSystemTypes
-                    GROUP BY ReferencesId
-                ) jt ON u.Id = jt.ReferencesId
-            ");
+            if (ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
+            {
+                migrationBuilder.Sql(@"
+                    UPDATE dbo.""ItSystemUsage"" u
+                    SET ""TechnicalSystemTypeId"" = jt.""TechnicalSystemTypesId""
+                    FROM (
+                        SELECT ""ReferencesId"", MIN(""TechnicalSystemTypesId"") AS ""TechnicalSystemTypesId""
+                        FROM dbo.""ItSystemUsageTechnicalSystemTypes""
+                        GROUP BY ""ReferencesId""
+                    ) jt
+                    WHERE u.""Id"" = jt.""ReferencesId""
+                ");
+            }
+            else
+            {
+                migrationBuilder.Sql(@"
+                    UPDATE u
+                    SET u.TechnicalSystemTypeId = jt.TechnicalSystemTypesId
+                    FROM ItSystemUsage u
+                    INNER JOIN (
+                        SELECT ReferencesId, MIN(TechnicalSystemTypesId) AS TechnicalSystemTypesId
+                        FROM ItSystemUsageTechnicalSystemTypes
+                        GROUP BY ReferencesId
+                    ) jt ON u.Id = jt.ReferencesId
+                ");
+            }
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItSystemUsage_TechnicalSystemTypeId",

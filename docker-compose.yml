@@ -110,6 +110,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       Database__Provider: PostgreSql
+      IgnorePendingModelChangesWarning: "true"
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=kitos_pubsub;Username=kitos;Password=kitos"
     depends_on:
       postgres:

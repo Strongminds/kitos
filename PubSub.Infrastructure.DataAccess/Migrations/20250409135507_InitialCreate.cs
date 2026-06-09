@@ -15,10 +15,10 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
                 name: "Subscriptions",
                 columns: table => new
                 {
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Callback = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Topic = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Callback = table.Column<string>(type: "text", nullable: false),
+                    Topic = table.Column<string>(type: "text", nullable: false),
+                    OwnerId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

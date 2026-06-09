@@ -15,7 +15,7 @@ namespace PubSub.Infrastructure.DataAccess.Factories
 
             var optionsBuilder = new DbContextOptionsBuilder<PubSubContext>();
 
-            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            if (string.IsNullOrWhiteSpace(provider) || DatabaseProviderHelper.IsPostgreSqlProvider(provider))
             {
                 optionsBuilder.UseNpgsql(connectionString);
             }
