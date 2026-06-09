@@ -402,7 +402,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDataAccess(services, configuration);
             RegisterDomainEventsEngine(services);
             RegisterDomainCommandsEngine(services);
-            RegisterKLE(services, appSettings["KLEOnlineUrl"] ?? "http://api.kle-online.dk/resources/kle");
+            RegisterKLE(services, appSettings["KLEOnlineUrl"] ?? "https://api.kle-online.dk/resources/kle");
             RegisterOptions(services);
             RegisterBackgroundJobs(services);
             RegisterRoleAssignmentServices(services);
