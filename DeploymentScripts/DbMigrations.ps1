@@ -318,6 +318,32 @@ Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString) {
     }
 }
 
+# Grants full access on the dbo schema and all its objects to the named user.
+# Called after baseline SQL is applied for a new PostgreSQL database. Needed when the
+# script runs as a superuser (e.g. postgres) while the application connects as a
+# lower-privileged user (e.g. kitos): the dbo schema would otherwise be owned by the
+# superuser and the application user would receive "permission denied for schema dbo".
+Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUser) {
+    if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
+
+    Write-Host "Granting dbo schema privileges to '$granteeUser'"
+    $safeUser = $granteeUser.Replace("'", "''").Replace('"', '""')
+    $sql = @"
+DO `$`$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$safeUser') THEN
+        GRANT USAGE, CREATE ON SCHEMA dbo TO "$safeUser";
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$safeUser";
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$safeUser";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$safeUser";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$safeUser";
+    END IF;
+END
+`$`$;
+"@
+    Invoke-PostgresSql -parts $parts -database $parts.Database -sql $sql
+}
+
 # For existing databases (previously managed by EF6), pre-marks EF Core migrations as applied
 # so that dotnet ef does not attempt to re-apply schema changes that are already present.
 #
@@ -414,6 +440,15 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
             Invoke-PostgresSqlFile -connectionString $connectionString -sqlFilePath $baselineSql
 
             Initialize-EFCoreHistoryForNewPostgresDb -connectionString $connectionString
+
+            # When the script runs as a superuser (e.g. postgres) but the application connects as a
+            # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
+            # Grant the known app user access so the running application is not blocked.
+            # This is a no-op when the script already runs as the app user (kitos owns the schema).
+            $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+            if ($pgParts.Username -ne $knownAppUser) {
+                Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
+            }
         } else {
             # New database: apply the extracted baseline SQL script which creates the full schema
             # and inserts the InitialBaseline record into __EFMigrationsHistory.

@@ -13,7 +13,9 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
     DO \$\$
     BEGIN
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${APP_USER}') THEN
-            CREATE ROLE ${APP_USER} WITH LOGIN PASSWORD '${APP_PASSWORD}';
+            -- CREATEDB allows the app user to drop and recreate its own databases when running
+            -- local dev tools like PrepareLocalDatabase.ps1 without needing the postgres superuser.
+            CREATE ROLE ${APP_USER} WITH LOGIN PASSWORD '${APP_PASSWORD}' CREATEDB;
         END IF;
     END
     \$\$;
