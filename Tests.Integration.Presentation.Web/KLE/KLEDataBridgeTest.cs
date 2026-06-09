@@ -13,7 +13,7 @@ namespace Tests.Integration.Presentation.Web.KLE
         {
             try
             {
-                var sut = new KLEDataBridge("http://api.kle-online.dk/resources/kle");
+                var sut = new KLEDataBridge("https://api.kle-online.dk/resources/kle");
                 var result = sut.GetAllActiveKleNumbers();
                 var publishingDateXElement = result.Descendants("UdgivelsesDato");
                 DateTime.Parse(publishingDateXElement.First().Value);
