@@ -61,7 +61,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 Mock.Of<IGenericRepository<ItSystemUsageOverviewUsingSystemUsageReadModel>>(),
                 _businessTypeService.Object,
                 _orgUnitRepoMock.Object,
-                _itContractReadModelRepoMock.Object);
+                _itContractReadModelRepoMock.Object,
+                Mock.Of<IGenericRepository<ItSystemUsageOverviewTechnicalSystemTypeReadModel>>());
         }
 
         private static readonly User DefaultTestUser = new()
@@ -368,8 +369,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.CriticalityFieldsLastChanged, readModel.CriticalityFieldsLastChanged);
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Uuid, readModel.SystemUsageCriticalityLevelUuid);
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
-            Assert.Equal(systemUsage.TechnicalSystemType?.Uuid, readModel.TechnicalSystemTypeUuid);
-            Assert.Equal(systemUsage.TechnicalSystemType?.Name, readModel.TechnicalSystemTypeName);
+            Assert.Equal(string.Join(", ", systemUsage.TechnicalSystemTypes.Select(x => x.Name)), readModel.TechnicalSystemTypeNamesAsCsv);
+            Assert.Equal(systemUsage.TechnicalSystemTypes.Count, readModel.TechnicalSystemTypes.Count);
             Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
 
             // Sensitive data levels

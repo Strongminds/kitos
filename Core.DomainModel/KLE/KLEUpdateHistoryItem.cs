@@ -6,7 +6,7 @@ namespace Core.DomainModel.KLE
     {
         public DateTime Version { get; set; }
 
-        // To keep EF and proxy generation happy
+        // Empty constructor to keep EF and proxy generation happy
         protected KLEUpdateHistoryItem() {}
 
         public KLEUpdateHistoryItem(DateTime version)
