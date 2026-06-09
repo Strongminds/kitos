@@ -1,5 +1,6 @@
 using Core.ApplicationServices.Notification;
 using Core.DomainModel.Notification;
+using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using System;
@@ -32,26 +33,51 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         [Route("organization/{organizationUuid}/user/{userUuid}/{ownerResourceType}")]
         public IActionResult GetByOrganizationAndUser([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromRoute][NonEmptyGuid] Guid userUuid, OwnerResourceType ownerResourceType)
         {
-            return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, ownerResourceType.ToRelatedEntityType())
-                    .Select(MapUserAlertsToDTO)
+            var relatedEntityType = ownerResourceType.ToRelatedEntityType();
+
+                return _userNotificationApplicationService.GetNotificationsForUserByUuid(organizationUuid, userUuid, relatedEntityType)
+                    .Select(userAlerts => MapUserAlertsToDTO(userAlerts, relatedEntityType))
                     .Match(Ok, FromOperationError);
         }
 
-        private static IEnumerable<AlertResponseDTO> MapUserAlertsToDTO(IEnumerable<UserNotification> userAlerts)
+        private static IEnumerable<AlertResponseDTO> MapUserAlertsToDTO(IQueryable<UserNotification> userAlerts, RelatedEntityType relatedEntityType)
         {
-            return userAlerts.Select(MapUserAlertsToDTO).ToList();
-        }
-
-        private static AlertResponseDTO MapUserAlertsToDTO(UserNotification userAlert) {
-            return new AlertResponseDTO
+            return relatedEntityType switch
             {
-                AlertType = AlertType.Advis,
-                Created = userAlert.Created,
-                Message = userAlert.NotificationMessage,
-                Name = userAlert.Name,
-                Uuid = userAlert.Uuid,
-                EntityUuid = userAlert.GetRelatedEntityUuid()
-                
+                RelatedEntityType.itContract => userAlerts
+                    .Select(userAlert => new AlertResponseDTO
+                    {
+                        AlertType = AlertType.Advis,
+                        Created = userAlert.Created,
+                        Message = userAlert.NotificationMessage,
+                        Name = userAlert.Name,
+                        Uuid = userAlert.Uuid,
+                        EntityUuid = userAlert.ItContract.Uuid
+                    })
+                    .ToList(),
+                RelatedEntityType.itSystemUsage => userAlerts
+                    .Select(userAlert => new AlertResponseDTO
+                    {
+                        AlertType = AlertType.Advis,
+                        Created = userAlert.Created,
+                        Message = userAlert.NotificationMessage,
+                        Name = userAlert.Name,
+                        Uuid = userAlert.Uuid,
+                        EntityUuid = userAlert.ItSystemUsage.Uuid
+                    })
+                    .ToList(),
+                RelatedEntityType.dataProcessingRegistration => userAlerts
+                    .Select(userAlert => new AlertResponseDTO
+                    {
+                        AlertType = AlertType.Advis,
+                        Created = userAlert.Created,
+                        Message = userAlert.NotificationMessage,
+                        Name = userAlert.Name,
+                        Uuid = userAlert.Uuid,
+                        EntityUuid = userAlert.DataProcessingRegistration.Uuid
+                    })
+                    .ToList(),
+                _ => throw new ArgumentOutOfRangeException(nameof(relatedEntityType), relatedEntityType, "Unsupported related entity type")
             };
         }
     }

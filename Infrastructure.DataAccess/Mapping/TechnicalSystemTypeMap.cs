@@ -11,6 +11,10 @@ namespace Infrastructure.DataAccess.Mapping
         {
             base.Configure(builder);
             builder.ToTable("TechnicalSystemTypes");
+
+            builder.HasMany(x => x.References)
+                .WithMany(x => x.TechnicalSystemTypes)
+                .UsingEntity(j => j.ToTable("ItSystemUsageTechnicalSystemTypes"));
         }
     }
 }

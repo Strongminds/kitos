@@ -11,16 +11,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
+            var datetimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
+
             migrationBuilder.AddColumn<DateTime>(
                 name: "CriticalityFieldsLastChanged",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "datetime2",
+                type: datetimeType,
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CriticalityFieldsLastChanged",
                 table: "ItSystemUsage",
-                type: "datetime2",
+                type: datetimeType,
                 nullable: true);
         }
 

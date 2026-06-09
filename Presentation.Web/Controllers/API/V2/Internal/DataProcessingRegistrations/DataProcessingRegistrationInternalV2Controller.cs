@@ -22,6 +22,7 @@ using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistrations
 {
@@ -71,6 +72,31 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
             return _dataProcessingRegistrationService
                 .Query(conditions.ToArray())
+                .Include(registration => registration.Organization)
+                .Include(registration => registration.ObjectOwner)
+                .Include(registration => registration.LastChangedByUser)
+                .Include(registration => registration.SystemUsages)
+                .Include(registration => registration.OversightOptions)
+                .Include(registration => registration.Rights)
+                    .ThenInclude(right => right.Role)
+                .Include(registration => registration.Rights)
+                    .ThenInclude(right => right.User)
+                .Include(registration => registration.ExternalReferences)
+                .Include(registration => registration.DataResponsible)
+                .Include(registration => registration.BasisForTransfer)
+                .Include(registration => registration.InsecureCountriesSubjectToDataTransfer)
+                .Include(registration => registration.DataProcessors)
+                .Include(registration => registration.AssignedSubDataProcessors)
+                    .ThenInclude(subDataProcessor => subDataProcessor.Organization)
+                .Include(registration => registration.AssignedSubDataProcessors)
+                    .ThenInclude(subDataProcessor => subDataProcessor.SubDataProcessorBasisForTransfer)
+                .Include(registration => registration.AssignedSubDataProcessors)
+                    .ThenInclude(subDataProcessor => subDataProcessor.InsecureCountry)
+                .Include(registration => registration.MainContract)
+                .Include(registration => registration.AssociatedContracts)
+                .Include(registration => registration.ResponsibleOrganizationUnit)
+                .Include(registration => registration.OversightDates)
+                .AsSplitQuery()
                 .OrderApiResultsByDefaultConventions(false, orderByProperty)
                 .Page(paginationQuery)
                 .ToList()

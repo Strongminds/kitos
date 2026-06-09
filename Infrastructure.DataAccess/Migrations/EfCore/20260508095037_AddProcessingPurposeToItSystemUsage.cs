@@ -10,17 +10,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
+            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
+            var varchar200Type = isSqlServer ? "nvarchar(200)" : "character varying(200)";
+
             migrationBuilder.AddColumn<string>(
                 name: "ProcessingPurpose",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "nvarchar(200)",
+                type: varchar200Type,
                 maxLength: 200,
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ProcessingPurpose",
                 table: "ItSystemUsage",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: true);
 
             migrationBuilder.CreateIndex(

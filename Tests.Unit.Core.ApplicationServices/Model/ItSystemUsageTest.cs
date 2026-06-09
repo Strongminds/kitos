@@ -1517,57 +1517,58 @@ namespace Tests.Unit.Core.Model
         }
 
         [Fact]
-        public void ResetTechnicalSystemType_SetsValueToNull()
+        public void ResetTechnicalSystemTypes_ClearsCollection()
         {
-            _sut.UpdateTechnicalSystemType(new TechnicalSystemType { Id = A<int>() });
-            Assert.NotNull(_sut.TechnicalSystemType);
+            _sut.UpdateTechnicalSystemTypes(new List<TechnicalSystemType> { new TechnicalSystemType { Id = A<int>(), Uuid = Guid.NewGuid() } });
+            Assert.NotEmpty(_sut.TechnicalSystemTypes);
 
-            _sut.ResetTechnicalSystemType();
+            _sut.ResetTechnicalSystemTypes();
 
-            Assert.Null(_sut.TechnicalSystemType);
+            Assert.Empty(_sut.TechnicalSystemTypes);
         }
 
         [Fact]
-        public void UpdateTechnicalSystemType_SetsValue_WhenNew()
+        public void UpdateTechnicalSystemTypes_SetsValues_WhenNew()
         {
-            var newValue = new TechnicalSystemType { Id = A<int>() };
+            var newValues = new List<TechnicalSystemType> { new TechnicalSystemType { Id = A<int>(), Uuid = Guid.NewGuid() } };
 
-            var error = _sut.UpdateTechnicalSystemType(newValue);
+            var error = _sut.UpdateTechnicalSystemTypes(newValues);
 
             Assert.True(error.IsNone);
-            Assert.Same(newValue, _sut.TechnicalSystemType);
+            Assert.Single(_sut.TechnicalSystemTypes);
         }
 
         [Fact]
-        public void UpdateTechnicalSystemType_SetsValue_WhenDifferentId()
+        public void UpdateTechnicalSystemTypes_SetsValues_WhenDifferentIds()
         {
-            var initial = new TechnicalSystemType { Id = A<int>() };
-            _sut.UpdateTechnicalSystemType(initial);
+            var initial = new List<TechnicalSystemType> { new TechnicalSystemType { Id = A<int>(), Uuid = Guid.NewGuid() } };
+            _sut.UpdateTechnicalSystemTypes(initial);
 
-            var newValue = new TechnicalSystemType { Id = A<int>() };
-            var error = _sut.UpdateTechnicalSystemType(newValue);
+            var newValues = new List<TechnicalSystemType> { new TechnicalSystemType { Id = A<int>(), Uuid = Guid.NewGuid() } };
+            var error = _sut.UpdateTechnicalSystemTypes(newValues);
 
             Assert.True(error.IsNone);
-            Assert.Same(newValue, _sut.TechnicalSystemType);
+            Assert.Single(_sut.TechnicalSystemTypes);
+            Assert.Equal(newValues[0].Id, _sut.TechnicalSystemTypes.First().Id);
         }
 
         [Fact]
-        public void UpdateTechnicalSystemType_DoesNotChangeValue_WhenSameId()
+        public void UpdateTechnicalSystemTypes_DoesNotChangeValues_WhenSameIds()
         {
-            var existing = new TechnicalSystemType { Id = A<int>() };
-            _sut.UpdateTechnicalSystemType(existing);
+            var existing = new TechnicalSystemType { Id = A<int>(), Uuid = Guid.NewGuid() };
+            _sut.UpdateTechnicalSystemTypes(new List<TechnicalSystemType> { existing });
 
-            var sameIdValue = new TechnicalSystemType { Id = existing.Id };
-            var error = _sut.UpdateTechnicalSystemType(sameIdValue);
+            var sameIdValues = new List<TechnicalSystemType> { new TechnicalSystemType { Id = existing.Id, Uuid = existing.Uuid } };
+            var error = _sut.UpdateTechnicalSystemTypes(sameIdValues);
 
             Assert.True(error.IsNone);
-            Assert.Same(existing, _sut.TechnicalSystemType);
+            Assert.Single(_sut.TechnicalSystemTypes);
         }
 
         [Fact]
-        public void UpdateTechnicalSystemType_Throws_WhenNull()
+        public void UpdateTechnicalSystemTypes_Throws_WhenNull()
         {
-            Assert.Throws<ArgumentNullException>(() => _sut.UpdateTechnicalSystemType(null));
+            Assert.Throws<ArgumentNullException>(() => _sut.UpdateTechnicalSystemTypes(null));
         }
 
         private void AssertCriticalityFieldsLastChanged(DateTime? beforeChange, bool expectChange = true)

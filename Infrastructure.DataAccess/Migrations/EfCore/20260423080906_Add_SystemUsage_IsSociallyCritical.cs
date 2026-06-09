@@ -13,13 +13,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "IsSociallyCritical",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "int",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "IsSociallyCritical",
                 table: "ItSystemUsage",
-                type: "int",
                 nullable: true);
         }
 
