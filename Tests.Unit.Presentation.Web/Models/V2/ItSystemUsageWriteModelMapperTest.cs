@@ -707,7 +707,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(noIsSociallyCritical, generalSection.IsSociallyCritical.IsUnchanged);
             Assert.Equal(noBusinessCritical, generalSection.BusinessCritical.IsUnchanged);
             Assert.Equal(noSystemUsageCriticalityLevel, generalSection.SystemUsageCriticalityLevelUuid.IsUnchanged);
-            Assert.Equal(noTechnicalSystemType, generalSection.TechnicalSystemTypeUuid.IsUnchanged);
+            Assert.Equal(noTechnicalSystemType, generalSection.TechnicalSystemTypeUuids.IsUnchanged);
         }
 
 
@@ -768,7 +768,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.True(generalSection.IsSociallyCritical.HasChange);
             Assert.True(generalSection.BusinessCritical.HasChange);
             Assert.True(generalSection.SystemUsageCriticalityLevelUuid.HasChange);
-            Assert.True(generalSection.TechnicalSystemTypeUuid.HasChange);
+            Assert.True(generalSection.TechnicalSystemTypeUuids.HasChange);
         }
 
         [Theory]
@@ -1290,7 +1290,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noIsSociallyCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsSociallyCritical));
             if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsBusinessCritical));
             if (noSystemUsageCriticalityLevel) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemUsageCriticalityLevelUuid));
-            if (noTechnicalSystemType) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.TechnicalSystemTypeUuid));
+            if (noTechnicalSystemType) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.TechnicalSystemTypeUuids));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
             if (noLifeCycleStatus) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.LifeCycleStatus));

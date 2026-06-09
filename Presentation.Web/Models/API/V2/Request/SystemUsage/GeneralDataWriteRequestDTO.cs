@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.DomainModel.ItSystemUsage;
 using Presentation.Web.Infrastructure.Attributes;
@@ -90,10 +91,9 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         [MaxLength(ItSystemUsage.LongProperyMaxLength)]
         public string? Purpose { get; set; }
         /// <summary>
-        /// The technical system type classification of this system usage.
-        /// Constraint: If an update changes this field, the option identified must be currently available in the organization context
+        /// The technical system type classifications of this system usage (multi-choice).
+        /// Constraint: If an update changes this field, all options identified must be currently available in the organization context
         /// </summary>
-        [NonEmptyGuid]
-        public Guid? TechnicalSystemTypeUuid { get; set; }
+        public IEnumerable<Guid>? TechnicalSystemTypeUuids { get; set; }
     }
 }

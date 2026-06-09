@@ -440,9 +440,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<string>.None,
 
 
-                TechnicalSystemTypeUuid = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuid)
-                    ? (source.TechnicalSystemTypeUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
-                    : OptionalValueChange<Maybe<Guid>>.None,
+                TechnicalSystemTypeUuids = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuids)
+                    ? (source.TechnicalSystemTypeUuids != null ? Maybe<IEnumerable<Guid>>.Some(source.TechnicalSystemTypeUuids) : Maybe<IEnumerable<Guid>>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
             };
         }
 

@@ -54,6 +54,7 @@ namespace Core.DomainModel.ItSystemUsage
             MarkAsDirty();
             AssociatedDataProcessingRegistrations = new List<DataProcessingRegistration>();
             PersonalDataOptions = new List<ItSystemUsagePersonalData>();
+            TechnicalSystemTypes = new List<TechnicalSystemType>();
         }
 
         public bool IsActiveAccordingToDateFields => CheckDatesValidity(DateTime.UtcNow).Any() == false;
@@ -262,8 +263,7 @@ namespace Core.DomainModel.ItSystemUsage
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
 
-        public int? TechnicalSystemTypeId { get; set; }
-        public virtual TechnicalSystemType TechnicalSystemType { get; set; }
+        public virtual ICollection<TechnicalSystemType> TechnicalSystemTypes { get; set; }
 
         public virtual string? CriticalityLevelDocumentationUrl { get; set; }
         public virtual string? CriticalityLevelDocumentationName { get; set; }
@@ -953,20 +953,31 @@ namespace Core.DomainModel.ItSystemUsage
             return Maybe<OperationError>.None;
         }
 
-        public void ResetTechnicalSystemType()
+        public void ResetTechnicalSystemTypes()
         {
-            TechnicalSystemType.Track();
-            TechnicalSystemType = null;
+            foreach (var technicalSystemType in TechnicalSystemTypes.ToList())
+            {
+                technicalSystemType.Track();
+            }
+            TechnicalSystemTypes.Clear();
         }
 
-        public Maybe<OperationError> UpdateTechnicalSystemType(TechnicalSystemType newValue)
+        public Maybe<OperationError> UpdateTechnicalSystemTypes(IEnumerable<TechnicalSystemType> newValues)
         {
-            if (newValue == null)
-                throw new ArgumentNullException(nameof(newValue));
+            if (newValues == null)
+                throw new ArgumentNullException(nameof(newValues));
 
-            if (TechnicalSystemType == null || TechnicalSystemType.Id != newValue.Id)
+            var newList = newValues.ToList();
+            var currentIds = TechnicalSystemTypes.Select(x => x.Id).ToHashSet();
+            var newIds = newList.Select(x => x.Id).ToHashSet();
+
+            if (currentIds.SetEquals(newIds))
+                return Maybe<OperationError>.None;
+
+            TechnicalSystemTypes.Clear();
+            foreach (var item in newList)
             {
-                TechnicalSystemType = newValue;
+                TechnicalSystemTypes.Add(item);
             }
 
             return Maybe<OperationError>.None;
