@@ -35,7 +35,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public YesNoDontKnowChoice? UserSupervision { get; set; }
         public DateTime? UserSupervisionDate { get; set; }
         public SimpleLinkDTO? UserSupervisionDocumentation { get; set; }
-        public YesNoDontKnowChoice? RiskAssessmentConducted { get; set; }
+        public YesNoDontKnowIrrelevantChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
         [SupplierField]
         public RiskLevelChoice? RiskAssessmentResult { get; set; }
@@ -53,5 +53,6 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public YesNoDontKnowChoice? RetentionPeriodDefined { get; set; }
         public DateTime? NextDataRetentionEvaluationDate { get; set; }
         public int? DataRetentionEvaluationFrequencyInMonths { get; set; }
+        public IsDataProcessingAgreementRequiredChoice? IsDataProcessingAgreementRequired { get; set; }
     }
 }

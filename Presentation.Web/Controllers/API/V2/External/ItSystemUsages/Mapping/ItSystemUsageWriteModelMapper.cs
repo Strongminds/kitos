@@ -142,8 +142,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<Maybe<NamedLink>>.None,
 
                 RiskAssessmentConducted = rule.MustUpdate(x => x.GDPR!.RiskAssessmentConducted)
-                    ? MapYesNoDontKnow(source.RiskAssessmentConducted)
-                    : OptionalValueChange<DataOptions?>.None,
+                    ? MapYesNoDontKnowIrrelevant(source.RiskAssessmentConducted)
+                    : OptionalValueChange<YesNoDontKnowIrrelevant?>.None,
 
                 RiskAssessmentConductedDate = rule.MustUpdate(x => x.GDPR!.RiskAssessmentConductedDate)
                     ? source.RiskAssessmentConductedDate.AsChangedValue()
@@ -188,6 +188,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 DataRetentionEvaluationFrequencyInMonths = rule.MustUpdate(x => x.GDPR!.DataRetentionEvaluationFrequencyInMonths)
                     ? source.DataRetentionEvaluationFrequencyInMonths.AsChangedValue()
                     : OptionalValueChange<int?>.None,
+
+                IsDataProcessingAgreementRequired = rule.MustUpdate(x => x.GDPR!.IsDataProcessingAgreementRequired)
+                ? MapEnumChoice(source.IsDataProcessingAgreementRequired, IsDataProcessingAgreementRequiredMappingExtensions.FromChoice)
+                : OptionalValueChange<IsDataProcessingAgreementRequired?>.None
             };
         }
 
@@ -435,6 +439,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.Purpose!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
+
+                TechnicalSystemTypeUuid = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuid)
+                    ? (source.TechnicalSystemTypeUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<Guid>>.None,
             };
         }
 
@@ -476,6 +484,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         private static ChangedValue<DataOptions?> MapYesNoDontKnow(YesNoDontKnowChoice? choice)
         {
             return MapEnumChoice(choice, DataOptionsMappingExtensions.ToDataOptions);
+        }
+
+        private static ChangedValue<YesNoDontKnowIrrelevant?> MapYesNoDontKnowIrrelevant(YesNoDontKnowIrrelevantChoice? choice)
+        {
+            return MapEnumChoice(choice, YesNoDontKnowIrrelevantMappingExtensions.FromChoice);
         }
 
         private static ChangedValue<Maybe<NamedLink>> MapLink(SimpleLinkDTO? simpleLinkDto)

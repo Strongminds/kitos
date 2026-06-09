@@ -44,6 +44,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private readonly IOptionsService<ItSystemUsage, ArchiveLocation> _archiveLocationOptionsService;
         private readonly IOptionsService<ItSystemUsage, ArchiveTestLocation> _archiveTestLocationOptionsService;
         private readonly IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> _systemUsageCriticalityLevelOptionsService;
+        private readonly IOptionsService<ItSystemUsage, TechnicalSystemType> _technicalSystemTypeOptionsService;
         private readonly IItsystemUsageRelationsService _systemUsageRelationsService;
         private readonly IEntityIdentityResolver _identityResolver;
         private readonly IItContractService _contractService;
@@ -81,7 +82,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
             IItsystemUsageRelationsService systemUsageRelationsService,
             IEntityIdentityResolver identityResolver,
             IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository,
-            IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> systemUsageCriticalityLevelOptionsService)
+            IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> systemUsageCriticalityLevelOptionsService,
+            IOptionsService<ItSystemUsage, TechnicalSystemType> technicalSystemTypeOptionsService)
         {
             _systemUsageService = systemUsageService;
             _transactionManager = transactionManager;
@@ -106,6 +108,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             _identityResolver = identityResolver;
             _personalDataOptionsRepository = personalDataOptionsRepository;
             _systemUsageCriticalityLevelOptionsService = systemUsageCriticalityLevelOptionsService;
+            _technicalSystemTypeOptionsService = technicalSystemTypeOptionsService;
         }
 
         public Result<ItSystemUsage, OperationError> Create(SystemUsageCreationParameters parameters)
@@ -246,6 +249,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
                        systemUsage.LinkToDirectoryUrl = newLink.Select(x => x.Url).GetValueOrDefault();
                    }))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.IsDataProcessingAgreementRequired, (systemUsage, isDataProcessingAgreementRequired) => systemUsage.IsDataProcessingAgreementRequired = isDataProcessingAgreementRequired))
 
                 //Registered data sensitivity
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DataSensitivityLevels, (systemUsage, levels) => UpdateSensitivityLevels(levels, systemUsage)))
@@ -551,6 +555,28 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return systemUsage.UpdateSystemUsageCriticalityLevel(optionByUuid.Value.option);
         }
 
+        private Maybe<OperationError> UpdateTechnicalSystemType(ItSystemUsage systemUsage, Maybe<Guid> technicalSystemTypeUuid)
+        {
+            if (technicalSystemTypeUuid.IsNone)
+            {
+                systemUsage.ResetTechnicalSystemType();
+                return Maybe<OperationError>.None;
+            }
+
+            var optionByUuid = _technicalSystemTypeOptionsService.GetOptionByUuid(systemUsage.OrganizationId, technicalSystemTypeUuid.Value);
+
+            if (optionByUuid.IsNone)
+                return new OperationError("Invalid TechnicalSystemType Uuid", OperationFailure.BadInput);
+
+            if (systemUsage.TechnicalSystemTypeId != null && systemUsage.TechnicalSystemTypeId == optionByUuid.Value.option.Id)
+                return Maybe<OperationError>.None;
+
+            if (!optionByUuid.Value.available)
+                return new OperationError($"TechnicalSystemType with uuid {technicalSystemTypeUuid.Value} is not available in this organization.", OperationFailure.BadInput);
+
+            return systemUsage.UpdateTechnicalSystemType(optionByUuid.Value.option);
+        }
+
         private Maybe<OperationError> UpdateArchiveType(ItSystemUsage systemUsage, Maybe<Guid> archiveType)
         {
             if (archiveType.IsNone)
@@ -656,7 +682,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Notes, (systemUsage, notes) => systemUsage.Note = notes))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemVersion, (systemUsage, version) => systemUsage.UpdateSystemVersion(version)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.NumberOfExpectedUsersInterval, UpdateExpectedUsersInterval))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.LifeCycleStatus, (systemUsage, lifeCycleStatus) => systemUsage.LifeCycleStatus = lifeCycleStatus))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.LifeCycleStatus, (systemUsage, lifeCycleStatus) => UpdateLifecycleStatus(systemUsage, lifeCycleStatus)))
                 .Bind(usage => UpdateValidityPeriod(usage, generalProperties))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.MainContractUuid, UpdateMainContract))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.ContainsAITechnology, (systemUsage, containsAITechnology) => systemUsage.UpdateContainsAITechnology(containsAITechnology)))
@@ -667,7 +693,18 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.BusinessCritical, (systemUsage, businessCritical) => systemUsage.UpdateIsBusinessCritical(businessCritical)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, (systemUsage, systemUsageCriticalityLevelUuid) => UpdateSystemUsageCriticalityLevel(systemUsage, systemUsageCriticalityLevelUuid)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuid, (systemUsage, technicalSystemTypeUuid) => UpdateTechnicalSystemType(systemUsage, technicalSystemTypeUuid)));
+        }
+
+        private void RaiseValidityUpdatedEvent(ItSystemUsage usage) {
+            _domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
+        }
+
+        private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus) {
+            usage.LifeCycleStatus = lifeCycleStatus;
+            RaiseValidityUpdatedEvent(usage);
+            return usage;
         }
 
         private static ItSystemUsage UpdateCriticalityLevelDocumentation(ItSystemUsage usage, Maybe<NamedLink> newLink)
@@ -684,13 +721,14 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return usage;
         }
 
-        private static Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)
+        private Result<ItSystemUsage, OperationError> UpdateValidityPeriod(ItSystemUsage usage, UpdatedSystemUsageGeneralProperties generalProperties)
         {
             if (generalProperties.ValidFrom.IsUnchanged && generalProperties.ValidTo.IsUnchanged)
                 return usage; //Not changes provided
 
             var newValidFrom = generalProperties.ValidFrom.MapDateTimeOptionalChangeWithFallback(usage.Concluded);
             var newValidTo = generalProperties.ValidTo.MapDateTimeOptionalChangeWithFallback(usage.ExpirationDate);
+            RaiseValidityUpdatedEvent(usage);
 
             return usage.UpdateSystemValidityPeriod(newValidFrom, newValidTo).Match<Result<ItSystemUsage, OperationError>>(error => error, () => usage);
         }
@@ -707,6 +745,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             if (contractResult.Failed)
                 return new OperationError($"Failure getting the contract:{contractResult.Error.Message.GetValueOrEmptyString()}", contractResult.Error.FailureType);
 
+            RaiseValidityUpdatedEvent(systemUsage);
             return systemUsage.SetMainContract(contractResult.Value).Match<Result<ItSystemUsage, OperationError>>(error => error, () => systemUsage);
         }
 

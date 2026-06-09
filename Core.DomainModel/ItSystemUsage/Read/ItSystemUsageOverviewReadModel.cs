@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.DomainModel.ItSystem.DataTypes;
+using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 
 namespace Core.DomainModel.ItSystemUsage.Read
@@ -14,6 +15,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         {
             RoleAssignments = new List<ItSystemUsageOverviewRoleAssignmentReadModel>();
             ItSystemTaskRefs = new List<ItSystemUsageOverviewTaskRefReadModel>();
+            LocalItSystemTaskRefs = new List<ItSystemUsageOverviewLocalTaskRefReadModel>();
             SensitiveDataLevels = new List<ItSystemUsageOverviewSensitiveDataLevelReadModel>();
             ArchivePeriods = new List<ItSystemUsageOverviewArchivePeriodReadModel>();
             DataProcessingRegistrations = new List<ItSystemUsageOverviewDataProcessingRegistrationReadModel>();
@@ -83,12 +85,16 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string ItSystemBusinessTypeName { get; set; }
         public int? ItSystemRightsHolderId { get; set; }
         public string ItSystemRightsHolderName { get; set; }
+        public string ItSystemRightsHolderCvr { get; set; }
         public int? ItSystemCategoriesId { get; set; }
         public Guid? ItSystemCategoriesUuid { get; set; }
         public string ItSystemCategoriesName { get; set; }
         public string ItSystemKLEIdsAsCsv { get; set; }
         public string ItSystemKLENamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewTaskRefReadModel> ItSystemTaskRefs { get; set; } // Adding TaskRefs as collection to enable indexed search
+        public string LocalKleIdsAsCsv { get; set; }
+        public string LocalKleNamesAsCsv { get; set; }
+        public virtual ICollection<ItSystemUsageOverviewLocalTaskRefReadModel> LocalItSystemTaskRefs { get; set; } // Local KLE deviations on the system usage
         public string LocalReferenceDocumentId { get; set; }
         public string LocalReferenceUrl { get; set; }
         public string LocalReferenceTitle { get; set; }
@@ -106,6 +112,8 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string SensitiveDataLevelsAsCsv { get; set; }
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
+        public RiskLevel? RiskAssessmentResult { get; set; }
+        public YesNoDontKnowIrrelevant? RiskAssessmentConducted { get; set; }
         public virtual ICollection<ItSystemUsageOverviewSensitiveDataLevelReadModel> SensitiveDataLevels { get; set; }
         public ArchiveDutyTypes? ArchiveDuty { get; set; }
         public bool IsHoldingDocument { get; set; }
@@ -126,6 +134,8 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string? SystemUsageCriticalityLevelName { get; set; }
         public string CriticalityLevelDocumentationUrl { get; set; }
         public string CriticalityLevelDocumentationName { get; set; }
+        public Guid? TechnicalSystemTypeUuid { get; set; }
+        public string? TechnicalSystemTypeName { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }
@@ -149,5 +159,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string WebAccessibilityNotes { get; set; }
         public DataOptions? IsSociallyCritical { get; set; }
         public DateTime? CriticalityFieldsLastChanged { get; set; }
+        public IsDataProcessingAgreementRequired? IsDataProcessingAgreementRequired { get; set; }
     }
 }

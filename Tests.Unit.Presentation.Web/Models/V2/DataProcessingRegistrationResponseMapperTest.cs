@@ -57,6 +57,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var dpr = new DataProcessingRegistration();
+            dpr.EnforceInvalidity = A<bool>();
 
             //Act
             var dto = _sut.MapDataProcessingRegistrationDTO(dpr);
@@ -87,7 +88,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Empty(general.SubDataProcessors);
             Assert.Null(general.MainContract);
             Assert.Empty(general.AssociatedContracts);
-            Assert.True(general.Valid);
+            Assert.False(general.Validity.Valid);
+            Assert.Equal(dpr.EnforceInvalidity, dto.General.Validity.EnforceInvalidity);
             Assert.Null(general.ResponsibleOrganizationUnit);
 
             var oversight = dto.Oversight;
@@ -129,7 +131,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertSubDataProcessors(dpr.AssignedSubDataProcessors, general.SubDataProcessors);
             AssertIdentity(dpr.MainContract, general.MainContract);
             AssertOptionalIdentities(dpr.AssociatedContracts, general.AssociatedContracts);
-            Assert.Equal(dpr.IsActiveAccordingToMainContract, general.Valid);
+            Assert.Equal(dpr.IsActiveAccordingToMainContract, general.Validity.Valid);
             Assert.Equal(dpr.ResponsibleOrganizationUnit.Uuid, general.ResponsibleOrganizationUnit.Uuid);
             Assert.Equal(dpr.ResponsibleOrganizationUnit.Name, general.ResponsibleOrganizationUnit.Name);
         }
@@ -446,7 +448,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private void AssertSystemUsages(DataProcessingRegistration dpr, List<IdentityNamePairResponseDTO> actual)
+        private void AssertSystemUsages(DataProcessingRegistration dpr, List<ShallowItSystemUsageResponseDTO> actual)
         {
             Assert.Equal(dpr.SystemUsages.Count, actual.Count);
 
@@ -458,10 +460,11 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private static void AssertSystemUsage(ItSystemUsage expected, IdentityNamePairResponseDTO actual)
+        private static void AssertSystemUsage(ItSystemUsage expected, ShallowItSystemUsageResponseDTO actual)
         {
             Assert.Equal(expected.Uuid, actual.Uuid);
             Assert.Equal(expected.ItSystem.Name, actual.Name);
+            Assert.Equal(expected.CheckSystemValidity().Result, actual.Valid);
         }
 
         private static void AssertOversightInterval(YearMonthIntervalOption? expectedFromSource, OversightIntervalChoice? actual)
@@ -471,6 +474,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 YearMonthIntervalOption.Half_yearly => OversightIntervalChoice.BiYearly,
                 YearMonthIntervalOption.Yearly => OversightIntervalChoice.Yearly,
                 YearMonthIntervalOption.Every_second_year => OversightIntervalChoice.EveryOtherYear,
+                YearMonthIntervalOption.Every_third_year => OversightIntervalChoice.EveryThirdYear,
                 YearMonthIntervalOption.Other => OversightIntervalChoice.Other,
                 YearMonthIntervalOption.Undecided => OversightIntervalChoice.Undecided,
                 null => null,

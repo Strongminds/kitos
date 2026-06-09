@@ -27,6 +27,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
         private readonly Mock<IOptionsService<ItSystem, BusinessType>> _businessTypeService;
         private readonly Mock<IGenericRepository<ItSystemUsageOverviewRoleAssignmentReadModel>> _roleAssignmentRepository;
         private readonly Mock<IGenericRepository<ItSystemUsageOverviewTaskRefReadModel>> _taskRefRepository;
+        private readonly Mock<IGenericRepository<ItSystemUsageOverviewLocalTaskRefReadModel>> _localTaskRefRepository;
         private readonly Mock<IGenericRepository<ItSystemUsageOverviewSensitiveDataLevelReadModel>> _sensitiveDataLevelRepository;
         private readonly Mock<IGenericRepository<ItSystemUsageOverviewArchivePeriodReadModel>> _archivePeriodReadModelRepository;
         private readonly Mock<IGenericRepository<ItSystemUsageOverviewDataProcessingRegistrationReadModel>> _dataProcessingReadModelRepository;
@@ -39,6 +40,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
         {
             _businessTypeService = new Mock<IOptionsService<ItSystem, BusinessType>>();
             _taskRefRepository = new Mock<IGenericRepository<ItSystemUsageOverviewTaskRefReadModel>>();
+            _localTaskRefRepository = new Mock<IGenericRepository<ItSystemUsageOverviewLocalTaskRefReadModel>>();
             _sensitiveDataLevelRepository = new Mock<IGenericRepository<ItSystemUsageOverviewSensitiveDataLevelReadModel>>();
             _roleAssignmentRepository = new Mock<IGenericRepository<ItSystemUsageOverviewRoleAssignmentReadModel>>();
             _archivePeriodReadModelRepository = new Mock<IGenericRepository<ItSystemUsageOverviewArchivePeriodReadModel>>();
@@ -50,6 +52,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             _sut = new ItSystemUsageOverviewReadModelUpdate(
                 _roleAssignmentRepository.Object,
                 _taskRefRepository.Object,
+                _localTaskRefRepository.Object,
                 _sensitiveDataLevelRepository.Object,
                 _archivePeriodReadModelRepository.Object,
                 _dataProcessingReadModelRepository.Object,
@@ -181,7 +184,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 BelongsTo = new Organization
                 {
                     Id = A<int>(),
-                    Name = A<string>()
+                    Name = A<string>(),
+                    Cvr = A<string>()
                 },
                 BusinessType = new BusinessType
                 {
@@ -246,10 +250,20 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 {
                     incomingRelation
                 },
-                LifeCycleStatus = A<LifeCycleStatusType>()
+                LifeCycleStatus = A<LifeCycleStatusType>(),
+                IsDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequired?>(),
+                TaskRefs = new List<TaskRef>
+                {
+                    new TaskRef
+                    {
+                        Id = A<int>(),
+                        TaskKey = A<string>(),
+                        Description = A<string>()
+                    }
+                },
             };
 
-            systemUsage.UpdateRiskAssessment(DataOptions.YES);
+            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
             systemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
@@ -339,6 +353,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.HostedAt, readModel.HostedAt);
             Assert.Equal(systemUsage.UserCount, readModel.UserCount);
             Assert.Equal(systemUsage.riskAssesmentDate, readModel.RiskAssessmentDate);
+            Assert.Equal(systemUsage.riskAssessment, readModel.RiskAssessmentConducted);
+            Assert.Equal(systemUsage.preriskAssessment, readModel.RiskAssessmentResult);
             Assert.Equal(systemUsage.PlannedRiskAssessmentDate, readModel.PlannedRiskAssessmentDate);
             Assert.Equal(systemUsage.ItSystem.PreviousName, readModel.SystemPreviousName);
             Assert.Equal(systemUsage.ItSystem.Description, readModel.SystemDescription);
@@ -352,6 +368,9 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(systemUsage.CriticalityFieldsLastChanged, readModel.CriticalityFieldsLastChanged);
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Uuid, readModel.SystemUsageCriticalityLevelUuid);
             Assert.Equal(systemUsage.SystemUsageCriticalityLevel?.Name, readModel.SystemUsageCriticalityLevelName);
+            Assert.Equal(systemUsage.TechnicalSystemType?.Uuid, readModel.TechnicalSystemTypeUuid);
+            Assert.Equal(systemUsage.TechnicalSystemType?.Name, readModel.TechnicalSystemTypeName);
+            Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);
@@ -365,6 +384,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(system.ExternalUuid, readModel.ExternalSystemUuid);
             Assert.Equal(system.BelongsTo.Id, readModel.ItSystemRightsHolderId);
             Assert.Equal(system.BelongsTo.Name, readModel.ItSystemRightsHolderName);
+            Assert.Equal(system.BelongsTo.Cvr, readModel.ItSystemRightsHolderCvr);
             Assert.Equal(systemUsage.ItSystemCategories.Uuid, readModel.ItSystemCategoriesUuid);
             Assert.Equal(systemUsage.ItSystemCategories.Id, readModel.ItSystemCategoriesId);
             Assert.Equal(systemUsage.ItSystemCategories.Name, readModel.ItSystemCategoriesName);
@@ -409,6 +429,13 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             var taskRef = Assert.Single(readModel.ItSystemTaskRefs);
             Assert.Equal(system.TaskRefs.First().TaskKey, taskRef.KLEId);
             Assert.Equal(system.TaskRefs.First().Description, taskRef.KLEName);
+
+            //Local KLE
+            Assert.Equal(systemUsage.TaskRefs.First().TaskKey, readModel.LocalKleIdsAsCsv);
+            Assert.Equal(systemUsage.TaskRefs.First().Description, readModel.LocalKleNamesAsCsv);
+            var localTaskRef = Assert.Single(readModel.LocalItSystemTaskRefs);
+            Assert.Equal(systemUsage.TaskRefs.First().TaskKey, localTaskRef.KLEId);
+            Assert.Equal(systemUsage.TaskRefs.First().Description, localTaskRef.KLEName);
 
             //Reference
             Assert.Equal(systemUsage.Reference.Title, readModel.LocalReferenceTitle);
@@ -617,7 +644,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 AssociatedDataProcessingRegistrations = new List<DataProcessingRegistration>()
             };
 
-            systemUsage.UpdateRiskAssessment(DataOptions.DONTKNOW);
+            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.DontKnow);
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
 
@@ -687,7 +714,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                     dpr5
                 }
             };
-            systemUsage.UpdateRiskAssessment(DataOptions.DONTKNOW);
+            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.DontKnow);
             systemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());

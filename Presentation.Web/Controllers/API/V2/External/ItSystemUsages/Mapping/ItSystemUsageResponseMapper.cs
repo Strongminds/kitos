@@ -66,7 +66,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return new GDPRRegistrationsResponseDTO
             {
                 ProcessingPurpose = systemUsage.ProcessingPurpose,
-                DPIAConducted = MapYesNoExtended(systemUsage.DPIA),
+                DPIAConducted = MapYesNoDontKnow(systemUsage.DPIA),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),
                 HostedAt = MapHosting(systemUsage),
@@ -88,22 +88,28 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     .Where(option => registerTypesMap.Value.ContainsKey(option.OptionId))
                     .Select(option => registerTypesMap.Value[option.OptionId].MapIdentityNamePairDTO())
                     .ToList(),
-                TechnicalPrecautionsInPlace = MapYesNoExtended(systemUsage.precautions),
+                TechnicalPrecautionsInPlace = MapYesNoDontKnow(systemUsage.precautions),
                 TechnicalPrecautionsApplied = MapPrecautions(systemUsage).ToList(),
                 TechnicalPrecautionsDocumentation = MapSimpleLink(systemUsage.TechnicalSupervisionDocumentationUrlName, systemUsage.TechnicalSupervisionDocumentationUrl),
-                RetentionPeriodDefined = MapYesNoExtended(systemUsage.answeringDataDPIA),
+                RetentionPeriodDefined = MapYesNoDontKnow(systemUsage.answeringDataDPIA),
                 DataRetentionEvaluationFrequencyInMonths = systemUsage.numberDPIA,
                 NextDataRetentionEvaluationDate = systemUsage.DPIAdeleteDate,
-                RiskAssessmentConducted = MapYesNoExtended(systemUsage.riskAssessment),
+                RiskAssessmentConducted = systemUsage.riskAssessment?.ToChoice(),
                 RiskAssessmentConductedDate = systemUsage.riskAssesmentDate,
                 RiskAssessmentDocumentation = MapSimpleLink(systemUsage.RiskSupervisionDocumentationUrlName, systemUsage.RiskSupervisionDocumentationUrl),
                 RiskAssessmentNotes = systemUsage.noteRisks,
                 RiskAssessmentResult = MapRiskAssessment(systemUsage),
                 PlannedRiskAssessmentDate = systemUsage.PlannedRiskAssessmentDate,
-                UserSupervision = MapYesNoExtended(systemUsage.UserSupervision),
+                UserSupervision = MapYesNoDontKnow(systemUsage.UserSupervision),
                 UserSupervisionDate = systemUsage.UserSupervisionDate,
                 UserSupervisionDocumentation = MapSimpleLink(systemUsage.UserSupervisionDocumentationUrlName, systemUsage.UserSupervisionDocumentationUrl),
+                IsDataProcessingAgreementRequired = MapIsDataProcessingAgreementRequired(systemUsage.IsDataProcessingAgreementRequired)
             };
+        }
+
+        private IsDataProcessingAgreementRequiredChoice? MapIsDataProcessingAgreementRequired(IsDataProcessingAgreementRequired? source) {
+            if (source is null) return null;
+            return source.Value.ToChoice();
         }
 
         private ArchivingRegistrationsResponseDTO MapArchiving(ItSystemUsage systemUsage)
@@ -189,12 +195,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 WebAccessibilityCompliance = systemUsage.WebAccessibilityCompliance?.ToYesNoPartiallyChoice(),
                 LastWebAccessibilityCheck = systemUsage.LastWebAccessibilityCheck,
                 WebAccessibilityNotes = systemUsage.WebAccessibilityNotes,
-                IsSociallyCritical = MapYesNoExtended(systemUsage.IsSociallyCritical),
-                IsBusinessCritical = MapYesNoExtended(systemUsage.isBusinessCritical),
+                IsSociallyCritical = MapYesNoDontKnow(systemUsage.IsSociallyCritical),
+                IsBusinessCritical = MapYesNoDontKnow(systemUsage.isBusinessCritical),
                 CriticalityFieldsLastChanged = systemUsage.CriticalityFieldsLastChanged,
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
                 CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
-                Purpose = systemUsage.GeneralPurpose
+                Purpose = systemUsage.GeneralPurpose,
+                TechnicalSystemType = systemUsage.TechnicalSystemType?.MapIdentityNamePairDTO()
             };
         }
 
@@ -227,7 +234,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             };
         }
 
-        private static YesNoDontKnowChoice? MapYesNoExtended(DataOptions? input)
+        private static YesNoDontKnowChoice? MapYesNoDontKnow(DataOptions? input)
         {
             return input?.ToYesNoDontKnowChoice();
         }

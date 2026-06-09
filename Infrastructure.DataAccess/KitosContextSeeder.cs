@@ -79,6 +79,9 @@ namespace Infrastructure.DataAccess
             AddOptions<SystemUsageCriticalityLevel, ItSystemUsage>(context, context.SystemUsageCriticalityLevelTypes, globalAdmin,
                 "TestCriticality1", "TestCriticality2", "TestCriticality3");
 
+            AddOptions<TechnicalSystemType, ItSystemUsage>(context, context.TechnicalSystemTypes, globalAdmin,
+                "Teknisk systemtype 1", "Teknisk systemtype 2", "Teknisk systemtype 3");
+
             AddOptions<DataType, DataRow>(context, context.DataTypes, globalAdmin,
                 "Person", "Virksomhed", "Sag", "Dokument", "Organisation", "Klassikfikation",
                 "Ejendom", "GIS", "Andet");

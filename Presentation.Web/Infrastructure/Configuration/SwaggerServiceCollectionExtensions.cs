@@ -1,3 +1,4 @@
+using Infrastructure.Services.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
@@ -5,6 +6,7 @@ using Presentation.Web.Controllers.API.V1.Auth;
 using Presentation.Web.Helpers;
 using Presentation.Web.Swagger;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Presentation.Web.Infrastructure.Configuration
@@ -46,12 +48,19 @@ namespace Presentation.Web.Infrastructure.Configuration
 
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition(AuthenticationSchemes.Bearer, new OpenApiSecurityScheme
                 {
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Description = "The KITOS TOKEN"
+                    Name = AuthenticationSchemes.Bearer,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "Enter the KITOS token obtained from the GetToken endpoint (without the 'Bearer ' prefix)."
+                });
+
+                // Apply the Bearer scheme globally so Swagger UI sends the Authorization header on every request.
+                c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    { new OpenApiSecuritySchemeReference(AuthenticationSchemes.Bearer, document), new List<string>() }
                 });
 
                 c.DocumentFilter<FilterByApiVersionFilter>(
@@ -75,6 +84,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                     (Predicate<OpenApiDocument>)(doc => int.TryParse(doc.Info?.Version, out var v) && v >= 2),
                     "Presentation.Web.Models.API.V2");
 
+                c.OperationFilter<AddBearerSecurityRequirementOperationFilter>();
                 c.OperationFilter<CreateOperationIdOperationFilter>();
                 c.OperationFilter<FixNamingOfComplexQueryParametersFilter>();
                 c.OperationFilter<FixContentParameterTypesOnSwaggerSpec>();

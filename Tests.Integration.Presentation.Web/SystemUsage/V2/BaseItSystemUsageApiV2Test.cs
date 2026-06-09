@@ -32,8 +32,9 @@ public class BaseItSystemUsageApiV2Test : BaseTest
         gdprInput.RegisteredDataCategoryUuids = registerTypes.Take(2).Select(x => x.Uuid).ToList();
         gdprInput.TechnicalPrecautionsApplied = Many<TechnicalPrecautionChoice>().Distinct().ToList(); //must be unique
         gdprInput.PlannedRiskAssessmentDate = A<DateTime>();
+        gdprInput.IsDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequiredChoice?>();
 
-        if (gdprInput.RiskAssessmentConducted != YesNoDontKnowChoice.Yes)
+        if (gdprInput.RiskAssessmentConducted != YesNoDontKnowIrrelevantChoice.Yes)
         {
             gdprInput.RiskAssessmentConductedDate = null;
             gdprInput.RiskAssessmentDocumentation = null;

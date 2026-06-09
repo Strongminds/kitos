@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Extensions;
@@ -227,7 +227,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noRequireValidParent)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigureGeneralDataInputContext(noContractId, noContractTypeUuid, noContractTemplateUuid, noAgreementElementUuids, noNotes, noEnforceValid, noValidFrom, noValidTo, noCriticalityTypeUuid, noRequireValidParent);
 
             //Act
@@ -319,7 +319,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noProcurementInitiated)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigureProcurementInputContext(noProcurementStrategyUuid, noPurchaseTypeUuid, noProcurementPlan, noProcurementInitiated);
 
             //Act
@@ -382,7 +382,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noSignedBy)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigureResponsibleDataInputContext(noOrganizationUnitUuid, noSigned, noSignedAt, noSignedBy);
 
             //Act
@@ -448,7 +448,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noSignedBy)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigureSupplierDataInputContext(noOrganizationUnitUuid, noSigned, noSignedAt, noSignedBy);
 
             //Act
@@ -514,7 +514,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noPriceRegulationUuid)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigurePaymentModelInputContext(noOperationsRemunerationStartedAt, noPaymentFrequencyUuid, noPaymentModelUuid, noPriceRegulationUuid);
 
             //Act
@@ -582,7 +582,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noIsContinuous)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigureAgreementPeriodInputContext(noDurationMonths, noDurationYears, noExtensionOptionsUsed, noExtensionOptionsUuid, noIrrevocableUntil, noIsContinuous);
 
             //Act
@@ -658,7 +658,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noNoticeByEndOf)
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO();
+            var input = new CreateNewContractRequestDTO { Name = A<string>() };
             ConfigureTerminationDataInputContext(noTerminatedAt, noNoticePeriodMonthsUuid, noNoticePeriodExtendsCurrent, noNoticeByEndOf);
 
             //Act
@@ -720,8 +720,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         public void FromPost_Maps_General()
         {
             //Arrange
-            var input = new CreateNewContractRequestDTO()
-            {
+            var input = new CreateNewContractRequestDTO { Name = A<string>(),
                 General = A<ContractGeneralDataWriteRequestDTO>()
             };
 
@@ -771,7 +770,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var parentUuid = hasParentUuid ? A<Guid?>() : null;
-            var requestDto = new CreateNewContractRequestDTO { ParentContractUuid = parentUuid };
+            var requestDto = new CreateNewContractRequestDTO { Name = A<string>(), ParentContractUuid = parentUuid };
 
             //Act
             var modificationParameters = _sut.FromPOST(requestDto);
@@ -819,7 +818,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var input = A<ContractResponsibleDataWriteRequestDTO>();
 
             //Act
-            var output = _sut.FromPOST(new CreateNewContractRequestDTO() { Responsible = input });
+            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), Responsible = input });
 
             //Assert
             AssertResponsible(input, output.Responsible.Value);
@@ -858,7 +857,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var input = A<ContractSupplierDataWriteRequestDTO>();
 
             //Act
-            var output = _sut.FromPOST(new CreateNewContractRequestDTO() { Supplier = input });
+            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), Supplier = input });
 
             //Assert
             AssertSupplier(input, output.Supplier.Value);
@@ -941,7 +940,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var procurement = CreateProcurementRequest(hasValues);
-            var requestDto = new CreateNewContractRequestDTO { Procurement = procurement };
+            var requestDto = new CreateNewContractRequestDTO { Name = A<string>(), Procurement = procurement };
 
             //Act
             var modificationParameters = _sut.FromPOST(requestDto);
@@ -1021,7 +1020,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var references = Many<ExternalReferenceDataWriteRequestDTO>().OrderBy(x => x.Url).ToList();
 
             //Act
-            var mappedReferences = _sut.FromPOST(new CreateNewContractRequestDTO { ExternalReferences = references }).ExternalReferences.Value.OrderBy(x => x.Url).ToList();
+            var mappedReferences = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), ExternalReferences = references }).ExternalReferences.Value.OrderBy(x => x.Url).ToList();
 
             //Assert
             AssertExternalReferences(mappedReferences, references);
@@ -1034,7 +1033,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var systemUsageUuids = hasValues ? new[] { A<Guid>(), A<Guid>() } : new Guid[0];
-            var requestDto = new CreateNewContractRequestDTO { SystemUsageUuids = systemUsageUuids };
+            var requestDto = new CreateNewContractRequestDTO { Name = A<string>(), SystemUsageUuids = systemUsageUuids };
 
             //Act
             var modificationParameters = _sut.FromPOST(requestDto);
@@ -1114,7 +1113,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var roles = Many<RoleAssignmentRequestDTO>().OrderBy(x => x.RoleUuid).ToList();
 
             //Act
-            var result = _sut.FromPOST(new CreateNewContractRequestDTO { Roles = roles });
+            var result = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), Roles = roles });
 
             //Assert
             AssertRoles(roles, AssertPropertyContainsDataChange(result.Roles).ToList());
@@ -1127,7 +1126,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var dataProcessingRegistrationUuids = hasValues ? new[] { A<Guid>(), A<Guid>() } : new Guid[0];
-            var requestDto = new CreateNewContractRequestDTO { DataProcessingRegistrationUuids = dataProcessingRegistrationUuids };
+            var requestDto = new CreateNewContractRequestDTO { Name = A<string>(), DataProcessingRegistrationUuids = dataProcessingRegistrationUuids };
 
             //Act
             var modificationParameters = _sut.FromPOST(requestDto);
@@ -1201,7 +1200,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             };
 
             //Act
-            var output = _sut.FromPOST(new CreateNewContractRequestDTO() { PaymentModel = input });
+            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), PaymentModel = input });
 
             //Assert
             AssertPaymentModel(input, output.PaymentModel.Value);
@@ -1282,7 +1281,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var input = A<ContractAgreementPeriodDataWriteRequestDTO>();
 
             //Act
-            var output = _sut.FromPOST(new CreateNewContractRequestDTO { AgreementPeriod = input });
+            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), AgreementPeriod = input });
 
             //Assert
             AssertAgreementPeriod(input, AssertPropertyContainsDataChange(output.AgreementPeriod));
@@ -1295,7 +1294,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var input = A<ContractPaymentsDataWriteRequestDTO>();
 
             //Act
-            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Payments = input }).Payments.Value;
+            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), Payments = input }).Payments.Value;
 
             //Assert
             AssertPayments(input, output);
@@ -1360,7 +1359,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var input = A<ContractTerminationDataWriteRequestDTO>();
 
             //Act
-            var output = _sut.FromPOST(new CreateNewContractRequestDTO() { Termination = input });
+            var output = _sut.FromPOST(new CreateNewContractRequestDTO { Name = A<string>(), Termination = input });
 
             //Assert
             AssertTermination(input, AssertPropertyContainsDataChange(output.Termination));

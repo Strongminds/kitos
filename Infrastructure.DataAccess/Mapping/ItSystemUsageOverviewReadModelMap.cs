@@ -104,6 +104,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.Concluded).HasDatabaseName("IX_Concluded");
             builder.HasIndex(x => x.ExpirationDate).HasDatabaseName("IX_ExpirationDate");
             builder.HasIndex(x => x.SystemUsageCriticalityLevelUuid).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemUsageCriticalityLevelUuid");
+            builder.HasIndex(x => x.TechnicalSystemTypeUuid).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_TechnicalSystemTypeUuid");
             builder.HasIndex(x => x.SystemActive).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_SystemActive");
             builder.HasIndex(x => x.RiskAssessmentDate).HasDatabaseName("IX_RiskAssessmentDate");
             builder.HasIndex(x => x.PlannedRiskAssessmentDate).HasDatabaseName("IX_PlannedRiskAssessmentDate");

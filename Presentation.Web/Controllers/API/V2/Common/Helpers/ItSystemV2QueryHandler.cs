@@ -9,6 +9,7 @@ using Core.DomainServices.Queries.ItSystem;
 using Presentation.Web.Extensions;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation.Web.Controllers.API.V2.Common.Helpers
 {
@@ -70,6 +71,21 @@ namespace Presentation.Web.Controllers.API.V2.Common.Helpers
                 refinements.Add(new QueryExceptChildrenOfUuid(excludeChildrenOfUuid.Value));
 
             return service.GetAvailableSystems(refinements.ToArray())
+                .Include(system => system.Organization)
+                .Include(system => system.LastChangedByUser)
+                .Include(system => system.ObjectOwner)
+                .Include(system => system.BelongsTo)
+                .Include(system => system.BusinessType)
+                .Include(system => system.Parent)
+                .Include(system => system.ExternalReferences)
+                .Include(system => system.TaskRefs)
+                .Include(system => system.Usages)
+                    .ThenInclude(usage => usage.Organization)
+                .Include(system => system.Usages)
+                    .ThenInclude(usage => usage.MainContract)
+                        .ThenInclude(mainContract => mainContract.ItContract)
+                            .ThenInclude(contract => contract.Supplier)
+                .AsSplitQuery()
                 .OrderApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty)
                 .Page(paginationQuery)
                 .ToList();

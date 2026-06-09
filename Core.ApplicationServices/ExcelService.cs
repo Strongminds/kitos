@@ -219,7 +219,7 @@ namespace Core.ApplicationServices
                 {
                     // is something entered?
                     if (!String.IsNullOrEmpty(contractRow.ConcludedText) && !String.IsNullOrWhiteSpace(contractRow.ConcludedText))
-                        contractRow.Concluded = DateTime.FromOADate(Double.Parse(contractRow.ConcludedText)).Date;
+                        contractRow.Concluded = SpecifyUtcKind(DateTime.FromOADate(Double.Parse(contractRow.ConcludedText)).Date);
                 }
                 catch (Exception)
                 {
@@ -238,7 +238,7 @@ namespace Core.ApplicationServices
                 {
                     // is something entered?
                     if (!String.IsNullOrEmpty(contractRow.IrrevocableToText) && !String.IsNullOrWhiteSpace(contractRow.IrrevocableToText))
-                        contractRow.IrrevocableTo = DateTime.FromOADate(Double.Parse(contractRow.IrrevocableToText)).Date;
+                        contractRow.IrrevocableTo = SpecifyUtcKind(DateTime.FromOADate(Double.Parse(contractRow.IrrevocableToText)).Date);
                 }
                 catch (Exception)
                 {
@@ -257,7 +257,7 @@ namespace Core.ApplicationServices
                 {
                     // is something entered?
                     if (!String.IsNullOrEmpty(contractRow.ExpirationDateText) && !String.IsNullOrWhiteSpace(contractRow.ExpirationDateText))
-                        contractRow.ExpirationDate = DateTime.FromOADate(Double.Parse(contractRow.ExpirationDateText)).Date;
+                        contractRow.ExpirationDate = SpecifyUtcKind(DateTime.FromOADate(Double.Parse(contractRow.ExpirationDateText)).Date);
                 }
                 catch (Exception)
                 {
@@ -276,7 +276,7 @@ namespace Core.ApplicationServices
                 {
                     // is something entered?
                     if (!String.IsNullOrEmpty(contractRow.TerminatedText) && !String.IsNullOrWhiteSpace(contractRow.TerminatedText))
-                        contractRow.Terminated = DateTime.FromOADate(Double.Parse(contractRow.TerminatedText)).Date;
+                        contractRow.Terminated = SpecifyUtcKind(DateTime.FromOADate(Double.Parse(contractRow.TerminatedText)).Date);
                 }
                 catch (Exception)
                 {
@@ -727,6 +727,17 @@ namespace Core.ApplicationServices
             // at this point, if there's is any unresolvedRows, we should report some errors
             errors.AddRange(unresolvedRows.Select(orgUnitRow => new ExcelImportOrgUnitBadParentError(orgUnitRow.RowIndex)));
             return errors;
+        }
+
+        /// <summary>
+        /// Ensures a DateTime has Kind=UTC for PostgreSQL compatibility.
+        /// Npgsql requires UTC Kind when writing to timestamp with time zone columns.
+        /// </summary>
+        private static DateTime SpecifyUtcKind(DateTime value)
+        {
+            return value.Kind == DateTimeKind.Utc
+                ? value
+                : new DateTime(value.Ticks, DateTimeKind.Utc);
         }
 
         public class ExcelImportOrgUnitBadParentError : ExcelImportError

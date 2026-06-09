@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
 using AutoMapper;
+using Npgsql;
 using Core.Abstractions.Caching;
+using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Infrastructure.DataAccess.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authentication;
@@ -102,6 +105,7 @@ using Core.DomainServices.Time;
 using Core.DomainServices.Tracking;
 using Core.DomainServices.Suppliers;
 using Infrastructure.DataAccess;
+using Infrastructure.DataAccess.Repositories.SystemUsage;
 using Infrastructure.DataAccess.Services;
 using Infrastructure.Ninject.ApplicationServices;
 using Infrastructure.Services.KLEDataBridge;
@@ -135,16 +139,14 @@ using Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Users.Mapping;
 using Presentation.Web.Infrastructure.Factories.Authentication;
-using Presentation.Web.Infrastructure.Authentication;
 using Presentation.Web.Infrastructure.Mail;
 using Presentation.Web.Infrastructure.Model.Request;
-using Infrastructure.DataAccess.Services;
-using Core.DomainServices.Repositories.Interface;
 using Serilog;
 using Core.ApplicationServices.Model.EventHandler;
 using dk.nita.saml20.identity;
 using Presentation.Web.Infrastructure.Middleware;
 using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
+using Core.ApplicationServices.Users;
 
 namespace Presentation.Web.Infrastructure.DI
 {
@@ -234,6 +236,7 @@ namespace Presentation.Web.Infrastructure.DI
             ));
 
             services.AddScoped<IUserWriteService, UserWriteService>();
+            services.AddScoped<IUserLoggedInService, UserLoggedInService>();
             services.AddScoped<IOrgUnitService, OrgUnitService>();
             services.AddScoped<IOrganizationRoleService, OrganizationRoleService>();
             services.AddScoped<IOrganizationRightsService, OrganizationRightsService>();
@@ -412,13 +415,30 @@ namespace Presentation.Web.Infrastructure.DI
         {
             var connectionString = configuration.GetConnectionString("KitosContext")
                 ?? throw new InvalidOperationException("KitosContext connection string is required");
+            var provider = configuration["Database:Provider"];
+            var usePostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider);
 
             services.AddDbContext<KitosContext>((sp, options) =>
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                options.UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString)
-                    .AddInterceptors(new EFEntityInterceptor(
+                options.UseLazyLoadingProxies();
+
+                if (usePostgreSql)
+                {
+                    // Include public in search_path so the citext extension type is discoverable.
+                    // HasDefaultSchema("dbo") causes Npgsql to set search_path=dbo on connect,
+                    // which would exclude public (where citext is installed) unless we override it here.
+                    var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
+                    options.UseNpgsql(pgCsb.ConnectionString,
+                        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"))
+                        .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
+                }
+                else
+                {
+                    options.UseSqlServer(connectionString);
+                }
+
+                options.AddInterceptors(new EFEntityInterceptor(
                         operationClock: () =>
                             httpContextAccessor.HttpContext?.RequestServices.GetService<IOperationClock>()
                             ?? new OperationClock(),
@@ -438,6 +458,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IItSystemRepository, ItSystemRepository>();
             services.AddScoped<IItSystemUsageRepository, ItSystemUsageRepository>();
+            services.AddScoped<IItSystemUsageBatchLoadRepository, ItSystemUsageBatchLoadRepository>();
             services.AddScoped<IOrganizationUnitRepository, OrganizationUnitRepository>();
             services.AddScoped<IAdviceRepository, AdviceRepository>();
             services.AddScoped<IItContractRepository, ItContractRepository>();
@@ -482,6 +503,7 @@ namespace Presentation.Web.Infrastructure.DI
                     sp.GetRequiredService<IOrganizationalUserContext>()));
         }
 
+
         private static void RegisterDomainEventsEngine(IServiceCollection services)
         {
             services.AddScoped<IDomainEvents, NinjectDomainEventHandlerMediator>();
@@ -509,6 +531,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDomainEvent<PublishSystemChangesEventHandler>(services);
             RegisterDomainEvent<RaiseEntityUpdatedOnSnapshotEventsHandler<ItSystem, ItSystemSnapshot>>(services);
             RegisterDomainEvent<RaiseEntityUpdatedOnSnapshotEventsHandler<DataProcessingRegistration, DprSnapshot>>(services);
+            RegisterDomainEvent<UserLoggedInEventHandler>(services);
         }
 
         private static void RegisterDomainEvent<THandler>(IServiceCollection services)
@@ -587,6 +610,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterOptionsService<ItSystemUsage, ArchiveLocation, LocalArchiveLocation>(services);
             RegisterOptionsService<ItSystemUsage, ArchiveTestLocation, LocalArchiveTestLocation>(services);
             RegisterOptionsService<ItSystemUsage, SystemUsageCriticalityLevel, LocalSystemUsageCriticalityLevel>(services);
+            RegisterOptionsService<ItSystemUsage, TechnicalSystemType, LocalTechnicalSystemType>(services);
             RegisterOptionsService<ItSystemUsage, RegisterType, LocalRegisterType>(services);
             RegisterOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(services);
             RegisterRoleOptionsService<ItContractRight, ItContractRole, LocalItContractRole>(services);
@@ -708,6 +732,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterGlobalRegularOptionService<BusinessType, ItSystem>(services);
             RegisterGlobalRegularOptionService<ArchiveLocation, ItSystemUsage>(services);
             RegisterGlobalRegularOptionService<SystemUsageCriticalityLevel, ItSystemUsage>(services);
+            RegisterGlobalRegularOptionService<TechnicalSystemType, ItSystemUsage>(services);
             RegisterGlobalRoleOptionService<ItSystemRole, ItSystemRight>(services);
             RegisterGlobalRegularOptionService<SensitivePersonalDataType, ItSystem>(services);
             RegisterGlobalRegularOptionService<ItSystemRole, ItSystemRight>(services);
@@ -763,6 +788,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterLocalOptionService<LocalArchiveLocation, ItSystemUsage, ArchiveLocation>(services);
             RegisterLocalOptionService<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation>(services);
             RegisterLocalOptionService<LocalSystemUsageCriticalityLevel, ItSystemUsage, SystemUsageCriticalityLevel>(services);
+            RegisterLocalOptionService<LocalTechnicalSystemType, ItSystemUsage, TechnicalSystemType>(services);
             RegisterLocalOptionService<LocalDataType, DataRow, DataType>(services);
             RegisterLocalOptionService<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType>(services);
             RegisterLocalOptionService<LocalInterfaceType, ItInterface, InterfaceType>(services);

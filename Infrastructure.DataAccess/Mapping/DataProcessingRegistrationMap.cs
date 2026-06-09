@@ -67,6 +67,8 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasOne(x => x.ResponsibleOrganizationUnit)
                 .WithMany(x => x.ResponsibleForDataProcessingRegistrations)
                 .HasForeignKey(t => t.ResponsibleOrganizationUnitId);
+
+            builder.Property(x => x.EnforceInvalidity).HasColumnType("boolean");
         }
     }
 }

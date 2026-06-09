@@ -262,12 +262,16 @@ namespace Core.DomainModel.ItSystemUsage
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
 
+        public int? TechnicalSystemTypeId { get; set; }
+        public virtual TechnicalSystemType TechnicalSystemType { get; set; }
+
         public virtual string? CriticalityLevelDocumentationUrl { get; set; }
         public virtual string? CriticalityLevelDocumentationName { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
         public UserCount? UserCount { get; set; }
+        public IsDataProcessingAgreementRequired? IsDataProcessingAgreementRequired { get; set; }
 
         public YesNoUndecidedOption? ContainsAITechnology { get; set; }
 
@@ -352,7 +356,7 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrlName { get; private set; }
         public string UserSupervisionDocumentationUrl { get; private set; }
 
-        public DataOptions? riskAssessment { get; private set; }
+        public YesNoDontKnowIrrelevant? riskAssessment { get; private set; }
         public DateTime? riskAssesmentDate { get; private set; }
         public RiskLevel? preriskAssessment { get; private set; }
         public DateTime? PlannedRiskAssessmentDate { get; private set; }
@@ -942,6 +946,25 @@ namespace Core.DomainModel.ItSystemUsage
             return Maybe<OperationError>.None;
         }
 
+        public void ResetTechnicalSystemType()
+        {
+            TechnicalSystemType.Track();
+            TechnicalSystemType = null;
+        }
+
+        public Maybe<OperationError> UpdateTechnicalSystemType(TechnicalSystemType newValue)
+        {
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+
+            if (TechnicalSystemType == null || TechnicalSystemType.Id != newValue.Id)
+            {
+                TechnicalSystemType = newValue;
+            }
+
+            return Maybe<OperationError>.None;
+        }
+
         public void ResetArchiveTestLocation()
         {
             ArchiveTestLocation.Track();
@@ -1347,7 +1370,7 @@ namespace Core.DomainModel.ItSystemUsage
             });
         }
 
-        public void UpdateRiskAssessment(DataOptions? riskAssessment)
+        public void UpdateRiskAssessment(YesNoDontKnowIrrelevant? riskAssessment)
         {
             this.riskAssessment = riskAssessment;
             if (HasRiskAssessment()) return;
@@ -1365,7 +1388,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         private bool HasRiskAssessment()
         {
-            return riskAssessment == DataOptions.YES;
+            return riskAssessment == YesNoDontKnowIrrelevant.Yes;
         }
 
         public Maybe<OperationError> UpdateRiskAssessmentDate(DateTime? date)

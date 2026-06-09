@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using System.Security.Principal;
 using Core.Abstractions.Extensions;
-using Core.Abstractions.Types;
 using Core.ApplicationServices.Authentication;
 using Core.DomainModel;
 using Core.DomainServices;
+using Infrastructure.Services.Http;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 
@@ -55,7 +55,7 @@ namespace Presentation.Web.Infrastructure.Factories.Authentication
             var authenticationMethod = user.Identity?.AuthenticationType;
             return authenticationMethod switch
             {
-                "Bearer" => AuthenticationMethod.KitosToken,
+                AuthenticationSchemes.Bearer => AuthenticationMethod.KitosToken,
                 "JWT" => AuthenticationMethod.KitosToken,
                 "Cookies" => AuthenticationMethod.Forms,
                 _ => LogUnknownAndReturnAnonymous(authenticationMethod)

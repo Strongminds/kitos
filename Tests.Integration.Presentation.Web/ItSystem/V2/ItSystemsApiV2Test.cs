@@ -143,7 +143,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
                 AssertBaseSystemDTO(dbSystem, systemDTO);
 
-                Assert.Equal(dbSystem.LastChanged, systemDTO.LastModified);
+                DateTimeTestHelper.AssertEqual(dbSystem.LastChanged, systemDTO.LastModified);
                 Assert.Equal(dbSystem.LastChangedByUser.Uuid, systemDTO.LastModifiedBy.Uuid);
                 Assert.Equal(dbSystem.LastChangedByUser.GetFullName(), systemDTO.LastModifiedBy.Name);
 
@@ -666,7 +666,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
 
             //Assert that only the patched properties have changed
             Assert.Equal(createdSystem.Uuid, updatedSystem.Uuid); //No changes expected
-            Assert.Equal(createdSystem.Created, updatedSystem.Created); //No changes expected
+            DateTimeTestHelper.AssertEqual(createdSystem.Created, updatedSystem.Created); //No changes expected
             Assert.Equal(updateRightsHolder ? changes[nameof(UpdateItSystemRequestDTO.RightsHolderUuid)] : createdSystem.RightsHolder.Uuid, updatedSystem.RightsHolder.Uuid);
             Assert.Equal(updateName ? changes[nameof(UpdateItSystemRequestDTO.Name)] : createdSystem.Name, updatedSystem.Name);
             Assert.Equal(updateFormerName ? changes[nameof(UpdateItSystemRequestDTO.PreviousName)] : createdSystem.FormerName, updatedSystem.FormerName);

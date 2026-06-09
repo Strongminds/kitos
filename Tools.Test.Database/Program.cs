@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using Core.Abstractions.Helpers;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Tools.Test.Database.Model.Cli;
 using Tools.Test.Database.Model.Environment;
 using Tools.Test.Database.Model.Parameters;
@@ -15,21 +17,36 @@ namespace Tools.Test.Database
     {
         static int Main(string[] args)
         {
+            // Test data creators use legacy/local DateTime values; enable compatibility for PostgreSQL seeding.
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             var task = GetArgument(args, 0);
             var additionalArgs = args.Skip(1).ToArray();
+            var rawConnectionString = GetArgument(additionalArgs, 0);
+            var provider = ResolveDatabaseProvider(rawConnectionString);
+            var connectionString = NormalizeConnectionString(rawConnectionString, provider);
 
-            var databaseTask = CreateTask(task, additionalArgs);
+            var databaseTask = CreateTask(task, additionalArgs, provider, connectionString);
             var taskName = $"{task}(implemented in {databaseTask.GetType().Name})";
 
             try
             {
                 Console.WriteLine($"Executing {taskName}");
-                var connectionString = EnsureTrustServerCertificate(GetArgument(additionalArgs, 0));
+                Console.WriteLine($"Database provider: {provider}");
                 FailOnConnectionToProd(connectionString);
-                var dbOptions = new DbContextOptionsBuilder<KitosContext>()
-                    .UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString)
-                    .Options;
+                var dbOptionsBuilder = new DbContextOptionsBuilder<KitosContext>()
+                    .UseLazyLoadingProxies();
+
+                if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+                {
+                    dbOptionsBuilder.UseNpgsql(connectionString);
+                }
+                else
+                {
+                    dbOptionsBuilder.UseSqlServer(connectionString);
+                }
+
+                var dbOptions = dbOptionsBuilder.Options;
                 using (var context = new KitosContext(dbOptions))
                 {
                     var success = databaseTask.Execute(context);
@@ -50,14 +67,13 @@ namespace Tools.Test.Database
             return 0;
         }
 
-        private static DatabaseTask CreateTask(string task, string[] additionalArgs)
+        private static DatabaseTask CreateTask(string task, string[] additionalArgs, string provider, string connectionString)
         {
             switch (task)
             {
                 case CliTargets.DropDatabase:
                     Console.WriteLine("Expecting the following arguments: <connectionString>");
-                    var connectionString = EnsureTrustServerCertificate(GetArgument(additionalArgs, 0));
-                    return new DropDatabaseTask(connectionString);
+                    return new DropDatabaseTask(connectionString, provider);
 
                 case CliTargets.CreateOrganization:
                     Console.WriteLine("Expecting the following arguments: <connectionString> <organizationType> <organizationName>");
@@ -175,6 +191,57 @@ namespace Tools.Test.Database
             var builder = new SqlConnectionStringBuilder(connectionString);
             builder.TrustServerCertificate = true;
             return builder.ConnectionString;
+        }
+
+        private static string NormalizeConnectionString(string connectionString, string provider)
+        {
+            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            {
+                var builder = new NpgsqlConnectionStringBuilder(connectionString);
+                if (string.Equals(builder.Host, "localhost", StringComparison.OrdinalIgnoreCase))
+                {
+                    builder.Host = "127.0.0.1";
+                }
+
+                if (string.IsNullOrWhiteSpace(builder.Database) == false)
+                {
+                    builder.Database = builder.Database.ToLowerInvariant();
+                }
+
+                return builder.ConnectionString;
+            }
+
+            return EnsureTrustServerCertificate(connectionString);
+        }
+
+        private static string ResolveDatabaseProvider(string connectionString)
+        {
+            // Connection string format is authoritative: a PostgreSQL-formatted connection string
+            // (Host=, Username=, etc.) cannot be used with SQL Server, so detect provider from it first.
+            if (LooksLikePostgreSqlConnectionString(connectionString))
+            {
+                return "PostgreSql";
+            }
+
+            var provider = Environment.GetEnvironmentVariable("Database__Provider");
+            if (string.IsNullOrWhiteSpace(provider) == false)
+            {
+                return provider;
+            }
+
+            return "SqlServer";
+        }
+
+
+        private static bool LooksLikePostgreSqlConnectionString(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return false;
+            }
+
+            return connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase)
+                   || connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string GetArgument(string[] additionalArgs, int index, bool trimEnclosingQuotes = true)

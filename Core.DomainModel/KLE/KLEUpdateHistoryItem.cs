@@ -6,8 +6,8 @@ namespace Core.DomainModel.KLE
     {
         public DateTime Version { get; set; }
 
-        // To keep EF happy
-        private KLEUpdateHistoryItem() {}
+        // To keep EF and proxy generation happy
+        protected KLEUpdateHistoryItem() {}
 
         public KLEUpdateHistoryItem(DateTime version)
         {

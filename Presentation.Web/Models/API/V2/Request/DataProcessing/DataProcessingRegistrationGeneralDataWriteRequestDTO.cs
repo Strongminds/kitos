@@ -80,5 +80,10 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         /// </summary>
         [NonEmptyGuid]
         public Guid? ResponsibleOrganizationUnitUuid { get; set; }
+
+        /// <summary>
+        /// Whether this registration should be considered invalid regardless of other properties.
+        /// </summary>
+        public bool? EnforceInvalidity { get; set; }
     }
 }

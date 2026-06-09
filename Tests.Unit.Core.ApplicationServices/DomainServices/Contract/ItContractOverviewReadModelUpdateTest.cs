@@ -351,13 +351,17 @@ namespace Tests.Unit.Core.DomainServices.Contract
             {
                 Assert.Null(itContractOverviewReadModel.SupplierId);
                 Assert.Null(itContractOverviewReadModel.SupplierName);
+                Assert.Null(itContractOverviewReadModel.SupplierCvr);
                 Assert.False(itContractOverviewReadModel.IsSupplierDisabled);
             }
             else
             {
-                Assert.Equal(itContract.Supplier.Id, itContractOverviewReadModel.SupplierId);
-                Assert.Equal(itContract.Supplier.Name, itContractOverviewReadModel.SupplierName);
-                Assert.Equal(itContract.Supplier.Disabled, itContractOverviewReadModel.IsSupplierDisabled);
+                var supplier = itContract.Supplier;
+                Assert.NotNull(supplier);
+                Assert.Equal(supplier.Id, itContractOverviewReadModel.SupplierId);
+                Assert.Equal(supplier.Name, itContractOverviewReadModel.SupplierName);
+                Assert.Equal(supplier.Cvr, itContractOverviewReadModel.SupplierCvr);
+                Assert.Equal(supplier.Disabled, itContractOverviewReadModel.IsSupplierDisabled);
             }
         }
 

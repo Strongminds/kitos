@@ -18,6 +18,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Options;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Shared;
+using Presentation.Web.Models.API.V2.SharedProperties;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
@@ -643,9 +644,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var updatedDpr = await DataProcessingRegistrationV2Helper.GetDPRAsync(token, registration.Uuid);
             Assert.Equal(contract1.Uuid, updatedDpr.General.MainContract.Uuid);
             Assert.Equal(contract1.Name, updatedDpr.General.MainContract.Name);
-            Assert.True(updatedDpr.General.Valid);
-
-            //Act - set to another contract
+            Assert.True(updatedDpr.General.Validity.Valid);
             using var response2 = await DataProcessingRegistrationV2Helper
                 .SendPatchGeneralDataAsync(token, registration.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO { MainContractUuid = contract2.Uuid })
                 .WithExpectedResponseCode(HttpStatusCode.OK);
@@ -661,7 +660,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(2, updatedDpr.General.AssociatedContracts.Count());
             Assert.Contains(updatedDpr.General.AssociatedContracts, x => x.Uuid == contract1.Uuid);
             Assert.Contains(updatedDpr.General.AssociatedContracts, x => x.Uuid == contract2.Uuid);
-            Assert.False(updatedDpr.General.Valid);
+            Assert.False(updatedDpr.General.Validity.Valid);
 
             //Act - set contract to null
             using var response3 = await DataProcessingRegistrationV2Helper
@@ -671,7 +670,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             //Assert
             updatedDpr = await DataProcessingRegistrationV2Helper.GetDPRAsync(token, registration.Uuid);
             Assert.Null(updatedDpr.General.MainContract);
-            Assert.True(updatedDpr.General.Valid);
+            Assert.True(updatedDpr.General.Validity.Valid);
         }
 
         [Fact]
@@ -1641,7 +1640,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(expected.OversightIntervalRemark, actual.OversightIntervalRemark);
             Assert.Equal(expected.IsOversightCompleted, actual.IsOversightCompleted);
             Assert.Equal(expected.OversightCompletedRemark, actual.OversightCompletedRemark);
-            Assert.Equal(expected.OversightScheduledInspectionDate, actual.OversightScheduledInspectionDate);
+            DateTimeTestHelper.AssertEqual(expected.OversightScheduledInspectionDate, actual.OversightScheduledInspectionDate);
             AssertOversightDates(expected.OversightDates, actual.OversightDates);
         }
 
@@ -1652,7 +1651,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(expectedOversightDates.Count, actualOversightDates.Count);
             for (var i = 0; i < expectedOversightDates.Count; i++)
             {
-                Assert.Equal(expectedOversightDates[i].CompletedAt, actualOversightDates[i].CompletedAt);
+                DateTimeTestHelper.AssertEqual(expectedOversightDates[i].CompletedAt, actualOversightDates[i].CompletedAt);
                 Assert.Equal(expectedOversightDates[i].Remark, actualOversightDates[i].Remark);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink.Url, actualOversightDates[i].OversightReportLink.Url);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink.Name, actualOversightDates[i].OversightReportLink.Name);
@@ -1671,7 +1670,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(input.DataResponsibleRemark, actual.General.DataResponsibleRemark);
             Assert.Equal(input.IsAgreementConcluded, actual.General.IsAgreementConcluded);
             Assert.Equal(input.IsAgreementConcludedRemark, actual.General.IsAgreementConcludedRemark);
-            Assert.Equal(input.AgreementConcludedAt, actual.General.AgreementConcludedAt);
+            DateTimeTestHelper.AssertEqual(input.AgreementConcludedAt, actual.General.AgreementConcludedAt);
             AssertCrossReference(inputBasisForTransfer, actual.General.BasisForTransfer);
             Assert.Equal(input.TransferToInsecureThirdCountries, actual.General.TransferToInsecureThirdCountries);
             AssertMultiAssignment(input.InsecureCountriesSubjectToDataTransferUuids, actual.General.InsecureCountriesSubjectToDataTransfer);
@@ -1716,7 +1715,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(expected?.Name, actual?.Name);
         }
 
-        private static void AssertMultiAssignment(IEnumerable<Guid> expected, IEnumerable<IdentityNamePairResponseDTO> actual)
+        private static void AssertMultiAssignment(IEnumerable<Guid> expected, IEnumerable<IHasUuidExternal> actual)
         {
             var expectedUuids = (expected ?? Array.Empty<Guid>()).OrderBy(x => x).ToList();
             var actualUuids = actual.Select(x => x.Uuid).OrderBy(x => x).ToList();

@@ -737,7 +737,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(dataClassification.Uuid, freshReadDTO.General.DataClassification.Uuid);
             Assert.Equal(dataClassification.Name, freshReadDTO.General.DataClassification.Name);
             Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
-            Assert.Equal(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
+            AssertTimestampEqual(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
             Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
             Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
         }
@@ -2205,7 +2205,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
             //Assert
             AssertJournalPeriod(newJournalPeriodInput, postResult);
-            Assert.Equivalent(postResult, getResult);
+            AssertJournalPeriod(postResult, getResult);
 
         }
 
@@ -2227,7 +2227,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
             //Assert
             AssertJournalPeriod(updated, putResult);
-            Assert.Equivalent(putResult, getResult);
+            AssertJournalPeriod(putResult, getResult);
         }
 
         [Fact]
@@ -2295,13 +2295,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var nonYesValues = new List<YesNoDontKnowChoice?>
                 { YesNoDontKnowChoice.No, YesNoDontKnowChoice.Undecided, YesNoDontKnowChoice.DontKnow, null };
 
+            var nonYesValuesWithIrrelevant = new List<YesNoDontKnowIrrelevantChoice?>
+                { YesNoDontKnowIrrelevantChoice.No, YesNoDontKnowIrrelevantChoice.Undecided, YesNoDontKnowIrrelevantChoice.DontKnow, YesNoDontKnowIrrelevantChoice.Irrelevant , null };
+
+
             return new List<object[]>
             {
                 new object[]
                 {
                     new GDPRWriteRequestDTO
                     {
-                        RiskAssessmentConducted = nonYesValues.RandomItem(),
+                        RiskAssessmentConducted = nonYesValuesWithIrrelevant.RandomItem(),
                         RiskAssessmentNotes     = fixture.Create<string>()
                     }
                 },
@@ -2361,14 +2365,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var token = await GetGlobalToken();
             var patchBefore = new GDPRWriteRequestDTO
             {
-                RiskAssessmentConducted = YesNoDontKnowChoice.Yes,
+                RiskAssessmentConducted = YesNoDontKnowIrrelevantChoice.Yes,
                 RiskAssessmentConductedDate = A<DateTime>(),
                 RiskAssessmentNotes = A<string>(),
                 RiskAssessmentDocumentation = A<SimpleLinkDTO>(),
                 RiskAssessmentResult = A<RiskLevelChoice>()
             };
             await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, patchBefore).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
-            var resetRequest = new GDPRWriteRequestDTO { RiskAssessmentConducted = YesNoDontKnowChoice.No };
+            var resetRequest = new GDPRWriteRequestDTO { RiskAssessmentConducted = YesNoDontKnowIrrelevantChoice.No };
 
             var response = await ItSystemUsageV2Helper.SendPatchGDPR(token, usage.Uuid, resetRequest);
 
@@ -2393,9 +2397,42 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static void AssertJournalPeriod(JournalPeriodDTO newJournalPeriodInput, JournalPeriodResponseDTO result)
         {
             Assert.Equal(newJournalPeriodInput.Approved, result.Approved);
-            Assert.Equal(newJournalPeriodInput.StartDate, result.StartDate);
-            Assert.Equal(newJournalPeriodInput.EndDate, result.EndDate);
+            AssertTimestampEqual(newJournalPeriodInput.StartDate, result.StartDate);
+            AssertTimestampEqual(newJournalPeriodInput.EndDate, result.EndDate);
             Assert.Equal(newJournalPeriodInput.ArchiveId, result.ArchiveId);
+        }
+
+        private static void AssertJournalPeriod(JournalPeriodResponseDTO expected, JournalPeriodResponseDTO actual)
+        {
+            Assert.Equal(expected.Uuid, actual.Uuid);
+            Assert.Equal(expected.Approved, actual.Approved);
+            AssertTimestampEqual(expected.StartDate, actual.StartDate);
+            AssertTimestampEqual(expected.EndDate, actual.EndDate);
+            Assert.Equal(expected.ArchiveId, actual.ArchiveId);
+        }
+
+        private static void AssertTimestampEqual(DateTime? expected, DateTime? actual)
+        {
+            Assert.Equal(NormalizeTimestamp(expected), NormalizeTimestamp(actual));
+        }
+
+        private static DateTime? NormalizeTimestamp(DateTime? value)
+        {
+            if (!value.HasValue)
+            {
+                return null;
+            }
+
+            var utcValue = value.Value.Kind switch
+            {
+                DateTimeKind.Utc => value.Value,
+                DateTimeKind.Local => value.Value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+            };
+
+            // PostgreSQL timestamps are stored with microsecond precision.
+            var truncatedTicks = utcValue.Ticks - (utcValue.Ticks % 10);
+            return new DateTime(truncatedTicks, DateTimeKind.Utc);
         }
 
         private static void AssertExternalReference(ExternalReferenceDataWriteRequestDTO expected, ExternalReferenceDataResponseDTO actual)
@@ -2658,21 +2695,22 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal((gdprInput.TechnicalPrecautionsApplied ?? new List<TechnicalPrecautionChoice>()).OrderBy(x => x), gdprResponse.TechnicalPrecautionsApplied.OrderBy(x => x));
             (gdprInput.TechnicalPrecautionsDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.TechnicalPrecautionsDocumentation);
             Assert.Equal(gdprInput.UserSupervision, gdprResponse.UserSupervision);
-            Assert.Equal(gdprInput.UserSupervisionDate, gdprResponse.UserSupervisionDate);
+            AssertTimestampEqual(gdprInput.UserSupervisionDate, gdprResponse.UserSupervisionDate);
             (gdprInput.UserSupervisionDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.UserSupervisionDocumentation);
             Assert.Equal(gdprInput.RiskAssessmentConducted, gdprResponse.RiskAssessmentConducted);
-            Assert.Equal(gdprInput.RiskAssessmentConductedDate, gdprResponse.RiskAssessmentConductedDate);
+            AssertTimestampEqual(gdprInput.RiskAssessmentConductedDate, gdprResponse.RiskAssessmentConductedDate);
             Assert.Equal(gdprInput.RiskAssessmentResult, gdprResponse.RiskAssessmentResult);
             (gdprInput.RiskAssessmentDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.RiskAssessmentDocumentation);
             Assert.Equal(gdprInput.RiskAssessmentNotes, gdprResponse.RiskAssessmentNotes);
-            Assert.Equal(gdprInput.PlannedRiskAssessmentDate, gdprResponse.PlannedRiskAssessmentDate);
+            AssertTimestampEqual(gdprInput.PlannedRiskAssessmentDate, gdprResponse.PlannedRiskAssessmentDate);
             Assert.Equal(gdprInput.DPIAConducted, gdprResponse.DPIAConducted);
-            Assert.Equal(gdprInput.DPIADate, gdprResponse.DPIADate);
+            AssertTimestampEqual(gdprInput.DPIADate, gdprResponse.DPIADate);
             (gdprInput.DPIADocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.DPIADocumentation);
             Assert.Equal(gdprInput.RetentionPeriodDefined, gdprResponse.RetentionPeriodDefined);
-            Assert.Equal(gdprInput.NextDataRetentionEvaluationDate, gdprResponse.NextDataRetentionEvaluationDate);
+            AssertTimestampEqual(gdprInput.NextDataRetentionEvaluationDate, gdprResponse.NextDataRetentionEvaluationDate);
             Assert.Equal(gdprInput.DataRetentionEvaluationFrequencyInMonths ?? 0, gdprResponse.DataRetentionEvaluationFrequencyInMonths);
             Assert.Equal(gdprInput.SpecificPersonalData ?? new List<GDPRPersonalDataChoice>().OrderBy(x => x), gdprResponse.SpecificPersonalData.OrderBy(x => x));
+            Assert.Equal(gdprInput.IsDataProcessingAgreementRequired, gdprResponse.IsDataProcessingAgreementRequired);
         }
 
         private static ItSystemUsageValidityWriteRequestDTO CreateValidityInput(DateTime baseDate, LifeCycleStatusChoice lifeCycleStatus)
@@ -2737,8 +2775,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var journalPeriodFromServer = Assert.Single(actual.JournalPeriods.Where(x => x.ArchiveId == firstJournalPeriod.ArchiveId));
             Assert.Equal(firstJournalPeriod.Approved, journalPeriodFromServer.Approved);
             Assert.Equal(firstJournalPeriod.ArchiveId, journalPeriodFromServer.ArchiveId);
-            Assert.Equal(firstJournalPeriod.StartDate, journalPeriodFromServer.StartDate);
-            Assert.Equal(firstJournalPeriod.EndDate, journalPeriodFromServer.EndDate);
+            AssertTimestampEqual(firstJournalPeriod.StartDate, journalPeriodFromServer.StartDate);
+            AssertTimestampEqual(firstJournalPeriod.EndDate, journalPeriodFromServer.EndDate);
         }
 
         private async Task<ArchivingCreationRequestDTO> CreateArchivingCreationRequestDTO(Guid organizationUuid)
