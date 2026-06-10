@@ -96,6 +96,23 @@ The system automatically falls back: if a `*CertFilePath` is set, the PFX file i
 | STS (Adgangsstyring) | `AppSettings:StsCertFilePath` | `AppSettings:StsCertPassword` | `AppSettings:StsCertificateThumbprint` |
 | STS Organisation | `AppSettings:StsOrganisationCertFilePath` | `AppSettings:StsOrganisationCertPassword` | `AppSettings:StsOrganisationCertificateThumbprint` |
 
+### STS Certificate Validation in Containers
+
+To replicate production behavior locally, keep strict STS certificate checks enabled:
+
+- `AppSettings__StsCertificateValidationMode=ChainTrust`
+- `AppSettings__StsCertificateRevocationMode=Online`
+
+In Docker Compose these are mapped from:
+
+- `STS_CERT_VALIDATION_MODE` (default `ChainTrust`)
+- `STS_CERT_REVOCATION_MODE` (default `Online`)
+
+Only for non-production troubleshooting, you can temporarily relax checks to values like:
+
+- `AppSettings__StsCertificateValidationMode` (for example `None`)
+- `AppSettings__StsCertificateRevocationMode` (for example `NoCheck`)
+
 ### Docker Compose Cert Setup
 
 Place PFX files in the `./certs/` directory at the repo root. They are mounted read-only into the container at `/etc/ssl/certs/`:
@@ -106,6 +123,11 @@ volumes:
   - ./certs/ADG_EXTTEST_Adgangsstyring_2:/etc/ssl/certs/ADG_EXTTEST_Adgangsstyring_2:ro
   - ./certs/ORG_EXTTEST_Organisation_2:/etc/ssl/certs/ORG_EXTTEST_Organisation_2:ro
 ```
+
+To replicate production trust behavior in Docker, also place trust-chain certificates
+(`.crt` in PEM format) in `./certs/` (for example root/intermediate CA). The `kitos-api`
+container imports `./certs/*.crt` into `/usr/local/share/ca-certificates/` and runs
+`update-ca-certificates` on startup before launching the API.
 
 ### Kubernetes Cert Setup
 

@@ -69,6 +69,7 @@ services:
       context: .
       dockerfile: Presentation.Web/Dockerfile
     container_name: kitos-api
+    entrypoint: ["/bin/sh", "-c", "set -e; if ls /kitos-certs/*.crt >/dev/null 2>&1; then cp /kitos-certs/*.crt /usr/local/share/ca-certificates/ && update-ca-certificates; fi; exec dotnet Presentation.Web.dll"]
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       Database__Provider: PostgreSql
@@ -86,12 +87,15 @@ services:
       AppSettings__SsoCertificateThumbprint: ${SSO_CERT_THUMBPRINT:-}
       AppSettings__StsCertificateThumbprint: ${STS_CERT_THUMBPRINT:-}
       AppSettings__StsOrganisationCertificateThumbprint: ${STS_ORG_CERT_THUMBPRINT:-}
+      AppSettings__StsCertificateValidationMode: ${STS_CERT_VALIDATION_MODE:-ChainTrust}
+      AppSettings__StsCertificateRevocationMode: ${STS_CERT_REVOCATION_MODE:-Online}
       Serilog__WriteTo__0__Args__path: "/var/log/kitos/kitos-.txt"
       Smtp__DeliveryMethod: SpecifiedPickupDirectory
       Smtp__PickupDirectoryLocation: "/tmp/maildrop/"
     ports:
       - "5000:8080"
     volumes:
+      - ./certs:/kitos-certs:ro
       - ./certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}:/etc/ssl/certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}:ro
       - ./certs/${STS_CERT_FILE_NAME:-ADG_EXTTEST_Adgangsstyring_2}:/etc/ssl/certs/${STS_CERT_FILE_NAME:-ADG_EXTTEST_Adgangsstyring_2}:ro
       - ./certs/${STS_ORG_CERT_FILE_NAME:-ORG_EXTTEST_Organisation_2}:/etc/ssl/certs/${STS_ORG_CERT_FILE_NAME:-ORG_EXTTEST_Organisation_2}:ro

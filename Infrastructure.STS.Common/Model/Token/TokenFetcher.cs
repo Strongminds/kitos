@@ -2,6 +2,7 @@ using System;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel.Security;
 using System.Text;
 using Digst.OioIdws.CommonCore;
 using Digst.OioIdws.OioWsTrustCore;
@@ -24,6 +25,8 @@ public class TokenFetcher
     private readonly string? _stsCertPassword;
     private readonly string? _stsOrganisationCertFilePath;
     private readonly string? _stsOrganisationCertPassword;
+    private readonly X509CertificateValidationMode? _serviceCertificateValidationMode;
+    private readonly X509RevocationMode? _serviceCertificateRevocationMode;
 
     public TokenFetcher(
         string clientCertificateThumbprint,
@@ -37,7 +40,9 @@ public class TokenFetcher
         string? stsCertFilePath = null,
         string? stsCertPassword = null,
         string? stsOrganisationCertFilePath = null,
-        string? stsOrganisationCertPassword = null)
+        string? stsOrganisationCertPassword = null,
+        string? serviceCertificateValidationMode = null,
+        string? serviceCertificateRevocationMode = null)
     {
         _clientCertificateThumbprint = clientCertificateThumbprint;
         _stsIssuer = stsIssuer;
@@ -51,6 +56,12 @@ public class TokenFetcher
         _stsCertPassword = stsCertPassword;
         _stsOrganisationCertFilePath = stsOrganisationCertFilePath;
         _stsOrganisationCertPassword = stsOrganisationCertPassword;
+        _serviceCertificateValidationMode = ParseOptionalEnum<X509CertificateValidationMode>(
+            serviceCertificateValidationMode,
+            nameof(serviceCertificateValidationMode));
+        _serviceCertificateRevocationMode = ParseOptionalEnum<X509RevocationMode>(
+            serviceCertificateRevocationMode,
+            nameof(serviceCertificateRevocationMode));
     }
 
     /// <summary>
@@ -99,10 +110,12 @@ public class TokenFetcher
             StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
         var stsConfig = new StsConfiguration(_stsEndpoint, _stsIssuer, cvr, stsCert);
         var wspConfig = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
-        return new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert)
+        var config = new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert)
         {
             MaxReceivedMessageSize = int.MaxValue
         };
+        ConfigureServiceCertificateAuthentication(config);
+        return config;
     }
 
     /// <summary>
@@ -122,5 +135,32 @@ public class TokenFetcher
     {
         var config = BuildServiceConfig(entityId, entityId, cvr);
         return new StsTokenService(config).GetToken();
+    }
+
+    private void ConfigureServiceCertificateAuthentication(IStsTokenServiceConfiguration config)
+    {
+        ApplyAuthenticationOverrides(config.StsCertificateAuthentication);
+        ApplyAuthenticationOverrides(config.WspCertificateAuthentication);
+        ApplyAuthenticationOverrides(config.SslCertificateAuthentication);
+    }
+
+    private void ApplyAuthenticationOverrides(X509ServiceCertificateAuthentication authentication)
+    {
+        if (_serviceCertificateValidationMode.HasValue)
+            authentication.CertificateValidationMode = _serviceCertificateValidationMode.Value;
+        if (_serviceCertificateRevocationMode.HasValue)
+            authentication.RevocationMode = _serviceCertificateRevocationMode.Value;
+    }
+
+    private static TEnum? ParseOptionalEnum<TEnum>(string? value, string parameterName)
+        where TEnum : struct, Enum
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+        if (Enum.TryParse<TEnum>(value, ignoreCase: true, out var parsed))
+            return parsed;
+        throw new ArgumentException(
+            $"Invalid value '{value}' for {parameterName}. Expected one of: {string.Join(", ", Enum.GetNames(typeof(TEnum)))}",
+            parameterName);
     }
 }

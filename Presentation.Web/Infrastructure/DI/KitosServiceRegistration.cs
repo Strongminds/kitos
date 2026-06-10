@@ -350,13 +350,16 @@ namespace Presentation.Web.Infrastructure.DI
             var stsCertPassword = appSettings["StsCertPassword"] ?? "";
             var stsOrganisationCertFilePath = appSettings["StsOrganisationCertFilePath"] ?? "";
             var stsOrganisationCertPassword = appSettings["StsOrganisationCertPassword"] ?? "";
+            var stsCertificateValidationMode = appSettings["StsCertificateValidationMode"] ?? "";
+            var stsCertificateRevocationMode = appSettings["StsCertificateRevocationMode"] ?? "";
 
             services.AddSingleton(_ => new TokenFetcher(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
                 stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint,
                 ssoCertFilePath, ssoCertPassword,
                 stsCertFilePath, stsCertPassword,
-                stsOrganisationCertFilePath, stsOrganisationCertPassword));
+                stsOrganisationCertFilePath, stsOrganisationCertPassword,
+                stsCertificateValidationMode, stsCertificateRevocationMode));
             services.AddScoped<IStsOrganizationService, StsOrganizationService>();
             services.AddScoped<IStsOrganizationCompanyLookupService, StsOrganizationCompanyLookupService>();
             services.AddScoped<IStsOrganizationSystemService, StsOrganizationSystemService>();
@@ -848,5 +851,4 @@ namespace Presentation.Web.Infrastructure.DI
         }
     }
 }
-
 
