@@ -9,9 +9,9 @@ This document describes how to run KITOS in containers and how configuration, se
 cp .env.example .env
 
 # 2. Place certificate PFX files in ./certs/
-#    - certs/sso-sp.pfx    (SSO Service Provider)
-#    - certs/sts.pfx       (STS Adgangsstyring)
-#    - certs/sts-org.pfx   (STS Organisation)
+#    - certs/kitos-local-pfx                (SSO Service Provider)
+#    - certs/ADG_EXTTEST_Adgangsstyring_2   (STS Adgangsstyring)
+#    - certs/ORG_EXTTEST_Organisation_2     (STS Organisation)
 
 # 3. Start the stack
 docker compose up
@@ -33,9 +33,15 @@ The API will be available at `http://localhost:5000`.
 See `.env.example` for the full template. At minimum:
 
 ```env
-SSO_CERT_PASSWORD=<password for sso-sp.pfx>
-STS_CERT_PASSWORD=<password for sts.pfx>
-STS_ORG_CERT_PASSWORD=<password for sts-org.pfx>
+SSO_CERT_FILE_NAME=kitos-local-pfx
+STS_CERT_FILE_NAME=ADG_EXTTEST_Adgangsstyring_2
+STS_ORG_CERT_FILE_NAME=ORG_EXTTEST_Organisation_2
+SSO_CERT_PASSWORD=<password for kitos-local-pfx>
+STS_CERT_PASSWORD=<password for ADG_EXTTEST_Adgangsstyring_2>
+STS_ORG_CERT_PASSWORD=<password for ORG_EXTTEST_Organisation_2>
+SSO_CERT_THUMBPRINT=<thumbprint for SSO certificate>
+STS_CERT_THUMBPRINT=<thumbprint for STS certificate>
+STS_ORG_CERT_THUMBPRINT=<thumbprint for STS organisation certificate>
 ```
 
 ## Configuration
@@ -80,7 +86,7 @@ The `CertificateLoader` class supports two modes:
 1. **PFX file-based** (containers/Linux) — set `*CertFilePath` config keys to mount PFX files
 2. **Windows Certificate Store** (legacy/IIS) — leave `*CertFilePath` empty to use thumbprint-based store lookup
 
-The system automatically falls back: if a `*CertFilePath` is set, the PFX file is loaded. If not, the Windows certificate store is used with the configured thumbprint.
+The system automatically falls back: if a `*CertFilePath` is set, the PFX file is loaded and validated against the configured thumbprint. If not, the Windows certificate store is used with the configured thumbprint.
 
 ### Certificate Config Keys
 
@@ -96,9 +102,9 @@ Place PFX files in the `./certs/` directory at the repo root. They are mounted r
 
 ```yaml
 volumes:
-  - ./certs/sso-sp.pfx:/etc/ssl/certs/sso-sp.pfx:ro
-  - ./certs/sts.pfx:/etc/ssl/certs/sts.pfx:ro
-  - ./certs/sts-org.pfx:/etc/ssl/certs/sts-org.pfx:ro
+  - ./certs/kitos-local-pfx:/etc/ssl/certs/kitos-local-pfx:ro
+  - ./certs/ADG_EXTTEST_Adgangsstyring_2:/etc/ssl/certs/ADG_EXTTEST_Adgangsstyring_2:ro
+  - ./certs/ORG_EXTTEST_Organisation_2:/etc/ssl/certs/ORG_EXTTEST_Organisation_2:ro
 ```
 
 ### Kubernetes Cert Setup
@@ -118,9 +124,12 @@ volumeMounts:
 
 Set the file path environment variables to point to the mounted files:
 ```yaml
-AppSettings__SsoCertFilePath: /etc/ssl/certs/sso-sp.pfx
-AppSettings__StsCertFilePath: /etc/ssl/certs/sts.pfx
-AppSettings__StsOrganisationCertFilePath: /etc/ssl/certs/sts-org.pfx
+AppSettings__SsoCertFilePath: /etc/ssl/certs/kitos-local-pfx
+AppSettings__StsCertFilePath: /etc/ssl/certs/ADG_EXTTEST_Adgangsstyring_2
+AppSettings__StsOrganisationCertFilePath: /etc/ssl/certs/ORG_EXTTEST_Organisation_2
+AppSettings__SsoCertificateThumbprint: "<thumbprint>"
+AppSettings__StsCertificateThumbprint: "<thumbprint>"
+AppSettings__StsOrganisationCertificateThumbprint: "<thumbprint>"
 ```
 
 ## Database Migrations

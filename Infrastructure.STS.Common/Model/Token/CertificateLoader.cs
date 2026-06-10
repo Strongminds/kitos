@@ -6,6 +6,11 @@ namespace Infrastructure.STS.Common.Model.Token
 {
     public static class CertificateLoader
     {
+        private static string NormalizeThumbprint(string thumbprint)
+        {
+            return (thumbprint ?? string.Empty).Replace(" ", string.Empty).ToUpperInvariant();
+        }
+
         /// <summary>
         /// Loads a certificate from a PFX file. Use this overload when running in environments
         /// without access to the Windows certificate store (e.g., Linux containers).
@@ -26,6 +31,10 @@ namespace Infrastructure.STS.Common.Model.Token
         /// </summary>
         public static X509Certificate2 LoadCertificate(StoreName storeName, StoreLocation storeLocation, string thumbprint)
         {
+            var normalizedThumbprint = NormalizeThumbprint(thumbprint);
+            if (string.IsNullOrWhiteSpace(normalizedThumbprint))
+                throw new ArgumentException("Certificate thumbprint must not be empty.", nameof(thumbprint));
+
             // Try the requested store first, then fall back to the other location
             var locationsToTry = storeLocation == StoreLocation.LocalMachine
                 ? new[] { StoreLocation.LocalMachine, StoreLocation.CurrentUser }
@@ -35,7 +44,7 @@ namespace Infrastructure.STS.Common.Model.Token
             {
                 using var store = new X509Store(storeName, location);
                 store.Open(OpenFlags.ReadOnly);
-                var result = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+                var result = store.Certificates.Find(X509FindType.FindByThumbprint, normalizedThumbprint, false);
                 if (result.Count > 0)
                 {
                     var cert = result[0];
@@ -49,7 +58,7 @@ namespace Infrastructure.STS.Common.Model.Token
                         catch (Exception ex)
                         {
                             throw new InvalidOperationException(
-                                $"Certificate with thumbprint '{thumbprint}' was found in {location}\\{storeName} " +
+                                $"Certificate with thumbprint '{normalizedThumbprint}' was found in {location}\\{storeName} " +
                                 $"but its private key is not accessible. Re-import the PFX file with its private key. " +
                                 $"Inner error: {ex.Message}", ex);
                         }
@@ -59,7 +68,7 @@ namespace Infrastructure.STS.Common.Model.Token
             }
 
             throw new ArgumentException(
-                $"No certificate with thumbprint '{thumbprint}' was found in {storeName} " +
+                $"No certificate with thumbprint '{normalizedThumbprint}' was found in {storeName} " +
                 $"(tried LocalMachine and CurrentUser). Install the certificate and retry.");
         }
 
@@ -80,7 +89,19 @@ namespace Infrastructure.STS.Common.Model.Token
         {
             if (!string.IsNullOrWhiteSpace(certFilePath))
             {
-                return LoadCertificateFromFile(certFilePath, certPassword ?? string.Empty);
+                var cert = LoadCertificateFromFile(certFilePath, certPassword ?? string.Empty);
+                var normalizedThumbprint = NormalizeThumbprint(thumbprint);
+                if (!string.IsNullOrWhiteSpace(normalizedThumbprint))
+                {
+                    var certThumbprint = NormalizeThumbprint(cert.Thumbprint);
+                    if (!string.Equals(certThumbprint, normalizedThumbprint, StringComparison.Ordinal))
+                    {
+                        throw new InvalidOperationException(
+                            $"Certificate loaded from '{certFilePath}' has thumbprint '{certThumbprint}', " +
+                            $"but '{normalizedThumbprint}' was configured. Ensure Docker/Kubernetes mounts the intended certificate file.");
+                    }
+                }
+                return cert;
             }
 
             return LoadCertificate(storeName, storeLocation, thumbprint);

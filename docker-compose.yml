@@ -77,21 +77,24 @@ services:
       ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
       AppSettings__BaseUrl: "http://localhost:5000"
       AppSettings__PubSubBaseUrl: "http://pubsub-api:8080"
-      AppSettings__SsoCertFilePath: /etc/ssl/certs/sso-sp.pfx
+      AppSettings__SsoCertFilePath: /etc/ssl/certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}
       AppSettings__SsoCertPassword: ${SSO_CERT_PASSWORD:-}
-      AppSettings__StsCertFilePath: /etc/ssl/certs/sts.pfx
+      AppSettings__StsCertFilePath: /etc/ssl/certs/${STS_CERT_FILE_NAME:-ADG_EXTTEST_Adgangsstyring_2}
       AppSettings__StsCertPassword: ${STS_CERT_PASSWORD:-}
-      AppSettings__StsOrganisationCertFilePath: /etc/ssl/certs/sts-org.pfx
+      AppSettings__StsOrganisationCertFilePath: /etc/ssl/certs/${STS_ORG_CERT_FILE_NAME:-ORG_EXTTEST_Organisation_2}
       AppSettings__StsOrganisationCertPassword: ${STS_ORG_CERT_PASSWORD:-}
+      AppSettings__SsoCertificateThumbprint: ${SSO_CERT_THUMBPRINT:-}
+      AppSettings__StsCertificateThumbprint: ${STS_CERT_THUMBPRINT:-}
+      AppSettings__StsOrganisationCertificateThumbprint: ${STS_ORG_CERT_THUMBPRINT:-}
       Serilog__WriteTo__0__Args__path: "/var/log/kitos/kitos-.txt"
       Smtp__DeliveryMethod: SpecifiedPickupDirectory
       Smtp__PickupDirectoryLocation: "/tmp/maildrop/"
     ports:
       - "5000:8080"
     volumes:
-      - ./certs/sso-sp.pfx:/etc/ssl/certs/sso-sp.pfx:ro
-      - ./certs/sts.pfx:/etc/ssl/certs/sts.pfx:ro
-      - ./certs/sts-org.pfx:/etc/ssl/certs/sts-org.pfx:ro
+      - ./certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}:/etc/ssl/certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}:ro
+      - ./certs/${STS_CERT_FILE_NAME:-ADG_EXTTEST_Adgangsstyring_2}:/etc/ssl/certs/${STS_CERT_FILE_NAME:-ADG_EXTTEST_Adgangsstyring_2}:ro
+      - ./certs/${STS_ORG_CERT_FILE_NAME:-ORG_EXTTEST_Organisation_2}:/etc/ssl/certs/${STS_ORG_CERT_FILE_NAME:-ORG_EXTTEST_Organisation_2}:ro
     depends_on:
       postgres:
         condition: service_healthy
