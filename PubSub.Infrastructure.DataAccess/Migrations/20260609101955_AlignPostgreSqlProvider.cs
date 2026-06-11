@@ -11,6 +11,11 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (ActiveProvider != "Npgsql.EntityFrameworkCore.PostgreSQL")
+            {
+                return;
+            }
+
             migrationBuilder.AlterColumn<string>(
                 name: "Topic",
                 table: "Subscriptions",
@@ -47,6 +52,11 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            if (ActiveProvider != "Npgsql.EntityFrameworkCore.PostgreSQL")
+            {
+                return;
+            }
+
             migrationBuilder.AlterColumn<string>(
                 name: "Topic",
                 table: "Subscriptions",
