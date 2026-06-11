@@ -204,3 +204,4 @@ tmp/
 # Certificates
 certs/
 MigrationsBundle/
+/.env
