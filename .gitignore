@@ -151,6 +151,8 @@ ClientBin/
 *.dbmdl
 *.[Pp]ublish.xml
 *.pfx
+!certs/ADG_EXTTEST_Adgangsstyring_2.pfx
+!certs/ORG_EXTTEST_Organisation_2.pfx
 *.publishsettings
 .vs/
 
