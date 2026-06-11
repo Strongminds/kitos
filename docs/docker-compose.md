@@ -17,22 +17,22 @@ This starts the full KITOS stack. First run will build images and apply database
 
 ## Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| **kitos-api** | [localhost:5000](http://localhost:5000) | Main KITOS API + legacy AngularJS UI |
-| **pubsub-api** | [localhost:5100](http://localhost:5100) | PubSub API (event messaging) |
-| **postgres** | localhost:5432 | PostgreSQL 17 (3 databases) |
-| **rabbitmq** | [localhost:15672](http://localhost:15672) | RabbitMQ management UI |
+| Service        | Port                                      | Description                          |
+| -------------- | ----------------------------------------- | ------------------------------------ |
+| **kitos-api**  | [localhost:5000](http://localhost:5000)   | Main KITOS API + legacy AngularJS UI |
+| **pubsub-api** | [localhost:5100](http://localhost:5100)   | PubSub API (event messaging)         |
+| **postgres**   | localhost:5432                            | PostgreSQL 17 (3 databases)          |
+| **rabbitmq**   | [localhost:15672](http://localhost:15672) | RabbitMQ management UI               |
 
 ## Databases
 
 PostgreSQL is initialized with three databases:
 
-| Database | Purpose |
-|----------|---------|
-| `kitos` | Main application database |
+| Database         | Purpose                           |
+| ---------------- | --------------------------------- |
+| `kitos`          | Main application database         |
 | `kitos_hangfire` | Background job storage (Hangfire) |
-| `kitos_pubsub` | PubSub event messaging database |
+| `kitos_pubsub`   | PubSub event messaging database   |
 
 **Credentials:** `kitos` / `kitos` (user/password)
 
@@ -82,33 +82,3 @@ POSTGRES_PASSWORD=custom_password
 APP_USER=custom_user
 APP_PASSWORD=custom_password
 ```
-
-## Troubleshooting
-
-### Port conflicts
-
-If ports 5000, 5100, 5432, 5672, or 15672 are in use, stop conflicting services or modify the port mappings in `docker-compose.yml`.
-
-### Database issues
-
-Reset the database state:
-
-```bash
-docker compose down -v
-docker compose up
-```
-
-### Build failures
-
-Ensure you're building from the repo root (where `docker-compose.yml` lives):
-
-```bash
-docker compose build --no-cache
-```
-
-## Notes
-
-- The legacy AngularJS frontend is served directly by `kitos-api` (ASP.NET)
-- The [new frontend](https://github.com/os2kitos/kitos_frontend) is a separate repository and not included in this compose setup
-- RabbitMQ management UI uses default credentials: `guest` / `guest`
-- Mail is configured to use a pickup directory (`/tmp/maildrop/`) — no SMTP server needed for local dev
