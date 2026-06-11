@@ -200,4 +200,8 @@ tmp/
 # EF Core migration bundles (compiled executables, platform-specific)
 **/efbundle.exe
 **/efbundle.postgresql.exe
+
+# Certificates
+certs/
 MigrationsBundle/
+/.env
