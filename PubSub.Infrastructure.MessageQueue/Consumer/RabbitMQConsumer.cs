@@ -16,9 +16,9 @@ namespace PubSub.Infrastructure.MessageQueue.Consumer
         private readonly string _topic;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IJsonPayloadSerializer _payloadSerializer;
-        private IConnection _connection;
-        private IChannel _channel;
-        private IAsyncBasicConsumer _consumerCallback;
+        private IConnection? _connection;
+        private IChannel? _channel;
+        private IAsyncBasicConsumer? _consumerCallback;
 
         public RabbitMQConsumer(IRabbitMQConnectionManager connectionManager,
             ISubscriberNotifier subscriberNotifierService,
@@ -46,7 +46,7 @@ namespace PubSub.Infrastructure.MessageQueue.Consumer
 
         private AsyncEventingBasicConsumer GetConsumerCallback()
         {
-            var consumer = new AsyncEventingBasicConsumer(_channel);
+            var consumer = new AsyncEventingBasicConsumer(_channel!);
             consumer.ReceivedAsync += async (_, eventArgs) => { await OnMessageAsync(eventArgs); };
             return consumer;
         }
