@@ -23,10 +23,7 @@ namespace Presentation.Web.Infrastructure.Configuration
 
                 var xmlFile = $"{typeof(SwaggerServiceCollectionExtensions).Assembly.GetName().Name}.xml";
                 var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (System.IO.File.Exists(xmlPath))
-                {
-                    c.IncludeXmlComments(xmlPath);
-                }
+                c.IncludeXmlComments(xmlPath);
 
                 c.DocInclusionPredicate((docName, apiDesc) =>
                 {
