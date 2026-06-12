@@ -21,7 +21,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITOS API V1", Version = "1" });
                 c.SwaggerDoc("v2", new OpenApiInfo { Title = "KITOS API V2", Version = "2" });
 
-                var xmlFile = "Presentation.Web.xml";
+                var xmlFile = $"{typeof(SwaggerServiceCollectionExtensions).Assembly.GetName().Name}.xml";
                 var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
                 if (System.IO.File.Exists(xmlPath))
                 {
