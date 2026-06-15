@@ -48,14 +48,6 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<PubSubContext>();
 
-    if (args.Contains("--migrate-and-exit", StringComparer.OrdinalIgnoreCase))
-    {
-        Console.WriteLine("Applying pending EF Core migrations for PubSub...");
-        context.Database.Migrate();
-        Console.WriteLine("Migrations applied successfully.");
-        return;
-    }
-
     var pendingMigrations = context.Database.GetPendingMigrations().ToArray();
     if (pendingMigrations.Any())
     {

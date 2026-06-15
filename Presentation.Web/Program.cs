@@ -59,18 +59,6 @@ KitosServiceRegistration.Register(services, configuration, signingKey);
 
 var app = builder.Build();
 
-// Support --migrate-and-exit for running EF migrations as a dedicated step.
-if (args.Contains("--migrate-and-exit", StringComparer.OrdinalIgnoreCase))
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<KitosContext>();
-
-    Log.Information("Applying pending EF Core migrations...");
-    db.Database.Migrate();
-    Log.Information("Migrations applied successfully.");
-    return;
-}
-
 // Initialize the SAML library's static HTTP context accessor so it can access HttpContext.Current
 // during SAML flows without requiring DI injection into the (statically-instantiated) handler classes.
 dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
