@@ -8,6 +8,7 @@
     <RootNamespace>Presentation.Web</RootNamespace>
     <AssemblyName>Presentation.Web</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
     <!-- AppConfig points MSBuild at the right file for local builds (dotnet build / run).
       For publish/deploy, PreparePackage.ps1 updates App.config with environment-specific SAML
