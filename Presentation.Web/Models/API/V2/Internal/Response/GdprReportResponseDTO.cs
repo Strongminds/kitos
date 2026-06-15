@@ -26,7 +26,6 @@ namespace Presentation.Web.Models.API.V2.Internal.Response
         public bool PersonalDataSocialOtherPrivateMatters { get; set; }
         public YesNoDontKnowChoice? DPIA { get; set; }
         public DateTime? DPIADate { get; set; }
-        public HostingChoice? HostedAt { get; set; }
         public string TechnicalSupervisionDocumentationUrlName { get; set; }
         public string TechnicalSupervisionDocumentationUrl { get; set; }
         public YesNoDontKnowChoice? UserSupervision { get; set; }
