@@ -1,16 +1,16 @@
-# Running KITOS with Docker Compose
+# Running KITOS with Podman Compose
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) (v20.10+)
-- [Docker Compose](https://docs.docker.com/compose/install/) (v2.0+)
+- [Podman](https://podman.io/docs/installation) (v4.0+)
+- [Podman Compose](https://github.com/containers/podman-compose) (v1.0+)
 
 ## Quick Start
 
 From the repository root:
 
 ```bash
-docker compose up
+podman compose up
 ```
 
 This starts the full KITOS stack. First run will build images and apply database migrations automatically.
@@ -40,26 +40,26 @@ PostgreSQL is initialized with three databases:
 
 ```bash
 # Start all services (foreground)
-docker compose up
+podman compose up
 
 # Start in background
-docker compose up -d
+podman compose up -d
 
 # Rebuild images after code changes
-docker compose up --build
+podman compose up --build
 
 # Stop all services
-docker compose down
+podman compose down
 
 # Stop and remove volumes (reset databases)
-docker compose down -v
+podman compose down -v
 
 # View logs for a specific service
-docker compose logs -f kitos-api
+podman compose logs -f kitos-api
 
 # Run only migrations (useful for debugging)
-docker compose run --rm migrate-db
-docker compose run --rm migrate-pubsub-db
+podman compose run --rm migrate-db
+podman compose run --rm migrate-pubsub-db
 ```
 
 ## How Migrations Work

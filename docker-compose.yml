@@ -1,6 +1,6 @@
-# KITOS Local Development - Docker Compose
+# KITOS Local Development - Podman Compose
 #
-# Usage: docker compose up
+# Usage: podman compose up
 #
 # NOTE: The legacy AngularJS frontend is served directly by the kitos-api (ASP.NET).
 # The new frontend (https://github.com/os2kitos/kitos_frontend) is a separate repo

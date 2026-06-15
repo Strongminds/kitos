@@ -2,7 +2,7 @@
 
 This document describes how to run KITOS in containers and how configuration, secrets, and certificates are managed.
 
-## Running Locally with Docker Compose
+## Running Locally with Podman Compose
 
 ```bash
 # 1. Copy the environment template and fill in certificate passwords
@@ -14,7 +14,7 @@ cp .env.example .env
 #    - certs/ORG_EXTTEST_Organisation_2.pfx     (STS Organisation)
 
 # 3. Start the stack
-docker compose up
+podman compose up
 ```
 
 The API will be available at `http://localhost:5000`.
@@ -81,7 +81,7 @@ To replicate production behavior locally, keep strict STS certificate checks ena
 - `AppSettings__StsCertificateValidationMode=ChainTrust`
 - `AppSettings__StsCertificateRevocationMode=Online`
 
-In Docker Compose these are mapped from:
+In Podman Compose these are mapped from:
 
 - `STS_CERT_VALIDATION_MODE` (default `ChainTrust`)
 - `STS_CERT_REVOCATION_MODE` (default `Online`)
@@ -91,7 +91,7 @@ Only for non-production troubleshooting, you can temporarily relax checks to val
 - `AppSettings__StsCertificateValidationMode` (for example `None`)
 - `AppSettings__StsCertificateRevocationMode` (for example `NoCheck`)
 
-### Docker Compose Cert Setup
+### Podman Compose Cert Setup
 
 Place PFX files in the `./certs/` directory at the repo root. They are mounted read-only into the container at `/etc/ssl/certs/`:
 
@@ -102,16 +102,16 @@ volumes:
   - ./certs/ORG_EXTTEST_Organisation_2.pfx:/etc/ssl/certs/ORG_EXTTEST_Organisation_2.pfx:ro
 ```
 
-To replicate production trust behavior in Docker, also place trust-chain certificates
+To replicate production trust behavior in Podman, also place trust-chain certificates
 (`.crt` in PEM format) in `./certs/` (for example root/intermediate CA). The `kitos-api`
 container imports `./certs/*.crt` into `/usr/local/share/ca-certificates/` and runs
 `update-ca-certificates` on startup before launching the API.
 
 ## Database Migrations
 
-Migrations run as a separate init step before the API starts (the `migrate-db` service in Docker Compose, or an init-container in Kubernetes). The API does NOT auto-migrate on startup.
+Migrations run as a separate init step before the API starts (the `migrate-db` service in Podman Compose, or an init-container in Kubernetes). The API does NOT auto-migrate on startup.
 
 ```bash
 # Run migrations manually against a running database
-docker compose run --rm migrate-db
+podman compose run --rm migrate-db
 ```
