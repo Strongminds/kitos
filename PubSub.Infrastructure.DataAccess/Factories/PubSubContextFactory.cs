@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Core.Abstractions.Helpers;
+using PubSub.Core.Abstractions.Helpers;
 
 namespace PubSub.Infrastructure.DataAccess.Factories
 {

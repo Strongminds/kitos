@@ -112,6 +112,10 @@ namespace Core.DomainServices.SystemUsage
             destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
             destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
 
+            var interfaces = source.GetExposedInterfaces();
+            destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.ItInterfaceId).ToStringWithDelimiter();
+            destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).Where(x => !x.IsWhiteSpace()).ToStringWithDelimiter();
+
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
             PatchOrganizationUnits(source, destination);
