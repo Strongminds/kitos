@@ -2,12 +2,9 @@
 #
 # Usage: podman compose up
 #
-# NOTE: The legacy AngularJS frontend is served directly by the kitos-api (ASP.NET).
-# The new frontend (https://github.com/os2kitos/kitos_frontend) is a separate repo
-# and is NOT included in this compose file.
-#
-# For Kubernetes deployments, EF migrations should run as init-containers rather than
-# at application startup. See the migrate-db service below for the local equivalent.
+# This compose file starts local infrastructure and API services.
+# Database schema/data preparation is still done manually per developer via:
+#   DeploymentScripts/PrepareLocalDatabase.ps1
 
 services:
   postgres:
@@ -44,25 +41,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-
-  # Runs EF Core migrations for the main KITOS database before the API starts.
-  # This mirrors the init-container pattern used in Kubernetes.
-  migrate-db:
-    build:
-      context: .
-      dockerfile: Presentation.Web/Dockerfile
-    container_name: kitos-migrate-db
-    entrypoint: ["dotnet", "Presentation.Web.dll", "--migrate-and-exit"]
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      Database__Provider: PostgreSql
-      Hangfire__Provider: PostgreSql
-      IgnorePendingModelChangesWarning: "true"
-      ConnectionStrings__KitosContext: "Host=postgres;Port=5432;Database=kitos;Username=kitos;Password=kitos"
-      ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   kitos-api:
     build:
@@ -104,30 +82,13 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      migrate-db:
-        condition: service_completed_successfully
-
-  # Runs EF Core migrations for the PubSub database.
-  migrate-pubsub-db:
-    build:
-      context: .
-      dockerfile: PubSub.Application.Api/Dockerfile
-    container_name: kitos-migrate-pubsub-db
-    entrypoint: ["dotnet", "PubSub.Application.Api.dll", "--migrate-and-exit"]
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      Database__Provider: PostgreSql
-      IgnorePendingModelChangesWarning: "true"
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=kitos_pubsub;Username=kitos;Password=kitos"
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   pubsub-api:
     build:
       context: .
       dockerfile: PubSub.Application.Api/Dockerfile
     container_name: kitos-pubsub-api
+    entrypoint: ["dotnet", "PubSub.Application.Api.dll"]
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       Database__Provider: PostgreSql
@@ -147,8 +108,6 @@ services:
         condition: service_healthy
       kitos-api:
         condition: service_started
-      migrate-pubsub-db:
-        condition: service_completed_successfully
 
 volumes:
   postgres_data:

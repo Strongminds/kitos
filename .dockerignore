@@ -25,5 +25,8 @@ Tools.Test.Database.IO/
 
 # Docker
 **/Dockerfile*
+!Dockerfile
+!Presentation.Web/Dockerfile
+!PubSub.Application.Api/Dockerfile
 **/.dockerignore
 docker-compose*.yml

@@ -59,17 +59,11 @@ KitosServiceRegistration.Register(services, configuration, signingKey);
 
 var app = builder.Build();
 
-// Support --migrate-and-exit for running EF migrations in init-containers or compose services.
-// For a fresh PostgreSQL database the baseline schema and migration history must be bootstrapped
-// before EF Core migrations run, because InitialBaseline.Up() is intentionally empty.
+// Support --migrate-and-exit for running EF migrations as a dedicated step.
 if (args.Contains("--migrate-and-exit", StringComparer.OrdinalIgnoreCase))
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<KitosContext>();
-    var isPostgres = db.Database.ProviderName?.Contains("Npgsql", StringComparison.OrdinalIgnoreCase) == true;
-
-    if (isPostgres)
-        PostgresFreshDatabaseBootstrapper.BootstrapIfFresh(db);
 
     Log.Information("Applying pending EF Core migrations...");
     db.Database.Migrate();

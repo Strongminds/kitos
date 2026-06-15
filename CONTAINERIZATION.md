@@ -5,19 +5,16 @@ This document describes how to run KITOS in containers and how configuration, se
 ## Running Locally with Podman Compose
 
 ```bash
-# 1. Copy the environment template and fill in certificate passwords
-cp .env.example .env
-
-# 2. Place certificate PFX files in ./certs/
-#    - certs/kitos-local.pfx                (SSO Service Provider)
-#    - certs/ADG_EXTTEST_Adgangsstyring_2.pfx   (STS Adgangsstyring)
-#    - certs/ORG_EXTTEST_Organisation_2.pfx     (STS Organisation)
-
-# 3. Start the stack
+# 1. Start local stack
 podman compose up
+
+# 2. Prepare local KITOS databases (run per developer)
+pwsh ./DeploymentScripts/PrepareLocalDatabase.ps1 \
+  -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" \
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
 ```
 
-The API will be available at `http://localhost:5000`.
+Compose starts both API services and shared infrastructure. Databases remain in base state until `PrepareLocalDatabase.ps1` is run.
 
 ### Services
 
@@ -109,9 +106,10 @@ container imports `./certs/*.crt` into `/usr/local/share/ca-certificates/` and r
 
 ## Database Migrations
 
-Migrations run as a separate init step before the API starts (the `migrate-db` service in Podman Compose, or an init-container in Kubernetes). The API does NOT auto-migrate on startup.
+For local development, run `DeploymentScripts/PrepareLocalDatabase.ps1` against the running PostgreSQL container to prepare the KITOS and Hangfire databases.
 
-```bash
-# Run migrations manually against a running database
-podman compose run --rm migrate-db
+```powershell
+.\DeploymentScripts\PrepareLocalDatabase.ps1 `
+  -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
 ```

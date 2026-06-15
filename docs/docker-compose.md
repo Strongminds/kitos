@@ -13,7 +13,7 @@ From the repository root:
 podman compose up
 ```
 
-This starts the full KITOS stack. First run will build images and apply database migrations automatically.
+This starts the local KITOS stack. Databases are still left in base state until `PrepareLocalDatabase.ps1` is run.
 
 ## Services
 
@@ -56,21 +56,19 @@ podman compose down -v
 
 # View logs for a specific service
 podman compose logs -f kitos-api
-
-# Run only migrations (useful for debugging)
-podman compose run --rm migrate-db
-podman compose run --rm migrate-pubsub-db
 ```
 
-## How Migrations Work
+## Prepare Local Databases
 
-Database migrations run automatically before the APIs start:
+Run database preparation manually per developer after the containers are running:
 
-1. `migrate-db` service applies EF Core migrations to the `kitos` database
-2. `migrate-pubsub-db` service applies migrations to `kitos_pubsub`
-3. APIs only start after their respective migration service exits successfully
+```powershell
+.\DeploymentScripts\PrepareLocalDatabase.ps1 `
+  -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
+```
 
-This mirrors the Kubernetes init-container pattern.
+This script is responsible for preparing the local KITOS/Hangfire databases for development use.
 
 ## Environment Variables
 
