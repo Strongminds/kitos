@@ -98,8 +98,8 @@ Place PFX files in the `./certs/` directory at the repo root. They are mounted r
 ```yaml
 volumes:
   - ./certs/kitos-local-pfx:/etc/ssl/certs/kitos-local-pfx:ro
-  - ./certs/ADG_EXTTEST_Adgangsstyring_2:/etc/ssl/certs/ADG_EXTTEST_Adgangsstyring_2:ro
-  - ./certs/ORG_EXTTEST_Organisation_2:/etc/ssl/certs/ORG_EXTTEST_Organisation_2:ro
+  - ./certs/ADG_EXTTEST_Adgangsstyring_2.pfx:/etc/ssl/certs/ADG_EXTTEST_Adgangsstyring_2.pfx:ro
+  - ./certs/ORG_EXTTEST_Organisation_2.pfx:/etc/ssl/certs/ORG_EXTTEST_Organisation_2.pfx:ro
 ```
 
 To replicate production trust behavior in Docker, also place trust-chain certificates
