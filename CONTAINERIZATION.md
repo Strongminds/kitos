@@ -9,9 +9,9 @@ This document describes how to run KITOS in containers and how configuration, se
 cp .env.example .env
 
 # 2. Place certificate PFX files in ./certs/
-#    - certs/kitos-local-pfx                (SSO Service Provider)
-#    - certs/ADG_EXTTEST_Adgangsstyring_2   (STS Adgangsstyring)
-#    - certs/ORG_EXTTEST_Organisation_2     (STS Organisation)
+#    - certs/kitos-local-pfx                    (SSO Service Provider)
+#    - certs/ADG_EXTTEST_Adgangsstyring_2.pfx   (STS Adgangsstyring)
+#    - certs/ORG_EXTTEST_Organisation_2.pfx     (STS Organisation)
 
 # 3. Start the stack
 docker compose up
