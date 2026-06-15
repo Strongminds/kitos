@@ -21,6 +21,10 @@ namespace Presentation.Web.Infrastructure.Configuration
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITOS API V1", Version = "1" });
                 c.SwaggerDoc("v2", new OpenApiInfo { Title = "KITOS API V2", Version = "2" });
 
+                var xmlFile = $"{typeof(SwaggerServiceCollectionExtensions).Assembly.GetName().Name}.xml";
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
                 c.DocInclusionPredicate((docName, apiDesc) =>
                 {
                     // Skip actions without an explicit HTTP method binding (OData, naming-convention V1, etc.)
