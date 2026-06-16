@@ -51,9 +51,7 @@ using (var scope = app.Services.CreateScope())
     var pendingMigrations = context.Database.GetPendingMigrations().ToArray();
     if (pendingMigrations.Any())
     {
-        throw new InvalidOperationException(
-            "The database is not up to date with the latest schema. " +
-            "Pending migrations: " + string.Join(", ", pendingMigrations));
+        context.Database.Migrate();
     }
 }
 
