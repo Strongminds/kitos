@@ -75,6 +75,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             await TakeSystemIntoUsageAsync(system1.Uuid, organizationUuid);
             await TakeSystemIntoUsageAsync(system2.Uuid, organizationUuid);
             await TakeSystemIntoUsageAsync(system3.Uuid, organizationUuid);
+            await WaitForReadModelQueueDepletion();
 
 
             //Act

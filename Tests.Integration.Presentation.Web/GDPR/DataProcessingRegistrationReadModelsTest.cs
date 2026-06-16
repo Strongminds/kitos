@@ -48,6 +48,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             await CreateDPRAsync(organizationUuid, name1);
             await CreateDPRAsync(organizationUuid, name2);
             await CreateDPRAsync(organizationUuid, name3);
+            await WaitForReadModelQueueDepletion();
 
             //Act
             var page1 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 0)).ToList();

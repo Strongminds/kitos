@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading;
 using System;
 using Xunit;
 
@@ -27,7 +26,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             stopwatch.Start();
             do
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                await Task.Delay(TimeSpan.FromMilliseconds(500));
                 conditionMet = await check();
             } while (conditionMet == false && stopwatch.Elapsed <= howLong);
 
