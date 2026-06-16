@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.SystemUsage.Write;
@@ -16,6 +13,9 @@ using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tests.Toolkit.Extensions;
 using Xunit;
 
@@ -666,7 +666,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noIsSociallyCritical,
             bool noBusinessCritical,
             bool noSystemUsageCriticalityLevel,
-            bool noTechnicalSystemType)
+            bool noTechnicalSystemType,
+            bool noHostedAt)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -685,7 +686,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noIsSociallyCritical,
                 noBusinessCritical,
                 noSystemUsageCriticalityLevel,
-                noTechnicalSystemType);
+                noTechnicalSystemType,
+                noHostedAt);
 
             //Act
             var output = _sut.FromPATCH(emptyInput);
@@ -727,7 +729,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noIsSociallyCritical,
             bool noBusinessCritical,
             bool noSystemUsageCriticalityLevel,
-            bool noTechnicalSystemType)
+            bool noTechnicalSystemType,
+            bool noHostedAt)
         {
             //Arrange
             var emptyInput = new UpdateItSystemUsageRequestDTO();
@@ -746,7 +749,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 noIsSociallyCritical,
                 noBusinessCritical,
                 noSystemUsageCriticalityLevel,
-                noTechnicalSystemType);
+                noTechnicalSystemType,
+                noHostedAt);
 
             //Act
             var output = _sut.FromPUT(emptyInput);
@@ -1125,7 +1129,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedGeneralSectionsInput()
         {
-            return CreateGetUndefinedSectionsInput(15);
+            return CreateGetUndefinedSectionsInput(16);
         }
 
         public static IEnumerable<object[]> GetUndefinedOrganizationUsageSectionsInput()
@@ -1267,7 +1271,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noIsSociallyCritical = false,
             bool noBusinessCritical = false,
             bool noSystemUsageCriticalityLevel = false,
-            bool noTechnicalSystemType = false)
+            bool noTechnicalSystemType = false,
+            bool noHostedAt = false)
         {
             var generalProperties = GetAllInputPropertyNames<GeneralDataUpdateRequestDTO>();
             if (noPurpose) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.Purpose));
@@ -1282,6 +1287,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noBusinessCritical) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.IsBusinessCritical));
             if (noSystemUsageCriticalityLevel) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.SystemUsageCriticalityLevelUuid));
             if (noTechnicalSystemType) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.TechnicalSystemTypeUuids));
+            if (noHostedAt) generalProperties.Remove(nameof(GeneralDataUpdateRequestDTO.HostedAt));
 
             var validityProperties = GetAllInputPropertyNames<ItSystemUsageValidityWriteRequestDTO>();
             if (noLifeCycleStatus) validityProperties.Remove(nameof(ItSystemUsageValidityWriteRequestDTO.LifeCycleStatus));
