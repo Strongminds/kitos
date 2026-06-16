@@ -12,56 +12,11 @@ namespace Kombit.InfrastructureSamples.Token;
 
 public class TokenFetcher
 {
-    private readonly string _clientCertificateThumbprint;
-    private readonly string _stsIssuer;
-    private readonly string _stsEndpoint;
-    private readonly string _stsCertificateAlias;
-    private readonly string _stsCertificateThumbprint;
-    private readonly string _wspCertificateThumbprint;
+    private readonly TokenFetcherConfig _config;
 
-    private readonly string? _ssoCertFilePath;
-    private readonly string? _ssoCertPassword;
-    private readonly string? _stsCertFilePath;
-    private readonly string? _stsCertPassword;
-    private readonly string? _stsOrganisationCertFilePath;
-    private readonly string? _stsOrganisationCertPassword;
-    private readonly X509CertificateValidationMode? _serviceCertificateValidationMode;
-    private readonly X509RevocationMode? _serviceCertificateRevocationMode;
-
-    public TokenFetcher(
-        string clientCertificateThumbprint,
-        string stsIssuer,
-        string stsEndpoint,
-        string stsCertificateAlias,
-        string stsCertificateThumbprint,
-        string wspCertificateThumbprint,
-        string? ssoCertFilePath = null,
-        string? ssoCertPassword = null,
-        string? stsCertFilePath = null,
-        string? stsCertPassword = null,
-        string? stsOrganisationCertFilePath = null,
-        string? stsOrganisationCertPassword = null,
-        string? serviceCertificateValidationMode = null,
-        string? serviceCertificateRevocationMode = null)
+    public TokenFetcher(TokenFetcherConfig config)
     {
-        _clientCertificateThumbprint = clientCertificateThumbprint;
-        _stsIssuer = stsIssuer;
-        _stsEndpoint = stsEndpoint;
-        _stsCertificateAlias = stsCertificateAlias;
-        _stsCertificateThumbprint = stsCertificateThumbprint;
-        _wspCertificateThumbprint = wspCertificateThumbprint;
-        _ssoCertFilePath = ssoCertFilePath;
-        _ssoCertPassword = ssoCertPassword;
-        _stsCertFilePath = stsCertFilePath;
-        _stsCertPassword = stsCertPassword;
-        _stsOrganisationCertFilePath = stsOrganisationCertFilePath;
-        _stsOrganisationCertPassword = stsOrganisationCertPassword;
-        _serviceCertificateValidationMode = ParseOptionalEnum<X509CertificateValidationMode>(
-            serviceCertificateValidationMode,
-            nameof(serviceCertificateValidationMode));
-        _serviceCertificateRevocationMode = ParseOptionalEnum<X509RevocationMode>(
-            serviceCertificateRevocationMode,
-            nameof(serviceCertificateRevocationMode));
+        _config = config ?? throw new ArgumentNullException(nameof(config));
     }
 
     /// <summary>
@@ -99,23 +54,23 @@ public class TokenFetcher
     /// </summary>
     public StsTokenServiceConfiguration BuildServiceConfig(string entityId, string wspEndpoint, string cvr)
     {
-        var clientCert = CertificateLoader.LoadCertificateWithFallback(
-            _ssoCertFilePath, _ssoCertPassword,
-            StoreName.My, StoreLocation.LocalMachine, _clientCertificateThumbprint);
-        var stsCert = CertificateLoader.LoadCertificateWithFallback(
-            _stsCertFilePath, _stsCertPassword,
-            StoreName.My, StoreLocation.LocalMachine, _stsCertificateThumbprint);
-        var wspCert = CertificateLoader.LoadCertificateWithFallback(
-            _stsOrganisationCertFilePath, _stsOrganisationCertPassword,
-            StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
-        var stsConfig = new StsConfiguration(_stsEndpoint, _stsIssuer, cvr, stsCert);
-        var wspConfig = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
-        var config = new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert)
+        var clientCertificate = CertificateLoader.LoadCertificateWithFallback(
+            _config.SsoCertFilePath, _config.SsoCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _config.ClientCertificateThumbprint);
+        var stsCertificate = CertificateLoader.LoadCertificateWithFallback(
+            _config.StsCertFilePath, _config.StsCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _config.StsCertificateThumbprint);
+        var wspCertificate = CertificateLoader.LoadCertificateWithFallback(
+            _config.StsOrganisationCertFilePath, _config.StsOrganisationCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _config.WspCertificateThumbprint);
+        var stsConfiguration = new StsConfiguration(_config.StsEndpoint, _config.StsIssuer, cvr, stsCertificate);
+        var wspConfiguration = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCertificate);
+        var tokenServiceConfiguration = new StsTokenServiceConfiguration(stsConfiguration, wspConfiguration, clientCertificate)
         {
             MaxReceivedMessageSize = int.MaxValue
         };
-        ConfigureServiceCertificateAuthentication(config);
-        return config;
+        ConfigureServiceCertificateAuthentication(tokenServiceConfiguration);
+        return tokenServiceConfiguration;
     }
 
     /// <summary>
@@ -146,21 +101,10 @@ public class TokenFetcher
 
     private void ApplyAuthenticationOverrides(X509ServiceCertificateAuthentication authentication)
     {
-        if (_serviceCertificateValidationMode.HasValue)
-            authentication.CertificateValidationMode = _serviceCertificateValidationMode.Value;
-        if (_serviceCertificateRevocationMode.HasValue)
-            authentication.RevocationMode = _serviceCertificateRevocationMode.Value;
+        if (_config.ParsedCertificateValidationMode.HasValue)
+            authentication.CertificateValidationMode = _config.ParsedCertificateValidationMode.Value;
+        if (_config.ParsedRevocationMode.HasValue)
+            authentication.RevocationMode = _config.ParsedRevocationMode.Value;
     }
 
-    private static TEnum? ParseOptionalEnum<TEnum>(string? value, string parameterName)
-        where TEnum : struct, Enum
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return null;
-        if (Enum.TryParse<TEnum>(value, ignoreCase: true, out var parsed))
-            return parsed;
-        throw new ArgumentException(
-            $"Invalid value '{value}' for {parameterName}. Expected one of: {string.Join(", ", Enum.GetNames(typeof(TEnum)))}",
-            parameterName);
-    }
 }

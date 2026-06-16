@@ -327,16 +327,16 @@ Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUs
     if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
 
     Write-Host "Granting dbo schema privileges to '$granteeUser'"
-    $safeUser = $granteeUser.Replace("'", "''").Replace('"', '""')
+    $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
     $sql = @"
 DO `$`$
 BEGIN
-    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$safeUser') THEN
-        GRANT USAGE, CREATE ON SCHEMA dbo TO "$safeUser";
-        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$safeUser";
-        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$safeUser";
-        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$safeUser";
-        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$safeUser";
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
     END IF;
 END
 `$`$;

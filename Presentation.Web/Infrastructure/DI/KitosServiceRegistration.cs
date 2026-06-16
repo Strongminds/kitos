@@ -353,13 +353,14 @@ namespace Presentation.Web.Infrastructure.DI
             var stsCertificateValidationMode = appSettings["StsCertificateValidationMode"] ?? "";
             var stsCertificateRevocationMode = appSettings["StsCertificateRevocationMode"] ?? "";
 
-            services.AddSingleton(_ => new TokenFetcher(
+            var tokenFetcherConfig = new TokenFetcherConfig(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
                 stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint,
                 ssoCertFilePath, ssoCertPassword,
                 stsCertFilePath, stsCertPassword,
                 stsOrganisationCertFilePath, stsOrganisationCertPassword,
-                stsCertificateValidationMode, stsCertificateRevocationMode));
+                stsCertificateValidationMode, stsCertificateRevocationMode);
+            services.AddSingleton(_ => new TokenFetcher(tokenFetcherConfig));
             services.AddScoped<IStsOrganizationService, StsOrganizationService>();
             services.AddScoped<IStsOrganizationCompanyLookupService, StsOrganizationCompanyLookupService>();
             services.AddScoped<IStsOrganizationSystemService, StsOrganizationSystemService>();
