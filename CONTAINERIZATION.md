@@ -113,3 +113,9 @@ For local development, run `DeploymentScripts/PrepareLocalDatabase.ps1` against 
   -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
   -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
 ```
+
+For PubSub, run:
+
+```powershell
+.\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1
+```

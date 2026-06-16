@@ -70,6 +70,12 @@ Run database preparation manually per developer after the containers are running
 
 This script is responsible for preparing the local KITOS/Hangfire databases for development use.
 
+To prepare the PubSub database for the containerized stack:
+
+```powershell
+.\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1
+```
+
 ## Environment Variables
 
 Key environment variables can be overridden in a `.env` file at the repo root:
