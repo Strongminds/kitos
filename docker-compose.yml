@@ -86,7 +86,9 @@ services:
   pubsub-api:
     build:
       context: .
-      dockerfile: PubSub.Application.Api/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        APP: PubSub.Application.Api
     container_name: kitos-pubsub-api
     entrypoint: ["dotnet", "PubSub.Application.Api.dll"]
     environment:

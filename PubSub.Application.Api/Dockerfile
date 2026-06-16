@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR app
+WORKDIR /app
 
 COPY ["PubSub.Application.Api/PubSub.Application.Api.csproj", "PubSub.Application.Api/"]
 COPY ["PubSub.Application.Services/PubSub.Application.Services.csproj", "PubSub.Application.Services/"]
@@ -13,7 +13,7 @@ RUN dotnet restore "PubSub.Application.Api/PubSub.Application.Api.csproj"
 
 COPY . .
 
-RUN dotnet publish "PubSub.Application.Api/PubSub.Application.Api.csproj" -c Release -o out
+RUN dotnet publish "PubSub.Application.Api/PubSub.Application.Api.csproj" -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
