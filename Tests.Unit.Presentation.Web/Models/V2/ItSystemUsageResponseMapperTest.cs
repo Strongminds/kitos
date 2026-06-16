@@ -97,6 +97,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itSystemUsage.IsSociallyCritical?.ToYesNoDontKnowChoice(), dto.General.IsSociallyCritical);
             AssertYesNoDontKnow(dto.General.IsBusinessCritical, itSystemUsage.isBusinessCritical);
             Assert.Equal(itSystemUsage.CriticalityFieldsLastChanged, dto.General.CriticalityFieldsLastChanged);
+            AssertHostedAt(dto.General.HostedAt, itSystemUsage.HostedAt);
         }
 
         [Fact]
@@ -268,7 +269,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(dto.GDPR.ProcessingPurpose, itSystemUsage.ProcessingPurpose);
             AssertYesNoDontKnow(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             AssertSimpleLink(dto.GDPR.DPIADocumentation, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
-            AssertHostedAt(dto.GDPR.HostedAt, itSystemUsage.HostedAt);
             AssertSimpleLink(dto.GDPR.DirectoryDocumentation, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);
             Assert.Equal(dto.GDPR.DataSensitivityLevels.Select(MapDataSensitivity).OrderBy(x => x).ToList(), itSystemUsage.SensitiveDataLevels.Select(x => x.SensitivityDataLevel).OrderBy(x => x).ToList());
             AssertYesNoDontKnow(dto.GDPR.TechnicalPrecautionsInPlace, itSystemUsage.precautions);

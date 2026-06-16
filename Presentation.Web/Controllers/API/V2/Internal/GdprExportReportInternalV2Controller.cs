@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
@@ -59,7 +58,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal
                 PersonalDataSocialOtherPrivateMatters = gdprReport.PersonalDataSocialOtherPrivateMatters,
                 DPIA = gdprReport.DPIA?.ToYesNoDontKnowChoice(),
                 DPIADate = gdprReport.DPIADate,
-                HostedAt = gdprReport.HostedAt?.ToHostingChoice(),
                 TechnicalSupervisionDocumentationUrl = gdprReport.TechnicalSupervisionDocumentationUrl,
                 TechnicalSupervisionDocumentationUrlName = gdprReport.TechnicalSupervisionDocumentationUrlName,
                 UserSupervision = gdprReport.UserSupervision?.ToYesNoDontKnowChoice(),

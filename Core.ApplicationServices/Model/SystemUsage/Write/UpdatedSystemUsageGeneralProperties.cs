@@ -31,6 +31,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<NamedLink>> CriticalityLevelDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
         public OptionalValueChange<string> Purpose { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<Maybe<IEnumerable<Guid>>> TechnicalSystemTypeUuids { get; set; } = OptionalValueChange<Maybe<IEnumerable<Guid>>>.None;
+        public OptionalValueChange<HostedAt?> HostedAt { get; set; } = OptionalValueChange<HostedAt?>.None;
 
     }
 }

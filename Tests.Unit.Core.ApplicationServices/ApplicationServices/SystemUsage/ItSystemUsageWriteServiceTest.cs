@@ -1877,7 +1877,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             IsDataProcessingAgreementRequired? isDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequired?>();
             var gdprInput = new UpdatedSystemUsageGDPRProperties
             {
-                HostedAt = hostedAt.AsChangedValue(),
                 DirectoryDocumentation = directoryDoc.FromNullable().AsChangedValue(),
                 DataSensitivityLevels = sensitiveDataLevels.FromNullable<IEnumerable<SensitiveDataLevel>>().AsChangedValue(),
                 SensitivePersonDataUuids = sensitiveDataTypeUuids.FromNullable<IEnumerable<Guid>>().AsChangedValue(),
@@ -1910,6 +1909,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 {
                     Purpose = purpose.AsChangedValue(),
                     BusinessCritical = businessCritical.AsChangedValue(),
+                    HostedAt = hostedAt.AsChangedValue(),
                     SystemUsageCriticalityLevelUuid = Maybe<Guid>.None.AsChangedValue()
                 },
                 GDPR = gdprInput
@@ -3396,6 +3396,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Equal(generalProperties.ContainsAITechnology.NewValue, actual.ContainsAITechnology);
             }
             Assert.Equal(generalProperties.BusinessCritical.NewValue, actual.isBusinessCritical);
+            Assert.Equal(generalProperties.HostedAt.NewValue, actual.HostedAt);
 
             //Archiving
             var archiving = expected.Archiving.Value;
@@ -3409,7 +3410,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             //GDPR
             var gdpr = expected.GDPR.Value;
-            Assert.Equal(gdpr.HostedAt.NewValue, actual.HostedAt);
             Assert.Equal(gdpr.TechnicalPrecautionsInPlace.NewValue, actual.precautions);
             Assert.Equal(gdpr.UserSupervision.NewValue, actual.UserSupervision);
             Assert.Equal(gdpr.UserSupervisionDate.NewValue, actual.UserSupervisionDate);
@@ -3472,6 +3472,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ContainsAITechnology = Maybe<YesNoUndecidedOption>.Some(A<YesNoUndecidedOption>()).AsChangedValue(),
                     BusinessCritical = A<DataOptions?>().AsChangedValue(),
                     Purpose = A<string>().AsChangedValue(),
+                    HostedAt = A<HostedAt?>().AsChangedValue(),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3483,7 +3484,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 },
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
-                    HostedAt = A<HostedAt?>().AsChangedValue(),
                     DirectoryDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
                     TechnicalPrecautionsInPlace = technicalPrecautionsInPlace.AsChangedValue(),
                     TechnicalPrecautionsDocumentation = A<NamedLink>().FromNullable().AsChangedValue(),
@@ -3523,6 +3523,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     ContainsAITechnology = new ChangedValue<Maybe<YesNoUndecidedOption>>(Maybe<YesNoUndecidedOption>.None),
                     BusinessCritical = new ChangedValue<DataOptions?>(null),
                     Purpose = "".AsChangedValue(),
+                    HostedAt = new ChangedValue<HostedAt?>(null),
                 },
                 Archiving = new UpdatedSystemUsageArchivingParameters
                 {
@@ -3534,7 +3535,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 },
                 GDPR = new UpdatedSystemUsageGDPRProperties
                 {
-                    HostedAt = new ChangedValue<HostedAt?>(null),
                     DirectoryDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     TechnicalPrecautionsInPlace = new ChangedValue<DataOptions?>(null),
                     TechnicalPrecautionsDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
