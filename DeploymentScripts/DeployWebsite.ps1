@@ -21,5 +21,18 @@ Function Deploy-Website($packageDirectory, $msDeployUrl, $msDeployUser, $msDeplo
 
     & cmd.exe /C $fullCommand
 
+    Write-Host "Ensuring app pool 'kitos' is started..."
+    $appPoolName = "kitos"
+    $appPool = Get-WebAppPoolState -Name $appPoolName -ErrorAction SilentlyContinue
+    if ($appPool.Value -ne "Started") {
+        Write-Host "App pool $appPoolName is not running, starting it now..."
+        Start-WebAppPool -Name $appPoolName
+        Start-Sleep -Seconds 2
+        Write-Host "App pool $appPoolName started successfully"
+    } else {
+        Write-Host "App pool $appPoolName is already running"
+    }
+
+
     if($LASTEXITCODE -ne 0) { throw "FAILED TO DEPLOY" }
 }
