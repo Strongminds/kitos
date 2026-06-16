@@ -57,6 +57,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             await CreateItContractAsync(organizationUuid, name1);
             await CreateItContractAsync(organizationUuid, name2);
             await CreateItContractAsync(organizationUuid, name3);
+            await ReadModelTestTools.WaitForReadModelQueueDepletion();
 
             //Act
             var page1 = (await ItContractV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 0)).ToList();
