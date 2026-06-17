@@ -17,6 +17,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 (ArchiveDutyChoice.BK, ArchiveDutyTypes.BK),
                 (ArchiveDutyChoice.KD, ArchiveDutyTypes.KD),
                 (ArchiveDutyChoice.KB, ArchiveDutyTypes.KB),
+                (ArchiveDutyChoice.DK, ArchiveDutyTypes.DK),
+                (ArchiveDutyChoice.DD, ArchiveDutyTypes.DD),
                 (ArchiveDutyChoice.Undecided, ArchiveDutyTypes.Undecided),
                 (ArchiveDutyChoice.Unknown, ArchiveDutyTypes.Unknown),
                 (ArchiveDutyChoice.PreserveDataCanDiscardDocuments, ArchiveDutyTypes.PreserveDataCanDiscardDocuments)
