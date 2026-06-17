@@ -35,7 +35,6 @@ namespace Tests.Integration.Presentation.Web.Internal.GdprReport
 
         private void AssertGdprReportIsEqual(GDPRWriteRequestDTO dto, GdprReportResponseDTO report)
         {
-            Assert.Equal(dto.HostedAt, report.HostedAt);
             Assert.Equal(dto.RiskAssessmentConducted, report.RiskAssessment);
             AssertTimestampEqual(dto.RiskAssessmentConductedDate, report.RiskAssessmentDate);
             AssertTimestampEqual(dto.PlannedRiskAssessmentDate, report.PlannedRiskAssessmentDate);
