@@ -95,5 +95,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Constraint: If an update changes this field, all options identified must be currently available in the organization context
         /// </summary>
         public IEnumerable<Guid>? TechnicalSystemTypeUuids { get; set; }
+
+        /// <summary>
+        /// Which kind of hosting is used for this system usage.
+        /// </summary>
+        public HostingChoice? HostedAt { get; set; }
     }
 }

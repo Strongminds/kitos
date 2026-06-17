@@ -69,7 +69,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 DPIAConducted = MapYesNoDontKnow(systemUsage.DPIA),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),
-                HostedAt = MapHosting(systemUsage),
                 DirectoryDocumentation = MapSimpleLink(systemUsage.LinkToDirectoryUrlName, systemUsage.LinkToDirectoryUrl),
                 DataSensitivityLevels = systemUsage
                     .SensitiveDataLevels
@@ -201,7 +200,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
                 CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
                 Purpose = systemUsage.GeneralPurpose,
-                TechnicalSystemTypes = (systemUsage.TechnicalSystemTypes ?? Array.Empty<TechnicalSystemType>()).Select(x => x.MapIdentityNamePairDTO()).ToList()
+                TechnicalSystemTypes = (systemUsage.TechnicalSystemTypes ?? Array.Empty<TechnicalSystemType>()).Select(x => x.MapIdentityNamePairDTO()).ToList(),
+                HostedAt = MapHosting(systemUsage)
             };
         }
 

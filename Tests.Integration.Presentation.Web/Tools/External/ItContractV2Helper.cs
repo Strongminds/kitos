@@ -290,7 +290,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<IEnumerable<ItContractOverviewReadModel>> QueryReadModelByNameContent(Guid organizationUuidUuid, string nameContent, int top, int skip)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/ItContractOverviewReadModels?organizationUuid={organizationUuidUuid:D}&$expand=RoleAssignments&$filter=contains(Name,'{nameContent}')&$top={top}&$skip={skip}&$orderBy=Name"), cookie);
+            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/ItContractOverviewReadModels?organizationUuid={organizationUuidUuid:D}&$expand=RoleAssignments&$filter=contains(Name,'{nameContent}')&$top={top}&$skip={skip}&$orderby=Name"), cookie);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadOdataListResponseBodyAsAsync<ItContractOverviewReadModel>();
         }
