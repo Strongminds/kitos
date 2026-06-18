@@ -100,5 +100,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// The licensing and code models used for this system usage. Existing models will be replaced by the input data.
         /// </summary>
         public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
+
+        /// <summary>
+        /// Which kind of hosting is used for this system usage.
+        /// </summary>
+        public HostingChoice? HostedAt { get; set; }
     }
 }

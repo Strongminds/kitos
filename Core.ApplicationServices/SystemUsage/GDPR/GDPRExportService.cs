@@ -69,7 +69,6 @@ namespace Core.ApplicationServices.SystemUsage.GDPR
                 SystemUuid = input.ItSystem.Uuid.ToString("D"),
                 DataProcessingAgreementConcluded = input.HasDataProcessingAgreement(),
                 DPIA = input.DPIA,
-                HostedAt = input.HostedAt,
                 NoData = input.SensitiveDataLevels.Any(x => x.SensitivityDataLevel == SensitiveDataLevel.NONE),
                 PersonalData = input.SensitiveDataLevels.Any(x => x.SensitivityDataLevel == SensitiveDataLevel.PERSONALDATA),
                 SensitiveData = hasSensitiveData,

@@ -91,6 +91,8 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
                 changed.Add(nameof(general.TechnicalSystemTypeUuids));
             if (general.LicensingAndCodeModels.HasChange)
                 changed.Add(nameof(general.LicensingAndCodeModels));
+            if (general.HostedAt.HasChange)
+                changed.Add(nameof(general.HostedAt));
             return changed;
         }
 
@@ -131,8 +133,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
             var gdpr = GDPR.Value;
             if (gdpr.ProcessingPurpose.HasChange)
                 changed.Add(nameof(gdpr.ProcessingPurpose));
-            if (gdpr.HostedAt.HasChange)
-                changed.Add(nameof(gdpr.HostedAt));
             if (gdpr.DirectoryDocumentation.HasChange)
                 changed.Add(nameof(gdpr.DirectoryDocumentation));
             if (gdpr.DataSensitivityLevels.HasChange)

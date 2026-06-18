@@ -242,8 +242,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         private Result<ItSystemUsage, OperationError> PerformGDPRUpdates(ItSystemUsage itSystemUsage, UpdatedSystemUsageGDPRProperties parameters)
         {
             //General GDPR registrations
-            return itSystemUsage.WithOptionalUpdate(parameters.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt)
-                .Bind(usage => usage.WithOptionalUpdate(parameters.ProcessingPurpose, (systemUsage, processingPurpose) => systemUsage.UpdateProcessingPurpose(processingPurpose)))
+            return itSystemUsage.WithOptionalUpdate(parameters.ProcessingPurpose, (systemUsage, processingPurpose) => systemUsage.UpdateProcessingPurpose(processingPurpose))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.DirectoryDocumentation, (systemUsage, newLink) =>
                    {
                        systemUsage.LinkToDirectoryUrlName = newLink.Select(x => x.Name).GetValueOrDefault();
@@ -708,6 +707,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, UpdateTechnicalSystemTypes))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.LicensingAndCodeModels, (systemUsage, newValue) => systemUsage.SetLicensingAndCodeModels(newValue)));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt));
         }
 
         private void RaiseValidityUpdatedEvent(ItSystemUsage usage) {

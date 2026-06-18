@@ -2556,6 +2556,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.LocalSystemId, actual.LocalSystemId);
             Assert.Equal(expected.SystemVersion, actual.SystemVersion);
             Assert.Equal(expected.Notes, actual.Notes);
+            Assert.Equal(expected.HostedAt, actual.HostedAt);
             Assert.Equal(expected.IsBusinessCritical, actual.IsBusinessCritical);
             if (hasData)
             {
@@ -2686,7 +2687,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static void AssertGDPR(GDPRWriteRequestDTO gdprInput, GDPRRegistrationsResponseDTO gdprResponse)
         {
             Assert.Equal(gdprInput.ProcessingPurpose, gdprResponse.ProcessingPurpose);
-            Assert.Equal(gdprInput.HostedAt, gdprResponse.HostedAt);
             (gdprInput.DirectoryDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.DirectoryDocumentation);
             Assert.Equal((gdprInput.DataSensitivityLevels ?? new List<DataSensitivityLevelChoice>()).OrderBy(x => x), gdprResponse.DataSensitivityLevels.OrderBy(x => x));
             Assert.Equal((gdprInput.SensitivePersonDataUuids ?? new List<Guid>()).OrderBy(x => x), gdprResponse.SensitivePersonData.Select(x => x.Uuid).OrderBy(x => x));

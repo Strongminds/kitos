@@ -95,10 +95,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.ProcessingPurpose!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-                HostedAt = rule.MustUpdate(x => x.GDPR!.HostedAt)
-                    ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
-                    : OptionalValueChange<HostedAt?>.None,
-
                 DirectoryDocumentation = rule.MustUpdate(x => x.GDPR!.DirectoryDocumentation)
                     ? MapLink(source.DirectoryDocumentation)
                     : OptionalValueChange<Maybe<NamedLink>>.None,
@@ -449,6 +445,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 TechnicalSystemTypeUuids = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuids)
                     ? (source.TechnicalSystemTypeUuids != null ? Maybe<IEnumerable<Guid>>.Some(source.TechnicalSystemTypeUuids) : Maybe<IEnumerable<Guid>>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
+
+                HostedAt = rule.MustUpdate(x => x.General!.HostedAt)
+                    ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
+                    : OptionalValueChange<HostedAt?>.None,
 
                 LicensingAndCodeModels = rule.MustUpdate(x => x.General!.LicensingAndCodeModels)
                     ? (MapLicensingAndCodeModels(source.LicensingAndCodeModels) ?? []).AsChangedValue()
