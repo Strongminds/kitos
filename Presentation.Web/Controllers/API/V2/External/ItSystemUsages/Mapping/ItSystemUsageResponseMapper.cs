@@ -55,7 +55,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 OutgoingSystemRelations = MapOutgoingSystemRelations(systemUsage),
                 Archiving = MapArchiving(systemUsage),
                 GDPR = MapGDPR(systemUsage),
-                LicensingAndCodeModels = MapLicensingAndCodeModels(systemUsage.LicensingAndCodeModels)
+                LicensingAndCodeModels = MapLicensingAndCodeModels(systemUsage.LicensingAndCodeModels ?? [])
             };
         }
 
