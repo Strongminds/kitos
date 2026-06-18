@@ -74,18 +74,13 @@ namespace Presentation.Web.Infrastructure.Configuration
                     createCmd.ExecuteNonQuery();
                 }
 
-                // Hangfire.PostgreSql probes "hangfire"."schema" very early; on some fresh
-                // databases this can happen before its auto-preparation step. Ensure the
-                // bootstrap objects exist so startup is deterministic.
+                // Ensure schema exists; Hangfire.PostgreSql will create/migrate its own tables.
                 csb.Database = databaseName;
                 using var hangfireConnection = new NpgsqlConnection(csb.ConnectionString);
                 hangfireConnection.Open();
                 using var bootstrapCmd = hangfireConnection.CreateCommand();
                 bootstrapCmd.CommandText = """
                     CREATE SCHEMA IF NOT EXISTS hangfire;
-                    CREATE TABLE IF NOT EXISTS hangfire."schema" (
-                        "version" integer NOT NULL
-                    );
                     """;
                 bootstrapCmd.ExecuteNonQuery();
 

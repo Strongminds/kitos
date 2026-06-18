@@ -24,20 +24,20 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
     SELECT 'CREATE DATABASE kitos OWNER ${APP_USER}'
         WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'kitos')\gexec
 
-    SELECT 'CREATE DATABASE kitos_hangfire OWNER ${APP_USER}'
-        WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'kitos_hangfire')\gexec
+    SELECT 'CREATE DATABASE kitos_hangfiredb OWNER ${APP_USER}'
+        WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'kitos_hangfiredb')\gexec
 
     SELECT 'CREATE DATABASE kitos_pubsub OWNER ${APP_USER}'
         WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'kitos_pubsub')\gexec
 
     -- Grant privileges
     GRANT ALL PRIVILEGES ON DATABASE kitos TO ${APP_USER};
-    GRANT ALL PRIVILEGES ON DATABASE kitos_hangfire TO ${APP_USER};
+    GRANT ALL PRIVILEGES ON DATABASE kitos_hangfiredb TO ${APP_USER};
     GRANT ALL PRIVILEGES ON DATABASE kitos_pubsub TO ${APP_USER};
 EOSQL
 
 # Connect to each database and grant schema privileges
-for db in kitos kitos_hangfire kitos_pubsub; do
+for db in kitos kitos_hangfiredb kitos_pubsub; do
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db" <<-EOSQL
         GRANT ALL ON SCHEMA public TO ${APP_USER};
         ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${APP_USER};

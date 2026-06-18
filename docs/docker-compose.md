@@ -31,7 +31,7 @@ PostgreSQL is initialized with three databases:
 | Database         | Purpose                           |
 | ---------------- | --------------------------------- |
 | `kitos`          | Main application database         |
-| `kitos_hangfire` | Background job storage (Hangfire) |
+| `kitos_hangfiredb` | Background job storage (Hangfire) |
 | `kitos_pubsub`   | PubSub event messaging database   |
 
 **Credentials:** `kitos` / `kitos` (user/password)
@@ -65,7 +65,7 @@ Run database preparation manually per developer after the containers are running
 ```powershell
 .\DeploymentScripts\PrepareLocalDatabase.ps1 `
   -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
-  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
 ```
 
 This script is responsible for preparing the local KITOS/Hangfire databases for development use.

@@ -11,7 +11,7 @@ podman compose up
 # 2. Prepare local KITOS databases (run per developer)
 pwsh ./DeploymentScripts/PrepareLocalDatabase.ps1 \
   -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" \
-  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
 ```
 
 Compose starts both API services and shared infrastructure. Databases remain in base state until `PrepareLocalDatabase.ps1` is run.
@@ -111,7 +111,7 @@ For local development, run `DeploymentScripts/PrepareLocalDatabase.ps1` against 
 ```powershell
 .\DeploymentScripts\PrepareLocalDatabase.ps1 `
   -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
-  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
 ```
 
 For PubSub, run:

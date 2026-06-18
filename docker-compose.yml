@@ -53,7 +53,7 @@ services:
       Database__Provider: PostgreSql
       Hangfire__Provider: PostgreSql
       ConnectionStrings__KitosContext: "Host=postgres;Port=5432;Database=kitos;Username=kitos;Password=kitos"
-      ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfire;Username=kitos;Password=kitos"
+      ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
       AppSettings__BaseUrl: "http://localhost:5000"
       AppSettings__PubSubBaseUrl: "http://pubsub-api:8080"
       AppSettings__SsoCertFilePath: /etc/ssl/certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}

@@ -328,10 +328,12 @@ Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUs
 
     Write-Host "Granting dbo schema privileges to '$granteeUser'"
     $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
+    $escapedDatabaseName = $parts.Database.Replace("'", "''").Replace('"', '""')
     $sql = @"
 DO `$`$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
         GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
         GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
         GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
