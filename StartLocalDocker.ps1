@@ -2,8 +2,6 @@ param(
     [switch]$ResetData,
     [switch]$RebuildApiImages,
     [switch]$NoCache,
-    [switch]$SkipDatabasePrepare,
-    [switch]$SkipPubSubDatabasePrepare,
     [string]$KitosDbConnectionString = "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos",
     [string]$HangfireDbConnectionString = "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
 )
@@ -40,6 +38,11 @@ try {
         Write-Host "Resetting compose stack and volumes"
         Invoke-CheckedCommand -FilePath $podman.Source -ArgumentList @("compose", "down", "-v")
     }
+    else {
+        # Remove and recreate app containers to avoid port conflicts with stale containers
+        Write-Host "Removing existing app containers to ensure clean startup"
+        Invoke-NonBlockingCommand -FilePath $podman.Source -ArgumentList @("compose", "rm", "-sf", "kitos-api", "pubsub-api", "rabbitmq")
+    }
 
     # Ensure only postgres runs while databases are prepared to avoid startup races.
     Write-Host "Stopping app services during database preparation"
@@ -48,7 +51,7 @@ try {
     Write-Host "Starting postgres"
     Invoke-CheckedCommand -FilePath $podman.Source -ArgumentList @("compose", "up", "-d", "postgres")
 
-    if (-not $SkipDatabasePrepare) {
+    if ($ResetData) {
         Write-Host "Preparing KITOS and Hangfire databases"
         & "$PSScriptRoot\DeploymentScripts\PrepareLocalDatabase.ps1" `
             -kitosDbConnectionString $KitosDbConnectionString `
@@ -56,12 +59,7 @@ try {
         if ($LASTEXITCODE -ne 0) {
             throw "PrepareLocalDatabase.ps1 failed"
         }
-    }
-    else {
-        Write-Host "Skipping KITOS/Hangfire database preparation"
-    }
 
-    if (-not $SkipPubSubDatabasePrepare) {
         Write-Host "Preparing PubSub database"
         & "$PSScriptRoot\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1"
         if ($LASTEXITCODE -ne 0) {
@@ -69,7 +67,7 @@ try {
         }
     }
     else {
-        Write-Host "Skipping PubSub database preparation"
+        Write-Host "Skipping database preparation"
     }
 
     if ($RebuildApiImages) {

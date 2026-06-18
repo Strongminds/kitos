@@ -11,22 +11,52 @@ This document describes how to run KITOS in containers and how configuration, se
 
 This starts PostgreSQL first, prepares databases, then starts API services and RabbitMQ.
 
+### Script Parameters
+
+| Parameter                     | Type   | Description                                                                                                                                       |
+| ----------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-ResetData`                  | Switch | Complete reset: removes all containers and volumes, then recreates with fresh databases. Runs both database prep scripts.                         |
+| `-RebuildApiImages`           | Switch | Rebuild `kitos-api` and `pubsub-api` Docker images before starting containers.                                                                    |
+| `-NoCache`                    | Switch | When rebuilding images, skip Docker layer cache (use with `-RebuildApiImages`).                                                                   |
+| `-KitosDbConnectionString`    | String | PostgreSQL connection string for KITOS database (default: `Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos`).               |
+| `-HangfireDbConnectionString` | String | PostgreSQL connection string for Hangfire database (default: `Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos`). |
+
+### Examples
+
 For a clean reset and rebuild:
 
 ```powershell
 .\StartLocalDocker.ps1 -ResetData -RebuildApiImages -NoCache
 ```
 
-Manual flow is still supported:
+Quick restart (keep databases intact):
 
 ```powershell
-podman compose up -d postgres
-.\DeploymentScripts\PrepareLocalDatabase.ps1 `
-  -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
-  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
-.\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1
-podman compose up -d rabbitmq kitos-api pubsub-api
+.\StartLocalDocker.ps1
 ```
+
+Skip PubSub database prep:
+
+```powershell
+.\StartLocalDocker.ps1 -SkipPubSubDatabasePrepare
+```
+
+### Using Podman Compose Directly
+
+For quick restarts without the PowerShell script overhead, use `podman compose` directly:
+
+```powershell
+# Start/restart all services (assumes databases already exist)
+podman compose up -d
+
+# Stop all services
+podman compose down
+
+# View logs
+podman compose logs -f kitos-api
+```
+
+The script (`StartLocalDocker.ps1`) is recommended for initial setup and clean resets, but `podman compose` commands are faster for day-to-day development when you just need to restart containers.
 
 ### Services
 
