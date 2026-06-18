@@ -17,7 +17,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "LicensingAndCodeModels",
                 table: "ItSystemUsage",
-                type: "nvarchar(max)",
                 nullable: true);
         }
 
@@ -31,7 +30,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "LicensingAndCodeModels",
                 table: "ItSystem",
-                type: "nvarchar(max)",
                 nullable: true);
         }
     }
