@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
@@ -8,18 +5,24 @@ using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
+using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.System;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Presentation.Web.Controllers.API.V2.External.Generic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
     public class ItSystemUsageWriteModelMapper : WriteModelMapperBase, IItSystemUsageWriteModelMapper
@@ -435,14 +438,17 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? source.Purpose!.AsChangedValue()
                     : OptionalValueChange<string>.None,
 
-
-                TechnicalSystemTypeUuids = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuids)
+                TechnicalSystemTypeUuids = rule.MustUpdate(x => x.General!.TechnicalSystemTypeUuids)
                     ? (source.TechnicalSystemTypeUuids != null ? Maybe<IEnumerable<Guid>>.Some(source.TechnicalSystemTypeUuids) : Maybe<IEnumerable<Guid>>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
 
                 HostedAt = rule.MustUpdate(x => x.General!.HostedAt)
                     ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
                     : OptionalValueChange<HostedAt?>.None,
+
+                LicensingAndCodeModels = rule.MustUpdate(x => x.General!.LicensingAndCodeModels) 
+                    ? (MapLicensingAndCodeModels(source?.LicensingAndCodeModels) ?? []).AsChangedValue() 
+                    : OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None
             };
         }
 
@@ -464,6 +470,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         public ExternalReferenceProperties MapExternalReference(ExternalReferenceDataWriteRequestDTO externalReferenceData)
         {
             return MapCommonReference(externalReferenceData);
+        }
+
+        private static IEnumerable<LicensingAndCodeModel>? MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModelChoice>? apiModels)
+        {
+            if (apiModels == null) return null;
+            return apiModels.Select(apiModel =>
+                 apiModel switch
+                 {
+                     LicensingAndCodeModelChoice.OpenSource => LicensingAndCodeModel.OpenSource,
+                     LicensingAndCodeModelChoice.Freeware => LicensingAndCodeModel.Freeware,
+                     LicensingAndCodeModelChoice.Proprietary => LicensingAndCodeModel.Proprietary,
+                     _ => throw new ArgumentOutOfRangeException(nameof(apiModels), $"Invalid value provided for enum conversion: {apiModels}"),
+                 });
         }
 
         private static ChangedValue<Maybe<IEnumerable<TOut>>> MapEnumList<TIn, TOut>(IEnumerable<TIn>? list, Func<TIn, TOut> mapWith)
