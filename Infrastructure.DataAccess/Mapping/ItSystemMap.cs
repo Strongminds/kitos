@@ -63,12 +63,6 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.LegalDataProcessorName).HasMaxLength(Organization.MaxNameLength);
             builder.HasIndex(x => x.LegalDataProcessorName).HasDatabaseName("ItSystem_IX_LegalDataProcessorName");
 
-            builder.Property(x => x.LicensingAndCodeModels)
-                .HasConversion(
-                    models => SerializeLicensingAndCodeModels(models),
-                    value => DeserializeLicensingAndCodeModels(value))
-                .Metadata.SetValueComparer(LicensingAndCodeModelsComparer);
-
             TypeMapping.AddIndexOnAccessModifier(builder);
         }
 

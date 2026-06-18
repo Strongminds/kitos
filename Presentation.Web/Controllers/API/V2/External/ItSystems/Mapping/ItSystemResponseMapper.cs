@@ -99,7 +99,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                     .DistinctBy(x => x.Uuid)
                     .Select(x => x.MapShallowOrganizationResponseDTO())
                     .ToList();
-            dto.LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels);
         }
     }
 }
