@@ -27,6 +27,14 @@
         /// </summary>
         KB = 7,
         /// <summary>
+        /// D+K duty
+        /// </summary>
+        DK = 8,
+        /// <summary>
+        /// D+D duty
+        /// </summary>
+        DD = 9,
+        /// <summary>
         /// No recommendation exists from the archiving authority
         /// </summary>
         NoRecommendation = 3,

@@ -57,6 +57,10 @@ namespace Tests.Unit.Core.Model
         [InlineData(ArchiveDutyRecommendationTypes.KD, "")]
         [InlineData(ArchiveDutyRecommendationTypes.BK, null)]
         [InlineData(ArchiveDutyRecommendationTypes.BK, "")]
+        [InlineData(ArchiveDutyRecommendationTypes.DK, null)]
+        [InlineData(ArchiveDutyRecommendationTypes.DK, "")]
+        [InlineData(ArchiveDutyRecommendationTypes.DD, null)]
+        [InlineData(ArchiveDutyRecommendationTypes.DD, "")]
         public void Can_UpdateRecommendedArchiveDuty(ArchiveDutyRecommendationTypes? recommendation, string comment)
         {
             //Act
