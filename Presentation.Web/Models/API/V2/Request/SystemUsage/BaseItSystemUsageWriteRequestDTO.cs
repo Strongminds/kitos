@@ -23,9 +23,5 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// GDPR-specific registrations
         /// </summary>
         public GDPRWriteRequestDTO? GDPR { get; set; }
-        /// <summary>
-        /// The licensing and code models used for this system usage. Existing models will be replaced by the input data.
-        /// </summary>
-        public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
     }
 }

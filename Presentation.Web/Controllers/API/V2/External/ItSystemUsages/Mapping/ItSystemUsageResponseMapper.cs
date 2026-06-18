@@ -54,8 +54,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ExternalReferences = _externalReferenceResponseMapper.MapExternalReferences(systemUsage.ExternalReferences),
                 OutgoingSystemRelations = MapOutgoingSystemRelations(systemUsage),
                 Archiving = MapArchiving(systemUsage),
-                GDPR = MapGDPR(systemUsage),
-                LicensingAndCodeModels = MapLicensingAndCodeModels(systemUsage.LicensingAndCodeModels ?? [])
+                GDPR = MapGDPR(systemUsage)
             };
         }
 
@@ -203,7 +202,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 SystemUsageCriticalityLevel = systemUsage.SystemUsageCriticalityLevel?.MapIdentityNamePairDTO(),
                 CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
                 Purpose = systemUsage.GeneralPurpose,
-                TechnicalSystemTypes = (systemUsage.TechnicalSystemTypes ?? Array.Empty<TechnicalSystemType>()).Select(x => x.MapIdentityNamePairDTO()).ToList()
+                TechnicalSystemTypes = (systemUsage.TechnicalSystemTypes ?? Array.Empty<TechnicalSystemType>()).Select(x => x.MapIdentityNamePairDTO()).ToList(),
+                LicensingAndCodeModels = MapLicensingAndCodeModels(systemUsage.LicensingAndCodeModels ?? [])
             };
         }
 

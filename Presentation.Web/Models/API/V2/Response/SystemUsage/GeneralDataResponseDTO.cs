@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.System;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
@@ -86,5 +87,9 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// The technical system types of this system usage.
         /// </summary>
         public IEnumerable<IdentityNamePairResponseDTO> TechnicalSystemTypes { get; set; }
+        /// <summary>
+        /// The licensing and code models used for this system usage.
+        /// </summary>
+        public IEnumerable<LicensingAndCodeModelChoice> LicensingAndCodeModels { get; set; }
     }
 }

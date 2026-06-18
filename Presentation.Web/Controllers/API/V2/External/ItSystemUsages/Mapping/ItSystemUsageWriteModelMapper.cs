@@ -45,7 +45,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     .FromNullable()
                     .Select(archiving => MapBaseArchiving(archiving, true))
                     .Select(archiving => MapJournalPeriods(archiving, request.Archiving, true)),
-                LicensingAndCodeModels = (MapLicensingAndCodeModels(request?.LicensingAndCodeModels) ?? []).AsChangedValue()
+                LicensingAndCodeModels = (MapLicensingAndCodeModels(request?.General?.LicensingAndCodeModels) ?? []).AsChangedValue()
             };
 
             return parameters;
@@ -65,7 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             var externalReferenceDataDtos = WithResetDataIfPropertyIsDefined(request.ExternalReferences, nameof(UpdateItSystemUsageRequestDTO.ExternalReferences), () => new List<UpdateExternalReferenceDataWriteRequestDTO>(), enforceFallbackOnUndefinedProperties);
             var gdpr = WithResetDataIfPropertyIsDefined(request.GDPR, nameof(UpdateItSystemUsageRequestDTO.GDPR), enforceFallbackOnUndefinedProperties);
             var archiving = WithResetDataIfPropertyIsDefined(request.Archiving, nameof(UpdateItSystemUsageRequestDTO.Archiving), enforceFallbackOnUndefinedProperties);
-            var licensingAndCodeModels = WithResetDataIfPropertyIsDefined(request.LicensingAndCodeModels, nameof(UpdateItSystemUsageRequestDTO.LicensingAndCodeModels), () => new List<LicensingAndCodeModelChoice>(), enforceFallbackOnUndefinedProperties);
+            var licensingAndCodeModels = WithResetDataIfPropertyIsDefined(request.General?.LicensingAndCodeModels, "General.LicensingAndCodeModels", () => new List<LicensingAndCodeModelChoice>(), enforceFallbackOnUndefinedProperties);
 
             return new SystemUsageUpdateParameters
             {

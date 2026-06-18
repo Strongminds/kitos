@@ -14,7 +14,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
     /// NOTE: IT-System usages are registrations which extend those of a system within the context of a specific organization.
     /// IT-System usages have their own lifecycle and identity but the human readable name is inherited from the system context.
     /// </summary>
-    public class ItSystemUsageResponseDTO : IHasUuidExternal, IHasLastModified, IHasOrganizationContext
+    public class l : IHasUuidExternal, IHasLastModified, IHasOrganizationContext
     {
         /// <summary>
         /// UUID of the IT-System usage registration instance
@@ -77,10 +77,6 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         [Required]
         public GDPRRegistrationsResponseDTO GDPR { get; set; }
-        /// <summary>
-        /// The licensing and code models used for this system usage.
-        /// </summary>
-        public IEnumerable<LicensingAndCodeModelChoice> LicensingAndCodeModels { get; set; }
         /// <summary>
         /// Contains registered relations to other system usages within the organization
         /// </summary>
