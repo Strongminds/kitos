@@ -4,17 +4,29 @@ This document describes how to run KITOS in containers and how configuration, se
 
 ## Running Locally with Podman Compose
 
-```bash
-# 1. Start local stack
-podman compose up
-
-# 2. Prepare local KITOS databases (run per developer)
-pwsh ./DeploymentScripts/PrepareLocalDatabase.ps1 \
-  -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" \
-  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
+```powershell
+# Start full local stack with safe ordering
+.\StartLocalDocker.ps1
 ```
 
-Compose starts both API services and shared infrastructure. Databases remain in base state until `PrepareLocalDatabase.ps1` is run.
+This starts PostgreSQL first, prepares databases, then starts API services and RabbitMQ.
+
+For a clean reset and rebuild:
+
+```powershell
+.\StartLocalDocker.ps1 -ResetData -RebuildApiImages -NoCache
+```
+
+Manual flow is still supported:
+
+```powershell
+podman compose up -d postgres
+.\DeploymentScripts\PrepareLocalDatabase.ps1 `
+  -kitosDbConnectionString "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos" `
+  -hangfireDbConnectionString "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
+.\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1
+podman compose up -d rabbitmq kitos-api pubsub-api
+```
 
 ### Services
 
@@ -118,4 +130,10 @@ For PubSub, run:
 
 ```powershell
 .\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1
+```
+
+Or run everything in one step:
+
+```powershell
+.\StartLocalDocker.ps1
 ```
