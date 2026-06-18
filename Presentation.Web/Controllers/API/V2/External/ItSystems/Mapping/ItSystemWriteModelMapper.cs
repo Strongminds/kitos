@@ -4,7 +4,6 @@ using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.System;
 using Core.DomainModel;
-using Core.DomainModel.ItSystem;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Infrastructure.Model.Request;
@@ -13,10 +12,8 @@ using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.System.RightsHolder;
 using Presentation.Web.Models.API.V2.Request.System.Shared;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Presentation.Web.Models.API.V2.Types.System;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {

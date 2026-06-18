@@ -19,6 +19,9 @@ using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.System;
+using Presentation.Web.Models.API.V2.Types.SystemUsage;
+using Presentation.Web.Controllers.API.V2.External.Generic;
+
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
     public class ItSystemUsageWriteModelMapper : WriteModelMapperBase, IItSystemUsageWriteModelMapper
@@ -77,7 +80,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     .Select(a => MapBaseArchiving(a, enforceFallbackOnUndefinedProperties))
                     .Select(a => MapUpdatedJournalPeriods(a, archiving!, enforceFallbackOnUndefinedProperties)),
                 LicensingAndCodeModels = licensingAndCodeModels.FromNullable().Select(models => MapLicensingAndCodeModels(models) ?? []).Match(
-                    onSome: models => (MapLicensingAndCodeModels(models) ?? []).AsChangedValue(),
+                    onValue: models => models.AsChangedValue(),
                     onNone: () => OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None)
             };
         }
