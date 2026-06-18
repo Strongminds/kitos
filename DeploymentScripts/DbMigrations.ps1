@@ -294,12 +294,12 @@ Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString) {
     #   re-applying would fail with "column already exists".
     # - BridgeMissingColumnsFromEF6: uses T-SQL IF NOT EXISTS syntax that cannot run on PostgreSQL;
     #   the bridged columns (SensitivePersonalDataTypeId, RegisterTypeId) are already in baseline.
-    # - EnableCitextForCaseInsensitiveNameColumns: citext columns already applied in baseline;
-    #   running again is harmless but pre-marking keeps history consistent with the baseline state.
+    # - EnableCitextForCaseInsensitiveNameColumns is intentionally NOT pre-marked:
+    #   Baseline.PostgreSql.FullModel.sql does not set all Name columns to citext.
+    #   The migration must run to align column types with the runtime model.
     [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260413095837_InitialBaseline', '10.0.6') ON CONFLICT DO NOTHING;")
     [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel', '10.0.6') ON CONFLICT DO NOTHING;")
     [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260420093000_BridgeMissingColumnsFromEF6', '10.0.6') ON CONFLICT DO NOTHING;")
-    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260427113000_EnableCitextForCaseInsensitiveNameColumns', '10.0.6') ON CONFLICT DO NOTHING;")
 
     $parts = ConvertTo-PostgresConnectionParts $connectionString
     # Write to a temp file and use psql -f for reliable multi-statement execution,

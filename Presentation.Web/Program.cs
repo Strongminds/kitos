@@ -64,6 +64,7 @@ var app = builder.Build();
 dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
     app.Services.GetRequiredService<IHttpContextAccessor>());
 
+app.EnsurePostgreSqlExtensions();
 app.UseKitosPipeline();
 app.MapKitosEndpoints();
 app.InitializeHangfireJobs();

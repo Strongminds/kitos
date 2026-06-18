@@ -510,12 +510,53 @@ namespace Presentation.Web.Infrastructure.DI
             {
                 var authentication = sp.GetRequiredService<IAuthenticationContext>();
                 if (authentication.Method != AuthenticationMethod.Anonymous && authentication.UserId.HasValue)
-                    return sp.GetRequiredService<IUserContextFactory>().Create(authentication.UserId.Value);
+                {
+                    var userContextFactory = sp.GetRequiredService<IUserContextFactory>();
+                    try
+                    {
+                        return userContextFactory.Create(authentication.UserId.Value);
+                    }
+                    catch (InvalidCastException ex) when (IsStalePostgreSqlTypeMap(ex))
+                    {
+                        ReloadPostgreSqlTypes(sp);
+                        return userContextFactory.Create(authentication.UserId.Value);
+                    }
+                }
                 return new UnauthenticatedUserContext();
             });
             services.AddScoped<IAuthorizationContext>(sp =>
                 sp.GetRequiredService<IAuthorizationContextFactory>().Create(
                     sp.GetRequiredService<IOrganizationalUserContext>()));
+        }
+
+        private static bool IsStalePostgreSqlTypeMap(InvalidCastException exception)
+        {
+            return exception.Message.Contains("DataTypeName '-.-'", StringComparison.OrdinalIgnoreCase)
+                   || exception.Message.Contains("cache lookup failed for type", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void ReloadPostgreSqlTypes(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<KitosContext>();
+            if (!dbContext.Database.IsNpgsql())
+            {
+                return;
+            }
+
+            dbContext.Database.OpenConnection();
+            try
+            {
+                if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
+                {
+                    npgsqlConnection.ReloadTypes();
+                    NpgsqlConnection.ClearAllPools();
+                }
+            }
+            finally
+            {
+                dbContext.Database.CloseConnection();
+            }
         }
 
 
@@ -852,4 +893,3 @@ namespace Presentation.Web.Infrastructure.DI
         }
     }
 }
-

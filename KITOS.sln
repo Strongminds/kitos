@@ -55,6 +55,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeploymentScripts", "DeploymentScripts", "{99BC9B21-B4D9-4344-9393-FFAE60AA0283}"
 	ProjectSection(SolutionItems) = preProject
 		DeploymentScripts\AwsApi.ps1 = DeploymentScripts\AwsApi.ps1
+		DeploymentScripts\Baseline.PostgreSql.FullModel.sql = DeploymentScripts\Baseline.PostgreSql.FullModel.sql
+		DeploymentScripts\Baseline.PostgreSql.sql = DeploymentScripts\Baseline.PostgreSql.sql
 		DeploymentScripts\Baseline.sql = DeploymentScripts\Baseline.sql
 		DeploymentScripts\CheckWebsiteVersion.ps1 = DeploymentScripts\CheckWebsiteVersion.ps1
 		DeploymentScripts\DbMigrations.ps1 = DeploymentScripts\DbMigrations.ps1
