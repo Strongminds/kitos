@@ -236,8 +236,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(parameters.KLE, PerformKLEUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.GDPR, PerformGDPRUpdates))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.Archiving, PerformArchivingUpdate))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.LicensingAndCodeModels, (systemUsage, newValue) => systemUsage.SetLicensingAndCodeModels(newValue)));
+                .Bind(usage => usage.WithOptionalUpdate(parameters.Archiving, PerformArchivingUpdate));
         }
 
         private Result<ItSystemUsage, OperationError> PerformGDPRUpdates(ItSystemUsage itSystemUsage, UpdatedSystemUsageGDPRProperties parameters)
@@ -707,7 +706,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.SystemUsageCriticalityLevelUuid, UpdateSystemUsageCriticalityLevel))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, UpdateTechnicalSystemTypes));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, UpdateTechnicalSystemTypes))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.LicensingAndCodeModels, (systemUsage, newValue) => systemUsage.SetLicensingAndCodeModels(newValue)));
         }
 
         private void RaiseValidityUpdatedEvent(ItSystemUsage usage) {

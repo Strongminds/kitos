@@ -44,8 +44,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Archiving = request.Archiving
                     .FromNullable()
                     .Select(archiving => MapBaseArchiving(archiving, true))
-                    .Select(archiving => MapJournalPeriods(archiving, request.Archiving, true)),
-                LicensingAndCodeModels = (MapLicensingAndCodeModels(request?.General?.LicensingAndCodeModels) ?? []).AsChangedValue()
+                    .Select(archiving => MapJournalPeriods(archiving, request.Archiving, true))
             };
 
             return parameters;
@@ -65,7 +64,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             var externalReferenceDataDtos = WithResetDataIfPropertyIsDefined(request.ExternalReferences, nameof(UpdateItSystemUsageRequestDTO.ExternalReferences), () => new List<UpdateExternalReferenceDataWriteRequestDTO>(), enforceFallbackOnUndefinedProperties);
             var gdpr = WithResetDataIfPropertyIsDefined(request.GDPR, nameof(UpdateItSystemUsageRequestDTO.GDPR), enforceFallbackOnUndefinedProperties);
             var archiving = WithResetDataIfPropertyIsDefined(request.Archiving, nameof(UpdateItSystemUsageRequestDTO.Archiving), enforceFallbackOnUndefinedProperties);
-            var licensingAndCodeModels = WithResetDataIfPropertyIsDefined(request.General?.LicensingAndCodeModels, "General.LicensingAndCodeModels", () => new List<LicensingAndCodeModelChoice>(), enforceFallbackOnUndefinedProperties);
 
             return new SystemUsageUpdateParameters
             {
@@ -78,10 +76,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Archiving = archiving
                     .FromNullable()
                     .Select(a => MapBaseArchiving(a, enforceFallbackOnUndefinedProperties))
-                    .Select(a => MapUpdatedJournalPeriods(a, archiving!, enforceFallbackOnUndefinedProperties)),
-                LicensingAndCodeModels = licensingAndCodeModels.FromNullable().Select(models => MapLicensingAndCodeModels(models) ?? []).Match(
-                    onValue: models => models.AsChangedValue(),
-                    onNone: () => OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None)
+                    .Select(a => MapUpdatedJournalPeriods(a, archiving!, enforceFallbackOnUndefinedProperties))
             };
         }
 
@@ -340,6 +335,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ? (source.MainContractUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
                 : OptionalValueChange<Maybe<Guid>>.None;
 
+            generalProperties.LicensingAndCodeModels = rule.MustUpdate(x => x.General!.LicensingAndCodeModels)
+                ? (MapLicensingAndCodeModels(source.LicensingAndCodeModels) ?? []).AsChangedValue()
+                : OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None;
+
             return generalProperties;
         }
 
@@ -450,6 +449,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 TechnicalSystemTypeUuids = rule.MustUpdate(x => x.General.TechnicalSystemTypeUuids)
                     ? (source.TechnicalSystemTypeUuids != null ? Maybe<IEnumerable<Guid>>.Some(source.TechnicalSystemTypeUuids) : Maybe<IEnumerable<Guid>>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<Guid>>>.None,
+
+                LicensingAndCodeModels = rule.MustUpdate(x => x.General!.LicensingAndCodeModels)
+                    ? (MapLicensingAndCodeModels(source.LicensingAndCodeModels) ?? []).AsChangedValue()
+                    : OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None,
             };
         }
 
