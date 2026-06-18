@@ -16,31 +16,6 @@ namespace Tests.Unit.Core.Model
             _sut = new ItSystem();
         }
 
-        [Fact]
-        public void SetLicensingAndCodeModels_Returns_Conflict_If_Proprietary_And_Other_Are_Present()
-        {
-            var models = new[] { LicensingAndCodeModel.OpenSource, LicensingAndCodeModel.Proprietary };
-
-            var result = _sut.SetLicensingAndCodeModels(models);
-
-            Assert.True(result.HasValue);
-            Assert.Equal(OperationFailure.Conflict, result.Value.FailureType);
-            Assert.Empty(_sut.LicensingAndCodeModels);
-        }
-
-        [Fact]
-        public void SetLicensingAndCodeModels_Does_Not_Add_Duplicates()
-        {
-            var values = new[] { LicensingAndCodeModel.OpenSource, LicensingAndCodeModel.Freeware, LicensingAndCodeModel.Freeware };
-            var uniqueValuesCount = values.ToHashSet().Count;
-            _sut.SetLicensingAndCodeModels(values);
-
-            var result = _sut.SetLicensingAndCodeModels(values);
-
-            Assert.True(result.IsNone);
-            Assert.Equal(uniqueValuesCount, _sut.LicensingAndCodeModels.Count);
-        }
-
         [Theory]
         [InlineData(null, null)]
         [InlineData(null, "")]

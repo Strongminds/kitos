@@ -6,6 +6,7 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.SharedProperties;
+using Presentation.Web.Models.API.V2.Types.System;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {
@@ -76,6 +77,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// </summary>
         [Required]
         public GDPRRegistrationsResponseDTO GDPR { get; set; }
+        /// <summary>
+        /// The licensing and code models used for this system usage.
+        /// </summary>
+        public IEnumerable<LicensingAndCodeModelChoice> LicensingAndCodeModels { get; set; }
         /// <summary>
         /// Contains registered relations to other system usages within the organization
         /// </summary>

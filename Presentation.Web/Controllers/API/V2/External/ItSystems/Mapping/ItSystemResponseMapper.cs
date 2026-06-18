@@ -61,12 +61,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 ModifyVisibility = permissions.ModifyVisibility
             };
         }
-
-        private static IList<LicensingAndCodeModelChoice> MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> domainModels)
-        {
-            return domainModels.Select(domain => 
-                 domain.ToChoice()).ToList();
-        }
         
         private static Models.API.V2.Types.System.SystemDeletionConflict MapConflict(Core.ApplicationServices.Model.System.SystemDeletionConflict arg)
         {
@@ -98,7 +92,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                     .DistinctBy(x => x.Uuid)
                     .Select(x => x.MapShallowOrganizationResponseDTO())
                     .ToList();
-            dto.LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels);
         }
     }
 }

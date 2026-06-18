@@ -12,7 +12,5 @@ namespace Presentation.Web.Models.API.V2.Request.System.Shared
         public string Description { get; set; } 
         public Guid? BusinessTypeUuid { get; set; }
         public IEnumerable<Guid> KLEUuids { get; set; }
-        public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
-
     }
 }

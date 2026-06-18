@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.DomainModel.ItSystemUsage;
 
 
 namespace Core.ApplicationServices.Model.SystemUsage.Write
@@ -14,6 +16,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public Maybe<UpdatedSystemUsageRoles> Roles { get; set; } = Maybe<UpdatedSystemUsageRoles>.None;
         public Maybe<UpdatedSystemUsageGDPRProperties> GDPR { get; set; } = Maybe<UpdatedSystemUsageGDPRProperties>.None;
         public Maybe<UpdatedSystemUsageArchivingParameters> Archiving { get; set; } = Maybe<UpdatedSystemUsageArchivingParameters>.None;
+        public OptionalValueChange<IEnumerable<LicensingAndCodeModel>> LicensingAndCodeModels { get; set; } = OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None;
 
         public IEnumerable<string> GetChangedPropertyKeys()
         {
@@ -39,6 +42,9 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
 
             if (Archiving.HasValue)
                 changed.AddRange(GetChangedArchiving());
+
+            if (LicensingAndCodeModels.HasChange)
+                changed.Add(nameof(LicensingAndCodeModels));
 
             return changed;
         }

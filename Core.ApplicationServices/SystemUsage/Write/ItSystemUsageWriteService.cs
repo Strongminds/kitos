@@ -236,7 +236,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(parameters.KLE, PerformKLEUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.ExternalReferences, PerformReferencesUpdate))
                 .Bind(usage => usage.WithOptionalUpdate(parameters.GDPR, PerformGDPRUpdates))
-                .Bind(usage => usage.WithOptionalUpdate(parameters.Archiving, PerformArchivingUpdate));
+                .Bind(usage => usage.WithOptionalUpdate(parameters.Archiving, PerformArchivingUpdate))
+                .Bind(usage => usage.WithOptionalUpdate(parameters.LicensingAndCodeModels, (systemUsage, newValue) => systemUsage.SetLicensingAndCodeModels(newValue)));
         }
 
         private Result<ItSystemUsage, OperationError> PerformGDPRUpdates(ItSystemUsage itSystemUsage, UpdatedSystemUsageGDPRProperties parameters)

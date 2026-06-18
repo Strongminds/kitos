@@ -1,4 +1,5 @@
 using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using System;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -6,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 
 namespace Infrastructure.DataAccess.Mapping
 {
@@ -63,102 +63,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.LegalDataProcessorName).HasMaxLength(Organization.MaxNameLength);
             builder.HasIndex(x => x.LegalDataProcessorName).HasDatabaseName("ItSystem_IX_LegalDataProcessorName");
 
-            builder.Property(x => x.LicensingAndCodeModels)
-                .HasConversion(
-                    models => SerializeLicensingAndCodeModels(models),
-                    value => DeserializeLicensingAndCodeModels(value))
-                .Metadata.SetValueComparer(LicensingAndCodeModelsComparer);
-
             TypeMapping.AddIndexOnAccessModifier(builder);
-        }
-
-        private static readonly ValueComparer<ICollection<LicensingAndCodeModel>> LicensingAndCodeModelsComparer =
-            new(
-                (left, right) => AreSameLicensingAndCodeModels(left, right),
-                models => GetLicensingAndCodeModelsHashCode(models),
-                models => CloneLicensingAndCodeModels(models));
-
-        private static string SerializeLicensingAndCodeModels(ICollection<LicensingAndCodeModel>? models)
-        {
-            var values = (models ?? [])
-                .Distinct()
-                .Select(model => (int)model)
-                .ToArray();
-
-            return JsonSerializer.Serialize(values);
-        }
-
-        private static ICollection<LicensingAndCodeModel> DeserializeLicensingAndCodeModels(string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return [];
-            }
-
-            using var document = JsonDocument.Parse(value);
-            if (document.RootElement.ValueKind != JsonValueKind.Array)
-            {
-                return [];
-            }
-
-            var result = new List<LicensingAndCodeModel>();
-            foreach (var item in document.RootElement.EnumerateArray())
-            {
-                if (TryParseLicensingAndCodeModel(item, out var model) && result.Contains(model) == false)
-                {
-                    result.Add(model);
-                }
-            }
-
-            return result;
-        }
-
-        private static bool AreSameLicensingAndCodeModels(
-            ICollection<LicensingAndCodeModel>? left,
-            ICollection<LicensingAndCodeModel>? right)
-        {
-            return (left ?? Enumerable.Empty<LicensingAndCodeModel>())
-                .SequenceEqual(right ?? Enumerable.Empty<LicensingAndCodeModel>());
-        }
-
-        private static int GetLicensingAndCodeModelsHashCode(ICollection<LicensingAndCodeModel>? models)
-        {
-            return (models ?? Enumerable.Empty<LicensingAndCodeModel>())
-                .Aggregate(0, (current, model) => HashCode.Combine(current, model));
-        }
-
-        private static ICollection<LicensingAndCodeModel> CloneLicensingAndCodeModels(ICollection<LicensingAndCodeModel>? models)
-        {
-            return models == null ? new List<LicensingAndCodeModel>() : models.ToList();
-        }
-
-        private static bool TryParseLicensingAndCodeModel(JsonElement item, out LicensingAndCodeModel model)
-        {
-            switch (item.ValueKind)
-            {
-                case JsonValueKind.Number when item.TryGetInt32(out var parsedNumber)
-                                                && System.Enum.IsDefined(typeof(LicensingAndCodeModel), parsedNumber):
-                    model = (LicensingAndCodeModel)parsedNumber;
-                    return true;
-                case JsonValueKind.String:
-                    var text = item.GetString();
-                    if (int.TryParse(text, out var parsedFromText) && System.Enum.IsDefined(typeof(LicensingAndCodeModel), parsedFromText))
-                    {
-                        model = (LicensingAndCodeModel)parsedFromText;
-                        return true;
-                    }
-
-                    if (System.Enum.TryParse<LicensingAndCodeModel>(text, ignoreCase: true, out model)
-                        && System.Enum.IsDefined(model))
-                    {
-                        return true;
-                    }
-
-                    break;
-            }
-
-            model = default;
-            return false;
         }
     }
 }

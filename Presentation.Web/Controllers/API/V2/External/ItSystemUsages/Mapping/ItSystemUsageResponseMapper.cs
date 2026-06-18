@@ -13,6 +13,7 @@ using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
+using Presentation.Web.Models.API.V2.Types.System;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
@@ -53,7 +54,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ExternalReferences = _externalReferenceResponseMapper.MapExternalReferences(systemUsage.ExternalReferences),
                 OutgoingSystemRelations = MapOutgoingSystemRelations(systemUsage),
                 Archiving = MapArchiving(systemUsage),
-                GDPR = MapGDPR(systemUsage)
+                GDPR = MapGDPR(systemUsage),
+                LicensingAndCodeModels = MapLicensingAndCodeModels(systemUsage.LicensingAndCodeModels)
             };
         }
 
@@ -314,6 +316,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserCount.FIVEHUNDREDPLUS => new ExpectedUsersIntervalDTO { LowerBound = 500},
                 _ => throw new ArgumentOutOfRangeException(nameof(systemUsage.UserCount))
             };
+        }
+
+        private static IList<LicensingAndCodeModelChoice> MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> domainModels)
+        {
+            return domainModels.Select(domain =>
+                 domain.ToChoice()).ToList();
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Core.Abstractions.Types;
-using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Types.System;
 
-namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
+namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
     public static class LicensingAndCodeModelMappingExtensions
     {

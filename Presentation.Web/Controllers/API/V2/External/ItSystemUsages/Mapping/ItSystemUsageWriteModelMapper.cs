@@ -18,8 +18,7 @@ using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Presentation.Web.Controllers.API.V2.External.Generic;
+using Presentation.Web.Models.API.V2.Types.System;
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
     public class ItSystemUsageWriteModelMapper : WriteModelMapperBase, IItSystemUsageWriteModelMapper
@@ -42,7 +41,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Archiving = request.Archiving
                     .FromNullable()
                     .Select(archiving => MapBaseArchiving(archiving, true))
-                    .Select(archiving => MapJournalPeriods(archiving, request.Archiving, true))
+                    .Select(archiving => MapJournalPeriods(archiving, request.Archiving, true)),
+                LicensingAndCodeModels = (MapLicensingAndCodeModels(request?.LicensingAndCodeModels) ?? []).AsChangedValue()
             };
 
             return parameters;
@@ -62,6 +62,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             var externalReferenceDataDtos = WithResetDataIfPropertyIsDefined(request.ExternalReferences, nameof(UpdateItSystemUsageRequestDTO.ExternalReferences), () => new List<UpdateExternalReferenceDataWriteRequestDTO>(), enforceFallbackOnUndefinedProperties);
             var gdpr = WithResetDataIfPropertyIsDefined(request.GDPR, nameof(UpdateItSystemUsageRequestDTO.GDPR), enforceFallbackOnUndefinedProperties);
             var archiving = WithResetDataIfPropertyIsDefined(request.Archiving, nameof(UpdateItSystemUsageRequestDTO.Archiving), enforceFallbackOnUndefinedProperties);
+            var licensingAndCodeModels = WithResetDataIfPropertyIsDefined(request.LicensingAndCodeModels, nameof(UpdateItSystemUsageRequestDTO.LicensingAndCodeModels), () => new List<LicensingAndCodeModelChoice>(), enforceFallbackOnUndefinedProperties);
 
             return new SystemUsageUpdateParameters
             {
@@ -74,7 +75,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Archiving = archiving
                     .FromNullable()
                     .Select(a => MapBaseArchiving(a, enforceFallbackOnUndefinedProperties))
-                    .Select(a => MapUpdatedJournalPeriods(a, archiving!, enforceFallbackOnUndefinedProperties))
+                    .Select(a => MapUpdatedJournalPeriods(a, archiving!, enforceFallbackOnUndefinedProperties)),
+                LicensingAndCodeModels = licensingAndCodeModels.FromNullable().Select(models => MapLicensingAndCodeModels(models) ?? []).Match(
+                    onSome: models => (MapLicensingAndCodeModels(models) ?? []).AsChangedValue(),
+                    onNone: () => OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None)
             };
         }
 
@@ -494,6 +498,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         private static ChangedValue<Maybe<NamedLink>> MapLink(SimpleLinkDTO? simpleLinkDto)
         {
             return (simpleLinkDto?.FromNullable().Select(linkDto => new NamedLink(linkDto.Name!, linkDto.Url!)) ?? Maybe<NamedLink>.None).AsChangedValue();
+        }
+
+        private static IEnumerable<LicensingAndCodeModel>? MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModelChoice>? apiModels)
+        {
+            if (apiModels == null) return null;
+            return apiModels.Select(apiModel =>
+                 apiModel switch
+                 {
+                     LicensingAndCodeModelChoice.OpenSource => LicensingAndCodeModel.OpenSource,
+                     LicensingAndCodeModelChoice.Freeware => LicensingAndCodeModel.Freeware,
+                     LicensingAndCodeModelChoice.Proprietary => LicensingAndCodeModel.Proprietary,
+                     _ => throw new ArgumentOutOfRangeException(nameof(apiModels), $"Invalid value provided for enum conversion: {apiModels}"),
+                 });
         }
     }
 }

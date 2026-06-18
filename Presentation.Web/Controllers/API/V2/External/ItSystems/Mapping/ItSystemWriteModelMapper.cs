@@ -124,21 +124,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             destination.Description = rule.MustUpdate(x => x.Description) ? source.Description.AsChangedValue() : OptionalValueChange<string>.None;
             destination.BusinessTypeUuid = rule.MustUpdate(x => x.BusinessTypeUuid) ? source.BusinessTypeUuid.AsChangedValue() : OptionalValueChange<Guid?>.None;
             destination.TaskRefUuids = rule.MustUpdate(x => x.KLEUuids) ? (source.KLEUuids ?? new List<Guid>()).AsChangedValue() : OptionalValueChange<IEnumerable<Guid>>.None;
-            destination.LicensingAndCodeModels = rule.MustUpdate(x => x.LicensingAndCodeModels) ? (MapLicensingAndCodeModels(source?.LicensingAndCodeModels) ?? []).AsChangedValue() : OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None;
             MapExternalReferences(source, destination, enforceResetOnMissingProperty);
-        }
-
-        private static IEnumerable<LicensingAndCodeModel>? MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModelChoice>? apiModels)
-        {
-            if (apiModels == null) return null;
-            return apiModels.Select(apiModel =>
-                 apiModel switch
-                 {
-                     LicensingAndCodeModelChoice.OpenSource => LicensingAndCodeModel.OpenSource,
-                     LicensingAndCodeModelChoice.Freeware => LicensingAndCodeModel.Freeware,
-                     LicensingAndCodeModelChoice.Proprietary => LicensingAndCodeModel.Proprietary,
-                     _ => throw new ArgumentOutOfRangeException(nameof(apiModels), $"Invalid value provided for enum conversion: {apiModels}"),
-                 });
         }
 
         private void MapExternalReferences(IItSystemWriteRequestCommonPropertiesDTO source, SharedSystemUpdateParameters destination, bool enforceResetOnMissingProperty)

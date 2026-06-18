@@ -259,6 +259,8 @@ namespace Core.DomainModel.ItSystemUsage
 
         public virtual ArchiveTestLocation ArchiveTestLocation { get; set; }
 
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; } = new List<LicensingAndCodeModel>();
+
         public int? ItSystemCategoriesId { get; set; }
         public int? SystemUsageCriticalityLevelId { get; set; }
         public virtual SystemUsageCriticalityLevel SystemUsageCriticalityLevel { get; set; }
@@ -1508,6 +1510,16 @@ namespace Core.DomainModel.ItSystemUsage
         public void UpdateProcessingPurpose(string purpose)
         {
             ProcessingPurpose = purpose;
+        }
+
+        public Maybe<OperationError> SetLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> newModels)
+        {
+            if (newModels.Any(x => x == LicensingAndCodeModel.Proprietary) && newModels.Any(y => y != LicensingAndCodeModel.Proprietary))
+                return new OperationError($"The Proprietary licensing and code model cannot be set on the same system as another model", OperationFailure.Conflict);
+
+            LicensingAndCodeModels = [.. newModels.Distinct()];
+
+            return Maybe<OperationError>.None;
         }
     }
 }

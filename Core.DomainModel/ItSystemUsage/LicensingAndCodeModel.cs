@@ -1,4 +1,4 @@
-﻿namespace Core.DomainModel.ItSystem
+namespace Core.DomainModel.ItSystemUsage
 {
     public enum LicensingAndCodeModel
     {

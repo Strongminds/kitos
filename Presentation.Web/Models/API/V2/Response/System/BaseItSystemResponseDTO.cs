@@ -90,14 +90,9 @@ namespace Presentation.Web.Models.API.V2.Response.System
         [Required]
         public RecommendedArchiveDutyResponseDTO RecommendedArchiveDuty { get; set; }
         /// <summary>
-        ///A list of unique suppliers associated with each usage’s main contract.
+        ///A list of unique suppliers associated with each usage's main contract.
         /// </summary>
         [Required]
         public IEnumerable<ShallowOrganizationResponseDTO> MainContractSuppliers { get; set; }
-
-        /// <summary>
-        /// The licensing and code models used for this system.
-        /// </summary>
-        public IEnumerable<LicensingAndCodeModelChoice> LicensingAndCodeModels { get; set; }
     }
 }
