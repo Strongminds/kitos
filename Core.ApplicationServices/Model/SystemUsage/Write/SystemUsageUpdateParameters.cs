@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
-using Core.DomainModel.ItSystemUsage;
-
 
 namespace Core.ApplicationServices.Model.SystemUsage.Write
 {

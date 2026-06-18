@@ -111,6 +111,7 @@ namespace Core.DomainServices.SystemUsage
             destination.CriticalityLevelDocumentationUrl = source.CriticalityLevelDocumentationUrl;
             destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
             destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
+            destination.LicensingAndCodeModels = source.LicensingAndCodeModels;
 
             var interfaces = source.GetExposedInterfaces();
             destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.ItInterfaceId).ToStringWithDelimiter();

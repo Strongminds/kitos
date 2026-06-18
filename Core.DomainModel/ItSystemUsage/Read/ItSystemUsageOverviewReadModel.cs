@@ -25,6 +25,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
             RelevantOrganizationUnits = new List<ItSystemUsageOverviewRelevantOrgUnitReadModel>();
             AssociatedContracts = new List<ItSystemUsageOverviewItContractReadModel>();
             TechnicalSystemTypes = new List<ItSystemUsageOverviewTechnicalSystemTypeReadModel>();
+            LicensingAndCodeModels = new List<LicensingAndCodeModel>();
         }
 
 
@@ -137,6 +138,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string CriticalityLevelDocumentationName { get; set; }
         public string TechnicalSystemTypeNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewTechnicalSystemTypeReadModel> TechnicalSystemTypes { get; set; }
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; }
         public string DependsOnInterfacesNamesAsCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewInterfaceReadModel> DependsOnInterfaces { get; set; }
         public string IncomingRelatedItSystemUsagesNamesAsCsv { get; set; }

@@ -373,6 +373,8 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(string.Join(", ", systemUsage.TechnicalSystemTypes.Select(x => x.Name)), readModel.TechnicalSystemTypeNamesAsCsv);
             Assert.Equal(systemUsage.TechnicalSystemTypes.Count, readModel.TechnicalSystemTypes.Count);
             Assert.Equal(systemUsage.IsDataProcessingAgreementRequired, readModel.IsDataProcessingAgreementRequired);
+            Assert.Equal(systemUsage.LicensingAndCodeModels, readModel.LicensingAndCodeModels);
+
             var expectedInterfaces = systemUsage.GetExposedInterfaces();
             Assert.Equal(expectedInterfaces.Select(x => x.ItInterfaceId).ToStringWithDelimiter(), readModel.ItInterfaceIdsAsCsv);
             Assert.Equal(expectedInterfaces.Select(x => x.Version).ToStringWithDelimiter(), readModel.ItInterfaceVersionsAsCsv);
