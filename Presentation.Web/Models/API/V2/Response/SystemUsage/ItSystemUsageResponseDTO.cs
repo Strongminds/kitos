@@ -6,7 +6,6 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.SharedProperties;
-using Presentation.Web.Models.API.V2.Types.System;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {
@@ -14,7 +13,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
     /// NOTE: IT-System usages are registrations which extend those of a system within the context of a specific organization.
     /// IT-System usages have their own lifecycle and identity but the human readable name is inherited from the system context.
     /// </summary>
-    public class l : IHasUuidExternal, IHasLastModified, IHasOrganizationContext
+    public class ItSystemUsageResponseDTO : IHasUuidExternal, IHasLastModified, IHasOrganizationContext
     {
         /// <summary>
         /// UUID of the IT-System usage registration instance
