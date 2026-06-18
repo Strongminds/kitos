@@ -1515,7 +1515,7 @@ namespace Core.DomainModel.ItSystemUsage
         public Maybe<OperationError> SetLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> newModels)
         {
             if (newModels.Any(x => x == LicensingAndCodeModel.Proprietary) && newModels.Any(y => y != LicensingAndCodeModel.Proprietary))
-                return new OperationError($"The Proprietary licensing and code model cannot be set on the same system as another model", OperationFailure.Conflict);
+                return new OperationError($"The Proprietary licensing and code model cannot be set on the same system usage as another model", OperationFailure.Conflict);
 
             LicensingAndCodeModels = [.. newModels.Distinct()];
 

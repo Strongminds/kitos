@@ -512,7 +512,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                      LicensingAndCodeModelChoice.OpenSource => LicensingAndCodeModel.OpenSource,
                      LicensingAndCodeModelChoice.Freeware => LicensingAndCodeModel.Freeware,
                      LicensingAndCodeModelChoice.Proprietary => LicensingAndCodeModel.Proprietary,
-                     _ => throw new ArgumentOutOfRangeException(nameof(apiModels), $"Invalid value provided for enum conversion: {apiModels}"),
+                     _ => throw new ArgumentOutOfRangeException(nameof(apiModel), $"Invalid value provided for enum conversion: {apiModel}"),
                  });
         }
     }
