@@ -27,6 +27,14 @@
         /// </summary>
         KB = 7,
         /// <summary>
+        /// D+K duty
+        /// </summary>
+        DK = 8,
+        /// <summary>
+        /// D+D duty
+        /// </summary>
+        DD = 9,
+        /// <summary>
         /// Unknown in the organization
         /// </summary>
         Unknown = 3,
