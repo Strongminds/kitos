@@ -103,7 +103,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public HostingChoice? HostedAt { get; set; }
 
         /// <summary>
-        /// The licensing and code model used for this system. Existing models will be replaced by the input data.
+        /// The licensing and code models used for this system usage. Existing models will be replaced by the input data.
         /// </summary>
         public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
     }

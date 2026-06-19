@@ -10,7 +10,6 @@ using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Infrastructure.Model.Request;
@@ -481,7 +480,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                      LicensingAndCodeModelChoice.OpenSource => LicensingAndCodeModel.OpenSource,
                      LicensingAndCodeModelChoice.Freeware => LicensingAndCodeModel.Freeware,
                      LicensingAndCodeModelChoice.Proprietary => LicensingAndCodeModel.Proprietary,
-                     _ => throw new ArgumentOutOfRangeException(nameof(apiModels), $"Invalid value provided for enum conversion: {apiModels}"),
+                     _ => throw new ArgumentOutOfRangeException(nameof(apiModel), $"Invalid value provided for enum conversion: {apiModel}"),
                  });
         }
 
