@@ -147,6 +147,7 @@ using dk.nita.saml20.identity;
 using Presentation.Web.Infrastructure.Middleware;
 using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
 using Core.ApplicationServices.Users;
+using Core.ApplicationServices.Model.SystemUsage;
 
 namespace Presentation.Web.Infrastructure.DI
 {
@@ -250,6 +251,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationSupplierService, OrganizationSupplierService>();
             services.AddScoped<IItSystemService, ItSystemService>();
             services.AddScoped<IItSystemUsageService, ItSystemUsageService>();
+            services.AddScoped<IArchivedItSystemUsageService, ArchivedItSystemUsageService>();
             services.AddScoped<IItSystemUsageMigrationServiceAdapter, ItSystemUsageMigrationServiceAdapter>();
             services.AddScoped<IItsystemUsageRelationsService, ItsystemUsageRelationsService>();
             services.AddScoped<IItSystemUsageWriteService, ItSystemUsageWriteService>();
