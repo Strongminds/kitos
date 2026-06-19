@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260619081335_IntroduceArchivingEntities")]
+    [Migration("20260619090512_IntroduceArchivingEntities")]
     partial class IntroduceArchivingEntities
     {
         /// <inheritdoc />
@@ -239,9 +239,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime>("ArchivingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ItSystemUsageSnapshotUuid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("datetime2");
 
@@ -262,20 +259,23 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("SnapshotUuid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("Uuid")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ItSystemUsageSnapshotUuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemArchive_ItSystemUsageSnapshotUuid");
 
                     b.HasIndex("LastChangedByUserId");
 
                     b.HasIndex("ObjectOwnerId");
 
                     b.HasIndex("OrganizationUuid");
+
+                    b.HasIndex("SnapshotUuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ItSystemArchive_ItSystemUsageSnapshotUuid");
 
                     b.HasIndex("Uuid")
                         .IsUnique()
@@ -330,7 +330,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_Uuid");
 
-                    b.ToTable("ItSystemUsageArchiveSnapshot", (string)null);
+                    b.ToTable("Snapshot", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.AttachedOption", b =>
@@ -8206,7 +8206,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", b =>
                 {
                     b.HasOne("Core.DomainModel.Archive.ItSystemArchive", "ItSystemArchive")
-                        .WithOne("ItSystemUsageArchiveSnapshot")
+                        .WithOne("Snapshot")
                         .HasForeignKey("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", "ItSystemArchiveUuid")
                         .HasPrincipalKey("Core.DomainModel.Archive.ItSystemArchive", "Uuid")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -11546,7 +11546,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.Navigation("ArchiveReferences");
 
-                    b.Navigation("ItSystemUsageArchiveSnapshot");
+                    b.Navigation("Snapshot");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ContactPerson", b =>
