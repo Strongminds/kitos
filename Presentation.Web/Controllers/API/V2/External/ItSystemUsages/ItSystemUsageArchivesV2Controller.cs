@@ -6,7 +6,7 @@ using System;
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
     [Route("api/v2/it-system-usages/archives")]
-    public class ItSystemUsageArchivesV2Controller(IArchivedItSystemUsageService archivedItSystemUsageService) : ExternalBaseController
+    public class ItSystemUsageArchivesV2Controller(IItSystemUsageArchiveService archivedItSystemUsageService) : ExternalBaseController
     {
         [HttpPost]
         [Route("{systemUsageUuid}")]
