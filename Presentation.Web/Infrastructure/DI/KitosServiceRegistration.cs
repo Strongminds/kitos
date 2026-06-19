@@ -695,7 +695,6 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItSystemUsageResponseMapper, ItSystemUsageResponseMapper>();
             services.AddScoped<IItSystemUsageWriteModelMapper, ItSystemUsageWriteModelMapper>();
             services.AddScoped<IItSystemUsageMigrationResponseMapper, ItSystemUsageMigrationResponseMapper>();
-            services.AddScoped<IItSystemArchiveResponseMapper, ItSystemArchiveResponseMapper>();
             services.AddScoped<IDataProcessingRegistrationWriteModelMapper, DataProcessingRegistrationWriteModelMapper>();
             services.AddScoped<IDataProcessingRegistrationResponseMapper, DataProcessingRegistrationResponseMapper>();
             services.AddScoped<IItContractWriteModelMapper, ItContractWriteModelMapper>();
