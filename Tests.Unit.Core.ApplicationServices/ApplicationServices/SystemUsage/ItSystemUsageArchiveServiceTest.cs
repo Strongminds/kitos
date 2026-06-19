@@ -44,7 +44,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 ReferenceName = A<string>(),
                 Note = A<string>()
             };
-            _identityResolver.Setup(x => x.ResolveDbId<ItSystemUsage>(usageUuid)).Returns((int?)null);
+            _identityResolver.Setup(x => x.ResolveDbId<ItSystemUsage>(usageUuid)).Returns(Maybe<int>.None);
 
             var result = _sut.Create(usageUuid, parameters);
 
