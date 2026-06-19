@@ -202,7 +202,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Purpose = systemUsage.GeneralPurpose,
                 TechnicalSystemTypes = (systemUsage.TechnicalSystemTypes ?? Array.Empty<TechnicalSystemType>()).Select(x => x.MapIdentityNamePairDTO()).ToList(),
                 HostedAt = MapHosting(systemUsage),
-                LicensingAndCodeModels = systemUsage.LicensingAndCodeModels.Select(x => x.ToChoice()).ToList()
+                LicensingAndCodeModels = (systemUsage.LicensingAndCodeModels ?? []).Select(x => x.ToChoice()).ToList()
             };
         }
 
