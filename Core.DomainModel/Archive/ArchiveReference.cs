@@ -2,7 +2,7 @@
 
 namespace Core.DomainModel.Archive;
 
-public class ArchiveReference: IHasUuid
+public class ArchiveReference: Entity, IHasUuid
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public string Label { get; set; }

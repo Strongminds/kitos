@@ -2,7 +2,8 @@
 
 namespace Core.DomainModel.Archive;
 
-public class ItSystemUsageArchiveSnapshot: IHasUuid
+// TODO add IItArchiveSnapshot interface
+public class ItSystemUsageArchiveSnapshot: Entity, IItArchiveSnapshot
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
 

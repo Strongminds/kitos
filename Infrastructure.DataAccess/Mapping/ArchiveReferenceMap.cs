@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Mapping
 {
-    public class ArchiveReferenceMap : IEntityTypeConfiguration<ArchiveReference>
+    public class ArchiveReferenceMap : EntityMap<ArchiveReference>
     {
-        public void Configure(EntityTypeBuilder<ArchiveReference> builder)
+        public override void Configure(EntityTypeBuilder<ArchiveReference> builder)
         {
-            builder.HasKey(x => x.Uuid);
+            base.Configure(builder);
             builder.ToTable("ArchiveReference");
+
+            builder.Property(x => x.Uuid).IsRequired();
+            builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ArchiveReference_Uuid");
 
             builder.Property(x => x.Label).IsRequired();
             builder.Property(x => x.Url).IsRequired();
@@ -17,6 +20,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasOne(x => x.ItSystemArchive)
                 .WithMany(x => x.ArchiveReferences)
                 .HasForeignKey(x => x.ItSystemArchiveUuid)
+                .HasPrincipalKey(x => x.Uuid)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }

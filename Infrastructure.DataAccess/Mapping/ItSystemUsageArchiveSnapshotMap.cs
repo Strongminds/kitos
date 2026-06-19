@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.DataAccess.Mapping
 {
-    public class ItSystemUsageArchiveSnapshotMap : IEntityTypeConfiguration<ItSystemUsageArchiveSnapshot>
+    public class ItSystemUsageArchiveSnapshotMap : EntityMap<ItSystemUsageArchiveSnapshot>
     {
-        public void Configure(EntityTypeBuilder<ItSystemUsageArchiveSnapshot> builder)
+        public override void Configure(EntityTypeBuilder<ItSystemUsageArchiveSnapshot> builder)
         {
-            builder.HasKey(x => x.Uuid);
+            base.Configure(builder);
             builder.ToTable("ItSystemUsageArchiveSnapshot");
+
+            builder.Property(x => x.Uuid).IsRequired();
+            builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_Uuid");
 
             builder.Property(x => x.ItSystemArchiveUuid).IsRequired();
             builder.HasIndex(x => x.ItSystemArchiveUuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemArchiveUuid");
