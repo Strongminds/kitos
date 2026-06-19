@@ -23,6 +23,7 @@ using Core.DomainModel.Notification;
 using Core.DomainModel.PublicMessage;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
+using Core.DomainModel.Archive;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Collections.Generic;
 
@@ -104,6 +105,9 @@ namespace Infrastructure.DataAccess
         public DbSet<PublicMessage> PublicMessages { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ArchivePeriod> ArchivePeriods { get; set; }
+        public DbSet<ItSystemArchive> ItSystemArchives { get; set; }
+        public DbSet<ArchiveReference> ArchiveReferences { get; set; }
+        public DbSet<ItSystemUsageArchiveSnapshot> ItSystemUsageArchiveSnapshots { get; set; }
         public DbSet<LocalAgreementElementType> LocalAgreementElementTypes { get; set; }
         public DbSet<LocalArchiveType> LocalArchiveTypes { get; set; }
         public DbSet<LocalArchiveLocation> LocalArchiveLocation { get; set; }
