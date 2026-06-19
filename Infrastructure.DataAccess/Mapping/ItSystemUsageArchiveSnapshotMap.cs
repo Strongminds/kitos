@@ -9,7 +9,7 @@ namespace Infrastructure.DataAccess.Mapping
         public override void Configure(EntityTypeBuilder<ItSystemUsageArchiveSnapshot> builder)
         {
             base.Configure(builder);
-            builder.ToTable("ItSystemUsageArchiveSnapshot");
+            builder.ToTable("Snapshot");
 
             builder.Property(x => x.Uuid).IsRequired();
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_Uuid");

@@ -25,7 +25,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.ItSystemUsageArchiveSnapshot)
+            builder.HasOne(x => x.Snapshot)
                 .WithOne(x => x.ItSystemArchive)
                 .HasForeignKey<ItSystemUsageArchiveSnapshot>(x => x.ItSystemArchiveUuid)
                 .HasPrincipalKey<ItSystemArchive>(x => x.Uuid)
@@ -39,7 +39,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(x => x.ItSystemUsageSnapshotUuid)
+            builder.HasIndex(x => x.SnapshotUuid)
                 .IsUnique()
                 .HasDatabaseName("UX_ItSystemArchive_ItSystemUsageSnapshotUuid");
         }

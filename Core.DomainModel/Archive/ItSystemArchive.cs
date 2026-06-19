@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Core.DomainModel.Archive;
 
-public class ItSystemArchive: Entity, IItArchive
+public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
-    public Guid ItSystemUsageSnapshotUuid { get; set; }
-    public virtual ItSystemUsageArchiveSnapshot ItSystemUsageArchiveSnapshot { get; set; }
+    public Guid SnapshotUuid { get; set; }
+    public virtual ItSystemUsageArchiveSnapshot Snapshot { get; set; }
 
     public Guid OrganizationUuid { get; set; }
     public virtual Organization.Organization Organization { get; set; }
