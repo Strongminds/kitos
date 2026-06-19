@@ -17,11 +17,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             var intType = isSqlServer ? "int" : "integer";
             var dateTimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
 
-            migrationBuilder.AddUniqueConstraint(
-                name: "AK_Organization_Uuid",
-                table: "Organization",
-                column: "Uuid");
-
             migrationBuilder.CreateTable(
                 name: "ItSystemArchive",
                 columns: table => new
@@ -189,12 +184,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UX_ItSystemArchive_Uuid",
-                table: "ItSystemArchive",
-                column: "Uuid",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Snapshot_LastChangedByUserId",
                 table: "Snapshot",
                 column: "LastChangedByUserId");
@@ -228,10 +217,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.DropTable(
                 name: "ItSystemArchive");
-
-            migrationBuilder.DropUniqueConstraint(
-                name: "AK_Organization_Uuid",
-                table: "Organization");
         }
     }
 }
