@@ -9,5 +9,5 @@ public class ArchiveReference: Entity, IHasUuid
     public string Url { get; set; }
 
     public Guid ItSystemArchiveUuid { get; set; }
-    public ItSystemArchive ItSystemArchive { get; set; }
+    public virtual ItSystemArchive ItSystemArchive { get; set; }
 }
