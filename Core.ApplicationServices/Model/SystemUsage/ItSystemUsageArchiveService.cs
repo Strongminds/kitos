@@ -32,7 +32,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
                 ArchivingDate = parameters.ArchivingDate,
                 ReferenceName = parameters.ReferenceName,
                 Note = parameters.Note,
-                ItSystemUsageSnapshotUuid = Guid.NewGuid(),
+                SnapshotUuid = Guid.NewGuid(),
             };
 
             var createdArchive = archiveRepository.Insert(archive);
