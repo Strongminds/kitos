@@ -1,4 +1,4 @@
-﻿using Core.ApplicationServices.Model.SystemUsage;
+using Core.ApplicationServices.Model.SystemUsage;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
@@ -10,7 +10,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
     [Route("api/v2/it-system-usages/archives")]
     public class ItSystemUsageArchivesV2Controller(
         IItSystemUsageArchiveService archivedItSystemUsageService,
-        IItSystemArchiveResponseMapper responseMapper) : ExternalBaseController
+        IItSystemArchiveResponseMapper responseMapper,
+        IItSystemArchiveWriteRequestMapper writeRequestMapper) : ExternalBaseController
     {
         [HttpPost]
         [Route("{systemUsageUuid}")]
@@ -20,13 +21,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var parameters = new CreateItSystemArchiveParameters
-            {
-                ArchivingDate = request.ArchivingDate,
-                ReferenceName = request.ReferenceName,
-                Note = request.Note
-            };
-
+            var parameters = writeRequestMapper.FromRequest(request);
             return archivedItSystemUsageService.Create(systemUsageUuid, parameters).Match(
                 archive => Ok(responseMapper.ToResponseDTO(archive)),
                 FromOperationError);
