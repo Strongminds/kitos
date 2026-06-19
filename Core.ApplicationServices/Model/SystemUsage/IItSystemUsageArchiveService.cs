@@ -4,7 +4,7 @@ using System;
 
 namespace Core.ApplicationServices.Model.SystemUsage
 {
-    public interface IArchivedItSystemUsageService
+    public interface IItSystemUsageArchiveService
     {
         Result<ItSystemUsage, OperationError> Create(Guid systemUsageUuid);
     }
