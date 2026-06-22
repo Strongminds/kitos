@@ -1,4 +1,5 @@
 using Core.DomainModel;
+using Core.DomainModel.Archive;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItContract.Read;
@@ -27,6 +28,7 @@ namespace Presentation.Web.Infrastructure.OData
             RegisterEntitySet<ItSystemRight>(builder, "ItSystemRights");
             RegisterEntitySet<ItInterface>(builder, "ItInterfaces");
             RegisterEntitySet<ItContract>(builder, "ItContracts");
+            RegisterEntitySet<ItSystemArchive>(builder, "ItSystemArchives");
             RegisterEntitySet<ItSystemUsageOverviewReadModel>(builder, "ItSystemUsageOverviewReadModels");
             RegisterEntitySet<ItContractOverviewReadModel>(builder, "ItContractOverviewReadModels");
             RegisterEntitySet<DataProcessingRegistrationReadModel>(builder, "DataProcessingRegistrationReadModels");
