@@ -1,8 +1,11 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.DomainModel;
+using Core.DomainModel.Archive;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Organization;
@@ -29,7 +32,20 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             {
                 ArchivingDate = archivingDate,
                 ReferenceName = referenceName,
-                Note = note
+                Note = note,
+                ArchiveReferences = new[]
+                {
+                    new ArchiveReferenceDTO
+                    {
+                        Label = A<string>(),
+                        Url = $"https://{A<string>()}.example.com/archive-1"
+                    },
+                    new ArchiveReferenceDTO
+                    {
+                        Label = A<string>(),
+                        Url = $"https://{A<string>()}.example.com/archive-2"
+                    }
+                }
             };
 
             // Act
@@ -43,6 +59,32 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(referenceName, archive.ReferenceName);
             Assert.Equal(note, archive.Note);
             Assert.Equal(organization.Uuid, archive.Organization.Uuid);
+            Assert.NotEqual(Guid.Empty, archive.Uuid);
+
+            var storedArchive = DatabaseAccess.MapFromEntitySet<ItSystemArchive, (Guid OrganizationUuid, string ReferenceName, string Note, int ReferenceCount, bool HasFirstReference, bool HasSecondReference)>(repository =>
+            {
+                var archivedEntity = repository.AsQueryable().Single(x => x.Uuid == archive.Uuid);
+                var references = archivedEntity.ArchiveReferences.ToList();
+                return
+                (
+                    archivedEntity.OrganizationUuid,
+                    archivedEntity.ReferenceName,
+                    archivedEntity.Note,
+                    references.Count,
+                    references.Any(x => x.Label == request.ArchiveReferences.First().Label && x.Url == request.ArchiveReferences.First().Url),
+                    references.Any(x => x.Label == request.ArchiveReferences.Skip(1).First().Label && x.Url == request.ArchiveReferences.Skip(1).First().Url)
+                );
+            });
+
+            var sourceUsageStillExists = DatabaseAccess.MapFromEntitySet<ItSystemUsage, bool>(repository => repository.AsQueryable().Any(x => x.Uuid == systemUsage.Uuid));
+
+            Assert.Equal(organization.Uuid, storedArchive.OrganizationUuid);
+            Assert.Equal(referenceName, storedArchive.ReferenceName);
+            Assert.Equal(note, storedArchive.Note);
+            Assert.Equal(2, storedArchive.ReferenceCount);
+            Assert.True(storedArchive.HasFirstReference);
+            Assert.True(storedArchive.HasSecondReference);
+            Assert.False(sourceUsageStillExists);
         }
 
         [Fact]
