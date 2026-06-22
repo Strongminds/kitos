@@ -2382,8 +2382,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var gdpr = system.GDPR;
             Assert.Null(gdpr.RiskAssessmentConductedDate);
             Assert.Null(gdpr.RiskAssessmentNotes);
-            Assert.Null(gdpr.RiskAssessmentDocumentation.Name);
-            Assert.Null(gdpr.RiskAssessmentDocumentation.Url);
+            Assert.Null(gdpr.RiskAssessmentDocumentation?.Name);
+            Assert.Null(gdpr.RiskAssessmentDocumentation?.Url);
             Assert.Null(gdpr.RiskAssessmentResult);
         }
 
@@ -2392,16 +2392,21 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             //Arrange
             var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var localCallName = A<string>();
+            var localSystemId = A<string>();
             var systemUsage = await ItSystemUsageV2Helper.PostAsync(token, new CreateItSystemUsageRequestDTO
             {
                 SystemUuid = system.Uuid,
-                OrganizationUuid = organization.Uuid
+                OrganizationUuid = organization.Uuid,
+                General = new GeneralDataWriteRequestDTO
+                {
+                    LocalCallName = localCallName,
+                    LocalSystemId = localSystemId
+                }
             });
             var archivingDate = A<DateTime>();
             var referenceName = A<string>();
             var note = A<string>();
-            var localSystemId = A<string>();
-            var localCallName = A<string>();
             var existingReference = new ArchiveReferenceWriteRequestDTO
             {
                 Label = A<string>(),
