@@ -301,8 +301,6 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<ItSystemArchiveResponseDTO> ArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
         {
             using var response = await SendArchiveAsync(token, systemUsageUuid, dto);
-            if (!response.IsSuccessStatusCode)
-                Debug.WriteLine(response.StatusCode + ":" + await response.Content.ReadAsStringAsync());
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadResponseBodyAsAsync<ItSystemArchiveResponseDTO>();
