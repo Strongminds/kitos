@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
@@ -26,8 +27,33 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public required string Note { get; set; }
 
         /// <summary>
+        /// Unique identifier of the archived system snapshot
+        /// </summary>
+        public required Guid ItSystemUuid { get; set; }
+
+        /// <summary>
+        /// System name from the snapshot at archive time
+        /// </summary>
+        public string? LegacyName { get; set; }
+
+        /// <summary>
+        /// Local call name from the snapshot at archive time
+        /// </summary>
+        public string? LocalName { get; set; }
+
+        /// <summary>
+        /// Local system id from the snapshot at archive time
+        /// </summary>
+        public string? LocalId { get; set; }
+
+        /// <summary>
         /// The organization in which the archive was created
         /// </summary>
         public ShallowOrganizationResponseDTO? Organization { get; set; }
+
+        /// <summary>
+        /// References associated with the archive
+        /// </summary>
+        public IEnumerable<ArchiveReferenceResponseDTO> ArchiveReferences { get; set; } = new List<ArchiveReferenceResponseDTO>();
     }
 }

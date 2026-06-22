@@ -1,4 +1,5 @@
 using Core.DomainModel.Archive;
+using System.Linq;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 
@@ -14,7 +15,17 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ArchivingDate = archive.ArchivingDate,
                 ReferenceName = archive.ReferenceName,
                 Note = archive.Note,
-                Organization = archive.Organization?.MapShallowOrganizationResponseDTO()
+                ItSystemUuid = archive.Snapshot.ItSystemUuid,
+                LegacyName = archive.Snapshot.LegacyName,
+                LocalName = archive.Snapshot.LocalName,
+                LocalId = archive.Snapshot.LocalId,
+                Organization = archive.Organization?.MapShallowOrganizationResponseDTO(),
+                ArchiveReferences = archive.ArchiveReferences?.Select(reference => new ArchiveReferenceResponseDTO
+                {
+                    Uuid = reference.Uuid,
+                    Label = reference.Label,
+                    Url = reference.Url
+                }).ToList() ?? []
             };
         }
     }
