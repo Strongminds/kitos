@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Presentation.Web.Models.API.V2.Request.SystemUsage
 {
@@ -18,5 +19,10 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// Notes about the archive
         /// </summary>
         public required string Note { get; set; }
+
+        /// <summary>
+        /// References associated with the archive
+        /// </summary>
+        public IEnumerable<ArchiveReferenceDTO> ArchiveReferences { get; set; } = new List<ArchiveReferenceDTO>();
     }
 }

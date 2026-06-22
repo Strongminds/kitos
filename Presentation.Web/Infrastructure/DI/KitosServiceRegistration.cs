@@ -251,7 +251,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationSupplierService, OrganizationSupplierService>();
             services.AddScoped<IItSystemService, ItSystemService>();
             services.AddScoped<IItSystemUsageService, ItSystemUsageService>();
-            services.AddScoped<IItSystemUsageArchiveService, ItSystemUsageArchiveService>();
+            services.AddScoped<IItSystemArchiveService, ItSystemArchiveService>();
             services.AddScoped<IItSystemUsageMigrationServiceAdapter, ItSystemUsageMigrationServiceAdapter>();
             services.AddScoped<IItsystemUsageRelationsService, ItsystemUsageRelationsService>();
             services.AddScoped<IItSystemUsageWriteService, ItSystemUsageWriteService>();

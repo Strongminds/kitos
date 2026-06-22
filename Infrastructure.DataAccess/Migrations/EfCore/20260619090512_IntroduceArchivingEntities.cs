@@ -223,10 +223,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.DropTable(
                 name: "ItSystemArchive");
-
-            migrationBuilder.DropUniqueConstraint(
-                name: "AK_Organization_Uuid",
-                table: "Organization");
         }
     }
 }

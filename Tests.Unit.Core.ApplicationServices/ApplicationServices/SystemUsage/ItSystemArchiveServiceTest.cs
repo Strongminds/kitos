@@ -13,21 +13,21 @@ using Xunit;
 
 namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 {
-    public class ItSystemUsageArchiveServiceTest: WithAutoFixture
+    public class ItSystemArchiveServiceTest: WithAutoFixture
     {
         private Mock<IItSystemUsageRepository> _usageRepository;
         private Mock<IEntityIdentityResolver> _identityResolver;
         private Mock<IGenericRepository<ItSystemArchive>> _archiveRepository;
         private Mock<IGenericRepository<Organization>> _organizationRepository;
-        private ItSystemUsageArchiveService _sut;
+        private ItSystemArchiveService _sut;
 
-        public ItSystemUsageArchiveServiceTest()
+        public ItSystemArchiveServiceTest()
         {
             _usageRepository = new Mock<IItSystemUsageRepository>();
             _identityResolver = new Mock<IEntityIdentityResolver>();
             _archiveRepository = new Mock<IGenericRepository<ItSystemArchive>>();
             _organizationRepository = new Mock<IGenericRepository<Organization>>();
-            _sut = new ItSystemUsageArchiveService(
+            _sut = new ItSystemArchiveService(
                 _usageRepository.Object,
                 _identityResolver.Object,
                 _archiveRepository.Object,
@@ -38,7 +38,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         public void Create_ReturnsNotFound_IfIdNotFound()
         {
             var usageUuid = A<Guid>();
-            var parameters = new CreateItSystemArchiveParameters
+            var parameters = new ArchiveItSystemUsageParameters
             {
                 ArchivingDate = DateTime.UtcNow,
                 ReferenceName = A<string>(),
@@ -57,7 +57,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             var usageUuid = A<Guid>();
             var usageId = A<int>();
-            var parameters = new CreateItSystemArchiveParameters
+            var parameters = new ArchiveItSystemUsageParameters
             {
                 ArchivingDate = DateTime.UtcNow,
                 ReferenceName = A<string>(),
@@ -79,7 +79,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usageId = A<int>();
             var organizationId = A<int>();
             var organizationUuid = A<Guid>();
-            var parameters = new CreateItSystemArchiveParameters
+            var parameters = new ArchiveItSystemUsageParameters
             {
                 ArchivingDate = DateTime.UtcNow,
                 ReferenceName = A<string>(),
