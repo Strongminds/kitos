@@ -904,9 +904,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             using var transaction = transactionManager.Begin();
 
-            var result = itSystemArchiveService.Create(systemUsageUuid, parameters)
-                .Bind(archive => Delete(systemUsageUuid)
-                    .Match<Result<ItSystemArchive, OperationError>>(error => error, () => archive));
+            var result = CreateArchiveAndDeleteUsage(systemUsageUuid, parameters);
 
             if (result.Ok)
             {
@@ -918,6 +916,18 @@ namespace Core.ApplicationServices.SystemUsage.Write
             }
 
             return result;
+        }
+
+        private Result<ItSystemArchive, OperationError> CreateArchiveAndDeleteUsage(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
+        {
+            return itSystemArchiveService.Create(systemUsageUuid, parameters)
+                .Bind(archive => DeleteUsageAndReturnArchive(systemUsageUuid, archive));
+        }
+
+        private Result<ItSystemArchive, OperationError> DeleteUsageAndReturnArchive(Guid systemUsageUuid, ItSystemArchive archive)
+        {
+            return Delete(systemUsageUuid)
+                .Match<Result<ItSystemArchive, OperationError>>(error => error, () => archive);
         }
 
         private Maybe<OperationError> DeleteUsage(ItSystemUsage usage)

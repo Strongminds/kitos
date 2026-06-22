@@ -285,10 +285,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ArchivingDate = request.ArchivingDate,
                 ReferenceName = request.ReferenceName,
                 Note = request.Note,
-                ArchiveReferences = request.ArchiveReferences?.Select(ref => new ArchiveReferenceProperties
+                ArchiveReferences = request.ArchiveReferences?.Select(reference => new ArchiveReferenceProperties
                 {
-                    Label = ref.Label,
-                    Url = ref.Url
+                    Label = reference.Label,
+                    Url = reference.Url
                 }) ?? new List<ArchiveReferenceProperties>()
             };
         }
