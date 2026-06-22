@@ -1,4 +1,4 @@
-﻿using Core.Abstractions.Types;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel.Archive;
@@ -33,6 +33,36 @@ namespace Core.ApplicationServices.Model.SystemUsage
             return createdArchive;
         }
 
+        public Result<ItSystemArchive, OperationError> GetByUuid(Guid archiveUuid)
+        {
+            var archive = archiveRepository.AsQueryable()
+                .FirstOrDefault(a => a.Uuid == archiveUuid);
+
+            if (archive == null)
+                return new OperationError($"Archive with UUID {archiveUuid} not found", OperationFailure.NotFound);
+
+            if (!authorizationContext.AllowReads(archive))
+                return new OperationError("User is not allowed to read this archive", OperationFailure.Forbidden);
+
+            return archive;
+        }
+
+        public Result<ItSystemArchive, OperationError> Delete(Guid archiveUuid)
+        {
+            var archive = archiveRepository.AsQueryable()
+                .FirstOrDefault(a => a.Uuid == archiveUuid);
+
+            if (archive == null)
+                return new OperationError($"Archive with UUID {archiveUuid} not found", OperationFailure.NotFound);
+
+            if (!authorizationContext.AllowDelete(archive))
+                return new OperationError("User is not allowed to delete this archive", OperationFailure.Forbidden);
+
+            archiveRepository.Delete(archive);
+            archiveRepository.Save();
+            return archive;
+        }
+
         private static ItSystemUsageArchiveSnapshot CreateSnapshot(ItSystemUsage systemUsage)
         {
             var system = systemUsage.ItSystem;
@@ -62,6 +92,8 @@ namespace Core.ApplicationServices.Model.SystemUsage
             {
                 SnapshotUuid = snapshot.Uuid,
                 OrganizationUuid = systemUsage.Organization.Uuid,
+                OrganizationId = systemUsage.OrganizationId,
+                Organization = systemUsage.Organization,
                 ArchivingDate = parameters.ArchivingDate,
                 ReferenceName = parameters.ReferenceName,
                 Note = parameters.Note,

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Core.DomainModel.Archive;
 
-public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>
+public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>, IOwnedByOrganization
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public Guid SnapshotUuid { get; set; }
@@ -11,6 +11,8 @@ public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapsho
 
     public Guid OrganizationUuid { get; set; }
     public virtual Organization.Organization Organization { get; set; }
+
+    public int OrganizationId { get; set; }
 
     public required string Note { get; set; }
     public required DateTime ArchivingDate { get; set; }

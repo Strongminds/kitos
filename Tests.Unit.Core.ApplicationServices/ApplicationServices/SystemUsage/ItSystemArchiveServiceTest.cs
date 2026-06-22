@@ -164,6 +164,150 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
 
+        [Fact]
+        public void GetByUuid_Returns_NotFound_If_Archive_Does_Not_Exist()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(Enumerable.Empty<ItSystemArchive>().AsQueryable());
+
+            // Act
+            var result = _sut.GetByUuid(archiveUuid);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void GetByUuid_Returns_Forbidden_If_User_Cannot_Read_Archive()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            var archive = new ItSystemArchive
+            {
+                Uuid = archiveUuid,
+                OrganizationUuid = A<Guid>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ReferenceName = A<string>(),
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                Snapshot = new ItSystemUsageArchiveSnapshot()
+            };
+
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
+            _authorizationContext.Setup(x => x.AllowReads(archive)).Returns(false);
+
+            // Act
+            var result = _sut.GetByUuid(archiveUuid);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void GetByUuid_Returns_Archive_If_User_Can_Read()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            var archive = new ItSystemArchive
+            {
+                Uuid = archiveUuid,
+                OrganizationUuid = A<Guid>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ReferenceName = A<string>(),
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                Snapshot = new ItSystemUsageArchiveSnapshot()
+            };
+
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
+            _authorizationContext.Setup(x => x.AllowReads(archive)).Returns(true);
+
+            // Act
+            var result = _sut.GetByUuid(archiveUuid);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.Same(archive, result.Value);
+        }
+
+        [Fact]
+        public void Delete_Returns_NotFound_If_Archive_Does_Not_Exist()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(Enumerable.Empty<ItSystemArchive>().AsQueryable());
+
+            // Act
+            var result = _sut.Delete(archiveUuid);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+            _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Save(), Times.Never);
+        }
+
+        [Fact]
+        public void Delete_Returns_Forbidden_If_User_Cannot_Delete_Archive()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            var archive = new ItSystemArchive
+            {
+                Uuid = archiveUuid,
+                OrganizationUuid = A<Guid>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ReferenceName = A<string>(),
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                Snapshot = new ItSystemUsageArchiveSnapshot()
+            };
+
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
+            _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(false);
+
+            // Act
+            var result = _sut.Delete(archiveUuid);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+            _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Save(), Times.Never);
+        }
+
+        [Fact]
+        public void Delete_Deletes_Archive_If_User_Can_Delete()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            var archive = new ItSystemArchive
+            {
+                Uuid = archiveUuid,
+                OrganizationUuid = A<Guid>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ReferenceName = A<string>(),
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                Snapshot = new ItSystemUsageArchiveSnapshot()
+            };
+
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
+            _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(true);
+
+            // Act
+            var result = _sut.Delete(archiveUuid);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.Same(archive, result.Value);
+            _archiveRepository.Verify(x => x.Delete(archive), Times.Once);
+            _archiveRepository.Verify(x => x.Save(), Times.Once);
+        }
+
         private ArchiveItSystemUsageParameters CreateParameters()
         {
             return new ArchiveItSystemUsageParameters
