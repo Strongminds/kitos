@@ -7,6 +7,7 @@ using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel;
+using Core.DomainModel.Archive;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
@@ -2383,6 +2384,77 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Null(gdpr.RiskAssessmentDocumentation.Name);
             Assert.Null(gdpr.RiskAssessmentDocumentation.Url);
             Assert.Null(gdpr.RiskAssessmentResult);
+        }
+
+        [Fact]
+        public async Task Can_Archive_SystemUsage_With_Valid_UUID_And_DTO()
+        {
+            //Arrange
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var systemUsage = await ItSystemUsageV2Helper.PostAsync(token, new CreateItSystemUsageRequestDTO
+            {
+                SystemUuid = system.Uuid,
+                OrganizationUuid = organization.Uuid
+            });
+            var archivingDate = A<DateTime>();
+            var referenceName = A<string>();
+            var note = A<string>();
+
+            var request = new CreateItSystemUsageArchiveRequestDTO
+            {
+                ArchivingDate = archivingDate,
+                ReferenceName = referenceName,
+                Note = note,
+                ArchiveReferences = new[]
+                {
+                    new ArchiveReferenceDTO
+                    {
+                        Label = A<string>(),
+                        Url = $"https://{A<string>()}.example.com/archive-1"
+                    },
+                    new ArchiveReferenceDTO
+                    {
+                        Label = A<string>(),
+                        Url = $"https://{A<string>()}.example.com/archive-2"
+                    }
+                }
+            };
+
+            //Act
+            var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, request);
+
+            //Assert
+            Assert.NotNull(archive);
+            Assert.Equal(archivingDate, archive.ArchivingDate);
+            Assert.Equal(referenceName, archive.ReferenceName);
+            Assert.Equal(note, archive.Note);
+            Assert.Equal(organization.Uuid, archive.Organization.Uuid);
+            Assert.NotEqual(Guid.Empty, archive.Uuid);
+
+            var storedArchive = DatabaseAccess.MapFromEntitySet<ItSystemArchive, (Guid OrganizationUuid, string ReferenceName, string Note, int ReferenceCount, bool HasFirstReference, bool HasSecondReference)>(repository =>
+            {
+                var archivedEntity = repository.AsQueryable().Single(x => x.Uuid == archive.Uuid);
+                var references = archivedEntity.ArchiveReferences.ToList();
+                return
+                (
+                    archivedEntity.OrganizationUuid,
+                    archivedEntity.ReferenceName,
+                    archivedEntity.Note,
+                    references.Count,
+                    references.Any(x => x.Label == request.ArchiveReferences.First().Label && x.Url == request.ArchiveReferences.First().Url),
+                    references.Any(x => x.Label == request.ArchiveReferences.Skip(1).First().Label && x.Url == request.ArchiveReferences.Skip(1).First().Url)
+                );
+            });
+
+            var sourceUsageStillExists = DatabaseAccess.MapFromEntitySet<ItSystemUsage, bool>(repository => repository.AsQueryable().Any(x => x.Uuid == systemUsage.Uuid));
+
+            Assert.Equal(organization.Uuid, storedArchive.OrganizationUuid);
+            Assert.Equal(referenceName, storedArchive.ReferenceName);
+            Assert.Equal(note, storedArchive.Note);
+            Assert.Equal(2, storedArchive.ReferenceCount);
+            Assert.True(storedArchive.HasFirstReference);
+            Assert.True(storedArchive.HasSecondReference);
+            Assert.False(sourceUsageStillExists);
         }
 
         private static bool MatchExpectedAssignment(ExtendedRoleAssignmentResponseDTO assignment, ItSystemRole expectedRole, User expectedUser)

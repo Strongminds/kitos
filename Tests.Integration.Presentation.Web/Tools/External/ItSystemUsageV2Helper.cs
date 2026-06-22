@@ -298,6 +298,22 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token);
         }
 
+        public static async Task<ItSystemArchiveResponseDTO> ArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        {
+            using var response = await SendArchiveAsync(token, systemUsageUuid, dto);
+            if (!response.IsSuccessStatusCode)
+                Debug.WriteLine(response.StatusCode + ":" + await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<ItSystemArchiveResponseDTO>();
+        }
+
+        public static async Task<HttpResponseMessage> SendArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        {
+            return await HttpApi.PostWithTokenAsync(
+                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}"), dto, token);
+        }
+
         public static async Task<OutgoingSystemRelationResponseDTO> PostRelationAsync(string token,
             Guid systemUsageUuid, SystemRelationWriteRequestDTO dto)
         {
