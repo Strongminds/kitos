@@ -1,4 +1,4 @@
-namespace Core.ApplicationServices.Model.SystemUsage
+namespace Core.ApplicationServices.Model.Archive
 {
     public class ArchiveReferenceProperties
     {

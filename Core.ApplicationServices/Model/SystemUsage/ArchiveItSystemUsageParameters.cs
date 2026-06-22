@@ -1,3 +1,4 @@
+using Core.ApplicationServices.Model.Archive;
 using System;
 using System.Collections.Generic;
 
