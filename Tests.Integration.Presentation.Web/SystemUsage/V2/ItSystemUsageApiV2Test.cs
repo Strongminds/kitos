@@ -2388,7 +2388,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         }
 
         [Fact]
-        public async Task Can_Archive_SystemUsage_With_Valid_UUID_And_DTO()
+        public async Task Can_Archive_SystemUsage()
         {
             //Arrange
             var (token, _, organization, system) = await CreatePrerequisitesAsync();
