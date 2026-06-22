@@ -11,7 +11,7 @@ public class ItSystemUsageArchiveSnapshot: Entity, IArchiveSnapshotEntity
     public string LocalId { get; set; }
 
     public Guid ItSystemUuid { get; set; }
-    public ItSystem.ItSystem ItSystem { get; set; }
+    public virtual ItSystem.ItSystem ItSystem { get; set; }
 
     public Guid ItSystemArchiveUuid { get; set; }
     public virtual ItSystemArchive ItSystemArchive { get; set; }

@@ -62,7 +62,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usage = new ItSystemUsage
             {
                 Organization = new Organization { Uuid = organizationUuid },
-                ItSystem = new ItSystem { Name = "Legacy Name" },
+                ItSystem = new ItSystem { Uuid = A<Guid>(), Name = "Legacy Name" },
                 LocalCallName = "Local Name",
                 LocalSystemId = "Local Id"
             };
@@ -87,6 +87,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(parameters.ReferenceName, insertedArchive.ReferenceName);
             Assert.Equal(parameters.Note, insertedArchive.Note);
 
+            Assert.Equal(usage.ItSystem.Uuid, insertedArchive.Snapshot.ItSystemUuid);
             Assert.Equal("Legacy Name", insertedArchive.Snapshot.LegacyName);
             Assert.Equal("Local Name", insertedArchive.Snapshot.LocalName);
             Assert.Equal("Local Id", insertedArchive.Snapshot.LocalId);

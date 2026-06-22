@@ -33,6 +33,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
             var system = systemUsage.ItSystem;
             return new ItSystemUsageArchiveSnapshot
             {
+                ItSystemUuid = system.Uuid,
                 LegacyName = system.Name,
                 LocalId = systemUsage.LocalSystemId,
                 LocalName = systemUsage.LocalCallName
