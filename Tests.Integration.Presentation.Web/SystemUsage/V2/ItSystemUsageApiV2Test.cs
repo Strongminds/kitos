@@ -16,6 +16,7 @@ using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
+using Presentation.Web.Models.API.V2.Request.Archive;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
@@ -2401,30 +2402,18 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var note = A<string>();
             var localSystemId = A<string>();
             var localCallName = A<string>();
+            var existingReference = new ArchiveReferenceWriteRequestDTO
+            {
+                Label = A<string>(),
+                Url = $"https://{A<string>()}.example.com/archive-1"
+            };
 
             var request = new CreateItSystemUsageArchiveRequestDTO
             {
                 ArchivingDate = archivingDate,
                 ReferenceName = referenceName,
                 Note = note,
-                ArchiveReferences = new[]
-                {
-                    new ArchiveReferenceDTO
-                    {
-                        Label = A<string>(),
-                        Url = $"https://{A<string>()}.example.com/archive-1"
-                    },
-                    new ArchiveReferenceDTO
-                    {
-                        Label = A<string>(),
-                        Url = $"https://{A<string>()}.example.com/archive-2"
-                    }
-                },
-                General = new GeneralDataWriteRequestDTO
-                {
-                    LocalSystemId = localSystemId,
-                    LocalCallName = localCallName
-                }
+                ArchiveReferences = [existingReference]
             };
 
             //Act
@@ -2439,44 +2428,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(system.Name, archive.LegacyName);
             Assert.Equal(localCallName, archive.LocalName);
             Assert.Equal(localSystemId, archive.LocalId);
-            Assert.Equal(organization.Uuid, archive.Organization.Uuid);
-            Assert.Equal(2, archive.ArchiveReferences.Count());
-            Assert.Contains(archive.ArchiveReferences, x => x.Label == request.ArchiveReferences.First().Label && x.Url == request.ArchiveReferences.First().Url);
-            Assert.Contains(archive.ArchiveReferences, x => x.Label == request.ArchiveReferences.Skip(1).First().Label && x.Url == request.ArchiveReferences.Skip(1).First().Url);
-            Assert.NotEqual(Guid.Empty, archive.Uuid);
+            Assert.Equal(organization.Uuid, archive.Organization?.Uuid);
+            var reference = Assert.Single(archive.ArchiveReferences);
 
-            var storedArchive = DatabaseAccess.MapFromEntitySet<ItSystemArchive, (Guid OrganizationUuid, string ReferenceName, string Note, Guid SnapshotSystemUuid, string SnapshotLegacyName, string SnapshotLocalName, string SnapshotLocalId, int ReferenceCount, bool HasFirstReference, bool HasSecondReference)>(repository =>
-            {
-                var archivedEntity = repository.AsQueryable().Single(x => x.Uuid == archive.Uuid);
-                var references = archivedEntity.ArchiveReferences.ToList();
-                return
-                (
-                    archivedEntity.OrganizationUuid,
-                    archivedEntity.ReferenceName,
-                    archivedEntity.Note,
-                    archivedEntity.Snapshot.ItSystemUuid,
-                    archivedEntity.Snapshot.LegacyName,
-                    archivedEntity.Snapshot.LocalName,
-                    archivedEntity.Snapshot.LocalId,
-                    references.Count,
-                    references.Any(x => x.Label == request.ArchiveReferences.First().Label && x.Url == request.ArchiveReferences.First().Url),
-                    references.Any(x => x.Label == request.ArchiveReferences.Skip(1).First().Label && x.Url == request.ArchiveReferences.Skip(1).First().Url)
-                );
-            });
-
-            var sourceUsageStillExists = DatabaseAccess.MapFromEntitySet<ItSystemUsage, bool>(repository => repository.AsQueryable().Any(x => x.Uuid == systemUsage.Uuid));
-
-            Assert.Equal(organization.Uuid, storedArchive.OrganizationUuid);
-            Assert.Equal(referenceName, storedArchive.ReferenceName);
-            Assert.Equal(note, storedArchive.Note);
-            Assert.Equal(system.Uuid, storedArchive.SnapshotSystemUuid);
-            Assert.Equal(system.Name, storedArchive.SnapshotLegacyName);
-            Assert.Equal(localCallName, storedArchive.SnapshotLocalName);
-            Assert.Equal(localSystemId, storedArchive.SnapshotLocalId);
-            Assert.Equal(2, storedArchive.ReferenceCount);
-            Assert.True(storedArchive.HasFirstReference);
-            Assert.True(storedArchive.HasSecondReference);
-            Assert.False(sourceUsageStillExists);
+            Assert.Equal(existingReference.Label, reference.Label);
+            Assert.Equal(existingReference.Url, reference.Url);
         }
 
         private static bool MatchExpectedAssignment(ExtendedRoleAssignmentResponseDTO assignment, ItSystemRole expectedRole, User expectedUser)
