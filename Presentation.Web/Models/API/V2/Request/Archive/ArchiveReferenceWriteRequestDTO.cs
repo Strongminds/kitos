@@ -1,6 +1,6 @@
-namespace Presentation.Web.Models.API.V2.Request.SystemUsage
+namespace Presentation.Web.Models.API.V2.Request.Archive
 {
-    public class ArchiveReferenceDTO
+    public class ArchiveReferenceWriteRequestDTO
     {
         /// <summary>
         /// Label for the archive reference

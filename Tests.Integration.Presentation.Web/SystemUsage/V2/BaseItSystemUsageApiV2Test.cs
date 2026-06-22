@@ -1,9 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.DomainModel;
-using Core.DomainModel.Organization;
-using Core.DomainServices.Extensions;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
@@ -70,12 +67,5 @@ public class BaseItSystemUsageApiV2Test : BaseTest
         }
 
         return gdprInput;
-    }
-
-    protected async Task<(User user, string token)> CreateApiUser(Guid organizationUuid)
-    {
-        var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true, false);
-        var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
-        return (user, userAndGetToken.token);
     }
 }
