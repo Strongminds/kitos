@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Model.Archive;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.ItSystem.DataTypes;
@@ -13,13 +12,16 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
+using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Presentation.Web.Controllers.API.V2.External.Generic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
     public class ItSystemUsageWriteModelMapper : WriteModelMapperBase, IItSystemUsageWriteModelMapper
@@ -275,6 +277,21 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         public SystemUsageJournalPeriodProperties MapJournalPeriodProperties(JournalPeriodDTO input)
         {
             return MapBaseJournalPeriodProperties(input);
+        }
+
+        public ArchiveItSystemUsageParameters MapArchiveParameters(CreateItSystemUsageArchiveRequestDTO request)
+        {
+            return new ArchiveItSystemUsageParameters
+            {
+                ArchivingDate = request.ArchivingDate,
+                ReferenceName = request.ReferenceName,
+                Note = request.Note,
+                ArchiveReferences = request.ArchiveReferences?.Select(reference => new ArchiveReferenceProperties
+                {
+                    Label = reference.Label,
+                    Url = reference.Url
+                }) ?? new List<ArchiveReferenceProperties>()
+            };
         }
 
         private SystemUsageJournalPeriodUpdate MapBaseJournalPeriodProperties(JournalPeriodDTO journalPeriod)

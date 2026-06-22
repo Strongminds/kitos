@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.ApplicationServices.SystemUsage;
 using Core.ApplicationServices.SystemUsage.Relations;
 using Core.ApplicationServices.SystemUsage.Write;
@@ -18,10 +17,8 @@ using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
-using Presentation.Web.Models.API.V2.Internal.Response.Roles;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
-using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Microsoft.AspNetCore.Mvc;
 

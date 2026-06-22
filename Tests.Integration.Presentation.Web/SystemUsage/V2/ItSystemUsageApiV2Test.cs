@@ -7,6 +7,7 @@ using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel;
+using Core.DomainModel.Archive;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
@@ -15,6 +16,7 @@ using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
+using Presentation.Web.Models.API.V2.Request.Archive;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
@@ -2380,9 +2382,62 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var gdpr = system.GDPR;
             Assert.Null(gdpr.RiskAssessmentConductedDate);
             Assert.Null(gdpr.RiskAssessmentNotes);
-            Assert.Null(gdpr.RiskAssessmentDocumentation.Name);
-            Assert.Null(gdpr.RiskAssessmentDocumentation.Url);
+            Assert.Null(gdpr.RiskAssessmentDocumentation?.Name);
+            Assert.Null(gdpr.RiskAssessmentDocumentation?.Url);
             Assert.Null(gdpr.RiskAssessmentResult);
+        }
+
+        [Fact]
+        public async Task Can_Archive_SystemUsage()
+        {
+            //Arrange
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var localCallName = A<string>();
+            var localSystemId = A<string>();
+            var systemUsage = await ItSystemUsageV2Helper.PostAsync(token, new CreateItSystemUsageRequestDTO
+            {
+                SystemUuid = system.Uuid,
+                OrganizationUuid = organization.Uuid,
+                General = new GeneralDataWriteRequestDTO
+                {
+                    LocalCallName = localCallName,
+                    LocalSystemId = localSystemId
+                }
+            });
+            var archivingDate = A<DateTime>();
+            var referenceName = A<string>();
+            var note = A<string>();
+            var existingReference = new ArchiveReferenceWriteRequestDTO
+            {
+                Label = A<string>(),
+                Url = $"https://{A<string>()}.example.com/archive-1"
+            };
+
+            var request = new CreateItSystemUsageArchiveRequestDTO
+            {
+                ArchivingDate = archivingDate,
+                ReferenceName = referenceName,
+                Note = note,
+                ArchiveReferences = [existingReference]
+            };
+
+            //Act
+            var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, request);
+
+            //Assert
+            Assert.NotNull(archive);
+            Assert.Equal(archivingDate, archive.ArchivingDate);
+            Assert.Equal(referenceName, archive.ReferenceName);
+            Assert.Equal(note, archive.Note);
+            Assert.Equal(system.Uuid, archive.ItSystemUuid);
+            Assert.Equal(system.Name, archive.LegacyName);
+            Assert.Equal(localCallName, archive.LocalName);
+            Assert.Equal(localSystemId, archive.LocalId);
+            Assert.Equal(organization.Uuid, archive.Organization?.Uuid);
+            var reference = Assert.Single(archive.ArchiveReferences);
+
+            Assert.Equal(existingReference.Label, reference.Label);
+            Assert.Equal(existingReference.Url, reference.Url);
         }
 
         private static bool MatchExpectedAssignment(ExtendedRoleAssignmentResponseDTO assignment, ItSystemRole expectedRole, User expectedUser)

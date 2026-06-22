@@ -16,6 +16,16 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.Property(x => x.ItSystemArchiveUuid).IsRequired();
             builder.HasIndex(x => x.ItSystemArchiveUuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemArchiveUuid");
+
+            builder.Property(x => x.ItSystemUuid).IsRequired();
+            builder.HasIndex(x => x.ItSystemUuid).HasDatabaseName("IX_ItSystemUsageArchiveSnapshot_ItSystemUuid");
+
+            builder.HasOne(x => x.ItSystem)
+                .WithMany()
+                .HasForeignKey(x => x.ItSystemUuid)
+                .HasPrincipalKey(x => x.Uuid)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

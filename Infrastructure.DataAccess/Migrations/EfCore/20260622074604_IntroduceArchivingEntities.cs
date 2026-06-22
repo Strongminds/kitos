@@ -113,6 +113,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     LegacyName = table.Column<string>(type: maxTextType, nullable: true),
                     LocalName = table.Column<string>(type: maxTextType, nullable: true),
                     LocalId = table.Column<string>(type: maxTextType, nullable: true),
+                    ItSystemUuid = table.Column<Guid>(type: uuidType, nullable: false),
                     ItSystemArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
                     ObjectOwnerId = table.Column<int>(type: intType, nullable: false),
                     LastChanged = table.Column<DateTime>(type: dateTimeType, nullable: false),
@@ -127,6 +128,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         principalTable: "ItSystemArchive",
                         principalColumn: "Uuid",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Snapshot_ItSystem_ItSystemUuid",
+                        column: x => x.ItSystemUuid,
+                        principalTable: "ItSystem",
+                        principalColumn: "Uuid",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Snapshot_User_LastChangedByUserId",
                         column: x => x.LastChangedByUserId,
@@ -182,6 +189,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 table: "ItSystemArchive",
                 column: "SnapshotUuid",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "UX_ItSystemArchive_Uuid",
+                table: "ItSystemArchive",
+                column: "Uuid",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItSystemUsageArchiveSnapshot_ItSystemUuid",
+                table: "Snapshot",
+                column: "ItSystemUuid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Snapshot_LastChangedByUserId",

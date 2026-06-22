@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20260619090512_IntroduceArchivingEntities")]
+    [Migration("20260622074604_IntroduceArchivingEntities")]
     partial class IntroduceArchivingEntities
     {
         /// <inheritdoc />
@@ -295,6 +295,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid>("ItSystemArchiveUuid")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ItSystemUuid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("datetime2");
 
@@ -321,6 +324,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ItSystemArchiveUuid")
                         .IsUnique()
                         .HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemArchiveUuid");
+
+                    b.HasIndex("ItSystemUuid")
+                        .HasDatabaseName("IX_ItSystemUsageArchiveSnapshot_ItSystemUuid");
 
                     b.HasIndex("LastChangedByUserId");
 
@@ -8212,6 +8218,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Core.DomainModel.ItSystem.ItSystem", "ItSystem")
+                        .WithMany()
+                        .HasForeignKey("ItSystemUuid")
+                        .HasPrincipalKey("Uuid")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
                         .WithMany()
                         .HasForeignKey("LastChangedByUserId")
@@ -8223,6 +8236,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasForeignKey("ObjectOwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ItSystem");
 
                     b.Navigation("ItSystemArchive");
 
