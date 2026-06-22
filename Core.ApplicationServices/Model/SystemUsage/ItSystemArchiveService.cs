@@ -60,6 +60,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
         {
             return new ItSystemArchive
             {
+                SnapshotUuid = snapshot.Uuid,
                 OrganizationUuid = systemUsage.Organization.Uuid,
                 ArchivingDate = parameters.ArchivingDate,
                 ReferenceName = parameters.ReferenceName,

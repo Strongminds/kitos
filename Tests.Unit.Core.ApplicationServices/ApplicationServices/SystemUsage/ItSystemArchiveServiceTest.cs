@@ -92,6 +92,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(parameters.ArchivingDate, insertedArchive.ArchivingDate);
             Assert.Equal(parameters.ReferenceName, insertedArchive.ReferenceName);
             Assert.Equal(parameters.Note, insertedArchive.Note);
+            Assert.NotEqual(Guid.Empty, insertedArchive.SnapshotUuid);
+            Assert.Equal(insertedArchive.Snapshot.Uuid, insertedArchive.SnapshotUuid);
 
             Assert.Equal(usage.ItSystem.Uuid, insertedArchive.Snapshot.ItSystemUuid);
             Assert.Equal("Legacy Name", insertedArchive.Snapshot.LegacyName);
