@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel;
+using Core.DomainModel.Archive;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
@@ -125,6 +126,11 @@ namespace Core.ApplicationServices.Authorization.Policies
             }
 
             if (MatchType<ItSystemUsage>(target))
+            {
+                return IsSystemModuleAdmin(organizationId);
+            }
+
+            if (MatchType<ItSystemArchive>(target))
             {
                 return IsSystemModuleAdmin(organizationId);
             }

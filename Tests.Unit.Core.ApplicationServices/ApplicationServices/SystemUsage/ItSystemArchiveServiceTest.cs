@@ -1,4 +1,6 @@
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Model.Archive;
 using Core.ApplicationServices.Model.SystemUsage;
 using Core.DomainModel.Archive;
 using Core.DomainModel.ItSystem;
@@ -17,14 +19,16 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
     public class ItSystemArchiveServiceTest : WithAutoFixture
     {
         private readonly Mock<IItSystemUsageService> _systemUsageService;
+        private readonly Mock<IAuthorizationContext> _authorizationContext;
         private readonly Mock<IGenericRepository<ItSystemArchive>> _archiveRepository;
         private readonly ItSystemArchiveService _sut;
 
         public ItSystemArchiveServiceTest()
         {
             _systemUsageService = new Mock<IItSystemUsageService>();
+            _authorizationContext = new Mock<IAuthorizationContext>();
             _archiveRepository = new Mock<IGenericRepository<ItSystemArchive>>();
-            _sut = new ItSystemArchiveService(_systemUsageService.Object, _archiveRepository.Object);
+            _sut = new ItSystemArchiveService(_systemUsageService.Object, _authorizationContext.Object, _archiveRepository.Object);
         }
 
         [Fact]
@@ -34,7 +38,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usageUuid = A<Guid>();
             var error = new OperationError(OperationFailure.NotFound);
             var parameters = CreateParameters();
-            _systemUsageService.Setup(x => x.GetItSystemUsageByUuid(usageUuid)).Returns(error);
+            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(error);
 
             // Act
             var result = _sut.Create(usageUuid, parameters);
@@ -61,6 +65,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             var usage = new ItSystemUsage
             {
+                OrganizationId = A<int>(),
                 Organization = new Organization { Uuid = organizationUuid },
                 ItSystem = new ItSystem { Uuid = A<Guid>(), Name = "Legacy Name" },
                 LocalCallName = "Local Name",
@@ -69,7 +74,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             ItSystemArchive insertedArchive = null;
 
-            _systemUsageService.Setup(x => x.GetItSystemUsageByUuid(usageUuid)).Returns(usage);
+            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
+            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(usage.OrganizationId)).Returns(true);
             _archiveRepository
                 .Setup(x => x.Insert(It.IsAny<ItSystemArchive>()))
                 .Callback<ItSystemArchive>(archive => insertedArchive = archive)
@@ -108,12 +114,14 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             parameters.ArchiveReferences = null!;
             var usage = new ItSystemUsage
             {
+                OrganizationId = A<int>(),
                 Organization = new Organization { Uuid = A<Guid>() },
                 ItSystem = new ItSystem { Name = A<string>() }
             };
 
             ItSystemArchive insertedArchive = null;
-            _systemUsageService.Setup(x => x.GetItSystemUsageByUuid(usageUuid)).Returns(usage);
+            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
+            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(usage.OrganizationId)).Returns(true);
             _archiveRepository
                 .Setup(x => x.Insert(It.IsAny<ItSystemArchive>()))
                 .Callback<ItSystemArchive>(archive => insertedArchive = archive)
@@ -127,6 +135,31 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.NotNull(insertedArchive);
             Assert.Empty(insertedArchive.ArchiveReferences);
             _archiveRepository.Verify(x => x.Save(), Times.Once);
+        }
+
+        [Fact]
+        public void Create_Returns_Forbidden_If_User_Cannot_Create_Archive()
+        {
+            // Arrange
+            var usageUuid = A<Guid>();
+            var parameters = CreateParameters();
+            var usage = new ItSystemUsage
+            {
+                OrganizationId = A<int>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ItSystem = new ItSystem { Uuid = A<Guid>(), Name = A<string>() }
+            };
+            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
+            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(usage.OrganizationId)).Returns(false);
+
+            // Act
+            var result = _sut.Create(usageUuid, parameters);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+            _archiveRepository.Verify(x => x.Insert(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
 
         private ArchiveItSystemUsageParameters CreateParameters()

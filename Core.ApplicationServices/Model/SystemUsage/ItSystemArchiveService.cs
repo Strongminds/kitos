@@ -1,4 +1,5 @@
 ﻿using Core.Abstractions.Types;
+using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel.Archive;
 using Core.DomainServices;
@@ -10,14 +11,18 @@ using Core.DomainModel.ItSystemUsage;
 namespace Core.ApplicationServices.Model.SystemUsage
 {
     public class ItSystemArchiveService(
-        IItSystemUsageService _systemUsageService,
+        IItSystemUsageService systemUsageService,
+        IAuthorizationContext authorizationContext,
         IGenericRepository<ItSystemArchive> archiveRepository) : IItSystemArchiveService
     {
         public Result<ItSystemArchive, OperationError> Create(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
         {
-            var systemUsageResult = _systemUsageService.GetItSystemUsageByUuid(systemUsageUuid);
+            var systemUsageResult = systemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid);
             if (systemUsageResult.Failed) return systemUsageResult.Error;
             var systemUsage = systemUsageResult.Value;
+
+            if (!authorizationContext.AllowCreate<ItSystemArchive>(systemUsage.OrganizationId))
+                return new OperationError("User is not allowed to create it-system archives", OperationFailure.Forbidden);
 
             var snapshot = CreateSnapshot(systemUsage);
             var archiveReferences = CreateArchiveReferences(parameters);
