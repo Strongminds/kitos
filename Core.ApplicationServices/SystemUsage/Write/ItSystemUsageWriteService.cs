@@ -706,7 +706,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.CriticalityLevelDocumentation, (systemUsage, newLink) => UpdateCriticalityLevelDocumentation(systemUsage, newLink)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.Purpose, (systemUsage, newPurpose) => systemUsage.UpdateGeneralPurpose(newPurpose)))
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.TechnicalSystemTypeUuids, UpdateTechnicalSystemTypes))
-                .Bind(usage => usage.WithOptionalUpdate(generalProperties.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt));
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.HostedAt, (systemUsage, hostedAt) => systemUsage.HostedAt = hostedAt))
+                .Bind(usage => usage.WithOptionalUpdate(generalProperties.LicensingAndCodeModels, (systemUsage, newModels) => systemUsage.SetLicensingAndCodeModels(newModels)));
         }
 
         private void RaiseValidityUpdatedEvent(ItSystemUsage usage) {
