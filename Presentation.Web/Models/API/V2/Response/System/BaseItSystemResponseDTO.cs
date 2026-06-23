@@ -94,10 +94,5 @@ namespace Presentation.Web.Models.API.V2.Response.System
         /// </summary>
         [Required]
         public IEnumerable<ShallowOrganizationResponseDTO> MainContractSuppliers { get; set; }
-
-        /// <summary>
-        /// The licensing and code models used for this system.
-        /// </summary>
-        public IEnumerable<LicensingAndCodeModelChoice> LicensingAndCodeModels { get; set; }
     }
 }

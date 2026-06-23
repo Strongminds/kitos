@@ -9,6 +9,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.System;
 using System;
 using System.Collections.Generic;
+using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {
@@ -98,7 +99,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                     .DistinctBy(x => x.Uuid)
                     .Select(x => x.MapShallowOrganizationResponseDTO())
                     .ToList();
-            dto.LicensingAndCodeModels = MapLicensingAndCodeModels(itSystem.LicensingAndCodeModels);
         }
     }
 }
