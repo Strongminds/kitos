@@ -23,7 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 ArchiveReferences = archive.ArchiveReferences?.Select(reference => new ArchiveReferenceResponseDTO
                 {
                     Uuid = reference.Uuid,
-                    Label = reference.Label,
+                    Name = reference.Label,
                     Url = reference.Url
                 }).ToList() ?? []
             };

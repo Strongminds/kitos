@@ -290,7 +290,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Note = request.Note,
                 ArchiveReferences = request.ArchiveReferences?.Select(reference => new ArchiveReferenceProperties
                 {
-                    Label = reference.Label,
+                    Label = reference.Name,
                     Url = reference.Url
                 }) ?? new List<ArchiveReferenceProperties>()
             };
