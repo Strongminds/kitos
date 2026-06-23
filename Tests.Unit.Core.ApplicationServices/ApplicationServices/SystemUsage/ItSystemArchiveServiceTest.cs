@@ -55,7 +55,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var usageUuid = A<Guid>();
-            var organizationUuid = A<Guid>();
             var parameters = CreateParameters();
             parameters.ArchiveReferences = new[]
             {
@@ -66,7 +65,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usage = new ItSystemUsage
             {
                 OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = organizationUuid },
+                Organization = new Organization { Uuid = A<Guid>() },
                 ItSystem = new ItSystem { Uuid = A<Guid>(), Name = "Legacy Name" },
                 LocalCallName = "Local Name",
                 LocalSystemId = "Local Id"
@@ -88,7 +87,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.True(result.Ok);
             Assert.Same(insertedArchive, result.Value);
             Assert.NotNull(insertedArchive);
-            Assert.Equal(organizationUuid, insertedArchive.OrganizationUuid);
+            Assert.Equal(usage.OrganizationId, insertedArchive.OrganizationId);
             Assert.Equal(parameters.ArchivingDate, insertedArchive.ArchivingDate);
             Assert.Equal(parameters.ReferenceName, insertedArchive.ReferenceName);
             Assert.Equal(parameters.Note, insertedArchive.Note);
@@ -187,7 +186,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var archive = new ItSystemArchive
             {
                 Uuid = archiveUuid,
-                OrganizationUuid = A<Guid>(),
+                OrganizationId = A<int>(),
                 Organization = new Organization { Uuid = A<Guid>() },
                 ReferenceName = A<string>(),
                 Note = A<string>(),
@@ -214,7 +213,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var archive = new ItSystemArchive
             {
                 Uuid = archiveUuid,
-                OrganizationUuid = A<Guid>(),
+                OrganizationId = A<int>(),
                 Organization = new Organization { Uuid = A<Guid>() },
                 ReferenceName = A<string>(),
                 Note = A<string>(),
@@ -258,7 +257,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var archive = new ItSystemArchive
             {
                 Uuid = archiveUuid,
-                OrganizationUuid = A<Guid>(),
+                OrganizationId = A<int>(),
                 Organization = new Organization { Uuid = A<Guid>() },
                 ReferenceName = A<string>(),
                 Note = A<string>(),
@@ -287,7 +286,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var archive = new ItSystemArchive
             {
                 Uuid = archiveUuid,
-                OrganizationUuid = A<Guid>(),
+                OrganizationId = A<int>(),
                 Organization = new Organization { Uuid = A<Guid>() },
                 ReferenceName = A<string>(),
                 Note = A<string>(),

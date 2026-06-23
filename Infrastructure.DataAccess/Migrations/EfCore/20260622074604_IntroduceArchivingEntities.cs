@@ -28,7 +28,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                             .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Uuid = table.Column<Guid>(type: uuidType, nullable: false),
                     SnapshotUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    OrganizationUuid = table.Column<Guid>(type: uuidType, nullable: false),
+                    OrganizationId = table.Column<int>(type: intType, nullable: false),
                     Note = table.Column<string>(type: maxTextType, nullable: false),
                     ArchivingDate = table.Column<DateTime>(type: dateTimeType, nullable: false),
                     ReferenceName = table.Column<string>(type: maxTextType, nullable: false),
@@ -41,10 +41,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     table.PrimaryKey("PK_ItSystemArchive", x => x.Id);
                     table.UniqueConstraint("AK_ItSystemArchive_Uuid", x => x.Uuid);
                     table.ForeignKey(
-                        name: "FK_ItSystemArchive_Organization_OrganizationUuid",
-                        column: x => x.OrganizationUuid,
+                        name: "FK_ItSystemArchive_Organization_OrganizationId",
+                        column: x => x.OrganizationId,
                         principalTable: "Organization",
-                        principalColumn: "Uuid",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ItSystemArchive_User_LastChangedByUserId",
@@ -180,9 +180,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemArchive_OrganizationUuid",
+                name: "IX_ItSystemArchive_OrganizationId",
                 table: "ItSystemArchive",
-                column: "OrganizationUuid");
+                column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
                 name: "UX_ItSystemArchive_ItSystemUsageSnapshotUuid",

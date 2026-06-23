@@ -252,8 +252,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("ObjectOwnerId")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("OrganizationUuid")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReferenceName")
                         .IsRequired()
@@ -271,7 +271,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.HasIndex("OrganizationUuid");
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("SnapshotUuid")
                         .IsUnique()
@@ -8197,8 +8197,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany()
-                        .HasForeignKey("OrganizationUuid")
-                        .HasPrincipalKey("Uuid")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
