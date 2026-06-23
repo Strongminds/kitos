@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainModel.Shared;
@@ -163,5 +164,6 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public IsDataProcessingAgreementRequired? IsDataProcessingAgreementRequired { get; set; }
         public string ItInterfaceIdsAsCsv { get; set; }
         public string ItInterfaceVersionsAsCsv { get; set; }
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; }
     }
 }

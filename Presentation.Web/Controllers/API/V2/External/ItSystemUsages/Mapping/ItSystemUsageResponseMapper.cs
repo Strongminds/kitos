@@ -201,7 +201,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 CriticalityLevelDocumentation = MapSimpleLink(systemUsage.CriticalityLevelDocumentationName, systemUsage.CriticalityLevelDocumentationUrl),
                 Purpose = systemUsage.GeneralPurpose,
                 TechnicalSystemTypes = (systemUsage.TechnicalSystemTypes ?? Array.Empty<TechnicalSystemType>()).Select(x => x.MapIdentityNamePairDTO()).ToList(),
-                HostedAt = MapHosting(systemUsage)
+                HostedAt = MapHosting(systemUsage),
+                LicensingAndCodeModels = (systemUsage.LicensingAndCodeModels ?? []).Select(x => x.ToChoice()).ToList()
             };
         }
 
