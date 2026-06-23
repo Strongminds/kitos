@@ -1,5 +1,4 @@
 using System;
-using Presentation.Web.Models.API.V2.Request.SystemUsage;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {

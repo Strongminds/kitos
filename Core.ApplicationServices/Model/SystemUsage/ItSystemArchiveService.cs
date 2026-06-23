@@ -49,11 +49,12 @@ namespace Core.ApplicationServices.Model.SystemUsage
 
         public Result<ItSystemArchive, OperationError> Delete(Guid archiveUuid)
         {
-            var archive = archiveRepository.AsQueryable()
-                .FirstOrDefault(a => a.Uuid == archiveUuid);
+            var archiveResult = GetByUuid(archiveUuid);
 
-            if (archive == null)
-                return new OperationError($"Archive with UUID {archiveUuid} not found", OperationFailure.NotFound);
+            if (archiveResult.Failed)
+                return archiveResult.Error;
+
+            var archive = archiveResult.Value;
 
             if (!authorizationContext.AllowDelete(archive))
                 return new OperationError("User is not allowed to delete this archive", OperationFailure.Forbidden);
