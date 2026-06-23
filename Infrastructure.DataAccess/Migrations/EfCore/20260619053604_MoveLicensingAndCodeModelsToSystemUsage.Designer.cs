@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260619053604_MoveLicensingAndCodeModelsToSystemUsage")]
+    partial class MoveLicensingAndCodeModelsToSystemUsage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,163 +180,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ObjectOwnerId");
 
                     b.ToTable("AdviceUserRelations", (string)null);
-                });
-
-            modelBuilder.Entity("Core.DomainModel.Archive.ArchiveReference", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ItSystemArchiveUuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastChanged")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LastChangedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ObjectOwnerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("Uuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItSystemArchiveUuid");
-
-                    b.HasIndex("LastChangedByUserId");
-
-                    b.HasIndex("ObjectOwnerId");
-
-                    b.HasIndex("Uuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ArchiveReference_Uuid");
-
-                    b.ToTable("ArchiveReference", (string)null);
-                });
-
-            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemArchive", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ArchivingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastChanged")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LastChangedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ObjectOwnerId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("OrganizationUuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ReferenceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SnapshotUuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Uuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LastChangedByUserId");
-
-                    b.HasIndex("ObjectOwnerId");
-
-                    b.HasIndex("OrganizationUuid");
-
-                    b.HasIndex("SnapshotUuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemArchive_ItSystemUsageSnapshotUuid");
-
-                    b.HasIndex("Uuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemArchive_Uuid");
-
-                    b.ToTable("ItSystemArchive", (string)null);
-                });
-
-            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ItSystemArchiveUuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ItSystemUuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("LastChanged")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LastChangedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LegacyName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LocalId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LocalName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ObjectOwnerId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("Uuid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItSystemArchiveUuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemArchiveUuid");
-
-                    b.HasIndex("ItSystemUuid")
-                        .HasDatabaseName("IX_ItSystemUsageArchiveSnapshot_ItSystemUuid");
-
-                    b.HasIndex("LastChangedByUserId");
-
-                    b.HasIndex("ObjectOwnerId");
-
-                    b.HasIndex("Uuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_Uuid");
-
-                    b.ToTable("Snapshot", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.AttachedOption", b =>
@@ -3443,7 +3289,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("LicensingAndCodeModels");
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -8154,99 +7999,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ObjectOwner");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.Archive.ArchiveReference", b =>
-                {
-                    b.HasOne("Core.DomainModel.Archive.ItSystemArchive", "ItSystemArchive")
-                        .WithMany("ArchiveReferences")
-                        .HasForeignKey("ItSystemArchiveUuid")
-                        .HasPrincipalKey("Uuid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastChangedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
-                        .WithMany()
-                        .HasForeignKey("ObjectOwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ItSystemArchive");
-
-                    b.Navigation("LastChangedByUser");
-
-                    b.Navigation("ObjectOwner");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemArchive", b =>
-                {
-                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastChangedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
-                        .WithMany()
-                        .HasForeignKey("ObjectOwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationUuid")
-                        .HasPrincipalKey("Uuid")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("LastChangedByUser");
-
-                    b.Navigation("ObjectOwner");
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", b =>
-                {
-                    b.HasOne("Core.DomainModel.Archive.ItSystemArchive", "ItSystemArchive")
-                        .WithOne("Snapshot")
-                        .HasForeignKey("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", "ItSystemArchiveUuid")
-                        .HasPrincipalKey("Core.DomainModel.Archive.ItSystemArchive", "Uuid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.ItSystem.ItSystem", "ItSystem")
-                        .WithMany()
-                        .HasForeignKey("ItSystemUuid")
-                        .HasPrincipalKey("Uuid")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastChangedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
-                        .WithMany()
-                        .HasForeignKey("ObjectOwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ItSystem");
-
-                    b.Navigation("ItSystemArchive");
-
-                    b.Navigation("LastChangedByUser");
-
-                    b.Navigation("ObjectOwner");
-                });
-
             modelBuilder.Entity("Core.DomainModel.AttachedOption", b =>
                 {
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
@@ -11556,13 +11308,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("AdviceSent");
 
                     b.Navigation("Reciepients");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemArchive", b =>
-                {
-                    b.Navigation("ArchiveReferences");
-
-                    b.Navigation("Snapshot");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ContactPerson", b =>
