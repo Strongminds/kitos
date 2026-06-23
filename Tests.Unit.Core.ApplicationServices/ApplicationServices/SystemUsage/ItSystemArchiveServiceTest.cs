@@ -55,6 +55,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var usageUuid = A<Guid>();
+            var organizationUuid = A<Guid>();
             var parameters = CreateParameters();
             parameters.ArchiveReferences = new[]
             {
