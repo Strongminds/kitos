@@ -55,7 +55,6 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var usageUuid = A<Guid>();
-            var organizationUuid = A<Guid>();
             var parameters = CreateParameters();
             parameters.ArchiveReferences = new[]
             {
@@ -63,19 +62,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 new ArchiveReferenceProperties { Label = "Ref 2", Url = "https://example.com/2" }
             };
 
-            var usage = new ItSystemUsage
-            {
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ItSystem = new ItSystem { Uuid = A<Guid>(), Name = "Legacy Name" },
-                LocalCallName = "Local Name",
-                LocalSystemId = "Local Id"
-            };
+            var usage = CreateSystemUsage("Legacy Name", "Local Name", "Local Id");
 
             ItSystemArchive insertedArchive = null;
 
-            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
-            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(usage.OrganizationId)).Returns(true);
+            SetupSystemUsageLookup(usageUuid, usage);
+            SetupAllowCreate(usage.OrganizationId, true);
             _archiveRepository
                 .Setup(x => x.Insert(It.IsAny<ItSystemArchive>()))
                 .Callback<ItSystemArchive>(archive => insertedArchive = archive)
@@ -114,16 +106,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var usageUuid = A<Guid>();
             var parameters = CreateParameters();
             parameters.ArchiveReferences = null!;
-            var usage = new ItSystemUsage
-            {
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ItSystem = new ItSystem { Name = A<string>() }
-            };
+            var usage = CreateSystemUsage();
 
             ItSystemArchive insertedArchive = null;
-            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
-            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(usage.OrganizationId)).Returns(true);
+            SetupSystemUsageLookup(usageUuid, usage);
+            SetupAllowCreate(usage.OrganizationId, true);
             _archiveRepository
                 .Setup(x => x.Insert(It.IsAny<ItSystemArchive>()))
                 .Callback<ItSystemArchive>(archive => insertedArchive = archive)
@@ -145,14 +132,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             // Arrange
             var usageUuid = A<Guid>();
             var parameters = CreateParameters();
-            var usage = new ItSystemUsage
-            {
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ItSystem = new ItSystem { Uuid = A<Guid>(), Name = A<string>() }
-            };
-            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
-            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(usage.OrganizationId)).Returns(false);
+            var usage = CreateSystemUsage();
+            SetupSystemUsageLookup(usageUuid, usage);
+            SetupAllowCreate(usage.OrganizationId, false);
 
             // Act
             var result = _sut.Create(usageUuid, parameters);
@@ -169,7 +151,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var archiveUuid = A<Guid>();
-            _archiveRepository.Setup(x => x.AsQueryable()).Returns(Enumerable.Empty<ItSystemArchive>().AsQueryable());
+            SetupArchiveQuery();
 
             // Act
             var result = _sut.GetByUuid(archiveUuid);
@@ -184,19 +166,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var archiveUuid = A<Guid>();
-            var archive = new ItSystemArchive
-            {
-                Uuid = archiveUuid,
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ReferenceName = A<string>(),
-                Note = A<string>(),
-                ArchivingDate = A<DateTime>(),
-                Snapshot = new ItSystemUsageArchiveSnapshot()
-            };
+            var archive = CreateArchive(archiveUuid);
 
-            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
-            _authorizationContext.Setup(x => x.AllowReads(archive)).Returns(false);
+            SetupArchiveQuery(archive);
+            SetupAllowReads(archive, false);
 
             // Act
             var result = _sut.GetByUuid(archiveUuid);
@@ -211,19 +184,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var archiveUuid = A<Guid>();
-            var archive = new ItSystemArchive
-            {
-                Uuid = archiveUuid,
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ReferenceName = A<string>(),
-                Note = A<string>(),
-                ArchivingDate = A<DateTime>(),
-                Snapshot = new ItSystemUsageArchiveSnapshot()
-            };
+            var archive = CreateArchive(archiveUuid);
 
-            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
-            _authorizationContext.Setup(x => x.AllowReads(archive)).Returns(true);
+            SetupArchiveQuery(archive);
+            SetupAllowReads(archive, true);
 
             // Act
             var result = _sut.GetByUuid(archiveUuid);
@@ -238,7 +202,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var archiveUuid = A<Guid>();
-            _archiveRepository.Setup(x => x.AsQueryable()).Returns(Enumerable.Empty<ItSystemArchive>().AsQueryable());
+            SetupArchiveQuery();
 
             // Act
             var result = _sut.Delete(archiveUuid);
@@ -255,19 +219,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var archiveUuid = A<Guid>();
-            var archive = new ItSystemArchive
-            {
-                Uuid = archiveUuid,
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ReferenceName = A<string>(),
-                Note = A<string>(),
-                ArchivingDate = A<DateTime>(),
-                Snapshot = new ItSystemUsageArchiveSnapshot()
-            };
+            var archive = CreateArchive(archiveUuid);
 
-            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
-            _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(false);
+            SetupArchiveQuery(archive);
+            SetupAllowReads(archive, true);
+            SetupAllowDelete(archive, false);
 
             // Act
             var result = _sut.Delete(archiveUuid);
@@ -275,6 +231,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             // Assert
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+            VerifyAllowDelete(archive, Times.Once());
             _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemArchive>()), Times.Never);
             _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
@@ -284,19 +241,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             // Arrange
             var archiveUuid = A<Guid>();
-            var archive = new ItSystemArchive
-            {
-                Uuid = archiveUuid,
-                OrganizationId = A<int>(),
-                Organization = new Organization { Uuid = A<Guid>() },
-                ReferenceName = A<string>(),
-                Note = A<string>(),
-                ArchivingDate = A<DateTime>(),
-                Snapshot = new ItSystemUsageArchiveSnapshot()
-            };
+            var archive = CreateArchive(archiveUuid);
 
-            _archiveRepository.Setup(x => x.AsQueryable()).Returns(new[] { archive }.AsQueryable());
-            _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(true);
+            SetupArchiveQuery(archive);
+            SetupAllowReads(archive, true);
+            SetupAllowDelete(archive, true);
 
             // Act
             var result = _sut.Delete(archiveUuid);
@@ -315,6 +264,62 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 ArchivingDate = A<DateTime>(),
                 ReferenceName = A<string>(),
                 Note = A<string>()
+            };
+        }
+
+        private void SetupSystemUsageLookup(Guid usageUuid, ItSystemUsage usage)
+        {
+            _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
+        }
+
+        private void SetupArchiveQuery(params ItSystemArchive[] archives)
+        {
+            _archiveRepository.Setup(x => x.AsQueryable()).Returns(archives.AsQueryable());
+        }
+
+        private void SetupAllowCreate(int organizationId, bool isAllowed)
+        {
+            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(organizationId)).Returns(isAllowed);
+        }
+
+        private void SetupAllowReads(ItSystemArchive archive, bool isAllowed)
+        {
+            _authorizationContext.Setup(x => x.AllowReads(archive)).Returns(isAllowed);
+        }
+
+        private void SetupAllowDelete(ItSystemArchive archive, bool isAllowed)
+        {
+            _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(isAllowed);
+        }
+
+        private void VerifyAllowDelete(ItSystemArchive archive, Times times)
+        {
+            _authorizationContext.Verify(x => x.AllowDelete(archive), times);
+        }
+
+        private ItSystemUsage CreateSystemUsage(string? systemName = null, string? localName = null, string? localId = null)
+        {
+            return new ItSystemUsage
+            {
+                OrganizationId = A<int>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ItSystem = new ItSystem { Uuid = A<Guid>(), Name = systemName ?? A<string>() },
+                LocalCallName = localName,
+                LocalSystemId = localId
+            };
+        }
+
+        private ItSystemArchive CreateArchive(Guid archiveUuid)
+        {
+            return new ItSystemArchive
+            {
+                Uuid = archiveUuid,
+                OrganizationId = A<int>(),
+                Organization = new Organization { Uuid = A<Guid>() },
+                ReferenceName = A<string>(),
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                Snapshot = new ItSystemUsageArchiveSnapshot()
             };
         }
     }
