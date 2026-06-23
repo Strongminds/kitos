@@ -91,6 +91,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal("Legacy Name", insertedArchive.Snapshot.LegacyName);
             Assert.Equal("Local Name", insertedArchive.Snapshot.LocalName);
             Assert.Equal("Local Id", insertedArchive.Snapshot.LocalId);
+            Assert.Equal(usage.Concluded, insertedArchive.Snapshot.TakenIntoUsageDate);
 
             var mappedReferences = insertedArchive.ArchiveReferences.ToList();
             Assert.Equal(2, mappedReferences.Count);

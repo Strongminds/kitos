@@ -35,6 +35,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// System name from the snapshot at archive time
         /// </summary>
         public string? LegacyName { get; set; }
+        /// <summary>
+        /// Date system was taken into usage
+        /// </summary>
+        public DateTime? TakenIntoUsageDate { get; set; }
 
         /// <summary>
         /// Local call name from the snapshot at archive time

@@ -310,6 +310,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("LocalName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("TakenIntoUsageDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ObjectOwnerId")
                         .HasColumnType("int");
 

@@ -71,6 +71,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
             {
                 ItSystemUuid = system.Uuid,
                 LegacyName = system.Name,
+                TakenIntoUsageDate = systemUsage.Concluded,
                 LocalId = systemUsage.LocalSystemId,
                 LocalName = systemUsage.LocalCallName
             };

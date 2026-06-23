@@ -110,6 +110,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         : table.Column<int>(type: intType, nullable: false)
                             .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Uuid = table.Column<Guid>(type: uuidType, nullable: false),
+                    TakenIntoUsageDate = table.Column<DateTime?>(type: dateTimeType, nullable: true),
                     LegacyName = table.Column<string>(type: maxTextType, nullable: true),
                     LocalName = table.Column<string>(type: maxTextType, nullable: true),
                     LocalId = table.Column<string>(type: maxTextType, nullable: true),

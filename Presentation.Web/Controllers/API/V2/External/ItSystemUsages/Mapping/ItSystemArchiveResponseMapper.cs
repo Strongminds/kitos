@@ -17,6 +17,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Note = archive.Note,
                 ItSystemUuid = archive.Snapshot.ItSystemUuid,
                 LegacyName = archive.Snapshot.LegacyName,
+                TakenIntoUsageDate = archive.Snapshot.TakenIntoUsageDate,
                 LocalName = archive.Snapshot.LocalName,
                 LocalId = archive.Snapshot.LocalId,
                 Organization = archive.Organization?.MapShallowOrganizationResponseDTO(),
