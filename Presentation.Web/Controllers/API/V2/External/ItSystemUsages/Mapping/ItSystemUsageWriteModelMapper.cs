@@ -286,6 +286,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return new ArchiveItSystemUsageParameters
             {
                 ArchivingDate = request.ArchivingDate,
+                TakenIntoUsageDate = request.TakenIntoUsageDate,
                 ReferenceName = request.ReferenceName,
                 Note = request.Note,
                 ArchiveReferences = request.ArchiveReferences?.Select(reference => new ArchiveReferenceProperties

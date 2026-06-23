@@ -25,6 +25,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             {
                 ReferenceName = A<string>(),
                 ArchivingDate = A<DateTime>(),
+                TakenIntoUsageDate = A<DateTime>(),
                 Note = A<string>()
             };
             var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, archiveRequest);
@@ -49,6 +50,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             {
                 ReferenceName = A<string>(),
                 ArchivingDate = A<DateTime>(),
+                TakenIntoUsageDate = A<DateTime>(),
                 Note = A<string>()
             };
             var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, archiveRequest);
