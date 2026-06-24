@@ -1,7 +1,6 @@
 using Presentation.Web.Models.API.V2.Types.Shared;
 using System;
 using System.Collections.Generic;
-using Presentation.Web.Models.API.V2.Types.Shared;
 
 namespace Presentation.Web.Models.API.V2.Request.SystemUsage
 {
