@@ -49,19 +49,16 @@ namespace Core.ApplicationServices.Model.SystemUsage
 
         public Result<ItSystemArchive, OperationError> Delete(Guid archiveUuid)
         {
-            var archiveResult = GetByUuid(archiveUuid);
-
-            if (archiveResult.Failed)
-                return archiveResult.Error;
-
-            var archive = archiveResult.Value;
-
-            if (!authorizationContext.AllowDelete(archive))
-                return new OperationError("User is not allowed to delete this archive", OperationFailure.Forbidden);
-
-            archiveRepository.Delete(archive);
-            archiveRepository.Save();
-            return archive;
+            return GetByUuid(archiveUuid)
+                .Bind(archive => !authorizationContext.AllowDelete(archive)
+                    ? new OperationError("User is not allowed to delete this archive", OperationFailure.Forbidden)
+                    : Result<ItSystemArchive, OperationError>.Success(archive))
+                .Bind(archive =>
+                {
+                    archiveRepository.Delete(archive);
+                    archiveRepository.Save();
+                    return Result<ItSystemArchive,OperationError>.Success(archive);
+                });
         }
 
         private static ItSystemUsageArchiveSnapshot CreateSnapshot(ItSystemUsage systemUsage)

@@ -21,14 +21,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var (token, _, organization, system) = await CreatePrerequisitesAsync();
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organization.Uuid);
             
-            var archiveRequest = new CreateItSystemUsageArchiveRequestDTO
-            {
-                ReferenceName = A<string>(),
-                ArchivingDate = A<DateTime>(),
-                TakenIntoUsageDate = A<DateTime>(),
-                Note = A<string>()
-            };
-            var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, archiveRequest);
+            var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, CreateArchiveRequest());
 
             // Act
             var result = await ItSystemArchiveV2Helper.GetArchiveAsync(token, archive.Uuid);
@@ -46,14 +39,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var (token, _, organization, system) = await CreatePrerequisitesAsync();
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organization.Uuid);
             
-            var archiveRequest = new CreateItSystemUsageArchiveRequestDTO
-            {
-                ReferenceName = A<string>(),
-                ArchivingDate = A<DateTime>(),
-                TakenIntoUsageDate = A<DateTime>(),
-                Note = A<string>()
-            };
-            var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, archiveRequest);
+            var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, CreateArchiveRequest());
 
             // Act
             await ItSystemArchiveV2Helper.DeleteArchiveAsync(token, archive.Uuid);
@@ -61,6 +47,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             // Assert - Verify archive is deleted by attempting to get it
             var getResult = await ItSystemArchiveV2Helper.SendGetArchiveAsync(token, archive.Uuid);
             Assert.Equal(System.Net.HttpStatusCode.NotFound, getResult.StatusCode);
+        }
+
+        private CreateItSystemUsageArchiveRequestDTO CreateArchiveRequest()
+        {
+            return new CreateItSystemUsageArchiveRequestDTO
+            {
+                ReferenceName = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                TakenIntoUsageDate = A<DateTime>(),
+                Note = A<string>()
+            };
         }
 
         private async Task<(string token, User user, ShallowOrganizationResponseDTO organization, ItSystemResponseDTO system)> CreatePrerequisitesAsync()
