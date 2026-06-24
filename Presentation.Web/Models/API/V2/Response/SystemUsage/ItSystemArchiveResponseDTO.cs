@@ -19,7 +19,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// A reference name for the archive
         /// </summary>
-        public required string ReferenceName { get; set; }
+        public string? ReferenceName { get; set; }
 
         /// <summary>
         /// Notes about the archive

@@ -14,7 +14,7 @@ public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapsho
 
     public required string Note { get; set; }
     public required DateTime ArchivingDate { get; set; }
-    public required string ReferenceName { get; set; }
+    public string ReferenceName { get; set; }
 
     public virtual ICollection<ArchiveReference> ArchiveReferences { get; set; }
 }

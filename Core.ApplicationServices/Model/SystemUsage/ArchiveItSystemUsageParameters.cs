@@ -7,7 +7,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
     public class ArchiveItSystemUsageParameters
     {
         public required DateTime ArchivingDate { get; set; }
-        public required string ReferenceName { get; set; }
+        public string? ReferenceName { get; set; }
         public required string Note { get; set; }
         public IEnumerable<ArchiveReferenceProperties> ArchiveReferences { get; set; } = new List<ArchiveReferenceProperties>();
     }
