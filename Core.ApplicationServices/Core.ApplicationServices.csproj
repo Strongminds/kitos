@@ -24,5 +24,8 @@
     <ProjectReference Include="..\Core.DomainServices\Core.DomainServices.csproj" />
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\Archive\" />
+  </ItemGroup>
 </Project>
 

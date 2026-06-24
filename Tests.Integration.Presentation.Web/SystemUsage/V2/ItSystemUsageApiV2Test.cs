@@ -16,7 +16,6 @@ using ExpectedObjects;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
-using Presentation.Web.Models.API.V2.Request.Archive;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
@@ -2407,9 +2406,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var archivingDate = A<DateTime>();
             var referenceName = A<string>();
             var note = A<string>();
-            var existingReference = new ArchiveReferenceWriteRequestDTO
+            var existingReference = new SimpleLinkDTO
             {
-                Label = A<string>(),
+                Name = A<string>(),
                 Url = $"https://{A<string>()}.example.com/archive-1"
             };
 
@@ -2436,7 +2435,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(organization.Uuid, archive.Organization?.Uuid);
             var reference = Assert.Single(archive.ArchiveReferences);
 
-            Assert.Equal(existingReference.Label, reference.Label);
+            Assert.Equal(existingReference.Name, reference.Label);
             Assert.Equal(existingReference.Url, reference.Url);
         }
 

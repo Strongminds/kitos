@@ -1,4 +1,4 @@
-using Presentation.Web.Models.API.V2.Request.Archive;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using System;
 using System.Collections.Generic;
 
@@ -24,6 +24,6 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// <summary>
         /// References associated with the archive
         /// </summary>
-        public IEnumerable<ArchiveReferenceWriteRequestDTO> ArchiveReferences { get; set; } = new List<ArchiveReferenceWriteRequestDTO>();
+        public IEnumerable<SimpleLinkDTO> ArchiveReferences { get; set; } = new List<SimpleLinkDTO>();
     }
 }
