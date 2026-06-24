@@ -2404,6 +2404,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 }
             });
             var archivingDate = A<DateTime>();
+            var takenIntoUsageDate = A<DateTime>();
             var referenceName = A<string>();
             var note = A<string>();
             var existingReference = new SimpleLinkDTO
@@ -2415,6 +2416,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var request = new CreateItSystemUsageArchiveRequestDTO
             {
                 ArchivingDate = archivingDate,
+                TakenIntoUsageDate = takenIntoUsageDate,
                 ReferenceName = referenceName,
                 Note = note,
                 ArchiveReferences = [existingReference]

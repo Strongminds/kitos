@@ -17,13 +17,14 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 Note = archive.Note,
                 ItSystemUuid = archive.Snapshot.ItSystemUuid,
                 LegacyName = archive.Snapshot.LegacyName,
+                TakenIntoUsageDate = archive.Snapshot.TakenIntoUsageDate,
                 LocalName = archive.Snapshot.LocalName,
                 LocalId = archive.Snapshot.LocalId,
                 Organization = archive.Organization?.MapShallowOrganizationResponseDTO(),
                 ArchiveReferences = archive.ArchiveReferences?.Select(reference => new ArchiveReferenceResponseDTO
                 {
                     Uuid = reference.Uuid,
-                    Label = reference.Label,
+                    Name = reference.Label,
                     Url = reference.Url
                 }).ToList() ?? []
             };

@@ -249,8 +249,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("ObjectOwnerId")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("OrganizationUuid")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReferenceName")
                         .IsRequired()
@@ -268,7 +268,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.HasIndex("OrganizationUuid");
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("SnapshotUuid")
                         .IsUnique()
@@ -312,6 +312,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<int>("ObjectOwnerId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("TakenIntoUsageDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("Uuid")
                         .HasColumnType("uniqueidentifier");
@@ -3443,7 +3446,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("LicensingAndCodeModels");
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -8198,8 +8200,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
                         .WithMany()
-                        .HasForeignKey("OrganizationUuid")
-                        .HasPrincipalKey("Uuid")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

@@ -20,8 +20,7 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasOne(x => x.Organization)
                 .WithMany()
-                .HasForeignKey(x => x.OrganizationUuid)
-                .HasPrincipalKey(x => x.Uuid)
+                .HasForeignKey(x => x.OrganizationId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 

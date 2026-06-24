@@ -1,15 +1,21 @@
 using Presentation.Web.Models.API.V2.Types.Shared;
 using System;
 using System.Collections.Generic;
+using Presentation.Web.Models.API.V2.Types.Shared;
 
 namespace Presentation.Web.Models.API.V2.Request.SystemUsage
 {
     public class CreateItSystemUsageArchiveRequestDTO
     {
         /// <summary>
-        /// The date when the archive was created
+        /// The date when the system usage was archived
         /// </summary>
         public required DateTime ArchivingDate { get; set; }
+
+        /// <summary>
+        /// The date when the system was taken into usage
+        /// </summary>
+        public required DateTime TakenIntoUsageDate { get; set; }
 
         /// <summary>
         /// A reference name for the archive

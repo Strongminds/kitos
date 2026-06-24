@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.DomainModel.ItSystem;
 
 namespace Core.DomainModel.Archive;
 
-public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>
+public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>, IOwnedByOrganization, ISystemModule
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public Guid SnapshotUuid { get; set; }
     public virtual ItSystemUsageArchiveSnapshot Snapshot { get; set; }
 
-    public Guid OrganizationUuid { get; set; }
+    public int OrganizationId { get; set; }
     public virtual Organization.Organization Organization { get; set; }
 
     public required string Note { get; set; }
