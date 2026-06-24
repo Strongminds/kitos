@@ -310,11 +310,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("LocalName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("TakenIntoUsageDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("ObjectOwnerId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("TakenIntoUsageDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("Uuid")
                         .HasColumnType("uniqueidentifier");
@@ -3446,7 +3446,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("LicensingAndCodeModels");
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
