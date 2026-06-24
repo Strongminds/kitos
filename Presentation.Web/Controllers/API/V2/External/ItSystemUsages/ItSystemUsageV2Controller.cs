@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -506,7 +506,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("{systemUsageUuid}")]
+        [Route("{systemUsageUuid}/archive")]
         public IActionResult ArchiveItSystemUsage(
             [NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] CreateItSystemUsageArchiveRequestDTO request)
