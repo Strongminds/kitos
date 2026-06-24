@@ -1,4 +1,4 @@
-﻿using Core.Abstractions.Types;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel.Archive;
@@ -33,6 +33,34 @@ namespace Core.ApplicationServices.Model.SystemUsage
             return createdArchive;
         }
 
+        public Result<ItSystemArchive, OperationError> GetByUuid(Guid archiveUuid)
+        {
+            var archive = archiveRepository.AsQueryable()
+                .FirstOrDefault(a => a.Uuid == archiveUuid);
+
+            if (archive == null)
+                return new OperationError($"Archive with UUID {archiveUuid} not found", OperationFailure.NotFound);
+
+            if (!authorizationContext.AllowReads(archive))
+                return new OperationError("User is not allowed to read this archive", OperationFailure.Forbidden);
+
+            return archive;
+        }
+
+        public Result<ItSystemArchive, OperationError> Delete(Guid archiveUuid)
+        {
+            return GetByUuid(archiveUuid)
+                .Bind(archive => !authorizationContext.AllowDelete(archive)
+                    ? new OperationError("User is not allowed to delete this archive", OperationFailure.Forbidden)
+                    : Result<ItSystemArchive, OperationError>.Success(archive))
+                .Bind(archive =>
+                {
+                    archiveRepository.Delete(archive);
+                    archiveRepository.Save();
+                    return Result<ItSystemArchive,OperationError>.Success(archive);
+                });
+        }
+
         private static ItSystemUsageArchiveSnapshot CreateSnapshot(ItSystemUsage systemUsage)
         {
             var system = systemUsage.ItSystem;
@@ -40,6 +68,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
             {
                 ItSystemUuid = system.Uuid,
                 LegacyName = system.Name,
+                TakenIntoUsageDate = systemUsage.Concluded,
                 LocalId = systemUsage.LocalSystemId,
                 LocalName = systemUsage.LocalCallName
             };
@@ -61,7 +90,8 @@ namespace Core.ApplicationServices.Model.SystemUsage
             return new ItSystemArchive
             {
                 SnapshotUuid = snapshot.Uuid,
-                OrganizationUuid = systemUsage.Organization.Uuid,
+                OrganizationId = systemUsage.OrganizationId,
+                Organization = systemUsage.Organization,
                 ArchivingDate = parameters.ArchivingDate,
                 ReferenceName = parameters.ReferenceName,
                 Note = parameters.Note,

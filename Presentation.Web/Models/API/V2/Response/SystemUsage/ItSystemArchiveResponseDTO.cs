@@ -27,7 +27,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public required string Note { get; set; }
 
         /// <summary>
-        /// Unique identifier of the archived system snapshot
+        /// Unique identifier of the IT system from the snapshot
         /// </summary>
         public required Guid ItSystemUuid { get; set; }
 
@@ -35,6 +35,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// System name from the snapshot at archive time
         /// </summary>
         public string? LegacyName { get; set; }
+        /// <summary>
+        /// Date system was taken into usage
+        /// </summary>
+        public DateTime? TakenIntoUsageDate { get; set; }
 
         /// <summary>
         /// Local call name from the snapshot at archive time

@@ -6,6 +6,7 @@ public class ItSystemUsageArchiveSnapshot: Entity, IArchiveSnapshotEntity
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
 
+    public DateTime? TakenIntoUsageDate { get; set; }
     public string LegacyName { get; set; }
     public string LocalName { get; set; }
     public string LocalId { get; set; }

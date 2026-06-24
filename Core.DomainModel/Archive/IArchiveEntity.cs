@@ -6,7 +6,7 @@ namespace Core.DomainModel.Archive;
 public interface IArchiveEntity<TSnapshot> : IHasUuid
     where TSnapshot : class, IArchiveSnapshotEntity
 {
-    Guid OrganizationUuid { get; set; }
+    int OrganizationId { get; set; }
     Organization.Organization Organization { get; set; }
     Guid SnapshotUuid { get; set; }
     TSnapshot Snapshot { get; set; }

@@ -4002,6 +4002,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             return new ArchiveItSystemUsageParameters
             {
                 ArchivingDate = A<DateTime>(),
+                TakenIntoUsageDate = A<DateTime>(),
                 ReferenceName = A<string>(),
                 Note = A<string>()
             };
