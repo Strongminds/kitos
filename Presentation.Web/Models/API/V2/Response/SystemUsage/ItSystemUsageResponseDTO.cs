@@ -31,6 +31,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         [Required]
         public DateTime LastModified { get; set; }
         /// <summary>
+        /// The time when this system usage was created
+        /// </summary>
+        public DateTime? CreatedAt { get; set; }
+        /// <summary>
         /// Responsible for last modification
         /// </summary>
         public IdentityNamePairResponseDTO? LastModifiedBy { get; set; }

@@ -44,6 +44,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 SystemContext = systemUsage.ItSystem.MapIdentityNamePairDTO(),
                 OrganizationContext = systemUsage.Organization.MapShallowOrganizationResponseDTO(),
                 CreatedBy = systemUsage.ObjectOwner?.MapIdentityNamePairDTO(),
+                CreatedAt = systemUsage.Concluded,
                 LastModified = systemUsage.LastChanged,
                 LastModifiedBy = systemUsage.LastChangedByUser?.MapIdentityNamePairDTO(),
                 General = MapGeneral(systemUsage),
