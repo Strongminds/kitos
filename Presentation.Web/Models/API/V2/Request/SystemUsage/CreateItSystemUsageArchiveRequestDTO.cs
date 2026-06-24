@@ -1,6 +1,6 @@
+using Presentation.Web.Models.API.V2.Types.Shared;
 using System;
 using System.Collections.Generic;
-using Presentation.Web.Models.API.V2.Types.Shared;
 
 namespace Presentation.Web.Models.API.V2.Request.SystemUsage
 {
@@ -14,12 +14,12 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// <summary>
         /// The date when the system was taken into usage
         /// </summary>
-        public required DateTime TakenIntoUsageDate { get; set; }
+        public DateTime? TakenIntoUsageDate { get; set; }
 
         /// <summary>
         /// A reference name for the archive
         /// </summary>
-        public required string ReferenceName { get; set; }
+        public string? ReferenceName { get; set; }
 
         /// <summary>
         /// Notes about the archive

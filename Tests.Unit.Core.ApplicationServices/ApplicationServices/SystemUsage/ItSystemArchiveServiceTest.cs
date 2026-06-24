@@ -1,6 +1,5 @@
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
-using Core.ApplicationServices.Model.Archive;
 using Core.ApplicationServices.Model.SystemUsage;
 using Core.DomainModel.Archive;
 using Core.DomainModel.ItSystem;
@@ -13,6 +12,7 @@ using System;
 using System.Linq;
 using Tests.Toolkit.Patterns;
 using Xunit;
+using Core.ApplicationServices.Model.SystemUsage.Write;
 
 namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 {
@@ -58,8 +58,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var parameters = CreateParameters();
             parameters.ArchiveReferences = new[]
             {
-                new ArchiveReferenceProperties { Label = "Ref 1", Url = "https://example.com/1" },
-                new ArchiveReferenceProperties { Label = "Ref 2", Url = "https://example.com/2" }
+                new NamedLink("Ref 1", "https://example.com/1"),
+                new NamedLink("Ref 2", "https://example.com/2")
             };
 
             var usage = CreateSystemUsage("Legacy Name", "Local Name", "Local Id");
