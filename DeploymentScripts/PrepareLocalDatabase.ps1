@@ -14,7 +14,23 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path "$PSScriptRoot\.."
 $testToolsProjectPath = Join-Path $repoRoot "Tools.Test.Database\Tools.Test.Database.csproj"
-$testToolsOutputPath = Join-Path $repoRoot "Output\Tools\TestDatabase\Tools.Test.Database.exe"
+$testToolsOutputDirectory = Join-Path $repoRoot "Output\Tools\TestDatabase"
+
+function Resolve-TestToolsPath {
+    $candidates = @(
+        (Join-Path $testToolsOutputDirectory "Tools.Test.Database.exe"),
+        (Join-Path $testToolsOutputDirectory "Tools.Test.Database"),
+        (Join-Path $testToolsOutputDirectory "Tools.Test.Database.dll")
+    )
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path -LiteralPath $candidate) {
+            return $candidate
+        }
+    }
+
+    return $null
+}
 
 function Get-LatestWriteTimeUtc([string[]]$paths) {
     $latest = [datetime]::MinValue
@@ -51,10 +67,11 @@ function Ensure-TestDatabaseToolIsFresh {
         (Join-Path $repoRoot "DeploymentScripts\Baseline.sql")
     )
 
-    $toolNeedsBuild = -not (Test-Path -LiteralPath $testToolsOutputPath)
+    $resolvedToolPath = Resolve-TestToolsPath
+    $toolNeedsBuild = [string]::IsNullOrWhiteSpace($resolvedToolPath)
     if (-not $toolNeedsBuild) {
         $latestInputWriteTime = Get-LatestWriteTimeUtc -paths $buildInputs
-        $toolWriteTime = (Get-Item -LiteralPath $testToolsOutputPath).LastWriteTimeUtc
+        $toolWriteTime = (Get-Item -LiteralPath $resolvedToolPath).LastWriteTimeUtc
         $toolNeedsBuild = $latestInputWriteTime -gt $toolWriteTime
     }
 
@@ -70,10 +87,10 @@ function Ensure-TestDatabaseToolIsFresh {
 }
 
 Ensure-TestDatabaseToolIsFresh
-$testToolsPath = Resolve-Path $testToolsOutputPath
+$testToolsPath = Resolve-TestToolsPath
 
 if((Test-Path "$testToolsPath") -eq $false) {
-    Throw "Failed to locate $testToolsPath after build. Please investigate the Tools.Test.Database output path."
+    Throw "Failed to locate Tools.Test.Database output in $testToolsOutputDirectory after build. Please investigate the build output path."
 }
 
 $localUserPassword = "localNoSecret"

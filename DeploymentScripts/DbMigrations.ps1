@@ -403,7 +403,10 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
-    $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
+    # Use Infrastructure.DataAccess as startup for dotnet ef fallback.
+    # This avoids loading Presentation.Web (not required because KitosContextDesignTimeFactory
+    # resolves provider/connection from environment variables).
+    $startupProject = $infraProject
 
     if ($newDb -eq $true) {
         if ($isPostgreSql) {
