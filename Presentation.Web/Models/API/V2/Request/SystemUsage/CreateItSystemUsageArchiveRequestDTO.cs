@@ -14,7 +14,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         /// <summary>
         /// The date when the system was taken into usage
         /// </summary>
-        public required DateTime TakenIntoUsageDate { get; set; }
+        public DateTime? TakenIntoUsageDate { get; set; }
 
         /// <summary>
         /// A reference name for the archive

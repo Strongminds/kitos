@@ -2437,7 +2437,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(organization.Uuid, archive.Organization?.Uuid);
             var reference = Assert.Single(archive.ArchiveReferences);
 
-            Assert.Equal(existingReference.Name, reference.Label);
+            Assert.Equal(existingReference.Name, reference.Name);
             Assert.Equal(existingReference.Url, reference.Url);
         }
 
