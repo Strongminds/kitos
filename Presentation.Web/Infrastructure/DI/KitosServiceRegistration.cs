@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using Npgsql;
@@ -198,7 +199,11 @@ namespace Presentation.Web.Infrastructure.DI
                 SingleThreadedMailClient inner;
                 if (deliveryMethod.Equals("SpecifiedPickupDirectory", StringComparison.OrdinalIgnoreCase))
                 {
-                    var pickupDir = smtpSection["PickupDirectoryLocation"] ?? @"c:\temp\maildrop\";
+                    var configuredPath = smtpSection["PickupDirectoryLocation"] ?? Path.Combine(Path.GetTempPath(), "kitos-maildrop");
+                    var pickupDir = Path.IsPathRooted(configuredPath)
+                        ? configuredPath
+                        : Path.GetFullPath(configuredPath);
+                    Directory.CreateDirectory(pickupDir);
                     inner = new SingleThreadedMailClient(pickupDir);
                 }
                 else

@@ -4,6 +4,7 @@ using Core.Abstractions.Helpers;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Tests.Integration.Presentation.Web.Tools.Model;
 
@@ -13,6 +14,10 @@ namespace Tests.Integration.Presentation.Web.Tools
     {
         private static readonly IReadOnlyDictionary<OrganizationRole, KitosCredentials> UsersFromEnvironment;
         private static readonly IReadOnlyDictionary<OrganizationRole, KitosCredentials> ApiUsersFromEnvironment;
+        private static readonly IConfiguration AppSettings = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+            .Build();
         private static readonly KitosTestEnvironment ActiveEnvironment;
         private static readonly string DefaultUserPassword;
         public const int DefaultOrganizationId = 1;
@@ -173,6 +178,13 @@ namespace Tests.Integration.Presentation.Web.Tools
             var variableName = name;
 
             var variable = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.Process);
+            if (string.IsNullOrWhiteSpace(variable))
+            {
+                // Fall back to appsettings.json — double underscore (__) maps to colon (:) for hierarchy
+                var configKey = name.Replace("__", ":");
+                variable = AppSettings[configKey];
+            }
+
             if (string.IsNullOrWhiteSpace(variable))
             {
                 if (mandatory)
