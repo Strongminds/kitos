@@ -1,7 +1,6 @@
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
-using Core.ApplicationServices.Model.Archive;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.SystemUsage;
@@ -289,11 +288,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 TakenIntoUsageDate = request.TakenIntoUsageDate,
                 ReferenceName = request.ReferenceName,
                 Note = request.Note,
-                ArchiveReferences = request.ArchiveReferences?.Select(reference => new ArchiveReferenceProperties
-                {
-                    Label = reference.Name,
-                    Url = reference.Url
-                }) ?? new List<ArchiveReferenceProperties>()
+                ArchiveReferences = request.ArchiveReferences?.Select(reference => new NamedLink(reference.Name ?? string.Empty, reference.Url ?? string.Empty)) ?? new List<NamedLink>()
             };
         }
 
