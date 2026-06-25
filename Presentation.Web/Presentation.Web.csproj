@@ -100,4 +100,7 @@
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.SoapCore.dll" />
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.WscCore.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\API\V2\Request\Archive\" />
+  </ItemGroup>
 </Project>

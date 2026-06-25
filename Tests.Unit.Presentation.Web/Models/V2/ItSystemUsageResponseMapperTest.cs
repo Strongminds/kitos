@@ -60,6 +60,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Assert
             Assert.Equal(itSystemUsage.Uuid, dto.Uuid);
             Assert.Equal(itSystemUsage.LastChanged, dto.LastModified);
+            Assert.Equal(itSystemUsage.Concluded, dto.CreatedAt);
             AssertUser(itSystemUsage.ObjectOwner, dto.CreatedBy);
             AssertUser(itSystemUsage.LastChangedByUser, dto.LastModifiedBy);
             AssertIdentity(itSystemUsage.ItSystem, dto.SystemContext);

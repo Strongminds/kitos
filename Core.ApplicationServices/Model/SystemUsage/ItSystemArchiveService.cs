@@ -79,7 +79,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
             return parameters.ArchiveReferences?
                 .Select(reference => new ArchiveReference
                 {
-                    Label = reference.Label,
+                    Label = reference.Name,
                     Url = reference.Url
                 })
                 .ToList() ?? [];
