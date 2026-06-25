@@ -193,7 +193,7 @@ namespace Presentation.Web.Infrastructure.DI
             {
                 var smtpSection = configuration.GetSection("Smtp");
                 var fromAddress = smtpSection["From"] ?? "noreply@kitos.dk";
-                var deliveryMethod = (smtpSection["DeliveryMethod"] ?? "SpecifiedPickupDirectory").Trim();
+                var deliveryMethod = smtpSection["DeliveryMethod"] ?? "SpecifiedPickupDirectory";
 
                 SingleThreadedMailClient inner;
                 if (deliveryMethod.Equals("SpecifiedPickupDirectory", StringComparison.OrdinalIgnoreCase))
@@ -201,7 +201,7 @@ namespace Presentation.Web.Infrastructure.DI
                     var pickupDir = smtpSection["PickupDirectoryLocation"] ?? @"c:\temp\maildrop\";
                     inner = new SingleThreadedMailClient(pickupDir);
                 }
-                else if (deliveryMethod.Equals("Network", StringComparison.OrdinalIgnoreCase))
+                else
                 {
                     var host = smtpSection["Host"];
                     if (string.IsNullOrWhiteSpace(host))
@@ -211,10 +211,6 @@ namespace Presentation.Web.Infrastructure.DI
                     var userName = smtpSection["UserName"];
                     var password = smtpSection["Password"];
                     inner = new SingleThreadedMailClient(host, port, ssl, userName, password);
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Unsupported Smtp:DeliveryMethod value '{deliveryMethod}'. Expected 'SpecifiedPickupDirectory' or 'Network'.");
                 }
 
                 return new DefaultFromAddressMailClient(inner, fromAddress);
