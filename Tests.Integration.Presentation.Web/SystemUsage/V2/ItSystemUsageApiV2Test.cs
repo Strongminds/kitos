@@ -2227,7 +2227,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_POST_And_GET_Journal_Period()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
             var usageDto = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
             var journalPeriods = CreateNewJournalPeriods(3);
             var newJournalPeriodInput = journalPeriods.RandomItem();
@@ -2246,10 +2246,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_PUT_Journal_Period()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
             var usageDto = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
             var journalPeriods = CreateNewJournalPeriods(3);
-            var newJournalPeriodInputs = journalPeriods.RandomItems(2);
+            var newJournalPeriodInputs = journalPeriods.RandomItems(2).ToList();
             var initial = newJournalPeriodInputs.First();
             var updated = newJournalPeriodInputs.Last();
             var postResult = await ItSystemUsageV2Helper.CreateJournalPeriodAsync(token, usageDto.Uuid, initial);
@@ -2267,7 +2267,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_DELETE_Journal_Period()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
             var usageDto = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
             var journalPeriods = CreateNewJournalPeriods(3);
             var newJournalPeriodInputs = journalPeriods.RandomItems(2);
@@ -2540,12 +2540,15 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private static void AssertRelation(SystemRelationWriteRequestDTO expected, string expectedInterfaceName, string expectedContractName, string expectedFrequencyName, OutgoingSystemRelationResponseDTO actual)
         {
+            Assert.NotNull(actual.ToSystemUsage);
             Assert.Equal(expected.ToSystemUsageUuid, actual.ToSystemUsage.Uuid);
             AssertBaseRelation(expected, expectedInterfaceName, expectedContractName, expectedFrequencyName, actual);
         }
 
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private static void AssertIncomingRelation(SystemRelationWriteRequestDTO expected, Guid expectedFromSystemUsageUuid, string expectedInterfaceName, string expectedContractName, string expectedFrequencyName, IncomingSystemRelationResponseDTO actual)
         {
+            Assert.NotNull(actual.FromSystemUsage);
             Assert.Equal(expectedFromSystemUsageUuid, actual.FromSystemUsage.Uuid);
             AssertBaseRelation(expected, expectedInterfaceName, expectedContractName, expectedFrequencyName, actual);
         }
@@ -2553,6 +2556,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static void AssertBaseRelation(SystemRelationWriteRequestDTO expected, string expectedInterfaceName,
             string expectedContractName, string expectedFrequencyName, BaseSystemRelationResponseDTO actual)
         {
+            Assert.NotNull(actual.RelationInterface);
+            Assert.NotNull(actual.AssociatedContract);
+            Assert.NotNull(actual.RelationFrequency);
             Assert.Equal(expected.RelationInterfaceUuid, actual.RelationInterface.Uuid);
             Assert.Equal(expectedInterfaceName, actual.RelationInterface.Name);
             Assert.Equal(expected.AssociatedContractUuid, actual.AssociatedContract.Uuid);
@@ -2579,7 +2585,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             IEnumerable<UpdateExternalReferenceDataWriteRequestDTO>,
             IEnumerable<RoleAssignmentRequestDTO>,
             GDPRWriteRequestDTO,
-            ArchivingUpdateRequestDTO)> CreateUpdateFullDataRequestDto(ShallowOrganizationResponseDTO organization, ItSystemResponseDTO system, IEnumerable<ExternalReferenceDataResponseDTO> existingExternalReferences = null)
+            ArchivingUpdateRequestDTO)> CreateUpdateFullDataRequestDto(ShallowOrganizationResponseDTO organization, ItSystemResponseDTO system, IEnumerable<ExternalReferenceDataResponseDTO>? existingExternalReferences = null)
         {
             var fullData = await CreateFullDataRequestDto(organization, system);
             var archiving = await CreateArchivingUpdateRequestDto(organization.Uuid);
@@ -2665,6 +2671,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             {
                 Assert.Null(actual.NumberOfExpectedUsers);
 
+                Assert.NotNull(actual.Validity);
                 Assert.Null(actual.Validity.LifeCycleStatus);
                 Assert.Null(actual.Validity.ValidFrom);
                 Assert.Null(actual.Validity.ValidTo);
@@ -2681,7 +2688,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expectedList.Count, actualList.Count);
             foreach (var expectedRight in expectedList)
             {
-                Assert.Single(actualList.Where(x => x.User.Uuid == expectedRight.UserUuid && x.Role.Uuid == expectedRight.RoleUuid));
+                Assert.Single(actualList, x => x.User.Uuid == expectedRight.UserUuid && x.Role.Uuid == expectedRight.RoleUuid);
             }
         }
 
@@ -2827,9 +2834,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private static void AssertValidity(ItSystemUsageValidityWriteRequestDTO validityInput, ItSystemUsageValidityResponseDTO? validityResponse, bool expectedDateValidity, bool expectedLifeCycleValidity)
         {
-            Assert.Equal(validityResponse?.ValidFrom, validityInput?.ValidFrom);
-            Assert.Equal(validityResponse?.ValidTo, validityInput?.ValidTo);
-            Assert.Equal(validityResponse?.LifeCycleStatus, validityInput?.LifeCycleStatus);
+            Assert.Equal(validityResponse?.ValidFrom, validityInput.ValidFrom);
+            Assert.Equal(validityResponse?.ValidTo, validityInput.ValidTo);
+            Assert.Equal(validityResponse?.LifeCycleStatus, validityInput.LifeCycleStatus);
             Assert.Equal(expectedDateValidity, validityResponse?.ValidAccordingToValidityPeriod);
             Assert.Equal(expectedLifeCycleValidity, validityResponse?.ValidAccordingToLifeCycle);
         }
@@ -2862,6 +2869,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             where T : BaseArchivingWriteRequestDTO, IHasJournalPeriods<TJournalPeriod>
             where TJournalPeriod : JournalPeriodDTO
         {
+            Assert.NotNull(actual.Type);
+            Assert.NotNull(actual.Location);
+            Assert.NotNull(actual.TestLocation);
+            Assert.NotNull(actual.Supplier);
             Assert.Equal(expected.ArchiveDuty, actual.ArchiveDuty);
             Assert.Equal(expected.TypeUuid, actual.Type.Uuid);
             Assert.Equal(expected.LocationUuid, actual.Location.Uuid);
@@ -2874,7 +2885,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
             Assert.Equal(expected.JournalPeriods.Count(), actual.JournalPeriods.Count());
             var firstJournalPeriod = expected.JournalPeriods.First();
-            var journalPeriodFromServer = Assert.Single(actual.JournalPeriods.Where(x => x.ArchiveId == firstJournalPeriod.ArchiveId));
+            var journalPeriodFromServer = Assert.Single(actual.JournalPeriods, x => x.ArchiveId == firstJournalPeriod.ArchiveId);
             Assert.Equal(firstJournalPeriod.Approved, journalPeriodFromServer.Approved);
             Assert.Equal(firstJournalPeriod.ArchiveId, journalPeriodFromServer.ArchiveId);
             AssertTimestampEqual(firstJournalPeriod.StartDate, journalPeriodFromServer.StartDate);
@@ -2968,7 +2979,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private IEnumerable<T> WithRandomMaster<T>(IEnumerable<T> references) where T : ExternalReferenceDataWriteRequestDTO
         {
-            var orderedRandomly = references.OrderBy(x => A<int>()).ToList();
+            var orderedRandomly = references.OrderBy(_ => A<int>()).ToList();
             orderedRandomly.First().MasterReference = true;
             foreach (var externalReferenceDataDto in orderedRandomly.Skip(1))
                 externalReferenceDataDto.MasterReference = false;
@@ -3019,7 +3030,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 Assert.Empty(actualDeviation);
         }
 
-        private int _taskKeyIndex = 0;
+        private int _taskKeyIndex;
         private readonly Lock _taskKeyLock = new Lock();
 
         private string ReserveKey()
@@ -3067,14 +3078,14 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var dto = await ItSystemUsageV2Helper.GetSingleAsync(token, systemUsageUuid);
             var expectedOrgUnits = expectedUnits
-                .Select(unitDto => new { Uuid = unitDto.Uuid, Name = unitDto.Name })
+                .Select(unitDto => new { unitDto.Uuid, unitDto.Name })
                 .OrderBy(x => x.Uuid)
                 .ToList();
 
             var actualOrgUnits = dto
                 .OrganizationUsage
                 .UsingOrganizationUnits
-                .Select(x => new { Uuid = x.Uuid, Name = x.Name })
+                .Select(x => new { x.Uuid, x.Name })
                 .OrderBy(x => x.Uuid)
                 .ToList();
 
@@ -3103,13 +3114,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static CreateItSystemUsageRequestDTO CreatePostRequest(
             Guid organizationId,
             Guid systemId,
-            GeneralDataWriteRequestDTO generalSection = null,
-            OrganizationUsageWriteRequestDTO organizationalUsageSection = null,
-            LocalKLEDeviationsRequestDTO kleDeviationsRequest = null,
-            IEnumerable<ExternalReferenceDataWriteRequestDTO> referenceDataDtos = null,
-            IEnumerable<RoleAssignmentRequestDTO> roles = null,
-            GDPRWriteRequestDTO gdpr = null,
-            ArchivingCreationRequestDTO archiving = null)
+            GeneralDataWriteRequestDTO? generalSection = null,
+            OrganizationUsageWriteRequestDTO? organizationalUsageSection = null,
+            LocalKLEDeviationsRequestDTO? kleDeviationsRequest = null,
+            IEnumerable<ExternalReferenceDataWriteRequestDTO>? referenceDataDtos = null,
+            IEnumerable<RoleAssignmentRequestDTO>? roles = null,
+            GDPRWriteRequestDTO? gdpr = null,
+            ArchivingCreationRequestDTO? archiving = null)
         {
             return new CreateItSystemUsageRequestDTO
             {
@@ -3126,23 +3137,23 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         }
 
         private static UpdateItSystemUsageRequestDTO CreatePutRequest(
-            GeneralDataWriteRequestDTO generalSection = null,
-            OrganizationUsageWriteRequestDTO organizationalUsageSection = null,
-            LocalKLEDeviationsRequestDTO kleDeviationsRequest = null,
-            IEnumerable<UpdateExternalReferenceDataWriteRequestDTO> referenceDataDtos = null,
-            IEnumerable<RoleAssignmentRequestDTO> roles = null,
-            GDPRWriteRequestDTO gdpr = null,
-            ArchivingUpdateRequestDTO baseArchiving = null)
+            GeneralDataWriteRequestDTO? generalSection = null,
+            OrganizationUsageWriteRequestDTO? organizationalUsageSection = null,
+            LocalKLEDeviationsRequestDTO? kleDeviationsRequest = null,
+            IEnumerable<UpdateExternalReferenceDataWriteRequestDTO>? referenceDataDtos = null,
+            IEnumerable<RoleAssignmentRequestDTO>? roles = null,
+            GDPRWriteRequestDTO? gdpr = null,
+            ArchivingUpdateRequestDTO? baseArchiving = null)
         {
             var generalUpdateRequest = new GeneralDataUpdateRequestDTO()
             {
-                DataClassificationUuid = generalSection.DataClassificationUuid,
-                LocalCallName = generalSection.LocalCallName,
-                LocalSystemId = generalSection.LocalSystemId,
-                Notes = generalSection.Notes,
-                NumberOfExpectedUsers = generalSection.NumberOfExpectedUsers,
-                SystemVersion = generalSection.SystemVersion,
-                Validity = generalSection.Validity
+                DataClassificationUuid = generalSection?.DataClassificationUuid,
+                LocalCallName = generalSection?.LocalCallName,
+                LocalSystemId = generalSection?.LocalSystemId,
+                Notes = generalSection?.Notes,
+                NumberOfExpectedUsers = generalSection?.NumberOfExpectedUsers,
+                SystemVersion = generalSection?.SystemVersion,
+                Validity = generalSection?.Validity
             };
             return new UpdateItSystemUsageRequestDTO
             {
@@ -3186,7 +3197,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expectedContent.SystemContext.Name, dto.SystemContext.Name);
         }
 
-        private async Task<ItSystemResponseDTO> CreateSystemAndGetAsync(Guid organizationUuid, AccessModifier accessModifier, string name = null)
+        private async Task<ItSystemResponseDTO> CreateSystemAndGetAsync(Guid organizationUuid, AccessModifier accessModifier, string? name = null)
         {
             var systemName = name ?? CreateName();
             var createdSystem = await CreateItSystemAsync(organizationUuid, systemName, accessModifier.ToChoice());
@@ -3196,22 +3207,22 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private async Task<(User user, string token)> CreateApiUser(Guid organizationUuid)
         {
-            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
+            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organizationUuid, true);
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid) ?? throw new InvalidOperationException("CreateApiUser - organizationUuid version - userAndGetToken cannot be empty"));
             return (user, userAndGetToken.token);
         }
 
         private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
-            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
+            var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true);
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid) ?? throw new InvalidOperationException("CreateApiUser - ShallowOrganizationResponseDTO version - userAndGetToken cannot be empty"));
             return (user, userAndGetToken.token);
         }
 
         private async Task<User> CreateUser(ShallowOrganizationResponseDTO organization)
         {
             var userResponse = await CreateUserAsync(organization.Uuid);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userResponse.Uuid));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userResponse.Uuid) ?? throw new InvalidOperationException("CreateUser - userAndGetToken cannot be empty"));
             return user;
         }
 
@@ -3220,10 +3231,11 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             return $"{nameof(ItSystemUsageApiV2Test)}æøå{A<string>()}";
         }
 
-        private static async Task<OutgoingSystemRelationResponseDTO> CreateRelationAsync(ItSystemUsageResponseDTO fromUsage, ItSystemUsageResponseDTO toUsage, ItContractResponseDTO contract = null)
+        private static async Task CreateRelationAsync(ItSystemUsageResponseDTO fromUsage,
+            ItSystemUsageResponseDTO toUsage, ItContractResponseDTO? contract = null)
         {
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
-            return await ItSystemUsageV2Helper.PostRelationAsync(token.Token, fromUsage.Uuid, new SystemRelationWriteRequestDTO
+            await ItSystemUsageV2Helper.PostRelationAsync(token.Token, fromUsage.Uuid, new SystemRelationWriteRequestDTO
             {
                 ToSystemUsageUuid = toUsage.Uuid,
                 AssociatedContractUuid = contract?.Uuid
@@ -3252,11 +3264,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         private static bool MatchExpectedAssignment(RoleAssignmentResponseDTO actual, RoleAssignmentRequestDTO expected)
         {
             return actual.Role.Uuid == expected.RoleUuid && actual.User.Uuid == expected.UserUuid;
-        }
-
-        private static bool MatchExpectedBulkAssignment(RoleAssignmentResponseDTO actual, BulkRoleAssignmentRequestDTO expected)
-        {
-            return actual.Role.Uuid == expected.RoleUuid && expected.UserUuids.Contains(actual.User.Uuid);
         }
     }
 }
