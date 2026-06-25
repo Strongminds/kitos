@@ -7,7 +7,6 @@ using AutoFixture;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel;
-using Core.DomainModel.Archive;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
@@ -131,8 +130,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var result = (await response.ReadResponseBodyAsAsync<IEnumerable<OutgoingSystemRelationResponseDTO>>()).ToList();
 
             Assert.Equal(2, result.Count);
-            Assert.Contains(result, x => x.RelationInterface.Uuid == interface1.Uuid);
-            Assert.Contains(result, x => x.RelationInterface.Uuid == interface2.Uuid);
+            Assert.Contains(result, x => x.RelationInterface?.Uuid == interface1.Uuid);
+            Assert.Contains(result, x => x.RelationInterface?.Uuid == interface2.Uuid);
         }
 
         [Fact]
@@ -199,7 +198,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_Get_All_ItSystemUsages_Internal_Filtered_By_LastModified()
         {
             //Arrange
-            var (token, user, organization, system1) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system1) = await CreatePrerequisitesAsync();
             var system2 = await CreateItSystemAsync(organization.Uuid);
             var system3 = await CreateItSystemAsync(organization.Uuid);
 
@@ -358,7 +357,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_Get_All_ItSystemUsages_Filtered_By_LastModified()
         {
             //Arrange
-            var (token, user, organization, system1) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system1) = await CreatePrerequisitesAsync();
             var system2 = await CreateItSystemAsync(organization.Uuid);
             var system3 = await CreateItSystemAsync(organization.Uuid);
 
@@ -497,7 +496,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_Get_All_ItSystemUsages_Filtered_By_RelationContractUuId()
         {
             //Arrange - setup multiple relations across orgs
-            var (token, user, organization1, _) = await CreatePrerequisitesAsync();
+            var (token, _, organization1, _) = await CreatePrerequisitesAsync();
 
             var relationTargetSystem = await CreateItSystemAsync(organization1.Uuid);
 
@@ -621,7 +620,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Cannot_Get_Unknown_ItSystemUsage()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, __, ___) = await CreatePrerequisitesAsync();
 
             //Act
             using var response = (await ItSystemUsageV2Helper.SendGetSingleAsync(token, A<Guid>()));
@@ -634,7 +633,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Cannot_Get_ItSystemUsage_If_NotAllowedTo()
         {
             //Arrange
-            var (token, user, organization1, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization1, system) = await CreatePrerequisitesAsync();
             var organization2 = await CreateOrganizationAsync();
             await TakeSystemIntoUsageAsync(system.Uuid, organization1.Uuid);
             var systemUsageOrg2 = await TakeSystemIntoUsageAsync(system.Uuid, organization2.Uuid);
@@ -670,7 +669,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Cannot_POST_Duplicate_With_No_Additional_Data()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
 
             //Act
             await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
@@ -684,7 +683,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Cannot_POST_If_ItSystem_Is_Disabled()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
 
             await ItSystemV2Helper.SendPatchSystemAsync(await GetGlobalToken(), system.Uuid, x => x.Deactivated, true).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
@@ -699,7 +698,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_POST_With_Full_General_Data_Section()
         {
             //Arrange
-            var (token, user, organization, system) = await CreatePrerequisitesAsync();
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
             var dataClassification = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItSystemUsageDataClassification, organization.Uuid, 1, 0)).First();
             var request = CreatePostRequest(organization.Uuid, system.Uuid, new GeneralDataWriteRequestDTO
             {
@@ -722,25 +721,31 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             });
 
             //Act
-            var createdDTO = await ItSystemUsageV2Helper.PostAsync(token, request);
+            var createdDto = await ItSystemUsageV2Helper.PostAsync(token, request);
 
             //Assert a fresh GET DTO
-            var freshReadDTO = await ItSystemUsageV2Helper.GetSingleAsync(token, createdDTO.Uuid);
-            Assert.Equal(request.General.LocalCallName, freshReadDTO.General.LocalCallName);
-            Assert.Equal(request.General.LocalSystemId, freshReadDTO.General.LocalSystemId);
-            Assert.Equal(request.General.SystemVersion, freshReadDTO.General.SystemVersion);
-            Assert.Equal(request.General.Notes, freshReadDTO.General.Notes);
-            Assert.Equal(request.General.NumberOfExpectedUsers.LowerBound, freshReadDTO.General.NumberOfExpectedUsers.LowerBound);
-            Assert.Equal(request.General.NumberOfExpectedUsers.UpperBound, freshReadDTO.General.NumberOfExpectedUsers.UpperBound);
-            Assert.Equal(request.General.Validity.LifeCycleStatus, freshReadDTO.General.Validity.LifeCycleStatus);
-            Assert.Equal(request.General.Validity.ValidFrom.GetValueOrDefault().Date, freshReadDTO.General.Validity.ValidFrom.GetValueOrDefault().Date);
-            Assert.Equal(request.General.Validity.ValidTo.GetValueOrDefault().Date, freshReadDTO.General.Validity.ValidTo.GetValueOrDefault().Date);
-            Assert.Equal(dataClassification.Uuid, freshReadDTO.General.DataClassification.Uuid);
-            Assert.Equal(dataClassification.Name, freshReadDTO.General.DataClassification.Name);
-            Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDTO.General.WebAccessibilityCompliance);
-            AssertTimestampEqual(request.General.LastWebAccessibilityCheck, freshReadDTO.General.LastWebAccessibilityCheck);
-            Assert.Equal(request.General.WebAccessibilityNotes, freshReadDTO.General.WebAccessibilityNotes);
-            Assert.Equal(request.General.IsSociallyCritical, freshReadDTO.General.IsSociallyCritical);
+            var freshReadDto = await ItSystemUsageV2Helper.GetSingleAsync(token, createdDto.Uuid);
+            Assert.NotNull(request.General);
+            Assert.NotNull(request.General.NumberOfExpectedUsers);
+            Assert.NotNull(request.General.Validity);
+            Assert.NotNull(freshReadDto.General.NumberOfExpectedUsers);
+            Assert.NotNull(freshReadDto.General.Validity);
+            Assert.NotNull(freshReadDto.General.DataClassification);
+            Assert.Equal(request.General.LocalCallName, freshReadDto.General.LocalCallName);
+            Assert.Equal(request.General.LocalSystemId, freshReadDto.General.LocalSystemId);
+            Assert.Equal(request.General.SystemVersion, freshReadDto.General.SystemVersion);
+            Assert.Equal(request.General.Notes, freshReadDto.General.Notes);
+            Assert.Equal(request.General.NumberOfExpectedUsers.LowerBound, freshReadDto.General.NumberOfExpectedUsers.LowerBound);
+            Assert.Equal(request.General.NumberOfExpectedUsers.UpperBound, freshReadDto.General.NumberOfExpectedUsers.UpperBound);
+            Assert.Equal(request.General.Validity.LifeCycleStatus, freshReadDto.General.Validity.LifeCycleStatus);
+            Assert.Equal(request.General.Validity.ValidFrom.GetValueOrDefault().Date, freshReadDto.General.Validity.ValidFrom.GetValueOrDefault().Date);
+            Assert.Equal(request.General.Validity.ValidTo.GetValueOrDefault().Date, freshReadDto.General.Validity.ValidTo.GetValueOrDefault().Date);
+            Assert.Equal(dataClassification.Uuid, freshReadDto.General.DataClassification.Uuid);
+            Assert.Equal(dataClassification.Name, freshReadDto.General.DataClassification.Name);
+            Assert.Equal(request.General.WebAccessibilityCompliance, freshReadDto.General.WebAccessibilityCompliance);
+            AssertTimestampEqual(request.General.LastWebAccessibilityCheck, freshReadDto.General.LastWebAccessibilityCheck);
+            Assert.Equal(request.General.WebAccessibilityNotes, freshReadDto.General.WebAccessibilityNotes);
+            Assert.Equal(request.General.IsSociallyCritical, freshReadDto.General.IsSociallyCritical);
         }
 
         [Fact]
