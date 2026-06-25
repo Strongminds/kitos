@@ -309,7 +309,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<HttpResponseMessage> SendArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
         {
             return await HttpApi.PostWithTokenAsync(
-                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}"), dto, token);
+                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}/archive"), dto, token);
         }
 
         public static async Task<OutgoingSystemRelationResponseDTO> PostRelationAsync(string token,
