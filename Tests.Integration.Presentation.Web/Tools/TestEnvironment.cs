@@ -94,11 +94,10 @@ namespace Tests.Integration.Presentation.Web.Tools
             {
                 //Loading users from environment
                 Console.Out.WriteLine("Tests running towards remote target. Loading configuration from environment.");
-                DefaultUserPassword = GetEnvironmentVariable("DefaultUserPassword", allowAppSettingsFallback: false);
+                DefaultUserPassword = GetEnvironmentVariable("DefaultUserPassword");
                 DatabaseProvider = GetEnvironmentVariable("KitosDbProvider", false,
-                    GetEnvironmentVariable("Database__Provider", false, "SqlServer", allowAppSettingsFallback: false),
-                    allowAppSettingsFallback: false);
-                ConnectionString = GetEnvironmentVariable("KitosDbConnectionStringForTeamCity", allowAppSettingsFallback: false);
+                    GetEnvironmentVariable("Database__Provider", false, "SqlServer"));
+                ConnectionString = GetEnvironmentVariable("KitosDbConnectionStringForTeamCity");
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
                     {OrganizationRole.User, LoadUserFromEnvironment(OrganizationRole.User)},
@@ -140,8 +139,8 @@ namespace Tests.Integration.Presentation.Web.Tools
                     throw new NotSupportedException($"{role} Not mapped in environment loader:{nameof(LoadUserFromEnvironment)}");
             }
 
-            var username = GetEnvironmentVariable($"TestUser{suffix}", allowAppSettingsFallback: false);
-            var password = GetEnvironmentVariable($"TestUser{suffix}Pw", allowAppSettingsFallback: false);
+            var username = GetEnvironmentVariable($"TestUser{suffix}");
+            var password = GetEnvironmentVariable($"TestUser{suffix}Pw");
             return new KitosCredentials(username, password);
         }
         public static KitosContext GetDatabase()
@@ -225,7 +224,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 case KitosTestEnvironment.Local:
                     return "https://localhost:44300";
                 case KitosTestEnvironment.Integration:
-                    return $"https://{GetEnvironmentVariable("KitosHostName", allowAppSettingsFallback: false)}";
+                    return $"https://{GetEnvironmentVariable("KitosHostName")}";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
