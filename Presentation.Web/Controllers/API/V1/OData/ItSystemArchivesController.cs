@@ -1,7 +1,11 @@
 using System;
 using System.Linq;
+using Core.Abstractions.Types;
 using Core.DomainModel.Archive;
+using Core.DomainModel.Organization;
 using Core.DomainServices;
+using Core.DomainServices.Authorization;
+using Core.DomainServices.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,9 +16,12 @@ namespace Presentation.Web.Controllers.API.V1.OData
     [InternalApi]
     public class ItSystemArchivesController : BaseEntityController<ItSystemArchive>
     {
-        public ItSystemArchivesController(IGenericRepository<ItSystemArchive> repository)
+        private readonly IEntityIdentityResolver _identityResolver;
+
+        public ItSystemArchivesController(IGenericRepository<ItSystemArchive> repository, IEntityIdentityResolver identityResolver)
             : base(repository)
         {
+            _identityResolver = identityResolver;
         }
 
         [EnableQuery]
@@ -25,16 +32,36 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return base.Get();
         }
 
+        [EnableQuery]
+        [Route("odata/Organizations({organizationUuid})/ItSystemArchives")]
+        [RequireTopOnOdataThroughKitosToken]
+        public IActionResult GetByOrganizationUuid([FromRoute] Guid organizationUuid)
+        {
+            var orgDbId = _identityResolver.ResolveDbId<Organization>(organizationUuid);
+            if (orgDbId.IsNone)
+            {
+                return FromOperationError(new OperationError("Invalid org id", OperationFailure.NotFound));
+            }
+
+            var accessLevel = GetOrganizationReadAccessLevel(orgDbId.Value);
+            if (accessLevel < OrganizationDataReadAccessLevel.Public)
+            {
+                return Forbidden();
+            }
+
+            return Ok(GetAllQuery().Where(x => x.OrganizationId == orgDbId.Value).ToList());
+        }
+
         protected override IQueryable<ItSystemArchive> GetAllQuery()
         {
             var all = base.GetAllQuery();
-            if (UserContext.IsGlobalAdmin())
+            if (!UserContext.IsGlobalAdmin())
             {
-                return all;
+                var orgIds = UserContext.OrganizationIds.ToList();
+                all = all.Where(x => orgIds.Contains(x.OrganizationId));
             }
 
-            var orgIds = UserContext.OrganizationIds.ToList();
-            return all.Where(x => orgIds.Contains(x.Organization.Id));
+            return all;
         }
 
         [NonAction]
