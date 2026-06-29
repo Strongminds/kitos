@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel;
@@ -123,7 +123,7 @@ namespace Core.ApplicationServices.Authorization.Policies
                 yield return OrganizationRole.OrganizationModuleAdmin;
 
             // Entities requiring System Module Admin
-            if (MatchType<ItSystemUsage>(target) || MatchType<ItSystemArchive>(target) || MatchType<ItInterface>(target))
+            if (MatchType<ItSystemUsage>(target) || MatchType<ItSystemUsageArchive>(target) || MatchType<ItInterface>(target))
                 yield return OrganizationRole.SystemModuleAdmin;
 
             // Entities requiring Contract Module Admin

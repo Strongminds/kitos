@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         IResourcePermissionsResponseMapper permissionsResponseMapper,
         IItsystemUsageRelationsService systemRelationsService,
         IExternalReferenceResponseMapper externalReferenceResponseMapper,
-        IItSystemArchiveResponseMapper archiveResponseMapper)
+        IItSystemUsageArchiveResponseMapper archiveResponseMapper)
         : ExternalBaseController
     {
         /// <summary>

@@ -12,20 +12,20 @@ using Core.ApplicationServices.Organizations;
 
 namespace Core.ApplicationServices.Model.SystemUsage
 {
-    public class ItSystemArchiveService(
+    public class ItSystemUsageArchiveService(
         IItSystemUsageService systemUsageService,
         IOrganizationService organizationService,
         IAuthorizationContext authorizationContext,
-        IGenericRepository<ItSystemArchive> archiveRepository) : IItSystemArchiveService
+        IGenericRepository<ItSystemUsageArchive> archiveRepository) : IItSystemUsageArchiveService
     {
-        public Result<ItSystemArchive, OperationError> Create(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
+        public Result<ItSystemUsageArchive, OperationError> Create(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
         {
             var systemUsageResult = systemUsageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid);
             if (systemUsageResult.Failed) return systemUsageResult.Error;
             var systemUsage = systemUsageResult.Value;
 
-            if (!authorizationContext.AllowCreate<ItSystemArchive>(systemUsage.OrganizationId))
-                return new OperationError("User is not allowed to create it-system archives", OperationFailure.Forbidden);
+            if (!authorizationContext.AllowCreate<ItSystemUsageArchive>(systemUsage.OrganizationId))
+                return new OperationError("User is not allowed to create it-system usage archives", OperationFailure.Forbidden);
 
             var snapshot = CreateSnapshot(systemUsage);
             var archiveReferences = CreateArchiveReferences(parameters);
@@ -36,7 +36,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
             return createdArchive;
         }
 
-        public Result<ItSystemArchive, OperationError> GetByUuid(Guid archiveUuid)
+        public Result<ItSystemUsageArchive, OperationError> GetByUuid(Guid archiveUuid)
         {
             var archive = archiveRepository.AsQueryable()
                 .FirstOrDefault(a => a.Uuid == archiveUuid);
@@ -50,17 +50,17 @@ namespace Core.ApplicationServices.Model.SystemUsage
             return archive;
         }
 
-        public Result<ItSystemArchive, OperationError> Delete(Guid archiveUuid)
+        public Result<ItSystemUsageArchive, OperationError> Delete(Guid archiveUuid)
         {
             return GetByUuid(archiveUuid)
                 .Bind(archive => !authorizationContext.AllowDelete(archive)
                     ? new OperationError("User is not allowed to delete this archive", OperationFailure.Forbidden)
-                    : Result<ItSystemArchive, OperationError>.Success(archive))
+                    : Result<ItSystemUsageArchive, OperationError>.Success(archive))
                 .Bind(archive =>
                 {
                     archiveRepository.Delete(archive);
                     archiveRepository.Save();
-                    return Result<ItSystemArchive,OperationError>.Success(archive);
+                    return Result<ItSystemUsageArchive,OperationError>.Success(archive);
                 });
         }
         
@@ -101,9 +101,9 @@ namespace Core.ApplicationServices.Model.SystemUsage
                 .ToList() ?? [];
         }
 
-        private static ItSystemArchive CreateArchive(ItSystemUsage systemUsage, ArchiveItSystemUsageParameters parameters, ItSystemUsageArchiveSnapshot snapshot, List<ArchiveReference> archiveReferences)
+        private static ItSystemUsageArchive CreateArchive(ItSystemUsage systemUsage, ArchiveItSystemUsageParameters parameters, ItSystemUsageArchiveSnapshot snapshot, List<ArchiveReference> archiveReferences)
         {
-            return new ItSystemArchive
+            return new ItSystemUsageArchive
             {
                 SnapshotUuid = snapshot.Uuid,
                 OrganizationId = systemUsage.OrganizationId,

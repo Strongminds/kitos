@@ -4,7 +4,7 @@ using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {
-    public class ItSystemArchiveResponseDTO
+    public class ItSystemUsageArchiveResponseDTO
     {
         /// <summary>
         /// Unique identifier for the archive

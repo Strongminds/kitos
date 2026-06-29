@@ -14,8 +14,8 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.Uuid).IsRequired();
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_Uuid");
 
-            builder.Property(x => x.ItSystemArchiveUuid).IsRequired();
-            builder.HasIndex(x => x.ItSystemArchiveUuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemArchiveUuid");
+            builder.Property(x => x.ItSystemUsageArchiveUuid).IsRequired();
+            builder.HasIndex(x => x.ItSystemUsageArchiveUuid).IsUnique().HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemUsageArchiveUuid");
 
             builder.Property(x => x.ItSystemUuid).IsRequired();
             builder.HasIndex(x => x.ItSystemUuid).HasDatabaseName("IX_ItSystemUsageArchiveSnapshot_ItSystemUuid");

@@ -3,8 +3,8 @@ using Presentation.Web.Models.API.V2.Response.SystemUsage;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
-    public interface IItSystemArchiveResponseMapper
+    public interface IItSystemUsageArchiveResponseMapper
     {
-        ItSystemArchiveResponseDTO ToResponseDTO(ItSystemArchive archive);
+        ItSystemUsageArchiveResponseDTO ToResponseDTO(ItSystemUsageArchive archive);
     }
 }

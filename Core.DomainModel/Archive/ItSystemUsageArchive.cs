@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Core.DomainModel.ItSystem;
 
 namespace Core.DomainModel.Archive;
 
-public class ItSystemArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>, IOwnedByOrganization, ISystemModule
+public class ItSystemUsageArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSnapshot>, IOwnedByOrganization, ISystemModule
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
     public Guid SnapshotUuid { get; set; }

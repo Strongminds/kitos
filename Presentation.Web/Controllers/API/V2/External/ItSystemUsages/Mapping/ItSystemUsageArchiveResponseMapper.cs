@@ -5,11 +5,11 @@ using Presentation.Web.Models.API.V2.Response.SystemUsage;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
-    public class ItSystemArchiveResponseMapper : IItSystemArchiveResponseMapper
+    public class ItSystemUsageArchiveResponseMapper : IItSystemUsageArchiveResponseMapper
     {
-        public ItSystemArchiveResponseDTO ToResponseDTO(ItSystemArchive archive)
+        public ItSystemUsageArchiveResponseDTO ToResponseDTO(ItSystemUsageArchive archive)
         {
-            return new ItSystemArchiveResponseDTO
+            return new ItSystemUsageArchiveResponseDTO
             {
                 Uuid = archive.Uuid,
                 ArchivingDate = archive.ArchivingDate,

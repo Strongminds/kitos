@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Core.DomainModel.Archive;
 
@@ -14,6 +14,6 @@ public class ItSystemUsageArchiveSnapshot: Entity, IArchiveSnapshotEntity
     public Guid ItSystemUuid { get; set; }
     public virtual ItSystem.ItSystem ItSystem { get; set; }
 
-    public Guid ItSystemArchiveUuid { get; set; }
-    public virtual ItSystemArchive ItSystemArchive { get; set; }
+    public Guid ItSystemUsageArchiveUuid { get; set; }
+    public virtual ItSystemUsageArchive ItSystemUsageArchive { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using Core.Abstractions.Extensions;
+using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Contract;
@@ -59,7 +59,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         IGenericRepository<ItSystemUsagePersonalData> personalDataOptionsRepository,
         IOptionsService<ItSystemUsage, SystemUsageCriticalityLevel> systemUsageCriticalityLevelOptionsService,
         IOptionsService<ItSystemUsage, TechnicalSystemType> technicalSystemTypeOptionsService,
-        IItSystemArchiveService itSystemArchiveService)
+        IItSystemUsageArchiveService itSystemArchiveService)
         : IItSystemUsageWriteService
     {
         public Result<ItSystemUsage, OperationError> Create(SystemUsageCreationParameters parameters)
@@ -901,7 +901,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => systemUsageService.RemoveArchivePeriod(usage.Id, periodUuid));
         }
 
-        public Result<ItSystemArchive, OperationError> Archive(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
+        public Result<ItSystemUsageArchive, OperationError> Archive(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
         {
             using var transaction = transactionManager.Begin();
 
@@ -919,16 +919,16 @@ namespace Core.ApplicationServices.SystemUsage.Write
             return result;
         }
 
-        private Result<ItSystemArchive, OperationError> CreateArchiveAndDeleteUsage(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
+        private Result<ItSystemUsageArchive, OperationError> CreateArchiveAndDeleteUsage(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
         {
             return itSystemArchiveService.Create(systemUsageUuid, parameters)
                 .Bind(archive => DeleteUsageAndReturnArchive(systemUsageUuid, archive));
         }
 
-        private Result<ItSystemArchive, OperationError> DeleteUsageAndReturnArchive(Guid systemUsageUuid, ItSystemArchive archive)
+        private Result<ItSystemUsageArchive, OperationError> DeleteUsageAndReturnArchive(Guid systemUsageUuid, ItSystemUsageArchive archive)
         {
             return Delete(systemUsageUuid)
-                .Match<Result<ItSystemArchive, OperationError>>(error => error, () => archive);
+                .Match<Result<ItSystemUsageArchive, OperationError>>(error => error, () => archive);
         }
 
         private Maybe<OperationError> DeleteUsage(ItSystemUsage usage)

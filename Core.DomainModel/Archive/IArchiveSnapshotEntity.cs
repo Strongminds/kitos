@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace Core.DomainModel.Archive;
 
 public interface IArchiveSnapshotEntity : IHasUuid
 {
-    Guid ItSystemArchiveUuid { get; set; }
-    ItSystemArchive ItSystemArchive { get; set; }
+    Guid ItSystemUsageArchiveUuid { get; set; }
+    ItSystemUsageArchive ItSystemUsageArchive { get; set; }
 }

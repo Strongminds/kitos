@@ -5,6 +5,7 @@ using Core.DomainModel.Archive;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
+using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainServices;
 using Moq;
@@ -16,19 +17,21 @@ using Core.ApplicationServices.Model.SystemUsage.Write;
 
 namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 {
-    public class ItSystemArchiveServiceTest : WithAutoFixture
+    public class ItSystemUsageArchiveServiceTest : WithAutoFixture
     {
         private readonly Mock<IItSystemUsageService> _systemUsageService;
+        private readonly Mock<IOrganizationService> _organizationService;
         private readonly Mock<IAuthorizationContext> _authorizationContext;
-        private readonly Mock<IGenericRepository<ItSystemArchive>> _archiveRepository;
-        private readonly ItSystemArchiveService _sut;
+        private readonly Mock<IGenericRepository<ItSystemUsageArchive>> _archiveRepository;
+        private readonly ItSystemUsageArchiveService _sut;
 
-        public ItSystemArchiveServiceTest()
+        public ItSystemUsageArchiveServiceTest()
         {
             _systemUsageService = new Mock<IItSystemUsageService>();
+            _organizationService = new Mock<IOrganizationService>();
             _authorizationContext = new Mock<IAuthorizationContext>();
-            _archiveRepository = new Mock<IGenericRepository<ItSystemArchive>>();
-            _sut = new ItSystemArchiveService(_systemUsageService.Object, _authorizationContext.Object, _archiveRepository.Object);
+            _archiveRepository = new Mock<IGenericRepository<ItSystemUsageArchive>>();
+            _sut = new ItSystemUsageArchiveService(_systemUsageService.Object, _organizationService.Object, _authorizationContext.Object, _archiveRepository.Object);
         }
 
         [Fact]
@@ -46,7 +49,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             // Assert
             Assert.True(result.Failed);
             Assert.Same(error, result.Error);
-            _archiveRepository.Verify(x => x.Insert(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Insert(It.IsAny<ItSystemUsageArchive>()), Times.Never);
             _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
 
@@ -64,14 +67,14 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             var usage = CreateSystemUsage("Legacy Name", "Local Name", "Local Id");
 
-            ItSystemArchive insertedArchive = null;
+            ItSystemUsageArchive insertedArchive = null;
 
             SetupSystemUsageLookup(usageUuid, usage);
             SetupAllowCreate(usage.OrganizationId, true);
             _archiveRepository
-                .Setup(x => x.Insert(It.IsAny<ItSystemArchive>()))
-                .Callback<ItSystemArchive>(archive => insertedArchive = archive)
-                .Returns<ItSystemArchive>(archive => archive);
+                .Setup(x => x.Insert(It.IsAny<ItSystemUsageArchive>()))
+                .Callback<ItSystemUsageArchive>(archive => insertedArchive = archive)
+                .Returns<ItSystemUsageArchive>(archive => archive);
 
             // Act
             var result = _sut.Create(usageUuid, parameters);
@@ -109,13 +112,13 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             parameters.ArchiveReferences = null!;
             var usage = CreateSystemUsage();
 
-            ItSystemArchive insertedArchive = null;
+            ItSystemUsageArchive insertedArchive = null;
             SetupSystemUsageLookup(usageUuid, usage);
             SetupAllowCreate(usage.OrganizationId, true);
             _archiveRepository
-                .Setup(x => x.Insert(It.IsAny<ItSystemArchive>()))
-                .Callback<ItSystemArchive>(archive => insertedArchive = archive)
-                .Returns<ItSystemArchive>(archive => archive);
+                .Setup(x => x.Insert(It.IsAny<ItSystemUsageArchive>()))
+                .Callback<ItSystemUsageArchive>(archive => insertedArchive = archive)
+                .Returns<ItSystemUsageArchive>(archive => archive);
 
             // Act
             var result = _sut.Create(usageUuid, parameters);
@@ -143,7 +146,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             // Assert
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
-            _archiveRepository.Verify(x => x.Insert(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Insert(It.IsAny<ItSystemUsageArchive>()), Times.Never);
             _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
 
@@ -211,7 +214,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             // Assert
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
-            _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemUsageArchive>()), Times.Never);
             _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
 
@@ -233,7 +236,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
             VerifyAllowDelete(archive, Times.Once());
-            _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemArchive>()), Times.Never);
+            _archiveRepository.Verify(x => x.Delete(It.IsAny<ItSystemUsageArchive>()), Times.Never);
             _archiveRepository.Verify(x => x.Save(), Times.Never);
         }
 
@@ -274,27 +277,27 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _systemUsageService.Setup(x => x.GetItSystemUsageByUuidAndAuthorizeRead(usageUuid)).Returns(usage);
         }
 
-        private void SetupArchiveQuery(params ItSystemArchive[] archives)
+        private void SetupArchiveQuery(params ItSystemUsageArchive[] archives)
         {
             _archiveRepository.Setup(x => x.AsQueryable()).Returns(archives.AsQueryable());
         }
 
         private void SetupAllowCreate(int organizationId, bool isAllowed)
         {
-            _authorizationContext.Setup(x => x.AllowCreate<ItSystemArchive>(organizationId)).Returns(isAllowed);
+            _authorizationContext.Setup(x => x.AllowCreate<ItSystemUsageArchive>(organizationId)).Returns(isAllowed);
         }
 
-        private void SetupAllowReads(ItSystemArchive archive, bool isAllowed)
+        private void SetupAllowReads(ItSystemUsageArchive archive, bool isAllowed)
         {
             _authorizationContext.Setup(x => x.AllowReads(archive)).Returns(isAllowed);
         }
 
-        private void SetupAllowDelete(ItSystemArchive archive, bool isAllowed)
+        private void SetupAllowDelete(ItSystemUsageArchive archive, bool isAllowed)
         {
             _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(isAllowed);
         }
 
-        private void VerifyAllowDelete(ItSystemArchive archive, Times times)
+        private void VerifyAllowDelete(ItSystemUsageArchive archive, Times times)
         {
             _authorizationContext.Verify(x => x.AllowDelete(archive), times);
         }
@@ -311,9 +314,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             };
         }
 
-        private ItSystemArchive CreateArchive(Guid archiveUuid)
+        private ItSystemUsageArchive CreateArchive(Guid archiveUuid)
         {
-            return new ItSystemArchive
+            return new ItSystemUsageArchive
             {
                 Uuid = archiveUuid,
                 OrganizationId = A<int>(),

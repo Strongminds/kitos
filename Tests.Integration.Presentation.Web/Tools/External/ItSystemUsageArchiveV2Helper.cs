@@ -8,15 +8,15 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.Tools.External
 {
-    public static class ItSystemArchiveV2Helper
+    public static class ItSystemUsageArchiveV2Helper
     {
-        private const string BasePath = "api/v2/it-system-archives";
+        private const string BasePath = "api/v2/it-system-usage-archives";
 
-        public static async Task<ItSystemArchiveResponseDTO> GetArchiveAsync(string token, Guid archiveUuid)
+        public static async Task<ItSystemUsageArchiveResponseDTO> GetArchiveAsync(string token, Guid archiveUuid)
         {
             using var response = await SendGetArchiveAsync(token, archiveUuid);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<ItSystemArchiveResponseDTO>();
+            return await response.ReadResponseBodyAsAsync<ItSystemUsageArchiveResponseDTO>();
         }
 
         public static async Task<HttpResponseMessage> SendGetArchiveAsync(string token, Guid archiveUuid)

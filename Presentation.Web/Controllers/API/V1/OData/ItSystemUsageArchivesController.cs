@@ -14,18 +14,18 @@ using Presentation.Web.Infrastructure.Attributes;
 namespace Presentation.Web.Controllers.API.V1.OData
 {
     [InternalApi]
-    public class ItSystemArchivesController : BaseEntityController<ItSystemArchive>
+    public class ItSystemUsageArchivesController : BaseEntityController<ItSystemUsageArchive>
     {
         private readonly IEntityIdentityResolver _identityResolver;
 
-        public ItSystemArchivesController(IGenericRepository<ItSystemArchive> repository, IEntityIdentityResolver identityResolver)
+        public ItSystemUsageArchivesController(IGenericRepository<ItSystemUsageArchive> repository, IEntityIdentityResolver identityResolver)
             : base(repository)
         {
             _identityResolver = identityResolver;
         }
 
         [EnableQuery]
-        [Route("odata/ItSystemArchives")]
+        [Route("odata/ItSystemUsageArchives")]
         [RequireTopOnOdataThroughKitosToken]
         public override IActionResult Get()
         {
@@ -33,7 +33,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery]
-        [Route("odata/Organizations({organizationUuid})/ItSystemArchives")]
+        [Route("odata/Organizations({organizationUuid})/ItSystemUsageArchives")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult GetByOrganizationUuid([FromRoute] Guid organizationUuid)
         {
@@ -52,7 +52,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return Ok(GetAllQuery().Where(x => x.OrganizationId == orgDbId.Value).ToList());
         }
 
-        protected override IQueryable<ItSystemArchive> GetAllQuery()
+        protected override IQueryable<ItSystemUsageArchive> GetAllQuery()
         {
             var all = base.GetAllQuery();
             if (!UserContext.IsGlobalAdmin())
@@ -68,10 +68,10 @@ namespace Presentation.Web.Controllers.API.V1.OData
         public override IActionResult Get(int key) => throw new NotSupportedException();
 
         [NonAction]
-        public override IActionResult Post(int organizationId, ItSystemArchive entity) => throw new NotSupportedException();
+        public override IActionResult Post(int organizationId, ItSystemUsageArchive entity) => throw new NotSupportedException();
 
         [NonAction]
-        public override IActionResult Patch(int key, Delta<ItSystemArchive> delta) => throw new NotSupportedException();
+        public override IActionResult Patch(int key, Delta<ItSystemUsageArchive> delta) => throw new NotSupportedException();
 
         [NonAction]
         public override IActionResult Delete(int key) => throw new NotSupportedException();

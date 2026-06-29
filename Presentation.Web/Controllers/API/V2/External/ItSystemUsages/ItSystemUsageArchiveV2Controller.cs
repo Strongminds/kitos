@@ -10,14 +10,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
     //TODO: Add get/delete endpoints
-    [Route("api/v2/it-system-archives")]
-    public class ItSystemArchiveV2Controller(
-        IItSystemArchiveService archivedItSystemService,
-        IItSystemArchiveResponseMapper responseMapper,
+    [Route("api/v2/it-system-usage-archives")]
+    public class ItSystemUsageArchiveV2Controller(
+        IItSystemUsageArchiveService archivedItSystemService,
+        IItSystemUsageArchiveResponseMapper responseMapper,
         IResourcePermissionsResponseMapper permissionsResponseMapper) : ExternalBaseController
     {
         /// <summary>
-        /// Returns a specific IT-System archive by its UUID
+        /// Returns a specific IT-System usage archive by its UUID
         /// </summary>
         /// <param name="archiveUuid">UUID of the archive entity</param>
         /// <returns>The archive entity if found and user has read access</returns>
@@ -35,7 +35,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
 
         /// <summary>
-        /// Deletes a specific IT-System archive by its UUID
+        /// Deletes a specific IT-System usage archive by its UUID
         /// </summary>
         /// <param name="archiveUuid">UUID of the archive entity to delete</param>
         /// <returns>No content if successfully deleted</returns>
@@ -52,13 +52,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
 
         /// <summary>
-        /// Returns the permissions of the authenticated client in the context of a specific IT-System archive (a specific IT-System in a specific Organization)
+        /// Returns the permissions of the authenticated client in the context of a specific IT-System usage archive (a specific IT-System in a specific Organization)
         /// </summary>
         /// <param name="archiveUuid">UUID of the archive entity</param>
         /// <returns></returns>
         [HttpGet]
         [Route("{archiveUuid}/permissions")]
-        public IActionResult GetItSystemArchivePermissions([NonEmptyGuid] Guid archiveUuid)
+        public IActionResult GetItSystemUsageArchivePermissions([NonEmptyGuid] Guid archiveUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -70,13 +70,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
 
         /// <summary>
-        /// Returns the permissions of the authenticated client for the IT-System archive resources collection in the context of an organization (IT-System archive permissions in a specific Organization)
+        /// Returns the permissions of the authenticated client for the IT-System usage archive resources collection in the context of an organization (IT-System usage archive permissions in a specific Organization)
         /// </summary>
         /// <param name="organizationUuid">UUID of the organization</param>
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
-        public IActionResult GetItSystemArchiveCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetItSystemUsageArchiveCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -88,4 +88,3 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
     }
 }
-

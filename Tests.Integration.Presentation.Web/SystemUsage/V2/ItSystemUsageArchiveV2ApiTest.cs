@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 {
-    public class ItSystemArchiveV2ApiTest : BaseItSystemUsageApiV2Test
+    public class ItSystemUsageArchiveV2ApiTest : BaseItSystemUsageApiV2Test
     {
         [Fact]
         public async Task Can_Get_Archive_By_Uuid()
@@ -24,7 +24,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, CreateArchiveRequest());
 
             // Act
-            var result = await ItSystemArchiveV2Helper.GetArchiveAsync(token, archive.Uuid);
+            var result = await ItSystemUsageArchiveV2Helper.GetArchiveAsync(token, archive.Uuid);
 
             // Assert
             Assert.NotNull(result);
@@ -42,10 +42,10 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, CreateArchiveRequest());
 
             // Act
-            await ItSystemArchiveV2Helper.DeleteArchiveAsync(token, archive.Uuid);
+            await ItSystemUsageArchiveV2Helper.DeleteArchiveAsync(token, archive.Uuid);
 
             // Assert - Verify archive is deleted by attempting to get it
-            var getResult = await ItSystemArchiveV2Helper.SendGetArchiveAsync(token, archive.Uuid);
+            var getResult = await ItSystemUsageArchiveV2Helper.SendGetArchiveAsync(token, archive.Uuid);
             Assert.Equal(System.Net.HttpStatusCode.NotFound, getResult.StatusCode);
         }
 
