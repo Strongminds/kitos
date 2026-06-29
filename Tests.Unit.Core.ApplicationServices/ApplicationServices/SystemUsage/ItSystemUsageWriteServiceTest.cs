@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -69,7 +69,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IEntityIdentityResolver> _identityResolverMock;
         private readonly Mock<IItsystemUsageRelationsService> _systemUsageRelationServiceMock;
         private readonly Mock<IGenericRepository<ItSystemUsagePersonalData>> _personalDataOptionsRepository;
-        private readonly Mock<IItSystemArchiveService> _itSystemArchiveServiceMock;
+        private readonly Mock<IItSystemUsageArchiveService> _itSystemArchiveServiceMock;
 
         public ItSystemUsageWriteServiceTest()
         {
@@ -95,7 +95,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
             _systemUsageRelationServiceMock = new Mock<IItsystemUsageRelationsService>();
             _personalDataOptionsRepository = new Mock<IGenericRepository<ItSystemUsagePersonalData>>();
-            _itSystemArchiveServiceMock = new Mock<IItSystemArchiveService>();
+            _itSystemArchiveServiceMock = new Mock<IItSystemUsageArchiveService>();
             _sut = new ItSystemUsageWriteService(_itSystemUsageServiceMock.Object, _transactionManagerMock.Object,
                 _itSystemServiceMock.Object, _organizationServiceMock.Object, _authorizationContextMock.Object,
                 _systemCategoriesOptionsServiceMock.Object, _contractServiceMock.Object,
@@ -2474,7 +2474,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Arrange
             var systemUsageUuid = A<Guid>();
             var systemUsageId = A<int>();
-            var archive = new ItSystemArchive
+            var archive = new ItSystemUsageArchive
             {
                 Note = A<string>(),
                 ArchivingDate = A<DateTime>(),
@@ -2525,7 +2525,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Arrange
             var systemUsageUuid = A<Guid>();
             var systemUsageId = A<int>();
-            var archive = new ItSystemArchive
+            var archive = new ItSystemUsageArchive
             {
                 Note = A<string>(),
                 ArchivingDate = A<DateTime>(),

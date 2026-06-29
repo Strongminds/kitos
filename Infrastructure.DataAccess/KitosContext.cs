@@ -105,7 +105,7 @@ namespace Infrastructure.DataAccess
         public DbSet<PublicMessage> PublicMessages { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ArchivePeriod> ArchivePeriods { get; set; }
-        public DbSet<ItSystemArchive> ItSystemArchives { get; set; }
+        public DbSet<ItSystemUsageArchive> ItSystemUsageArchives { get; set; }
         public DbSet<ArchiveReference> ArchiveReferences { get; set; }
         public DbSet<ItSystemUsageArchiveSnapshot> ItSystemUsageArchiveSnapshots { get; set; }
         public DbSet<LocalAgreementElementType> LocalAgreementElementTypes { get; set; }

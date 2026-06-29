@@ -41,7 +41,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         IResourcePermissionsResponseMapper permissionsResponseMapper,
         IItsystemUsageRelationsService systemRelationsService,
         IExternalReferenceResponseMapper externalReferenceResponseMapper,
-        IItSystemArchiveResponseMapper archiveResponseMapper)
+        IItSystemUsageArchiveResponseMapper archiveResponseMapper)
         : ExternalBaseController
     {
         /// <summary>
@@ -55,6 +55,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="systemNameContent">Query usages based on system name</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="paginationQuery">Pagination query parameters</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]
@@ -64,10 +65,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             [NonEmptyGuid] Guid? relatedToSystemUsageUuid = null,
             [NonEmptyGuid] Guid? relatedToContractUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
-            string systemNameContent = null,
+            string? systemNameContent = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -506,7 +507,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("{systemUsageUuid}")]
+        [Route("{systemUsageUuid}/archive")]
         public IActionResult ArchiveItSystemUsage(
             [NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] CreateItSystemUsageArchiveRequestDTO request)

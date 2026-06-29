@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -298,18 +298,18 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token);
         }
 
-        public static async Task<ItSystemArchiveResponseDTO> ArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        public static async Task<ItSystemUsageArchiveResponseDTO> ArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
         {
             using var response = await SendArchiveAsync(token, systemUsageUuid, dto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<ItSystemArchiveResponseDTO>();
+            return await response.ReadResponseBodyAsAsync<ItSystemUsageArchiveResponseDTO>();
         }
 
         public static async Task<HttpResponseMessage> SendArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
         {
             return await HttpApi.PostWithTokenAsync(
-                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}"), dto, token);
+                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}/archive"), dto, token);
         }
 
         public static async Task<OutgoingSystemRelationResponseDTO> PostRelationAsync(string token,

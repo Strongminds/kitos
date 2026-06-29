@@ -1,4 +1,4 @@
-﻿using Core.Abstractions.Types;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.SystemUsage;
 using Core.ApplicationServices.Model.SystemUsage.Write;
@@ -30,6 +30,6 @@ namespace Core.ApplicationServices.SystemUsage.Write
         Result<ExternalReference, OperationError> DeleteExternalReference(Guid usageUuid, Guid externalReferenceUuid);
         Maybe<OperationError> DeleteByItSystemAndOrganizationUuids(Guid itSystemUuid, Guid organizationUuid);
 
-        Result<ItSystemArchive, OperationError> Archive(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters);
+        Result<ItSystemUsageArchive, OperationError> Archive(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters);
     }
 }

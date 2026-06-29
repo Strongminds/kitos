@@ -17,9 +17,9 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.Label).IsRequired();
             builder.Property(x => x.Url).IsRequired();
 
-            builder.HasOne(x => x.ItSystemArchive)
+            builder.HasOne(x => x.ItSystemUsageArchive)
                 .WithMany(x => x.ArchiveReferences)
-                .HasForeignKey(x => x.ItSystemArchiveUuid)
+                .HasForeignKey(x => x.ItSystemUsageArchiveUuid)
                 .HasPrincipalKey(x => x.Uuid)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);

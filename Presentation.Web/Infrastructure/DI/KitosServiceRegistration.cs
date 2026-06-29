@@ -251,7 +251,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationSupplierService, OrganizationSupplierService>();
             services.AddScoped<IItSystemService, ItSystemService>();
             services.AddScoped<IItSystemUsageService, ItSystemUsageService>();
-            services.AddScoped<IItSystemArchiveService, ItSystemArchiveService>();
+            services.AddScoped<IItSystemUsageArchiveService, ItSystemUsageArchiveService>();
             services.AddScoped<IItSystemUsageMigrationServiceAdapter, ItSystemUsageMigrationServiceAdapter>();
             services.AddScoped<IItsystemUsageRelationsService, ItsystemUsageRelationsService>();
             services.AddScoped<IItSystemUsageWriteService, ItSystemUsageWriteService>();
@@ -695,7 +695,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItSystemUsageResponseMapper, ItSystemUsageResponseMapper>();
             services.AddScoped<IItSystemUsageWriteModelMapper, ItSystemUsageWriteModelMapper>();
             services.AddScoped<IItSystemUsageMigrationResponseMapper, ItSystemUsageMigrationResponseMapper>();
-            services.AddScoped<IItSystemArchiveResponseMapper, ItSystemArchiveResponseMapper>();
+            services.AddScoped<IItSystemUsageArchiveResponseMapper, ItSystemUsageArchiveResponseMapper>();
             services.AddScoped<IDataProcessingRegistrationWriteModelMapper, DataProcessingRegistrationWriteModelMapper>();
             services.AddScoped<IDataProcessingRegistrationResponseMapper, DataProcessingRegistrationResponseMapper>();
             services.AddScoped<IItContractWriteModelMapper, ItContractWriteModelMapper>();
@@ -840,5 +840,3 @@ namespace Presentation.Web.Infrastructure.DI
         }
     }
 }
-
-

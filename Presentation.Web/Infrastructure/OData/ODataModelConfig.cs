@@ -28,7 +28,7 @@ namespace Presentation.Web.Infrastructure.OData
             RegisterEntitySet<ItSystemRight>(builder, "ItSystemRights");
             RegisterEntitySet<ItInterface>(builder, "ItInterfaces");
             RegisterEntitySet<ItContract>(builder, "ItContracts");
-            RegisterEntitySet<ItSystemArchive>(builder, "ItSystemArchives");
+            RegisterEntitySet<ItSystemUsageArchive>(builder, "ItSystemUsageArchives");
             RegisterEntitySet<ItSystemUsageOverviewReadModel>(builder, "ItSystemUsageOverviewReadModels");
             RegisterEntitySet<ItContractOverviewReadModel>(builder, "ItContractOverviewReadModels");
             RegisterEntitySet<DataProcessingRegistrationReadModel>(builder, "DataProcessingRegistrationReadModels");

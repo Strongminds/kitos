@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -18,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             var dateTimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
 
             migrationBuilder.CreateTable(
-                name: "ItSystemArchive",
+                name: "ItSystemUsageArchive",
                 columns: table => new
                 {
                     Id = isSqlServer
@@ -38,22 +38,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItSystemArchive", x => x.Id);
-                    table.UniqueConstraint("AK_ItSystemArchive_Uuid", x => x.Uuid);
+                    table.PrimaryKey("PK_ItSystemUsageArchive", x => x.Id);
+                    table.UniqueConstraint("AK_ItSystemUsageArchive_Uuid", x => x.Uuid);
                     table.ForeignKey(
-                        name: "FK_ItSystemArchive_Organization_OrganizationId",
+                        name: "FK_ItSystemUsageArchive_Organization_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organization",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItSystemArchive_User_LastChangedByUserId",
+                        name: "FK_ItSystemUsageArchive_User_LastChangedByUserId",
                         column: x => x.LastChangedByUserId,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ItSystemArchive_User_ObjectOwnerId",
+                        name: "FK_ItSystemUsageArchive_User_ObjectOwnerId",
                         column: x => x.ObjectOwnerId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -72,7 +72,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     Uuid = table.Column<Guid>(type: uuidType, nullable: false),
                     Label = table.Column<string>(type: maxTextType, nullable: false),
                     Url = table.Column<string>(type: maxTextType, nullable: false),
-                    ItSystemArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
+                    ItSystemUsageArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
                     ObjectOwnerId = table.Column<int>(type: intType, nullable: false),
                     LastChanged = table.Column<DateTime>(type: dateTimeType, nullable: false),
                     LastChangedByUserId = table.Column<int>(type: intType, nullable: false)
@@ -81,9 +81,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     table.PrimaryKey("PK_ArchiveReference", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ArchiveReference_ItSystemArchive_ItSystemArchiveUuid",
-                        column: x => x.ItSystemArchiveUuid,
-                        principalTable: "ItSystemArchive",
+                        name: "FK_ArchiveReference_ItSystemUsageArchive_ItSystemUsageArchiveUuid",
+                        column: x => x.ItSystemUsageArchiveUuid,
+                        principalTable: "ItSystemUsageArchive",
                         principalColumn: "Uuid",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -115,7 +115,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     LocalName = table.Column<string>(type: maxTextType, nullable: true),
                     LocalId = table.Column<string>(type: maxTextType, nullable: true),
                     ItSystemUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    ItSystemArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
+                    ItSystemUsageArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
                     ObjectOwnerId = table.Column<int>(type: intType, nullable: false),
                     LastChanged = table.Column<DateTime>(type: dateTimeType, nullable: false),
                     LastChangedByUserId = table.Column<int>(type: intType, nullable: false)
@@ -124,9 +124,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     table.PrimaryKey("PK_Snapshot", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Snapshot_ItSystemArchive_ItSystemArchiveUuid",
-                        column: x => x.ItSystemArchiveUuid,
-                        principalTable: "ItSystemArchive",
+                        name: "FK_Snapshot_ItSystemUsageArchive_ItSystemUsageArchiveUuid",
+                        column: x => x.ItSystemUsageArchiveUuid,
+                        principalTable: "ItSystemUsageArchive",
                         principalColumn: "Uuid",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -150,9 +150,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArchiveReference_ItSystemArchiveUuid",
+                name: "IX_ArchiveReference_ItSystemUsageArchiveUuid",
                 table: "ArchiveReference",
-                column: "ItSystemArchiveUuid");
+                column: "ItSystemUsageArchiveUuid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchiveReference_LastChangedByUserId",
@@ -171,29 +171,29 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemArchive_LastChangedByUserId",
-                table: "ItSystemArchive",
+                name: "IX_ItSystemUsageArchive_LastChangedByUserId",
+                table: "ItSystemUsageArchive",
                 column: "LastChangedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemArchive_ObjectOwnerId",
-                table: "ItSystemArchive",
+                name: "IX_ItSystemUsageArchive_ObjectOwnerId",
+                table: "ItSystemUsageArchive",
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemArchive_OrganizationId",
-                table: "ItSystemArchive",
+                name: "IX_ItSystemUsageArchive_OrganizationId",
+                table: "ItSystemUsageArchive",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "UX_ItSystemArchive_ItSystemUsageSnapshotUuid",
-                table: "ItSystemArchive",
+                name: "UX_ItSystemUsageArchive_ItSystemUsageSnapshotUuid",
+                table: "ItSystemUsageArchive",
                 column: "SnapshotUuid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UX_ItSystemArchive_Uuid",
-                table: "ItSystemArchive",
+                name: "UX_ItSystemUsageArchive_Uuid",
+                table: "ItSystemUsageArchive",
                 column: "Uuid",
                 unique: true);
 
@@ -213,9 +213,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "UX_ItSystemUsageArchiveSnapshot_ItSystemArchiveUuid",
+                name: "UX_ItSystemUsageArchiveSnapshot_ItSystemUsageArchiveUuid",
                 table: "Snapshot",
-                column: "ItSystemArchiveUuid",
+                column: "ItSystemUsageArchiveUuid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -235,7 +235,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Snapshot");
 
             migrationBuilder.DropTable(
-                name: "ItSystemArchive");
+                name: "ItSystemUsageArchive");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Core.DomainModel.Archive;
 
@@ -8,6 +8,6 @@ public class ArchiveReference: Entity, IHasUuid
     public string Label { get; set; }
     public string Url { get; set; }
 
-    public Guid ItSystemArchiveUuid { get; set; }
-    public virtual ItSystemArchive ItSystemArchive { get; set; }
+    public Guid ItSystemUsageArchiveUuid { get; set; }
+    public virtual ItSystemUsageArchive ItSystemUsageArchive { get; set; }
 }
