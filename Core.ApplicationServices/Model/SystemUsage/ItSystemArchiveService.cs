@@ -2,16 +2,19 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel.Archive;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.DomainModel.ItSystemUsage;
+using Core.Abstractions.Extensions;
+using Core.ApplicationServices.Organizations;
 
 namespace Core.ApplicationServices.Model.SystemUsage
 {
     public class ItSystemArchiveService(
         IItSystemUsageService systemUsageService,
+        IOrganizationService organizationService,
         IAuthorizationContext authorizationContext,
         IGenericRepository<ItSystemArchive> archiveRepository) : IItSystemArchiveService
     {
@@ -59,6 +62,19 @@ namespace Core.ApplicationServices.Model.SystemUsage
                     archiveRepository.Save();
                     return Result<ItSystemArchive,OperationError>.Success(archive);
                 });
+        }
+        
+        public Result<ResourcePermissionsResult, OperationError> GetPermissions(Guid uuid)
+        {
+            return GetByUuid(uuid)
+                .Transform(result => ResourcePermissionsResult.FromResolutionResult(result, authorizationContext));
+        }
+
+        public Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid)
+        {
+            return organizationService
+                .GetOrganization(organizationUuid)
+                .Select(result => ResourceCollectionPermissionsResult.FromOrganizationId<ItSystemUsage>(result.Id, authorizationContext));
         }
 
         private static ItSystemUsageArchiveSnapshot CreateSnapshot(ItSystemUsage systemUsage)
