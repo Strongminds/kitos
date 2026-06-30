@@ -90,9 +90,13 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
             await DeleteDprAsync(token, dpr3);
             await DeleteDprAsync(token, dpr1);
 
-            // Use an explicit marker between deletion batches to avoid precision/order drift
-            // when filtering on event timestamps returned from the API.
-            var deletedSinceMarker = DateTime.UtcNow;
+            // Derive the marker from the server's own clock (via the API response) to avoid
+            // clock-skew between the test client and the remote server. A small delay ensures
+            // the server's Windows system timer has advanced past the first batch's tick so
+            // the second batch events get strictly later OccurredAtUtc values.
+            await Task.Delay(TimeSpan.FromMilliseconds(50));
+            var firstBatchEvents = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token)).ToList();
+            var deletedSinceMarker = firstBatchEvents.Max(x => x.OccurredAtUtc).AddMilliseconds(1);
 
             await DeleteDprAsync(token, dpr2);
             await DeleteDprAsync(token, dpr4);
@@ -103,8 +107,9 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
             //Assert that that the last two are iuncluded (filtering includes changes AT the data provided
             Assert.Equal(new[] { dpr2.Uuid, dpr4.Uuid }, deletedItemsFiltered.Select(x => x.EntityUuid));
 
-            //Act - move marker to now and assert no new deletions are returned
-            deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: DateTime.UtcNow)).ToList();
+            //Act - move marker to the latest server-side event + 1 ms and assert no new deletions are returned
+            var noNewEventsMarker = deletedItemsFiltered.Max(x => x.OccurredAtUtc).AddMilliseconds(1);
+            deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: noNewEventsMarker)).ToList();
 
             //Assert no additional events after current marker
             Assert.Empty(deletedItemsFiltered);

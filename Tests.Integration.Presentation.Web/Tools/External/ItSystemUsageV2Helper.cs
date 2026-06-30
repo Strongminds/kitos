@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -296,6 +296,20 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<HttpResponseMessage> SendDeleteAsync(string token, Guid uuid)
         {
             return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token);
+        }
+
+        public static async Task<ItSystemUsageArchiveResponseDTO> ArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        {
+            using var response = await SendArchiveAsync(token, systemUsageUuid, dto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<ItSystemUsageArchiveResponseDTO>();
+        }
+
+        public static async Task<HttpResponseMessage> SendArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        {
+            return await HttpApi.PostWithTokenAsync(
+                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}/archive"), dto, token);
         }
 
         public static async Task<OutgoingSystemRelationResponseDTO> PostRelationAsync(string token,

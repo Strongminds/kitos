@@ -3,6 +3,7 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Extensions;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.ItSystem;
@@ -277,6 +278,18 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         public SystemUsageJournalPeriodProperties MapJournalPeriodProperties(JournalPeriodDTO input)
         {
             return MapBaseJournalPeriodProperties(input);
+        }
+
+        public ArchiveItSystemUsageParameters MapArchiveParameters(CreateItSystemUsageArchiveRequestDTO request)
+        {
+            return new ArchiveItSystemUsageParameters
+            {
+                ArchivingDate = request.ArchivingDate,
+                TakenIntoUsageDate = request.TakenIntoUsageDate,
+                ReferenceName = request.ReferenceName,
+                Note = request.Note,
+                ArchiveReferences = request.ArchiveReferences?.Select(reference => new NamedLink(reference.Name ?? string.Empty, reference.Url ?? string.Empty)) ?? new List<NamedLink>()
+            };
         }
 
         private SystemUsageJournalPeriodUpdate MapBaseJournalPeriodProperties(JournalPeriodDTO journalPeriod)

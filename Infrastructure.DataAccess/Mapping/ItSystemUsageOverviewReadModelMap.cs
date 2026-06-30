@@ -124,6 +124,10 @@ namespace Infrastructure.DataAccess.Mapping
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(x => x.SourceEntityUuid).IsRequired();
+
+            // LicensingAndCodeModels is persisted as a string but exposed as a collection via the entity property
+            // Ignore the navigation property to prevent EF from trying to map it as an array
+            builder.Ignore(x => x.LicensingAndCodeModels);
         }
     }
 }

@@ -33,34 +33,17 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
     /// NOTE: IT-System usages are registrations which extend those of a system within the context of a specific organization.
     /// </summary>
     [Route("api/v2/it-system-usages")]
-    public class ItSystemUsageV2Controller : ExternalBaseController
+    public class ItSystemUsageV2Controller(
+        IItSystemUsageService itSystemUsageService,
+        IItSystemUsageResponseMapper responseMapper,
+        IItSystemUsageWriteService writeService,
+        IItSystemUsageWriteModelMapper writeModelMapper,
+        IResourcePermissionsResponseMapper permissionsResponseMapper,
+        IItsystemUsageRelationsService systemRelationsService,
+        IExternalReferenceResponseMapper externalReferenceResponseMapper,
+        IItSystemUsageArchiveResponseMapper archiveResponseMapper)
+        : ExternalBaseController
     {
-        private readonly IItSystemUsageService _itSystemUsageService;
-        private readonly IItSystemUsageResponseMapper _responseMapper;
-        private readonly IItSystemUsageWriteService _writeService;
-        private readonly IItSystemUsageWriteModelMapper _writeModelMapper;
-        private readonly IResourcePermissionsResponseMapper _permissionsResponseMapper;
-        private readonly IItsystemUsageRelationsService _systemRelationsService;
-        private readonly IExternalReferenceResponseMapper _externalReferenceResponseMapper;
-
-        public ItSystemUsageV2Controller(
-            IItSystemUsageService itSystemUsageService,
-            IItSystemUsageResponseMapper responseMapper,
-            IItSystemUsageWriteService writeService,
-            IItSystemUsageWriteModelMapper writeModelMapper,
-            IResourcePermissionsResponseMapper permissionsResponseMapper,
-            IItsystemUsageRelationsService systemRelationsService,
-            IExternalReferenceResponseMapper externalReferenceResponseMapper)
-        {
-            _itSystemUsageService = itSystemUsageService;
-            _responseMapper = responseMapper;
-            _writeService = writeService;
-            _writeModelMapper = writeModelMapper;
-            _permissionsResponseMapper = permissionsResponseMapper;
-            _systemRelationsService = systemRelationsService;
-            _externalReferenceResponseMapper = externalReferenceResponseMapper;
-        }
-
         /// <summary>
         /// Returns all IT-System usages available to the current user
         /// </summary>
@@ -72,6 +55,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="systemNameContent">Query usages based on system name</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="paginationQuery">Pagination query parameters</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]
@@ -81,17 +65,17 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             [NonEmptyGuid] Guid? relatedToSystemUsageUuid = null,
             [NonEmptyGuid] Guid? relatedToContractUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
-            string systemNameContent = null,
+            string? systemNameContent = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _itSystemUsageService
+            return itSystemUsageService
                 .ExecuteItSystemUsagesQuery(organizationUuid, relatedToSystemUuid, relatedToSystemUsageUuid, relatedToContractUuid, systemUuid, systemNameContent, changedSinceGtEq, orderByProperty, paginationQuery)
-                .Select(_responseMapper.MapSystemUsageDTO)
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Transform(Ok);
         }
 
@@ -107,9 +91,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _itSystemUsageService
+            return itSystemUsageService
                 .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
-                .Select(_responseMapper.MapSystemUsageDTO)
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -125,9 +109,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _itSystemUsageService
+            return itSystemUsageService
                 .GetPermissions(systemUsageUuid)
-                .Select(_permissionsResponseMapper.Map)
+                .Select(permissionsResponseMapper.Map)
                 .Match(Ok, FromOperationError);
         }
 
@@ -143,9 +127,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _itSystemUsageService
+            return itSystemUsageService
                 .GetCollectionPermissions(organizationUuid)
-                .Select(_permissionsResponseMapper.Map)
+                .Select(permissionsResponseMapper.Map)
                 .Match(Ok, FromOperationError);
         }
 
@@ -162,7 +146,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
+            return writeService
                 .Delete(systemUsageUuid)
                 .Match(FromOperationError, () => StatusCode((int)HttpStatusCode.NoContent));
         }
@@ -179,9 +163,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
-                .Create(new SystemUsageCreationParameters(request.SystemUuid, request.OrganizationUuid, _writeModelMapper.FromPOST(request)))
-                .Select(_responseMapper.MapSystemUsageDTO)
+            return writeService
+                .Create(new SystemUsageCreationParameters(request.SystemUuid, request.OrganizationUuid, writeModelMapper.FromPOST(request)))
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Match(MapSystemCreatedResponse, FromOperationError);
         }
 
@@ -199,11 +183,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updateParameters = _writeModelMapper.FromPUT(request);
+            var updateParameters = writeModelMapper.FromPUT(request);
 
-            return _writeService
+            return writeService
                 .Update(systemUsageUuid, updateParameters)
-                .Select(_responseMapper.MapSystemUsageDTO)
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -223,11 +207,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updateParameters = _writeModelMapper.FromPATCH(request);
+            var updateParameters = writeModelMapper.FromPATCH(request);
 
-            return _writeService
+            return writeService
                 .Update(systemUsageUuid, updateParameters)
-                .Select(_responseMapper.MapSystemUsageDTO)
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -240,10 +224,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         [Route("{systemUsageUuid}/incoming-system-relations")]
         public IActionResult GetIncomingSystemRelations([NonEmptyGuid] Guid systemUsageUuid)
         {
-            return _itSystemUsageService
+            return itSystemUsageService
                 .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
-                .Bind(usage => _systemRelationsService.GetRelationsTo(usage.Id))
-                .Select(relations => relations.Select(relation => _responseMapper.MapIncomingSystemRelationDTO(relation)).ToList())
+                .Bind(usage => systemRelationsService.GetRelationsTo(usage.Id))
+                .Select(relations => relations.Select(relation => responseMapper.MapIncomingSystemRelationDTO(relation)).ToList())
                 .Match(Ok, FromOperationError);
         }
 
@@ -261,9 +245,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
+            return writeService
                 .AddRole(systemUsageUuid, request.ToUserRolePair())
-                .Select(_responseMapper.MapSystemUsageDTO)
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -280,9 +264,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
+            return writeService
                 .RemoveRole(systemUsageUuid, request.ToUserRolePair())
-                .Select(_responseMapper.MapSystemUsageDTO)
+                .Select(responseMapper.MapSystemUsageDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -297,11 +281,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var systemRelationParameters = _writeModelMapper.MapRelation(request);
+            var systemRelationParameters = writeModelMapper.MapRelation(request);
 
-            return _writeService
+            return writeService
                 .CreateSystemRelation(systemUsageUuid, systemRelationParameters)
-                .Select(_responseMapper.MapOutgoingSystemRelationDTO)
+                .Select(responseMapper.MapOutgoingSystemRelationDTO)
                 .Match(relationDTO => CreateCreatedResourcePath(systemUsageUuid, "system-relations", relationDTO), FromOperationError);
         }
 
@@ -318,7 +302,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _itSystemUsageService
+            return itSystemUsageService
                 .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(usage =>
                     usage.GetUsageRelation(systemRelationUuid)
@@ -327,7 +311,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
                         systemRelation => systemRelation,
                         () => new OperationError("Relation not found on system usage", OperationFailure.NotFound))
                     )
-                .Select(_responseMapper.MapOutgoingSystemRelationDTO)
+                .Select(responseMapper.MapOutgoingSystemRelationDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -344,11 +328,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var systemRelationParameters = _writeModelMapper.MapRelation(request);
+            var systemRelationParameters = writeModelMapper.MapRelation(request);
 
-            return _writeService
+            return writeService
                 .UpdateSystemRelation(systemUsageUuid, systemRelationUuid, systemRelationParameters)
-                .Select(_responseMapper.MapOutgoingSystemRelationDTO)
+                .Select(responseMapper.MapOutgoingSystemRelationDTO)
                 .Match(Ok, FromOperationError);
         }
 
@@ -365,7 +349,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
+            return writeService
                 .DeleteSystemRelation(systemUsageUuid, systemRelationUuid)
                 .Match(FromOperationError, () => StatusCode((int)HttpStatusCode.NoContent));
         }
@@ -382,11 +366,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var properties = _writeModelMapper.MapExternalReference(dto);
+            var properties = writeModelMapper.MapExternalReference(dto);
 
-            return _writeService
+            return writeService
                 .AddExternalReference(systemUsageUuid, properties)
-                .Select(_externalReferenceResponseMapper.MapExternalReference)
+                .Select(externalReferenceResponseMapper.MapExternalReference)
                 .Match(reference => Created($"{new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").AbsoluteUri.TrimEnd('/')}/{systemUsageUuid}/external-references/{reference.Uuid}", reference), FromOperationError);
         }
 
@@ -403,11 +387,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var properties = _writeModelMapper.MapExternalReference(dto);
+            var properties = writeModelMapper.MapExternalReference(dto);
 
-            return _writeService
+            return writeService
                 .UpdateExternalReference(systemUsageUuid, externalReferenceUuid, properties)
-                .Select(_externalReferenceResponseMapper.MapExternalReference)
+                .Select(externalReferenceResponseMapper.MapExternalReference)
                 .Match(Ok, FromOperationError);
         }
 
@@ -424,7 +408,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
+            return writeService
                 .DeleteExternalReference(systemUsageUuid, externalReferenceUuid)
                 .Match(_ => NoContent(), FromOperationError);
         }
@@ -442,11 +426,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var parameters = _writeModelMapper.MapJournalPeriodProperties(request);
+            var parameters = writeModelMapper.MapJournalPeriodProperties(request);
 
-            return _writeService
+            return writeService
                 .CreateJournalPeriod(systemUsageUuid, parameters)
-                .Select(_responseMapper.MapJournalPeriodResponseDto)
+                .Select(responseMapper.MapJournalPeriodResponseDto)
                 .Match(period => CreateCreatedResourcePath(systemUsageUuid, "journal-periods", period), FromOperationError);
         }
 
@@ -463,7 +447,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _itSystemUsageService
+            return itSystemUsageService
                 .GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
                 .Bind(usage =>
                     usage.GetArchivePeriod(journalPeriodUuid)
@@ -472,7 +456,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
                         period => period,
                         () => new OperationError("Journal period not found on system usage", OperationFailure.NotFound))
                     )
-                .Select(_responseMapper.MapJournalPeriodResponseDto)
+                .Select(responseMapper.MapJournalPeriodResponseDto)
                 .Match(Ok, FromOperationError);
         }
 
@@ -490,11 +474,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var parameters = _writeModelMapper.MapJournalPeriodProperties(request);
+            var parameters = writeModelMapper.MapJournalPeriodProperties(request);
 
-            return _writeService
+            return writeService
                 .UpdateJournalPeriod(systemUsageUuid, journalPeriodUuid, parameters)
-                .Select(_responseMapper.MapJournalPeriodResponseDto)
+                .Select(responseMapper.MapJournalPeriodResponseDto)
                 .Match(Ok, FromOperationError);
         }
 
@@ -511,9 +495,29 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return _writeService
+            return writeService
                 .DeleteJournalPeriod(systemUsageUuid, journalPeriodUuid)
                 .Match(_ => NoContent(), FromOperationError);
+        }
+
+        /// <summary>
+        /// Archives the specified ItSystemUsage
+        /// </summary>
+        /// <param name="systemUsageUuid"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("{systemUsageUuid}/archive")]
+        public IActionResult ArchiveItSystemUsage(
+            [NonEmptyGuid] Guid systemUsageUuid,
+            [FromBody] CreateItSystemUsageArchiveRequestDTO request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var parameters = writeModelMapper.MapArchiveParameters(request);
+            return writeService.Archive(systemUsageUuid, parameters).Match(
+                archive => Ok(archiveResponseMapper.ToResponseDTO(archive)),
+                FromOperationError);
         }
 
         private IActionResult MapSystemCreatedResponse(ItSystemUsageResponseDTO dto)
