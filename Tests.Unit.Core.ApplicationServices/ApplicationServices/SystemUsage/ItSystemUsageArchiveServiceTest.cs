@@ -14,6 +14,7 @@ using System.Linq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 using Core.ApplicationServices.Model.SystemUsage.Write;
+using Core.DomainModel;
 
 namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 {
@@ -22,6 +23,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IItSystemUsageService> _systemUsageService;
         private readonly Mock<IOrganizationService> _organizationService;
         private readonly Mock<IAuthorizationContext> _authorizationContext;
+        private readonly Mock<IOrganizationalUserContext> _organizationalUserContext;
+        private readonly Mock<IUserRepository> _userRepository;
         private readonly Mock<IGenericRepository<ItSystemUsageArchive>> _archiveRepository;
         private readonly ItSystemUsageArchiveService _sut;
 
@@ -30,8 +33,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _systemUsageService = new Mock<IItSystemUsageService>();
             _organizationService = new Mock<IOrganizationService>();
             _authorizationContext = new Mock<IAuthorizationContext>();
+            _organizationalUserContext = new Mock<IOrganizationalUserContext>();
+            _userRepository = new Mock<IUserRepository>();
             _archiveRepository = new Mock<IGenericRepository<ItSystemUsageArchive>>();
-            _sut = new ItSystemUsageArchiveService(_systemUsageService.Object, _organizationService.Object, _authorizationContext.Object, _archiveRepository.Object);
+            _sut = new ItSystemUsageArchiveService(_systemUsageService.Object, _organizationService.Object, _authorizationContext.Object, _organizationalUserContext.Object, _userRepository.Object, _archiveRepository.Object);
         }
 
         [Fact]
@@ -64,6 +69,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 new NamedLink("Ref 1", "https://example.com/1"),
                 new NamedLink("Ref 2", "https://example.com/2")
             };
+            var userId = A<int>();
 
             var usage = CreateSystemUsage("Legacy Name", "Local Name", "Local Id");
 
@@ -71,6 +77,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             SetupSystemUsageLookup(usageUuid, usage);
             SetupAllowCreate(usage.OrganizationId, true);
+            SetupCurrentUser(userId);
             _archiveRepository
                 .Setup(x => x.Insert(It.IsAny<ItSystemUsageArchive>()))
                 .Callback<ItSystemUsageArchive>(archive => insertedArchive = archive)
@@ -87,6 +94,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.Equal(parameters.ArchivingDate, insertedArchive.ArchivingDate);
             Assert.Equal(parameters.ReferenceName, insertedArchive.ReferenceName);
             Assert.Equal(parameters.Note, insertedArchive.Note);
+            Assert.Equal(userId, insertedArchive.ArchivedById);
             Assert.NotEqual(Guid.Empty, insertedArchive.SnapshotUuid);
             Assert.Equal(insertedArchive.Snapshot.Uuid, insertedArchive.SnapshotUuid);
 
@@ -111,8 +119,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var parameters = CreateParameters();
             parameters.ArchiveReferences = null!;
             var usage = CreateSystemUsage();
+            SetupCurrentUser(A<int>());
 
-            ItSystemUsageArchive insertedArchive = null;
+            ItSystemUsageArchive? insertedArchive = null;
             SetupSystemUsageLookup(usageUuid, usage);
             SetupAllowCreate(usage.OrganizationId, true);
             _archiveRepository
@@ -377,6 +386,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private void SetupAllowCreate(int organizationId, bool isAllowed)
         {
             _authorizationContext.Setup(x => x.AllowCreate<ItSystemUsageArchive>(organizationId)).Returns(isAllowed);
+        }
+
+        private void SetupCurrentUser(int userId)
+        {
+            _organizationalUserContext.Setup(x => x.UserId).Returns(userId);
+            _userRepository.Setup(x => x.GetById(userId)).Returns(new User { Id = userId });
         }
 
         private void SetupAllowReads(ItSystemUsageArchive archive, bool isAllowed)

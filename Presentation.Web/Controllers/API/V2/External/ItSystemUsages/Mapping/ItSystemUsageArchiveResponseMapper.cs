@@ -21,6 +21,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 LocalName = archive.Snapshot.LocalName,
                 LocalId = archive.Snapshot.LocalId,
                 Organization = archive.Organization?.MapShallowOrganizationResponseDTO(),
+                ArchivedByFullName = archive.ArchivedByUser.GetFullName(),
                 ArchiveReferences = archive.ArchiveReferences?.Select(reference => new ArchiveReferenceResponseDTO
                 {
                     Uuid = reference.Uuid,

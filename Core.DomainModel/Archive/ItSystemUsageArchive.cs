@@ -17,5 +17,8 @@ public class ItSystemUsageArchive: Entity, IArchiveEntity<ItSystemUsageArchiveSn
     public required DateTime ArchivingDate { get; set; }
     public string ReferenceName { get; set; }
 
+    public int ArchivedById { get; set; }
+    public virtual User ArchivedByUser { get; set; }
+
     public virtual ICollection<ArchiveReference> ArchiveReferences { get; set; }
 }
