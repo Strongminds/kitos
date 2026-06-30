@@ -261,6 +261,98 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _archiveRepository.Verify(x => x.Save(), Times.Once);
         }
 
+        [Fact]
+        public void GetPermissions_Returns_NotFound_If_Archive_Does_Not_Exist()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            SetupArchiveQuery();
+
+            // Act
+            var result = _sut.GetPermissions(archiveUuid);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void GetPermissions_Returns_Empty_Permissions_If_User_Cannot_Read_Archive()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            var archive = CreateArchive(archiveUuid);
+            SetupArchiveQuery(archive);
+            SetupAllowReads(archive, false);
+
+            // Act
+            var result = _sut.GetPermissions(archiveUuid);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.False(result.Value.Read);
+            Assert.False(result.Value.Modify);
+            Assert.False(result.Value.Delete);
+            VerifyAllowModify(archive, Times.Never());
+            VerifyAllowDelete(archive, Times.Never());
+        }
+
+        [Fact]
+        public void GetPermissions_Returns_All_Resolved_Base_Permissions_If_User_Can_Read_Archive()
+        {
+            // Arrange
+            var archiveUuid = A<Guid>();
+            var archive = CreateArchive(archiveUuid);
+            SetupArchiveQuery(archive);
+            SetupAllowReads(archive, true);
+            SetupAllowModify(archive, false);
+            SetupAllowDelete(archive, true);
+
+            // Act
+            var result = _sut.GetPermissions(archiveUuid);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.True(result.Value.Read);
+            Assert.False(result.Value.Modify);
+            Assert.True(result.Value.Delete);
+        }
+
+        [Fact]
+        public void GetCollectionPermissions_Propagates_Error_If_Organization_Cannot_Be_Resolved()
+        {
+            // Arrange
+            var organizationUuid = A<Guid>();
+            var error = A<OperationError>();
+            _organizationService.Setup(x => x.GetOrganization(organizationUuid)).Returns(error);
+
+            // Act
+            var result = _sut.GetCollectionPermissions(organizationUuid);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Same(error, result.Error);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void GetCollectionPermissions_Returns_Create_Permission_From_Authorization_Context(bool createAllowed)
+        {
+            // Arrange
+            var organizationUuid = A<Guid>();
+            var organization = new Organization { Id = A<int>() };
+            _organizationService.Setup(x => x.GetOrganization(organizationUuid)).Returns(organization);
+            _authorizationContext.Setup(x => x.AllowCreate<ItSystemUsage>(organization.Id)).Returns(createAllowed);
+
+            // Act
+            var result = _sut.GetCollectionPermissions(organizationUuid);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.Equal(createAllowed, result.Value.Create);
+        }
+
         private ArchiveItSystemUsageParameters CreateParameters()
         {
             return new ArchiveItSystemUsageParameters
@@ -297,9 +389,19 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _authorizationContext.Setup(x => x.AllowDelete(archive)).Returns(isAllowed);
         }
 
+        private void SetupAllowModify(ItSystemUsageArchive archive, bool isAllowed)
+        {
+            _authorizationContext.Setup(x => x.AllowModify(archive)).Returns(isAllowed);
+        }
+
         private void VerifyAllowDelete(ItSystemUsageArchive archive, Times times)
         {
             _authorizationContext.Verify(x => x.AllowDelete(archive), times);
+        }
+
+        private void VerifyAllowModify(ItSystemUsageArchive archive, Times times)
+        {
+            _authorizationContext.Verify(x => x.AllowModify(archive), times);
         }
 
         private ItSystemUsage CreateSystemUsage(string? systemName = null, string? localName = null, string? localId = null)
