@@ -107,8 +107,9 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
             //Assert that that the last two are iuncluded (filtering includes changes AT the data provided
             Assert.Equal(new[] { dpr2.Uuid, dpr4.Uuid }, deletedItemsFiltered.Select(x => x.EntityUuid));
 
-            //Act - move marker to now and assert no new deletions are returned
-            deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: DateTime.UtcNow)).ToList();
+            //Act - move marker to the latest server-side event + 1 ms and assert no new deletions are returned
+            var noNewEventsMarker = deletedItemsFiltered.Max(x => x.OccurredAtUtc).AddMilliseconds(1);
+            deletedItemsFiltered = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token, deletedSinceUTC: noNewEventsMarker)).ToList();
 
             //Assert no additional events after current marker
             Assert.Empty(deletedItemsFiltered);
