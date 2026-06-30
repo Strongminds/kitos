@@ -90,9 +90,13 @@ namespace Tests.Integration.Presentation.Web.Deltas.V2
             await DeleteDprAsync(token, dpr3);
             await DeleteDprAsync(token, dpr1);
 
-            // Use an explicit marker between deletion batches to avoid precision/order drift
-            // when filtering on event timestamps returned from the API.
-            var deletedSinceMarker = DateTime.UtcNow;
+            // Derive the marker from the server's own clock (via the API response) to avoid
+            // clock-skew between the test client and the remote server. A small delay ensures
+            // the server's Windows system timer has advanced past the first batch's tick so
+            // the second batch events get strictly later OccurredAtUtc values.
+            await Task.Delay(TimeSpan.FromMilliseconds(50));
+            var firstBatchEvents = (await DeltaFeedV2Helper.GetDeletedEntitiesAsync(token)).ToList();
+            var deletedSinceMarker = firstBatchEvents.Max(x => x.OccurredAtUtc).AddMilliseconds(1);
 
             await DeleteDprAsync(token, dpr2);
             await DeleteDprAsync(token, dpr4);
