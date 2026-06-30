@@ -391,7 +391,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("OptionType")
                         .HasDatabaseName("UX_OptionType");
 
-                    b.ToTable("AttachedOptions");
+                    b.ToTable("AttachedOptions", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.BackgroundJobs.PendingReadModelUpdate", b =>
@@ -425,7 +425,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("Category", "Id")
                         .HasDatabaseName("IX_Category_Id");
 
-                    b.ToTable("PendingReadModelUpdates");
+                    b.ToTable("PendingReadModelUpdates", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Config", b =>
@@ -511,7 +511,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("ContactPersons");
+                    b.ToTable("ContactPersons", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ExternalReference", b =>
@@ -632,7 +632,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("DataProcessingBasisForTransferOptions");
+                    b.ToTable("DataProcessingBasisForTransferOptions", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingCountryOption", b =>
@@ -685,7 +685,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("DataProcessingCountryOptions");
+                    b.ToTable("DataProcessingCountryOptions", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingDataResponsibleOption", b =>
@@ -738,7 +738,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("DataProcessingDataResponsibleOptions");
+                    b.ToTable("DataProcessingDataResponsibleOptions", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingOversightOption", b =>
@@ -791,7 +791,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("DataProcessingOversightOptions");
+                    b.ToTable("DataProcessingOversightOptions", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingRegistration", b =>
@@ -906,7 +906,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_NameUniqueToOrg");
 
-                    b.ToTable("DataProcessingRegistrations");
+                    b.ToTable("DataProcessingRegistrations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingRegistrationOversightDate", b =>
@@ -939,7 +939,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("DataProcessingRegistrationOversightDates");
+                    b.ToTable("DataProcessingRegistrationOversightDates", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingRegistrationRight", b =>
@@ -980,7 +980,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DataProcessingRegistrationRights");
+                    b.ToTable("DataProcessingRegistrationRights", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingRegistrationRole", b =>
@@ -1039,7 +1039,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("DataProcessingRegistrationRoles");
+                    b.ToTable("DataProcessingRegistrationRoles", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.Read.DataProcessingRegistrationReadModel", b =>
@@ -1230,7 +1230,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("TransferToInsecureThirdCountries")
                         .HasDatabaseName("IX_DPR_TransferToInsecureThirdCountries");
 
-                    b.ToTable("DataProcessingRegistrationReadModels");
+                    b.ToTable("DataProcessingRegistrationReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.Read.DataProcessingRegistrationRoleAssignmentReadModel", b =>
@@ -1271,7 +1271,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("UserId")
                         .HasDatabaseName("IX_UserId");
 
-                    b.ToTable("DataProcessingRegistrationRoleAssignmentReadModels");
+                    b.ToTable("DataProcessingRegistrationRoleAssignmentReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.GDPR.SubDataProcessor", b =>
@@ -1299,7 +1299,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("SubDataProcessorBasisForTransferId");
 
-                    b.ToTable("SubDataProcessors");
+                    b.ToTable("SubDataProcessors", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.HelpText", b =>
@@ -1334,7 +1334,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("HelpTexts");
+                    b.ToTable("HelpTexts", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.AgreementElementType", b =>
@@ -1387,7 +1387,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("AgreementElementTypes");
+                    b.ToTable("AgreementElementTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.CriticalityType", b =>
@@ -1440,7 +1440,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("CriticalityTypes");
+                    b.ToTable("CriticalityTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.EconomyStream", b =>
@@ -1737,7 +1737,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasFilter("[ItSystemUsage_Id] IS NOT NULL");
 
-                    b.ToTable("ItContractItSystemUsages");
+                    b.ToTable("ItContractItSystemUsages", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.ItContractRight", b =>
@@ -1778,7 +1778,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ItContractRights");
+                    b.ToTable("ItContractRights", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.ItContractRole", b =>
@@ -1837,7 +1837,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ItContractRoles");
+                    b.ToTable("ItContractRoles", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.ItContractTemplateType", b =>
@@ -1890,7 +1890,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ItContractTemplateTypes");
+                    b.ToTable("ItContractTemplateTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.ItContractType", b =>
@@ -1943,7 +1943,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ItContractTypes");
+                    b.ToTable("ItContractTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.OptionExtendType", b =>
@@ -1996,7 +1996,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("OptionExtendTypes");
+                    b.ToTable("OptionExtendTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.PaymentFreqencyType", b =>
@@ -2049,7 +2049,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("PaymentFreqencyTypes");
+                    b.ToTable("PaymentFreqencyTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.PaymentModelType", b =>
@@ -2102,7 +2102,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("PaymentModelTypes");
+                    b.ToTable("PaymentModelTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.PriceRegulationType", b =>
@@ -2155,7 +2155,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("PriceRegulationTypes");
+                    b.ToTable("PriceRegulationTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.ProcurementStrategyType", b =>
@@ -2208,7 +2208,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ProcurementStrategyTypes");
+                    b.ToTable("ProcurementStrategyTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.PurchaseFormType", b =>
@@ -2261,7 +2261,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("PurchaseFormTypes");
+                    b.ToTable("PurchaseFormTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractOverviewReadModel", b =>
@@ -2664,7 +2664,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("TerminationDeadlineUuid")
                         .HasDatabaseName("IX_TerminationDeadlineType_Uuid");
 
-                    b.ToTable("ItContractOverviewReadModels");
+                    b.ToTable("ItContractOverviewReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractOverviewReadModelDataProcessingAgreement", b =>
@@ -2698,7 +2698,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItContractOverviewReadModelDataProcessingAgreements");
+                    b.ToTable("ItContractOverviewReadModelDataProcessingAgreements", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractOverviewReadModelItSystemUsage", b =>
@@ -2742,7 +2742,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItContractOverviewReadModelItSystemUsages");
+                    b.ToTable("ItContractOverviewReadModelItSystemUsages", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractOverviewReadModelSystemRelation", b =>
@@ -2778,7 +2778,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ToSystemUsageId")
                         .HasDatabaseName("IX_ToSystemUsageId");
 
-                    b.ToTable("ItContractOverviewReadModelSystemRelations");
+                    b.ToTable("ItContractOverviewReadModelSystemRelations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractOverviewRoleAssignmentReadModel", b =>
@@ -2818,7 +2818,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("UserId")
                         .HasDatabaseName("IX_ItContract_Read_User_Id");
 
-                    b.ToTable("ItContractOverviewRoleAssignmentReadModels");
+                    b.ToTable("ItContractOverviewRoleAssignmentReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.TerminationDeadlineType", b =>
@@ -2871,7 +2871,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("TerminationDeadlineTypes");
+                    b.ToTable("TerminationDeadlineTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.ArchiveLocation", b =>
@@ -3074,7 +3074,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ArchiveTypes");
+                    b.ToTable("ArchiveTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.BusinessType", b =>
@@ -3127,7 +3127,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("BusinessTypes");
+                    b.ToTable("BusinessTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.DataRow", b =>
@@ -3226,7 +3226,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("DataTypes");
+                    b.ToTable("DataTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.InterfaceType", b =>
@@ -3279,7 +3279,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("InterfaceTypes");
+                    b.ToTable("InterfaceTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.ItInterface", b =>
@@ -3569,7 +3569,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ItSystemCategories");
+                    b.ToTable("ItSystemCategories", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.ItSystemRight", b =>
@@ -3611,7 +3611,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ItSystemRights");
+                    b.ToTable("ItSystemRights", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.ItSystemRole", b =>
@@ -3670,7 +3670,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("ItSystemRoles");
+                    b.ToTable("ItSystemRoles", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.LocalSensitivePersonalDataType", b =>
@@ -3763,7 +3763,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("RelationFrequencyTypes");
+                    b.ToTable("RelationFrequencyTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.SensitiveDataType", b =>
@@ -3816,7 +3816,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("SensitiveDataTypes");
+                    b.ToTable("SensitiveDataTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.SensitivePersonalDataType", b =>
@@ -3863,7 +3863,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("SensitivePersonalDataTypes");
+                    b.ToTable("SensitivePersonalDataTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystem.SystemUsageCriticalityLevel", b =>
@@ -4011,7 +4011,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ItSystemUsage_Id");
 
-                    b.ToTable("ItSystemUsageSensitiveDataLevels");
+                    b.ToTable("ItSystemUsageSensitiveDataLevels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.ItSystemUsage", b =>
@@ -4304,7 +4304,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasFilter("[ResponsibleItSystemUsage_Id] IS NOT NULL");
 
-                    b.ToTable("ItSystemUsageOrgUnitUsages");
+                    b.ToTable("ItSystemUsageOrgUnitUsages", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewArchivePeriodReadModel", b =>
@@ -4334,7 +4334,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("StartDate")
                         .HasDatabaseName("ItSystemUsageOverviewArchivePeriodReadModel_index_StartDate");
 
-                    b.ToTable("ItSystemUsageOverviewArchivePeriodReadModels");
+                    b.ToTable("ItSystemUsageOverviewArchivePeriodReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewDataProcessingRegistrationReadModel", b =>
@@ -4372,7 +4372,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewDataProcessingRegistrationReadModels");
+                    b.ToTable("ItSystemUsageOverviewDataProcessingRegistrationReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewInterfaceReadModel", b =>
@@ -4407,7 +4407,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewInterfaceReadModels");
+                    b.ToTable("ItSystemUsageOverviewInterfaceReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewItContractReadModel", b =>
@@ -4442,7 +4442,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewItContractReadModels");
+                    b.ToTable("ItSystemUsageOverviewItContractReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewLocalTaskRefReadModel", b =>
@@ -4474,7 +4474,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewLocalTaskRefReadModels");
+                    b.ToTable("ItSystemUsageOverviewLocalTaskRefReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewReadModel", b =>
@@ -4936,7 +4936,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("WebAccessibilityCompliance")
                         .HasDatabaseName("IX_WebAccessibilityCompliance");
 
-                    b.ToTable("ItSystemUsageOverviewReadModels");
+                    b.ToTable("ItSystemUsageOverviewReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewRelevantOrgUnitReadModel", b =>
@@ -4974,7 +4974,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewRelevantOrgUnitReadModels");
+                    b.ToTable("ItSystemUsageOverviewRelevantOrgUnitReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewRoleAssignmentReadModel", b =>
@@ -5022,7 +5022,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("UserId")
                         .HasDatabaseName("IX_UserId");
 
-                    b.ToTable("ItSystemUsageOverviewRoleAssignmentReadModels");
+                    b.ToTable("ItSystemUsageOverviewRoleAssignmentReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewSensitiveDataLevelReadModel", b =>
@@ -5046,7 +5046,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SensitivityDataLevel")
                         .HasDatabaseName("ItSystemUsageOverviewSensitiveDataLevelReadModel_Index_SensitiveDataLevel");
 
-                    b.ToTable("ItSystemUsageOverviewSensitiveDataLevelReadModels");
+                    b.ToTable("ItSystemUsageOverviewSensitiveDataLevelReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewTaskRefReadModel", b =>
@@ -5078,7 +5078,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewTaskRefReadModels");
+                    b.ToTable("ItSystemUsageOverviewTaskRefReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.Read.ItSystemUsageOverviewTechnicalSystemTypeReadModel", b =>
@@ -5182,7 +5182,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ItSystemUsageOverviewUsingSystemUsageReadModels");
+                    b.ToTable("ItSystemUsageOverviewUsingSystemUsageReadModels", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.RegisterType", b =>
@@ -5229,7 +5229,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("RegisterTypes");
+                    b.ToTable("RegisterTypes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItSystemUsage.SystemRelation", b =>
@@ -5289,7 +5289,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UsageFrequencyId");
 
-                    b.ToTable("SystemRelations");
+                    b.ToTable("SystemRelations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.KLE.KLEUpdateHistoryItem", b =>
@@ -5318,7 +5318,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.ToTable("KLEUpdateHistoryItems");
+                    b.ToTable("KLEUpdateHistoryItems", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.KendoColumnConfiguration", b =>
@@ -5383,7 +5383,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("OverviewType")
                         .HasDatabaseName("KendoOrganizationalConfiguration_OverviewType");
 
-                    b.ToTable("KendoOrganizationalConfigurations");
+                    b.ToTable("KendoOrganizationalConfigurations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.LocalOptions.LocalAgreementElementType", b =>
@@ -6715,7 +6715,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("UserNotifications");
+                    b.ToTable("UserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.CountryCode", b =>
@@ -6768,7 +6768,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("CountryCodes");
+                    b.ToTable("CountryCodes", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.DataProtectionAdvisor", b =>
@@ -6817,7 +6817,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("DataProtectionAdvisors");
+                    b.ToTable("DataProtectionAdvisors", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.DataResponsible", b =>
@@ -6866,7 +6866,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("DataResponsibles");
+                    b.ToTable("DataResponsibles", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.Organization", b =>
@@ -7005,7 +7005,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OrganizationRights");
+                    b.ToTable("OrganizationRights", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.OrganizationSupplier", b =>
@@ -7020,7 +7020,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("OrganizationSuppliers");
+                    b.ToTable("OrganizationSuppliers", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.OrganizationType", b =>
@@ -7147,7 +7147,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OrganizationUnitRights");
+                    b.ToTable("OrganizationUnitRights", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.OrganizationUnitRole", b =>
@@ -7206,7 +7206,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_Option_Uuid");
 
-                    b.ToTable("OrganizationUnitRoles");
+                    b.ToTable("OrganizationUnitRoles", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.StsOrganizationChangeLog", b =>
@@ -7255,7 +7255,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("StsOrganizationConnectionId");
 
-                    b.ToTable("StsOrganizationChangeLogs");
+                    b.ToTable("StsOrganizationChangeLogs", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.StsOrganizationConnection", b =>
@@ -7308,7 +7308,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("SubscribeToUpdates")
                         .HasDatabaseName("IX_Required");
 
-                    b.ToTable("StsOrganizationConnections");
+                    b.ToTable("StsOrganizationConnections", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.StsOrganizationConsequenceLog", b =>
@@ -7359,7 +7359,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("Type")
                         .HasDatabaseName("IX_StsOrganizationConsequenceType");
 
-                    b.ToTable("StsOrganizationConsequenceLogs");
+                    b.ToTable("StsOrganizationConsequenceLogs", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Organization.StsOrganizationIdentity", b =>
@@ -7560,7 +7560,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasKey("Id");
 
-                    b.ToTable("BrokenExternalReferencesReports");
+                    b.ToTable("BrokenExternalReferencesReports", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Qa.References.BrokenLinkInExternalReference", b =>
@@ -7655,7 +7655,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("User_Id");
 
-                    b.ToTable("SsoUserIdentities");
+                    b.ToTable("SsoUserIdentities", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.Text", b =>
@@ -7745,7 +7745,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("OptionalRightsHolderOrganizationId", "OptionalOrganizationReferenceId", "EventType", "OccurredAtUtc", "EntityType")
                         .HasDatabaseName("IX_RightsHolder_Org_EventType_OccurredAt_EntityType");
 
-                    b.ToTable("LifeCycleTrackingEvents");
+                    b.ToTable("LifeCycleTrackingEvents", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.UIConfiguration.CustomizedUINode", b =>
@@ -7821,7 +7821,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsUnique()
                         .HasDatabaseName("UX_OrganizationId_UIModuleCustomization_Module");
 
-                    b.ToTable("UIModuleCustomizations");
+                    b.ToTable("UIModuleCustomizations", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.User", b =>
