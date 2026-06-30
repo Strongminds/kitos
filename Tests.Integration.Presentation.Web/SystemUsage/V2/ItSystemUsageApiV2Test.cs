@@ -2422,7 +2422,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_Archive_SystemUsage()
         {
             //Arrange
-            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var (token, user, organization, system) = await CreatePrerequisitesAsync();
             var localCallName = A<string>();
             var localSystemId = A<string>();
             var systemUsage = await ItSystemUsageV2Helper.PostAsync(token, new CreateItSystemUsageRequestDTO
@@ -2467,6 +2467,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(localCallName, archive.LocalName);
             Assert.Equal(localSystemId, archive.LocalId);
             Assert.Equal(organization.Uuid, archive.Organization?.Uuid);
+            Assert.Equal(user.GetFullName(), archive.ArchivedByFullName);
             var reference = Assert.Single(archive.ArchiveReferences);
 
             Assert.Equal(existingReference.Name, reference.Name);

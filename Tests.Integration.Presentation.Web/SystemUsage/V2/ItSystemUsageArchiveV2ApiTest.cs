@@ -18,7 +18,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         public async Task Can_Get_Archive_By_Uuid()
         {
             // Arrange
-            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var (token, user, organization, system) = await CreatePrerequisitesAsync();
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organization.Uuid);
             
             var archive = await ItSystemUsageV2Helper.ArchiveAsync(token, systemUsage.Uuid, CreateArchiveRequest());
@@ -30,6 +30,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.NotNull(result);
             Assert.Equal(archive.Uuid, result.Uuid);
             Assert.Equal(archive.ReferenceName, result.ReferenceName);
+            Assert.Equal(user.GetFullName(), result.ArchivedByFullName);
         }
 
         [Fact]
