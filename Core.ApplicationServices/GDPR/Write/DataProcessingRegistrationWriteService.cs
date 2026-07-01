@@ -481,7 +481,11 @@ namespace Core.ApplicationServices.GDPR.Write
 
             foreach (var newDate in oversightDates.Value)
             {
-                var assignResult = dpr.AssignOversightDate(newDate.CompletedAt, newDate.Remark, newDate.OversightReportLink, newDate.OversightReportLinkName);
+                var oversightOptionIdResult = ResolveOversightOptionId(newDate.OversightOptionUuid);
+                if (oversightOptionIdResult.Failed)
+                    return oversightOptionIdResult.Error;
+
+                var assignResult = dpr.AssignOversightDate(newDate.CompletedAt, newDate.Remark, newDate.OversightReportLink, newDate.OversightReportLinkName, oversightOptionIdResult.Value);
 
                 if (assignResult.Failed)
                     return new OperationError($"Failed to assign new oversight date with Date: {newDate.CompletedAt} and Remark: {newDate.Remark}. Error message: {assignResult.Error.Message.GetValueOrEmptyString()}", assignResult.Error.FailureType);
@@ -933,15 +937,38 @@ namespace Core.ApplicationServices.GDPR.Write
                 .Bind(updateRegistration => updateRegistration.WithOptionalUpdate(parameters.OversightReportLink,
                     (dpr, changedLink) => dpr.ModifyOversightDateReportLink(oversightDateId, changedLink)))
                 .Bind(updateRegistration => updateRegistration.WithOptionalUpdate(parameters.OversightReportLinkName,
-                    (dpr, changedLinkName) => dpr.ModifyOversightDateReportLinkName(oversightDateId, changedLinkName)));
+                    (dpr, changedLinkName) => dpr.ModifyOversightDateReportLinkName(oversightDateId, changedLinkName)))
+                .Bind(updateRegistration =>
+                {
+                    if (!parameters.OversightOptionUuid.HasChange)
+                        return updateRegistration;
+
+                    return ResolveOversightOptionId(parameters.OversightOptionUuid.NewValue)
+                        .Bind(changedOptionId => updateRegistration.ModifyOversightDateOptionId(oversightDateId, changedOptionId))
+                        .Select(_ => updateRegistration);
+                });
         }
 
-        private static Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DataProcessingRegistration dpr, UpdatedDataProcessingRegistrationOversightDateParameters parameters)
+        private Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DataProcessingRegistration dpr, UpdatedDataProcessingRegistrationOversightDateParameters parameters)
         {
             var remark = parameters.Remark.HasChange ? parameters.Remark.NewValue : null;
             var oversightReportLink = parameters.OversightReportLink.HasChange ? parameters.OversightReportLink.NewValue : null;
             var oversightReportLinkName = parameters.OversightReportLinkName.HasChange ? parameters.OversightReportLinkName.NewValue : null;
-            return dpr.AssignOversightDate(parameters.CompletedAt.NewValue, remark, oversightReportLink, oversightReportLinkName);
+            var oversightOptionUuid = parameters.OversightOptionUuid.HasChange ? parameters.OversightOptionUuid.NewValue : null;
+            return ResolveOversightOptionId(oversightOptionUuid)
+                .Bind(oversightOptionId => dpr.AssignOversightDate(parameters.CompletedAt.NewValue, remark, oversightReportLink, oversightReportLinkName, oversightOptionId));
+        }
+
+        private Result<int?, OperationError> ResolveOversightOptionId(Guid? oversightOptionUuid)
+        {
+            if (!oversightOptionUuid.HasValue)
+                return (int?)null;
+
+            var oversightOptionId = _entityIdentityResolver.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid.Value);
+            if (oversightOptionId == null || oversightOptionId.IsNone)
+                return new OperationError($"Failed to resolve Id for Uuid {oversightOptionUuid.Value}", OperationFailure.BadInput);
+
+            return oversightOptionId.Value;
         }
 
         private Result<DataProcessingRegistrationOversightDate, OperationError> PerformRemoveOversightDate(DataProcessingRegistration registration, DataProcessingRegistrationOversightDate oversightDate)

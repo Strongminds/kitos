@@ -14,6 +14,12 @@ namespace Infrastructure.DataAccess.Mapping
                 .HasForeignKey(x => x.ParentId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.OversightOption)
+                .WithMany()
+                .HasForeignKey(x => x.OversightOptionId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

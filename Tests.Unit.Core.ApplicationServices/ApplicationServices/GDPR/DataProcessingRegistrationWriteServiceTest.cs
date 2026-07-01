@@ -1581,6 +1581,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var dates = Many<UpdatedDataProcessingRegistrationOversightDate>().ToList();
+            dates.ForEach(x => x.OversightOptionUuid = null);
             var oversightData = new UpdatedDataProcessingRegistrationOversightDataParameters()
             {
                 OversightDates = dates.FromNullable<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>().AsChangedValue()
@@ -2005,6 +2006,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             // Arrange
             var registrationUuid = A<Guid>();
             var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            parameters.OversightOptionUuid = OptionalValueChange<Guid?>.None;
 
             var transaction = ExpectTransaction();
             SetupGetFromRepository(new DataProcessingRegistration(){ Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes});
@@ -2027,6 +2029,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var registrationId = A<int>();
             var oversightDateId = A<int>();
             var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            parameters.OversightOptionUuid = OptionalValueChange<Guid?>.None;
             var oversightDate = new DataProcessingRegistrationOversightDate
             {
                 Id = oversightDateId,

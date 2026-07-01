@@ -15,12 +15,16 @@ namespace Presentation.Web.Models.API.V2.Types.DataProcessing
         /// Optional remark related to the oversight
         /// </summary>
         [SupplierField]
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// (Supplier Field): OversightReportLink.Url
         /// (Shared Supplier Field): OversightReportLink.Name
         /// </summary>
-        public SimpleLinkDTO OversightReportLink { get; set; }
+        public SimpleLinkDTO? OversightReportLink { get; set; }
+        /// <summary>
+        /// Optional UUID for the oversight option
+        /// </summary>
+        public Guid? OversightOptionUuid { get; set; }
     }
 }
