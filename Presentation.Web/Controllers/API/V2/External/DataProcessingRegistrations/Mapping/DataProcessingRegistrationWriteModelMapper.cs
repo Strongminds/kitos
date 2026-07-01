@@ -219,7 +219,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                                 Remark = y.Remark,
                                 OversightReportLink = y.OversightReportLink?.Url,
                                 OversightReportLinkName = y.OversightReportLink?.Name,
-                                OversightOptionUuid = y.OversightOptionUuid,
+                                OversightOptionUuid = y.OversightOption?.Uuid,
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
             };

@@ -79,8 +79,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 CompletedAt = oversightDate.OversightDate,
                 Remark = oversightDate.OversightRemark,
                 OversightReportLink = MapOversightReportLink(oversightDate.OversightReportLink, oversightDate.OversightReportLinkName),
-                OversightOptionUuid = oversightDate.OversightOption?.Uuid,
-                OversightOptionName = oversightDate.OversightOption?.Name
+                OversightOption = oversightDate.OversightOption?.MapIdentityNamePairDTO()
             };
         }
 
