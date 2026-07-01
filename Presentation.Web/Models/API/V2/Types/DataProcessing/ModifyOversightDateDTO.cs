@@ -10,7 +10,7 @@ namespace Presentation.Web.Models.API.V2.Types.DataProcessing
         /// Date of oversight completion
         /// </summary>
         [SupplierField]
-        public DateTime CompletedAt { get; set; }
+        public required DateTime CompletedAt { get; set; }
         /// <summary>
         /// Optional remark related to the oversight
         /// </summary>
