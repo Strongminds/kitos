@@ -1535,7 +1535,9 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                     }
                 });
 
+            var oversightOption = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationOversight, org.Uuid, 1, 0)).First();
             var request = A<ModifyOversightDateDTO>();
+            request.OversightOptionUuid = oversightOption.Uuid;
 
             var response = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, request, token);
 
@@ -1543,6 +1545,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
+            Assert.Equal(request.OversightOptionUuid, response.OversightOption?.Uuid);
         }
 
         [Fact]
@@ -1560,16 +1563,23 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                     }
                 });
 
+            var oversightOptions = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationOversight, org.Uuid, 10, 0)).ToList();
+            var initialOption = oversightOptions.First();
+            var updatedOption = oversightOptions.Skip(1).FirstOrDefault() ?? initialOption;
+
             var createRequest = A<ModifyOversightDateDTO>();
+            createRequest.OversightOptionUuid = initialOption.Uuid;
             var createResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, createRequest, token);
 
             var request = A<ModifyOversightDateDTO>();
+            request.OversightOptionUuid = updatedOption.Uuid;
             var response = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, createResponse.Uuid, request, token);
 
             Assert.Equal(request.CompletedAt, response.CompletedAt);
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
+            Assert.Equal(request.OversightOptionUuid, response.OversightOption?.Uuid);
         }
 
         [Fact]
@@ -1588,6 +1598,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                 });
 
             var createRequest = A<ModifyOversightDateDTO>();
+            createRequest.OversightOptionUuid = null;
             var createResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, createRequest, token);
 
             await DataProcessingRegistrationV2Helper.DeleteOversightDate(dpr.Uuid, createResponse.Uuid, token);
@@ -1655,6 +1666,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                 Assert.Equal(expectedOversightDates[i].Remark, actualOversightDates[i].Remark);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink.Url, actualOversightDates[i].OversightReportLink.Url);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink.Name, actualOversightDates[i].OversightReportLink.Name);
+                Assert.Equal(expectedOversightDates[i].OversightOption?.Uuid, actualOversightDates[i].OversightOption?.Uuid);
             }
         }
 

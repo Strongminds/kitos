@@ -5,6 +5,7 @@ using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
+using Core.DomainModel.Shared;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -168,6 +169,42 @@ namespace Tests.Unit.Core.Model
             AssertInvalidResult(result,
                 DataProcessingRegistrationValidationError.EnforcedInvalidity,
                 DataProcessingRegistrationValidationError.MainContractNotActive);
+        }
+
+        [Fact]
+        public void AssignOversightDate_Sets_OversightOptionId()
+        {
+            var oversightOptionId = A<int>();
+            var dpr = new DataProcessingRegistration { IsOversightCompleted = YesNoUndecidedOption.Yes };
+
+            var result = dpr.AssignOversightDate(A<DateTime>(), A<string>(), A<string>(), A<string>(), oversightOptionId);
+
+            Assert.True(result.Ok);
+            Assert.Equal(oversightOptionId, result.Value.OversightOptionId);
+        }
+
+        [Fact]
+        public void ModifyOversightDateOptionId_Updates_OversightOptionId()
+        {
+            var oversightDateId = A<int>();
+            var initialOversightOptionId = A<int>();
+            var updatedOversightOptionId = A<int>();
+            var dpr = new DataProcessingRegistration
+            {
+                OversightDates = new List<DataProcessingRegistrationOversightDate>
+                {
+                    new()
+                    {
+                        Id = oversightDateId,
+                        OversightOptionId = initialOversightOptionId
+                    }
+                }
+            };
+
+            var result = dpr.ModifyOversightDateOptionId(oversightDateId, updatedOversightOptionId);
+
+            Assert.True(result.Ok);
+            Assert.Equal(updatedOversightOptionId, result.Value.OversightOptionId);
         }
 
         private static DataProcessingRegistration CreateDprWithMainContract(int contractId)

@@ -15,6 +15,7 @@ using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
+using Presentation.Web.Models.API.V2.Types.Shared;
 using Tests.Toolkit.Extensions;
 using Xunit;
 
@@ -489,6 +490,49 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         }
 
         [Fact]
+        public void FromOversightPOST_Maps_OversightDate_OversightOptionUuid()
+        {
+            //Arrange
+            var input = A<CreateOversightDateDTO>();
+
+            //Act
+            var output = _sut.FromOversightPOST(input);
+
+            //Assert
+            Assert.Equal(input.CompletedAt, AssertPropertyContainsDataChange(output.CompletedAt));
+            Assert.Equal(input.Remark, AssertPropertyContainsDataChange(output.Remark));
+            Assert.Equal(input.OversightReportLink?.Url, AssertPropertyContainsDataChange(output.OversightReportLink));
+            Assert.Equal(input.OversightReportLink?.Name, AssertPropertyContainsDataChange(output.OversightReportLinkName));
+            Assert.Equal(input.OversightOptionUuid, AssertPropertyContainsDataChange(output.OversightOptionUuid));
+        }
+
+        [Fact]
+        public void FromOversightPATCH_Maps_OversightDate_OversightOptionUuid()
+        {
+            //Arrange
+            _currentHttpRequestMock
+                .Setup(x => x.GetDefinedJsonProperties(It.IsAny<IEnumerable<string>>()))
+                .Returns(new HashSet<string>());
+            _currentHttpRequestMock
+                .Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch()))
+                .Returns(GetAllInputPropertyNames<ModifyOversightDateDTO>());
+            _currentHttpRequestMock
+                .Setup(x => x.GetDefinedJsonProperties(nameof(ModifyOversightDateDTO.OversightReportLink).WrapAsEnumerable().AsParameterMatch()))
+                .Returns(GetAllInputPropertyNames<SimpleLinkDTO>());
+            var input = A<ModifyOversightDateDTO>();
+
+            //Act
+            var output = _sut.FromOversightPATCH(input);
+
+            //Assert
+            Assert.Equal(input.CompletedAt, AssertPropertyContainsDataChange(output.CompletedAt));
+            Assert.Equal(input.Remark, AssertPropertyContainsDataChange(output.Remark));
+            Assert.Equal(input.OversightReportLink?.Url, AssertPropertyContainsDataChange(output.OversightReportLink));
+            Assert.Equal(input.OversightReportLink?.Name, AssertPropertyContainsDataChange(output.OversightReportLinkName));
+            Assert.Equal(input.OversightOptionUuid, AssertPropertyContainsDataChange(output.OversightOptionUuid));
+        }
+
+        [Fact]
         public void MapRoles_Returns_UpdatedDataProcessingRegistrationRoles()
         {
             //Arrange
@@ -595,6 +639,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal(orderedExpected[i].Remark, orderedActual[i].Remark);
                 Assert.Equal(orderedExpected[i].OversightReportLink.Url, orderedActual[i].OversightReportLink);
                 Assert.Equal(orderedExpected[i].OversightReportLink.Name, orderedActual[i].OversightReportLinkName);
+                Assert.Equal(orderedExpected[i].OversightOption?.Uuid, orderedActual[i].OversightOptionUuid);
             }
         }
 

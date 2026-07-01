@@ -6,7 +6,7 @@ namespace Core.ApplicationServices.Model.GDPR.Write
 {
     public class UpdatedDataProcessingRegistrationOversightDateParameters: ISupplierAssociatedEntityUpdateParameters
     {
-        public OptionalValueChange<DateTime> CompletedAt { get; set; } = OptionalValueChange<DateTime>.None;
+        public required OptionalValueChange<DateTime> CompletedAt { get; set; }
         public OptionalValueChange<string> Remark { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<string> OversightReportLink { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<string> OversightReportLinkName { get; set; } = OptionalValueChange<string>.None;

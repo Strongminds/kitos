@@ -2019,6 +2019,53 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             AssertTransactionCommitted(transaction);
         }
+
+        [Fact]
+        public void Can_AddOversightDate_With_OversightOption()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var oversightOptionUuid = A<Guid>();
+            var oversightOptionId = A<int>();
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            parameters.OversightOptionUuid = OptionalValueChange<Guid?>.With(oversightOptionUuid);
+
+            var transaction = ExpectTransaction();
+            SetupGetFromRepository(new DataProcessingRegistration { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes });
+            _identityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(oversightOptionId);
+            AllowReadsReturns();
+
+            // Act
+            var result = _sut.AddOversightDate(registrationUuid, parameters);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.Equal(oversightOptionId, result.Value.OversightOptionId);
+            AssertTransactionCommitted(transaction);
+        }
+
+        [Fact]
+        public void Cannot_AddOversightDate_If_OversightOption_Does_Not_Exist()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var oversightOptionUuid = A<Guid>();
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            parameters.OversightOptionUuid = OptionalValueChange<Guid?>.With(oversightOptionUuid);
+
+            var transaction = ExpectTransaction();
+            SetupGetFromRepository(new DataProcessingRegistration { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes });
+            _identityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(Maybe<int>.None);
+            AllowReadsReturns();
+
+            // Act
+            var result = _sut.AddOversightDate(registrationUuid, parameters);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+            AssertTransactionNotCommitted(transaction);
+        }
         
         [Fact]
         public void Can_UpdateOversightDate()
@@ -2054,6 +2101,79 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             Assert.True(result.Ok);
             Assert.NotNull(result.Value);
             AssertTransactionCommitted(transaction);
+        }
+
+        [Fact]
+        public void Can_UpdateOversightDate_With_OversightOption()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var oversightDateUuid = A<Guid>();
+            var oversightOptionUuid = A<Guid>();
+            var oversightOptionId = A<int>();
+            var oversightDateId = A<int>();
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            parameters.OversightOptionUuid = OptionalValueChange<Guid?>.With(oversightOptionUuid);
+            var oversightDate = new DataProcessingRegistrationOversightDate
+            {
+                Id = oversightDateId,
+                Uuid = oversightDateUuid
+            };
+            var dpr = new DataProcessingRegistration
+            {
+                OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
+                IsOversightCompleted = YesNoUndecidedOption.Yes,
+                Uuid = registrationUuid
+            };
+
+            var transaction = ExpectTransaction();
+            SetupGetFromRepository(dpr);
+            _identityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(oversightOptionId);
+            AllowReadsReturns();
+
+            // Act
+            var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
+
+            // Assert
+            Assert.True(result.Ok);
+            Assert.Equal(oversightOptionId, result.Value.OversightOptionId);
+            AssertTransactionCommitted(transaction);
+        }
+
+        [Fact]
+        public void Cannot_UpdateOversightDate_If_OversightOption_Does_Not_Exist()
+        {
+            // Arrange
+            var registrationUuid = A<Guid>();
+            var oversightDateUuid = A<Guid>();
+            var oversightOptionUuid = A<Guid>();
+            var oversightDateId = A<int>();
+            var parameters = A<UpdatedDataProcessingRegistrationOversightDateParameters>();
+            parameters.OversightOptionUuid = OptionalValueChange<Guid?>.With(oversightOptionUuid);
+            var oversightDate = new DataProcessingRegistrationOversightDate
+            {
+                Id = oversightDateId,
+                Uuid = oversightDateUuid
+            };
+            var dpr = new DataProcessingRegistration
+            {
+                OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
+                IsOversightCompleted = YesNoUndecidedOption.Yes,
+                Uuid = registrationUuid
+            };
+
+            var transaction = ExpectTransaction();
+            SetupGetFromRepository(dpr);
+            _identityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(Maybe<int>.None);
+            AllowReadsReturns();
+
+            // Act
+            var result = _sut.UpdateOversightDate(registrationUuid, oversightDateUuid, parameters);
+
+            // Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+            AssertTransactionNotCommitted(transaction);
         }
 
         [Fact]

@@ -965,7 +965,7 @@ namespace Core.ApplicationServices.GDPR.Write
                 return (int?)null;
 
             var oversightOptionId = _entityIdentityResolver.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid.Value);
-            if (oversightOptionId == null || oversightOptionId.IsNone)
+            if (oversightOptionId.IsNone)
                 return new OperationError($"Failed to resolve Id for Uuid {oversightOptionUuid.Value}", OperationFailure.BadInput);
 
             return oversightOptionId.Value;

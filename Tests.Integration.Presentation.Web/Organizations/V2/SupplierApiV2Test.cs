@@ -71,6 +71,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 new CreateItSystemUsageRequestDTO { OrganizationUuid = organization.Uuid, SystemUuid = system.Uuid });
 
             var oversightDateRequest = A<ModifyOversightDateDTO>();
+            oversightDateRequest.OversightOptionUuid = null;
             var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, token);
             AssertOversightDate(oversightDateRequest, postResponse);
 
@@ -90,6 +91,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.True(updateUsageGdpr.IsSuccessStatusCode);
 
             var patchRequest = A<ModifyOversightDateDTO>();
+            patchRequest.OversightOptionUuid = null;
             var patchResponse = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, postResponse.Uuid, patchRequest, token);
             AssertOversightDate(patchRequest, patchResponse);
 
@@ -189,12 +191,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 });
 
             var oversightDateRequest = A<ModifyOversightDateDTO>();
+            oversightDateRequest.OversightOptionUuid = null;
             using var failedPostResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, token);
             Assert.False(failedPostResponse.IsSuccessStatusCode);
 
             var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, globalAdminToken);
-            
+             
             var patchRequest = A<ModifyOversightDateDTO>();
+            patchRequest.OversightOptionUuid = null;
             using var failedPatchResponse = await DataProcessingRegistrationV2Helper.SendPatchOversightDate(dpr.Uuid, postResponse.Uuid, patchRequest, token);
             Assert.False(failedPatchResponse.IsSuccessStatusCode);
 
@@ -208,6 +212,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(expected.CompletedAt, actual.CompletedAt);
             Assert.Equal(expected.OversightReportLink.Name, actual.OversightReportLink.Name);
             Assert.Equal(expected.OversightReportLink.Url, actual.OversightReportLink.Url);
+            Assert.Equal(expected.OversightOptionUuid, actual.OversightOption?.Uuid);
         }
     }
 }
