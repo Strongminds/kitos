@@ -102,8 +102,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <summary>
         /// Get roles assigned to the system usage
         /// </summary>
-        /// <param name="systemUsageUuid"></param>
-        /// <param name="request"></param>
+        /// <param name="systemUsageUuid">UUID of the system usage</param>
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/roles")]

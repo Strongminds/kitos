@@ -107,6 +107,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
                 .Select(rights => rights.Select(right => right.MapExtendedRoleAssignmentResponse()))
                 .Match(Ok, FromOperationError);
         }
+        /// <summary>
         /// Add role assignment to the it-contract
         /// Constraint: Duplicates are not allowed (existing assignment of the same user/role)
         /// </summary>

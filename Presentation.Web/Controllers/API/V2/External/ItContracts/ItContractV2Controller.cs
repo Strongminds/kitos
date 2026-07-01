@@ -158,7 +158,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <summary>
         /// Returns requested IT-Contract
         /// </summary>
-        /// <param name="uuid">Specific IT-Contract UUID</param>
+        /// <param name="contractUuid">Specific IT-Contract UUID</param>
         /// <returns>Specific data related to the IT-Contract</returns>
         [HttpGet]
         [Route("{contractUuid}")]
@@ -239,8 +239,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <summary>
         /// Delete an existing contract
         /// </summary>
-        /// <param name="contractUuid"></param>
-        /// <param name="request"></param>
+        /// <param name="contractUuid">UUID of the contract in KITOS</param>
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}")]
