@@ -24,6 +24,12 @@ namespace Infrastructure.DataAccess.Mapping
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(x => x.ArchivedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.ArchivedById)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasOne(x => x.Snapshot)
                 .WithOne(x => x.ItSystemUsageArchive)
                 .HasForeignKey<ItSystemUsageArchiveSnapshot>(x => x.ItSystemUsageArchiveUuid)

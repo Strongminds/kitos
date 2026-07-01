@@ -16,6 +16,8 @@ namespace Core.ApplicationServices.Model.SystemUsage
         IItSystemUsageService systemUsageService,
         IOrganizationService organizationService,
         IAuthorizationContext authorizationContext,
+        IOrganizationalUserContext organizationalUserContext,
+        IUserRepository userRepository,
         IGenericRepository<ItSystemUsageArchive> archiveRepository) : IItSystemUsageArchiveService
     {
         public Result<ItSystemUsageArchive, OperationError> Create(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
@@ -29,7 +31,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
 
             var snapshot = CreateSnapshot(systemUsage);
             var archiveReferences = CreateArchiveReferences(parameters);
-            var archive = CreateArchive(systemUsage, parameters, snapshot, archiveReferences);
+            var archive = CreateArchive(systemUsage, parameters, snapshot, archiveReferences, organizationalUserContext.UserId);
 
             var createdArchive = archiveRepository.Insert(archive);
             archiveRepository.Save();
@@ -101,7 +103,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
                 .ToList() ?? [];
         }
 
-        private static ItSystemUsageArchive CreateArchive(ItSystemUsage systemUsage, ArchiveItSystemUsageParameters parameters, ItSystemUsageArchiveSnapshot snapshot, List<ArchiveReference> archiveReferences)
+        private static ItSystemUsageArchive CreateArchive(ItSystemUsage systemUsage, ArchiveItSystemUsageParameters parameters, ItSystemUsageArchiveSnapshot snapshot, List<ArchiveReference> archiveReferences, int archivedById)
         {
             return new ItSystemUsageArchive
             {
@@ -111,6 +113,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
                 ArchivingDate = parameters.ArchivingDate,
                 ReferenceName = parameters.ReferenceName,
                 Note = parameters.Note,
+                ArchivedById = archivedById,
                 Snapshot = snapshot,
                 ArchiveReferences = archiveReferences
             };

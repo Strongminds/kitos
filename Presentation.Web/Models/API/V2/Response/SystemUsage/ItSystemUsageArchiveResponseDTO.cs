@@ -59,5 +59,10 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// References associated with the archive
         /// </summary>
         public IEnumerable<ArchiveReferenceResponseDTO> ArchiveReferences { get; set; } = new List<ArchiveReferenceResponseDTO>();
+
+        /// <summary>
+        /// Full name of the user who archived the system usage
+        /// </summary>
+        public required string ArchivedByFullName { get; set; }
     }
 }
