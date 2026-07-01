@@ -19,7 +19,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithMany()
                 .HasForeignKey(x => x.OversightOptionId)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
