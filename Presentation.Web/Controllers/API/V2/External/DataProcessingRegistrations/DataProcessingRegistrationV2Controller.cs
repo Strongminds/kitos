@@ -59,6 +59,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="agreementConcluded">Filter based on whether or not an agreement has been concluded</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="nameContains">Filter based on whether the name contains the provided value</param>
+        /// <param name="nameEquals">Filter based on whether the name equals the provided value</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]
@@ -69,11 +71,11 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             [NonEmptyGuid] Guid? dataProcessorUuid = null,
             [NonEmptyGuid] Guid? subDataProcessorUuid = null,
             bool? agreementConcluded = null,
-            string nameContains = null,
-            string nameEquals = null,
+            string? nameContains = null,
+            string? nameEquals = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

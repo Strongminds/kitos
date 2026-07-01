@@ -5,5 +5,6 @@ namespace Presentation.Web.Models.API.V2.Types.DataProcessing
     public class OversightDateDTO : ModifyOversightDateDTO
     {
         public Guid Uuid { get; set; }
+        public string? OversightOptionName { get; set; }
     }
 }
