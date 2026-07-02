@@ -561,7 +561,7 @@ namespace Presentation.Web.Controllers.API.V1
                 return BadRequest(nameof(createOversightDateDTO) + " must be provided");
 
             return _dataProcessingRegistrationApplicationService
-                .AssignOversightDate(id, createOversightDateDTO.OversightDate, createOversightDateDTO.OversightRemark, createOversightDateDTO.OversightReportLink.Url, createOversightDateDTO.OversightReportLink.Name)
+                .AssignOversightDate(id, createOversightDateDTO.OversightDate, createOversightDateDTO.OversightRemark, createOversightDateDTO.OversightReportLink?.Url, createOversightDateDTO.OversightReportLink?.Name, createOversightDateDTO.OversightOptionUuid)
                 .Select(ToDTO)
                 .Match(Ok, FromOperationError);
         }
@@ -913,5 +913,3 @@ namespace Presentation.Web.Controllers.API.V1
         }
     }
 }
-
-

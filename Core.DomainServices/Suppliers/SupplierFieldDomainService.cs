@@ -19,6 +19,7 @@ namespace Core.DomainServices.Suppliers
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate),
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark),
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink),
+                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightOptionId),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment),

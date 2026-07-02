@@ -61,7 +61,7 @@ namespace Core.ApplicationServices.GDPR
         Result<DataProcessingRegistration, OperationError> UpdateIsOversightCompleted(int id, YesNoUndecidedOption completed);
         Result<DataProcessingRegistration, OperationError> UpdateOversightScheduledInspectionDate(int id, DateTime? oversightScheduledInspectionDate);
         Result<DataProcessingRegistration, OperationError> UpdateOversightCompletedRemark(int id, string remark);
-        Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName);
+        Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName, Guid? oversightOptionUuid);
         Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int id, int oversightDateId);
         Result<DataProcessingRegistration, OperationError> UpdateMainContract(int id, int contractId);
         Result<DataProcessingRegistration, OperationError> RemoveMainContract(int id);

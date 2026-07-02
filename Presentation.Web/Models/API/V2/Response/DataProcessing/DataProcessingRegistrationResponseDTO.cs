@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Organization;
@@ -24,6 +23,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         public required DataProcessingRegistrationGeneralDataResponseDTO General { get; set; }
         /// <summary>
         /// Associated it-system-usage entities
+        /// </summary>
         public required IEnumerable<ShallowItSystemUsageResponseDTO> SystemUsages { get; set; }
         public required DataProcessingRegistrationOversightResponseDTO Oversight { get; set; }
         /// <summary>

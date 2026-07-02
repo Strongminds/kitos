@@ -29,6 +29,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.Contains(ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark), result);
             Assert.Contains(ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink), result);
             Assert.Contains(ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName), result);
+            Assert.Contains(ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightOptionId), result);
         }
 
         [Fact]

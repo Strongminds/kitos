@@ -7,9 +7,10 @@ namespace Core.ApplicationServices.Model.GDPR.Write
     public class UpdatedDataProcessingRegistrationOversightDateParameters: ISupplierAssociatedEntityUpdateParameters
     {
         public required OptionalValueChange<DateTime> CompletedAt { get; set; }
-        public required OptionalValueChange<string> Remark { get; set; }
-        public required OptionalValueChange<string> OversightReportLink { get; set; }
-        public required OptionalValueChange<string> OversightReportLinkName { get; set; }
+        public OptionalValueChange<string> Remark { get; set; } = OptionalValueChange<string>.None;
+        public OptionalValueChange<string> OversightReportLink { get; set; } = OptionalValueChange<string>.None;
+        public OptionalValueChange<string> OversightReportLinkName { get; set; } = OptionalValueChange<string>.None;
+        public OptionalValueChange<Guid?> OversightOptionUuid { get; set; } = OptionalValueChange<Guid?>.None;
 
         public IEnumerable<string> GetChangedPropertyKeys()
         {
@@ -23,6 +24,8 @@ namespace Core.ApplicationServices.Model.GDPR.Write
                 changedProperties.Add(nameof(OversightReportLink));
             if(OversightReportLinkName.HasChange)
                 changedProperties.Add(nameof(OversightReportLinkName));
+            if(OversightOptionUuid.HasChange)
+                changedProperties.Add(nameof(OversightOptionUuid));
             return changedProperties;
         }
     }

@@ -14,6 +14,7 @@ using Core.DomainModel.Organization;
 using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
+using Core.DomainServices.Generic;
 using Core.DomainServices.GDPR;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Repositories.GDPR;
@@ -52,6 +53,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IGenericRepository<DataProcessingRegistrationOversightDate>> _oversightDateRepositoryMock;
         private readonly Mock<IFieldAuthorizationModel> _fieldAuthorizationModelMock;
+        private readonly Mock<IEntityIdentityResolver> _entityIdentityResolverMock;
 
         public DataProcessingRegistrationApplicationServiceTest()
         {
@@ -73,6 +75,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _organizationServiceMock = new Mock<IOrganizationService>();
             _oversightDateRepositoryMock = new Mock<IGenericRepository<DataProcessingRegistrationOversightDate>>();
             _fieldAuthorizationModelMock = new Mock<IFieldAuthorizationModel>();
+            _entityIdentityResolverMock = new Mock<IEntityIdentityResolver>();
             _sut = new DataProcessingRegistrationApplicationService(
                 _authorizationContextMock.Object,
                 _repositoryMock.Object,
@@ -91,7 +94,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 _sdpRepositoryMock.Object,
                 _organizationServiceMock.Object,
                 _oversightDateRepositoryMock.Object,
-                _fieldAuthorizationModelMock.Object);
+                _fieldAuthorizationModelMock.Object,
+                _entityIdentityResolverMock.Object);
         }
 
         [Fact]
@@ -1632,13 +1636,16 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var oversightRemark = A<string>();
             var oversightReportLink = A<string>();
             var oversightReportLinkName = A<string>();
+            var oversightOptionUuid = A<Guid>();
+            var oversightOptionId = A<int>();
+            _entityIdentityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(oversightOptionId);
             ExpectRepositoryGetToReturn(id, registration);
             ExpectAllowModifyReturns(registration, true);
 
             var transaction = ExpectTransaction();
 
             //Act
-            var result = _sut.AssignOversightDate(id, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName);
+            var result = _sut.AssignOversightDate(id, oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName, oversightOptionUuid);
 
             //Assert
             Assert.True(result.Ok);
@@ -1651,7 +1658,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             var oversightReportLink = A<string>();
             var oversightReportLinkName = A<string>();
-            Test_Command_Which_Fails_With_Dpr_NotFound(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>(), oversightReportLink, oversightReportLinkName));
+            var oversightOptionUuid = A<Guid>();
+            Test_Command_Which_Fails_With_Dpr_NotFound(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>(), oversightReportLink, oversightReportLinkName, oversightOptionUuid));
         }
 
         [Fact]
@@ -1659,7 +1667,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             var oversightReportLink = A<string>();
             var oversightReportLinkName = A<string>();
-            Test_Command_Which_Fails_With_Dpr_Insufficient_WriteAccess(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>(), oversightReportLink, oversightReportLinkName));
+            var oversightOptionUuid = A<Guid>();
+            Test_Command_Which_Fails_With_Dpr_Insufficient_WriteAccess(id => _sut.AssignOversightDate(id, A<DateTime>(), A<string>(), oversightReportLink, oversightReportLinkName, oversightOptionUuid));
         }
 
         [Fact]

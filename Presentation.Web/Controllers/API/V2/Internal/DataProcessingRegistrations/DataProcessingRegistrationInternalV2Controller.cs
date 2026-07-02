@@ -123,6 +123,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
                 .Match(Ok, FromOperationError);
         }
 
+        /// <summary>
         /// Add role assignment to the data processing registration
         /// Constraint: Duplicates are not allowed (existing assignment of the same user/role)
         /// </summary>

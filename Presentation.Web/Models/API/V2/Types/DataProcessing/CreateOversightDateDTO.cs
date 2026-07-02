@@ -14,8 +14,9 @@ namespace Presentation.Web.Models.API.V2.Types.DataProcessing
         /// <summary>
         /// Optional remark related to the oversight
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
-        public SimpleLinkDTO OversightReportLink { get; set; }
+        public SimpleLinkDTO? OversightReportLink { get; set; }
+        public Guid? OversightOptionUuid { get; set; }
     }
 }

@@ -217,8 +217,9 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                             {
                                 CompletedAt = y.CompletedAt,
                                 Remark = y.Remark,
-                                OversightReportLink = y.OversightReportLink?.Url!,
-                                OversightReportLinkName = y.OversightReportLink?.Name!
+                                OversightReportLink = y.OversightReportLink?.Url,
+                                OversightReportLinkName = y.OversightReportLink?.Name,
+                                OversightOptionUuid = y.OversightOption?.Uuid,
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
             };
@@ -234,14 +235,17 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     ? dto.CompletedAt.AsChangedValue()
                     : OptionalValueChange<DateTime>.None,
                 Remark = rule.MustUpdate(x => x.Remark)
-                    ? dto.Remark.AsChangedValue()
+                    ? dto.Remark?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
                     : OptionalValueChange<string>.None,
-                OversightReportLink = rule.MustUpdate(x => x.OversightReportLink.Url)
-                    ? dto.OversightReportLink.Url!.AsChangedValue()
+                OversightReportLink = rule.MustUpdate(x => x.OversightReportLink!.Url)
+                    ? dto.OversightReportLink?.Url?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
                     : OptionalValueChange<string>.None,
-                OversightReportLinkName = rule.MustUpdate(x => x.OversightReportLink.Name)
-                    ? dto.OversightReportLink.Name!.AsChangedValue()
-                    : OptionalValueChange<string>.None
+                OversightReportLinkName = rule.MustUpdate(x => x.OversightReportLink!.Name)
+                    ? dto.OversightReportLink?.Name?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
+                    : OptionalValueChange<string>.None,
+                OversightOptionUuid = rule.MustUpdate(x => x.OversightOptionUuid)
+                    ? dto.OversightOptionUuid.AsChangedValue()
+                    : OptionalValueChange<Guid?>.None
             };
         }
 
