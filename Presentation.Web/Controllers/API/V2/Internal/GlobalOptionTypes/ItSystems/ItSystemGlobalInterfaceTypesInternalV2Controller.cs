@@ -22,6 +22,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<GlobalRegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetGlobalInterfaceTypes()
         {
             return GetAll();
@@ -29,6 +34,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(GlobalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult CreateGlobalInterfaceType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
@@ -36,6 +46,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(GlobalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult PatchGlobalInterfaceType([NonEmptyGuid][FromRoute] Guid optionUuid,
             [FromBody] GlobalRegularOptionUpdateRequestDTO dto)
         {

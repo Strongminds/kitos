@@ -22,7 +22,12 @@ public class ItSystemDBSV2Controller : ExternalBaseController
 
     [HttpPatch]
     [Route("")]
-    public IActionResult PatchDbsProperties([NonEmptyGuid][FromRoute] Guid systemUuid, [FromBody] LegalPropertiesUpdateRequestDTO request)
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(401)]
+        public IActionResult PatchDbsProperties([NonEmptyGuid][FromRoute] Guid systemUuid, [FromBody] LegalPropertiesUpdateRequestDTO request)
     {
         var parameters = _writeModelMapper.FromPATCH(request);
         return _writeService.LegalPropertiesUpdate(systemUuid, parameters)

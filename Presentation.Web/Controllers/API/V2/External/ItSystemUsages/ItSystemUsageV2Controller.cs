@@ -15,6 +15,7 @@ using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
+using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
@@ -59,6 +60,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<ItSystemUsageResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult GetItSystemUsages(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? relatedToSystemUuid = null,
@@ -86,6 +90,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}")]
+        [ProducesResponseType(typeof(ItSystemUsageResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult GetItSystemUsage([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -104,6 +113,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/permissions")]
+        [ProducesResponseType(typeof(ResourcePermissionsResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetItSystemUsagePermissions([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -122,6 +135,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
+        [ProducesResponseType(typeof(ResourceCollectionPermissionsResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetItSystemUsageCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -141,6 +158,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteItSystemUsage([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -158,6 +180,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(ItSystemUsageResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult PostItSystemUsage([FromBody] CreateItSystemUsageRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -178,6 +205,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}")]
+        [ProducesResponseType(typeof(ItSystemUsageResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PutSystemUsage([NonEmptyGuid] Guid systemUsageUuid, [FromBody] UpdateItSystemUsageRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -202,6 +234,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}")]
+        [ProducesResponseType(typeof(ItSystemUsageResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PatchSystemUsage([NonEmptyGuid] Guid systemUsageUuid, [FromBody] UpdateItSystemUsageRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -222,6 +259,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/incoming-system-relations")]
+        [ProducesResponseType(typeof(IEnumerable<IncomingSystemRelationResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult GetIncomingSystemRelations([NonEmptyGuid] Guid systemUsageUuid)
         {
             return itSystemUsageService
@@ -240,6 +282,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}/roles/add")]
+        [ProducesResponseType(typeof(ItSystemUsageResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PatchAddRoleAssignment([NonEmptyGuid] Guid systemUsageUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -259,6 +307,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}/roles/remove")]
+        [ProducesResponseType(typeof(ItSystemUsageResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PatchRemoveRoleAssignment([NonEmptyGuid] Guid systemUsageUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -277,6 +330,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
+        [ProducesResponseType(typeof(OutgoingSystemRelationResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PostSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [FromBody][Required] SystemRelationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -297,6 +355,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
+        [ProducesResponseType(typeof(OutgoingSystemRelationResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult GetSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid systemRelationUuid)
         {
             if (!ModelState.IsValid)
@@ -323,6 +386,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
+        [ProducesResponseType(typeof(OutgoingSystemRelationResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PutSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid systemRelationUuid, [FromBody] SystemRelationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -344,6 +412,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid systemRelationUuid)
         {
             if (!ModelState.IsValid)
@@ -361,6 +434,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/external-references")]
+        [ProducesResponseType(typeof(ExternalReferenceDataResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid systemUsageUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -382,6 +460,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/external-references/{externalReferenceUuid}")]
+        [ProducesResponseType(typeof(ExternalReferenceDataResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -403,6 +486,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}/external-references/{externalReferenceUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)
@@ -421,6 +509,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/journal-periods")]
+        [ProducesResponseType(typeof(JournalPeriodResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PostJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [FromBody][Required] JournalPeriodDTO request)
         {
             if (!ModelState.IsValid)
@@ -442,6 +535,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/journal-periods/{journalPeriodUuid}")]
+        [ProducesResponseType(typeof(JournalPeriodResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult GetJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid journalPeriodUuid)
         {
             if (!ModelState.IsValid)
@@ -469,6 +567,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/journal-periods/{journalPeriodUuid}")]
+        [ProducesResponseType(typeof(JournalPeriodResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PutJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid journalPeriodUuid, [FromBody] JournalPeriodDTO request)
         {
             if (!ModelState.IsValid)
@@ -490,6 +593,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}/journal-periods/{journalPeriodUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid journalPeriodUuid)
         {
             if (!ModelState.IsValid)
@@ -508,6 +616,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/archive")]
+        [ProducesResponseType(typeof(ItSystemUsageArchiveResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult ArchiveItSystemUsage(
             [NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] CreateItSystemUsageArchiveRequestDTO request)

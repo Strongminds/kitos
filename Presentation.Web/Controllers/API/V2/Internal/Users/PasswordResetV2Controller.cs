@@ -32,6 +32,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("create")]
         [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public IActionResult RequestPasswordReset([FromBody] RequestPasswordResetRequestDTO request)
         {
             _hangfire.Schedule(() => _userWriteService.RequestPasswordReset(request.Email));
@@ -40,6 +42,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{requestId}")]
         [HttpGet]
+        [ProducesResponseType(typeof(PasswordResetResponseDTO), 200)]
+        [ProducesResponseType(404)]
         public IActionResult GetPasswordReset([FromRoute] string requestId)
         {
             try
@@ -57,6 +61,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{requestId}")]
         [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public IActionResult PostPasswordReset([FromRoute] string requestId, [FromBody] ResetPasswordRequestDTO request)
         {
             try
@@ -85,5 +92,4 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         }
     }
 }
-
 

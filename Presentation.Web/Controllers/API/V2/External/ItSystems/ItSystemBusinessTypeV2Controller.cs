@@ -26,6 +26,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>A list of available IT-System business type specifics formatted as uuid and name pairs</returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<RegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -39,6 +44,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>A uuid and name pair with boolean to mark if the business type is available in the organization</returns>
         [HttpGet]
         [Route("{businessTypeUuid}")]
+        [ProducesResponseType(typeof(RegularOptionExtendedResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetBusinessType([NonEmptyGuid] Guid businessTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(businessTypeUuid, organizationUuid);

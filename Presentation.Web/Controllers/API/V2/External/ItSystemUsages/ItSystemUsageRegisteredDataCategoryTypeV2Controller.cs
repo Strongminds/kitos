@@ -25,6 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A list of available types</returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<RegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -38,6 +43,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the type is available in the organization</returns>
         [HttpGet]
         [Route("{registeredDataCatagoryTypeUuid}")]
+        [ProducesResponseType(typeof(RegularOptionExtendedResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid registeredDataCatagoryTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(registeredDataCatagoryTypeUuid, organizationUuid);

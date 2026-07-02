@@ -27,6 +27,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A list of available IT-System usage role types</returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<RoleOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -40,6 +45,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A detailed description of the role type and it's availability</returns>
         [HttpGet]
         [Route("{systemUsageRoleTypeUuid}")]
+        [ProducesResponseType(typeof(RoleOptionExtendedResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid systemUsageRoleTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(systemUsageRoleTypeUuid, organizationUuid);

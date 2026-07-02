@@ -46,6 +46,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/search")]
+        [ProducesResponseType(typeof(IEnumerable<ItSystemSearchResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult GetItSystems(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             [NonEmptyGuid] Guid? businessTypeUuid = null,
@@ -72,6 +76,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
 
         [HttpGet]
         [Route("organization/{organizationUuid}/it-systems/{systemUuid}/hierarchy")]
+        [ProducesResponseType(typeof(IEnumerable<ItSystemHierarchyNodeResponseDTO>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetHierarchy([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)

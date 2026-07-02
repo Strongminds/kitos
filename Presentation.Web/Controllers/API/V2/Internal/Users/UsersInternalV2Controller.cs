@@ -41,6 +41,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("create")]
         [HttpPost]
+        [ProducesResponseType(typeof(UserResponseDTO), 201)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult CreateUser([NonEmptyGuid] Guid organizationUuid, [FromBody] CreateUserRequestDTO parameters)
         {
             return _userWriteService.Create(organizationUuid, _writeModelMapper.FromPOST(parameters))
@@ -50,6 +55,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{userUuid}/patch")]
         [HttpPatch]
+        [ProducesResponseType(typeof(UserResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult PatchUser([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid,
             [FromBody] UpdateUserRequestDTO parameters)
         {
@@ -60,6 +70,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{userUuid}/notifications/send")]
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult SendNotification([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.SendNotification(organizationUuid, userUuid)
@@ -68,6 +82,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("permissions")]
         [HttpGet]
+        [ProducesResponseType(typeof(UserCollectionPermissionsResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             return _userWriteService.GetCollectionPermissions(organizationUuid)
@@ -77,6 +96,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("find-any-by-email")]
         [HttpGet]
+        [ProducesResponseType(typeof(UserIsPartOfCurrentOrgResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(401)]
         public IActionResult GetUsersByEmailInOtherOrganizations([NonEmptyGuid] Guid organizationUuid, string email)
         {
             return _userService.GetUserByEmail(organizationUuid, email)
@@ -86,6 +108,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{fromUserUuid}/copy-roles/{toUserUuid}")]
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult CopyRoles([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid fromUserUuid, [NonEmptyGuid] Guid toUserUuid, [FromBody] MutateUserRightsRequestDTO request)
         {
             var parameters = MapCopyRightsDTOToParameters(request);
@@ -95,6 +122,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{fromUserUuid}/transfer-roles/{toUserUuid}")]
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult TransferRoles([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid fromUserUuid, [NonEmptyGuid] Guid toUserUuid, [FromBody] MutateUserRightsRequestDTO request)
         {
             var parameters = MapCopyRightsDTOToParameters(request);
@@ -104,6 +136,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{userUuid}")]
         [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteUserInOrganization([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.DeleteUser(userUuid, organizationUuid)
@@ -113,6 +150,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("{userUuid}")]
+        [ProducesResponseType(typeof(UserResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetUserByUuid(Guid organizationUuid, Guid userUuid)
         {
             return _userService
@@ -123,6 +164,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpPatch]
         [Route("{userUuid}/default-unit/{organizationUnitUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult PatchDefaultOrgUnit(Guid organizationUuid, Guid userUuid, Guid organizationUnitUuid)
         {
             return _userWriteService.SetDefaultOrgUnit(userUuid, organizationUuid, organizationUnitUuid)
@@ -131,6 +176,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("{userUuid}/default-unit")]
+        [ProducesResponseType(typeof(IdentityNamePairResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetUserDefaultUnit(Guid organizationUuid, Guid userUuid)
         {
             return _userService

@@ -24,6 +24,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 
         [HttpDelete]
         [Route("{alertUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult DeleteAlert([FromRoute][NonEmptyGuid] Guid alertUuid)
         {
             return _userNotificationApplicationService.DeleteByUuid(alertUuid).Match(FromOperationError, NoContent);
@@ -31,6 +36,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
 
         [HttpGet]
         [Route("organization/{organizationUuid}/user/{userUuid}/{ownerResourceType}")]
+        [ProducesResponseType(typeof(IEnumerable<AlertResponseDTO>), 200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetByOrganizationAndUser([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromRoute][NonEmptyGuid] Guid userUuid, OwnerResourceType ownerResourceType)
         {
             var relatedEntityType = ownerResourceType.ToRelatedEntityType();

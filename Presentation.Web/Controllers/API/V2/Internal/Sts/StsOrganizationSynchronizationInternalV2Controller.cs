@@ -26,6 +26,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("snapshot")]
+        [ProducesResponseType(typeof(StsOrganizationOrgUnitDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetSnapshotFromStsOrganization(Guid organizationUuid, int? levels = null)
         {
             return _stsOrganizationSynchronizationService
@@ -36,6 +40,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("connection-status")]
+        [ProducesResponseType(typeof(StsOrganizationSynchronizationDetailsResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetSynchronizationStatus(Guid organizationUuid)
         {
             return _stsOrganizationSynchronizationService
@@ -61,6 +69,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpPost]
         [Route("connection")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult CreateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -81,6 +93,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
         [HttpDelete]
         [Consumes("application/json")]
         [Route("connection")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult Disconnect(Guid organizationUuid, [FromBody] DisconnectFromStsOrganizationRequestDTO request)
         {
             if (request == null)
@@ -95,6 +111,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpDelete]
         [Route("connection/subscription")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult DeleteSubscription(Guid organizationUuid)
         {
             return _stsOrganizationSynchronizationService
@@ -104,6 +124,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("connection/update")]
+        [ProducesResponseType(typeof(ConnectionUpdateConsequencesResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetUpdateConsequences(Guid organizationUuid, int? synchronizationDepth = null)
         {
             if (synchronizationDepth is < 1)
@@ -119,6 +143,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpPut]
         [Route("connection")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult UpdateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -138,6 +166,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("connection/change-log")]
+        [ProducesResponseType(typeof(IEnumerable<StsOrganizationChangeLogResponseDTO>), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetChangeLogs(Guid organizationUuid, int numberOfChangeLogs)
         {
             return _stsOrganizationSynchronizationService.GetChangeLogs(organizationUuid, numberOfChangeLogs)

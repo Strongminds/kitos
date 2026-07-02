@@ -38,6 +38,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns>A description of the consequences of the migration</returns>
         [HttpGet]
         [Route("{usageUuid}/migration")]
+        [ProducesResponseType(typeof(ItSystemUsageMigrationV2ResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult Get([Required][NonEmptyGuid] Guid usageUuid, [Required][NonEmptyGuid] Guid toSystemUuid)
         {
             if (!ModelState.IsValid)
@@ -56,6 +61,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{usageUuid}/migration")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult ExecuteMigration([Required][NonEmptyGuid] Guid usageUuid, [Required][NonEmptyGuid] Guid toSystemUuid)
         {
             if (!ModelState.IsValid)
@@ -71,6 +81,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("migration/permissions")]
+        [ProducesResponseType(typeof(ItSystemUsageMigrationPermissionsResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetPermissions()
         {
             if (!ModelState.IsValid)
@@ -90,6 +105,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("migration/unused-it-systems")]
+        [ProducesResponseType(typeof(IEnumerable<IdentityNamePairWithDeactivatedStatusDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetUnusedItSystemsBySearchAndOrganization(
             [Required][NonEmptyGuid] Guid organizationUuid,
             [Required] int numberOfItSystems,

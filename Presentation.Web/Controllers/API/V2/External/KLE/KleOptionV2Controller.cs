@@ -40,6 +40,9 @@ namespace Presentation.Web.Controllers.API.V2.External.KLE
         /// <returns></returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(VersionedKLEResponseDTO<IEnumerable<KLEDetailsDTO>>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult Get(
             [NonEmptyGuid] Guid? parentKleUuid = null,
             string parentKleNumber = null,
@@ -82,6 +85,10 @@ namespace Presentation.Web.Controllers.API.V2.External.KLE
         /// <returns></returns>
         [HttpGet]
         [Route("{kleUuid}")]
+        [ProducesResponseType(typeof(VersionedKLEResponseDTO<KLEDetailsDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid kleUuid)
         {
             if (!ModelState.IsValid)

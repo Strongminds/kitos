@@ -28,21 +28,36 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
             [HttpGet]
             [Route("")]
-            public IActionResult GetDprRoles()
+            [ProducesResponseType(typeof(IEnumerable<GlobalRoleOptionResponseDTO>), 200)]
+            [ProducesResponseType(400)]
+            [ProducesResponseType(401)]
+            [ProducesResponseType(403)]
+            [ProducesResponseType(404)]
+        public IActionResult GetDprRoles()
             {
                 return GetAll();
             }
 
             [HttpPost]
             [Route("")]
-            public IActionResult CreateDprRole([FromBody] GlobalRoleOptionCreateRequestDTO dto)
+            [ProducesResponseType(typeof(GlobalRoleOptionResponseDTO), 200)]
+            [ProducesResponseType(400)]
+            [ProducesResponseType(401)]
+            [ProducesResponseType(403)]
+            [ProducesResponseType(404)]
+        public IActionResult CreateDprRole([FromBody] GlobalRoleOptionCreateRequestDTO dto)
             {
                 return Create(dto);
             }
 
             [HttpPatch]
             [Route("{optionUuid}")]
-            public IActionResult PatchDprRole([NonEmptyGuid] [FromRoute] Guid optionUuid,
+            [ProducesResponseType(typeof(GlobalRoleOptionResponseDTO), 200)]
+            [ProducesResponseType(400)]
+            [ProducesResponseType(401)]
+            [ProducesResponseType(403)]
+            [ProducesResponseType(404)]
+        public IActionResult PatchDprRole([NonEmptyGuid] [FromRoute] Guid optionUuid,
                 [FromBody] GlobalRoleOptionUpdateRequestDTO dto)
             {
                 return Patch(optionUuid, dto);

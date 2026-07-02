@@ -52,6 +52,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}")]
+        [ProducesResponseType(typeof(IEnumerable<NotificationResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetNotifications(
             OwnerResourceType ownerResourceType,
             [Required][NonEmptyGuid] Guid organizationUuid,
@@ -98,6 +103,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/{ownerResourceUuid}/{notificationUuid}")]
+        [ProducesResponseType(typeof(NotificationResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetNotificationByUuid(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -117,6 +127,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPost]
         [Route("{ownerResourceType}/{ownerResourceUuid}/immediate")]
+        [ProducesResponseType(typeof(NotificationResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult CreateImmediateNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [FromBody] ImmediateNotificationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -142,6 +157,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPost]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled")]
+        [ProducesResponseType(typeof(NotificationResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult CreateScheduledNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [FromBody] ScheduledNotificationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -168,6 +188,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPut]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled/{notificationUuid}")]
+        [ProducesResponseType(typeof(NotificationResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult UpdateScheduledNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid, [FromBody] UpdateScheduledNotificationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -189,6 +214,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPatch]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled/deactivate/{notificationUuid}")]
+        [ProducesResponseType(typeof(NotificationResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult DeactivateScheduledNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -208,6 +238,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpDelete]
         [Route("{ownerResourceType}/{ownerResourceUuid}/{notificationUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -226,6 +261,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/{ownerResourceUuid}/sent/{notificationUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<SentNotificationResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetSentNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -247,6 +287,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/{ownerResourceUuid}/{notificationUuid}/permissions")]
+        [ProducesResponseType(typeof(NotificationResourcePermissionsDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetPermissions(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)

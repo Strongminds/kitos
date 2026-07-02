@@ -41,6 +41,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("{unitUuid}/permissions")]
         [HttpGet]
+        [ProducesResponseType(typeof(UnitAccessRightsResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult GetPermissions([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid unitUuid)
         {
             return _organizationUnitService.GetAccessRights(organizationUuid, unitUuid)
@@ -50,6 +54,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("all/collection-permissions")]
         [HttpGet]
+        [ProducesResponseType(typeof(UnitAccessRightsWithUnitDataResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationUnitService.GetAccessRightsByOrganization(organizationUuid)
@@ -65,6 +73,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("create")]
         [HttpPost]
+        [ProducesResponseType(typeof(OrganizationUnitResponseDTO), 201)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult CreateUnit([NonEmptyGuid] Guid organizationUuid, [FromBody] CreateOrganizationUnitRequestDTO parameters)
         {
             return _organizationUnitWriteService.Create(organizationUuid, _organizationUnitWriteModelMapper.FromPOST(parameters))
@@ -74,6 +86,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("{organizationUnitUuid}/patch")]
         [HttpPatch]
+        [ProducesResponseType(typeof(OrganizationUnitResponseDTO), 201)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult PatchUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] UpdateOrganizationUnitRequestDTO parameters)
         {
             return _organizationUnitWriteService.Patch(organizationUuid, organizationUnitUuid,
@@ -84,6 +100,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("{organizationUnitUuid}/delete")]
         [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult DeleteUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitUuid)
         {
             var result = _organizationUnitService.Delete(organizationUuid, organizationUnitUuid);
@@ -92,6 +112,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpGet]
         [Route("{organizationUnitUuid}/roles")]
+        [ProducesResponseType(typeof(IEnumerable<OrganizationUnitRolesResponseDTO>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult GetRoleAssignments([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitUuid)
         {
             if (!ModelState.IsValid)
@@ -104,6 +128,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpPost]
         [Route("{organizationUnitUuid}/roles/create")]
+        [ProducesResponseType(typeof(OrganizationUnitRoleAssignmentResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult CreateRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] CreateOrganizationUnitRoleAssignmentRequestDTO request)
         {
@@ -118,6 +146,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpPost]
         [Route("{organizationUnitUuid}/roles/bulk/create")]
+        [ProducesResponseType(typeof(OrganizationUnitResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult CreateBulkRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] BulkRoleAssignmentRequestDTO request)
         {
@@ -132,6 +164,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
         [HttpDelete]
         [Consumes("application/json")]
         [Route("{organizationUnitUuid}/roles/delete")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult DeleteRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] DeleteOrganizationUnitRoleAssignmentRequestDTO request)
         {

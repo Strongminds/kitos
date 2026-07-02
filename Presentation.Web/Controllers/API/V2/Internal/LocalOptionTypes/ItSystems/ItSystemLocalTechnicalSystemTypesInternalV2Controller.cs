@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using Core.ApplicationServices.LocalOptions;
 using Core.DomainModel.ItSystem;
@@ -5,6 +6,7 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.LocalOptions;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Internal.Response;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<LocalRegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetLocalTechnicalSystemTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -30,6 +37,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetLocalTechnicalSystemTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -37,6 +49,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult CreateTechnicalSystemType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -44,6 +61,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult PatchTechnicalSystemType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
@@ -53,6 +75,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpDelete]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteTechnicalSystemType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

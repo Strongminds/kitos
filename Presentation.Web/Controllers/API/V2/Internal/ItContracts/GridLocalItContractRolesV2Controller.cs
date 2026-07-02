@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response.ItContract;
 using Core.ApplicationServices.OptionTypes;
@@ -21,6 +22,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("{organizationUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<LocalItContractRolesResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult GetByOrganizationUuid(Guid organizationUuid)
         {
             return _optionService.GetOptionTypes(organizationUuid)

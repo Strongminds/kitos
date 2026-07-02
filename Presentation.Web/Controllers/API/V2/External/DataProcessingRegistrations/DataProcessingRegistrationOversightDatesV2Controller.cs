@@ -36,6 +36,12 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(OversightDateDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PostDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [FromBody] CreateOversightDateDTO request)
         {
             if (!ModelState.IsValid)
@@ -56,6 +62,12 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{oversightDateUuid}")]
+        [ProducesResponseType(typeof(OversightDateDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PatchDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid, [FromBody] ModifyOversightDateDTO request)
         {
             if (!ModelState.IsValid)
@@ -75,6 +87,12 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns></returns>
         [HttpDelete]
         [Route("{oversightDateUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteDataProcessingRegistrationOversightDate([NonEmptyGuid] Guid uuid, [NonEmptyGuid] Guid oversightDateUuid)
         {
             return _writeService

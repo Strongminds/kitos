@@ -35,6 +35,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{overviewType}/save")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(OrganizationGridConfigurationResponseDTO), 200)]
         public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
         {
             if (!ModelState.IsValid)
@@ -48,6 +53,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{overviewType}/delete")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType)
         {
             if (!ModelState.IsValid)
@@ -62,6 +71,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{overviewType}/get")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType)
         {
             if (!ModelState.IsValid) 
@@ -75,6 +88,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("permissions")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(OrganizationGridPermissionsResponseDTO), 200)]
         public IActionResult GetOrganizationGridPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

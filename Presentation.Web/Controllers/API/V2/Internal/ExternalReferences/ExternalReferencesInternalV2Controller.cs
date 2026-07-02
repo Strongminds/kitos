@@ -31,6 +31,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-systems/{systemUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetItSystemReferences([NonEmptyGuid][FromRoute] Guid systemUuid)
         {
             return _systemService.GetSystem(systemUuid)
@@ -40,6 +45,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-system-usages/{systemUsageUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetItSystemUsageReferences([NonEmptyGuid][FromRoute] Guid systemUsageUuid)
         {
             return _usageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
@@ -49,6 +59,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-contracts/{contractUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetItContractReferences([NonEmptyGuid][FromRoute] Guid contractUuid)
         {
             return _contractService.GetContract(contractUuid)
@@ -58,6 +73,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("data-processing/{dprUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetDataProcessingReferences([NonEmptyGuid][FromRoute] Guid dprUuid)
         {
             return _dprService.GetByUuid(dprUuid)

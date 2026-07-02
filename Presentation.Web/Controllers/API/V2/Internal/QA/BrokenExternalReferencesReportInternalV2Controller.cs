@@ -20,6 +20,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpGet]
         [Route("status")]
+        [ProducesResponseType(typeof(BrokenExternalReferencesReportStatusResponseDTO), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
         public IActionResult GetStatus()
         {
             return _brokenExternalReferencesReportService
@@ -36,6 +40,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpPost]
         [Route("trigger")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
         public IActionResult Trigger()
         {
             return _brokenExternalReferencesReportService
@@ -49,6 +57,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpGet]
         [Route("current/csv")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
         public IActionResult GetCurrentCsvReport()
         {
             return _brokenExternalReferencesReportService

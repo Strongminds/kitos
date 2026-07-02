@@ -4,9 +4,11 @@ using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Options;
 using System;
+using System.Collections.Generic;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Models.API.V2.Internal.Response.GlobalOptions;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSystems
 {
@@ -24,6 +26,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<GlobalRegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetSystemUsageCriticalityLevelTypes()
         {
             return GetAll();
@@ -31,6 +38,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(GlobalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult CreateSystemUsageCriticalityLevelType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
@@ -38,6 +50,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(GlobalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult PatchSystemUsageCriticalityLevelType([NonEmptyGuid] [FromRoute] Guid optionUuid,
             [FromBody] GlobalRegularOptionUpdateRequestDTO dto)
         {

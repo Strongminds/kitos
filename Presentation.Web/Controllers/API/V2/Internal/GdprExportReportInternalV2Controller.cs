@@ -23,6 +23,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{organizationUuid}")]
+        [ProducesResponseType(typeof(IEnumerable<GdprReportResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
         public IActionResult GetGdprReport([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             return _gdprExportService.GetGDPRDataByUuid(organizationUuid)

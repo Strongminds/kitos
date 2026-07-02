@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using Core.ApplicationServices.Tracking;
 using Core.DomainModel.Tracking;
@@ -30,6 +31,8 @@ namespace Presentation.Web.Controllers.API.V2.External.Deltas
         /// <returns></returns>
         [HttpGet]
         [Route("deleted-entities")]
+        [ProducesResponseType(typeof(IEnumerable<TrackingEventResponseDTO>), 200)]
+        [ProducesResponseType(401)]
         public IActionResult GetDeletedObjects(
             TrackedEntityTypeChoice? entityType = null,
             DateTime? deletedSinceUTC = null,

@@ -66,6 +66,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<ItContractResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
         public IActionResult GetItContracts(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
@@ -162,6 +166,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns>Specific data related to the IT-Contract</returns>
         [HttpGet]
         [Route("{contractUuid}")]
+        [ProducesResponseType(typeof(ItContractResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -180,6 +189,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(ItContractResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(409)]
         public IActionResult PostItContract([FromBody] CreateNewContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -202,6 +216,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}")]
+        [ProducesResponseType(typeof(ItContractResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(404)]
         public IActionResult PutItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -223,6 +243,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("{contractUuid}")]
+        [ProducesResponseType(typeof(ItContractResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(404)]
         public IActionResult PatchItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -243,6 +269,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -260,6 +291,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("{contractUuid}/permissions")]
+        [ProducesResponseType(typeof(ItContractPermissionsResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetItContractPermissions([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -279,6 +314,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
+        [ProducesResponseType(typeof(ResourceCollectionPermissionsResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult GetItContractCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -296,6 +335,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPost]
         [Route("{contractUuid}/external-references")]
+        [ProducesResponseType(typeof(ExternalReferenceDataResponseDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid contractUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -317,6 +361,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
+        [ProducesResponseType(typeof(ExternalReferenceDataResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -338,6 +387,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(403)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)

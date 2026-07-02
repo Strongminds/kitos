@@ -33,6 +33,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 
         [HttpGet]
         [Route("status")]
+        [ProducesResponseType(typeof(KLEStatusResponseDTO), 200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(400)]
         public IActionResult GetKLEStatus()
         {
             var result = _kleApplicationService.GetKLEStatus();
@@ -49,6 +52,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 
         [HttpGet]
         [Route("changes")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(400)]
         public IActionResult GetKLEChanges()
         {
             var result = _kleApplicationService.GetKLEChangeSummary();
@@ -63,6 +69,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 
         [HttpPut]
         [Route("update")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(400)]
         public IActionResult PutKLEChanges()
         {
             var result = _kleApplicationService.UpdateKLE();

@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Core.ApplicationServices.OptionTypes;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
+using Presentation.Web.Models.API.V2.Response.Options;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
@@ -23,6 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A list of available It-System Usage technical system types</returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<RegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -36,6 +43,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the technical system type is available in the organization</returns>
         [HttpGet]
         [Route("{technicalSystemTypeUuid}")]
+        [ProducesResponseType(typeof(RegularOptionExtendedResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid technicalSystemTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(technicalSystemTypeUuid, organizationUuid);

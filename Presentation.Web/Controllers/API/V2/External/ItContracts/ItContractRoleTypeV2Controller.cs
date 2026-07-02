@@ -26,6 +26,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns>A list of available It Contract role option types</returns>
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<RoleOptionResponseDTO>), 200)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -39,6 +43,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns>A detailed description of the It Contract role type and it's availability</returns>
         [HttpGet]
         [Route("{contractRoleTypeUuid}")]
+        [ProducesResponseType(typeof(RoleOptionExtendedResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult Get([NonEmptyGuid] Guid contractRoleTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(contractRoleTypeUuid, organizationUuid);

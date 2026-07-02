@@ -39,6 +39,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(IEnumerable<PublicMessageResponseDTO>), 200)]
+        [ProducesResponseType(400)]
         public IActionResult Get()
         {
             var publicMessages = _publicMessagesService.Read();
@@ -48,6 +50,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
 
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(PublicMessageResponseDTO), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(400)]
         public IActionResult Post([FromBody] PublicMessageRequestDTO body)
         {
             if (body == null)
@@ -65,6 +71,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         /// </summary>
         [HttpPatch]
         [Route("{messageUuid}")]
+        [ProducesResponseType(typeof(PublicMessageResponseDTO), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(409)]
         public IActionResult Patch([NonEmptyGuid] Guid messageUuid, [FromBody] PublicMessageRequestDTO body)
         {
             if (body == null)
@@ -84,6 +95,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         /// </summary>
         [HttpGet]
         [Route("permissions")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ResourcePermissionsResponseDTO), 200)]
         public IActionResult GetPermissions()
         {
             return _publicMessagesService
@@ -98,6 +111,5 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         }
     }
 }
-
 
 

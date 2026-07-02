@@ -27,6 +27,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpGet]
         [Route("")]
+        [ProducesResponseType(typeof(IEnumerable<LocalRegularOptionResponseDTO>), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetLocalCountryOptionTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -34,6 +39,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpGet]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult GetLocalCountryOptionTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -41,6 +51,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpPost]
         [Route("")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult CreateLocalCountryOptionType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -48,6 +63,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult PatchLocalCountryOptionType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
@@ -57,6 +77,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpDelete]
         [Route("{optionUuid}")]
+        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteLocalCountryOptionType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {
