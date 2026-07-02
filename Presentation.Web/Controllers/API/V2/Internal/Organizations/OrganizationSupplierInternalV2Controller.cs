@@ -26,10 +26,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/suppliers")]
-        [ProducesResponseType(typeof(IEnumerable<ShallowOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationSupplierService.GetSuppliersForOrganization(organizationUuid)
@@ -39,10 +39,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/suppliers/available")]
-        [ProducesResponseType(typeof(IEnumerable<ShallowOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetAvailableSuppliers([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationSupplierService.GetAvailableSuppliers(organizationUuid)
@@ -52,10 +52,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("suppliers/{supplierUuid}/using-organizations")]
-        [ProducesResponseType(typeof(IEnumerable<ShallowOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUsingOrganizations([NonEmptyGuid] Guid supplierUuid)
         {
             return _organizationSupplierService.GetUsingOrganizations(supplierUuid)
@@ -65,10 +65,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
-        [ProducesResponseType(typeof(ShallowOrganizationResponseDTO), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(ShallowOrganizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult AddSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)
         {
             return _organizationSupplierService.AddSupplierToOrganization(organizationUuid, supplierUuid)
@@ -78,10 +78,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{organizationUuid}/suppliers/{supplierUuid}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult DeleteSupplier([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid supplierUuid)
         {
             return _organizationSupplierService.RemoveSupplierFromOrganization(organizationUuid, supplierUuid)
@@ -104,4 +104,3 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         }
     }
 }
-

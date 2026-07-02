@@ -75,10 +75,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems")]
-        [ProducesResponseType(typeof(IEnumerable<ItSystemResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<ItSystemResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItSystems(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             [NonEmptyGuid] Guid? businessTypeUuid = null,
@@ -109,11 +109,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpPost]
         [Route("it-systems")]
-        [ProducesResponseType(typeof(ItSystemResponseDTO), 201)]
-        [ProducesResponseType(409)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(ItSystemResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostItSystem([FromBody] CreateItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -133,12 +133,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpPatch]
         [Route("it-systems/{uuid}")]
-        [ProducesResponseType(typeof(ItSystemResponseDTO), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(409)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(ItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchItSystem([NonEmptyGuid] Guid uuid, [FromBody] UpdateItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -162,10 +162,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpDelete]
         [Route("it-systems/{uuid}")]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteItSystem([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -183,11 +183,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>Specific data related to the IT-System</returns>
         [HttpGet]
         [Route("it-systems/{uuid}")]
-        [ProducesResponseType(typeof(ItSystemResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(ItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystem([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -206,10 +206,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/{uuid}/hierarchy")]
-        [ProducesResponseType(typeof(IEnumerable<RegistrationHierarchyNodeWithActivationStatusResponseDTO>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(IEnumerable<RegistrationHierarchyNodeWithActivationStatusResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetHierarchy([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -230,9 +230,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems")]
-        [ProducesResponseType(typeof(IEnumerable<RightsHolderItSystemResponseDTO>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<RightsHolderItSystemResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItSystemsByRightsHoldersAccess(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             bool? includeDeactivated = null,
@@ -269,11 +269,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems/{uuid}")]
-        [ProducesResponseType(typeof(RightsHolderItSystemResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemByRightsHoldersAccess([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -293,11 +293,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpPost]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems")]
-        [ProducesResponseType(typeof(RightsHolderItSystemResponseDTO), 201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(409)]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
         public IActionResult PostItSystemAsRightsHolder([FromBody] RightsHolderFullItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -322,11 +322,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpPut]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems/{uuid}")]
-        [ProducesResponseType(typeof(RightsHolderItSystemResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PutItSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] RightsHolderFullItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -349,11 +349,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpPatch]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems/{uuid}")]
-        [ProducesResponseType(typeof(RightsHolderItSystemResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchItSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] RightsHolderUpdateSystemPropertiesRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -377,11 +377,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [AllowRightsHoldersAccess]
         [Consumes("application/json")]
         [Route("rightsholder/it-systems/{uuid}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeactivateSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] DeactivationReasonRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -400,10 +400,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/{systemUuid}/permissions")]
-        [ProducesResponseType(typeof(ItSystemPermissionsResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(ItSystemPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemPermissions([NonEmptyGuid] Guid systemUuid)
         {
             if (!ModelState.IsValid)
@@ -423,10 +423,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/permissions")]
-        [ProducesResponseType(typeof(ResourceCollectionPermissionsResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(ResourceCollectionPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -445,11 +445,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpPost]
         [Route("it-systems/{systemUuid}/external-references")]
-        [ProducesResponseType(typeof(ExternalReferenceDataResponseDTO), 201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid systemUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -471,11 +471,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpPut]
         [Route("it-systems/{systemUuid}/external-references/{externalReferenceUuid}")]
-        [ProducesResponseType(typeof(ExternalReferenceDataResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -497,11 +497,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpDelete]
         [Route("it-systems/{systemUuid}/external-references/{externalReferenceUuid}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)

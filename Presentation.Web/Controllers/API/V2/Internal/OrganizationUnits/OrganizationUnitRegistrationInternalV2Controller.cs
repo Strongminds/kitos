@@ -10,6 +10,7 @@ using Presentation.Web.Models.API.V2.Internal.Request.OrganizationUnit;
 using Presentation.Web.Models.API.V2.Internal.Response.OrganizationUnit;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
 using Core.DomainModel.ItSystemUsage;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
@@ -25,9 +26,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(OrganizationRegistrationUnitResponseDTO), 200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(OrganizationRegistrationUnitResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetRegistrations(Guid organizationUuid, Guid unitUuid)
         {
             return _organizationUnitService.GetRegistrations(organizationUuid, unitUuid)
@@ -37,9 +38,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpDelete]
         [Consumes("application/json")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult RemoveRegistrations(Guid organizationUuid, Guid unitUuid, [FromBody] ChangeOrganizationUnitRegistrationV2RequestDTO requestDto)
         {
             var changeParameters = ToChangeParameters(requestDto);
@@ -48,9 +49,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
         }
 
         [HttpPut]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult TransferRegistrations(Guid organizationUuid, Guid unitUuid, [FromBody] TransferOrganizationUnitRegistrationV2RequestDTO requestDto)
         {
             var changeParameters = ToChangeParameters(requestDto);

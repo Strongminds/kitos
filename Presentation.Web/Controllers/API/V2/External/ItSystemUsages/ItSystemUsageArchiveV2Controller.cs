@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Response.Shared;
 
+using System.Net;
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
 {
     //TODO: Add get/delete endpoints
@@ -25,11 +26,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>The archive entity if found and user has read access</returns>
         [HttpGet]
         [Route("{archiveUuid:guid}")]
-        [ProducesResponseType(typeof(ItSystemUsageArchiveResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(ItSystemUsageArchiveResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] System.Guid archiveUuid)
         {
             if (!ModelState.IsValid)
@@ -48,11 +49,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>No content if successfully deleted</returns>
         [HttpDelete]
         [Route("{archiveUuid:guid}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Delete([NonEmptyGuid] System.Guid archiveUuid)
         {
             if (!ModelState.IsValid)
@@ -70,10 +71,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{archiveUuid}/permissions")]
-        [ProducesResponseType(typeof(ResourcePermissionsResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(ItSystemUsageArchiveResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemUsageArchivePermissions([NonEmptyGuid] Guid archiveUuid)
         {
             if (!ModelState.IsValid)
@@ -92,10 +93,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
-        [ProducesResponseType(typeof(ResourceCollectionPermissionsResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(ItSystemUsageArchiveResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemUsageArchiveCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)

@@ -25,11 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<LocalRegularOptionResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalSensitivePersonalDataTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -37,11 +37,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpGet]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalSensitivePersonalDataTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -49,11 +49,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -61,11 +61,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
@@ -75,11 +75,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystem
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteLocalSensitivePersonalDataType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

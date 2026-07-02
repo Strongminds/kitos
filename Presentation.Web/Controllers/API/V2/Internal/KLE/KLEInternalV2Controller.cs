@@ -11,8 +11,10 @@ using Core.ApplicationServices.Extensions;
 using Presentation.Web.Controllers.API.V2.Internal.KLE.Mapping;
 using Presentation.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response.KLE;
 
+using System.Net;
 namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 {
     [Route("api/v2/internal/kle")]
@@ -33,9 +35,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 
         [HttpGet]
         [Route("status")]
-        [ProducesResponseType(typeof(KLEStatusResponseDTO), 200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(400)]
+        [ApiResponse(typeof(KLEStatusResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult GetKLEStatus()
         {
             var result = _kleApplicationService.GetKLEStatus();
@@ -52,9 +54,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 
         [HttpGet]
         [Route("changes")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(400)]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult GetKLEChanges()
         {
             var result = _kleApplicationService.GetKLEChangeSummary();
@@ -69,9 +71,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.KLE
 
         [HttpPut]
         [Route("update")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(400)]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult PutKLEChanges()
         {
             var result = _kleApplicationService.UpdateKLE();

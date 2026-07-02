@@ -39,8 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(IEnumerable<PublicMessageResponseDTO>), 200)]
-        [ProducesResponseType(400)]
+        [ApiResponse(typeof(IEnumerable<PublicMessageResponseDTO>), HttpStatusCode.OK)]
         public IActionResult Get()
         {
             var publicMessages = _publicMessagesService.Read();
@@ -50,10 +49,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
 
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(PublicMessageResponseDTO), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(400)]
+        [ApiResponse(typeof(PublicMessageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult Post([FromBody] PublicMessageRequestDTO body)
         {
             if (body == null)
@@ -71,11 +70,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         /// </summary>
         [HttpPatch]
         [Route("{messageUuid}")]
-        [ProducesResponseType(typeof(PublicMessageResponseDTO), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(409)]
+        [ApiResponse(typeof(PublicMessageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
         public IActionResult Patch([NonEmptyGuid] Guid messageUuid, [FromBody] PublicMessageRequestDTO body)
         {
             if (body == null)
@@ -95,8 +94,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Messages
         /// </summary>
         [HttpGet]
         [Route("permissions")]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(ResourcePermissionsResponseDTO), 200)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(typeof(ResourcePermissionsResponseDTO), HttpStatusCode.OK)]
         public IActionResult GetPermissions()
         {
             return _publicMessagesService

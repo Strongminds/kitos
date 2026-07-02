@@ -63,9 +63,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list of organizations</returns>
         [HttpGet]
         [Route("organizations")]
-        [ProducesResponseType(typeof(IEnumerable<OrganizationResponseDTO>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(400)]
+        [ApiResponse(typeof(IEnumerable<OrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult GetOrganizations(
             bool onlyWhereUserHasMembership = false,
             string? nameContent = null,
@@ -108,10 +108,10 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}")]
-        [ProducesResponseType(typeof(OrganizationResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(OrganizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetOrganization([NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -134,11 +134,11 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list og users in a specific organizational context</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users")]
-        [ProducesResponseType(typeof(IEnumerable<OrganizationUserResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<OrganizationUserResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUsers(
             [NonEmptyGuid] Guid organizationUuid,
             string? nameOrEmailQuery = null,
@@ -174,11 +174,11 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A user in the context of a specific organization</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users/{userUuid}")]
-        [ProducesResponseType(typeof(OrganizationUserResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(OrganizationUserResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUser([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
             return _userService
@@ -199,11 +199,11 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list og organization unit representations</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units")]
-        [ProducesResponseType(typeof(IEnumerable<OrganizationUnitResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<OrganizationUnitResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUnits(
             [NonEmptyGuid] Guid organizationUuid,
             string? nameQuery = null,
@@ -236,11 +236,11 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization unit</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units/{organizationUnitId}")]
-        [ProducesResponseType(typeof(OrganizationUnitResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(OrganizationUnitResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitId)
         {
             return _organizationService
@@ -257,9 +257,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/organizations")]
-        [ProducesResponseType(typeof(IEnumerable<ShallowOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationsAsRightsHolder([FromQuery] BoundedPaginationQuery? pagination = null)
         {
             if (!ModelState.IsValid)

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
+using System.Net;
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
 
@@ -23,11 +24,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{organizationUuid}")]
-        [ProducesResponseType(typeof(IEnumerable<GdprReportResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<GdprReportResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetGdprReport([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             return _gdprExportService.GetGDPRDataByUuid(organizationUuid)

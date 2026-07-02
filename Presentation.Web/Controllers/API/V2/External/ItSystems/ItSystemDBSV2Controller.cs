@@ -22,11 +22,11 @@ public class ItSystemDBSV2Controller : ExternalBaseController
 
     [HttpPatch]
     [Route("")]
-    [ProducesResponseType(204)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    [ProducesResponseType(404)]
-    [ProducesResponseType(401)]
+    [ApiResponse(HttpStatusCode.NoContent)]
+    [ApiResponse(HttpStatusCode.BadRequest)]
+    [ApiResponse(HttpStatusCode.Forbidden)]
+    [ApiResponse(HttpStatusCode.NotFound)]
+    [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult PatchDbsProperties([NonEmptyGuid][FromRoute] Guid systemUuid, [FromBody] LegalPropertiesUpdateRequestDTO request)
     {
         var parameters = _writeModelMapper.FromPATCH(request);

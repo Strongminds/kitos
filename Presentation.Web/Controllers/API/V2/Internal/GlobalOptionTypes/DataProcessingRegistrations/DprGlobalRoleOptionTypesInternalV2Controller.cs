@@ -28,11 +28,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
             [HttpGet]
             [Route("")]
-            [ProducesResponseType(typeof(IEnumerable<GlobalRoleOptionResponseDTO>), 200)]
-            [ProducesResponseType(400)]
-            [ProducesResponseType(401)]
-            [ProducesResponseType(403)]
-            [ProducesResponseType(404)]
+            [ApiResponse(typeof(IEnumerable<GlobalRoleOptionResponseDTO>), HttpStatusCode.OK)]
+            [ApiResponse(HttpStatusCode.BadRequest)]
+            [ApiResponse(HttpStatusCode.Unauthorized)]
+            [ApiResponse(HttpStatusCode.Forbidden)]
+            [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetDprRoles()
             {
                 return GetAll();
@@ -40,11 +40,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
             [HttpPost]
             [Route("")]
-            [ProducesResponseType(typeof(GlobalRoleOptionResponseDTO), 200)]
-            [ProducesResponseType(400)]
-            [ProducesResponseType(401)]
-            [ProducesResponseType(403)]
-            [ProducesResponseType(404)]
+            [ApiResponse(typeof(GlobalRoleOptionResponseDTO), HttpStatusCode.OK)]
+            [ApiResponse(HttpStatusCode.BadRequest)]
+            [ApiResponse(HttpStatusCode.Unauthorized)]
+            [ApiResponse(HttpStatusCode.Forbidden)]
+            [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateDprRole([FromBody] GlobalRoleOptionCreateRequestDTO dto)
             {
                 return Create(dto);
@@ -52,11 +52,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.DataPro
 
             [HttpPatch]
             [Route("{optionUuid}")]
-            [ProducesResponseType(typeof(GlobalRoleOptionResponseDTO), 200)]
-            [ProducesResponseType(400)]
-            [ProducesResponseType(401)]
-            [ProducesResponseType(403)]
-            [ProducesResponseType(404)]
+            [ApiResponse(typeof(GlobalRoleOptionResponseDTO), HttpStatusCode.OK)]
+            [ApiResponse(HttpStatusCode.BadRequest)]
+            [ApiResponse(HttpStatusCode.Unauthorized)]
+            [ApiResponse(HttpStatusCode.Forbidden)]
+            [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchDprRole([NonEmptyGuid] [FromRoute] Guid optionUuid,
                 [FromBody] GlobalRoleOptionUpdateRequestDTO dto)
             {

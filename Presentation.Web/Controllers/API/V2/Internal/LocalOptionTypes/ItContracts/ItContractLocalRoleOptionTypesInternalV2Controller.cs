@@ -25,11 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<LocalRoleOptionResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(IEnumerable<LocalRoleOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalItContractRoles([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -37,11 +37,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpGet]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRoleOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -49,11 +49,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(LocalRoleOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -61,11 +61,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRoleOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRoleOptionUpdateRequestDTO dto)
@@ -75,11 +75,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRoleOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteLocalItContractRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

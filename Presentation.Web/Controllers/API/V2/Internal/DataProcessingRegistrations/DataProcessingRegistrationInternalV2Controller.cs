@@ -56,10 +56,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("search")]
-        [ProducesResponseType(typeof(IEnumerable<DataProcessingRegistrationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<DataProcessingRegistrationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItSystems(
             [NonEmptyGuid] Guid organizationUuid,
             string nameContains = null,
@@ -116,10 +116,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/roles")]
-        [ProducesResponseType(typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetAddRoleAssignments([NonEmptyGuid] Guid dprUuid)
         {
             if (!ModelState.IsValid)
@@ -140,12 +140,12 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{dprUuid}/roles/add")]
-        [ProducesResponseType(typeof(DataProcessingRegistrationResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(409)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(DataProcessingRegistrationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchAddRoleAssignment([NonEmptyGuid] Guid dprUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -165,11 +165,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpPatch]
         [Route("{dprUuid}/roles/remove")]
-        [ProducesResponseType(typeof(DataProcessingRegistrationResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(DataProcessingRegistrationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchRemoveRoleAssignment([NonEmptyGuid] Guid dprUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -183,11 +183,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
         [HttpGet]
         [Route("{dprUuid}/data-processors/available")]
-        [ProducesResponseType(typeof(IEnumerable<ShallowOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetAvailableDataProcessors([NonEmptyGuid] Guid dprUuid,
             [FromQuery] string nameQuery = null, [FromQuery] int pageSize = 25)
         {
@@ -205,11 +205,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
         [HttpGet]
         [Route("{dprUuid}/sub-data-processors/available")]
-        [ProducesResponseType(typeof(IEnumerable<ShallowOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetAvailableSubDataProcessors([NonEmptyGuid] Guid dprUuid,
             [FromQuery] string nameQuery = null, [FromQuery] int pageSize = 25)
         {
@@ -227,11 +227,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
         [HttpGet]
         [Route("{dprUuid}/system-usages/available")]
-        [ProducesResponseType(typeof(IEnumerable<IdentityNamePairResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<IdentityNamePairResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetAvailableSystemUsages([NonEmptyGuid] Guid dprUuid,
             [FromQuery] string nameQuery = null, [FromQuery] int pageSize = 25)
         {

@@ -26,11 +26,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<LocalRegularOptionResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalAgreementElementTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -38,11 +38,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpGet]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalAgreementElementTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -50,11 +50,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateLocalAgreementElementType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -62,11 +62,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPatch]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchLocalAgreementElementType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
@@ -76,11 +76,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpDelete]
         [Route("{optionUuid}")]
-        [ProducesResponseType(typeof(LocalRegularOptionResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteLocalAgreementElementType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

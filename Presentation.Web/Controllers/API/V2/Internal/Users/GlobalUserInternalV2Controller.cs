@@ -49,11 +49,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{userUuid}")]
         [HttpDelete]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteUser([NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.DeleteUser(userUuid, Maybe<Guid>.None)
@@ -62,11 +62,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("search")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<UserReferenceResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<UserReferenceResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUsers(
             string nameOrEmailQuery = null,
             string emailQuery = null,
@@ -90,9 +90,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<UserReferenceResponseDTO>), 200)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<UserReferenceResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetGlobalAdmins()
         {
             var query = new List<IDomainQuery<User>> { new QueryByGlobalAdmin() };
@@ -104,11 +104,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpPost]
-        [ProducesResponseType(typeof(UserReferenceResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(UserReferenceResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult AddGlobalAdmin([FromRoute][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.AddGlobalAdmin(userUuid)
@@ -118,11 +118,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("global-admins/{userUuid}")]
         [HttpDelete]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult RemoveGlobalAdmin([FromRoute][NonEmptyGuid] Guid userUuid)
         {
             return _userWriteService.RemoveGlobalAdmin(userUuid)
@@ -130,11 +130,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         }
         [Route("{userUuid}/organizations")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<OrganizationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<OrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationsByUserUuid(Guid userUuid)
         {
             
@@ -147,11 +147,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("local-admins")]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<UserReferenceWithOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<UserReferenceWithOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetAllLocalAdmins()
         {
             return _userService.GetUsersWithRoleAssignedInAnyOrganization(Core.DomainModel.Organization.OrganizationRole.LocalAdmin)
@@ -166,11 +166,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpPost]
-        [ProducesResponseType(typeof(UserReferenceWithOrganizationResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(UserReferenceWithOrganizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult AddLocalAdmin([NonEmptyGuid][FromRoute] Guid organizationUuid, [NonEmptyGuid][FromRoute] Guid userUuid)
         {
             return _userWriteService.AddLocalAdmin(organizationUuid, userUuid)
@@ -180,11 +180,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [Route("{organizationUuid}/local-admins/{userUuid}")]
         [HttpDelete]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(401)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult RemoveLocalAdmin([NonEmptyGuid][FromRoute] Guid organizationUuid, [NonEmptyGuid][FromRoute] Guid userUuid)
         {
             return _userWriteService.RemoveLocalAdmin(organizationUuid, userUuid)
@@ -193,10 +193,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         
         [HttpGet]
         [Route("with-rightsholder-access")]
-        [ProducesResponseType(typeof(IEnumerable<UserWithOrganizationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<UserWithOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUsersWithRightsholderAccess()
         {
             return _userRightsService
@@ -209,10 +209,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("with-cross-organization-permissions")]
-        [ProducesResponseType(typeof(IEnumerable<UserWithCrossOrganizationalRightsResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<UserWithCrossOrganizationalRightsResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUsersWithCrossAccess()
         {
             return _userService
@@ -225,10 +225,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpGet]
         [Route("system-integrators")]
-        [ProducesResponseType(typeof(IEnumerable<UserReferenceResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<UserReferenceResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetSystemIntegrators()
         {
             var results = _userService.GetUsers(new QueryBySystemIntegrator());
@@ -239,11 +239,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
 
         [HttpPatch]
         [Route("system-integrators/{userUuid}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
         {
             return _userWriteService.UpdateSystemIntegrator(userUuid, requestedValue)

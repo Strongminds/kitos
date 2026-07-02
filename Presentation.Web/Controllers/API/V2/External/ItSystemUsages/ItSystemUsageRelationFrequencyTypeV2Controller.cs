@@ -26,11 +26,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A list of available IT-System usage relation frequency option types</returns>
         [HttpGet]
         [Route("")]
-        [ProducesResponseType(typeof(IEnumerable<RegularOptionResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -44,11 +44,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the relation frequency type is available in the organization</returns>
         [HttpGet]
         [Route("{relationFrequencyTypeUuid}")]
-        [ProducesResponseType(typeof(RegularOptionExtendedResponseDTO), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(404)]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid relationFrequencyTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(relationFrequencyTypeUuid, organizationUuid);

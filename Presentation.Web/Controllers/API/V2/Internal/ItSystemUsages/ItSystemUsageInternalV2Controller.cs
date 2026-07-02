@@ -68,9 +68,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         ///
         [HttpGet]
         [Route("search")]
-        [ProducesResponseType(typeof(IEnumerable<ItSystemUsageSearchResultResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
+        [ApiResponse(typeof(IEnumerable<ItSystemUsageSearchResultResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetItSystemUsages(
             [NonEmptyGuid] Guid organizationUuid,
             [NonEmptyGuid] Guid? relatedToSystemUuid = null,
@@ -93,11 +93,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
-        [ProducesResponseType(typeof(IEnumerable<OutgoingSystemRelationResponseDTO>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
-        [ProducesResponseType(400)]
+        [ApiResponse(typeof(IEnumerable<OutgoingSystemRelationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult PostSystemUsageRelations([NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] [Required] IEnumerable<SystemRelationWriteRequestDTO> dtos)
         {
@@ -116,10 +116,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/roles")]
-        [ProducesResponseType(typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetRoleAssignments([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -139,10 +139,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("system/{systemUuid}/organization/{organizationUuid}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(403)]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteItSystemUsageByOrganizationUuidAndSystemUuid([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid systemUuid)
         {
             if (!ModelState.IsValid)
@@ -155,10 +155,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 
         [HttpGet]
         [Route("relations/{contractUuid}")]
-        [ProducesResponseType(typeof(IEnumerable<GeneralSystemRelationResponseDTO>), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(403)]
+        [ApiResponse(typeof(IEnumerable<GeneralSystemRelationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetRelations([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
