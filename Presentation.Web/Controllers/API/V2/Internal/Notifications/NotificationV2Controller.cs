@@ -52,6 +52,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}")]
+        [ApiResponse(typeof(IEnumerable<NotificationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetNotifications(
             OwnerResourceType ownerResourceType,
             [Required][NonEmptyGuid] Guid organizationUuid,
@@ -98,6 +103,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/{ownerResourceUuid}/{notificationUuid}")]
+        [ApiResponse(typeof(NotificationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetNotificationByUuid(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -117,6 +127,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPost]
         [Route("{ownerResourceType}/{ownerResourceUuid}/immediate")]
+        [ApiResponse(typeof(NotificationResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateImmediateNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [FromBody] ImmediateNotificationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -142,6 +157,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPost]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled")]
+        [ApiResponse(typeof(NotificationResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateScheduledNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [FromBody] ScheduledNotificationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -168,6 +188,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPut]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled/{notificationUuid}")]
+        [ApiResponse(typeof(NotificationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult UpdateScheduledNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid, [FromBody] UpdateScheduledNotificationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -189,6 +214,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpPatch]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled/deactivate/{notificationUuid}")]
+        [ApiResponse(typeof(NotificationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeactivateScheduledNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -208,6 +238,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpDelete]
         [Route("{ownerResourceType}/{ownerResourceUuid}/{notificationUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -226,6 +261,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/{ownerResourceUuid}/sent/{notificationUuid}")]
+        [ApiResponse(typeof(IEnumerable<SentNotificationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetSentNotification(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)
@@ -247,6 +287,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// <returns></returns>
         [HttpGet]
         [Route("{ownerResourceType}/{ownerResourceUuid}/{notificationUuid}/permissions")]
+        [ApiResponse(typeof(NotificationResourcePermissionsDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetPermissions(OwnerResourceType ownerResourceType, [NonEmptyGuid] Guid ownerResourceUuid, [NonEmptyGuid] Guid notificationUuid)
         {
             if (!ModelState.IsValid)

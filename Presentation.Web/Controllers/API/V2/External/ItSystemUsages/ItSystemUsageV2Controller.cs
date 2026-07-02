@@ -15,6 +15,7 @@ using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
+using Presentation.Web.Models.API.V2.Response.Shared;
 using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Request.Generic.Roles;
@@ -59,6 +60,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<ItSystemUsageResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetItSystemUsages(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? relatedToSystemUuid = null,
@@ -86,6 +90,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}")]
+        [ApiResponse(typeof(ItSystemUsageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItSystemUsage([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -104,6 +113,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/permissions")]
+        [ApiResponse(typeof(ResourcePermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemUsagePermissions([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -122,6 +135,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
+        [ApiResponse(typeof(ResourceCollectionPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemUsageCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -141,6 +158,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteItSystemUsage([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -158,6 +180,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(ItSystemUsageResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostItSystemUsage([FromBody] CreateItSystemUsageRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -178,6 +205,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}")]
+        [ApiResponse(typeof(ItSystemUsageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutSystemUsage([NonEmptyGuid] Guid systemUsageUuid, [FromBody] UpdateItSystemUsageRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -202,6 +234,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}")]
+        [ApiResponse(typeof(ItSystemUsageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchSystemUsage([NonEmptyGuid] Guid systemUsageUuid, [FromBody] UpdateItSystemUsageRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -222,6 +259,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/incoming-system-relations")]
+        [ApiResponse(typeof(IEnumerable<IncomingSystemRelationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetIncomingSystemRelations([NonEmptyGuid] Guid systemUsageUuid)
         {
             return itSystemUsageService
@@ -240,6 +282,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}/roles/add")]
+        [ApiResponse(typeof(ItSystemUsageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchAddRoleAssignment([NonEmptyGuid] Guid systemUsageUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -259,6 +307,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPatch]
         [Route("{systemUsageUuid}/roles/remove")]
+        [ApiResponse(typeof(ItSystemUsageResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchRemoveRoleAssignment([NonEmptyGuid] Guid systemUsageUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -277,6 +330,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
+        [ApiResponse(typeof(OutgoingSystemRelationResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [FromBody][Required] SystemRelationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -297,6 +355,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
+        [ApiResponse(typeof(OutgoingSystemRelationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid systemRelationUuid)
         {
             if (!ModelState.IsValid)
@@ -323,6 +386,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
+        [ApiResponse(typeof(OutgoingSystemRelationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid systemRelationUuid, [FromBody] SystemRelationWriteRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -344,6 +412,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteSystemUsageRelation([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid systemRelationUuid)
         {
             if (!ModelState.IsValid)
@@ -361,6 +434,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/external-references")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid systemUsageUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -382,6 +460,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -403,6 +486,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)
@@ -421,6 +509,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/journal-periods")]
+        [ApiResponse(typeof(JournalPeriodResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [FromBody][Required] JournalPeriodDTO request)
         {
             if (!ModelState.IsValid)
@@ -442,6 +535,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/journal-periods/{journalPeriodUuid}")]
+        [ApiResponse(typeof(JournalPeriodResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid journalPeriodUuid)
         {
             if (!ModelState.IsValid)
@@ -469,6 +567,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/journal-periods/{journalPeriodUuid}")]
+        [ApiResponse(typeof(JournalPeriodResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid journalPeriodUuid, [FromBody] JournalPeriodDTO request)
         {
             if (!ModelState.IsValid)
@@ -490,6 +593,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("{systemUsageUuid}/journal-periods/{journalPeriodUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteJournalPeriod([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid journalPeriodUuid)
         {
             if (!ModelState.IsValid)
@@ -508,6 +616,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/archive")]
+        [ApiResponse(typeof(ItSystemUsageArchiveResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult ArchiveItSystemUsage(
             [NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] CreateItSystemUsageArchiveRequestDTO request)
@@ -530,6 +643,5 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
     }
 }
-
 
 

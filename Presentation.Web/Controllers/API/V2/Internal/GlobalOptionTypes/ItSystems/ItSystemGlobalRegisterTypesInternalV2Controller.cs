@@ -22,6 +22,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<GlobalRegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetGlobalRegisterTypes()
         {
             return GetAll();
@@ -29,6 +34,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(GlobalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateGlobalRegisterType([FromBody] GlobalRegularOptionCreateRequestDTO dto)
         {
             return Create(dto);
@@ -36,6 +46,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.GlobalOptionTypes.ItSyste
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(GlobalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchGlobalRegisterType([NonEmptyGuid][FromRoute] Guid optionUuid,
             [FromBody] GlobalRegularOptionUpdateRequestDTO dto)
         {

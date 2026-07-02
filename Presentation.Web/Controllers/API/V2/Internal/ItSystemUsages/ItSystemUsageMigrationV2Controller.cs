@@ -38,6 +38,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns>A description of the consequences of the migration</returns>
         [HttpGet]
         [Route("{usageUuid}/migration")]
+        [ApiResponse(typeof(ItSystemUsageMigrationV2ResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([Required][NonEmptyGuid] Guid usageUuid, [Required][NonEmptyGuid] Guid toSystemUuid)
         {
             if (!ModelState.IsValid)
@@ -56,6 +61,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpPost]
         [Route("{usageUuid}/migration")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult ExecuteMigration([Required][NonEmptyGuid] Guid usageUuid, [Required][NonEmptyGuid] Guid toSystemUuid)
         {
             if (!ModelState.IsValid)
@@ -71,6 +81,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("migration/permissions")]
+        [ApiResponse(typeof(ItSystemUsageMigrationPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetPermissions()
         {
             if (!ModelState.IsValid)
@@ -90,6 +105,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpGet]
         [Route("migration/unused-it-systems")]
+        [ApiResponse(typeof(IEnumerable<IdentityNamePairWithDeactivatedStatusDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetUnusedItSystemsBySearchAndOrganization(
             [Required][NonEmptyGuid] Guid organizationUuid,
             [Required] int numberOfItSystems,

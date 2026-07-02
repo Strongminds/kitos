@@ -26,6 +26,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A list of available It-System Usage archive locations</returns>
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -39,6 +44,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the archive location is available in the organization</returns>
         [HttpGet]
         [Route("{archiveLocationUuid}")]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid archiveLocationUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(archiveLocationUuid, organizationUuid);

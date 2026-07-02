@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using Core.ApplicationServices.Tracking;
 using Core.DomainModel.Tracking;
@@ -9,7 +10,9 @@ using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Response.Tracking;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
 
+using System.Net;
 namespace Presentation.Web.Controllers.API.V2.External.Deltas
 {
     [Route("api/v2/delta-feed")]
@@ -30,6 +33,8 @@ namespace Presentation.Web.Controllers.API.V2.External.Deltas
         /// <returns></returns>
         [HttpGet]
         [Route("deleted-entities")]
+        [ApiResponse(typeof(IEnumerable<TrackingEventResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetDeletedObjects(
             TrackedEntityTypeChoice? entityType = null,
             DateTime? deletedSinceUTC = null,

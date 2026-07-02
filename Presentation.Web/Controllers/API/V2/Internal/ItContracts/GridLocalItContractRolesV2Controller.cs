@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Response.ItContract;
 using Core.ApplicationServices.OptionTypes;
 using Microsoft.AspNetCore.Mvc;
 using Core.DomainModel.ItContract;
 
+using System.Net;
 namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 {
     [InternalApi]
@@ -21,6 +23,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("{organizationUuid}")]
+        [ApiResponse(typeof(IEnumerable<LocalItContractRolesResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetByOrganizationUuid(Guid organizationUuid)
         {
             return _optionService.GetOptionTypes(organizationUuid)
@@ -32,4 +38,3 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         }
     }
 }
-

@@ -66,6 +66,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<ItContractResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItContracts(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
@@ -162,6 +166,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns>Specific data related to the IT-Contract</returns>
         [HttpGet]
         [Route("{contractUuid}")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -180,6 +189,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
         public IActionResult PostItContract([FromBody] CreateNewContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -202,6 +216,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PutItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -223,6 +243,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("{contractUuid}")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -243,6 +269,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -260,6 +291,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("{contractUuid}/permissions")]
+        [ApiResponse(typeof(ItContractPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContractPermissions([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -279,6 +314,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
+        [ApiResponse(typeof(ResourceCollectionPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContractCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -296,6 +335,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPost]
         [Route("{contractUuid}/external-references")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid contractUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -317,6 +361,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -338,6 +387,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)

@@ -25,6 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns>A list of available Data Processing Registration country</returns>
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -38,6 +43,11 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <returns>A uuid and name pair with boolean to mark if the country is available in the organization</returns>
         [HttpGet]
         [Route("{countryUuid}")]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid countryUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(countryUuid, organizationUuid);

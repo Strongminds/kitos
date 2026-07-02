@@ -47,6 +47,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("{contractUuid}/data-processing-registrations")]
+        [ApiResponse(typeof(IEnumerable<IdentityNamePairResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetDataProcessingRegistrations(
             [NonEmptyGuid] Guid contractUuid,
             string nameQuery = null, [FromQuery] int pageSize = 25)
@@ -66,6 +70,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("{contractUuid}/hierarchy")]
+        [ApiResponse(typeof(IEnumerable<ItContractHierarchyNodeResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetHierarchy([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -79,6 +87,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("{contractUuid}/sub-hierarchy")]
+        [ApiResponse(typeof(IEnumerable<ItContractHierarchyNodeResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetSubHierarchy([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -97,6 +109,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("{contractUuid}/roles")]
+        [ApiResponse(typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetAddRoleAssignments([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -116,6 +132,12 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("{contractUuid}/roles/add")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchAddRoleAssignment([NonEmptyGuid] Guid contractUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -135,6 +157,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("{contractUuid}/roles/remove")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchRemoveRoleAssignment([NonEmptyGuid] Guid contractUuid, [FromBody] RoleAssignmentRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -148,6 +175,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
 
         [HttpGet]
         [Route("applied-procurement-plans/{organizationUuid}")]
+        [ApiResponse(typeof(IEnumerable<AppliedProcurementPlanResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetAppliedProcurementPlans([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return _itContractService.GetAppliedProcurementPlansByUuid(organizationUuid)
@@ -163,6 +195,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("transfer")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult TransferItContractRange([FromBody] MultipleContractsRequestDto request)
         {
             if (!ModelState.IsValid)    
@@ -180,6 +217,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}/delete-with-children")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteItContractWithChildren([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
