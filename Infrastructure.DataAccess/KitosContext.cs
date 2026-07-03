@@ -187,6 +187,8 @@ namespace Infrastructure.DataAccess
         public DbSet<ItContractOverviewReadModelItSystemUsage> ItContractOverviewReadModelItSystemUsages { get; set; }
         public DbSet<ItContractOverviewRoleAssignmentReadModel> ItContractOverviewRoleAssignmentReadModels { get; set; }
         public DbSet<ItContractOverviewReadModelSystemRelation> ItContractOverviewReadModelSystemRelations { get; set; }
+        public DbSet<ItContractSupplierOverviewReadModel> ItContractSupplierOverviewReadModels { get; set; }
+        public DbSet<ItContractSupplierOverviewAtCriticalityContractReadModel> ItContractSupplierOverviewAtCriticalityContractReadModels { get; set; }
         public DbSet<StsOrganizationConnection> StsOrganizationConnections { get; set; }
         public DbSet<StsOrganizationChangeLog> StsOrganizationChangeLogs { get; set; }
         public DbSet<StsOrganizationConsequenceLog> StsOrganizationConsequenceLogs { get; set; }
