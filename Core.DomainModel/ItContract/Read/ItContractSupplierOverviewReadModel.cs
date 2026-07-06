@@ -4,7 +4,7 @@ using OrganizationEntity = Core.DomainModel.Organization.Organization;
 
 namespace Core.DomainModel.ItContract.Read
 {
-    public sealed class ItContractSupplierOverviewReadModel : IHasId, IOwnedByOrganization
+    public class ItContractSupplierOverviewReadModel : IHasId, IOwnedByOrganization
     {
         public int Id { get; set; }
         public int OrganizationId { get; set; }
