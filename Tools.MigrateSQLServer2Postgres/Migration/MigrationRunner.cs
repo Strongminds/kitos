@@ -372,23 +372,46 @@ internal sealed class MigrationRunner
         var uniqueIndexes = await SchemaDiscovery.GetPostgresUniqueIndexesAsync(targetConnection, targetTableSet);
         var uniqueConstraints = await SchemaDiscovery.GetPostgresUniqueConstraintsAsync(targetConnection, targetTableSet);
 
+        var skippedUniqueIndexes = new HashSet<(string Schema, string Name, string IndexName)>();
+
         foreach (var idx in uniqueIndexes)
         {
-            var dropSql = $"DROP INDEX IF EXISTS {SchemaDiscovery.QuotePostgresIdentifier(idx.Table.Schema)}.{SchemaDiscovery.QuotePostgresIdentifier(idx.IndexName)};";
-            await using var cmd = new NpgsqlCommand(dropSql, targetConnection);
-            await cmd.ExecuteNonQueryAsync();
+            try
+            {
+                var dropSql = $"DROP INDEX IF EXISTS {SchemaDiscovery.QuotePostgresIdentifier(idx.Table.Schema)}.{SchemaDiscovery.QuotePostgresIdentifier(idx.IndexName)};";
+                await using var cmd = new NpgsqlCommand(dropSql, targetConnection);
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (PostgresException ex) when (ex.SqlState == "2BP01")
+            {
+                skippedUniqueIndexes.Add((idx.Table.Schema, idx.Table.Name, idx.IndexName));
+                CliConsole.Warning($"Skipping drop of unique index {idx.Table}.{idx.IndexName} because dependent object(s) exist.");
+            }
         }
+
+        var skippedUniqueConstraints = new HashSet<(string Schema, string Name, string ConstraintName)>();
 
         foreach (var uc in uniqueConstraints)
         {
-            var dropSql = $"ALTER TABLE {SchemaDiscovery.QualifyPostgresTable(uc.Table)} DROP CONSTRAINT IF EXISTS {SchemaDiscovery.QuotePostgresIdentifier(uc.ConstraintName)};";
-            await using var cmd = new NpgsqlCommand(dropSql, targetConnection);
-            await cmd.ExecuteNonQueryAsync();
+            try
+            {
+                var dropSql = $"ALTER TABLE {SchemaDiscovery.QualifyPostgresTable(uc.Table)} DROP CONSTRAINT IF EXISTS {SchemaDiscovery.QuotePostgresIdentifier(uc.ConstraintName)};";
+                await using var cmd = new NpgsqlCommand(dropSql, targetConnection);
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (PostgresException ex) when (ex.SqlState == "2BP01")
+            {
+                skippedUniqueConstraints.Add((uc.Table.Schema, uc.Table.Name, uc.ConstraintName));
+                CliConsole.Warning($"Skipping drop of unique constraint {uc.Table}.{uc.ConstraintName} because dependent object(s) exist.");
+            }
         }
+
+        var droppedUniqueIndexCount = uniqueIndexes.Count - skippedUniqueIndexes.Count;
+        var droppedUniqueConstraintCount = uniqueConstraints.Count - skippedUniqueConstraints.Count;
 
         if (uniqueIndexes.Count + uniqueConstraints.Count > 0)
         {
-            CliConsole.Info($"Dropped {uniqueIndexes.Count} unique index(es) and {uniqueConstraints.Count} unique constraint(s) for the duration of the copy.");
+            CliConsole.Info($"Dropped {droppedUniqueIndexCount} unique index(es) and {droppedUniqueConstraintCount} unique constraint(s) for the duration of the copy.");
         }
 
         var failures = new List<string>();
@@ -461,6 +484,11 @@ internal sealed class MigrationRunner
 
         foreach (var idx in uniqueIndexes)
         {
+            if (skippedUniqueIndexes.Contains((idx.Table.Schema, idx.Table.Name, idx.IndexName)))
+            {
+                continue;
+            }
+
             try
             {
                 await using var cmd = new NpgsqlCommand(idx.IndexDdl, targetConnection);
@@ -476,6 +504,11 @@ internal sealed class MigrationRunner
 
         foreach (var uc in uniqueConstraints)
         {
+            if (skippedUniqueConstraints.Contains((uc.Table.Schema, uc.Table.Name, uc.ConstraintName)))
+            {
+                continue;
+            }
+
             try
             {
                 var cols = string.Join(", ", uc.QuotedColumns);
@@ -497,7 +530,7 @@ internal sealed class MigrationRunner
         }
         else if (uniqueIndexes.Count + uniqueConstraints.Count > 0)
         {
-            CliConsole.Success($"Recreated {uniqueIndexes.Count} unique index(es) and {uniqueConstraints.Count} unique constraint(s).");
+            CliConsole.Success($"Recreated {droppedUniqueIndexCount} unique index(es) and {droppedUniqueConstraintCount} unique constraint(s).");
         }
 
         CliConsole.RenderExecutionSummary(results);
