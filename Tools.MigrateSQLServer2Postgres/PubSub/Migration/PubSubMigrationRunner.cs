@@ -55,28 +55,48 @@ internal sealed class PubSubMigrationRunner
                 throw new CommandLineException("Target PostgreSQL connection could not be established.");
             }
 
-            if (isInteractive && !effectiveOptions.AllowNonEmptyTarget && !freshTargetPrepared)
+            if (!freshTargetPrepared)
             {
-                var hasData = await TableHasDataAsync(targetConnection, TargetTable);
-                if (hasData)
+                var targetTableExists = await PostgresTableExistsAsync(targetConnection, TargetTable);
+
+                if (!targetTableExists)
                 {
-                    CliConsole.Warning($"Target table {TargetTable} is not empty.");
-                    var recreate = AnsiConsole.Confirm("Recreate the target database as a new empty database with the required structure?", true);
-                    if (recreate)
+                    // Database exists but schema is not bootstrapped yet (e.g. freshly created empty DB).
+                    CliConsole.Warning("Target PostgreSQL database exists but the Subscriptions table is missing.");
+                    var shouldBootstrap = !isInteractive || AnsiConsole.Confirm("Bootstrap the target database with EF Core migrations now?", true);
+                    if (!shouldBootstrap)
                     {
-                        await targetConnection.CloseAsync();
-                        await targetConnection.DisposeAsync();
-                        NpgsqlConnection.ClearAllPools();
+                        throw new CommandLineException("Target database is not bootstrapped. Run with --interactive or prepare the schema first.");
+                    }
 
-                        var prepareResult = await RunPrepareTargetAsync(effectiveOptions.TargetConnectionString, requireConfirmation: false);
-                        if (prepareResult != 0)
+                    var bootstrapper = new PubSubTargetBootstrapper();
+                    await bootstrapper.BootstrapFreshDatabaseAsync(options.TargetConnectionString);
+                    freshTargetPrepared = true;
+                    effectiveOptions = options with { AllowNonEmptyTarget = false };
+                }
+                else if (isInteractive && !effectiveOptions.AllowNonEmptyTarget)
+                {
+                    var hasData = await TableHasDataAsync(targetConnection, TargetTable);
+                    if (hasData)
+                    {
+                        CliConsole.Warning($"Target table {TargetTable} is not empty.");
+                        var recreate = AnsiConsole.Confirm("Recreate the target database as a new empty database with the required structure?", true);
+                        if (recreate)
                         {
-                            throw new CommandLineException("Failed to recreate the target PostgreSQL database.");
-                        }
+                            await targetConnection.CloseAsync();
+                            await targetConnection.DisposeAsync();
+                            NpgsqlConnection.ClearAllPools();
 
-                        targetConnection = await OpenTargetConnectionAsync(options.TargetConnectionString);
-                        effectiveOptions = effectiveOptions with { AllowNonEmptyTarget = false };
-                        freshTargetPrepared = true;
+                            var prepareResult = await RunPrepareTargetAsync(effectiveOptions.TargetConnectionString, requireConfirmation: false);
+                            if (prepareResult != 0)
+                            {
+                                throw new CommandLineException("Failed to recreate the target PostgreSQL database.");
+                            }
+
+                            targetConnection = await OpenTargetConnectionAsync(options.TargetConnectionString);
+                            effectiveOptions = effectiveOptions with { AllowNonEmptyTarget = false };
+                            freshTargetPrepared = true;
+                        }
                     }
                 }
             }
