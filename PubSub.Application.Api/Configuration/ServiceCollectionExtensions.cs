@@ -60,7 +60,9 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<PubSubContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            var isPostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider)
+                               || DatabaseProviderHelper.LooksLikePostgreSqlConnectionString(connectionString);
+            if (isPostgreSql)
             {
                 options.UseNpgsql(connectionString);
             }
