@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 using PubSub.Core.Abstractions.Helpers;
 using PubSub.Core.ApplicationServices.CallbackAuthenticator;
 using PubSub.Core.ApplicationServices.Config;
@@ -64,7 +65,9 @@ public static class ServiceCollectionExtensions
                                || DatabaseProviderHelper.LooksLikePostgreSqlConnectionString(connectionString);
             if (isPostgreSql)
             {
-                options.UseNpgsql(connectionString);
+                var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+                dataSourceBuilder.ConnectionStringBuilder.GssEncryptionMode = GssEncryptionMode.Disable;
+                options.UseNpgsql(dataSourceBuilder.Build());
             }
             else
             {
