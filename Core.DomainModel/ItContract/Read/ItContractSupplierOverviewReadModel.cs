@@ -8,7 +8,7 @@ namespace Core.DomainModel.ItContract.Read
     {
         public int Id { get; set; }
         public int OrganizationId { get; set; }
-        public OrganizationEntity Organization { get; set; }
+        public virtual OrganizationEntity Organization { get; set; }
         public int SupplierId { get; set; }
         public bool IsInternalContract { get; set; }
         public Guid SupplierUuid { get; set; }
@@ -19,6 +19,6 @@ namespace Core.DomainModel.ItContract.Read
         public string HighestCriticalityName { get; set; }
         public int? HighestCriticalityRank { get; set; }
         public string ContractsAtHighestCriticalityCsv { get; set; }
-        public ICollection<ItContractSupplierOverviewAtCriticalityContractReadModel> ContractsAtHighestCriticality { get; set; } = new List<ItContractSupplierOverviewAtCriticalityContractReadModel>();
+        public virtual ICollection<ItContractSupplierOverviewAtCriticalityContractReadModel> ContractsAtHighestCriticality { get; set; } = new List<ItContractSupplierOverviewAtCriticalityContractReadModel>();
     }
 }
