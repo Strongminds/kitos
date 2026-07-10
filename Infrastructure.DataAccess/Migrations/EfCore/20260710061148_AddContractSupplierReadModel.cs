@@ -11,11 +11,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-            var uuidType = isSqlServer ? "uniqueidentifier" : "uuid";
-            var intType = isSqlServer ? "int" : "integer";
-            var dateTimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
+            var isSqlServer = migrationBuilder.ActiveProvider == InfrastructureConstants.SqlServerProviderName;
+            var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
+            var uuidType = isSqlServer ? InfrastructureConstants.SqlServerUuidType : InfrastructureConstants.PostgreSqlUuidType;
+            var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
+            var dateTimeType = isSqlServer ? InfrastructureConstants.SqlServerDateTimeType : InfrastructureConstants.PostgreSqlDateTimeType;
 
             migrationBuilder.CreateTable(
                 name: "ItContractSupplierOverviewReadModels",
@@ -50,12 +50,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractSupplierOverviewAtCriticalityContractReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: intType, nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ContractId = table.Column<int>(type: "int", nullable: false),
-                    ContractUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ContractId = table.Column<int>(type: intType, nullable: false),
+                    ContractUuid = table.Column<Guid>(type: uuidType, nullable: false),
                     ContractName = table.Column<string>(maxLength: 200, nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    ParentId = table.Column<int>(type: intType, nullable: false)
                 },
                 constraints: table =>
                 {
