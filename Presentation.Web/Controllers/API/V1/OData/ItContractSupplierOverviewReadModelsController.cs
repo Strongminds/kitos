@@ -24,14 +24,14 @@ namespace Presentation.Web.Controllers.API.V1.OData
             _identityResolver = identityResolver;
         }
 
-        [EnableQuery(MaxNodeCount = 300)]
-        [Route("odata/Organizations({organizationId})/ItContractSupplierOverviewReadModels")]
-        public IActionResult GetByOrganizationId([FromRoute] int organizationId)
-        {
-            return _readModelsService
-                .GetByOrganizationId(organizationId)
-                .Match(onSuccess: q => Ok(q.ToList()), onFailure: FromOperationError);
-        }
+        //[EnableQuery(MaxNodeCount = 300)]
+        //[Route("odata/Organizations({organizationId})/ItContractSupplierOverviewReadModels")]
+        //public IActionResult GetByOrganizationId([FromRoute] int organizationId)
+        //{
+        //    return _readModelsService
+        //        .GetByOrganizationId(organizationId)
+        //        .Match(onSuccess: q => Ok(q.ToList()), onFailure: FromOperationError);
+        //}
 
         [EnableQuery(MaxNodeCount = 300)]
         [Route("odata/ItContractSupplierOverviewReadModels")]
