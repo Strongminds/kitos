@@ -30,7 +30,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.SupplierCvr).HasDatabaseName("IX_ItContract_Supplier_Read_SupplierCvr");
 
             builder.HasIndex(x => x.IsSupplierDisabled).HasDatabaseName("IX_ItContract_Supplier_Read_IsSupplierDisabled");
-            builder.HasIndex(x => x.IsInternalContract).HasDatabaseName("IX_ItContract_Supplier_Read_IsInternalContract");
+            builder.HasIndex(x => x.SupplierType).HasDatabaseName("IX_ItContract_Supplier_Read_SupplierType");
             builder.HasIndex(x => x.HighestCriticalityUuid).HasDatabaseName("IX_ItContract_Supplier_Read_HighestCriticalityUuid");
 
             builder.Property(x => x.HighestCriticalityName).HasMaxLength(OptionEntity<ItContract>.MaxNameLength);
