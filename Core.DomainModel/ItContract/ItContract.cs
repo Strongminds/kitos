@@ -93,7 +93,7 @@ namespace Core.DomainModel.ItContract
             return Validate(DateTime.Now);
         }
 
-        public bool HasInternalSupplier { get; private set; }
+        public bool? HasInternalSupplier { get; private set; }
 
         /// <summary>
         ///     Whether the contract is active or not

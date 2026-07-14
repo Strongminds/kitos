@@ -100,6 +100,9 @@ namespace Core.BackgroundJobs.Model.ReadModels
         private void RebuildSupplierReadModel(int organizationId, int supplierId)
         {
             var supplier = organizationRepository.GetByKey(supplierId);
+            var organization = organizationRepository.GetByKey(organizationId);
+            if (organization == null) return;
+
             var existingReadModel = supplierOverviewReadModelRepository.GetByOrganizationAndSupplier(organizationId, supplierId);
 
             if (supplier == null)
@@ -121,7 +124,8 @@ namespace Core.BackgroundJobs.Model.ReadModels
                         ContractName = contract.Name ?? string.Empty,
                         CriticalityUuid = criticality != null ? criticality.Uuid : null,
                         CriticalityName = criticality != null ? criticality.Name : null,
-                        CriticalityRank = criticality != null ? criticality.Priority : null
+                        CriticalityRank = criticality != null ? criticality.Priority : null,
+                        HasInternalSupplier = contract.HasInternalSupplier ?? false
                     })
                 .ToList();
 
@@ -149,7 +153,7 @@ namespace Core.BackgroundJobs.Model.ReadModels
                 SupplierId = supplierId
             });
 
-            readModel.SupplierType = ItContractSupplierType.External; //TODO adapt to internal suppliers when relevant
+            readModel.SupplierType = contractsAtHighestCriticality.Any(x => x.HasInternalSupplier) ? ItContractSupplierType.Internal : ItContractSupplierType.External;
             readModel.SupplierUuid = supplier.Uuid;
             readModel.SupplierName = supplier.Name;
             readModel.SupplierCvr = supplier.GetActiveCvr();
@@ -214,6 +218,7 @@ namespace Core.BackgroundJobs.Model.ReadModels
             public Guid? CriticalityUuid { get; init; }
             public string? CriticalityName { get; init; } = string.Empty;
             public int? CriticalityRank { get; init; }
+            public bool HasInternalSupplier { get; init; }
         }
 
         private class SupplierKey : IEquatable<SupplierKey>
