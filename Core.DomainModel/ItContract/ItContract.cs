@@ -93,7 +93,7 @@ namespace Core.DomainModel.ItContract
             return Validate(DateTime.Now);
         }
 
-        public ItContractSupplierType SupplierType { get; set; } //TODO design how to actually handle both Organizations and OrganizationUnits as suppliers
+        public bool HasInternalSupplier { get; private set; }
 
         /// <summary>
         ///     Whether the contract is active or not
