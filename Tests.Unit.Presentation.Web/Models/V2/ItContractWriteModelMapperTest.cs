@@ -113,7 +113,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         public static IEnumerable<object[]> GetUndefinedSupplierDataPropertiesInput()
         {
-            return CreateGetUndefinedSectionsInput(4);
+            return CreateGetUndefinedSectionsInput(10);
         }
 
         public static IEnumerable<object[]> GetUndefinedPaymentModelPropertiesInput()
@@ -442,67 +442,103 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [Theory]
         [MemberData(nameof(GetUndefinedSupplierDataPropertiesInput))]
         public void FromPOST_Ignores_Undefined_Properties_In_SupplierSection(
+            bool noOrganizationUuid,
             bool noOrganizationUnitUuid,
+            bool noIsInternal,
             bool noSigned,
             bool noSignedAt,
-            bool noSignedBy)
+            bool noSignedBy,
+            bool noContactPerson,
+            bool noUseSignedByForContact,
+            bool noContactPhoneNumber,
+            bool noContactEmail)
         {
             //Arrange
             var input = new CreateNewContractRequestDTO { Name = A<string>() };
-            ConfigureSupplierDataInputContext(noOrganizationUnitUuid, noSigned, noSignedAt, noSignedBy);
+            ConfigureSupplierDataInputContext(noOrganizationUuid, noOrganizationUnitUuid, noIsInternal, noSigned, noSignedAt, noSignedBy, noContactPerson, noUseSignedByForContact, noContactPhoneNumber, noContactEmail);
 
             //Act
             var output = _sut.FromPOST(input).Supplier.Value;
 
             //Assert
-            Assert.Equal(noOrganizationUnitUuid, output.OrganizationUuid.IsUnchanged);
+            Assert.Equal(noOrganizationUuid, output.OrganizationUuid.IsUnchanged);
+            Assert.Equal(noOrganizationUnitUuid, output.OrganizationUnitUuid.IsUnchanged);
+            Assert.Equal(noIsInternal, output.IsInternal.IsUnchanged);
             Assert.Equal(noSigned, output.Signed.IsUnchanged);
             Assert.Equal(noSignedAt, output.SignedAt.IsUnchanged);
             Assert.Equal(noSignedBy, output.SignedBy.IsUnchanged);
+            Assert.Equal(noContactPerson, output.ContactPerson.IsUnchanged);
+            Assert.Equal(noUseSignedByForContact, output.UseSignedByForContact.IsUnchanged);
+            Assert.Equal(noContactPhoneNumber, output.ContactPhoneNumber.IsUnchanged);
+            Assert.Equal(noContactEmail, output.ContactEmail.IsUnchanged);
         }
 
         [Theory]
         [MemberData(nameof(GetUndefinedSupplierDataPropertiesInput))]
         public void FromPATCH_Ignores_Undefined_Properties_In_SupplierSection(
+            bool noOrganizationUuid,
             bool noOrganizationUnitUuid,
+            bool noIsInternal,
             bool noSigned,
             bool noSignedAt,
-            bool noSignedBy)
+            bool noSignedBy,
+            bool noContactPerson,
+            bool noUseSignedByForContact,
+            bool noContactPhoneNumber,
+            bool noContactEmail)
         {
             //Arrange
             var input = new UpdateContractRequestDTO();
-            ConfigureSupplierDataInputContext(noOrganizationUnitUuid, noSigned, noSignedAt, noSignedBy);
+            ConfigureSupplierDataInputContext(noOrganizationUuid, noOrganizationUnitUuid, noIsInternal, noSigned, noSignedAt, noSignedBy, noContactPerson, noUseSignedByForContact, noContactPhoneNumber, noContactEmail);
 
             //Act
             var output = _sut.FromPATCH(input).Supplier.Value;
 
             //Assert
-            Assert.Equal(noOrganizationUnitUuid, output.OrganizationUuid.IsUnchanged);
+            Assert.Equal(noOrganizationUuid, output.OrganizationUuid.IsUnchanged);
+            Assert.Equal(noOrganizationUnitUuid, output.OrganizationUnitUuid.IsUnchanged);
+            Assert.Equal(noIsInternal, output.IsInternal.IsUnchanged);
             Assert.Equal(noSigned, output.Signed.IsUnchanged);
             Assert.Equal(noSignedAt, output.SignedAt.IsUnchanged);
             Assert.Equal(noSignedBy, output.SignedBy.IsUnchanged);
+            Assert.Equal(noContactPerson, output.ContactPerson.IsUnchanged);
+            Assert.Equal(noUseSignedByForContact, output.UseSignedByForContact.IsUnchanged);
+            Assert.Equal(noContactPhoneNumber, output.ContactPhoneNumber.IsUnchanged);
+            Assert.Equal(noContactEmail, output.ContactEmail.IsUnchanged);
         }
 
         [Theory]
         [MemberData(nameof(GetUndefinedSupplierDataPropertiesInput))]
         public void FromPUT_Enforces_Undefined_Properties_In_SupplierSection(
+            bool noOrganizationUuid,
             bool noOrganizationUnitUuid,
+            bool noIsInternal,
             bool noSigned,
             bool noSignedAt,
-            bool noSignedBy)
+            bool noSignedBy,
+            bool noContactPerson,
+            bool noUseSignedByForContact,
+            bool noContactPhoneNumber,
+            bool noContactEmail)
         {
             //Arrange
             var input = new UpdateContractRequestDTO();
-            ConfigureSupplierDataInputContext(noOrganizationUnitUuid, noSigned, noSignedAt, noSignedBy);
+            ConfigureSupplierDataInputContext(noOrganizationUuid, noOrganizationUnitUuid, noIsInternal, noSigned, noSignedAt, noSignedBy, noContactPerson, noUseSignedByForContact, noContactPhoneNumber, noContactEmail);
 
             //Act
             var output = _sut.FromPUT(input).Supplier.Value;
 
             //Assert
             Assert.True(output.OrganizationUuid.HasChange);
+            Assert.True(output.OrganizationUnitUuid.HasChange);
+            Assert.True(output.IsInternal.HasChange);
             Assert.True(output.Signed.HasChange);
             Assert.True(output.SignedAt.HasChange);
             Assert.True(output.SignedBy.HasChange);
+            Assert.True(output.ContactPerson.HasChange);
+            Assert.True(output.UseSignedByForContact.HasChange);
+            Assert.True(output.ContactPhoneNumber.HasChange);
+            Assert.True(output.ContactEmail.HasChange);
         }
 
         [Theory]
@@ -919,9 +955,15 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         private static void AssertSupplier(ContractSupplierDataWriteRequestDTO input, ItContractSupplierModificationParameters output)
         {
             Assert.Equal(input.OrganizationUuid, AssertPropertyContainsDataChange(output.OrganizationUuid));
+            Assert.Equal(input.OrganizationUnitUuid, AssertPropertyContainsDataChange(output.OrganizationUnitUuid));
+            Assert.Equal(input.IsInternal, AssertPropertyContainsDataChange(output.IsInternal));
             Assert.Equal(input.Signed, AssertPropertyContainsDataChange(output.Signed));
             Assert.Equal(input.SignedAt, AssertPropertyContainsDataChange(output.SignedAt));
             Assert.Equal(input.SignedBy, AssertPropertyContainsDataChange(output.SignedBy));
+            Assert.Equal(input.ContactPerson, AssertPropertyContainsDataChange(output.ContactPerson));
+            Assert.Equal(input.UseSignedByForContact, AssertPropertyContainsDataChange(output.UseSignedByForContact));
+            Assert.Equal(input.ContactPhoneNumber, AssertPropertyContainsDataChange(output.ContactPhoneNumber));
+            Assert.Equal(input.ContactEmail, AssertPropertyContainsDataChange(output.ContactEmail));
         }
 
         private static void AssertResponsible(ContractResponsibleDataWriteRequestDTO input,
@@ -1577,16 +1619,28 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         private void ConfigureSupplierDataInputContext(
             bool noOrganizationUuid,
+            bool noOrganizationUnitUuid,
+            bool noIsInternal,
             bool noSigned,
             bool noSignedAt,
-            bool noSignedBy)
+            bool noSignedBy,
+            bool noContactPerson,
+            bool noUseSignedByForContact,
+            bool noContactPhoneNumber,
+            bool noContactEmail)
         {
             var sectionProperties = GetAllInputPropertyNames<ContractSupplierDataWriteRequestDTO>();
 
             if (noOrganizationUuid) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.OrganizationUuid));
+            if (noOrganizationUnitUuid) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.OrganizationUnitUuid));
+            if (noIsInternal) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.IsInternal));
             if (noSigned) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.Signed));
             if (noSignedAt) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.SignedAt));
             if (noSignedBy) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.SignedBy));
+            if (noContactPerson) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.ContactPerson));
+            if (noUseSignedByForContact) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.UseSignedByForContact));
+            if (noContactPhoneNumber) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.ContactPhoneNumber));
+            if (noContactEmail) sectionProperties.Remove(nameof(ContractSupplierDataWriteRequestDTO.ContactEmail));
 
             _currentHttpRequestMock
                 .Setup(x => x.GetDefinedJsonProperties(nameof(UpdateContractRequestDTO.Supplier).WrapAsEnumerable().AsParameterMatch()))

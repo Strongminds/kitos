@@ -11,7 +11,6 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Types.Contract;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.Organization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 {
@@ -31,15 +30,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 Uuid = contract.Uuid,
                 Name = contract.Name,
                 ParentContract = contract.Parent?.MapIdentityNamePairDTO(),
-                OrganizationContext = contract.Organization?.MapShallowOrganizationResponseDTO(),
-                CreatedBy = contract.ObjectOwner?.MapIdentityNamePairDTO(),
+                OrganizationContext = contract.Organization.MapShallowOrganizationResponseDTO(),
+                CreatedBy = contract.ObjectOwner.MapIdentityNamePairDTO(),
                 LastModified = contract.LastChanged,
-                LastModifiedBy = contract.LastChangedByUser?.MapIdentityNamePairDTO(),
+                LastModifiedBy = contract.LastChangedByUser.MapIdentityNamePairDTO(),
                 General = MapGeneral(contract),
                 Procurement = MapProcurement(contract),
                 Supplier = MapSupplier(contract),
                 Responsible = MapResponsible(contract),
-                SystemUsages = contract.AssociatedSystemUsages?.Select(x => x.ItSystemUsage?.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO>(),
+                SystemUsages = contract.AssociatedSystemUsages?.Select(x => x.ItSystemUsage?.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO?>(),
                 DataProcessingRegistrations = contract.DataProcessingRegistrations?.Select(x => x.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO>(),
                 PaymentModel = MapPaymentModel(contract),
                 AgreementPeriod = MapAgreementPeriod(contract),
@@ -151,7 +150,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 SignedBy = contract.SupplierContractSigner,
                 Signed = contract.HasSupplierSigned,
                 SignedAt = contract.SupplierSignedDate,
-                Organization = contract.Supplier?.MapShallowOrganizationResponseDTO()
+                Organization = contract.Supplier?.MapShallowOrganizationResponseDTO(),
+                OrganizationUnit = contract.SupplierOrganizationUnit?.MapIdentityNamePairDTO(),
+                IsInternal = contract.HasInternalSupplier,
+                ContactPerson = contract.SupplierContactPerson,
+                UseSignedByForContact = contract.UseSupplierContractSignerAsContactPerson,
+                ContactPhoneNumber = contract.SupplierContactPhoneNumber,
+                ContactEmail = contract.SupplierContactEmail
             };
         }
 

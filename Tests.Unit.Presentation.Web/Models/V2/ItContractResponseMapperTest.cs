@@ -97,6 +97,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Null(supplier.SignedBy);
             Assert.Null(supplier.SignedAt);
             Assert.Null(supplier.Organization);
+            Assert.Null(supplier.OrganizationUnit);
+            Assert.Null(supplier.IsInternal);
+            Assert.Null(supplier.ContactPerson);
+            Assert.False(supplier.UseSignedByForContact);
+            Assert.Null(supplier.ContactPhoneNumber);
+            Assert.Null(supplier.ContactEmail);
 
             var responsible = dto.Responsible;
             Assert.False(responsible.Signed);
@@ -211,13 +217,20 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(contract.SupplierContractSigner, dto.Supplier.SignedBy);
             Assert.Equal(contract.HasSupplierSigned, dto.Supplier.Signed);
             Assert.Equal(contract.SupplierSignedDate, dto.Supplier.SignedAt);
+            Assert.Equal(contract.HasInternalSupplier, dto.Supplier.IsInternal);
+            Assert.Equal(contract.SupplierContactPerson, dto.Supplier.ContactPerson);
+            Assert.Equal(contract.UseSupplierContractSignerAsContactPerson, dto.Supplier.UseSignedByForContact);
+            Assert.Equal(contract.SupplierContactPhoneNumber, dto.Supplier.ContactPhoneNumber);
+            Assert.Equal(contract.SupplierContactEmail, dto.Supplier.ContactEmail);
             if (withOptionalCrossReferences)
             {
                 AssertOrganization(contract.Supplier, dto.Supplier.Organization);
+                AssertIdentity(contract.SupplierOrganizationUnit, dto.Supplier.OrganizationUnit);
             }
             else
             {
                 Assert.Null(dto.Supplier.Organization);
+                Assert.Null(dto.Supplier.OrganizationUnit);
             }
         }
 
@@ -636,8 +649,16 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             contract.SupplierContractSigner = A<string>();
             contract.HasSupplierSigned = A<bool>();
             contract.SupplierSignedDate = A<DateTime>();
+            contract.SetInternalSupplier(true);
+            contract.SupplierContactPerson = A<string>();
+            contract.UseSupplierContractSignerAsContactPerson = A<bool>();
+            contract.SupplierContactPhoneNumber = A<string>();
+            contract.SupplierContactEmail = A<string>();
             contract.Supplier = withOptionalCrossReferences
                 ? CreateOrganization()
+                : null;
+            contract.SupplierOrganizationUnit = withOptionalCrossReferences
+                ? CreateOrganizationUnit()
                 : null;
         }
 

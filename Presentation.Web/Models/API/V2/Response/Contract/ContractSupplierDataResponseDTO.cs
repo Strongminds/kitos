@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Presentation.Web.Models.API.V2.Response.Contract
@@ -10,6 +11,8 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// Optional reference to the supplier organization
         /// </summary>
         public ShallowOrganizationResponseDTO Organization { get; set; }
+        public IdentityNamePairResponseDTO OrganizationUnit { get; set; }
+        public bool? IsInternal { get; set; }
         /// <summary>
         /// Determines if the contract has been signed by the supplier
         /// </summary>
@@ -23,5 +26,9 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// Which date was the contract signed by the supplier
         /// </summary>
         public DateTime? SignedAt { get; set; }
+        public string ContactPerson { get; set; }
+        public bool UseSignedByForContact { get; set; }
+        public string ContactPhoneNumber { get; set; }
+        public string ContactEmail { get; set; }
     }
 }
