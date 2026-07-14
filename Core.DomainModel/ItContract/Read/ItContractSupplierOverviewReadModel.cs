@@ -10,7 +10,7 @@ namespace Core.DomainModel.ItContract.Read
         public int OrganizationId { get; set; }
         public virtual OrganizationEntity Organization { get; set; }
         public int SupplierId { get; set; }
-        public bool IsInternalContract { get; set; }
+        public ItContractSupplierType SupplierType { get; set; }
         public Guid SupplierUuid { get; set; }
         public string SupplierName { get; set; }
         public string SupplierCvr { get; set; }

@@ -149,7 +149,7 @@ namespace Core.BackgroundJobs.Model.ReadModels
                 SupplierId = supplierId
             });
 
-            readModel.IsInternalContract = organizationId == supplierId;
+            readModel.SupplierType = ItContractSupplierType.External; //TODO adapt to internal suppliers when relevant
             readModel.SupplierUuid = supplier.Uuid;
             readModel.SupplierName = supplier.Name;
             readModel.SupplierCvr = supplier.GetActiveCvr();
