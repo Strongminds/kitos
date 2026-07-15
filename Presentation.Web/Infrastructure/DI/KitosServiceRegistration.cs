@@ -259,6 +259,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItContractService, ItContractService>();
             services.AddScoped<IItContractWriteService, ItContractWriteService>();
             services.AddScoped<IItContractOverviewReadModelsService, ItContractOverviewReadModelsService>();
+            services.AddScoped<IItContractSupplierOverviewReadModelsService, ItContractSupplierOverviewReadModelsService>();
             services.AddScoped<IReadModelUpdate<ItContract, ItContractOverviewReadModel>, ItContractOverviewReadModelUpdate>();
             services.AddSingleton<IUserRepositoryFactory, UserRepositoryFactory>();
             services.AddScoped<IExcelService, ExcelService>();
@@ -484,6 +485,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IDataProcessingRegistrationOptionRepository, DataProcessingRegistrationOptionRepository>();
             services.AddScoped<IItSystemUsageOverviewReadModelRepository, ItSystemUsageOverviewReadModelRepository>();
             services.AddScoped<IItContractOverviewReadModelRepository, ItContractOverviewReadModelRepository>();
+            services.AddScoped<IItContractSupplierOverviewReadModelRepository, ItContractSupplierOverviewReadModelRepository>();
 
             services.AddScoped<IAuthorizationModelFactory, AuthorizationModelFactory>();
             services.AddScoped<IAuthorizationContextFactory, AuthorizationContextFactory>();
@@ -526,6 +528,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDomainEvent<SystemUsageDeletedUserNotificationsHandler>(services);
             RegisterDomainEvent<BuildItSystemUsageOverviewReadModelOnChangesHandler>(services);
             RegisterDomainEvent<BuildItContractOverviewReadModelOnChangesHandler>(services);
+            RegisterDomainEvent<BuildItContractSupplierOverviewReadModelOnChangesHandler>(services);
             RegisterDomainEvent<MarkEntityAsDirtyOnChangeEventHandler>(services);
             RegisterDomainEvent<TrackDeletedEntitiesEventHandler>(services);
             RegisterDomainEvent<HandleOrganizationBeingDeleted>(services);
@@ -660,8 +663,10 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState>();
             services.AddScoped<ScheduleUpdatesForItContractOverviewReadModelsWhichChangesActiveState>();
             services.AddScoped<ScheduleItContractOverviewReadModelUpdates>();
+            services.AddScoped<ScheduleItContractSupplierOverviewReadModelUpdates>();
             services.AddScoped<ScheduleUpdatesForDataProcessingRegistrationOverviewReadModelsWhichChangesActiveState>();
             services.AddScoped<RebuildItContractOverviewReadModelsBatchJob>();
+            services.AddScoped<RebuildItContractSupplierOverviewReadModelsBatchJob>();
             services.AddScoped<PurgeDuplicatePendingReadModelUpdates>();
             services.AddScoped<PurgeOrphanedHangfireJobs>();
             services.AddScoped<ScheduleFkOrgUpdatesBackgroundJob>();

@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260710061148_AddContractSupplierReadModel")]
+    partial class AddContractSupplierReadModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1554,9 +1557,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("ExtendMultiplier")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("HasInternalSupplier")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("HasSupplierSigned")
                         .HasColumnType("bit");
 
@@ -2888,6 +2888,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid?>("HighestCriticalityUuid")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsInternalContract")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsSupplierDisabled")
                         .HasColumnType("bit");
 
@@ -2895,8 +2898,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("int");
 
                     b.Property<string>("SupplierCvr")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
@@ -2904,9 +2906,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("SupplierName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("SupplierType")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("SupplierUuid")
                         .HasColumnType("uniqueidentifier");
@@ -2922,6 +2921,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("HighestCriticalityUuid")
                         .HasDatabaseName("IX_ItContract_Supplier_Read_HighestCriticalityUuid");
 
+                    b.HasIndex("IsInternalContract")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_IsInternalContract");
+
                     b.HasIndex("IsSupplierDisabled")
                         .HasDatabaseName("IX_ItContract_Supplier_Read_IsSupplierDisabled");
 
@@ -2936,9 +2938,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("SupplierName")
                         .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierName");
-
-                    b.HasIndex("SupplierType")
-                        .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierType");
 
                     b.HasIndex("SupplierUuid")
                         .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierUuid");

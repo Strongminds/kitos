@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using Presentation.Web.Models.API.V2.Types.Contract;
 
 namespace Presentation.Web.Models.API.V2.Response.Contract
 {
@@ -10,6 +11,10 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// Optional reference to the supplier organization
         /// </summary>
         public ShallowOrganizationResponseDTO Organization { get; set; }
+        /// <summary>
+        /// Supplier type (Internal or External)
+        /// </summary>
+        public ItContractSupplierTypeChoice SupplierType { get; set; }
         /// <summary>
         /// Determines if the contract has been signed by the supplier
         /// </summary>

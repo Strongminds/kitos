@@ -40,6 +40,7 @@ namespace Core.DomainModel.ItContract
 
         public Guid Uuid { get; set; }
 
+
         public ItContractValidationResult Validate(DateTime todayReference)
         {
             var enforcedActive = Active;
@@ -91,6 +92,8 @@ namespace Core.DomainModel.ItContract
         {
             return Validate(DateTime.Now);
         }
+
+        public bool? HasInternalSupplier { get; private set; }
 
         /// <summary>
         ///     Whether the contract is active or not
