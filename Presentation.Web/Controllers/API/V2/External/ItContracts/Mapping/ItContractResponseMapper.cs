@@ -157,7 +157,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 UseSignedByForContact = contract.UseSupplierContractSignerAsContactPerson,
                 ContactPhoneNumber = contract.SupplierContactPhoneNumber,
                 ContactEmail = contract.SupplierContactEmail,
-                Organization = contract.Supplier?.MapShallowOrganizationResponseDTO(),
                 SupplierType = contract.HasInternalSupplier.ToItContractSupplierTypeChoice()
             };
         }
