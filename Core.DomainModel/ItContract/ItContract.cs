@@ -392,7 +392,7 @@ namespace Core.DomainModel.ItContract
         #region Deadlines (aftalefrister)
 
         /// <summary>
-        ///     When the contract began. (indg�et)
+        ///     When the contract began. (indgået)
         /// </summary>
         /// <value>
         ///     The concluded date.
@@ -416,7 +416,7 @@ namespace Core.DomainModel.ItContract
         public int? DurationMonths { get; set; }
 
         /// <summary>
-        ///     Gets or sets the ongoing status. (l�bende)
+        ///     Gets or sets the ongoing status. (løbende)
         /// </summary>
         /// <value>
         ///     Is the duration ongoing.
@@ -432,7 +432,7 @@ namespace Core.DomainModel.ItContract
         public DateTime? IrrevocableTo { get; set; }
 
         /// <summary>
-        ///     When the contract expires. (udl�bet)
+        ///     When the contract expires. (udløbet)
         /// </summary>
         /// <value>
         ///     The expiration date.
@@ -469,7 +469,7 @@ namespace Core.DomainModel.ItContract
         ///
         /// </summary>
         /// <value>
-        ///     (l�bende)
+        ///     (løbende)
         /// </value>
         public YearSegmentOption? Running { get; set; }
 
