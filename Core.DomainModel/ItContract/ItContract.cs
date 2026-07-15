@@ -242,7 +242,7 @@ namespace Core.DomainModel.ItContract
         public int? SupplierOrganizationUnitId { get; set; }
         public virtual OrganizationUnit SupplierOrganizationUnit { get; set; }
         public string SupplierContactPerson { get; set; }
-        public bool UseSupplierContractSignerAsContactPerson { get; set; }
+        public bool UseSupplierContractSignerAsContactPerson { get; set; } = true;
         public string SupplierContactPhoneNumber { get; set; }
         public string SupplierContactEmail { get; set; }
 
