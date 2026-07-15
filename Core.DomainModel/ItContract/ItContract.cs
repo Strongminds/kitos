@@ -795,13 +795,13 @@ namespace Core.DomainModel.ItContract
             SupplierOrganizationUnit = null;
         }
 
-        public Maybe<OperationError> SetSupplierOrganization(Organization.Organization organization)
+        public Maybe<OperationError> SetSupplierOrganization(Organization.Organization newSupplier)
         {
-            if (organization == null)
+            if (newSupplier == null)
                 return new OperationError("Organization cannot be null when updating the supplier", OperationFailure.BadState);
 
-            SetInternalSupplier(organization.Uuid == Supplier.Uuid);
-            Supplier = organization;
+            SetInternalSupplier(newSupplier.Uuid == Uuid);
+            Supplier = newSupplier;
 
             return Maybe<OperationError>.None;
         }
