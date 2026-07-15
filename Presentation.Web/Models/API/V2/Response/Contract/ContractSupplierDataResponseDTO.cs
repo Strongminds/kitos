@@ -21,14 +21,14 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// Who, at the supplier, signed the contract
         /// </summary>
-        public string SignedBy { get; set; }
+        public string? SignedBy { get; set; }
         /// <summary>
         /// Which date was the contract signed by the supplier
         /// </summary>
         public DateTime? SignedAt { get; set; }
-        public string ContactPerson { get; set; }
+        public string? ContactPerson { get; set; }
         public bool UseSignedByForContact { get; set; }
-        public string ContactPhoneNumber { get; set; }
-        public string ContactEmail { get; set; }
+        public string? ContactPhoneNumber { get; set; }
+        public string? ContactEmail { get; set; }
     }
 }
