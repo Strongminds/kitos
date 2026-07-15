@@ -16,6 +16,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             var uuidType = isSqlServer ? InfrastructureConstants.SqlServerUuidType : InfrastructureConstants.PostgreSqlUuidType;
             var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
             var dateTimeType = isSqlServer ? InfrastructureConstants.SqlServerDateTimeType : InfrastructureConstants.PostgreSqlDateTimeType;
+            var boolType = isSqlServer ? "bit" : "boolean";
+
+            migrationBuilder.AddColumn<bool>(
+                name: "HasInternalSupplier",
+                table: "ItContract",
+                type: boolType,
+                nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "ItContractSupplierOverviewReadModels",
@@ -25,11 +32,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrganizationId = table.Column<int>(type: intType, nullable: false),
                     SupplierId = table.Column<int>(type: intType, nullable: false),
-                    IsInternalContract = table.Column<bool>(type: "bit", nullable: false),
+                    SupplierType = table.Column<int>(type: intType, nullable: false),
                     SupplierUuid = table.Column<Guid>(type: uuidType, nullable: false),
                     SupplierName = table.Column<string>(maxLength: 100, nullable: true),
-                    SupplierCvr = table.Column<string>(maxLength: 100, nullable: true),
-                    IsSupplierDisabled = table.Column<bool>(type: "bit", nullable: false),
+                    SupplierCvr = table.Column<string>(maxLength: 10, nullable: true),
+                    IsSupplierDisabled = table.Column<bool>(type: boolType, nullable: false),
                     HighestCriticalityUuid = table.Column<Guid>(type: uuidType, nullable: true),
                     HighestCriticalityName = table.Column<string>(maxLength: 150, nullable: true),
                     HighestCriticalityRank = table.Column<int>(type: intType, nullable: true),
@@ -104,9 +111,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "HighestCriticalityUuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItContract_Supplier_Read_IsInternalContract",
+                name: "IX_ItContract_Supplier_Read_SupplierType",
                 table: "ItContractSupplierOverviewReadModels",
-                column: "IsInternalContract");
+                column: "SupplierType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItContract_Supplier_Read_IsSupplierDisabled",
@@ -153,6 +160,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.DropTable(
                 name: "ItContractSupplierOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "HasInternalSupplier",
+                table: "ItContract");
         }
     }
 }

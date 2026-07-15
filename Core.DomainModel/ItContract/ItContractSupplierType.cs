@@ -2,7 +2,7 @@
 {
     public enum ItContractSupplierType
     {
-        External,
-        Internal
+        External = 0,
+        Internal = 1,
     }
 }

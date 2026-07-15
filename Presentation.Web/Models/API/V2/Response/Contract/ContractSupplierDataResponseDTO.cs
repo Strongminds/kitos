@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using Presentation.Web.Models.API.V2.Types.Contract;
 
 namespace Presentation.Web.Models.API.V2.Response.Contract
 {
@@ -13,6 +14,10 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         public ShallowOrganizationResponseDTO Organization { get; set; }
         public IdentityNamePairResponseDTO OrganizationUnit { get; set; }
         public bool? IsInternal { get; set; }
+        /// <summary>
+        /// Supplier type (Internal or External)
+        /// </summary>
+        public ItContractSupplierTypeChoice SupplierType { get; set; }
         /// <summary>
         /// Determines if the contract has been signed by the supplier
         /// </summary>
