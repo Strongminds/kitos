@@ -100,7 +100,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Null(supplier.OrganizationUnit);
             Assert.Null(supplier.IsInternal);
             Assert.Null(supplier.ContactPerson);
-            Assert.False(supplier.UseSignedByForContact);
+            Assert.True(supplier.UseSignedByForContact);
             Assert.Null(supplier.ContactPhoneNumber);
             Assert.Null(supplier.ContactEmail);
 
