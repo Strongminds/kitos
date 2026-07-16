@@ -800,7 +800,7 @@ namespace Core.DomainModel.ItContract
             if (newSupplier == null)
                 return new OperationError("Organization cannot be null when updating the supplier", OperationFailure.BadState);
 
-            SetInternalSupplier(newSupplier.Uuid == Uuid);
+            SetInternalSupplier(newSupplier.Uuid == Organization.Uuid);
             Supplier = newSupplier;
 
             return Maybe<OperationError>.None;
