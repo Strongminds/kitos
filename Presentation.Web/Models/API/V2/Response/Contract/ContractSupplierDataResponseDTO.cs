@@ -11,8 +11,8 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// Optional reference to the supplier organization
         /// </summary>
-        public ShallowOrganizationResponseDTO Organization { get; set; }
-        public IdentityNamePairResponseDTO OrganizationUnit { get; set; }
+        public ShallowOrganizationResponseDTO? Organization { get; set; }
+        public IdentityNamePairResponseDTO? OrganizationUnit { get; set; }
         public bool? IsInternal { get; set; }
         /// <summary>
         /// Supplier type (Internal or External)
