@@ -44,7 +44,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 table: "ItContract",
                 type: boolType,
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItContract_SupplierOrganizationUnitId",
