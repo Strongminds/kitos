@@ -135,7 +135,7 @@ namespace Core.BackgroundJobs.Model.ReadModels
                 return;
             }
 
-            var highestRank = contractRows.Max(x => x.CriticalityRank);
+            var highestRank = contractRows.Where(x => x.CriticalityRank.HasValue).Max(x => x.CriticalityRank);
             var contractsAtHighestCriticality = contractRows
                 .Where(x => x.CriticalityRank == highestRank || (x.CriticalityRank == null && highestRank == null))
                 .OrderBy(x => x.ContractName)
