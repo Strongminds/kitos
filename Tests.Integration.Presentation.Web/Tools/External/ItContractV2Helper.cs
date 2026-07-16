@@ -306,7 +306,8 @@ namespace Tests.Integration.Presentation.Web.Tools.External
 
             var queryParameters = new List<string>
             {
-                $"organizationUuid={organizationUuid:D}"
+                $"organizationUuid={organizationUuid:D}",
+                "$expand=ContractsAtHighestCriticality"
             };
 
             if (!string.IsNullOrWhiteSpace(odataFilter))
@@ -322,7 +323,8 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/ItContractSupplierOverviewReadModels?{query}"), cookie);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            return await response.ReadOdataListResponseBodyAsAsync<ItContractSupplierOverviewReadModel>();
+            var debug = await response.ReadOdataListResponseBodyAsAsync<ItContractSupplierOverviewReadModel>();
+            return debug;
         }
     }
 }
