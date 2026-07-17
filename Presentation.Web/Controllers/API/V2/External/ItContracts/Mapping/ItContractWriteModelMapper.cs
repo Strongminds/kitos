@@ -234,6 +234,14 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                     ? dto.OrganizationUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
+                OrganizationUnitUuid = rule.MustUpdate(x => x.Supplier.OrganizationUnitUuid)
+                    ? dto.OrganizationUnitUuid.AsChangedValue()
+                    : OptionalValueChange<Guid?>.None,
+
+                IsInternal = rule.MustUpdate(x => x.Supplier.IsInternal)
+                    ? dto.IsInternal.AsChangedValue()
+                    : OptionalValueChange<bool>.None,
+
                 Signed = rule.MustUpdate(x => x.Supplier.Signed)
                     ? dto.Signed.AsChangedValue()
                     : OptionalValueChange<bool>.None,
@@ -244,6 +252,22 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 
                 SignedBy = rule.MustUpdate(x => x.Supplier.SignedBy)
                     ? dto.SignedBy.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+
+                ContactPerson = rule.MustUpdate(x => x.Supplier.ContactPerson)
+                    ? dto.ContactPerson.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+
+                UseSignedByForContact = rule.MustUpdate(x => x.Supplier.UseSignedByForContact)
+                    ? dto.UseSignedByForContact.AsChangedValue()
+                    : OptionalValueChange<bool>.None,
+
+                ContactPhoneNumber = rule.MustUpdate(x => x.Supplier.ContactPhoneNumber)
+                    ? dto.ContactPhoneNumber.AsChangedValue()
+                    : OptionalValueChange<string>.None,
+
+                ContactEmail = rule.MustUpdate(x => x.Supplier.ContactEmail)
+                    ? dto.ContactEmail.AsChangedValue()
                     : OptionalValueChange<string>.None
             };
         }

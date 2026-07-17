@@ -714,12 +714,20 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             var supplier = new ItContractSupplierModificationParameters()
             {
                 OrganizationUuid = ((Guid?)A<Guid>()).AsChangedValue(),
+                OrganizationUnitUuid = ((Guid?)A<Guid>()).AsChangedValue(),
+                IsInternal = true.AsChangedValue(),
                 Signed = A<bool>().AsChangedValue(),
                 SignedAt = A<DateTime?>().AsChangedValue(),
-                SignedBy = A<string>().AsChangedValue()
+                SignedBy = A<string>().AsChangedValue(),
+                ContactPerson = A<string>().AsChangedValue(),
+                UseSignedByForContact = A<bool>().AsChangedValue(),
+                ContactPhoneNumber = A<string>().AsChangedValue(),
+                ContactEmail = A<string>().AsChangedValue()
             };
             var (organizationUuid, parameters, createdContract, transaction) = SetupCreateScenarioPrerequisites(supplier: supplier);
             var organization = new Organization() { Uuid = supplier.OrganizationUuid.NewValue.GetValueOrDefault() };
+            var organizationUnit = new OrganizationUnit() { Uuid = supplier.OrganizationUnitUuid.NewValue.GetValueOrDefault() };
+            createdContract.Organization.OrgUnits.Add(organizationUnit);
             _organizationServiceMock.Setup(x => x.GetOrganization(organization.Uuid, null)).Returns(organization);
 
             //Act
@@ -732,6 +740,12 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             Assert.Equal(supplier.Signed.NewValue, contract.HasSupplierSigned);
             Assert.Equal(supplier.SignedAt.NewValue?.Date, contract.SupplierSignedDate);
             Assert.Equal(supplier.SignedBy.NewValue, contract.SupplierContractSigner);
+            Assert.Equal(supplier.IsInternal.NewValue, contract.HasInternalSupplier);
+            Assert.Equal(supplier.OrganizationUnitUuid.NewValue, contract.SupplierOrganizationUnit?.Uuid);
+            Assert.Equal(supplier.ContactPerson.NewValue, contract.SupplierContactPerson);
+            Assert.Equal(supplier.UseSignedByForContact.NewValue, contract.UseSupplierContractSignerAsContactPerson);
+            Assert.Equal(supplier.ContactPhoneNumber.NewValue, contract.SupplierContactPhoneNumber);
+            Assert.Equal(supplier.ContactEmail.NewValue, contract.SupplierContactEmail);
             AssertTransactionCommitted(transaction);
         }
 
@@ -1340,10 +1354,24 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             Configure(f => f.Register<Guid?>(() => Guid.NewGuid()));
             Configure(f => f.Register<bool>(() => false));
 
+            var supplier = new ItContractSupplierModificationParameters()
+            {
+                OrganizationUuid = ((Guid?)A<Guid>()).AsChangedValue(),
+                OrganizationUnitUuid = ((Guid?)A<Guid>()).AsChangedValue(),
+                IsInternal = true.AsChangedValue(),
+                Signed = A<bool>().AsChangedValue(),
+                SignedAt = A<DateTime?>().AsChangedValue(),
+                SignedBy = A<string>().AsChangedValue(),
+                ContactPerson = A<string>().AsChangedValue(),
+                UseSignedByForContact = A<bool>().AsChangedValue(),
+                ContactPhoneNumber = A<string>().AsChangedValue(),
+                ContactEmail = A<string>().AsChangedValue()
+            };
+
             var (organizationUuid, parameters, createdContract, transaction) = SetupCreateScenarioPrerequisites(
                 parentUuid: A<Guid>(),
                 responsible: A<ItContractResponsibleDataModificationParameters>(),
-                supplier: A<ItContractSupplierModificationParameters>(),
+                supplier: supplier,
                 systemUsageUuids: Many<Guid>().ToList(),
                 dataProcessingRegistrationUuids: Many<Guid>().ToList(),
                 roleAssignments: Many<UserRolePair>().ToList(),
@@ -1380,6 +1408,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             //Supplier
             var organization = new Organization() { Uuid = parameters.Supplier.Value.OrganizationUuid.NewValue.GetValueOrDefault() };
             _organizationServiceMock.Setup(x => x.GetOrganization(organization.Uuid, null)).Returns(organization);
+            var supplierOrganizationUnit = new OrganizationUnit() { Uuid = parameters.Supplier.Value.OrganizationUnitUuid.NewValue.GetValueOrDefault() };
+            createdContract.Organization.OrgUnits.Add(supplierOrganizationUnit);
 
             //System usage setup
             ExpectUpdateMultiAssignmentReturns<ItSystemUsage, ItSystemUsage>(createdContract, parameters.SystemUsageUuids, Maybe<OperationError>.None);
@@ -1470,6 +1500,12 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             Assert.Equal(parameters.Supplier.Value.Signed.NewValue, contract.HasSupplierSigned);
             Assert.Equal(parameters.Supplier.Value.SignedAt.NewValue?.Date, contract.SupplierSignedDate);
             Assert.Equal(parameters.Supplier.Value.SignedBy.NewValue, contract.SupplierContractSigner);
+            Assert.Equal(parameters.Supplier.Value.IsInternal.NewValue, contract.HasInternalSupplier);
+            Assert.Equal(parameters.Supplier.Value.OrganizationUnitUuid.NewValue, contract.SupplierOrganizationUnit?.Uuid);
+            Assert.Equal(parameters.Supplier.Value.ContactPerson.NewValue, contract.SupplierContactPerson);
+            Assert.Equal(parameters.Supplier.Value.UseSignedByForContact.NewValue, contract.UseSupplierContractSignerAsContactPerson);
+            Assert.Equal(parameters.Supplier.Value.ContactPhoneNumber.NewValue, contract.SupplierContactPhoneNumber);
+            Assert.Equal(parameters.Supplier.Value.ContactEmail.NewValue, contract.SupplierContactEmail);
 
             AssertPaymentModel(paymentModel, contract, true);
 
