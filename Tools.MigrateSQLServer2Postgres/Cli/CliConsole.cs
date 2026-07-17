@@ -32,6 +32,33 @@ internal static class CliConsole
         AnsiConsole.Write(table);
     }
 
+    public static void RenderPubSubHeader()
+    {
+        AnsiConsole.Write(new FigletText("PubSub Migrator")
+            .LeftJustified()
+            .Color(Color.SteelBlue1));
+
+        AnsiConsole.Write(new Panel(new Markup("[grey]SQL Server -> PostgreSQL copy-over migration tool for PubSub[/]"))
+            .Border(BoxBorder.Rounded)
+            .BorderColor(Color.Grey));
+    }
+
+    public static void RenderPubSubHelp()
+    {
+        RenderPubSubHeader();
+
+        var table = new Table().Border(TableBorder.Rounded).AddColumn("Argument").AddColumn("Description");
+        foreach (var item in CommandLineParser.HelpItems)
+        {
+            table.AddRow($"[deepskyblue2]{Markup.Escape(item.Argument)}[/]", Markup.Escape(item.Description));
+        }
+
+        AnsiConsole.Write(new Markup("[bold]Usage[/]\n"));
+        AnsiConsole.WriteLine("  Tools.MigrateSQLServer2Postgres pubsub --source <sqlServerConnectionString> --target <postgresConnectionString> [options]");
+        AnsiConsole.WriteLine();
+        AnsiConsole.Write(table);
+    }
+
     public static void Info(string message)
     {
         AnsiConsole.MarkupLine($"[deepskyblue2]{Markup.Escape(message)}[/]");

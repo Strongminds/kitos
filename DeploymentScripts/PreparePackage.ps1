@@ -104,11 +104,9 @@
 	$appSettingsPath = ".\TEMP_PresentationWeb\appsettings.json"
 	$appSettings = Get-Content $appSettingsPath -Raw | ConvertFrom-Json
 
-	# Database provider (defaults to SqlServer when not set so existing deployments are unaffected)
-	if ($Env:KitosDbProvider) {
-		$appSettings.Database.Provider  = $Env:KitosDbProvider
-		$appSettings.Hangfire.Provider  = $Env:KitosDbProvider
-	}
+	# Database provider (resolved in DeploymentSetup.ps1)
+	$appSettings.Database.Provider  = $Env:KitosDbProvider
+	$appSettings.Hangfire.Provider  = $Env:KitosDbProvider
 
 	# Connection strings
 	$appSettings.ConnectionStrings.KitosContext     = $Env:KitosDbConnectionStringForIIsApp

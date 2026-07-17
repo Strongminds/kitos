@@ -31,6 +31,10 @@ Interactive mode can:
 
 ## Usage
 
+The tool supports two subcommands: the default KITOS database migration, and a dedicated `pubsub` subcommand for the PubSub service database.
+
+### KITOS database (default)
+
 Interactive mode:
 
 ```powershell
@@ -40,9 +44,25 @@ dotnet run --project Tools.MigrateSQLServer2Postgres/Tools.MigrateSQLServer2Post
 Scripted single-flow run:
 
 ```powershell
-dotnet run --project Tools.MigrateSQLServer2Postgres/Tools.MigrateSQLServer2Postgres.csproj -- --source "Server=.\\SQLEXPRESS;Database=Kitos;Integrated Security=true;TrustServerCertificate=true" --target "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=postgres"
+dotnet run --project Tools.MigrateSQLServer2Postgres/Tools.MigrateSQLServer2Postgres.csproj -- --source "Server=.\\SQLEXPRESS;Database=Kitos;Integrated Security=true;TrustServerCertificate=true" --target "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=<password>"
 ```
 
+### PubSub database
+
+Interactive mode:
+
+```powershell
+dotnet run --project Tools.MigrateSQLServer2Postgres/Tools.MigrateSQLServer2Postgres.csproj -- pubsub --interactive
+```
+
+Scripted single-flow run:
+
+```powershell
+dotnet run --project Tools.MigrateSQLServer2Postgres/Tools.MigrateSQLServer2Postgres.csproj -- pubsub --source "Server=.\\SQLEXPRESS;Database=KitosPubSub;Integrated Security=true;TrustServerCertificate=true" --target "Host=127.0.0.1;Port=5432;Database=kitos_pubsub;Username=postgres;Password=<password>"
+```
+
+The `pubsub` subcommand migrates the `Subscriptions` table from the PubSub SQL Server database to PostgreSQL.
+The target schema is bootstrapped using EF Core migrations (`PubSubContext.Database.MigrateAsync()`), keeping it aligned with the PubSub application's own migration history.
 ## Local PostgreSQL development database
 
 For local development you can run PostgreSQL in a Docker-compatible container runtime such as Podman or Docker.
