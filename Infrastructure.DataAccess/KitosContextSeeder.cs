@@ -105,7 +105,7 @@ namespace Infrastructure.DataAccess
                 "SKI", "SKI 02.18", "SKI 02.19", "Udbud", "EU udbud", "Direkte tildeling", "Annoncering");
 
             AddOptions<CriticalityType, ItContract>(context, context.CriticalityTypes, globalAdmin,
-                "Kritikalitet 1", "Kritikalitet 2");
+                "Kritikalitet 1", "Kritikalitet 2", "Kritikalitet 3");
 
             AddOptions<PaymentModelType, ItContract>(context, context.PaymentModelTypes, globalAdmin,
                 "Licens", "icens - flatrate", "Licens - forbrug", "Licens - indbyggere",

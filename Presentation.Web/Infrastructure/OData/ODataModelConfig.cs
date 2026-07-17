@@ -31,6 +31,7 @@ namespace Presentation.Web.Infrastructure.OData
             RegisterEntitySet<ItSystemUsageArchive>(builder, "ItSystemUsageArchives");
             RegisterEntitySet<ItSystemUsageOverviewReadModel>(builder, "ItSystemUsageOverviewReadModels");
             RegisterEntitySet<ItContractOverviewReadModel>(builder, "ItContractOverviewReadModels");
+            RegisterEntitySet<ItContractSupplierOverviewReadModel>(builder, "ItContractSupplierOverviewReadModels");
             RegisterEntitySet<DataProcessingRegistrationReadModel>(builder, "DataProcessingRegistrationReadModels");
 
             // ExternalReference is a navigation target on ItSystem, ItSystemUsage, ItContract etc.

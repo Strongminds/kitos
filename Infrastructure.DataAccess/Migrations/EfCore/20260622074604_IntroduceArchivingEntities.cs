@@ -11,11 +11,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-            var uuidType = isSqlServer ? "uniqueidentifier" : "uuid";
-            var intType = isSqlServer ? "int" : "integer";
-            var dateTimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
+            var isSqlServer = migrationBuilder.ActiveProvider == InfrastructureConstants.SqlServerProviderName;
+            var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
+            var uuidType = isSqlServer ? InfrastructureConstants.SqlServerUuidType : InfrastructureConstants.PostgreSqlUuidType;
+            var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
+            var dateTimeType = isSqlServer ? InfrastructureConstants.SqlServerDateTimeType : InfrastructureConstants.PostgreSqlDateTimeType;
 
             migrationBuilder.CreateTable(
                 name: "ItSystemUsageArchive",

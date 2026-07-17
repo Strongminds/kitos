@@ -419,9 +419,15 @@ namespace Core.ApplicationServices.Contract.Write
         {
             return contract
                 .WithOptionalUpdate(parameters.OrganizationUuid, UpdateSupplierOrganization)
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.IsInternal, (c, newValue) => c.SetInternalSupplier(newValue)))
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.OrganizationUnitUuid, UpdateSupplierOrganizationUnit))
                 .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.Signed, (c, newValue) => c.HasSupplierSigned = newValue))
                 .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.SignedAt, (c, newValue) => c.SupplierSignedDate = newValue?.Date))
-                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.SignedBy, (c, newValue) => c.SupplierContractSigner = newValue));
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.SignedBy, (c, newValue) => c.SupplierContractSigner = newValue))
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.ContactPerson, (c, newValue) => c.SupplierContactPerson = newValue))
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.UseSignedByForContact, (c, newValue) => c.UseSupplierContractSignerAsContactPerson = newValue))
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.ContactPhoneNumber, (c, newValue) => c.SupplierContactPhoneNumber = newValue))
+                .Bind(updatedContract => updatedContract.WithOptionalUpdate(parameters.ContactEmail, (c, newValue) => c.SupplierContactEmail = newValue));
         }
 
         private Maybe<OperationError> UpdateSupplierOrganization(ItContract contract, Guid? organizationId)
@@ -441,6 +447,22 @@ namespace Core.ApplicationServices.Contract.Write
                 return contract.SetSupplierOrganization(organizationResult.Value);
             }
             return Maybe<OperationError>.None;
+        }
+
+        private static Maybe<OperationError> UpdateSupplierOrganizationUnit(ItContract contract, Guid? organizationUnitUuid)
+        {
+            if (!organizationUnitUuid.HasValue)
+            {
+                contract.ResetSupplierOrganizationUnit();
+                return Maybe<OperationError>.None;
+            }
+
+            if (contract.HasInternalSupplier != true)
+            {
+                return new OperationError("Supplier organization unit can only be set for internal suppliers", OperationFailure.BadInput);
+            }
+
+            return contract.SetSupplierOrganizationUnit(organizationUnitUuid.Value);
         }
 
         private static Result<ItContract, OperationError> UpdateResponsibleData(ItContract contract, ItContractResponsibleDataModificationParameters parameters)

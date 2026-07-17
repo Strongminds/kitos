@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260710061148_AddContractSupplierReadModel")]
+    partial class AddContractSupplierReadModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -1637,22 +1640,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime?>("SignedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("SupplierContactEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplierContactPerson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplierContactPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SupplierContractSigner")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SupplierOrganizationUnitId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("SupplierSignedDate")
@@ -1663,9 +1654,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<int?>("TerminationDeadlineId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("UseSupplierContractSignerAsContactPerson")
-                        .HasColumnType("bit");
 
                     b.Property<Guid>("Uuid")
                         .HasColumnType("uniqueidentifier");
@@ -1710,8 +1698,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ResponsibleOrganizationUnitId");
 
                     b.HasIndex("SupplierId");
-
-                    b.HasIndex("SupplierOrganizationUnitId");
 
                     b.HasIndex("TerminationDeadlineId");
 
@@ -8941,10 +8927,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .WithMany("Supplier")
                         .HasForeignKey("SupplierId");
 
-                    b.HasOne("Core.DomainModel.Organization.OrganizationUnit", "SupplierOrganizationUnit")
-                        .WithMany()
-                        .HasForeignKey("SupplierOrganizationUnitId");
-
                     b.HasOne("Core.DomainModel.ItContract.TerminationDeadlineType", "TerminationDeadline")
                         .WithMany("References")
                         .HasForeignKey("TerminationDeadlineId");
@@ -8980,8 +8962,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ResponsibleOrganizationUnit");
 
                     b.Navigation("Supplier");
-
-                    b.Navigation("SupplierOrganizationUnit");
 
                     b.Navigation("TerminationDeadline");
                 });

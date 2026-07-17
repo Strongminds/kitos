@@ -2209,7 +2209,12 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
                 Signed = A<bool>(),
                 SignedAt = withSignedAt ? A<DateTime>() : null,
                 SignedBy = withSignedBy ? A<string>() : null,
-                OrganizationUuid = supplierOrganization?.Uuid
+                OrganizationUuid = supplierOrganization?.Uuid,
+                IsInternal = A<bool>(),
+                ContactPerson = A<string>(),
+                UseSignedByForContact = A<bool>(),
+                ContactPhoneNumber = A<string>(),
+                ContactEmail = A<string>()
             };
             return contractResponsibleDataWriteRequestDto;
         }
@@ -2377,9 +2382,15 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         private static void AssertSupplier(ContractSupplierDataWriteRequestDTO contractResponsibleDataWriteRequestDto, ItContractResponseDTO freshDTO)
         {
             Assert.Equal(contractResponsibleDataWriteRequestDto.OrganizationUuid, freshDTO.Supplier.Organization?.Uuid);
+            Assert.Equal(contractResponsibleDataWriteRequestDto.OrganizationUnitUuid, freshDTO.Supplier.OrganizationUnit?.Uuid);
+            Assert.Equal(contractResponsibleDataWriteRequestDto.IsInternal, freshDTO.Supplier.IsInternal);
             Assert.Equal(contractResponsibleDataWriteRequestDto.Signed, freshDTO.Supplier.Signed);
             Assert.Equal(contractResponsibleDataWriteRequestDto.SignedAt?.Date, freshDTO.Supplier.SignedAt);
             Assert.Equal(contractResponsibleDataWriteRequestDto.SignedBy, freshDTO.Supplier.SignedBy);
+            Assert.Equal(contractResponsibleDataWriteRequestDto.ContactPerson, freshDTO.Supplier.ContactPerson);
+            Assert.Equal(contractResponsibleDataWriteRequestDto.UseSignedByForContact, freshDTO.Supplier.UseSignedByForContact);
+            Assert.Equal(contractResponsibleDataWriteRequestDto.ContactPhoneNumber, freshDTO.Supplier.ContactPhoneNumber);
+            Assert.Equal(contractResponsibleDataWriteRequestDto.ContactEmail, freshDTO.Supplier.ContactEmail);
         }
 
         private async Task<ContractResponsibleDataWriteRequestDTO> CreateContractResponsibleDataRequestDTO(string token, ShallowOrganizationResponseDTO organization, bool withOrgUnit, bool withSignedAt, bool withSignedBy)
