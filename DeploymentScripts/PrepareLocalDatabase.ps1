@@ -64,7 +64,7 @@ function Ensure-TestDatabaseToolIsFresh {
         (Join-Path $repoRoot "Core.DomainModel"),
         (Join-Path $repoRoot "Core.DomainServices"),
         (Join-Path $repoRoot "Infrastructure.DataAccess"),
-        (Join-Path $repoRoot "DeploymentScripts\Baseline.sql")
+        (Join-Path $repoRoot "Infrastructure.DataAccess\Migrations\EfCore\20260413095837_InitialBaseline.cs")
     )
 
     $resolvedToolPath = Resolve-TestToolsPath
