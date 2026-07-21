@@ -8,27 +8,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
     /// <inheritdoc />
     public partial class InitialBaseline : Migration
     {
-        private static readonly (string OldName, string NewName)[] SqlServerFreshInstallTableRenames =
-        {
-            ("AdviceSent", "AdviceSents"),
-            ("ArchiveLocation", "ArchiveLocations"),
-            ("ArchiveTestLocation", "ArchiveTestLocations"),
-            ("BrokenLinkInExternalReference", "BrokenLinkInExternalReferences"),
-            ("BrokenLinkInInterface", "BrokenLinkInInterfaces"),
-            ("DataProcessingCountryOptionDataProcessingRegistration", "DataProcessingRegistrationDataProcessingCountryOptions"),
-            ("DataProcessingOversightOptionDataProcessingRegistration", "DataProcessingRegistrationDataProcessingOversightOptions"),
-            ("DataProcessingRegistrationItContract", "ItContractDataProcessingRegistrations"),
-            ("DataProcessingRegistrationItSystemUsage", "DataProcessingRegistrationItSystemUsages"),
-            ("DataProcessingRegistrationOrganization", "DataProcessingRegistrationOrganizations"),
-            ("ItSystemTaskRef", "TaskRefItSystems"),
-            ("ItSystemUsageOverviewItSystemUsageReadModels", "ItSystemUsageOverviewUsedBySystemUsageReadModels"),
-            ("ItSystemUsagePersonalDataOptions", "ItSystemUsagePersonalDatas"),
-            ("ItSystemUsageTaskRef", "TaskRefItSystemUsages"),
-            ("KendoColumnConfiguration", "KendoColumnConfigurations"),
-            ("LocalFrequencyTypes", "LocalRelationFrequencyTypes"),
-            ("SsoOrganizationIdentities", "StsOrganizationIdentities"),
-        };
-
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -193,7 +172,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "ArchiveLocation",
+                name: "ArchiveLocations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -227,7 +206,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "ArchiveTestLocation",
+                name: "ArchiveTestLocations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -1373,14 +1352,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    User_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SsoUserIdentities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SsoUserIdentities_User_UserId",
-                        column: x => x.UserId,
+                        name: "FK_SsoUserIdentities_User_User_Id",
+                        column: x => x.User_Id,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -1449,7 +1428,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "AdviceSent",
+                name: "AdviceSents",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -2259,7 +2238,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocalFrequencyTypes",
+                name: "LocalRelationFrequencyTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -2966,20 +2945,20 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "SsoOrganizationIdentities",
+                name: "StsOrganizationIdentities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false)
+                    Organization_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SsoOrganizationIdentities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SsoOrganizationIdentities_Organization_OrganizationId",
-                        column: x => x.OrganizationId,
+                        name: "FK_SsoOrganizationIdentities_Organization_Organization_Id",
+                        column: x => x.Organization_Id,
                         principalTable: "Organization",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -3057,7 +3036,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "BrokenLinkInInterface",
+                name: "BrokenLinkInInterfaces",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -3066,21 +3045,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     Cause = table.Column<int>(type: "int", nullable: false),
                     ErrorResponseCode = table.Column<int>(type: "int", nullable: true),
                     ReferenceDateOfLatestLinkChange = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BrokenReferenceOriginId = table.Column<int>(type: "int", nullable: false),
-                    ParentReportId = table.Column<int>(type: "int", nullable: false)
+                    BrokenReferenceOrigin_Id = table.Column<int>(type: "int", nullable: false),
+                    ParentReport_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BrokenLinkInInterface", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BrokenLinkInInterface_BrokenExternalReferencesReports_ParentReportId",
-                        column: x => x.ParentReportId,
+                        name: "FK_BrokenLinkInInterface_BrokenExternalReferencesReports_ParentReport_Id",
+                        column: x => x.ParentReport_Id,
                         principalTable: "BrokenExternalReferencesReports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BrokenLinkInInterface_ItInterface_BrokenReferenceOriginId",
-                        column: x => x.BrokenReferenceOriginId,
+                        name: "FK_BrokenLinkInInterface_ItInterface_BrokenReferenceOrigin_Id",
+                        column: x => x.BrokenReferenceOrigin_Id,
                         principalTable: "ItInterface",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -3129,7 +3108,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "KendoColumnConfiguration",
+                name: "KendoColumnConfigurations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -3440,7 +3419,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "BrokenLinkInExternalReference",
+                name: "BrokenLinkInExternalReferences",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -3449,93 +3428,93 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     Cause = table.Column<int>(type: "int", nullable: false),
                     ErrorResponseCode = table.Column<int>(type: "int", nullable: true),
                     ReferenceDateOfLatestLinkChange = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BrokenReferenceOriginId = table.Column<int>(type: "int", nullable: false),
-                    ParentReportId = table.Column<int>(type: "int", nullable: false)
+                    BrokenReferenceOrigin_Id = table.Column<int>(type: "int", nullable: false),
+                    ParentReport_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BrokenLinkInExternalReference", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BrokenLinkInExternalReference_BrokenExternalReferencesReports_ParentReportId",
-                        column: x => x.ParentReportId,
+                        name: "FK_BrokenLinkInExternalReference_BrokenExternalReferencesReports_ParentReport_Id",
+                        column: x => x.ParentReport_Id,
                         principalTable: "BrokenExternalReferencesReports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataProcessingCountryOptionDataProcessingRegistration",
+                name: "DataProcessingRegistrationDataProcessingCountryOptions",
                 columns: table => new
                 {
-                    InsecureCountriesSubjectToDataTransferId = table.Column<int>(type: "int", nullable: false),
-                    ReferencesId = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
+                    DataProcessingCountryOption_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataProcessingCountryOptionDataProcessingRegistration", x => new { x.InsecureCountriesSubjectToDataTransferId, x.ReferencesId });
+                    table.PrimaryKey("PK_DataProcessingCountryOptionDataProcessingRegistration", x => new { x.DataProcessingRegistration_Id, x.DataProcessingCountryOption_Id });
                     table.ForeignKey(
-                        name: "FK_DataProcessingCountryOptionDataProcessingRegistration_DataProcessingCountryOptions_InsecureCountriesSubjectToDataTransferId",
-                        column: x => x.InsecureCountriesSubjectToDataTransferId,
+                        name: "FK_DataProcessingCountryOptionDataProcessingRegistration_DataProcessingCountryOptions_DataProcessingCountryOption_Id",
+                        column: x => x.DataProcessingCountryOption_Id,
                         principalTable: "DataProcessingCountryOptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataProcessingOversightOptionDataProcessingRegistration",
+                name: "DataProcessingRegistrationDataProcessingOversightOptions",
                 columns: table => new
                 {
-                    OversightOptionsId = table.Column<int>(type: "int", nullable: false),
-                    ReferencesId = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
+                    DataProcessingOversightOption_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataProcessingOversightOptionDataProcessingRegistration", x => new { x.OversightOptionsId, x.ReferencesId });
+                    table.PrimaryKey("PK_DataProcessingOversightOptionDataProcessingRegistration", x => new { x.DataProcessingRegistration_Id, x.DataProcessingOversightOption_Id });
                     table.ForeignKey(
-                        name: "FK_DataProcessingOversightOptionDataProcessingRegistration_DataProcessingOversightOptions_OversightOptionsId",
-                        column: x => x.OversightOptionsId,
+                        name: "FK_DataProcessingOversightOptionDataProcessingRegistration_DataProcessingOversightOptions_DataProcessingOversightOption_Id",
+                        column: x => x.DataProcessingOversightOption_Id,
                         principalTable: "DataProcessingOversightOptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataProcessingRegistrationItContract",
+                name: "ItContractDataProcessingRegistrations",
                 columns: table => new
                 {
-                    AssociatedContractsId = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingRegistrationsId = table.Column<int>(type: "int", nullable: false)
+                    ItContract_Id = table.Column<int>(type: "int", nullable: false),
+                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataProcessingRegistrationItContract", x => new { x.AssociatedContractsId, x.DataProcessingRegistrationsId });
+                    table.PrimaryKey("PK_DataProcessingRegistrationItContract", x => new { x.ItContract_Id, x.DataProcessingRegistration_Id });
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataProcessingRegistrationItSystemUsage",
+                name: "DataProcessingRegistrationItSystemUsages",
                 columns: table => new
                 {
-                    AssociatedDataProcessingRegistrationsId = table.Column<int>(type: "int", nullable: false),
-                    SystemUsagesId = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
+                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataProcessingRegistrationItSystemUsage", x => new { x.AssociatedDataProcessingRegistrationsId, x.SystemUsagesId });
+                    table.PrimaryKey("PK_DataProcessingRegistrationItSystemUsage", x => new { x.DataProcessingRegistration_Id, x.ItSystemUsage_Id });
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataProcessingRegistrationOrganization",
+                name: "DataProcessingRegistrationOrganizations",
                 columns: table => new
                 {
-                    DataProcessorForDataProcessingRegistrationsId = table.Column<int>(type: "int", nullable: false),
-                    DataProcessorsId = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
+                    Organization_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataProcessingRegistrationOrganization", x => new { x.DataProcessorForDataProcessingRegistrationsId, x.DataProcessorsId });
+                    table.PrimaryKey("PK_DataProcessingRegistrationOrganization", x => new { x.DataProcessingRegistration_Id, x.Organization_Id });
                     table.ForeignKey(
-                        name: "FK_DataProcessingRegistrationOrganization_Organization_DataProcessorsId",
-                        column: x => x.DataProcessorsId,
+                        name: "FK_DataProcessingRegistrationOrganization_Organization_Organization_Id",
+                        column: x => x.Organization_Id,
                         principalTable: "Organization",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -4286,24 +4265,24 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItSystemTaskRef",
+                name: "TaskRefItSystems",
                 columns: table => new
                 {
-                    ItSystemsId = table.Column<int>(type: "int", nullable: false),
-                    TaskRefsId = table.Column<int>(type: "int", nullable: false)
+                    ItSystem_Id = table.Column<int>(type: "int", nullable: false),
+                    TaskRef_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItSystemTaskRef", x => new { x.ItSystemsId, x.TaskRefsId });
+                    table.PrimaryKey("PK_ItSystemTaskRef", x => new { x.ItSystem_Id, x.TaskRef_Id });
                     table.ForeignKey(
-                        name: "FK_ItSystemTaskRef_ItSystem_ItSystemsId",
-                        column: x => x.ItSystemsId,
+                        name: "FK_ItSystemTaskRef_ItSystem_ItSystem_Id",
+                        column: x => x.ItSystem_Id,
                         principalTable: "ItSystem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItSystemTaskRef_TaskRef_TaskRefsId",
-                        column: x => x.TaskRefsId,
+                        name: "FK_ItSystemTaskRef_TaskRef_TaskRef_Id",
+                        column: x => x.TaskRef_Id,
                         principalTable: "TaskRef",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -4384,12 +4363,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     table.ForeignKey(
                         name: "FK_ItSystemUsage_ArchiveLocation_ArchiveLocationId",
                         column: x => x.ArchiveLocationId,
-                        principalTable: "ArchiveLocation",
+                        principalTable: "ArchiveLocations",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ItSystemUsage_ArchiveTestLocation_ArchiveTestLocationId",
                         column: x => x.ArchiveTestLocationId,
-                        principalTable: "ArchiveTestLocation",
+                        principalTable: "ArchiveTestLocations",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ItSystemUsage_ArchiveTypes_ArchiveTypeId",
@@ -4750,7 +4729,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItSystemUsagePersonalDataOptions",
+                name: "ItSystemUsagePersonalDatas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -4775,39 +4754,39 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
+                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false),
                     SensitivityDataLevel = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItSystemUsageSensitiveDataLevels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItSystemUsageSensitiveDataLevels_ItSystemUsage_ItSystemUsageId",
-                        column: x => x.ItSystemUsageId,
+                        name: "FK_ItSystemUsageSensitiveDataLevels_ItSystemUsage_ItSystemUsage_Id",
+                        column: x => x.ItSystemUsage_Id,
                         principalTable: "ItSystemUsage",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItSystemUsageTaskRef",
+                name: "TaskRefItSystemUsages",
                 columns: table => new
                 {
-                    ItSystemUsagesId = table.Column<int>(type: "int", nullable: false),
-                    TaskRefsId = table.Column<int>(type: "int", nullable: false)
+                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false),
+                    TaskRef_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItSystemUsageTaskRef", x => new { x.ItSystemUsagesId, x.TaskRefsId });
+                    table.PrimaryKey("PK_ItSystemUsageTaskRef", x => new { x.ItSystemUsage_Id, x.TaskRef_Id });
                     table.ForeignKey(
-                        name: "FK_ItSystemUsageTaskRef_ItSystemUsage_ItSystemUsagesId",
-                        column: x => x.ItSystemUsagesId,
+                        name: "FK_ItSystemUsageTaskRef_ItSystemUsage_ItSystemUsage_Id",
+                        column: x => x.ItSystemUsage_Id,
                         principalTable: "ItSystemUsage",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItSystemUsageTaskRef_TaskRef_TaskRefsId",
-                        column: x => x.TaskRefsId,
+                        name: "FK_ItSystemUsageTaskRef_TaskRef_TaskRef_Id",
+                        column: x => x.TaskRef_Id,
                         principalTable: "TaskRef",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -4882,21 +4861,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TaskRefItSystemUsageOptOut",
                 columns: table => new
                 {
-                    ItSystemUsagesOptOutId = table.Column<int>(type: "int", nullable: false),
-                    TaskRefsOptOutId = table.Column<int>(type: "int", nullable: false)
+                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false),
+                    TaskRef_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskRefItSystemUsageOptOut", x => new { x.ItSystemUsagesOptOutId, x.TaskRefsOptOutId });
+                    table.PrimaryKey("PK_TaskRefItSystemUsageOptOut", x => new { x.ItSystemUsage_Id, x.TaskRef_Id });
                     table.ForeignKey(
-                        name: "FK_TaskRefItSystemUsageOptOut_ItSystemUsage_ItSystemUsagesOptOutId",
-                        column: x => x.ItSystemUsagesOptOutId,
+                        name: "FK_TaskRefItSystemUsageOptOut_ItSystemUsage_ItSystemUsage_Id",
+                        column: x => x.ItSystemUsage_Id,
                         principalTable: "ItSystemUsage",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TaskRefItSystemUsageOptOut_TaskRef_TaskRefsOptOutId",
-                        column: x => x.TaskRefsOptOutId,
+                        name: "FK_TaskRefItSystemUsageOptOut_TaskRef_TaskRef_Id",
+                        column: x => x.TaskRef_Id,
                         principalTable: "TaskRef",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -5055,7 +5034,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItSystemUsageOverviewItSystemUsageReadModels",
+                name: "ItSystemUsageOverviewUsedBySystemUsageReadModels",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -5197,17 +5176,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdviceSent_AdviceId",
-                table: "AdviceSent",
+                table: "AdviceSents",
                 column: "AdviceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdviceSent_LastChangedByUserId",
-                table: "AdviceSent",
+                table: "AdviceSents",
                 column: "LastChangedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdviceSent_ObjectOwnerId",
-                table: "AdviceSent",
+                table: "AdviceSents",
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
@@ -5258,17 +5237,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchiveLocation_LastChangedByUserId",
-                table: "ArchiveLocation",
+                table: "ArchiveLocations",
                 column: "LastChangedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchiveLocation_ObjectOwnerId",
-                table: "ArchiveLocation",
+                table: "ArchiveLocations",
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "UX_Option_Uuid",
-                table: "ArchiveLocation",
+                table: "ArchiveLocations",
                 column: "Uuid",
                 unique: true);
 
@@ -5295,12 +5274,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchiveTestLocation_LastChangedByUserId",
-                table: "ArchiveTestLocation",
+                table: "ArchiveTestLocations",
                 column: "LastChangedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchiveTestLocation_ObjectOwnerId",
-                table: "ArchiveTestLocation",
+                table: "ArchiveTestLocations",
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
@@ -5350,24 +5329,24 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "OptionType");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BrokenLinkInExternalReference_BrokenReferenceOriginId",
-                table: "BrokenLinkInExternalReference",
-                column: "BrokenReferenceOriginId");
+                name: "IX_BrokenLinkInExternalReference_BrokenReferenceOrigin_Id",
+                table: "BrokenLinkInExternalReferences",
+                column: "BrokenReferenceOrigin_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BrokenLinkInExternalReference_ParentReportId",
-                table: "BrokenLinkInExternalReference",
-                column: "ParentReportId");
+                name: "IX_BrokenLinkInExternalReference_ParentReport_Id",
+                table: "BrokenLinkInExternalReferences",
+                column: "ParentReport_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BrokenLinkInInterface_BrokenReferenceOriginId",
-                table: "BrokenLinkInInterface",
-                column: "BrokenReferenceOriginId");
+                name: "IX_BrokenLinkInInterface_BrokenReferenceOrigin_Id",
+                table: "BrokenLinkInInterfaces",
+                column: "BrokenReferenceOrigin_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BrokenLinkInInterface_ParentReportId",
-                table: "BrokenLinkInInterface",
-                column: "ParentReportId");
+                name: "IX_BrokenLinkInInterface_ParentReport_Id",
+                table: "BrokenLinkInInterfaces",
+                column: "ParentReport_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusinessTypes_LastChangedByUserId",
@@ -5469,9 +5448,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataProcessingCountryOptionDataProcessingRegistration_ReferencesId",
-                table: "DataProcessingCountryOptionDataProcessingRegistration",
-                column: "ReferencesId");
+                name: "IX_DataProcessingCountryOptionDataProcessingRegistration_DataProcessingCountryOption_Id",
+                table: "DataProcessingRegistrationDataProcessingCountryOptions",
+                column: "DataProcessingCountryOption_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DataProcessingCountryOptions_LastChangedByUserId",
@@ -5506,9 +5485,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataProcessingOversightOptionDataProcessingRegistration_ReferencesId",
-                table: "DataProcessingOversightOptionDataProcessingRegistration",
-                column: "ReferencesId");
+                name: "IX_DataProcessingOversightOptionDataProcessingRegistration_DataProcessingOversightOption_Id",
+                table: "DataProcessingRegistrationDataProcessingOversightOptions",
+                column: "DataProcessingOversightOption_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DataProcessingOversightOptions_LastChangedByUserId",
@@ -5527,19 +5506,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataProcessingRegistrationItContract_DataProcessingRegistrationsId",
-                table: "DataProcessingRegistrationItContract",
-                column: "DataProcessingRegistrationsId");
+                name: "IX_DataProcessingRegistrationItContract_DataProcessingRegistration_Id",
+                table: "ItContractDataProcessingRegistrations",
+                column: "DataProcessingRegistration_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataProcessingRegistrationItSystemUsage_SystemUsagesId",
-                table: "DataProcessingRegistrationItSystemUsage",
-                column: "SystemUsagesId");
+                name: "IX_DataProcessingRegistrationItSystemUsage_ItSystemUsage_Id",
+                table: "DataProcessingRegistrationItSystemUsages",
+                column: "ItSystemUsage_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataProcessingRegistrationOrganization_DataProcessorsId",
-                table: "DataProcessingRegistrationOrganization",
-                column: "DataProcessorsId");
+                name: "IX_DataProcessingRegistrationOrganization_Organization_Id",
+                table: "DataProcessingRegistrationOrganizations",
+                column: "Organization_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DataProcessingRegistrationOversightDates_ParentId",
@@ -6667,9 +6646,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemTaskRef_TaskRefsId",
-                table: "ItSystemTaskRef",
-                column: "TaskRefsId");
+                name: "IX_ItSystemTaskRef_TaskRef_Id",
+                table: "TaskRefItSystems",
+                column: "TaskRef_Id");
 
             migrationBuilder.CreateIndex(
                 name: "ItSystemUsage_Index_GdprCriticality",
@@ -6846,22 +6825,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.CreateIndex(
                 name: "ItSystemUsageOverviewItSystemUsageReadModel_index_ItSystemUsageId",
-                table: "ItSystemUsageOverviewItSystemUsageReadModels",
+                table: "ItSystemUsageOverviewUsedBySystemUsageReadModels",
                 column: "ItSystemUsageId");
 
             migrationBuilder.CreateIndex(
                 name: "ItSystemUsageOverviewItSystemUsageReadModel_index_ItSystemUsageName",
-                table: "ItSystemUsageOverviewItSystemUsageReadModels",
+                table: "ItSystemUsageOverviewUsedBySystemUsageReadModels",
                 column: "ItSystemUsageName");
 
             migrationBuilder.CreateIndex(
                 name: "ItSystemUsageOverviewItSystemUsageReadModel_index_ItSystemUsageUuid",
-                table: "ItSystemUsageOverviewItSystemUsageReadModels",
+                table: "ItSystemUsageOverviewUsedBySystemUsageReadModels",
                 column: "ItSystemUsageUuid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItSystemUsageOverviewItSystemUsageReadModels_ParentId",
-                table: "ItSystemUsageOverviewItSystemUsageReadModels",
+                table: "ItSystemUsageOverviewUsedBySystemUsageReadModels",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
@@ -7211,22 +7190,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItSystemUsagePersonalDataOptions_ItSystemUsageId",
-                table: "ItSystemUsagePersonalDataOptions",
+                table: "ItSystemUsagePersonalDatas",
                 column: "ItSystemUsageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemUsageSensitiveDataLevels_ItSystemUsageId",
+                name: "IX_ItSystemUsageSensitiveDataLevels_ItSystemUsage_Id",
                 table: "ItSystemUsageSensitiveDataLevels",
-                column: "ItSystemUsageId");
+                column: "ItSystemUsage_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItSystemUsageTaskRef_TaskRefsId",
-                table: "ItSystemUsageTaskRef",
-                column: "TaskRefsId");
+                name: "IX_ItSystemUsageTaskRef_TaskRef_Id",
+                table: "TaskRefItSystemUsages",
+                column: "TaskRef_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KendoColumnConfiguration_KendoOrganizationalConfigurationId",
-                table: "KendoColumnConfiguration",
+                table: "KendoColumnConfigurations",
                 column: "KendoOrganizationalConfigurationId");
 
             migrationBuilder.CreateIndex(
@@ -7486,17 +7465,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocalFrequencyTypes_LastChangedByUserId",
-                table: "LocalFrequencyTypes",
+                table: "LocalRelationFrequencyTypes",
                 column: "LastChangedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocalFrequencyTypes_ObjectOwnerId",
-                table: "LocalFrequencyTypes",
+                table: "LocalRelationFrequencyTypes",
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocalFrequencyTypes_OrganizationId",
-                table: "LocalFrequencyTypes",
+                table: "LocalRelationFrequencyTypes",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
@@ -8111,20 +8090,20 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "ObjectOwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SsoOrganizationIdentities_OrganizationId",
-                table: "SsoOrganizationIdentities",
-                column: "OrganizationId");
+                name: "IX_SsoOrganizationIdentities_Organization_Id",
+                table: "StsOrganizationIdentities",
+                column: "Organization_Id");
 
             migrationBuilder.CreateIndex(
                 name: "UX_ExternalUuid",
-                table: "SsoOrganizationIdentities",
+                table: "StsOrganizationIdentities",
                 column: "ExternalUuid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SsoUserIdentities_UserId",
+                name: "IX_SsoUserIdentities_User_Id",
                 table: "SsoUserIdentities",
-                column: "UserId");
+                column: "User_Id");
 
             migrationBuilder.CreateIndex(
                 name: "UX_ExternalUuid",
@@ -8302,9 +8281,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskRefItSystemUsageOptOut_TaskRefsOptOutId",
+                name: "IX_TaskRefItSystemUsageOptOut_TaskRef_Id",
                 table: "TaskRefItSystemUsageOptOut",
-                column: "TaskRefsOptOutId");
+                column: "TaskRef_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TerminationDeadlineTypes_LastChangedByUserId",
@@ -8424,65 +8403,65 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_BrokenLinkInExternalReference_ExternalReferences_BrokenReferenceOriginId",
-                table: "BrokenLinkInExternalReference",
-                column: "BrokenReferenceOriginId",
+                name: "FK_BrokenLinkInExternalReference_ExternalReferences_BrokenReferenceOrigin_Id",
+                table: "BrokenLinkInExternalReferences",
+                column: "BrokenReferenceOrigin_Id",
                 principalTable: "ExternalReferences",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingCountryOptionDataProcessingRegistration_DataProcessingRegistrations_ReferencesId",
-                table: "DataProcessingCountryOptionDataProcessingRegistration",
-                column: "ReferencesId",
+                name: "FK_DataProcessingCountryOptionDataProcessingRegistration_DataProcessingRegistrations_DataProcessingRegistration_Id",
+                table: "DataProcessingRegistrationDataProcessingCountryOptions",
+                column: "DataProcessingRegistration_Id",
                 principalTable: "DataProcessingRegistrations",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingOversightOptionDataProcessingRegistration_DataProcessingRegistrations_ReferencesId",
-                table: "DataProcessingOversightOptionDataProcessingRegistration",
-                column: "ReferencesId",
+                name: "FK_DataProcessingOversightOptionDataProcessingRegistration_DataProcessingRegistrations_DataProcessingRegistration_Id",
+                table: "DataProcessingRegistrationDataProcessingOversightOptions",
+                column: "DataProcessingRegistration_Id",
                 principalTable: "DataProcessingRegistrations",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingRegistrationItContract_DataProcessingRegistrations_DataProcessingRegistrationsId",
-                table: "DataProcessingRegistrationItContract",
-                column: "DataProcessingRegistrationsId",
+                name: "FK_DataProcessingRegistrationItContract_DataProcessingRegistrations_DataProcessingRegistration_Id",
+                table: "ItContractDataProcessingRegistrations",
+                column: "DataProcessingRegistration_Id",
                 principalTable: "DataProcessingRegistrations",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingRegistrationItContract_ItContract_AssociatedContractsId",
-                table: "DataProcessingRegistrationItContract",
-                column: "AssociatedContractsId",
+                name: "FK_DataProcessingRegistrationItContract_ItContract_ItContract_Id",
+                table: "ItContractDataProcessingRegistrations",
+                column: "ItContract_Id",
                 principalTable: "ItContract",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingRegistrationItSystemUsage_DataProcessingRegistrations_AssociatedDataProcessingRegistrationsId",
-                table: "DataProcessingRegistrationItSystemUsage",
-                column: "AssociatedDataProcessingRegistrationsId",
+                name: "FK_DataProcessingRegistrationItSystemUsage_DataProcessingRegistrations_DataProcessingRegistration_Id",
+                table: "DataProcessingRegistrationItSystemUsages",
+                column: "DataProcessingRegistration_Id",
                 principalTable: "DataProcessingRegistrations",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingRegistrationItSystemUsage_ItSystemUsage_SystemUsagesId",
-                table: "DataProcessingRegistrationItSystemUsage",
-                column: "SystemUsagesId",
+                name: "FK_DataProcessingRegistrationItSystemUsage_ItSystemUsage_ItSystemUsage_Id",
+                table: "DataProcessingRegistrationItSystemUsages",
+                column: "ItSystemUsage_Id",
                 principalTable: "ItSystemUsage",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DataProcessingRegistrationOrganization_DataProcessingRegistrations_DataProcessorForDataProcessingRegistrationsId",
-                table: "DataProcessingRegistrationOrganization",
-                column: "DataProcessorForDataProcessingRegistrationsId",
+                name: "FK_DataProcessingRegistrationOrganization_DataProcessingRegistrations_DataProcessingRegistration_Id",
+                table: "DataProcessingRegistrationOrganizations",
+                column: "DataProcessingRegistration_Id",
                 principalTable: "DataProcessingRegistrations",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -8574,29 +8553,26 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
-            ApplySqlServerTableRenameFixes(migrationBuilder, reverse: false);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            ApplySqlServerTableRenameFixes(migrationBuilder, reverse: true);
-
             migrationBuilder.DropForeignKey(
                 name: "FK_ArchiveLocation_User_LastChangedByUserId",
-                table: "ArchiveLocation");
+                table: "ArchiveLocations");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ArchiveLocation_User_ObjectOwnerId",
-                table: "ArchiveLocation");
+                table: "ArchiveLocations");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ArchiveTestLocation_User_LastChangedByUserId",
-                table: "ArchiveTestLocation");
+                table: "ArchiveTestLocations");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ArchiveTestLocation_User_ObjectOwnerId",
-                table: "ArchiveTestLocation");
+                table: "ArchiveTestLocations");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ArchiveTypes_User_LastChangedByUserId",
@@ -8831,7 +8807,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 table: "ItSystem");
 
             migrationBuilder.DropTable(
-                name: "AdviceSent");
+                name: "AdviceSents");
 
             migrationBuilder.DropTable(
                 name: "AdviceUserRelations");
@@ -8843,10 +8819,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "AttachedOptions");
 
             migrationBuilder.DropTable(
-                name: "BrokenLinkInExternalReference");
+                name: "BrokenLinkInExternalReferences");
 
             migrationBuilder.DropTable(
-                name: "BrokenLinkInInterface");
+                name: "BrokenLinkInInterfaces");
 
             migrationBuilder.DropTable(
                 name: "Config");
@@ -8855,19 +8831,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "CustomizedUiNodes");
 
             migrationBuilder.DropTable(
-                name: "DataProcessingCountryOptionDataProcessingRegistration");
+                name: "DataProcessingRegistrationDataProcessingCountryOptions");
 
             migrationBuilder.DropTable(
-                name: "DataProcessingOversightOptionDataProcessingRegistration");
+                name: "DataProcessingRegistrationDataProcessingOversightOptions");
 
             migrationBuilder.DropTable(
-                name: "DataProcessingRegistrationItContract");
+                name: "ItContractDataProcessingRegistrations");
 
             migrationBuilder.DropTable(
-                name: "DataProcessingRegistrationItSystemUsage");
+                name: "DataProcessingRegistrationItSystemUsages");
 
             migrationBuilder.DropTable(
-                name: "DataProcessingRegistrationOrganization");
+                name: "DataProcessingRegistrationOrganizations");
 
             migrationBuilder.DropTable(
                 name: "DataProcessingRegistrationOversightDates");
@@ -8921,7 +8897,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemRights");
 
             migrationBuilder.DropTable(
-                name: "ItSystemTaskRef");
+                name: "TaskRefItSystems");
 
             migrationBuilder.DropTable(
                 name: "ItSystemUsageOrgUnitUsages");
@@ -8939,7 +8915,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewItContractReadModels");
 
             migrationBuilder.DropTable(
-                name: "ItSystemUsageOverviewItSystemUsageReadModels");
+                name: "ItSystemUsageOverviewUsedBySystemUsageReadModels");
 
             migrationBuilder.DropTable(
                 name: "ItSystemUsageOverviewRelevantOrgUnitReadModels");
@@ -8957,16 +8933,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewUsingSystemUsageReadModels");
 
             migrationBuilder.DropTable(
-                name: "ItSystemUsagePersonalDataOptions");
+                name: "ItSystemUsagePersonalDatas");
 
             migrationBuilder.DropTable(
                 name: "ItSystemUsageSensitiveDataLevels");
 
             migrationBuilder.DropTable(
-                name: "ItSystemUsageTaskRef");
+                name: "TaskRefItSystemUsages");
 
             migrationBuilder.DropTable(
-                name: "KendoColumnConfiguration");
+                name: "KendoColumnConfigurations");
 
             migrationBuilder.DropTable(
                 name: "KLEUpdateHistoryItems");
@@ -9011,7 +8987,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataTypes");
 
             migrationBuilder.DropTable(
-                name: "LocalFrequencyTypes");
+                name: "LocalRelationFrequencyTypes");
 
             migrationBuilder.DropTable(
                 name: "LocalInterfaceTypes");
@@ -9083,7 +9059,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PublicMessages");
 
             migrationBuilder.DropTable(
-                name: "SsoOrganizationIdentities");
+                name: "StsOrganizationIdentities");
 
             migrationBuilder.DropTable(
                 name: "SsoUserIdentities");
@@ -9176,10 +9152,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsage");
 
             migrationBuilder.DropTable(
-                name: "ArchiveLocation");
+                name: "ArchiveLocations");
 
             migrationBuilder.DropTable(
-                name: "ArchiveTestLocation");
+                name: "ArchiveTestLocations");
 
             migrationBuilder.DropTable(
                 name: "ArchiveTypes");
@@ -9261,24 +9237,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             migrationBuilder.DropTable(
                 name: "OrganizationTypes");
-        }
-
-        private static void ApplySqlServerTableRenameFixes(MigrationBuilder migrationBuilder, bool reverse)
-        {
-            if (migrationBuilder.ActiveProvider != "Microsoft.EntityFrameworkCore.SqlServer")
-            {
-                return;
-            }
-
-            foreach (var (oldName, newName) in SqlServerFreshInstallTableRenames)
-            {
-                var sourceName = reverse ? newName : oldName;
-                var targetName = reverse ? oldName : newName;
-                migrationBuilder.Sql($@"
-                    IF OBJECT_ID('{sourceName}', 'U') IS NOT NULL AND OBJECT_ID('{targetName}', 'U') IS NULL
-                        EXEC sp_rename '{sourceName}', '{targetName}';
-                ");
-            }
         }
     }
 }
