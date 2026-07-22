@@ -30,7 +30,12 @@ namespace Presentation.Web.Infrastructure.Configuration
 
                 if (DatabaseProviderHelper.IsPostgreSqlProvider(hangfireProvider))
                 {
-                    config.UsePostgreSqlStorage(hangfireConnectionString);
+                    config.UsePostgreSqlStorage(hangfireConnectionString, new PostgreSqlStorageOptions
+                    {
+                        // Ensure Hangfire creates its own schema/tables in fresh PostgreSQL databases.
+                        PrepareSchemaIfNecessary = true,
+                        SchemaName = "hangfire"
+                    });
                 }
                 else
                 {
@@ -68,6 +73,16 @@ namespace Presentation.Web.Infrastructure.Configuration
                     createCmd.CommandText = $"CREATE DATABASE \"{databaseName.Replace("\"", "\"\"")}\"";
                     createCmd.ExecuteNonQuery();
                 }
+
+                // Ensure schema exists; Hangfire.PostgreSql will create/migrate its own tables.
+                csb.Database = databaseName;
+                using var hangfireConnection = new NpgsqlConnection(csb.ConnectionString);
+                hangfireConnection.Open();
+                using var bootstrapCmd = hangfireConnection.CreateCommand();
+                bootstrapCmd.CommandText = """
+                    CREATE SCHEMA IF NOT EXISTS hangfire;
+                    """;
+                bootstrapCmd.ExecuteNonQuery();
 
                 return;
             }

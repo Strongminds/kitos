@@ -1,12 +1,15 @@
 using Core.BackgroundJobs.Model;
 using Hangfire;
 using Hangfire.Common;
+using Infrastructure.DataAccess;
 using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using Presentation.Web.Infrastructure.Middleware;
 using Serilog;
 using System;
@@ -168,6 +171,33 @@ namespace Presentation.Web.Infrastructure.Configuration
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchCreateMainPublicMessageTask(CancellationToken.None)),
                 cronExpression: Cron.Never(),
                 timeZone: TimeZoneInfo.Local);
+
+            return app;
+        }
+
+        public static WebApplication EnsurePostgreSqlExtensions(this WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<KitosContext>();
+            if (dbContext.Database.IsNpgsql())
+            {
+                dbContext.Database.OpenConnection();
+                try
+                {
+                    dbContext.Database.ExecuteSqlRaw("CREATE SCHEMA IF NOT EXISTS public; CREATE EXTENSION IF NOT EXISTS citext SCHEMA public;");
+                    if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
+                    {
+                        npgsqlConnection.ReloadTypes();
+                        // Drop all pooled connectors so every subsequent request opens connections
+                        // with fresh type metadata after the extension bootstrap.
+                        NpgsqlConnection.ClearAllPools();
+                    }
+                }
+                finally
+                {
+                    dbContext.Database.CloseConnection();
+                }
+            }
 
             return app;
         }

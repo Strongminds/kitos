@@ -346,9 +346,24 @@ namespace Presentation.Web.Infrastructure.DI
             var stsBrugerPort = appSettings["StsBrugerPort"] ?? "";
             var stsPersonPort = appSettings["StsPersonPort"] ?? "";
 
-            services.AddSingleton(_ => new TokenFetcher(
+            // Certificate file paths for container environments (empty = use Windows cert store)
+            var ssoCertFilePath = appSettings["SsoCertFilePath"] ?? "";
+            var ssoCertPassword = appSettings["SsoCertPassword"] ?? "";
+            var stsCertFilePath = appSettings["StsCertFilePath"] ?? "";
+            var stsCertPassword = appSettings["StsCertPassword"] ?? "";
+            var stsOrganisationCertFilePath = appSettings["StsOrganisationCertFilePath"] ?? "";
+            var stsOrganisationCertPassword = appSettings["StsOrganisationCertPassword"] ?? "";
+            var stsCertificateValidationMode = appSettings["StsCertificateValidationMode"] ?? "";
+            var stsCertificateRevocationMode = appSettings["StsCertificateRevocationMode"] ?? "";
+
+            var tokenFetcherConfig = new TokenFetcherConfig(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
-                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint));
+                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint,
+                ssoCertFilePath, ssoCertPassword,
+                stsCertFilePath, stsCertPassword,
+                stsOrganisationCertFilePath, stsOrganisationCertPassword,
+                stsCertificateValidationMode, stsCertificateRevocationMode);
+            services.AddSingleton(_ => new TokenFetcher(tokenFetcherConfig));
             services.AddScoped<IStsOrganizationService, StsOrganizationService>();
             services.AddScoped<IStsOrganizationCompanyLookupService, StsOrganizationCompanyLookupService>();
             services.AddScoped<IStsOrganizationSystemService, StsOrganizationSystemService>();
@@ -499,12 +514,53 @@ namespace Presentation.Web.Infrastructure.DI
             {
                 var authentication = sp.GetRequiredService<IAuthenticationContext>();
                 if (authentication.Method != AuthenticationMethod.Anonymous && authentication.UserId.HasValue)
-                    return sp.GetRequiredService<IUserContextFactory>().Create(authentication.UserId.Value);
+                {
+                    var userContextFactory = sp.GetRequiredService<IUserContextFactory>();
+                    try
+                    {
+                        return userContextFactory.Create(authentication.UserId.Value);
+                    }
+                    catch (InvalidCastException ex) when (IsStalePostgreSqlTypeMap(ex))
+                    {
+                        ReloadPostgreSqlTypes(sp);
+                        return userContextFactory.Create(authentication.UserId.Value);
+                    }
+                }
                 return new UnauthenticatedUserContext();
             });
             services.AddScoped<IAuthorizationContext>(sp =>
                 sp.GetRequiredService<IAuthorizationContextFactory>().Create(
                     sp.GetRequiredService<IOrganizationalUserContext>()));
+        }
+
+        private static bool IsStalePostgreSqlTypeMap(InvalidCastException exception)
+        {
+            return exception.Message.Contains("DataTypeName '-.-'", StringComparison.OrdinalIgnoreCase)
+                   || exception.Message.Contains("cache lookup failed for type", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void ReloadPostgreSqlTypes(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<KitosContext>();
+            if (!dbContext.Database.IsNpgsql())
+            {
+                return;
+            }
+
+            dbContext.Database.OpenConnection();
+            try
+            {
+                if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
+                {
+                    npgsqlConnection.ReloadTypes();
+                    NpgsqlConnection.ClearAllPools();
+                }
+            }
+            finally
+            {
+                dbContext.Database.CloseConnection();
+            }
         }
 
 
