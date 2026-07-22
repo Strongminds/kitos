@@ -11,7 +11,7 @@ public class SAMLDecryptor
         var certificate = X509CertificateLoader.LoadPkcs12FromFile(
             privateKeyPath,
             certificatePassword,
-            X509KeyStorageFlags.Exportable);
+            X509KeyStorageFlags.EphemeralKeySet);
 
         // GetRSAPrivateKey() returns null if the certificate has no RSA private key (CS8602)
         var rsa = certificate.GetRSAPrivateKey()
@@ -19,12 +19,12 @@ public class SAMLDecryptor
 
         byte[] encryptedKeyBytes = Convert.FromBase64String(encryptedKeyBase64);
 
-        var paddingModes = new[]
-        {
-            (RSAEncryptionPadding.OaepSHA256, "OAEP SHA-256"),
-            (RSAEncryptionPadding.OaepSHA1,   "OAEP SHA-1"),
-            (RSAEncryptionPadding.Pkcs1,       "PKCS#1 v1.5"),
-        };
+            var paddingModes = new[]
+            {
+                (RSAEncryptionPadding.OaepSHA1,   "OAEP SHA-1 (rsa-oaep-mgf1p + sha1)"),  // matches EncryptionMethod rsa-oaep-mgf1p / DigestMethod sha1
+                (RSAEncryptionPadding.OaepSHA256, "OAEP SHA-256"),
+                (RSAEncryptionPadding.Pkcs1,       "PKCS#1 v1.5"),
+            };
 
         foreach (var (padding, name) in paddingModes)
         {
@@ -47,23 +47,26 @@ public class SAMLDecryptor
     {
         byte[] encryptedAssertionBytes = Convert.FromBase64String(encryptedAssertionBase64);
 
-        // AES-256-GCM (xmlenc11): layout is [nonce:12][ciphertext:n][tag:16]
-        const int nonceSize = 12; // GCM nonce: 96 bits
-        const int tagSize = 16; // GCM auth tag: 128 bits
+        // AES-256-CBC (xmlenc#aes256-cbc): layout is [iv:16][ciphertext:n]
+        const int ivSize = 16; // CBC IV: 128 bits
 
-        if (encryptedAssertionBytes.Length < nonceSize + tagSize)
+        if (encryptedAssertionBytes.Length < ivSize)
             throw new CryptographicException(
-                $"Assertion data too short ({encryptedAssertionBytes.Length} bytes) to contain a GCM nonce and tag.");
+                $"Assertion data too short ({encryptedAssertionBytes.Length} bytes) to contain a CBC IV.");
 
-        byte[] nonce = encryptedAssertionBytes[..nonceSize];
-        byte[] tag = encryptedAssertionBytes[^tagSize..];
-        byte[] cipherText = encryptedAssertionBytes[nonceSize..^tagSize];
-        byte[] plainText = new byte[cipherText.Length];
+        byte[] iv = encryptedAssertionBytes[..ivSize];
+        byte[] cipherText = encryptedAssertionBytes[ivSize..];
 
-        Console.WriteLine($"[DEBUG] GCM nonce={nonceSize}B, ciphertext={cipherText.Length}B, tag={tagSize}B");
+        Console.WriteLine($"[DEBUG] CBC iv={ivSize}B, ciphertext={cipherText.Length}B");
 
-        using var aesGcm = new AesGcm(symmetricKey, tagSize);
-        aesGcm.Decrypt(nonce, cipherText, tag, plainText);
+        using var aes = System.Security.Cryptography.Aes.Create();
+        aes.Key = symmetricKey;
+        aes.IV = iv;
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+
+        using var decryptor = aes.CreateDecryptor();
+        byte[] plainText = decryptor.TransformFinalBlock(cipherText, 0, cipherText.Length);
 
         return Encoding.UTF8.GetString(plainText);
     }
