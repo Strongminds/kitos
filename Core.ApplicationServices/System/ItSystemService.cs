@@ -172,7 +172,7 @@ namespace Core.ApplicationServices.System
         public Result<IEnumerable<ItSystem>, OperationError> GetCompleteHierarchy(int systemId)
         {
             return GetSystem(systemId)
-                .Select(system => system.FlattenCompleteHierarchy());
+                .Select(system => system.FlattenCompleteHierarchy().Where(x => _authorizationContext.AllowReads(x)));
         }
 
         public SystemDeleteResult Delete(int id, bool breakBindings = false)
