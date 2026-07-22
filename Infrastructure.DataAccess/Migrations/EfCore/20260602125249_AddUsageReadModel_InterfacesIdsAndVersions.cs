@@ -10,16 +10,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            var isSqlServer = ActiveProvider.Contains("SqlServer", System.StringComparison.OrdinalIgnoreCase);
+            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
+
             migrationBuilder.AddColumn<string>(
                 name: "ItInterfaceIdsAsCsv",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "ItInterfaceVersionsAsCsv",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "nvarchar(max)",
+                type: maxTextType,
                 nullable: true);
         }
 
