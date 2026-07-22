@@ -1,5 +1,4 @@
 using System;
-using System.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel.Security;
 
