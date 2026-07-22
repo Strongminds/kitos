@@ -41,6 +41,7 @@ namespace Presentation.Web.Hangfire
             backgroundJobLauncher.LaunchUpdateDataProcessingRegistrationReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
             backgroundJobLauncher.LaunchUpdateItSystemUsageOverviewReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
             backgroundJobLauncher.LaunchUpdateItContractOverviewReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
+            backgroundJobLauncher.LaunchUpdateItContractSupplierOverviewReadModels(combinedTokenSource.Token).Wait(CancellationToken.None);
         }
 
         private static void PurgeDuplicateUpdates(IBackgroundJobLauncher backgroundJobLauncher, CancellationTokenSource combinedTokenSource)
@@ -54,6 +55,7 @@ namespace Presentation.Web.Hangfire
             backgroundJobLauncher.LaunchScheduleDataProcessingRegistrationReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
             backgroundJobLauncher.LaunchScheduleItSystemUsageOverviewReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
             backgroundJobLauncher.LaunchScheduleItContractOverviewReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
+            backgroundJobLauncher.LaunchScheduleItContractSupplierOverviewReadModelUpdates(combinedTokenSource.Token).Wait(CancellationToken.None);
         }
 
         private static void CoolDown()

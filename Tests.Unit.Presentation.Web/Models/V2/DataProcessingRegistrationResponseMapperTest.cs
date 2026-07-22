@@ -342,7 +342,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     OversightDate = A<DateTime>(),
                     OversightRemark = A<string>(),
                     OversightReportLink = A<string>(),
-                    OversightReportLinkName = A<string>()
+                    OversightReportLinkName = A<string>(),
+                    OversightOption = withOptionalCrossReferences ? new DataProcessingOversightOption { Uuid = A<Guid>(), Name = A<string>() } : null
                 },
                 new()
                 {
@@ -352,7 +353,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     OversightDate = A<DateTime>(),
                     OversightRemark = A<string>(),
                     OversightReportLink = A<string>(),
-                    OversightReportLinkName = A<string>()
+                    OversightReportLinkName = A<string>(),
+                    OversightOption = withOptionalCrossReferences ? new DataProcessingOversightOption { Uuid = A<Guid>(), Name = A<string>() } : null
                 }
             };
         }
@@ -445,6 +447,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal(comparison.expected.OversightRemark, comparison.actual.Remark);
                 Assert.Equal(comparison.expected.OversightReportLink, comparison.actual.OversightReportLink.Url);
                 Assert.Equal(comparison.expected.OversightReportLinkName, comparison.actual.OversightReportLink.Name);
+                AssertOptionalIdentity(comparison.expected.OversightOption, comparison.actual.OversightOption);
             }
         }
 

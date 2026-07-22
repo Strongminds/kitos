@@ -147,6 +147,7 @@ using dk.nita.saml20.identity;
 using Presentation.Web.Infrastructure.Middleware;
 using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
 using Core.ApplicationServices.Users;
+using Core.ApplicationServices.Model.SystemUsage;
 
 namespace Presentation.Web.Infrastructure.DI
 {
@@ -250,6 +251,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationSupplierService, OrganizationSupplierService>();
             services.AddScoped<IItSystemService, ItSystemService>();
             services.AddScoped<IItSystemUsageService, ItSystemUsageService>();
+            services.AddScoped<IItSystemUsageArchiveService, ItSystemUsageArchiveService>();
             services.AddScoped<IItSystemUsageMigrationServiceAdapter, ItSystemUsageMigrationServiceAdapter>();
             services.AddScoped<IItsystemUsageRelationsService, ItsystemUsageRelationsService>();
             services.AddScoped<IItSystemUsageWriteService, ItSystemUsageWriteService>();
@@ -257,6 +259,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItContractService, ItContractService>();
             services.AddScoped<IItContractWriteService, ItContractWriteService>();
             services.AddScoped<IItContractOverviewReadModelsService, ItContractOverviewReadModelsService>();
+            services.AddScoped<IItContractSupplierOverviewReadModelsService, ItContractSupplierOverviewReadModelsService>();
             services.AddScoped<IReadModelUpdate<ItContract, ItContractOverviewReadModel>, ItContractOverviewReadModelUpdate>();
             services.AddSingleton<IUserRepositoryFactory, UserRepositoryFactory>();
             services.AddScoped<IExcelService, ExcelService>();
@@ -497,6 +500,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IDataProcessingRegistrationOptionRepository, DataProcessingRegistrationOptionRepository>();
             services.AddScoped<IItSystemUsageOverviewReadModelRepository, ItSystemUsageOverviewReadModelRepository>();
             services.AddScoped<IItContractOverviewReadModelRepository, ItContractOverviewReadModelRepository>();
+            services.AddScoped<IItContractSupplierOverviewReadModelRepository, ItContractSupplierOverviewReadModelRepository>();
 
             services.AddScoped<IAuthorizationModelFactory, AuthorizationModelFactory>();
             services.AddScoped<IAuthorizationContextFactory, AuthorizationContextFactory>();
@@ -580,6 +584,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDomainEvent<SystemUsageDeletedUserNotificationsHandler>(services);
             RegisterDomainEvent<BuildItSystemUsageOverviewReadModelOnChangesHandler>(services);
             RegisterDomainEvent<BuildItContractOverviewReadModelOnChangesHandler>(services);
+            RegisterDomainEvent<BuildItContractSupplierOverviewReadModelOnChangesHandler>(services);
             RegisterDomainEvent<MarkEntityAsDirtyOnChangeEventHandler>(services);
             RegisterDomainEvent<TrackDeletedEntitiesEventHandler>(services);
             RegisterDomainEvent<HandleOrganizationBeingDeleted>(services);
@@ -714,8 +719,10 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState>();
             services.AddScoped<ScheduleUpdatesForItContractOverviewReadModelsWhichChangesActiveState>();
             services.AddScoped<ScheduleItContractOverviewReadModelUpdates>();
+            services.AddScoped<ScheduleItContractSupplierOverviewReadModelUpdates>();
             services.AddScoped<ScheduleUpdatesForDataProcessingRegistrationOverviewReadModelsWhichChangesActiveState>();
             services.AddScoped<RebuildItContractOverviewReadModelsBatchJob>();
+            services.AddScoped<RebuildItContractSupplierOverviewReadModelsBatchJob>();
             services.AddScoped<PurgeDuplicatePendingReadModelUpdates>();
             services.AddScoped<PurgeOrphanedHangfireJobs>();
             services.AddScoped<ScheduleFkOrgUpdatesBackgroundJob>();
@@ -749,6 +756,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItSystemUsageResponseMapper, ItSystemUsageResponseMapper>();
             services.AddScoped<IItSystemUsageWriteModelMapper, ItSystemUsageWriteModelMapper>();
             services.AddScoped<IItSystemUsageMigrationResponseMapper, ItSystemUsageMigrationResponseMapper>();
+            services.AddScoped<IItSystemUsageArchiveResponseMapper, ItSystemUsageArchiveResponseMapper>();
             services.AddScoped<IDataProcessingRegistrationWriteModelMapper, DataProcessingRegistrationWriteModelMapper>();
             services.AddScoped<IDataProcessingRegistrationResponseMapper, DataProcessingRegistrationResponseMapper>();
             services.AddScoped<IItContractWriteModelMapper, ItContractWriteModelMapper>();

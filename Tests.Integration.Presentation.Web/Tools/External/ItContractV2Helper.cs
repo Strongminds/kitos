@@ -294,5 +294,37 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             return await response.ReadOdataListResponseBodyAsAsync<ItContractOverviewReadModel>();
         }
+
+        public static async Task<IEnumerable<ItContractSupplierOverviewReadModel>> QuerySupplierOverviewReadModel(
+            Guid organizationUuid,
+            string? odataFilter = null,
+            string? odataOrderBy = null,
+            int? top = null,
+            int? skip = null)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+
+            var queryParameters = new List<string>
+            {
+                $"organizationUuid={organizationUuid:D}",
+                "$expand=ContractsAtHighestCriticality"
+            };
+
+            if (!string.IsNullOrWhiteSpace(odataFilter))
+                queryParameters.Add($"$filter={odataFilter}");
+            if (!string.IsNullOrWhiteSpace(odataOrderBy))
+                queryParameters.Add($"$orderby={odataOrderBy}");
+            if (top.HasValue)
+                queryParameters.Add($"$top={top.Value}");
+            if (skip.HasValue)
+                queryParameters.Add($"$skip={skip.Value}");
+
+            var query = string.Join("&", queryParameters);
+            using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"odata/ItContractSupplierOverviewReadModels?{query}"), cookie);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var debug = await response.ReadOdataListResponseBodyAsAsync<ItContractSupplierOverviewReadModel>();
+            return debug;
+        }
     }
 }

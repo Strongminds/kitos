@@ -22,6 +22,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Tokens
         [Route("validate")]
         [AllowAnonymous]
         [IgnoreCSRFProtection]
+        [ApiResponse(typeof(TokenIntrospectionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult Introspect([FromBody] TokenIntrospectionRequest request)
         {
             return _tokenValidator.VerifyToken(request.Token)

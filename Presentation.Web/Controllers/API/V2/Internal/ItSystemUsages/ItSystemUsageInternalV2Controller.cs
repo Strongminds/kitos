@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
-using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.ApplicationServices.SystemUsage;
 using Core.ApplicationServices.SystemUsage.Relations;
 using Core.ApplicationServices.SystemUsage.Write;
@@ -17,11 +16,11 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
 using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
-using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
+using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Internal.Response.Roles;
+using Presentation.Web.Models.API.V2.Internal.Response.ItSystemUsage;
 using Presentation.Web.Models.API.V2.Request.Generic.Queries;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
-using Presentation.Web.Models.API.V2.Response.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,6 +68,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         ///
         [HttpGet]
         [Route("search")]
+        [ApiResponse(typeof(IEnumerable<ItSystemUsageSearchResultResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetItSystemUsages(
             [NonEmptyGuid] Guid organizationUuid,
             [NonEmptyGuid] Guid? relatedToSystemUuid = null,
@@ -91,6 +93,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
+        [ApiResponse(typeof(IEnumerable<OutgoingSystemRelationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult PostSystemUsageRelations([NonEmptyGuid] Guid systemUsageUuid,
             [FromBody] [Required] IEnumerable<SystemRelationWriteRequestDTO> dtos)
         {
@@ -105,11 +112,14 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <summary>
         /// Get roles assigned to the system usage
         /// </summary>
-        /// <param name="systemUsageUuid"></param>
-        /// <param name="request"></param>
+        /// <param name="systemUsageUuid">UUID of the system usage</param>
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/roles")]
+        [ApiResponse(typeof(IEnumerable<ExtendedRoleAssignmentResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetRoleAssignments([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
@@ -129,6 +139,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// <returns></returns>
         [HttpDelete]
         [Route("system/{systemUuid}/organization/{organizationUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteItSystemUsageByOrganizationUuidAndSystemUuid([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid systemUuid)
         {
             if (!ModelState.IsValid)
@@ -141,6 +155,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
 
         [HttpGet]
         [Route("relations/{contractUuid}")]
+        [ApiResponse(typeof(IEnumerable<GeneralSystemRelationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetRelations([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

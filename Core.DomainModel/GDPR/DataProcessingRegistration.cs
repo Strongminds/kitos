@@ -435,7 +435,7 @@ namespace Core.DomainModel.GDPR
             return MainContract == null || MainContract.IsActive;
         }
         
-        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
+        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName, int? oversightOptionId)
         {
             if (IsOversightCompleted != YesNoUndecidedOption.Yes)
                 IsOversightCompleted = YesNoUndecidedOption.Yes;
@@ -447,6 +447,7 @@ namespace Core.DomainModel.GDPR
                 OversightRemark = oversightRemark,
                 OversightReportLink = oversightReportLink,
                 OversightReportLinkName = oversightReportLinkName,
+                OversightOptionId = oversightOptionId,
                 Parent = this
             };
 
@@ -486,6 +487,11 @@ namespace Core.DomainModel.GDPR
         public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateReportLinkName(int oversightId, string oversightReportLinkName)
         {
             return ModifyOversightDate(oversightId, existingDate => existingDate.OversightReportLinkName = oversightReportLinkName);
+        }
+
+        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateOptionId(int oversightId, int? oversightOptionId)
+        {
+            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightOptionId = oversightOptionId);
         }
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int oversightId)

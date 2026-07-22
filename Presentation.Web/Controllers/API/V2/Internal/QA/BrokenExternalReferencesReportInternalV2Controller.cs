@@ -5,6 +5,7 @@ using Core.Abstractions.Types;
 using Core.DomainModel.Qa.References;
 using Presentation.Web.Models.API.V2.Internal.Response.QA;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.QA
 {
@@ -20,6 +21,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpGet]
         [Route("status")]
+        [ApiResponse(typeof(BrokenExternalReferencesReportStatusResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetStatus()
         {
             return _brokenExternalReferencesReportService
@@ -36,6 +41,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpPost]
         [Route("trigger")]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult Trigger()
         {
             return _brokenExternalReferencesReportService
@@ -49,6 +58,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.QA
 
         [HttpGet]
         [Route("current/csv")]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetCurrentCsvReport()
         {
             return _brokenExternalReferencesReportService

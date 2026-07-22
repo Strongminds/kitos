@@ -25,6 +25,7 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     $Env:ResetPasswordTtl = $parameters["ResetPasswordTtl"]
     $Env:MailSuffix = $parameters["MailSuffix"]
     $Env:KitosEnvName = $parameters["KitosEnvName"]
+    $Env:KitosDbProvider = if ([string]::IsNullOrWhiteSpace($parameters["KitosDbProvider"])) { "SqlServer" } else { $parameters["KitosDbProvider"] }
     $Env:KitosDbConnectionStringForIIsApp = $parameters["KitosDbConnectionStringForIIsApp"]
     $Env:HangfireDbConnectionStringForIIsApp = $parameters["HangfireDbConnectionStringForIIsApp"]
     $Env:KitosDbConnectionStringForTeamCity = $parameters["KitosDbConnectionStringForTeamCity"]

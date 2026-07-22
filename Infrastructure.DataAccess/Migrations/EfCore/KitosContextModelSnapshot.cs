@@ -17,7 +17,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -177,6 +177,171 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ObjectOwnerId");
 
                     b.ToTable("AdviceUserRelations", (string)null);
+                });
+
+            modelBuilder.Entity("Core.DomainModel.Archive.ArchiveReference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ItSystemUsageArchiveUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastChanged")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastChangedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ObjectOwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItSystemUsageArchiveUuid");
+
+                    b.HasIndex("LastChangedByUserId");
+
+                    b.HasIndex("ObjectOwnerId");
+
+                    b.HasIndex("Uuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ArchiveReference_Uuid");
+
+                    b.ToTable("ArchiveReference", (string)null);
+                });
+
+            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchive", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArchivedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ArchivingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastChanged")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastChangedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ObjectOwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SnapshotUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArchivedById");
+
+                    b.HasIndex("LastChangedByUserId");
+
+                    b.HasIndex("ObjectOwnerId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("SnapshotUuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ItSystemUsageArchive_ItSystemUsageSnapshotUuid");
+
+                    b.HasIndex("Uuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ItSystemUsageArchive_Uuid");
+
+                    b.ToTable("ItSystemUsageArchive", (string)null);
+                });
+
+            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ItSystemUsageArchiveUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ItSystemUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LastChanged")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastChangedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LegacyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocalId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocalName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ObjectOwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TakenIntoUsageDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItSystemUsageArchiveUuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_ItSystemUsageArchiveUuid");
+
+                    b.HasIndex("ItSystemUuid")
+                        .HasDatabaseName("IX_ItSystemUsageArchiveSnapshot_ItSystemUuid");
+
+                    b.HasIndex("LastChangedByUserId");
+
+                    b.HasIndex("ObjectOwnerId");
+
+                    b.HasIndex("Uuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ItSystemUsageArchiveSnapshot_Uuid");
+
+                    b.ToTable("Snapshot", (string)null);
                 });
 
             modelBuilder.Entity("Core.DomainModel.AttachedOption", b =>
@@ -755,6 +920,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime>("OversightDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("OversightOptionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("OversightRemark")
                         .HasColumnType("nvarchar(max)");
 
@@ -771,6 +939,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OversightOptionId");
 
                     b.HasIndex("ParentId");
 
@@ -1384,6 +1554,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("ExtendMultiplier")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("HasInternalSupplier")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("HasSupplierSigned")
                         .HasColumnType("bit");
 
@@ -1464,10 +1637,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime?>("SignedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SupplierContactEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupplierContactPerson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupplierContactPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SupplierContractSigner")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierOrganizationUnitId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("SupplierSignedDate")
@@ -1478,6 +1663,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<int?>("TerminationDeadlineId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("UseSupplierContractSignerAsContactPerson")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("Uuid")
                         .HasColumnType("uniqueidentifier");
@@ -1522,6 +1710,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ResponsibleOrganizationUnitId");
 
                     b.HasIndex("SupplierId");
+
+                    b.HasIndex("SupplierOrganizationUnitId");
 
                     b.HasIndex("TerminationDeadlineId");
 
@@ -2654,6 +2844,127 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasDatabaseName("IX_ItContract_Read_User_Id");
 
                     b.ToTable("ItContractOverviewRoleAssignmentReadModels");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractSupplierOverviewAtCriticalityContractReadModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ContractUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_Contracts_ContractId");
+
+                    b.HasIndex("ContractName")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_Contracts_ContractName");
+
+                    b.HasIndex("ContractUuid")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_Contracts_ContractUuid");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_Contracts_ParentId");
+
+                    b.ToTable("ItContractSupplierOverviewAtCriticalityContractReadModels");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractSupplierOverviewReadModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContractsAtHighestCriticalityCsv")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HighestCriticalityName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int?>("HighestCriticalityRank")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("HighestCriticalityUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsSupplierDisabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierCvr")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SupplierType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SupplierUuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HighestCriticalityName")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_HighestCriticalityName");
+
+                    b.HasIndex("HighestCriticalityRank")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_HighestCriticalityRank");
+
+                    b.HasIndex("HighestCriticalityUuid")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_HighestCriticalityUuid");
+
+                    b.HasIndex("IsSupplierDisabled")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_IsSupplierDisabled");
+
+                    b.HasIndex("OrganizationId")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_OrganizationId");
+
+                    b.HasIndex("SupplierCvr")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierCvr");
+
+                    b.HasIndex("SupplierId")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierId");
+
+                    b.HasIndex("SupplierName")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierName");
+
+                    b.HasIndex("SupplierType")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierType");
+
+                    b.HasIndex("SupplierUuid")
+                        .HasDatabaseName("IX_ItContract_Supplier_Read_SupplierUuid");
+
+                    b.HasIndex("OrganizationId", "SupplierId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ItContract_Supplier_Read_Org_Supplier");
+
+                    b.ToTable("ItContractSupplierOverviewReadModels");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.TerminationDeadlineType", b =>
@@ -3941,9 +4252,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<DateTime?>("LastWebAccessibilityCheck")
                         .HasColumnType("datetime2");
 
-                    b.PrimitiveCollection<string>("LicensingAndCodeModels")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("LifeCycleStatus")
                         .HasColumnType("int");
 
@@ -4457,9 +4765,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<DateTime?>("LastWebAccessibilityCheck")
                         .HasColumnType("datetime2");
-
-                    b.PrimitiveCollection<string>("LicensingAndCodeModels")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("LifeCycleStatus")
                         .HasColumnType("int");
@@ -7996,6 +8301,106 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ObjectOwner");
                 });
 
+            modelBuilder.Entity("Core.DomainModel.Archive.ArchiveReference", b =>
+                {
+                    b.HasOne("Core.DomainModel.Archive.ItSystemUsageArchive", "ItSystemUsageArchive")
+                        .WithMany("ArchiveReferences")
+                        .HasForeignKey("ItSystemUsageArchiveUuid")
+                        .HasPrincipalKey("Uuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastChangedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
+                        .WithMany()
+                        .HasForeignKey("ObjectOwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ItSystemUsageArchive");
+
+                    b.Navigation("LastChangedByUser");
+
+                    b.Navigation("ObjectOwner");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchive", b =>
+                {
+                    b.HasOne("Core.DomainModel.User", "ArchivedByUser")
+                        .WithMany()
+                        .HasForeignKey("ArchivedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastChangedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
+                        .WithMany()
+                        .HasForeignKey("ObjectOwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ArchivedByUser");
+
+                    b.Navigation("LastChangedByUser");
+
+                    b.Navigation("ObjectOwner");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", b =>
+                {
+                    b.HasOne("Core.DomainModel.Archive.ItSystemUsageArchive", "ItSystemUsageArchive")
+                        .WithOne("Snapshot")
+                        .HasForeignKey("Core.DomainModel.Archive.ItSystemUsageArchiveSnapshot", "ItSystemUsageArchiveUuid")
+                        .HasPrincipalKey("Core.DomainModel.Archive.ItSystemUsageArchive", "Uuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.ItSystem.ItSystem", "ItSystem")
+                        .WithMany()
+                        .HasForeignKey("ItSystemUuid")
+                        .HasPrincipalKey("Uuid")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastChangedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
+                        .WithMany()
+                        .HasForeignKey("ObjectOwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ItSystem");
+
+                    b.Navigation("ItSystemUsageArchive");
+
+                    b.Navigation("LastChangedByUser");
+
+                    b.Navigation("ObjectOwner");
+                });
+
             modelBuilder.Entity("Core.DomainModel.AttachedOption", b =>
                 {
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
@@ -8233,11 +8638,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
             modelBuilder.Entity("Core.DomainModel.GDPR.DataProcessingRegistrationOversightDate", b =>
                 {
+                    b.HasOne("Core.DomainModel.GDPR.DataProcessingOversightOption", "OversightOption")
+                        .WithMany()
+                        .HasForeignKey("OversightOptionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Core.DomainModel.GDPR.DataProcessingRegistration", "Parent")
                         .WithMany("OversightDates")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("OversightOption");
 
                     b.Navigation("Parent");
                 });
@@ -8529,6 +8941,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .WithMany("Supplier")
                         .HasForeignKey("SupplierId");
 
+                    b.HasOne("Core.DomainModel.Organization.OrganizationUnit", "SupplierOrganizationUnit")
+                        .WithMany()
+                        .HasForeignKey("SupplierOrganizationUnitId");
+
                     b.HasOne("Core.DomainModel.ItContract.TerminationDeadlineType", "TerminationDeadline")
                         .WithMany("References")
                         .HasForeignKey("TerminationDeadlineId");
@@ -8564,6 +8980,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ResponsibleOrganizationUnit");
 
                     b.Navigation("Supplier");
+
+                    b.Navigation("SupplierOrganizationUnit");
 
                     b.Navigation("TerminationDeadline");
                 });
@@ -8886,6 +9304,28 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsRequired();
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractSupplierOverviewAtCriticalityContractReadModel", b =>
+                {
+                    b.HasOne("Core.DomainModel.ItContract.Read.ItContractSupplierOverviewReadModel", "Parent")
+                        .WithMany("ContractsAtHighestCriticality")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractSupplierOverviewReadModel", b =>
+                {
+                    b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.TerminationDeadlineType", b =>
@@ -11307,6 +11747,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("Reciepients");
                 });
 
+            modelBuilder.Entity("Core.DomainModel.Archive.ItSystemUsageArchive", b =>
+                {
+                    b.Navigation("ArchiveReferences");
+
+                    b.Navigation("Snapshot");
+                });
+
             modelBuilder.Entity("Core.DomainModel.ContactPerson", b =>
                 {
                     b.Navigation("Organization");
@@ -11452,6 +11899,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("RoleAssignments");
 
                     b.Navigation("SystemRelations");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.Read.ItContractSupplierOverviewReadModel", b =>
+                {
+                    b.Navigation("ContractsAtHighestCriticality");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.TerminationDeadlineType", b =>

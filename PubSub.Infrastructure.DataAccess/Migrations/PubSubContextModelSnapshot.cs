@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PubSub.Infrastructure.DataAccess;
 
 #nullable disable
@@ -18,27 +17,21 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             modelBuilder.Entity("PubSub.Core.DomainModel.Subscriptions.Subscription", b =>
                 {
                     b.Property<Guid>("Uuid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Callback")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .IsRequired();
 
                     b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .IsRequired();
 
                     b.Property<string>("Topic")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .IsRequired();
 
                     b.HasKey("Uuid");
 

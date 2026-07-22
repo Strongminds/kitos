@@ -22,6 +22,11 @@ namespace Presentation.Web.Controllers.API.V2.External.OrganizationUnits
 
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<RoleOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
         {
             return GetAll(organizationUuid, pagination);
@@ -29,6 +34,11 @@ namespace Presentation.Web.Controllers.API.V2.External.OrganizationUnits
 
         [HttpGet]
         [Route("{organizationUnitRoleTypeUuid}")]
+        [ApiResponse(typeof(RoleOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid organizationUnitRoleTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(organizationUnitRoleTypeUuid, organizationUuid);

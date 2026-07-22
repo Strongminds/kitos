@@ -155,6 +155,8 @@ ClientBin/
 !certs/ORG_EXTTEST_Organisation_2.pfx
 *.publishsettings
 .vs/
+.idea/
+**/.idea/
 
 # RIA/Silverlight projects
 Generated_Code/

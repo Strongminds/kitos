@@ -416,22 +416,39 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
     }
 
-    # Verify TCP connectivity before proceeding with any sqlcmd or migration operations.
-    # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
-    $parts = ConvertTo-SqlConnectionParts $connectionString
-    $rawServer = $parts.Server -replace '^tcp:', ''
-    $splitParts = $rawServer -split ',', 2
-    # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
-    $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
-    $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
-    if (-not $isLocalServer) {
-        $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
-        Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
+    # Verify TCP connectivity before proceeding with any migration operations.
+    if ($isPostgreSql) {
+        $parts = ConvertTo-PostgresConnectionParts $connectionString
+        if (-not $parts.Host) {
+            throw "PostgreSQL connection string must contain Host"
+        }
+
+        $pgHost = $parts.Host.Trim()
+        $isLocalServer = $newDb -eq $true -or ($pgHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+        if (-not $isLocalServer) {
+            $pgPort = if ($parts.Port) { [int]$parts.Port } else { 5432 }
+            Wait-ForTcpPort -Hostname $pgHost -Port $pgPort
+        }
+    } else {
+        # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
+        $parts = ConvertTo-SqlConnectionParts $connectionString
+        $rawServer = $parts.Server -replace '^tcp:', ''
+        $splitParts = $rawServer -split ',', 2
+        # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
+        $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
+        $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+        if (-not $isLocalServer) {
+            $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
+            Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
+        }
     }
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
-    $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
+    # Use Infrastructure.DataAccess as startup for dotnet ef fallback.
+    # This avoids loading Presentation.Web (not required because KitosContextDesignTimeFactory
+    # resolves provider/connection from environment variables).
+    $startupProject = $infraProject
 
     if ($newDb -eq $true) {
         if ($isPostgreSql) {

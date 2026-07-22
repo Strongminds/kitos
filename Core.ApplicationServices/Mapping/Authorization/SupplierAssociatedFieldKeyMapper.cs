@@ -18,6 +18,7 @@ namespace Core.ApplicationServices.Mapping.Authorization
             { nameof(UpdatedDataProcessingRegistrationOversightDateParameters.Remark), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark)},
             { nameof(UpdatedDataProcessingRegistrationOversightDateParameters.OversightReportLink), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink) },
             { nameof(UpdatedDataProcessingRegistrationOversightDateParameters.OversightReportLinkName), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName) },
+            { nameof(UpdatedDataProcessingRegistrationOversightDateParameters.OversightOptionUuid), ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightOptionId) },
         };
         private readonly Dictionary<string, string> _usageParameterToSupplierFieldMap = new()
         {

@@ -6,6 +6,17 @@ The legacy UI (AngularJS) lives in this repo. The **new frontend** is maintained
 
 ---
 
+## Scope (in priority order)
+
+1. **Correctness & reliability:** Logic errors, race conditions, data loss, broken edge cases.
+2. **Security & privacy:** Injection, auth/z, secret handling, unsafe deserialization, insecure defaults.
+3. **Compatibility:** Breaking changes, backwards compatibility, input/output validation.
+4. **Performance:** Changes that meaningfully impact latency, memory, or scale.
+5. **Testing:** Gaps for critical paths; propose **minimal** test additions.
+6. **Economic token spend:** Be concise. No explanations unless asked. Code only for generation tasks. Bullets over paragraphs.
+
+---
+
 ## Build & Test
 
 Build the solution with MSBuild or Visual Studio:
