@@ -22,6 +22,7 @@ RUN if [ "$APP" = "Presentation.Web" ]; then \
     fi
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+ARG APP=Presentation.Web
 WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libgssapi-krb5-2 ca-certificates \
@@ -29,6 +30,7 @@ RUN apt-get update \
 COPY --from=build /app/out .
 
 ENV ASPNETCORE_URLS=http://+:8080
+ENV APP=${APP}
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "Presentation.Web.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet ${APP}.dll"]

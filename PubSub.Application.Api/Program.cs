@@ -47,11 +47,21 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<PubSubContext>();
+    var allowAutoMigrate = app.Environment.IsDevelopment() || IsAutoMigrateEnabled();
 
     var pendingMigrations = context.Database.GetPendingMigrations().ToArray();
     if (pendingMigrations.Any())
     {
-        context.Database.Migrate();
+        if (allowAutoMigrate)
+        {
+            context.Database.Migrate();
+        }
+        else
+        {
+            var migrationList = string.Join(", ", pendingMigrations);
+            throw new InvalidOperationException(
+                $"Pending database migrations detected ({migrationList}). Apply migrations before startup or set {Constants.Config.Database.AutoMigrate}=true to opt in to automatic migrations.");
+        }
     }
 }
 
@@ -66,3 +76,19 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
+
+static bool IsAutoMigrateEnabled()
+{
+    var value = Environment.GetEnvironmentVariable(Constants.Config.Database.AutoMigrate);
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return false;
+    }
+
+    if (bool.TryParse(value, out var parsed))
+    {
+        return parsed;
+    }
+
+    return string.Equals(value, "1", StringComparison.OrdinalIgnoreCase);
+}
