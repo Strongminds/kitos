@@ -32,6 +32,6 @@ public sealed class PostgreSqlMigrationTest : IAsyncLifetime
         var hangfireConnectionString =
             $"Host={_container.Hostname};Port={_container.GetMappedPublicPort(5432)};Database={HangfireDatabaseName};Username={UserName};Password={Password}";
 
-        await MigrationTestHelper.AssertNoPendingMigrationsAsync("postgresql", connectionString, hangfireConnectionString);
+        await MigrationTestHelper.AssertNoPendingMigrationsAsync("PostgreSql", connectionString, hangfireConnectionString);
     }
 }
