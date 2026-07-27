@@ -13,8 +13,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
     DO \$\$
     BEGIN
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${APP_USER}') THEN
-            -- CREATEDB allows the app user to drop and recreate its own databases when running
-            -- local dev tools like PrepareLocalDatabase.ps1 without needing the postgres superuser.
+            -- CREATEDB is required by local reset/migration scripts that recreate databases.
             CREATE ROLE ${APP_USER} WITH LOGIN PASSWORD '${APP_PASSWORD}' CREATEDB;
         END IF;
     END
@@ -29,18 +28,4 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
 
     SELECT 'CREATE DATABASE kitos_pubsub OWNER ${APP_USER}'
         WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'kitos_pubsub')\gexec
-
-    -- Grant privileges
-    GRANT ALL PRIVILEGES ON DATABASE kitos TO ${APP_USER};
-    GRANT ALL PRIVILEGES ON DATABASE kitos_hangfiredb TO ${APP_USER};
-    GRANT ALL PRIVILEGES ON DATABASE kitos_pubsub TO ${APP_USER};
 EOSQL
-
-# Connect to each database and grant schema privileges
-for db in kitos kitos_hangfiredb kitos_pubsub; do
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db" <<-EOSQL
-        GRANT ALL ON SCHEMA public TO ${APP_USER};
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${APP_USER};
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO ${APP_USER};
-EOSQL
-done
