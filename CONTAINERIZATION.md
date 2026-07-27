@@ -10,6 +10,8 @@ This document describes how to run KITOS in containers and how configuration, se
 ```
 
 This starts PostgreSQL first, prepares databases, then starts API services and RabbitMQ.
+`docker-compose.yml` also includes a `postgres-permissions` bootstrap service that reapplies
+database ownership and grants on every startup, so existing volumes stay compatible.
 
 ### Script Parameters
 
