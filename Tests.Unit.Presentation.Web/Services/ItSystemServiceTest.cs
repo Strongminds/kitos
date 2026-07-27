@@ -1239,8 +1239,11 @@ namespace Tests.Unit.Presentation.Web.Services
         {
             //Arrange
             var (root, createdItSystems) = CreateHierarchy();
+            foreach (var system in createdItSystems)
+            {
+                ExpectAllowReadsReturns(system, true);
+            }
 
-            ExpectAllowReadsReturns(root, true);
             ExpectGetSystemReturns(root.Id, root);
 
             //Act
@@ -1306,7 +1309,11 @@ namespace Tests.Unit.Presentation.Web.Services
             //Arrange
             var (root, createdItSystems) = CreateHierarchy();
 
-            ExpectAllowReadsReturns(root, true);
+            foreach (var system in createdItSystems)
+            {
+                ExpectAllowReadsReturns(system, true);
+            }
+
             ExpectGetSystemReturns(root.Id, root);
             ExpectResolveIdReturns<ItSystem>(root.Uuid, root.Id);
 
@@ -1348,6 +1355,77 @@ namespace Tests.Unit.Presentation.Web.Services
             //Assert
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void Get_Hierarchy_Filters_Out_Systems_User_Cannot_Read()
+        {
+            //Arrange
+            var (root, createdItSystems) = CreateHierarchy();
+            var child = createdItSystems[1];
+            var grandchild = createdItSystems[2];
+
+            ExpectAllowReadsReturns(root, true);
+            ExpectAllowReadsReturns(child, false);
+            ExpectAllowReadsReturns(grandchild, true);
+            ExpectGetSystemReturns(root.Id, root);
+
+            //Act
+            var result = _sut.GetCompleteHierarchy(root.Id);
+
+            //Assert
+            Assert.True(result.Ok);
+            var hierarchy = result.Value.ToList();
+            Assert.Equal(2, hierarchy.Count);
+            Assert.Contains(root, hierarchy);
+            Assert.DoesNotContain(child, hierarchy);
+            Assert.Contains(grandchild, hierarchy);
+        }
+
+        [Fact]
+        public void Get_Hierarchy_Returns_Forbidden_When_No_Systems_Are_Readable()
+        {
+            //Arrange
+            var (root, createdItSystems) = CreateHierarchy();
+            foreach (var system in createdItSystems)
+            {
+                ExpectAllowReadsReturns(system, false);
+            }
+
+            ExpectGetSystemReturns(root.Id, root);
+
+            //Act
+            var result = _sut.GetCompleteHierarchy(root.Id);
+
+            //Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void Get_Hierarchy_By_Uuid_Filters_Out_Systems_User_Cannot_Read()
+        {
+            //Arrange
+            var (root, createdItSystems) = CreateHierarchy();
+            var child = createdItSystems[1];
+            var grandchild = createdItSystems[2];
+
+            ExpectAllowReadsReturns(root, true);
+            ExpectAllowReadsReturns(child, false);
+            ExpectAllowReadsReturns(grandchild, true);
+            ExpectGetSystemReturns(root.Id, root);
+            ExpectResolveIdReturns<ItSystem>(root.Uuid, root.Id);
+
+            //Act
+            var result = _sut.GetCompleteHierarchyByUuid(root.Uuid);
+
+            //Assert
+            Assert.True(result.Ok);
+            var hierarchy = result.Value.ToList();
+            Assert.Equal(2, hierarchy.Count);
+            Assert.Contains(root, hierarchy);
+            Assert.DoesNotContain(child, hierarchy);
+            Assert.Contains(grandchild, hierarchy);
         }
 
         [Fact]

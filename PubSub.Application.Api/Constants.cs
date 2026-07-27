@@ -31,6 +31,11 @@
                 public const string PubSubApiKey = "PUBSUB_API_KEY";
             }
 
+            public static class Database
+            {
+                public const string AutoMigrate = "PUBSUB_AUTO_MIGRATE";
+            }
+
             public static class Certificate
             {
                 public const string CertPassword = "CERT_PASSWORD";

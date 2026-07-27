@@ -1,6 +1,8 @@
 using AutoMapper;
+using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Presentation.Web;
@@ -62,6 +64,7 @@ var app = builder.Build();
 dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
     app.Services.GetRequiredService<IHttpContextAccessor>());
 
+app.EnsurePostgreSqlExtensions();
 app.UseKitosPipeline();
 app.MapKitosEndpoints();
 app.InitializeHangfireJobs();
