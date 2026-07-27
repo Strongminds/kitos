@@ -25,22 +25,6 @@ services:
       timeout: 3s
       retries: 10
 
-  postgres-permissions:
-    image: postgres:17
-    container_name: kitos-postgres-permissions
-    restart: "no"
-    environment:
-      PGPASSWORD: postgres
-      APP_USER: kitos
-    volumes:
-      - ./DeploymentScripts/docker/apply-postgres-permissions.sh:/scripts/apply-postgres-permissions.sh:ro
-    entrypoint:
-      - /bin/sh
-      - /scripts/apply-postgres-permissions.sh
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: kitos-rabbitmq
@@ -96,8 +80,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      postgres-permissions:
-        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
 
@@ -124,8 +106,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      postgres-permissions:
-        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
       kitos-api:
