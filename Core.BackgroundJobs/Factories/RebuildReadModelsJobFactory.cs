@@ -54,6 +54,11 @@ namespace Core.BackgroundJobs.Factories
                     getIds = () => _contractRepository.AsQueryable().Select(x => x.Id).AsEnumerable();
                     updateSourceCategory = PendingReadModelUpdateSourceCategory.ItContract;
                     break;
+                case ReadModelRebuildScope.ItContractSupplier:
+                    id = StandardJobIds.RebuildItContractSupplierReadModels;
+                    getIds = () => _contractRepository.AsQueryable().Select(x => x.Id).AsEnumerable();
+                    updateSourceCategory = PendingReadModelUpdateSourceCategory.ItContract_SupplierOverview;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
             }
