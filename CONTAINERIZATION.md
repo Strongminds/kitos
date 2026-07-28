@@ -9,7 +9,7 @@ This document describes how to run KITOS in containers and how configuration, se
 .\StartLocalDocker.ps1
 ```
 
-This starts PostgreSQL first, prepares databases, then starts API services and RabbitMQ.
+This starts PostgreSQL first, prepares databases (role + owner-assigned databases), runs migrations, then starts API services and RabbitMQ.
 
 ### Script Parameters
 
@@ -46,7 +46,7 @@ Skip PubSub database prep:
 For quick restarts without the PowerShell script overhead, use `podman compose` directly:
 
 ```powershell
-# Start/restart all services (assumes databases already exist)
+# Start/restart all services (assumes databases already exist and schema is already up to date)
 podman compose up -d
 
 # Stop all services

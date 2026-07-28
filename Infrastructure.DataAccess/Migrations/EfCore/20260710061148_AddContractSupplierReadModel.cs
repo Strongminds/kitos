@@ -15,8 +15,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
             var uuidType = isSqlServer ? InfrastructureConstants.SqlServerUuidType : InfrastructureConstants.PostgreSqlUuidType;
             var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
-            var dateTimeType = isSqlServer ? InfrastructureConstants.SqlServerDateTimeType : InfrastructureConstants.PostgreSqlDateTimeType;
             var boolType = isSqlServer ? "bit" : "boolean";
+            var supplierNameType = isSqlServer ? "nvarchar(100)" : "character varying(100)";
+            var supplierCvrType = isSqlServer ? "nvarchar(10)" : "character varying(10)";
+            var highestCriticalityNameType = isSqlServer ? "nvarchar(150)" : "character varying(150)";
+            var contractNameType = isSqlServer ? "nvarchar(200)" : "character varying(200)";
 
             migrationBuilder.AddColumn<bool>(
                 name: "HasInternalSupplier",
@@ -34,11 +37,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     SupplierId = table.Column<int>(type: intType, nullable: false),
                     SupplierType = table.Column<int>(type: intType, nullable: false),
                     SupplierUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    SupplierName = table.Column<string>(maxLength: 100, nullable: true),
-                    SupplierCvr = table.Column<string>(maxLength: 10, nullable: true),
+                    SupplierName = table.Column<string>(type: supplierNameType, maxLength: 100, nullable: true),
+                    SupplierCvr = table.Column<string>(type: supplierCvrType, maxLength: 10, nullable: true),
                     IsSupplierDisabled = table.Column<bool>(type: boolType, nullable: false),
                     HighestCriticalityUuid = table.Column<Guid>(type: uuidType, nullable: true),
-                    HighestCriticalityName = table.Column<string>(maxLength: 150, nullable: true),
+                    HighestCriticalityName = table.Column<string>(type: highestCriticalityNameType, maxLength: 150, nullable: true),
                     HighestCriticalityRank = table.Column<int>(type: intType, nullable: true),
                     ContractsAtHighestCriticalityCsv = table.Column<string>(type: maxTextType, nullable: true)
                 },
@@ -61,7 +64,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ContractId = table.Column<int>(type: intType, nullable: false),
                     ContractUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    ContractName = table.Column<string>(maxLength: 200, nullable: true),
+                    ContractName = table.Column<string>(type: contractNameType, maxLength: 200, nullable: true),
                     ParentId = table.Column<int>(type: intType, nullable: false)
                 },
                 constraints: table =>
