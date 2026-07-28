@@ -199,8 +199,20 @@ namespace Presentation.Web.Infrastructure.DI
                 SingleThreadedMailClient inner;
                 if (deliveryMethod.Equals("SpecifiedPickupDirectory", StringComparison.OrdinalIgnoreCase))
                 {
-                    var pickupDir = smtpSection["PickupDirectoryLocation"] ?? @"c:\temp\maildrop\";
-                    Directory.CreateDirectory(pickupDir);
+                    var configuredPickupDir = smtpSection["PickupDirectoryLocation"];
+                    var pickupDir = string.IsNullOrWhiteSpace(configuredPickupDir)
+                        ? Path.Combine(Path.GetTempPath(), "kitos-maildrop")
+                        : configuredPickupDir;
+
+                    try
+                    {
+                        Directory.CreateDirectory(pickupDir);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException($"Unable to create SMTP pickup directory '{pickupDir}'. Check Smtp:PickupDirectoryLocation.", ex);
+                    }
+
                     inner = new SingleThreadedMailClient(pickupDir);
                 }
                 else
