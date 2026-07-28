@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using Npgsql;
@@ -199,6 +200,7 @@ namespace Presentation.Web.Infrastructure.DI
                 if (deliveryMethod.Equals("SpecifiedPickupDirectory", StringComparison.OrdinalIgnoreCase))
                 {
                     var pickupDir = smtpSection["PickupDirectoryLocation"] ?? @"c:\temp\maildrop\";
+                    Directory.CreateDirectory(pickupDir);
                     inner = new SingleThreadedMailClient(pickupDir);
                 }
                 else
