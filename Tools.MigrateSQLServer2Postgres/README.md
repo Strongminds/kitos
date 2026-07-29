@@ -12,13 +12,8 @@ The CLI supports both scripted execution and an interactive Spectre.Console wiza
 4. Data migration
 5. Validation
 
-Fresh PostgreSQL targets are bootstrapped from the same canonical artifacts as the normal deployment flow:
-
-* `DeploymentScripts/Baseline.PostgreSql.FullModel.sql`
-* `dbo.__EFMigrationsHistory` pre-populated with all EF Core migrations whose timestamp falls within the baseline's coverage window (determined by the `baseline-covers-to:` marker in the baseline SQL file; falls back to only `InitialBaseline` when the marker is absent)
-* post-baseline EF Core migrations applied afterwards
-
-This keeps the migration target aligned with the runtime application schema instead of rebuilding a PostgreSQL-shaped schema from SQL Server metadata.
+Fresh PostgreSQL targets are bootstrapped by running the EF Core migration chain from an empty database.
+`InitialBaseline` now carries baseline schema creation directly, so there is no separate baseline SQL bootstrap step and no migration pre-marking.
 When a PostgreSQL migrations bundle is available, the tool will only use it if it is newer than the migration source inputs; otherwise it falls back to `dotnet ef` from the current repository so newly-added migrations are not missed silently.
 
 Interactive mode can:

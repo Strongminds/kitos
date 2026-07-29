@@ -19,7 +19,7 @@ namespace Presentation.Web.Swagger
 
             foreach (var response in operation.Responses ?? new OpenApiResponses())
             {
-                foreach (var content in response.Value.Content?.Values ?? Enumerable.Empty<OpenApiMediaType>())
+                foreach (var content in response.Value.Content?.Values ?? Enumerable.Empty<IOpenApiMediaType>())
                 {
                     if (content.Schema != null) yield return content.Schema;
                     if (content.Schema?.Items != null) yield return content.Schema.Items;
@@ -33,7 +33,7 @@ namespace Presentation.Web.Swagger
 
             if (operation.RequestBody != null)
             {
-                foreach (var content in operation.RequestBody.Content?.Values ?? Enumerable.Empty<OpenApiMediaType>())
+                foreach (var content in operation.RequestBody.Content?.Values ?? Enumerable.Empty<IOpenApiMediaType>())
                 {
                     if (content.Schema != null) yield return content.Schema;
                 }
