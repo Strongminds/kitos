@@ -7,9 +7,6 @@
         public string Column { get; set; }
         public string Message { get; set; }
 
-        public string PrintableError
-        {
-            get { return ToString(); }
-        }
+        public string? PrintableError => ToString();
     }
 }

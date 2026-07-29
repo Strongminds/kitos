@@ -105,7 +105,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
                 return FromOperationFailure(result.Error);
             }
-            catch (Exception e)
+            catch
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }

@@ -352,9 +352,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             {
                 RightsHolderUuid = withoutRightsHolder ? Guid.Empty : org.Uuid,
                 ExposedBySystemUuid = withoutExposingSystem ? Guid.Empty : exposingSystem.Uuid,
-                Name = withoutName ? null : A<string>(),
-                Description = wihtoutDescription ? null : A<string>(),
-                UrlReference = withoutUrlReference ? null : A<string>()
+                Name = withoutName ? string.Empty : A<string>(),
+                Description = wihtoutDescription ? string.Empty : A<string>(),
+                UrlReference = withoutUrlReference ? string.Empty : A<string>()
             };
 
             //Act
@@ -484,6 +484,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
 
             var updateRequest = new RightsHolderWritableItInterfacePropertiesDTO
             {
+                Name = "",
                 ExposedBySystemUuid = A<Guid>()
             };
 
@@ -558,9 +559,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var input = new RightsHolderWritableItInterfacePropertiesDTO()
             {
                 ExposedBySystemUuid = withoutExposingSystem ? Guid.Empty : newExposingSystem.Uuid,
-                Name = withoutName ? null : A<string>(),
-                Description = wihtoutDescription ? null : A<string>(),
-                UrlReference = withoutUrlReference ? null : A<string>()
+                Name = withoutName ? string.Empty : A<string>(),
+                Description = wihtoutDescription ? string.Empty : A<string>(),
+                UrlReference = withoutUrlReference ? string.Empty : A<string>()
             };
 
             //Act

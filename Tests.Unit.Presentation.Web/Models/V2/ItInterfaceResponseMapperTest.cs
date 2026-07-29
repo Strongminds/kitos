@@ -138,7 +138,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             foreach (var dataRow in expected.DataRows)
             {
-                var matchingRow = Assert.Single(actualData.Where(x => x.Uuid == dataRow.Uuid));
+                var matchingRow = Assert.Single(actualData, x => x.Uuid == dataRow.Uuid);
                 AssertIdentityReference(dataRow.DataType, matchingRow.DataType);
                 Assert.Equal(dataRow.Data, matchingRow.Description);
             }
@@ -155,7 +155,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(expected.GetActiveCvr(), actual.Cvr);
         }
 
-        private static void AssertIdentityReference<T>(T expected, IdentityNamePairResponseDTO actual) where T : IHasName, IHasUuid
+        private static void AssertIdentityReference<T>(T? expected, IdentityNamePairResponseDTO actual) where T : IHasName, IHasUuid
         {
             Assert.Equivalent(expected?.Transform(u => new IdentityNamePairResponseDTO(u.Uuid, u.Name)), actual);
         }

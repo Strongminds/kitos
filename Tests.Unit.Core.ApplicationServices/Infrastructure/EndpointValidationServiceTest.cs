@@ -6,6 +6,7 @@ using Moq;
 using Serilog;
 using Xunit;
 
+#pragma warning disable xUnit1030
 namespace Tests.Unit.Core.Infrastructure
 {
     public class EndpointValidationServiceTest
@@ -63,3 +64,4 @@ namespace Tests.Unit.Core.Infrastructure
         }
     }
 }
+#pragma warning restore xUnit1030

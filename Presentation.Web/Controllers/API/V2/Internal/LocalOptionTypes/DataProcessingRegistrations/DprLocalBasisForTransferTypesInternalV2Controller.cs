@@ -14,17 +14,15 @@ using DataProcessingRegistration = Core.DomainModel.GDPR.DataProcessingRegistrat
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProcessingRegistrations
 {
     [Route("api/v2/internal/data-processing/{organizationUuid}/local-option-types/basis-for-transfer-types")]
-    public class DprLocalBasisForTransferTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption>
+    public class DprLocalBasisForTransferTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration,
+            DataProcessingBasisForTransferOption> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingBasisForTransferOption,
+            DataProcessingRegistration, DataProcessingBasisForTransferOption>(localOptionTypeService, responseMapper,
+            writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public DprLocalBasisForTransferTypesInternalV2Controller(IGenericLocalOptionsService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

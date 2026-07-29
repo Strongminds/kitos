@@ -4,17 +4,17 @@ namespace Presentation.Web.Models.API.V1.GDPR
 {
     public class SubDataProcessorResponseDTO : ShallowOrganizationDTO
     {
-        public NamedEntityWithExpirationStatusDTO BasisForTransfer { get; set; }
+        public NamedEntityWithExpirationStatusDTO? BasisForTransfer { get; set; }
         public YesNoUndecidedOption? TransferToInsecureThirdCountries { get; set; }
-        public NamedEntityWithExpirationStatusDTO InsecureCountry { get; set; }
+        public NamedEntityWithExpirationStatusDTO? InsecureCountry { get; set; }
 
         public SubDataProcessorResponseDTO(
             int id,
             string name,
             string cvrNumber,
-            NamedEntityWithExpirationStatusDTO basisForTransfer,
+            NamedEntityWithExpirationStatusDTO? basisForTransfer,
             YesNoUndecidedOption? transferToInsecureThirdCountries,
-            NamedEntityWithExpirationStatusDTO insecureCountry) : base(id, name)
+            NamedEntityWithExpirationStatusDTO? insecureCountry) : base(id, name)
         {
             BasisForTransfer = basisForTransfer;
             TransferToInsecureThirdCountries = transferToInsecureThirdCountries;

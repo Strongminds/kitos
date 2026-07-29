@@ -190,7 +190,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         /// <summary>
         /// Transfer multiple contracts
         /// </summary>
-        /// <param name="parentUuid"></param>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPatch]

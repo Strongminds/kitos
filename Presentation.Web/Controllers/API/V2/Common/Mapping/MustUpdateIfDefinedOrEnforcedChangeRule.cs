@@ -17,7 +17,7 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
             _enforceDefined = enforceDefined;
         }
 
-        private bool ClientRequestsChangeTo<TRoot, TProperty>(Expression<Func<TRoot, TProperty>> propertySelection)
+        private bool ClientRequestsChangeTo<TRootProperty, TProperty>(Expression<Func<TRootProperty, TProperty>> propertySelection)
         {
             var expression = propertySelection.Body;
             while (expression.NodeType == ExpressionType.Convert) //Called if implicit upcast is applied by the compiler

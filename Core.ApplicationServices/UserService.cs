@@ -119,7 +119,7 @@ namespace Core.ApplicationServices
             if (sendMailOnCreation)
                 IssueAdvisMail(savedUser, false, orgId);
 
-            return savedUser;
+            return savedUser!;
         }
 
         public void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId)

@@ -344,7 +344,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces
         /// Deactivates an IT-Interface
         /// </summary>
         /// <param name="uuid">Specific IT-Interface UUID</param>
-        /// <param name="deactivationReasonDTO">Reason for deactivation</param>
+        /// <param name="request">Reason for deactivation</param>
         /// <returns>No content</returns>
         [HttpDelete]
         [AllowRightsHoldersAccess]

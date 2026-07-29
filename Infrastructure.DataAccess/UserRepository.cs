@@ -27,12 +27,12 @@ namespace Infrastructure.DataAccess
             return _context.Users.AsQueryable().Where(x => x.IsGlobalAdmin);
         }
 
-        public User GetByEmail(string email)
+        public User? GetByEmail(string email)
         {
             return _context.Users.SingleOrDefault(u => u.Email == email);
         }
 
-        public User GetById(int id)
+        public User? GetById(int id)
         {
             return _context.Users.SingleOrDefault(u => u.Id == id);
         }

@@ -203,7 +203,7 @@ public sealed class KitosNpgsqlMigrationsSqlGenerator(
         operation.NewName = GetPatchedIndexName(operation.NewName, operation.Table);
     }
 
-    private static string? GetPatchedIndexName(string? indexName, string? tableName)
+    private static string GetPatchedIndexName(string indexName, string? tableName)
     {
         if (string.IsNullOrWhiteSpace(indexName))
         {
@@ -232,7 +232,7 @@ public sealed class KitosNpgsqlMigrationsSqlGenerator(
         return $"{candidate[..prefixLength]}_{hash}";
     }
 
-    private static string? GetPatchedConstraintName(string? constraintName, string? tableName)
+    private static string GetPatchedConstraintName(string constraintName, string? tableName)
     {
         if (string.IsNullOrWhiteSpace(constraintName))
         {

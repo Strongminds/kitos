@@ -216,10 +216,11 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             //Assert
             if (shouldIncludeDeactivated)
             {
-                Assert.Equal(2, result.Count());
-                var activeSystemDTO = result.First(x => x.Uuid.Equals(active));
+                var resultList = result.ToList();
+                Assert.Equal(2, resultList.Count);
+                var activeSystemDTO = resultList.First(x => x.Uuid.Equals(active));
                 Assert.False(activeSystemDTO.Deactivated);
-                var inactiveSystemDTO = result.First(x => x.Uuid.Equals(inactive));
+                var inactiveSystemDTO = resultList.First(x => x.Uuid.Equals(inactive));
                 Assert.True(inactiveSystemDTO.Deactivated);
             }
             else
@@ -269,7 +270,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             //Arrange
             var (userId, token, createdOrganization) = await CreateRightsHolderAccessUserInNewOrganizationAndGetFullUserAsync();
             var input = await PrepareCreateRightsHolderSystemRequestAsync(withBusinessType, withKleUuid, withParent, withFormerName, withExternalUuid, createdOrganization);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(r => r.AsQueryable().ByUuid(userId));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(r => r.AsQueryable().ByUuid(userId)!);
 
             //Act - create it and GET it to verify that response DTO matches input requests AND that a consecutive GET returns the same data
             var createdSystem = await ItSystemV2Helper.CreateRightsHolderSystemAsync(token, input);

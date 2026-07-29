@@ -13,17 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
     [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/local-register-types")]
-    public class ItSystemLocalRegisterTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalRegisterType, ItSystemUsage, RegisterType>
+    public class ItSystemLocalRegisterTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalRegisterType, ItSystemUsage, RegisterType> localRegisterTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalRegisterType, ItSystemUsage, RegisterType>(
+            localRegisterTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalRegisterType, ItSystemUsage, RegisterType> _localRegisterTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItSystemLocalRegisterTypesInternalV2Controller(IGenericLocalOptionsService<LocalRegisterType, ItSystemUsage, RegisterType> localRegisterTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localRegisterTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

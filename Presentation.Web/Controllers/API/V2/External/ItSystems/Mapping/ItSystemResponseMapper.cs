@@ -6,10 +6,9 @@ using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.System;
 using Presentation.Web.Models.API.V2.Types.Shared;
-using Presentation.Web.Models.API.V2.Types.System;
 using System;
 using System.Collections.Generic;
-using Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping;
+using Presentation.Web.Models.API.V2.Response.Organization;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {
@@ -24,7 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 
         public RightsHolderItSystemResponseDTO ToRightsHolderResponseDTO(ItSystem itSystem)
         {
-            var dto = new RightsHolderItSystemResponseDTO();
+            var dto = new RightsHolderItSystemResponseDTO { ExternalReferences = [], KLE = [], MainContractSuppliers = [] };
             MapBaseInformation(itSystem, dto);
             return dto;
         }
@@ -43,7 +42,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 Scope = itSystem.AccessModifier.ToChoice(),
                 OrganizationContext = itSystem.Organization?.MapShallowOrganizationResponseDTO(),
                 LegalName = itSystem.LegalName,
-                LegalDataProcessorName = itSystem.LegalDataProcessorName
+                LegalDataProcessorName = itSystem.LegalDataProcessorName,
+                ExternalReferences = [],
+                KLE = [],
+                MainContractSuppliers = []
             };
 
             MapBaseInformation(itSystem, dto);
@@ -63,12 +65,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             };
         }
 
-        private static IList<LicensingAndCodeModelChoice> MapLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> domainModels)
-        {
-            return domainModels.Select(domain => 
-                 domain.ToChoice()).ToList();
-        }
-        
         private static Models.API.V2.Types.System.SystemDeletionConflict MapConflict(Core.ApplicationServices.Model.System.SystemDeletionConflict arg)
         {
             return arg.ToChoice();
@@ -96,9 +92,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             dto.MainContractSuppliers =
                 itSystem.Usages.Select(x => x.MainContract?.ItContract.Supplier)
                     .Where(x => x != null)
-                    .DistinctBy(x => x.Uuid)
-                    .Select(x => x.MapShallowOrganizationResponseDTO())
-                    .ToList();
+                    .DistinctBy(x => x?.Uuid)
+                    .Select(x => x?.MapShallowOrganizationResponseDTO())
+                    .ToList() ?? new List<ShallowOrganizationResponseDTO?>();
         }
     }
 }

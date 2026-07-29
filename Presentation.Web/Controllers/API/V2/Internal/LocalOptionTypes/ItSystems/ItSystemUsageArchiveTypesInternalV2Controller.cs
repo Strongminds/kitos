@@ -14,17 +14,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
     [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/archive-types")]
-    public class ItSystemLocalArchiveTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalArchiveType, ItSystemUsage, ArchiveType>
+    public class ItSystemLocalArchiveTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalArchiveType, ItSystemUsage, ArchiveType> localArchiveTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalArchiveType, ItSystemUsage, ArchiveType>(
+            localArchiveTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalArchiveType, ItSystemUsage, ArchiveType> _localArchiveTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItSystemLocalArchiveTypesInternalV2Controller(IGenericLocalOptionsService<LocalArchiveType, ItSystemUsage, ArchiveType> localArchiveTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localArchiveTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

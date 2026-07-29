@@ -352,7 +352,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         private async Task<(User user, string token)> CreateApiUserAsync(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid)!);
             return (user, userAndGetToken.token);
         }
 

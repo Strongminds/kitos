@@ -172,7 +172,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             };
         }
 
-        private static ProcurementPlanDTO MapProcurementPlan(ItContract contract)
+        private static ProcurementPlanDTO? MapProcurementPlan(ItContract contract)
         {
             if (!contract.ProcurementPlanQuarter.HasValue)
                 return null;

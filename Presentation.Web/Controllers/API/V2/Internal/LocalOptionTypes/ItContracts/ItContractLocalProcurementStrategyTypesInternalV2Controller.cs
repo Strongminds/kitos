@@ -13,17 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/procurement-strategy-types")]
-    public class ItContractLocalProcurementStrategyTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalProcurementStrategyType, ItContract, ProcurementStrategyType>
+    public class ItContractLocalProcurementStrategyTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalProcurementStrategyType, ItContract, ProcurementStrategyType>
+            localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalProcurementStrategyType, ItContract,
+            ProcurementStrategyType>(localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalProcurementStrategyType, ItContract, ProcurementStrategyType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalProcurementStrategyTypesInternalV2Controller(IGenericLocalOptionsService<LocalProcurementStrategyType, ItContract, ProcurementStrategyType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

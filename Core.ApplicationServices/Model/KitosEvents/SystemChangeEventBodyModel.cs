@@ -16,7 +16,7 @@ public class SystemChangeEventBodyModel : IEventBody
         var keyValuePairs = new Dictionary<string, object> { { nameof(SystemUuid), SystemUuid } };
 
         if (SystemName.HasChange) keyValuePairs.Add(nameof(SystemName), SystemName.NewValue);
-        if (DataProcessorUuid.HasChange) keyValuePairs.Add(nameof(DataProcessorUuid), DataProcessorUuid.NewValue.HasValue ? DataProcessorUuid.NewValue.Value : null);
+        if (DataProcessorUuid.HasChange) keyValuePairs.Add(nameof(DataProcessorUuid), DataProcessorUuid.NewValue?.HasValue == true ? DataProcessorUuid.NewValue.Value : Guid.Empty);
         if (DataProcessorName.HasChange) keyValuePairs.Add(nameof(DataProcessorName), DataProcessorName.NewValue);
 
         return keyValuePairs;

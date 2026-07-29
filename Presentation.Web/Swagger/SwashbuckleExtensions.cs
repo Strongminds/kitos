@@ -47,7 +47,7 @@ namespace Presentation.Web.Swagger
 
         private static IEnumerable<IOpenApiSchema> EnumerateSchemaRecursive(this IOpenApiSchema schema, IDictionary<string, IOpenApiSchema> schemaByTypeName, ISet<string> visitedDefinitions, bool isRoot = true)
         {
-            var root = schema?.GetRootSchemaOrNull();
+            var root = schema.GetRootSchemaOrNull();
             var rootId = (root as OpenApiSchemaReference)?.Id;
             if (rootId == null) yield break;
 

@@ -16,7 +16,7 @@ namespace Presentation.Web.Models.API.V1.References
 
         public bool MasterReference { get; set; }
 
-        public NamedEntityDTO LastChangedByUser { get; set; }
+        public NamedEntityDTO? LastChangedByUser { get; set; }
 
         public DateTime LastChanged { get; set; }
     }

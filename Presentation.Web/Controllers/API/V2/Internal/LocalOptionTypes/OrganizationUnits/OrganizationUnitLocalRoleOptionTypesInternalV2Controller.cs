@@ -13,16 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.OrganizationUnits
 {
     [Route("api/v2/internal/organization-units/{organizationUuid}/local-option-types/organization-unit-roles")]
-    public class OrganizationUnitLocalRoleOptionTypesInternalV2Controller: BaseLocalRoleOptionTypesInternalV2Controller<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>
+    public class OrganizationUnitLocalRoleOptionTypesInternalV2Controller(
+        IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>
+            localRoleOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRoleOptionTypesInternalV2Controller<LocalOrganizationUnitRole, OrganizationUnitRight,
+            OrganizationUnitRole>(localRoleOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> _localOrganizationUnitRoleOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public OrganizationUnitLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRoleOptionResponseDTO>), HttpStatusCode.OK)]

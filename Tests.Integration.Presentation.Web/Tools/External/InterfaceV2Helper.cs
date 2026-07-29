@@ -322,7 +322,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
                 throw new ArgumentException("Selector must be a simple member access", nameof(propertySelector));
 
             var propertyName = m.Member.Name;
-            var kvp = new KeyValuePair<string, object>(propertyName, value);
+            var kvp = new KeyValuePair<string, object>(propertyName, value!);
             return await SendPatchInterfaceAsync(token, uuid, kvp);
         }
     }

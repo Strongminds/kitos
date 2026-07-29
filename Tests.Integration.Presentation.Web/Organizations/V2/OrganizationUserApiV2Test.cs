@@ -241,14 +241,14 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         private async Task<(User user, string token)> CreateApiUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, organization.Uuid, true, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid)!);
             return (user, userAndGetToken.token);
         }
 
         private async Task<User> CreateUser(ShallowOrganizationResponseDTO organization)
         {
             var userAndGetToken = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, organization.Uuid, false);
-            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid));
+            var user = DatabaseAccess.MapFromEntitySet<User, User>(x => x.AsQueryable().ByUuid(userAndGetToken.userUuid)!);
             return user;
         }
 

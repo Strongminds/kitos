@@ -588,7 +588,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             using var putResponse = await SendPutUpdateStsOrganizationConnectionAsync(targetOrgUuid, levels - 1, cookie);
 
             //Assert
-            var convertedUnit = DatabaseAccess.MapFromEntitySet<OrganizationUnit, OrganizationUnit>(repo => repo.AsQueryable().ByUuid(expectedConversionUuid));
+            var convertedUnit = DatabaseAccess.MapFromEntitySet<OrganizationUnit, OrganizationUnit>(repo => repo.AsQueryable().ByUuid(expectedConversionUuid)!);
             Assert.Equal(OrganizationUnitOrigin.Kitos, convertedUnit.Origin);
             Assert.Null(convertedUnit.ExternalOriginUuid);
         }

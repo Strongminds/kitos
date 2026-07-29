@@ -1125,7 +1125,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             return system;
         }
 
-        private static ExpectedUsersIntervalDTO UserIntervalDtoFromUerCount(UserCount count)
+        private static ExpectedUsersIntervalDTO? UserIntervalDtoFromUerCount(UserCount count)
         {
             int lower = 0;
             int? upper = null;
