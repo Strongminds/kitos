@@ -1,8 +1,6 @@
 using AutoMapper;
-using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Presentation.Web;
@@ -31,6 +29,11 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog
+var configuredLogPath = builder.Configuration["AppSettings:LogFilePath"];
+builder.Configuration["Serilog:WriteTo:0:Args:path"] = string.IsNullOrWhiteSpace(configuredLogPath)
+    ? System.IO.Path.Combine(System.IO.Path.GetTempPath(), "kitos", "Kitos-.txt")
+    : configuredLogPath;
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
