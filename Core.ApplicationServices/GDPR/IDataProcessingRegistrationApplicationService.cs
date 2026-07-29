@@ -34,10 +34,10 @@ namespace Core.ApplicationServices.GDPR
         Result<ItSystemUsage, OperationError> RemoveSystem(int id, int systemId);
         Result<DataProcessingRegistration, OperationError> UpdateOversightInterval(int id, YearMonthIntervalOption oversightInterval);
         Result<DataProcessingRegistration, OperationError> UpdateOversightIntervalRemark(int id, string remark);
-        Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize);
+        Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize);
         Result<Organization, OperationError> AssignDataProcessor(int id, int organizationId);
         Result<Organization, OperationError> RemoveDataProcessor(int id, int organizationId);
-        Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize);
+        Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize);
         Result<DataProcessingRegistration, OperationError> SetSubDataProcessorsState(int id, YesNoUndecidedOption state);
         Result<SubDataProcessor, OperationError> AssignSubDataProcessor(int id, int organizationId, Maybe<SubDataProcessorDetailsParameters> details);
         Result<SubDataProcessor, OperationError> UpdateSubDataProcessor(int id, int organizationId, SubDataProcessorDetailsParameters details);

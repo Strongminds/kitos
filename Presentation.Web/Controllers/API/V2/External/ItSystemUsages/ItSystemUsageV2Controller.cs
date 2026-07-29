@@ -327,6 +327,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Creates a system relation FROM the system usage to another
         /// </summary>
         /// <param name="systemUsageUuid"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/system-relations")]
@@ -383,6 +384,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// </summary>
         /// <param name="systemUsageUuid"></param>
         /// <param name="systemRelationUuid"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/system-relations/{systemRelationUuid}")]
@@ -431,6 +433,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Creates an external reference for the system usage
         /// </summary>
         /// <param name="systemUsageUuid"></param>
+        /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("{systemUsageUuid}/external-references")]
@@ -457,6 +460,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// </summary>
         /// <param name="systemUsageUuid"></param>
         /// <param name="externalReferenceUuid"></param>
+        /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("{systemUsageUuid}/external-references/{externalReferenceUuid}")]

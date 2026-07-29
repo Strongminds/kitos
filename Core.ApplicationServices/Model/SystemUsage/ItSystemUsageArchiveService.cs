@@ -17,7 +17,6 @@ namespace Core.ApplicationServices.Model.SystemUsage
         IOrganizationService organizationService,
         IAuthorizationContext authorizationContext,
         IOrganizationalUserContext organizationalUserContext,
-        IUserRepository userRepository,
         IGenericRepository<ItSystemUsageArchive> archiveRepository) : IItSystemUsageArchiveService
     {
         public Result<ItSystemUsageArchive, OperationError> Create(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters)
@@ -94,13 +93,13 @@ namespace Core.ApplicationServices.Model.SystemUsage
 
         private static List<ArchiveReference> CreateArchiveReferences(ArchiveItSystemUsageParameters parameters)
         {
-            return parameters.ArchiveReferences?
+            return parameters.ArchiveReferences
                 .Select(reference => new ArchiveReference
                 {
                     Label = reference.Name,
                     Url = reference.Url
                 })
-                .ToList() ?? [];
+                .ToList();
         }
 
         private static ItSystemUsageArchive CreateArchive(ItSystemUsage systemUsage, ArchiveItSystemUsageParameters parameters, ItSystemUsageArchiveSnapshot snapshot, List<ArchiveReference> archiveReferences, int archivedById)

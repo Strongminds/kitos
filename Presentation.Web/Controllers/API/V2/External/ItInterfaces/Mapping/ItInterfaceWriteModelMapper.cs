@@ -69,7 +69,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
             var rule = CreateChangeRule<IItInterfaceWritablePropertiesRequestDTO>(enforceFallbackIfNotProvided);
             MapCommon(source, destination, enforceFallbackIfNotProvided);
             destination.ExposingSystemUuid = rule.MustUpdate(x => x.ExposedBySystemUuid) ? source.ExposedBySystemUuid.AsChangedValue() : OptionalValueChange<Guid?>.None;
-            destination.Note = rule.MustUpdate(x => x.Note) ? source.Note.AsChangedValue() : OptionalValueChange<string>.None;
+            destination.Note = rule.MustUpdate(x => x.Note) ? source.Note.AsChangedValue()! : OptionalValueChange<string>.None;
             destination.Deactivated = rule.MustUpdate(x => x.Deactivated) ? source.Deactivated.AsChangedValue() : OptionalValueChange<bool>.None;
             destination.InterfaceTypeUuid = rule.MustUpdate(x => x.ItInterfaceTypeUuid) ? source.ItInterfaceTypeUuid.AsChangedValue() : OptionalValueChange<Guid?>.None;
             destination.Scope = rule.MustUpdate(x => x.Scope) ? source.Scope.FromChoice().AsChangedValue() : OptionalValueChange<AccessModifier>.None;

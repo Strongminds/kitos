@@ -266,7 +266,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _systemAssignmentService.RemoveSystem(registration, systemId));
         }
 
-        public Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -297,7 +297,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _dataProcessingRegistrationDataProcessorAssignmentService.RemoveDataProcessor(registration, organizationId));
         }
 
-        public Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 

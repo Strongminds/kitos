@@ -2765,9 +2765,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var newRelation = new SystemRelation(itSystemUsage);
             ExpectGetSystemUsageReturns(systemUsageUuid, itSystemUsage);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters.ToSystemUsageUuid, toSystemUsageId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId ?? Maybe<int>.None);
             ExpectAddSystemRelationReturns(itSystemUsage, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters.Description, systemRelationParameters.UrlReference, newRelation);
 
             //Act
@@ -2919,9 +2919,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectGetSystemUsageReturns(systemUsageUuid, itSystemUsage);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<SystemRelation>(relationUuid, relationId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters.ToSystemUsageUuid, toSystemUsageId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId ?? Maybe<int>.None);
             ExpectModifyRelationReturns(itSystemUsage, relationId, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters.Description, systemRelationParameters.UrlReference, newRelation);
 
             //Act
@@ -3390,8 +3390,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 {
                     WebAccessibilityCompliance = Maybe<YesNoPartiallyOption>.None.AsChangedValue(),
                     LastWebAccessibilityCheck = Maybe<DateTime>.None.AsChangedValue(),
-                    WebAccessibilityNotes =
-                ((string)null).AsChangedValue()
+                    WebAccessibilityNotes = ((string)null!).AsChangedValue()!
                 }
             };
 
@@ -3630,7 +3629,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RiskAssessmentConducted = new ChangedValue<YesNoDontKnowIrrelevant?>(null),
                     RiskAssessmentConductedDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
-                    RiskAssessmentNotes = new ChangedValue<string>(null),
+                    RiskAssessmentNotes = new ChangedValue<string>(null!),
                     PlannedRiskAssessmentDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentResult = new ChangedValue<RiskLevel?>(null),
                     DPIAConducted = new ChangedValue<DataOptions?>(null),

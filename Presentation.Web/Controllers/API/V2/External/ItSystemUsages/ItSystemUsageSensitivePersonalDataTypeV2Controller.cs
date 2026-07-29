@@ -22,6 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns It-System usage sensitive personal data types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the sensitive personal data types availability</param>
+        /// <param name="pagination">pagination parameters for the query</param>
         /// <returns>A list of available It-System usage sensitive personal data types</returns>
         [HttpGet]
         [Route("")]
@@ -30,7 +31,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
