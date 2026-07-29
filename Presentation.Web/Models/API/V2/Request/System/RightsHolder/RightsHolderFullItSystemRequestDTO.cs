@@ -38,7 +38,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(Core.DomainModel.ItSystem.ItSystem.MaxNameLength)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Former name of IT-System (if any)
@@ -49,7 +49,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// Description
         /// </summary>
         [Required(AllowEmptyStrings = false)]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// User defined external references.

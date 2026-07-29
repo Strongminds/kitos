@@ -22,6 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// Returns It-Contract contract template type options 
         /// </summary>
         /// <param name="organizationUuid">organization context for the contract template types availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available It-Contract contract template types</returns>
         [HttpGet]
         [Route("")]
@@ -53,5 +54,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         }
     }
 }
-
 

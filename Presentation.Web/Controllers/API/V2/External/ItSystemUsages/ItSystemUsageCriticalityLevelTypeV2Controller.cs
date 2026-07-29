@@ -23,6 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns It-System Usage criticality level options which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the criticality level types availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available It-System Usage criticality level types</returns>
         [HttpGet]
         [Route("")]

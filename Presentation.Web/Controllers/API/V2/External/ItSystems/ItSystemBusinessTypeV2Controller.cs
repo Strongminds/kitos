@@ -23,6 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// Returns IT-System business types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the business type availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available IT-System business type specifics formatted as uuid and name pairs</returns>
         [HttpGet]
         [Route("")]
@@ -55,5 +56,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         }
     }
 }
-
 

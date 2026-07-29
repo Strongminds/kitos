@@ -23,6 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns IT-System usage data classification option types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the data classification type availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available IT-System usage data classification option types</returns>
         [HttpGet]
         [Route("")]
@@ -55,5 +56,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
     }
 }
-
 

@@ -22,6 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces
         /// Returns IT-Interface 'interface-type' options which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the archive locations availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>IT-Interface 'interface-type'</returns>
         [HttpGet]
         [Route("")]
@@ -54,5 +55,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces
         }
     }
 }
-
 

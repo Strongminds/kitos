@@ -22,7 +22,7 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// Organization in which the contract was created
         /// </summary>
-        public required ShallowOrganizationResponseDTO OrganizationContext { get; set; }
+        public ShallowOrganizationResponseDTO? OrganizationContext { get; set; }
         /// <summary>
         /// UTC timestamp of latest modification
         /// </summary>
@@ -30,11 +30,11 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// Reference to the user who last modified the contract
         /// </summary>
-        public required IdentityNamePairResponseDTO LastModifiedBy { get; set; }
+        public IdentityNamePairResponseDTO? LastModifiedBy { get; set; }
         /// <summary>
         /// Reference to the user who created the contract
         /// </summary>
-        public required IdentityNamePairResponseDTO CreatedBy { get; set; }
+        public IdentityNamePairResponseDTO? CreatedBy { get; set; }
         /// <summary>
         /// Optional parent contract
         /// </summary>

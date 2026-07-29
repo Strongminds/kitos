@@ -30,6 +30,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Deltas
         /// </summary>
         /// <param name="entityType">Filter results based on tracked entity type.</param>
         /// <param name="deletedSinceUTC">Results will be returned where 'deletedTimeStamp >= deletedSinceUTC'</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns></returns>
         [HttpGet]
         [Route("deleted-entities")]
@@ -63,4 +64,3 @@ namespace Presentation.Web.Controllers.API.V2.External.Deltas
         }
     }
 }
-

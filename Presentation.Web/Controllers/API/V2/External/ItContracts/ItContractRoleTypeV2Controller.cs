@@ -23,6 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// Returns It Contract role types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the It Contract role availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available It Contract role option types</returns>
         [HttpGet]
         [Route("")]
@@ -54,5 +55,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         }
     }
 }
-
 

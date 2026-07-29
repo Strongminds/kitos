@@ -36,7 +36,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _organizationalUserContext = new Mock<IOrganizationalUserContext>();
             _userRepository = new Mock<IUserRepository>();
             _archiveRepository = new Mock<IGenericRepository<ItSystemUsageArchive>>();
-            _sut = new ItSystemUsageArchiveService(_systemUsageService.Object, _organizationService.Object, _authorizationContext.Object, _organizationalUserContext.Object, _userRepository.Object, _archiveRepository.Object);
+            _sut = new ItSystemUsageArchiveService(_systemUsageService.Object, _organizationService.Object, _authorizationContext.Object, _organizationalUserContext.Object, _archiveRepository.Object);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             var usage = CreateSystemUsage("Legacy Name", "Local Name", "Local Id");
 
-            ItSystemUsageArchive insertedArchive = null;
+            ItSystemUsageArchive? insertedArchive = null;
 
             SetupSystemUsageLookup(usageUuid, usage);
             SetupAllowCreate(usage.OrganizationId, true);

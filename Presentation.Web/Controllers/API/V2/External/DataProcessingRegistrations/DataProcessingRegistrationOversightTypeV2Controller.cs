@@ -22,6 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// Returns Data Processing Registration oversight options which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the oversight availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available Data Processing Registration oversight</returns>
         [HttpGet]
         [Route("")]
@@ -54,5 +55,4 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         }
     }
 }
-
 
