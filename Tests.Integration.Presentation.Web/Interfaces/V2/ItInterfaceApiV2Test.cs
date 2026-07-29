@@ -40,7 +40,6 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             using var result = await InterfaceV2Helper.SendGetInterfaceAsync(token, itInterface.Uuid);
 
             //Assert
-            var res = await result.Content.ReadAsStringAsync();
             Assert.True(result.IsSuccessStatusCode);
             var interfaceResponse = await result.ReadResponseBodyAsAsync<ItInterfaceResponseDTO>();
             Assert.Equal(itInterface.Uuid, interfaceResponse.Uuid);
@@ -50,7 +49,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         public async Task Can_Get_Interface_As_Stakeholder_With_Correct_Data()
         {
             //Arrange
-            var (token, org) = await CreateUserInNewOrg(true);
+            var (token, _) = await CreateUserInNewOrg(true);
 
             var system = await CreateItSystemAsync(DefaultOrgUuid, scope: RegistrationScopeChoice.Local);
             var itInterface = await CreateItInterfaceAsync(DefaultOrgUuid);
@@ -59,6 +58,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             DatabaseAccess.MutateDatabase(db =>
             {
                 var dbInterface = db.ItInterfaces.AsQueryable().ByUuid(itInterface.Uuid);
+                Assert.NotNull(dbInterface);
 
                 dbInterface.Description = A<string>();
                 dbInterface.ItInterfaceId = A<string>();
@@ -78,12 +78,13 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             DatabaseAccess.MapFromEntitySet<ItInterface, bool>(x =>
             {
                 var dbInterface = x.AsQueryable().ByUuid(itInterface.Uuid);
+                Assert.NotNull(dbInterface);
                 BaseItInterfaceResponseDTODBCheck(dbInterface, itInterfaceDTO);
 
                 DateTimeTestHelper.AssertEqual(dbInterface.LastChanged, itInterfaceDTO.LastModified);
 
-                Assert.Equal(dbInterface.LastChangedByUser.Uuid, itInterfaceDTO.LastModifiedBy.Uuid);
-                Assert.Equal(dbInterface.LastChangedByUser.GetFullName(), itInterfaceDTO.LastModifiedBy.Name);
+                Assert.Equal(dbInterface.LastChangedByUser.Uuid, itInterfaceDTO.LastModifiedBy?.Uuid);
+                Assert.Equal(dbInterface.LastChangedByUser.GetFullName(), itInterfaceDTO.LastModifiedBy?.Name);
 
                 return true;
             });
@@ -93,7 +94,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
         public async Task Can_Get_Interfaces_As_Stakeholder()
         {
             //Arrange - Making sure there are at least 2 public interfaces
-            var (token, org) = await CreateUserInNewOrg(true);
+            var (token, _) = await CreateUserInNewOrg(true);
 
             var pageSize = 2;
             var pageNumber = 0; //Always takes the first page;
@@ -130,7 +131,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
                 await InterfaceV2Helper.PatchExposedBySystemAsync(interfaceDto.Uuid, system.Uuid);
             }
 
-            var interface3LastModified = DatabaseAccess.MapFromEntitySet<ItInterface, DateTime>(x => x.AsQueryable().ByUuid(itInterface3.Uuid).LastChanged.Transform(DateTimeTestHelper.Normalize));
+            var interface3LastModified = DatabaseAccess.MapFromEntitySet<ItInterface, DateTime>(x => x.AsQueryable().ByUuid(itInterface3.Uuid)!.LastChanged.Transform(DateTimeTestHelper.Normalize));
 
             //Act
             var dtos = (await InterfaceV2Helper.GetInterfacesAsync(token, changedSinceGtEq: interface3LastModified, exposedBySystemUuid: system.Uuid, pageNumber: 0, pageSize: 10)).ToList();

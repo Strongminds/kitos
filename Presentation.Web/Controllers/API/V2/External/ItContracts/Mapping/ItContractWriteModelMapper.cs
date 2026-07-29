@@ -149,27 +149,27 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractAgreementPeriodModificationParameters
             {
-                DurationMonths = rule.MustUpdate(x => x.AgreementPeriod.DurationMonths)
+                DurationMonths = rule.MustUpdate(x => x.AgreementPeriod!.DurationMonths)
                     ? dto.DurationMonths.AsChangedValue()
                     : OptionalValueChange<int?>.None,
 
-                DurationYears = rule.MustUpdate(x => x.AgreementPeriod.DurationYears)
+                DurationYears = rule.MustUpdate(x => x.AgreementPeriod!.DurationYears)
                     ? dto.DurationYears.AsChangedValue()
                     : OptionalValueChange<int?>.None,
 
-                ExtensionOptionsUsed = rule.MustUpdate(x => x.AgreementPeriod.ExtensionOptionsUsed)
+                ExtensionOptionsUsed = rule.MustUpdate(x => x.AgreementPeriod!.ExtensionOptionsUsed)
                     ? dto.ExtensionOptionsUsed.AsChangedValue()
                     : OptionalValueChange<int>.None,
 
-                ExtensionOptionsUuid = rule.MustUpdate(x => x.AgreementPeriod.ExtensionOptionsUuid)
+                ExtensionOptionsUuid = rule.MustUpdate(x => x.AgreementPeriod!.ExtensionOptionsUuid)
                     ? dto.ExtensionOptionsUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                IrrevocableUntil = rule.MustUpdate(x => x.AgreementPeriod.IrrevocableUntil)
+                IrrevocableUntil = rule.MustUpdate(x => x.AgreementPeriod!.IrrevocableUntil)
                     ? dto.IrrevocableUntil.AsChangedValue()
                     : OptionalValueChange<DateTime?>.None,
 
-                IsContinuous = rule.MustUpdate(x => x.AgreementPeriod.IsContinuous)
+                IsContinuous = rule.MustUpdate(x => x.AgreementPeriod!.IsContinuous)
                     ? dto.IsContinuous.AsChangedValue()
                     : OptionalValueChange<bool>.None
             };
@@ -186,19 +186,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractPaymentModelModificationParameters
             {
-                OperationsRemunerationStartedAt = rule.MustUpdate(x => x.PaymentModel.OperationsRemunerationStartedAt)
+                OperationsRemunerationStartedAt = rule.MustUpdate(x => x.PaymentModel!.OperationsRemunerationStartedAt)
                     ? (dto.OperationsRemunerationStartedAt?.FromNullable() ?? Maybe<DateTime>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
-                PaymentFrequencyUuid = rule.MustUpdate(x => x.PaymentModel.PaymentFrequencyUuid)
+                PaymentFrequencyUuid = rule.MustUpdate(x => x.PaymentModel!.PaymentFrequencyUuid)
                     ? dto.PaymentFrequencyUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                PaymentModelUuid = rule.MustUpdate(x => x.PaymentModel.PaymentModelUuid)
+                PaymentModelUuid = rule.MustUpdate(x => x.PaymentModel!.PaymentModelUuid)
                     ? dto.PaymentModelUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                PriceRegulationUuid = rule.MustUpdate(x => x.PaymentModel.PriceRegulationUuid)
+                PriceRegulationUuid = rule.MustUpdate(x => x.PaymentModel!.PriceRegulationUuid)
                     ? dto.PriceRegulationUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None
             };
@@ -208,19 +208,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractTerminationParameters
             {
-                TerminatedAt = rule.MustUpdate(x => x.Termination.TerminatedAt)
+                TerminatedAt = rule.MustUpdate(x => x.Termination!.TerminatedAt)
                     ? (dto.TerminatedAt?.FromNullable() ?? Maybe<DateTime>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
-                NoticePeriodMonthsUuid = rule.MustUpdate(x => x.Termination.Terms.NoticePeriodMonthsUuid)
+                NoticePeriodMonthsUuid = rule.MustUpdate(x => x.Termination!.Terms!.NoticePeriodMonthsUuid)
                     ? (dto.Terms?.NoticePeriodMonthsUuid).AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                NoticePeriodExtendsCurrent = rule.MustUpdate(x => x.Termination.Terms.NoticePeriodExtendsCurrent)
+                NoticePeriodExtendsCurrent = rule.MustUpdate(x => x.Termination!.Terms!.NoticePeriodExtendsCurrent)
                     ? (dto.Terms?.NoticePeriodExtendsCurrent?.ToYearSegmentOption() ?? Maybe<YearSegmentOption>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<YearSegmentOption>>.None,
 
-                NoticeByEndOf = rule.MustUpdate(x => x.Termination.Terms.NoticeByEndOf)
+                NoticeByEndOf = rule.MustUpdate(x => x.Termination!.Terms!.NoticeByEndOf)
                     ? (dto.Terms?.NoticeByEndOf?.ToYearSegmentOption() ?? Maybe<YearSegmentOption>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<YearSegmentOption>>.None
             };
@@ -230,44 +230,44 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractSupplierModificationParameters
             {
-                OrganizationUuid = rule.MustUpdate(x => x.Supplier.OrganizationUuid)
+                OrganizationUuid = rule.MustUpdate(x => x.Supplier!.OrganizationUuid)
                     ? dto.OrganizationUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                OrganizationUnitUuid = rule.MustUpdate(x => x.Supplier.OrganizationUnitUuid)
+                OrganizationUnitUuid = rule.MustUpdate(x => x.Supplier!.OrganizationUnitUuid)
                     ? dto.OrganizationUnitUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                IsInternal = rule.MustUpdate(x => x.Supplier.IsInternal)
+                IsInternal = rule.MustUpdate(x => x.Supplier!.IsInternal)
                     ? dto.IsInternal.AsChangedValue()
                     : OptionalValueChange<bool>.None,
 
-                Signed = rule.MustUpdate(x => x.Supplier.Signed)
+                Signed = rule.MustUpdate(x => x.Supplier!.Signed)
                     ? dto.Signed.AsChangedValue()
                     : OptionalValueChange<bool>.None,
 
-                SignedAt = rule.MustUpdate(x => x.Supplier.SignedAt)
+                SignedAt = rule.MustUpdate(x => x.Supplier!.SignedAt)
                     ? dto.SignedAt.AsChangedValue()
                     : OptionalValueChange<DateTime?>.None,
 
-                SignedBy = rule.MustUpdate(x => x.Supplier.SignedBy)
-                    ? dto.SignedBy.AsChangedValue()
+                SignedBy = rule.MustUpdate(x => x.Supplier!.SignedBy)
+                    ? dto.SignedBy.AsChangedValue()!
                     : OptionalValueChange<string>.None,
 
-                ContactPerson = rule.MustUpdate(x => x.Supplier.ContactPerson)
-                    ? dto.ContactPerson.AsChangedValue()
+                ContactPerson = rule.MustUpdate(x => x.Supplier!.ContactPerson)
+                    ? dto.ContactPerson.AsChangedValue()!
                     : OptionalValueChange<string>.None,
 
-                UseSignedByForContact = rule.MustUpdate(x => x.Supplier.UseSignedByForContact)
+                UseSignedByForContact = rule.MustUpdate(x => x.Supplier!.UseSignedByForContact)
                     ? dto.UseSignedByForContact.AsChangedValue()
                     : OptionalValueChange<bool>.None,
 
-                ContactPhoneNumber = rule.MustUpdate(x => x.Supplier.ContactPhoneNumber)
-                    ? dto.ContactPhoneNumber.AsChangedValue()
+                ContactPhoneNumber = rule.MustUpdate(x => x.Supplier!.ContactPhoneNumber)
+                    ? dto.ContactPhoneNumber.AsChangedValue()!
                     : OptionalValueChange<string>.None,
 
-                ContactEmail = rule.MustUpdate(x => x.Supplier.ContactEmail)
-                    ? dto.ContactEmail.AsChangedValue()
+                ContactEmail = rule.MustUpdate(x => x.Supplier!.ContactEmail)
+                    ? dto.ContactEmail.AsChangedValue()!
                     : OptionalValueChange<string>.None
             };
         }
@@ -276,20 +276,20 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractResponsibleDataModificationParameters
             {
-                OrganizationUnitUuid = rule.MustUpdate(x => x.Responsible.OrganizationUnitUuid)
+                OrganizationUnitUuid = rule.MustUpdate(x => x.Responsible!.OrganizationUnitUuid)
                     ? dto.OrganizationUnitUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                Signed = rule.MustUpdate(x => x.Responsible.Signed)
+                Signed = rule.MustUpdate(x => x.Responsible!.Signed)
                     ? dto.Signed.AsChangedValue()
                     : OptionalValueChange<bool>.None,
 
-                SignedAt = rule.MustUpdate(x => x.Responsible.SignedAt)
+                SignedAt = rule.MustUpdate(x => x.Responsible!.SignedAt)
                     ? dto.SignedAt.AsChangedValue()
                     : OptionalValueChange<DateTime?>.None,
 
-                SignedBy = rule.MustUpdate(x => x.Responsible.SignedBy)
-                    ? dto.SignedBy.AsChangedValue()
+                SignedBy = rule.MustUpdate(x => x.Responsible!.SignedBy)
+                    ? dto.SignedBy.AsChangedValue()!
                     : OptionalValueChange<string>.None
             };
         }
@@ -298,43 +298,43 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractGeneralDataModificationParameters
             {
-                ContractId = rule.MustUpdate(x => x.General.ContractId)
-                    ? dto.ContractId.AsChangedValue()
+                ContractId = rule.MustUpdate(x => x.General!.ContractId)
+                    ? dto.ContractId.AsChangedValue()!
                     : OptionalValueChange<string>.None,
 
-                ContractTypeUuid = rule.MustUpdate(x => x.General.ContractTypeUuid)
+                ContractTypeUuid = rule.MustUpdate(x => x.General!.ContractTypeUuid)
                     ? dto.ContractTypeUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                ContractTemplateUuid = rule.MustUpdate(x => x.General.ContractTemplateUuid)
+                ContractTemplateUuid = rule.MustUpdate(x => x.General!.ContractTemplateUuid)
                     ? dto.ContractTemplateUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                AgreementElementUuids = rule.MustUpdate(x => x.General.AgreementElementUuids)
+                AgreementElementUuids = rule.MustUpdate(x => x.General!.AgreementElementUuids)
                     ? (dto.AgreementElementUuids ?? new List<Guid>()).AsChangedValue()
                     : OptionalValueChange<IEnumerable<Guid>>.None,
 
-                Notes = rule.MustUpdate(x => x.General.Notes)
-                    ? dto.Notes.AsChangedValue()
+                Notes = rule.MustUpdate(x => x.General!.Notes)
+                    ? dto.Notes.AsChangedValue()!
                     : OptionalValueChange<string>.None,
 
-                ValidFrom = rule.MustUpdate(x => x.General.Validity.ValidFrom)
+                ValidFrom = rule.MustUpdate(x => x.General!.Validity!.ValidFrom)
                     ? (dto.Validity?.ValidFrom ?? Maybe<DateTime>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
-                ValidTo = rule.MustUpdate(x => x.General.Validity.ValidTo)
+                ValidTo = rule.MustUpdate(x => x.General!.Validity!.ValidTo)
                     ? (dto.Validity?.ValidTo ?? Maybe<DateTime>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<DateTime>>.None,
 
-                EnforceValid = rule.MustUpdate(x => x.General.Validity.EnforcedValid)
+                EnforceValid = rule.MustUpdate(x => x.General!.Validity!.EnforcedValid)
                     ? (dto.Validity?.EnforcedValid ?? Maybe<bool>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<bool>>.None,
 
-                RequireValidParent = rule.MustUpdate(x => x.General.Validity.RequireValidParent)
+                RequireValidParent = rule.MustUpdate(x => x.General!.Validity!.RequireValidParent)
                     ? (dto.Validity?.RequireValidParent ?? Maybe<bool>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<bool>>.None,
 
-                CriticalityUuid = rule.MustUpdate(x => x.General.CriticalityUuid)
+                CriticalityUuid = rule.MustUpdate(x => x.General!.CriticalityUuid)
                     ? dto.CriticalityUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
             };
@@ -344,19 +344,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         {
             return new ItContractProcurementModificationParameters
             {
-                ProcurementStrategyUuid = rule.MustUpdate(x => x.Procurement.ProcurementStrategyUuid)
+                ProcurementStrategyUuid = rule.MustUpdate(x => x.Procurement!.ProcurementStrategyUuid)
                     ? dto.ProcurementStrategyUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                PurchaseTypeUuid = rule.MustUpdate(x => x.Procurement.PurchaseTypeUuid)
+                PurchaseTypeUuid = rule.MustUpdate(x => x.Procurement!.PurchaseTypeUuid)
                     ? dto.PurchaseTypeUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
 
-                ProcurementPlan = rule.MustUpdate(x => x.Procurement.ProcurementPlan)
+                ProcurementPlan = rule.MustUpdate(x => x.Procurement!.ProcurementPlan)
                     ? MapProcurementPlan(dto.ProcurementPlan).AsChangedValue()
                     : OptionalValueChange<Maybe<(byte half, int year)>>.None,
 
-                ProcurementInitiated = rule.MustUpdate(x => x.Procurement.ProcurementInitiated)
+                ProcurementInitiated = rule.MustUpdate(x => x.Procurement!.ProcurementInitiated)
                     ? (dto.ProcurementInitiated?.ToYesNoUndecidedOption() ?? Maybe<YesNoUndecidedOption>.None).AsChangedValue()
                     : OptionalValueChange<Maybe<YesNoUndecidedOption>>.None
             };
@@ -372,7 +372,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             return dto.ExternalReferences.FromNullable().Select(BaseMapUpdateReferences);
         }
 
-        private static Maybe<(byte quarter, int year)> MapProcurementPlan(ProcurementPlanDTO plan)
+        private static Maybe<(byte quarter, int year)> MapProcurementPlan(ProcurementPlanDTO? plan)
         {
             return plan == null ? Maybe<(byte quarter, int year)>.None : (plan.QuarterOfYear, plan.Year);
         }

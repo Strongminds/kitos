@@ -273,6 +273,18 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Assert
             var mappedGdpr = AssertPropertyContainsDataChange(output.GDPR);
             Assert.Equal(input.ProcessingPurpose, AssertPropertyContainsDataChange(mappedGdpr.ProcessingPurpose));
+
+            Assert.NotNull(input.DirectoryDocumentation);
+            Assert.NotNull(input.DataSensitivityLevels);
+            Assert.NotNull(input.SensitivePersonDataUuids);
+            Assert.NotNull(input.RegisteredDataCategoryUuids);
+            Assert.NotNull(input.TechnicalPrecautionsApplied);
+            Assert.NotNull(input.TechnicalPrecautionsDocumentation);
+            Assert.NotNull(input.UserSupervisionDocumentation);
+            Assert.NotNull(input.RiskAssessmentDocumentation);
+            Assert.NotNull(input.DPIADocumentation);
+            Assert.NotNull(input.SpecificPersonalData);
+
             AssertLinkMapping(input.DirectoryDocumentation, mappedGdpr.DirectoryDocumentation);
             Assert.Equal(input.DataSensitivityLevels.ToList(), AssertPropertyContainsDataChange(mappedGdpr.DataSensitivityLevels).Select(x => x.ToDataSensitivityLevelChoice()));
             Assert.Equal(input.SensitivePersonDataUuids.ToList(), AssertPropertyContainsDataChange(mappedGdpr.SensitivePersonDataUuids));
@@ -471,8 +483,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.FrequencyInMonths, AssertPropertyContainsDataChange(mappedArchiving.ArchiveFrequencyInMonths));
             Assert.Equal(input.DocumentBearing, AssertPropertyContainsDataChange(mappedArchiving.ArchiveDocumentBearing));
 
-            var inputPeriods = allJournalPeriods.OrderBy(_ => _.ArchiveId).ToList();
-            var mappedPeriods = AssertPropertyContainsDataChange(mappedArchiving.ArchiveJournalPeriods).OrderBy(_ => _.ArchiveId).ToList();
+            var inputPeriods = allJournalPeriods.OrderBy(dto => dto.ArchiveId).ToList();
+            var mappedPeriods = AssertPropertyContainsDataChange(mappedArchiving.ArchiveJournalPeriods).OrderBy(update => update.ArchiveId).ToList();
             Assert.Equal(inputPeriods.Count, mappedPeriods.Count);
             for (var i = 0; i < inputPeriods.Count; i++)
             {
@@ -1219,19 +1231,19 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noDocumentBearing,
             bool noJournalPeriods)
         {
-            var ArchivingProperties = GetAllInputPropertyNames<ArchivingUpdateRequestDTO>();
-            if (noArchiveDuty) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.ArchiveDuty));
-            if (noTypeUuid) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.TypeUuid));
-            if (noLocationUuid) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.LocationUuid));
-            if (noTestLocationUuid) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.TestLocationUuid));
-            if (noSupplierOrganizationUuid) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.SupplierOrganizationUuid));
-            if (noActive) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.Active));
-            if (noNotes) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.Notes));
-            if (noFrequencyInMonths) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.FrequencyInMonths));
-            if (noDocumentBearing) ArchivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.DocumentBearing));
-            if (noJournalPeriods) ArchivingProperties.Remove(nameof(IHasJournalPeriods<JournalPeriodDTO>.JournalPeriods));
+            var archivingProperties = GetAllInputPropertyNames<ArchivingUpdateRequestDTO>();
+            if (noArchiveDuty) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.ArchiveDuty));
+            if (noTypeUuid) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.TypeUuid));
+            if (noLocationUuid) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.LocationUuid));
+            if (noTestLocationUuid) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.TestLocationUuid));
+            if (noSupplierOrganizationUuid) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.SupplierOrganizationUuid));
+            if (noActive) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.Active));
+            if (noNotes) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.Notes));
+            if (noFrequencyInMonths) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.FrequencyInMonths));
+            if (noDocumentBearing) archivingProperties.Remove(nameof(ArchivingUpdateRequestDTO.DocumentBearing));
+            if (noJournalPeriods) archivingProperties.Remove(nameof(IHasJournalPeriods<JournalPeriodDTO>.JournalPeriods));
 
-            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.Archiving).WrapAsEnumerable().AsParameterMatch())).Returns(ArchivingProperties);
+            _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(nameof(UpdateItSystemUsageRequestDTO.Archiving).WrapAsEnumerable().AsParameterMatch())).Returns(archivingProperties);
         }
 
         private void ConfigureKLEDataProperties(
@@ -1363,8 +1375,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private static void AssertKLE(IEnumerable<Guid> expected, OptionalValueChange<Maybe<IEnumerable<Guid>>> actual)
+        private static void AssertKLE(IEnumerable<Guid>? expected, OptionalValueChange<Maybe<IEnumerable<Guid>>>? actual)
         {
+            Assert.NotNull(expected);
+            Assert.NotNull(actual);
             Assert.True(actual.HasChange);
             Assert.True(actual.NewValue.HasValue);
             var mappedUuids = actual.NewValue.Value;

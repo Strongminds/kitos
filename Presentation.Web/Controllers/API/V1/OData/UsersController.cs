@@ -100,11 +100,11 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 return BadRequest(ModelState);
             }
 
-            User user = null;
+            User? user = null;
             if (parameters.ContainsKey("user"))
             {
                 user = parameters["user"] as User;
-                TryValidateModel(user); // this will set the ModelState if not valid
+                TryValidateModel(user!); // this will set the ModelState if not valid
             }
 
             var organizationId = 0;
@@ -143,8 +143,9 @@ namespace Presentation.Web.Controllers.API.V1.OData
                 }
             }
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || user == null)
                 return BadRequest(ModelState);
+
 
             var createdUser = _userService.AddUser(user, sendMailOnCreation, organizationId);
 

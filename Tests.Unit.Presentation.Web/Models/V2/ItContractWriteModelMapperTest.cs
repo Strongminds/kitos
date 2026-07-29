@@ -1410,6 +1410,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         private static void AssertTermination(ContractTerminationDataWriteRequestDTO input, ItContractTerminationParameters output)
         {
             Assert.Equal(input.TerminatedAt, AssertPropertyContainsDataChange(output.TerminatedAt));
+            Assert.NotNull(input.Terms);
             Assert.Equal(input.Terms.NoticePeriodMonthsUuid, AssertPropertyContainsDataChange(output.NoticePeriodMonthsUuid));
             Assert.Equal(input.Terms.NoticePeriodExtendsCurrent?.ToYearSegmentOption(), AssertPropertyContainsDataChange(output.NoticePeriodExtendsCurrent));
             Assert.Equal(input.Terms.NoticeByEndOf?.ToYearSegmentOption(), AssertPropertyContainsDataChange(output.NoticeByEndOf));
@@ -1473,6 +1474,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.ContractTemplateUuid, AssertPropertyContainsDataChange(output.ContractTemplateUuid));
             Assert.Equal(input.AgreementElementUuids, AssertPropertyContainsDataChange(output.AgreementElementUuids));
             Assert.Equal(input.Notes, AssertPropertyContainsDataChange(output.Notes));
+            Assert.NotNull(input.Validity);
             Assert.Equal(input.Validity.ValidFrom, AssertPropertyContainsDataChange(output.ValidFrom));
             Assert.Equal(input.Validity.ValidTo, AssertPropertyContainsDataChange(output.ValidTo));
             Assert.Equal(input.Validity.EnforcedValid, AssertPropertyContainsDataChange(output.EnforceValid));
@@ -1488,6 +1490,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (hasValues)
             {
                 var (half, year) = AssertPropertyContainsDataChange(actual.ProcurementPlan);
+                Assert.NotNull(expected.ProcurementPlan);
                 Assert.Equal(expected.ProcurementPlan.QuarterOfYear, half);
                 Assert.Equal(expected.ProcurementPlan.Year, year);
                 Assert.Equal(expected.ProcurementInitiated, AssertPropertyContainsDataChange(actual.ProcurementInitiated).ToYesNoUndecidedChoice());
@@ -1527,9 +1530,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertPaymentCollection(input.External, AssertPropertyContainsDataChange(output.ExternalPayments));
         }
 
-        private static void AssertPaymentCollection(IEnumerable<PaymentRequestDTO> expectedPayments, IEnumerable<ItContractPayment> outputPayments)
+        private static void AssertPaymentCollection(IEnumerable<PaymentRequestDTO>? expectedPayments, IEnumerable<ItContractPayment> outputPayments)
         {
-            var expected = expectedPayments.ToList();
+            var expected = expectedPayments?.ToList() ?? new List<PaymentRequestDTO>();
             var actual = outputPayments.ToList();
             Assert.Equal(expected.Count, actual.Count);
             for (var i = 0; i < expected.Count; i++)

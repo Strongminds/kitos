@@ -39,7 +39,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         [Theory]
         [InlineData("")]
-        [InlineData(null)]
         [InlineData("test")]
         public void Can_Map_Name_From_RightsHolder_Post(string name)
         {
@@ -55,7 +54,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         [Theory]
         [InlineData("")]
-        [InlineData(null)]
         [InlineData("test")]
         public void Can_Map_Name_From_RightsHolder_Put(string name)
         {
@@ -70,7 +68,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         }
         [Theory]
         [InlineData("")]
-        [InlineData(null)]
         [InlineData("test")]
         public void Can_Map_Name_From_RightsHolder_Patch(string name)
         {
@@ -141,7 +138,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noDescription) rootProperties.Remove(nameof(RightsHolderWritableItInterfacePropertiesDTO.Description));
             if (noUrlReference) rootProperties.Remove(nameof(RightsHolderWritableItInterfacePropertiesDTO.UrlReference));
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(rootProperties);
-            var emptyInput = new RightsHolderWritableItInterfacePropertiesDTO();
+            var emptyInput = new RightsHolderWritableItInterfacePropertiesDTO
+            {
+                Name = A<string>()
+            };
 
             //Act
             var output = _sut.FromPUT(emptyInput);
@@ -174,7 +174,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noDescription) rootProperties.Remove(nameof(RightsHolderWritableItInterfacePropertiesDTO.Description));
             if (noUrlReference) rootProperties.Remove(nameof(RightsHolderWritableItInterfacePropertiesDTO.UrlReference));
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(rootProperties);
-            var input = new RightsHolderCreateItInterfaceRequestDTO();
+            var input = new RightsHolderCreateItInterfaceRequestDTO
+            {
+                Name = A<string>()
+            };
 
             //Act
             var output = _sut.FromPOST(input);
@@ -195,7 +198,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Arrange
             var input = new RightsHolderCreateItInterfaceRequestDTO
             {
-                Uuid = A<Guid>()
+                Uuid = A<Guid>(),
+                Name = A<string>()
             };
 
             //Act
@@ -225,7 +229,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(requestDto.InterfaceId, AssertPropertyContainsDataChange(modificationParameters.InterfaceId));
             Assert.Equal(requestDto.UrlReference, AssertPropertyContainsDataChange(modificationParameters.UrlReference));
             Assert.Equal(requestDto.Version, AssertPropertyContainsDataChange(modificationParameters.Version));
-            Assert.Equivalent(requestDto.Data.Select(x => new ItInterfaceDataWriteModel(x.Description, x.DataTypeUuid)), AssertPropertyContainsDataChange(modificationParameters.Data));
+            Assert.Equivalent(requestDto.Data!.Select(x => new ItInterfaceDataWriteModel(x.Description!, x.DataTypeUuid)), AssertPropertyContainsDataChange(modificationParameters.Data));
         }
 
         [Fact]
@@ -248,7 +252,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(requestDto.InterfaceId, AssertPropertyContainsDataChange(modificationParameters.InterfaceId));
             Assert.Equal(requestDto.UrlReference, AssertPropertyContainsDataChange(modificationParameters.UrlReference));
             Assert.Equal(requestDto.Version, AssertPropertyContainsDataChange(modificationParameters.Version));
-            Assert.Equivalent(requestDto.Data.Select(x => new ItInterfaceDataWriteModel(x.Description, x.DataTypeUuid)), AssertPropertyContainsDataChange(modificationParameters.Data));
+            Assert.Equivalent(requestDto.Data!.Select(x => new ItInterfaceDataWriteModel(x.Description!, x.DataTypeUuid)), AssertPropertyContainsDataChange(modificationParameters.Data));
         }
 
         public static IEnumerable<object[]> GetUndefinedSectionsInput()

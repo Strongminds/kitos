@@ -445,8 +445,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal(comparison.expected.Uuid, comparison.actual.Uuid);
                 Assert.Equal(comparison.expected.OversightDate, comparison.actual.CompletedAt);
                 Assert.Equal(comparison.expected.OversightRemark, comparison.actual.Remark);
-                Assert.Equal(comparison.expected.OversightReportLink, comparison.actual.OversightReportLink.Url);
-                Assert.Equal(comparison.expected.OversightReportLinkName, comparison.actual.OversightReportLink.Name);
+                Assert.Equal(comparison.expected.OversightReportLink, comparison.actual.OversightReportLink!.Url);
+                Assert.Equal(comparison.expected.OversightReportLinkName, comparison.actual.OversightReportLink!.Name);
                 AssertOptionalIdentity(comparison.expected.OversightOption, comparison.actual.OversightOption);
             }
         }
@@ -456,7 +456,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(dpr.SystemUsages.Count, actual.Count);
 
             foreach (var comparison in dpr.SystemUsages.OrderBy(x => x.Uuid)
-                .Zip(actual.OrderBy(x => x.Uuid), (expected, actual) => new { expected, actual })
+                .Zip(actual.OrderBy(x => x.Uuid), (expected, actualDto) => new { expected, actual = actualDto })
                 .ToList())
             {
                 AssertSystemUsage(comparison.expected, comparison.actual);
@@ -513,7 +513,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(expected, actual);
         }
 
-        private static void AssertOptionalIdentities<T>(IEnumerable<T> optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
+        private static void AssertOptionalIdentities<T>(IEnumerable<T>? optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentities == null)
             {
@@ -535,7 +535,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private static void AssertOptionalIdentity<T>(T optionalExpectedIdentity, IdentityNamePairResponseDTO actualIdentity) where T : IHasUuid, IHasName
+        private static void AssertOptionalIdentity<T>(T? optionalExpectedIdentity, IdentityNamePairResponseDTO? actualIdentity) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentity == null)
                 Assert.Null(actualIdentity);
@@ -568,10 +568,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(organization.Cvr, shallowOrganizationDTO.Cvr);
         }
 
-        private static void AssertIdentity<T>(T sourceIdentity, IdentityNamePairResponseDTO dto) where T : IHasUuid, IHasName
+        private static void AssertIdentity<T>(T sourceIdentity, IdentityNamePairResponseDTO? dto) where T : IHasUuid, IHasName
         {
-            Assert.Equal(sourceIdentity.Name, dto.Name);
-            Assert.Equal(sourceIdentity.Uuid, dto.Uuid);
+            Assert.Equal(sourceIdentity.Name, dto?.Name);
+            Assert.Equal(sourceIdentity.Uuid, dto?.Uuid);
         }
 
         #endregion

@@ -289,7 +289,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
 
             if (expected?.BaseProperties.Receivers != null)
             {
-                AssertEmailRecipients(expected.BaseProperties.Receivers.EmailRecipients, actual.Receivers.EmailRecipients);
+                AssertEmailRecipients(expected.BaseProperties.Receivers.EmailRecipients, actual!.Receivers.EmailRecipients);
                 AssertRoleRecipients(expected.BaseProperties.Receivers.RoleRecipients, actual.Receivers.RoleRecipients);
             }
             else
@@ -298,7 +298,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertRoleRecipients(IEnumerable<RoleRecipientWriteRequestDTO> expected, IEnumerable<RoleRecipientResponseDTO> actual)
+        private static void AssertRoleRecipients(IEnumerable<RoleRecipientWriteRequestDTO>? expected, IEnumerable<RoleRecipientResponseDTO> actual)
         {
             if (expected == null)
             {
@@ -314,7 +314,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertEmailRecipients(IEnumerable<EmailRecipientWriteRequestDTO> expected, IEnumerable<EmailRecipientResponseDTO> actual)
+        private static void AssertEmailRecipients(IEnumerable<EmailRecipientWriteRequestDTO>? expected, IEnumerable<EmailRecipientResponseDTO> actual)
         {
             if (expected == null)
             {
@@ -329,7 +329,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertRecipients(NotificationResponseDTO expected, NotificationResponseDTO actual)
+        private static void AssertRecipients(NotificationResponseDTO? expected, NotificationResponseDTO actual)
         {
             if (expected?.CCs != null)
             {
@@ -338,7 +338,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
             else
             {
-                Assert.Null(actual?.CCs);
+                Assert.Null(actual.CCs);
             }
 
             if (expected?.Receivers != null)
@@ -348,11 +348,11 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
             else
             {
-                Assert.Null(actual?.Receivers);
+                Assert.Null(actual.Receivers);
             }
         }
 
-        private static void AssertRoleRecipients(IEnumerable<RoleRecipientResponseDTO> expected, IEnumerable<RoleRecipientResponseDTO> actual)
+        private static void AssertRoleRecipients(IEnumerable<RoleRecipientResponseDTO>? expected, IEnumerable<RoleRecipientResponseDTO> actual)
         {
             if (expected == null)
             {
@@ -368,7 +368,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertEmailRecipients(IEnumerable<EmailRecipientResponseDTO> expected, IEnumerable<EmailRecipientResponseDTO> actual)
+        private static void AssertEmailRecipients(IEnumerable<EmailRecipientResponseDTO>? expected, IEnumerable<EmailRecipientResponseDTO> actual)
         {
             if (expected == null)
             {

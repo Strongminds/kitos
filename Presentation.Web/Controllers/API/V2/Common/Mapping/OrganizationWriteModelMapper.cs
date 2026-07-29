@@ -11,7 +11,6 @@ using Core.DomainModel.Organization;
 using Core.DomainServices.Generic;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Common.Mapping;
 
@@ -24,6 +23,7 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
     {
         _identityResolver = identityResolver;
     }
+
     public OrganizationMasterDataUpdateParameters ToMasterDataUpdateParameters(OrganizationMasterDataRequestDTO dto)
     {
         var rule = CreateChangeRule<OrganizationMasterDataRequestDTO>(false);
@@ -31,16 +31,16 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
         return new()
         {
             Cvr = rule.MustUpdate(x => x.Cvr)
-                ? (dto.Cvr.FromNullable() ?? Maybe<string>.None).AsChangedValue()
+                ? dto.Cvr.FromNullable().AsChangedValue()
                 : OptionalValueChange<Maybe<string>>.None,
             Email = rule.MustUpdate(x => x.Email)
-                ? (dto.Email.FromNullable() ?? Maybe<string>.None).AsChangedValue()
+                ? dto.Email.FromNullable().AsChangedValue()
                 : OptionalValueChange<Maybe<string>>.None,
             Address = rule.MustUpdate(x => x.Address)
-                ? (dto.Address.FromNullable() ?? Maybe<string>.None).AsChangedValue() 
+                ? dto.Address.FromNullable().AsChangedValue() 
                 : OptionalValueChange<Maybe<string>>.None,
             Phone = rule.MustUpdate(x => x.Phone)
-                ? (dto.Phone.FromNullable() ?? Maybe<string>.None).AsChangedValue() 
+                ? dto.Phone.FromNullable().AsChangedValue() 
                 : OptionalValueChange<Maybe<string>>.None,
         };
     }
@@ -128,15 +128,15 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
         return new()
         {
             ShowItSystemModule = rule.MustUpdate(x => x.ShowItSystemModule)
-                ? (dto.ShowItSystemModule.FromNullable() ?? Maybe<bool>.None).AsChangedValue()
+                ? (dto.ShowItSystemModule.FromNullable()).AsChangedValue()
                 : OptionalValueChange<Maybe<bool>>.None,
             ShowItContractModule = rule.MustUpdate(x => x.ShowItContractModule)
-                ? (dto.ShowItContractModule.FromNullable() ?? Maybe<bool>.None).AsChangedValue()
+                ? (dto.ShowItContractModule.FromNullable()).AsChangedValue()
                 : OptionalValueChange<Maybe<bool>>.None,
 
             ShowDataProcessing = rule.MustUpdate(x => x.ShowDataProcessing)
-                ? (dto.ShowDataProcessing.FromNullable() ?? Maybe<bool>.None).AsChangedValue()
-                : OptionalValueChange<Maybe<bool>>.None,
+                ? (dto.ShowDataProcessing.FromNullable()).AsChangedValue()
+                : OptionalValueChange<Maybe<bool>>.None
         };
     }
 
@@ -145,11 +145,11 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
         return new CustomUINodeParameters(node.Key, node.Enabled);
     }
 
-    private static Maybe<ContactPersonUpdateParameters> ToContactPersonUpdateParameters(ContactPersonRequestDTO dto)
+    private static Maybe<ContactPersonUpdateParameters> ToContactPersonUpdateParameters(ContactPersonRequestDTO? dto)
         {
             if (dto == null) return Maybe<ContactPersonUpdateParameters>.None;
 
-            return new ContactPersonUpdateParameters()
+            return new ContactPersonUpdateParameters
             {
                 Email = dto.Email != null 
                     ? OptionalValueChange<Maybe<string>>.With(dto.Email) 
@@ -166,7 +166,7 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
             };
         }
 
-        private static Maybe<DataResponsibleUpdateParameters> ToDataResponsibleUpdateParameters(DataResponsibleRequestDTO dto)
+        private static Maybe<DataResponsibleUpdateParameters> ToDataResponsibleUpdateParameters(DataResponsibleRequestDTO? dto)
         {
             if (dto == null) return Maybe<DataResponsibleUpdateParameters>.None;
 
@@ -190,7 +190,7 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
                 };
         }
 
-        private static Maybe<DataProtectionAdvisorUpdateParameters> ToDataProtectionAdvisorUpdateParameters(DataProtectionAdvisorRequestDTO dto)
+        private static Maybe<DataProtectionAdvisorUpdateParameters> ToDataProtectionAdvisorUpdateParameters(DataProtectionAdvisorRequestDTO? dto)
         {
         if (dto == null) return Maybe<DataProtectionAdvisorUpdateParameters>.None;
 
@@ -213,8 +213,4 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
                 : Maybe<string>.None.AsChangedValue()
         };
     }
-
-    public OrganizationWriteModelMapper(ICurrentHttpRequest currentHttpRequest) : base(currentHttpRequest)
-        {
-        }
 }

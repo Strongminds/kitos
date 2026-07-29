@@ -11,10 +11,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 {
     public class BaseResponseMapperTest : WithAutoFixture
     {
-        protected static void AssertOrganization(Organization organization, ShallowOrganizationResponseDTO shallowOrganizationDTO)
+        protected static void AssertOrganization(Organization organization, ShallowOrganizationResponseDTO? shallowOrganizationDTO)
         {
             AssertIdentity(organization, shallowOrganizationDTO);
-            Assert.Equal(organization.Cvr, shallowOrganizationDTO.Cvr);
+            Assert.Equal(organization.Cvr, shallowOrganizationDTO?.Cvr);
         }
 
         protected static void AssertOptionalOrganization(Organization? organization, ShallowOrganizationResponseDTO shallowOrganizationDTO)
@@ -41,8 +41,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
             else
             {
-                Assert.Equal(sourceIdentity.Name, dto.Name);
-                Assert.Equal(sourceIdentity.Uuid, dto.Uuid);
+                Assert.Equal(sourceIdentity.Name, dto?.Name);
+                Assert.Equal(sourceIdentity.Uuid, dto?.Uuid);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        public static void AssertOptionalIdentities<T>(IEnumerable<T> optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
+        public static void AssertOptionalIdentities<T>(IEnumerable<T>? optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentities == null)
             {
@@ -96,7 +96,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        public static void AssertOptionalOrganizationIdentities(IEnumerable<Organization> optionalExpectedIdentities, IEnumerable<ShallowOrganizationResponseDTO> actualIdentities)
+        public static void AssertOptionalOrganizationIdentities(IEnumerable<Organization>? optionalExpectedIdentities, IEnumerable<ShallowOrganizationResponseDTO> actualIdentities)
         {
             if (optionalExpectedIdentities == null)
             {

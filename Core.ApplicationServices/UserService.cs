@@ -287,7 +287,7 @@ namespace Core.ApplicationServices
             return passwordReset;
         }
 
-        public void ResetPassword(PasswordResetRequest passwordResetRequest, string newPassword)
+        public void ResetPassword(PasswordResetRequest? passwordResetRequest, string newPassword)
         {
             if (passwordResetRequest == null)
                 throw new ArgumentNullException(nameof(passwordResetRequest));
