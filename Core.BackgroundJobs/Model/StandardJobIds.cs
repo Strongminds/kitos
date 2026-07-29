@@ -15,6 +15,7 @@
         public static readonly string RebuildDataProcessingReadModels = $"{NamePrefix}rebuild-dpr-read-models";
         public static readonly string RebuildItSystemUsageReadModels = $"{NamePrefix}rebuild-it-system-usage-read-models";
         public static readonly string RebuildItContractReadModels = $"{NamePrefix}rebuild-it-contract-read-models";
+        public static readonly string RebuildItContractSupplierReadModels = $"{NamePrefix}rebuild-it-contract-supplier-read-models";
         public static readonly string PurgeDuplicatePendingReadModelUpdates = $"{NamePrefix}purge-duplicate-read-model-updates";
         public static readonly string ScheduleUpdatesForDataProcessingReadModelsWhichChangesActiveState = $"{NamePrefix}fix-stale-dpr-rms";
         public static readonly string ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState = $"{NamePrefix}fix-stale-itsystem-usage-rms";
