@@ -23,7 +23,53 @@ spec:
         app: kitos-api
     spec:
       containers:
-      - env: []
+      - env:
+        - name: Serilog__LogFilePath
+          valueFrom:
+            secretKeyRef:
+              key: LogFilePath
+              name: user-secret
+        - name: Smtp__PickupDirectoryLocation
+          valueFrom:
+            secretKeyRef:
+              key: PickupDirectoryLocation
+              name: user-secret
+        - name: Smtp__DeliveryMethod
+          value: SpecifiedPickupDirectory
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Dev
+        - name: Database__Provider
+          value: PostgreSql
+        - name: Hangfire__Provider
+          value: PostgreSql
+        - name: ConnectionStrings__KitosContext
+          value: 	Host=dev-db-rw;Port=5432;Database=dev-db;Username=kitos;Password=localNoSecret
+        - name: ConnectionStrings__kitos_HangfireDB
+          value: 	Host=hangfire-dev-db-rw;Port=5432;Database=hangfire-dev-db;Username=kitos;Password=localNoSecret
+        - name: AppSettings__BaseUrl
+          value: https://eh-kitos-dev.strongminds.dk
+        - name: AppSettings__PubSubBaseUrl
+          value: https://eh-pubsub-kitos-dev.strongminds.dk
+        - name: AppSettings__SecurityKeyString
+          valueFrom:
+            secretKeyRef:
+              key: SecurityKeyString
+              name: user-secret
+        - name: Smtp__Host
+          valueFrom:
+            secretKeyRef:
+              key: SmtpNetworkHost
+              name: user-secret
+        - name: Smtp__Port
+          valueFrom:
+            secretKeyRef:
+              key: SmtpNetworkPort
+              name: user-secret
+        - name: Smtp__Password
+          valueFrom:
+            secretKeyRef:
+              key: SmtpPassword
+              name: user-secret
         image: '{will be replaced by build pipeline}'
         name: kitos-api
         ports:
@@ -37,14 +83,5 @@ spec:
           requests:
             memory: 128Mi
             cpu: 100m
-        volumeMounts:
-        - mountPath: /temp
-          name: kitos-api-storage
-          readOnly: false
       imagePullSecrets:
       - name: 90d73529-a238-405b-a079-3eea2e8e36e6
-      volumes:
-      - name: kitos-api-storage
-        persistentVolumeClaim:
-          claimName: kitos-api-storage
-          readOnly: false
