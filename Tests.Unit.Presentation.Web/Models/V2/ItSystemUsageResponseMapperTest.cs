@@ -511,7 +511,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.ArchivePeriods = Many<string>().Select(CreateArchivePeriod).ToList();
         }
 
-        private ArchivePeriod CreateArchivePeriod(string id = null)
+        private ArchivePeriod CreateArchivePeriod(string? id = null)
         {
             return new ArchivePeriod
             {
@@ -730,10 +730,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(organization.Cvr, dtoOrganizationContext.Cvr);
         }
 
-        private static void AssertIdentity(ItSystemUsage sourceIdentity, IdentityNamePairResponseDTO dto)
+        private static void AssertIdentity(ItSystemUsage sourceIdentity, IdentityNamePairResponseDTO? dto)
         {
-            Assert.Equal(sourceIdentity.ItSystem.Name, dto.Name);
-            Assert.Equal(sourceIdentity.Uuid, dto.Uuid);
+            Assert.Equal(sourceIdentity.ItSystem.Name, dto?.Name);
+            Assert.Equal(sourceIdentity.Uuid, dto?.Uuid);
         }
 
         private static void AssertIdentity<T>(T sourceIdentity, IdentityNamePairResponseDTO? dto) where T : IHasUuid, IHasName

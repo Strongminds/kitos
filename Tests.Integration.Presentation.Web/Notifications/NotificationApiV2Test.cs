@@ -224,7 +224,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             Assert.Equal(expected.NotificationType, actual.NotificationType);
             Assert.Equal(expected.Body, actual.Body);
             Assert.Equal(expected.Subject, actual.Subject);
-            Assert.Equal(expected.OwnerResource.Uuid, actual.OwnerResource.Uuid);
+            Assert.Equal(expected.OwnerResource?.Uuid, actual.OwnerResource?.Uuid);
             AssertRecipients(expected, actual);
         }
 
@@ -271,7 +271,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             Assert.Equal(notificationType, actual.NotificationType);
             Assert.Equal(expected.BaseProperties.Body, actual.Body);
             Assert.Equal(expected.BaseProperties.Subject, actual.Subject);
-            Assert.Equal(relationUuid, actual.OwnerResource.Uuid);
+            Assert.Equal(relationUuid, actual.OwnerResource?.Uuid);
             AssertRecipients(expected, actual);
         }
 
@@ -279,8 +279,8 @@ namespace Tests.Integration.Presentation.Web.Notifications
         {
             if (expected?.BaseProperties.Ccs != null)
             {
-                AssertEmailRecipients(expected.BaseProperties.Ccs.EmailRecipients, actual.CCs.EmailRecipients);
-                AssertRoleRecipients(expected.BaseProperties.Ccs.RoleRecipients, actual.CCs.RoleRecipients);
+                AssertEmailRecipients(expected.BaseProperties.Ccs.EmailRecipients, actual.CCs?.EmailRecipients);
+                AssertRoleRecipients(expected.BaseProperties.Ccs.RoleRecipients, actual.CCs?.RoleRecipients);
             }
             else
             {
@@ -289,8 +289,8 @@ namespace Tests.Integration.Presentation.Web.Notifications
 
             if (expected?.BaseProperties.Receivers != null)
             {
-                AssertEmailRecipients(expected.BaseProperties.Receivers.EmailRecipients, actual!.Receivers.EmailRecipients);
-                AssertRoleRecipients(expected.BaseProperties.Receivers.RoleRecipients, actual.Receivers.RoleRecipients);
+                AssertEmailRecipients(expected.BaseProperties.Receivers.EmailRecipients, actual?.Receivers?.EmailRecipients);
+                AssertRoleRecipients(expected.BaseProperties.Receivers.RoleRecipients, actual?.Receivers?.RoleRecipients);
             }
             else
             {
@@ -298,7 +298,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertRoleRecipients(IEnumerable<RoleRecipientWriteRequestDTO>? expected, IEnumerable<RoleRecipientResponseDTO> actual)
+        private static void AssertRoleRecipients(IEnumerable<RoleRecipientWriteRequestDTO>? expected, IEnumerable<RoleRecipientResponseDTO>? actual)
         {
             if (expected == null)
             {
@@ -306,6 +306,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
                 return;
             }
 
+            Assert.NotNull(actual);
             var actualList = actual.ToList();
 
             foreach (var role in expected)
@@ -314,7 +315,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertEmailRecipients(IEnumerable<EmailRecipientWriteRequestDTO>? expected, IEnumerable<EmailRecipientResponseDTO> actual)
+        private static void AssertEmailRecipients(IEnumerable<EmailRecipientWriteRequestDTO>? expected, IEnumerable<EmailRecipientResponseDTO>? actual)
         {
             if (expected == null)
             {
@@ -322,6 +323,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
                 return;
             }
 
+            Assert.NotNull(actual);
             var actualList = actual.ToList();
             foreach (var email in expected)
             {
@@ -333,8 +335,8 @@ namespace Tests.Integration.Presentation.Web.Notifications
         {
             if (expected?.CCs != null)
             {
-                AssertEmailRecipients(expected.CCs.EmailRecipients, actual.CCs.EmailRecipients);
-                AssertRoleRecipients(expected.CCs.RoleRecipients, actual.CCs.RoleRecipients);
+                AssertEmailRecipients(expected.CCs.EmailRecipients, actual.CCs?.EmailRecipients);
+                AssertRoleRecipients(expected.CCs.RoleRecipients, actual.CCs?.RoleRecipients);
             }
             else
             {
@@ -343,8 +345,8 @@ namespace Tests.Integration.Presentation.Web.Notifications
 
             if (expected?.Receivers != null)
             {
-                AssertEmailRecipients(expected.Receivers.EmailRecipients, actual.Receivers.EmailRecipients);
-                AssertRoleRecipients(expected.Receivers.RoleRecipients, actual.Receivers.RoleRecipients);
+                AssertEmailRecipients(expected.Receivers.EmailRecipients, actual.Receivers?.EmailRecipients);
+                AssertRoleRecipients(expected.Receivers.RoleRecipients, actual.Receivers?.RoleRecipients);
             }
             else
             {
@@ -352,7 +354,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertRoleRecipients(IEnumerable<RoleRecipientResponseDTO>? expected, IEnumerable<RoleRecipientResponseDTO> actual)
+        private static void AssertRoleRecipients(IEnumerable<RoleRecipientResponseDTO>? expected, IEnumerable<RoleRecipientResponseDTO>? actual)
         {
             if (expected == null)
             {
@@ -360,6 +362,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
                 return;
             }
 
+            Assert.NotNull(actual);
             var actualList = actual.ToList();
 
             foreach (var role in expected)
@@ -368,7 +371,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
             }
         }
 
-        private static void AssertEmailRecipients(IEnumerable<EmailRecipientResponseDTO>? expected, IEnumerable<EmailRecipientResponseDTO> actual)
+        private static void AssertEmailRecipients(IEnumerable<EmailRecipientResponseDTO>? expected, IEnumerable<EmailRecipientResponseDTO>? actual)
         {
             if (expected == null)
             {
@@ -376,6 +379,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
                 return;
             }
 
+            Assert.NotNull(actual);
             var actualList = actual.ToList();
             foreach (var email in expected)
             {
@@ -385,16 +389,22 @@ namespace Tests.Integration.Presentation.Web.Notifications
 
         private ImmediateNotificationWriteRequestDTO CreateImmediateNotificationWriteRequest(OwnerResourceType ownerResourceType)
         {
-            var request = new ImmediateNotificationWriteRequestDTO();
-            CreateBaseProperties(request, ownerResourceType);
+            var request = new ImmediateNotificationWriteRequestDTO
+            {
+                BaseProperties = CreateBaseProperties(ownerResourceType)
+            };
 
             return request;
         }
 
         private ScheduledNotificationWriteRequestDTO CreateScheduledNotificationWriteRequest(OwnerResourceType ownerResourceType)
         {
-            var request = new ScheduledNotificationWriteRequestDTO();
-            CreateBaseScheduledProperties(request, ownerResourceType);
+            var request = new ScheduledNotificationWriteRequestDTO
+            {
+                BaseProperties = CreateBaseScheduledProperties(ownerResourceType),
+                Name = A<string>(),
+                ToDate = A<DateTime>()
+            };
 
             request.FromDate = DateTime.UtcNow.AddDays(A<int>());
             //Make sure ToDate is larger than FromDate
@@ -406,22 +416,24 @@ namespace Tests.Integration.Presentation.Web.Notifications
 
         private UpdateScheduledNotificationWriteRequestDTO CreateUpdateScheduledNotificationWriteRequest(OwnerResourceType ownerResourceType)
         {
-            var request = new UpdateScheduledNotificationWriteRequestDTO();
-            CreateBaseScheduledProperties(request, ownerResourceType);
+            var request = new UpdateScheduledNotificationWriteRequestDTO
+            {
+                BaseProperties = CreateBaseScheduledProperties(ownerResourceType),
+                Name = A<string>(),
+                ToDate = A<DateTime>()
+            };
 
             return request;
         }
 
-        private void CreateBaseScheduledProperties<T>(T request, OwnerResourceType ownerResourceType) where T : class, IHasBaseWriteProperties, IHasName, IHasToDate, new()
+        private BaseNotificationPropertiesWriteRequestDTO CreateBaseScheduledProperties(OwnerResourceType ownerResourceType)
         {
-            CreateBaseProperties(request, ownerResourceType);
-            request.Name = A<string>();
-            request.ToDate = A<DateTime>();
+            return CreateBaseProperties(ownerResourceType);
         }
 
-        private void CreateBaseProperties<TModel>(TModel model, OwnerResourceType ownerResourceType) where TModel : class, IHasBaseWriteProperties, new()
+        private BaseNotificationPropertiesWriteRequestDTO CreateBaseProperties(OwnerResourceType ownerResourceType)
         {
-            model.BaseProperties = new BaseNotificationPropertiesWriteRequestDTO
+            return new BaseNotificationPropertiesWriteRequestDTO
             {
                 Subject = A<string>(),
                 Body = A<string>(),
@@ -446,7 +458,7 @@ namespace Tests.Integration.Presentation.Web.Notifications
                         {
                             new() {RoleUuid = CreateNewRole(ownerResourceType).Uuid}
                         }
-                }
+                },
             };
         }
 

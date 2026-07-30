@@ -26,6 +26,7 @@ namespace Tests.Integration.Presentation.Web.Tools
         public const int DefaultUserId = 1;
         private static readonly string ConnectionString;
         private static readonly string DatabaseProvider;
+        private static readonly string BaseUrl;
 
         static TestEnvironment()
         {
@@ -89,6 +90,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 };
 
                 Console.Out.WriteLine($"[TestEnvironment] ActiveEnvironment={ActiveEnvironment}, DatabaseProvider={DatabaseProvider}");
+                BaseUrl = "https://localhost:44300";
             }
             else
             {
@@ -111,6 +113,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                     {OrganizationRole.GlobalAdmin, LoadUserFromEnvironment(OrganizationRole.GlobalAdmin, true)}
                 };
 
+                BaseUrl = $"https://{GetEnvironmentVariable("KitosHostName")}";
                 Console.Out.WriteLine($"[TestEnvironment] ActiveEnvironment={ActiveEnvironment}, DatabaseProvider={DatabaseProvider}");
             }
         }
@@ -224,7 +227,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 case KitosTestEnvironment.Local:
                     return "https://localhost:44300";
                 case KitosTestEnvironment.Integration:
-                    return $"https://{GetEnvironmentVariable("KitosHostName")}";
+                    return BaseUrl;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -77,7 +77,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
         [InlineData(UnAuthorizedCvr, false, CheckConnectionError.FailedToLookupOrganizationCompany)]
         [InlineData(null, false, CheckConnectionError.InvalidCvrOnOrganization)]
         [InlineData(AuthorizedCvr, true, null)]
-        public async Task Can_GET_ConnectionStatus(string cvr, bool expectConnected, CheckConnectionError? expectedError)
+        public async Task Can_GET_ConnectionStatus(string? cvr, bool expectConnected, CheckConnectionError? expectedError)
         {
             //Arrange
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
@@ -156,6 +156,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             DatabaseAccess.MapFromEntitySet<Organization, bool>(orgs =>
             {
                 var organization = orgs.AsQueryable().ByUuid(targetOrgUuid);
+                Assert.NotNull(organization);
                 var dbRoot = organization.GetRoot();
                 Assert.NotNull(organization.StsOrganizationConnection);
                 Assert.False(organization.StsOrganizationConnection.Connected);
@@ -337,7 +338,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             Assert.Equal(HttpStatusCode.OK, consequencesResponse.StatusCode);
             var consequences = await consequencesResponse.ReadResponseBodyAsAsync<ConnectionUpdateConsequencesResponseDTO>();
             Assert.NotEmpty(consequences.Consequences);
-            var conversion = Assert.Single(consequences.Consequences.Where(x => x.Category == ConnectionUpdateOrganizationUnitChangeType.Converted));
+            var conversion = Assert.Single(consequences.Consequences, x => x.Category == ConnectionUpdateOrganizationUnitChangeType.Converted);
             Assert.Equal(expectedConvertedUnit, conversion.Uuid);
         }
 
@@ -398,7 +399,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
                         .AsQueryable()
                         .Where(unit => unit.Organization.Uuid == targetOrgUuid)
                         .Where(x => x.Origin == OrganizationUnitOrigin.STS_Organisation)
-                        .Where(x => !expectedUuidsLeft.Contains(x.ExternalOriginUuid.Value))
+                        .Where(x => !expectedUuidsLeft.Contains(x.ExternalOriginUuid!.Value))
                         .Select(x => x.Uuid) //selecting the kitos uuid
                         .ToList())
                 .ToList();
@@ -511,9 +512,9 @@ namespace Tests.Integration.Presentation.Web.Organizations
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
-            var actualParentUuid = DatabaseAccess.MapFromEntitySet<OrganizationUnit, Guid>(x => x.AsQueryable().ByUuid(expectedMoval.expectedMoval).Parent.Uuid);
+            var actualParentUuid = DatabaseAccess.MapFromEntitySet<OrganizationUnit, Guid>(x => x.AsQueryable().ByUuid(expectedMoval.expectedMoval)!.Parent.Uuid);
             Assert.Equal(expectedMoval.expectedParent, actualParentUuid);
-            var movedItemChildrenUuids = DatabaseAccess.MapFromEntitySet<OrganizationUnit, IEnumerable<Guid>>(x => x.AsQueryable().ByUuid(expectedMoval.expectedMoval).Children.Select(x => x.Uuid).ToList());
+            var movedItemChildrenUuids = DatabaseAccess.MapFromEntitySet<OrganizationUnit, IEnumerable<Guid>>(x => x.AsQueryable().ByUuid(expectedMoval.expectedMoval)!.Children.Select(x => x.Uuid).ToList());
             Assert.Contains(uuidOfExpectedMoval, movedItemChildrenUuids);
         }
 
@@ -550,7 +551,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
-            var subscriptionRemoved = DatabaseAccess.MapFromEntitySet<Organization, bool>(r => r.AsQueryable().ByUuid(targetOrgUuid).StsOrganizationConnection?.SubscribeToUpdates == false);
+            var subscriptionRemoved = DatabaseAccess.MapFromEntitySet<Organization, bool>(r => r.AsQueryable().ByUuid(targetOrgUuid)?.StsOrganizationConnection?.SubscribeToUpdates == false);
             Assert.True(subscriptionRemoved);
         }
 
@@ -731,6 +732,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             //Addition consequences
             var additionLogs = logsList[1];
             Assert.NotNull(additionLogs);
+            Assert.NotNull(additionLogs.Consequences);
             var additionLogsConsequences = additionLogs.Consequences.ToList();
 
             Assert.Equal(additionConsequences.Count, additionLogsConsequences.Count);
@@ -739,6 +741,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             //Get second item in the list
             var otherLogs = logsList.Last();
             Assert.NotNull(otherLogs);
+            Assert.NotNull(otherLogs.Consequences);
             var otherLogsConsequences = otherLogs.Consequences.ToList();
 
             Assert.Equal(otherConsequences.Count, otherLogsConsequences.Count);
@@ -775,7 +778,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             }
         }
 
-        private async Task<Guid> GetOrCreateOrgWithCvr(GetTokenResponseDTO token, string cvr)
+        private async Task<Guid> GetOrCreateOrgWithCvr(GetTokenResponseDTO token, string? cvr)
         {
             Guid targetOrgUuid;
             //Check if we already have the authorized org before we test snapshot (so we dont have to create a new org)
@@ -803,6 +806,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
                     var organization = repo.AsQueryable().ByUuid(org.Uuid);
                     var externalUnit = new ExternalOrganizationUnit(Guid.NewGuid(), "FAKE ROOT",
                         new Dictionary<string, string>(), new List<ExternalOrganizationUnit>());
+                    Assert.NotNull(organization);
                     organization.ConnectToExternalOrganizationHierarchy(OrganizationUnitOrigin.STS_Organisation, externalUnit, Maybe<int>.Some(1), fakeInitialSubscription);
                     organization.StsOrganizationConnection.LastChangedByUserId = TestEnvironment.DefaultUserId;
                     organization.StsOrganizationConnection.ObjectOwnerId = TestEnvironment.DefaultUserId;
@@ -834,6 +838,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             StsOrganizationChangeLogResponseDTO logs)
         {
             var consequencesList = consequences.ToList();
+            Assert.NotNull(logs.Consequences);
             Assert.Equal(consequencesList.Count, logs.Consequences.Count());
             foreach (var consequence in consequencesList)
             {

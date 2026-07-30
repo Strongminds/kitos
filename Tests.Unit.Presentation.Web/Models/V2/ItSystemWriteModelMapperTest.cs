@@ -130,7 +130,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
            bool noTaskRefUuids)
         {
             //Arrange
-            var emptyInput = new RightsHolderFullItSystemRequestDTO();
+            var emptyInput = new RightsHolderFullItSystemRequestDTO{Name = string.Empty, Description = string.Empty};
             var definedProperties = GetAllInputPropertyNames<RightsHolderUpdateSystemPropertiesRequestDTO>();
             if (noName) definedProperties.Remove(nameof(RightsHolderUpdateSystemPropertiesRequestDTO.Name));
             if (noDescription) definedProperties.Remove(nameof(RightsHolderUpdateSystemPropertiesRequestDTO.Description));
@@ -167,7 +167,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
        bool noTaskRefUuids)
         {
             //Arrange
-            var emptyInput = new RightsHolderFullItSystemRequestDTO();
+            var emptyInput = new RightsHolderFullItSystemRequestDTO{Name = string.Empty, Description = string.Empty};
             var definedProperties = GetAllInputPropertyNames<RightsHolderUpdateSystemPropertiesRequestDTO>();
             if (noName) definedProperties.Remove(nameof(RightsHolderUpdateSystemPropertiesRequestDTO.Name));
             if (noDescription) definedProperties.Remove(nameof(RightsHolderUpdateSystemPropertiesRequestDTO.Description));

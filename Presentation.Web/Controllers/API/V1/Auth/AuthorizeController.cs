@@ -54,7 +54,10 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         public IActionResult GetLogin()
         {
             var user = _userRepository.GetById(_userContext.UserId);
-            Logger?.Debug($"GetLogin called for {user}");
+            Logger.Debug($"GetLogin called for {user}");
+            if (user == null)
+                return Unauthorized();
+
             var response = Map<User, UserDTO>(user);
             return Ok(response);
         }

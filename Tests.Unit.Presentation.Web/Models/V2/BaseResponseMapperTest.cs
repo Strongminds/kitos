@@ -17,7 +17,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(organization.Cvr, shallowOrganizationDTO?.Cvr);
         }
 
-        protected static void AssertOptionalOrganization(Organization? organization, ShallowOrganizationResponseDTO shallowOrganizationDTO)
+        protected static void AssertOptionalOrganization(Organization? organization, ShallowOrganizationResponseDTO? shallowOrganizationDTO)
         {
             if (organization == null)
                 Assert.Null(shallowOrganizationDTO);
@@ -25,7 +25,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 AssertOrganization(organization, shallowOrganizationDTO);
         }
 
-        protected static void AssertOptionalIdentity<T>(T? optionalExpectedIdentity, IdentityNamePairResponseDTO actualIdentity) where T : IHasUuid, IHasName
+        protected static void AssertOptionalIdentity<T>(T? optionalExpectedIdentity, IdentityNamePairResponseDTO? actualIdentity) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentity == null)
                 Assert.Null(actualIdentity);
@@ -46,12 +46,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        protected static void AssertUser(User user, IdentityNamePairResponseDTO dtoValue)
+        protected static void AssertUser(User user, IdentityNamePairResponseDTO? dtoValue)
         {
-            Assert.Equal((user.GetFullName(), user.Uuid), (dtoValue.Name, dtoValue.Uuid));
+            Assert.Equal((user.GetFullName(), user.Uuid), (dtoValue?.Name, dtoValue?.Uuid));
         }
 
-        protected static void AssertOptionalUser(User? user, IdentityNamePairResponseDTO dtoValue)
+        protected static void AssertOptionalUser(User? user, IdentityNamePairResponseDTO? dtoValue)
         {
             if (user == null)
                 Assert.Null(dtoValue);
