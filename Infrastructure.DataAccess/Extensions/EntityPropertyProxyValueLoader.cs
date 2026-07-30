@@ -22,7 +22,7 @@ namespace Infrastructure.DataAccess.Extensions
         public T LoadReferencedEntities(T entity)
         {
             //Invoke getters of all reference properties. This solves the issue of EF not cascading on optional foreign keys in reference objects which may reference either one or many of the different root elements. Example: TaskRef
-            _entityTypeVirtualGetters
+            _ = _entityTypeVirtualGetters
                 .Value
                 .Select(methodInfo => methodInfo.Invoke(entity, new object[0]))
                 .ToList();

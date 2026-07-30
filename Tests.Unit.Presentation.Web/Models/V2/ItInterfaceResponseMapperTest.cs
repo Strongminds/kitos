@@ -66,15 +66,23 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itInterface.AccessModifier.ToChoice(), responseDto.Scope);
             Assert.Equal(itInterface.Note, responseDto.Notes);
             Assert.Equal(itInterface.Created, responseDto.Created);
+            Assert.NotNull(responseDto.CreatedBy);
             AssertUser(itInterface.ObjectOwner, responseDto.CreatedBy);
             Assert.Equal(itInterface.LastChanged, responseDto.LastModified);
+            Assert.NotNull(responseDto.LastModifiedBy);
             AssertUser(itInterface.LastChangedByUser, responseDto.LastModifiedBy);
             Assert.Equal(itInterface.Disabled, responseDto.Deactivated);
+            Assert.NotNull(responseDto.ItInterfaceType);
             AssertIdentityReference(itInterface.Interface, responseDto.ItInterfaceType);
+            Assert.NotNull(responseDto.ExposedBySystem);
             AssertIdentityReference(itInterface.ExhibitedBy?.ItSystem, responseDto.ExposedBySystem);
+            Assert.NotNull(responseDto.OrganizationContext);
             AssertOrganization(itInterface.Organization, responseDto.OrganizationContext);
             if(!minimumData)
+            {
+                Assert.NotNull(responseDto.RightsHolder);
                 AssertOrganization(itInterface.GetRightsHolderOrganization(), responseDto.RightsHolder);
+            }
             AssertData(itInterface, responseDto);
 
         }
@@ -109,8 +117,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(itInterface.Url, responseDto.UrlReference);
             Assert.Equal(itInterface.Note, responseDto.Notes);
             Assert.Equal(itInterface.Created, responseDto.Created);
+            Assert.NotNull(responseDto.CreatedBy);
             AssertUser(itInterface.ObjectOwner, responseDto.CreatedBy);
             Assert.Equal(itInterface.Disabled, responseDto.Deactivated);
+            Assert.NotNull(responseDto.ExposedBySystem);
             AssertIdentityReference(itInterface.ExhibitedBy?.ItSystem, responseDto.ExposedBySystem);
         }
 
@@ -139,6 +149,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             foreach (var dataRow in expected.DataRows)
             {
                 var matchingRow = Assert.Single(actualData, x => x.Uuid == dataRow.Uuid);
+                Assert.NotNull(matchingRow.DataType);
                 AssertIdentityReference(dataRow.DataType, matchingRow.DataType);
                 Assert.Equal(dataRow.Data, matchingRow.Description);
             }
@@ -146,7 +157,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         private static void AssertUser(User expected, IdentityNamePairResponseDTO actual)
         {
-            Assert.Equivalent(expected?.Transform(u => new IdentityNamePairResponseDTO(u.Uuid, u.GetFullName())), actual);
+            Assert.Equivalent(expected.Transform(u => new IdentityNamePairResponseDTO(u.Uuid, u.GetFullName())), actual);
         }
 
         private static void AssertOrganization(Organization expected, ShallowOrganizationResponseDTO actual)
@@ -157,7 +168,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         private static void AssertIdentityReference<T>(T? expected, IdentityNamePairResponseDTO actual) where T : IHasName, IHasUuid
         {
-            Assert.Equivalent(expected?.Transform(u => new IdentityNamePairResponseDTO(u.Uuid, u.Name)), actual);
+            Assert.Equivalent(expected?.Transform(u => new IdentityNamePairResponseDTO(u!.Uuid, u.Name)), actual);
         }
     }
 }

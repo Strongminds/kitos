@@ -75,7 +75,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     .SensitiveDataLevels
                     .Select(MapDataSensitivity)
                     .Where(level => level.HasValue)
-                    .Select(level => level.Value)
+                    .Select(level => level!.Value)
                     .ToList(),
                 SpecificPersonalData = systemUsage.PersonalDataOptions.Select(x => x.PersonalData.ToGDPRPersonalDataChoice()).ToList(),
                 SensitivePersonData = attachedOptions

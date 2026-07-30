@@ -14,7 +14,7 @@ namespace Presentation.Web.Controllers.API.V2.External
     public abstract class BaseRegularOptionTypeV2Controller<TParent,TOption> 
         : BaseOptionTypeV2Controller<TParent,TOption, RegularOptionResponseDTO, RegularOptionExtendedResponseDTO> where TOption : OptionEntity<TParent>
     {
-        protected override IActionResult GetAvailableOptions(Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        protected override IActionResult GetAvailableOptions(Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return _optionApplicationService
                 .GetOptionTypes(organizationUuid)

@@ -790,6 +790,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             }
             else
             {
+                Assert.NotNull(cvr);
                 targetOrgUuid = await CreateOrgWithCvr(cvr);
             }
 
