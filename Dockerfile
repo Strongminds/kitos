@@ -13,8 +13,7 @@ RUN if [ "$APP" = "Presentation.Web" ]; then \
     fi
 
 RUN if [ "$APP" = "Presentation.Web" ]; then \
-        dotnet publish "Presentation.Web/Presentation.Web.csproj" -c Release -o /app/out -p:ContainerBuild=true && \
-        cp "/src/DeploymentScripts/Baseline.PostgreSql.FullModel.sql" /app/out/; \
+        dotnet publish "Presentation.Web/Presentation.Web.csproj" -c Release -o /app/out -p:ContainerBuild=true; \
     elif [ "$APP" = "PubSub.Application.Api" ]; then \
         dotnet publish "PubSub.Application.Api/PubSub.Application.Api.csproj" -c Release -o /app/out; \
     else \

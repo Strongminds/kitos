@@ -28,7 +28,6 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libgssapi-krb5-2 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/out .
-COPY --from=build /app/DeploymentScripts/Baseline.PostgreSql.FullModel.sql .
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
