@@ -5,13 +5,13 @@ on:
     types:
       - closed
     branches:
-      - { branch-name }
+      - "master"
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: { image-name }
-  DEPLOYMENT_MANIFEST: { deployment-manifest-path }
+  IMAGE_NAME: "strongminds/kitos-kitos-pubsub"
+  DEPLOYMENT_MANIFEST: "infrastructure/kitos-dev/kitos/services/kitos-pubsub/deployment.yaml"
 
 jobs:
   build:
@@ -57,8 +57,8 @@ jobs:
           platforms: linux/amd64
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
-          context: { build-context }
-          file: { dockerfile-path }
+          context: "./PubSub.Application.Api"
+          file: "PubSub.Application.Api/Dockerfile"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -74,7 +74,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          ref: { branch-name }
+          ref: "master"
           # https://github.com/orgs/community/discussions/25305#discussioncomment-10728028
           ssh-key: ${{ secrets.WRITE_DEPLOY_KEY }}
 
