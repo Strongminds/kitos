@@ -28,6 +28,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.SupplierName).HasDatabaseName("IX_ItContract_Supplier_Read_SupplierName");
             builder.Property(x => x.SupplierCvr).HasMaxLength(10);
             builder.HasIndex(x => x.SupplierCvr).HasDatabaseName("IX_ItContract_Supplier_Read_SupplierCvr");
+            builder.Property(x => x.SupplierForeignCvr);
 
             builder.HasIndex(x => x.IsSupplierDisabled).HasDatabaseName("IX_ItContract_Supplier_Read_IsSupplierDisabled");
             builder.HasIndex(x => x.SupplierType).HasDatabaseName("IX_ItContract_Supplier_Read_SupplierType");
