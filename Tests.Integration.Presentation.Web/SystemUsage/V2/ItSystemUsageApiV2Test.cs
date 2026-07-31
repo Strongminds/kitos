@@ -2574,7 +2574,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var targetInterface = await CreateItInterfaceAsync(organizationUuid);
             await InterfaceV2Helper.SendPatchExposedBySystemAsync(await GetGlobalToken(), targetInterface.Uuid, systemUuid);
-            return (targetInterface.Uuid, targetInterface.Name);
+            return (targetInterface.Uuid, targetInterface.Name!);
         }
 
         private async Task<(GeneralDataWriteRequestDTO,

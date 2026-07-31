@@ -93,8 +93,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 itSystem.Usages.Select(x => x.MainContract?.ItContract.Supplier)
                     .Where(x => x != null)
                     .DistinctBy(x => x?.Uuid)
-                    .Select(x => x?.MapShallowOrganizationResponseDTO())
-                    .ToList() ?? new List<ShallowOrganizationResponseDTO?>();
+                    .Select(x => x!.MapShallowOrganizationResponseDTO())
+                    .ToList();
         }
     }
 }

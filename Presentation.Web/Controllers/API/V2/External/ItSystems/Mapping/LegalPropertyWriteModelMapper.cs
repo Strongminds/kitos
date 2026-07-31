@@ -4,7 +4,6 @@ using Core.ApplicationServices.Model.System;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 {
@@ -17,8 +16,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             var rule = CreateChangeRule<LegalPropertiesUpdateRequestDTO>(false);
             return new LegalUpdateParameters
             {
-                SystemName = rule.MustUpdate(x => x.SystemName) ? request.SystemName.AsChangedValue() : OptionalValueChange<string>.None,
-                DataProcessorName = rule.MustUpdate(x => x.DataProcessorName) ? request.DataProcessorName.AsChangedValue() : OptionalValueChange<string>.None
+                SystemName = rule.MustUpdate(x => x.SystemName) ? request.SystemName.AsChangedValue()! : OptionalValueChange<string>.None,
+                DataProcessorName = rule.MustUpdate(x => x.DataProcessorName) ? request.DataProcessorName.AsChangedValue()! : OptionalValueChange<string>.None
             };
         }
     }

@@ -53,7 +53,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         {
             SystemUuid = dpr.SystemUsages.First().ItSystem.Uuid,
             DataProcessorName = newestProcessor.Name.AsChangedValue(),
-            DataProcessorUuid = newestProcessor.Uuid.FromNullable().AsChangedValue()
+            DataProcessorUuid = newestProcessor.Uuid.FromNullable().AsChangedValue()!
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 
@@ -70,8 +70,8 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         var expectedBody = new SystemChangeEventBodyModel
         {
             SystemUuid = system.Uuid,
-            DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue(),
-            DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault().AsChangedValue()
+            DataProcessorUuid = system.GetRightsHolder().Select(x => x.Uuid).AsChangedValue()!,
+            DataProcessorName = system.GetRightsHolder().Select(x => x.Name).GetValueOrDefault().AsChangedValue()!
         };
         var expectedEvent = new KitosEvent(expectedBody, ExpectedQueueTopic);
 

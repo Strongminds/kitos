@@ -9,7 +9,6 @@ using Core.DomainModel;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
 {
@@ -108,7 +107,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
                 : OptionalValueChange<string>.None;
 
             destination.Version = rule.MustUpdate(x => x.Version)
-                ? source.Version.AsChangedValue()
+                ? source.Version.AsChangedValue()!
                 : OptionalValueChange<string>.None;
 
             destination.UrlReference = rule.MustUpdate(x => x.UrlReference)
