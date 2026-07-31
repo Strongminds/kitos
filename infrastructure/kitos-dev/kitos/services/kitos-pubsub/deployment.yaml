@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - env: []
-        image: '{will be replaced by build pipeline}'
+        image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-e862c930e07434b001485e7554231d82de3641a2
         name: kitos-pubsub
         ports:
         - containerPort: 8080
