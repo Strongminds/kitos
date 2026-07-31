@@ -17,7 +17,7 @@ spec:
               name: http
         path: /
         pathType: Prefix
-  - host: bbc16f0d-0692-4131-afe7-29f4cf875d2f.kitos-dev.strongminds.easyhosting.strongminds.dev
+  - host: 64b4c599-77a7-4a34-9771-ad124a7fb491.kitos-dev.strongminds.easyhosting.strongminds.dev
     http:
       paths:
       - backend:
@@ -32,5 +32,5 @@ spec:
     - kitos-pubsub.strongminds.tech
     secretName: kitos-pubsub-strongminds-tech-tls
   - hosts:
-    - bbc16f0d-0692-4131-afe7-29f4cf875d2f.kitos-dev.strongminds.easyhosting.strongminds.dev
-    secretName: bbc16f0d-0692-4131-afe7-29f4cf875d2f-kitos-dev-strongminds-easyhosting-strongminds-dev-tls
+    - 64b4c599-77a7-4a34-9771-ad124a7fb491.kitos-dev.strongminds.easyhosting.strongminds.dev
+    secretName: 64b4c599-77a7-4a34-9771-ad124a7fb491-kitos-dev-strongminds-easyhosting-strongminds-dev-tls

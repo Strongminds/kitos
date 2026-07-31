@@ -3,8 +3,8 @@ kind: Deployment
 metadata:
   annotations:
     easyhosting.io/service-reference: PubSub.Application.Api/Dockerfile
-    easyhosting.io/service-unique-id: bbc16f0d-0692-4131-afe7-29f4cf875d2f
-    easyhosting.io/easy-hosting-domain-name: bbc16f0d-0692-4131-afe7-29f4cf875d2f.kitos-dev.strongminds.easyhosting.strongminds.dev
+    easyhosting.io/service-unique-id: 64b4c599-77a7-4a34-9771-ad124a7fb491
+    easyhosting.io/easy-hosting-domain-name: 64b4c599-77a7-4a34-9771-ad124a7fb491.kitos-dev.strongminds.easyhosting.strongminds.dev
   labels:
     app: kitos-pubsub
   name: kitos-pubsub
