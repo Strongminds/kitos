@@ -29,7 +29,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                 KLE = [],
                 MainContractSuppliers = [], 
                 Name = itSystem.Name,
-                CreatedBy = itSystem.ObjectOwner.MapIdentityNamePairDTO(),
+                CreatedBy = itSystem.ObjectOwner?.MapIdentityNamePairDTO()!,
                 RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided)
             };
             MapBaseInformation(itSystem, dto);
@@ -47,10 +47,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                     .ToList(),
                 Name = itSystem.Name,
                 LastModified = itSystem.LastChanged,
-                CreatedBy = itSystem.ObjectOwner.MapIdentityNamePairDTO(),
-                LastModifiedBy = itSystem.LastChangedByUser.MapIdentityNamePairDTO(),
+                CreatedBy = itSystem.ObjectOwner?.MapIdentityNamePairDTO()!,
+                LastModifiedBy = itSystem.LastChangedByUser?.MapIdentityNamePairDTO()!,
                 Scope = itSystem.AccessModifier.ToChoice(),
-                OrganizationContext = itSystem.Organization.MapShallowOrganizationResponseDTO(),
+                OrganizationContext = itSystem.Organization?.MapShallowOrganizationResponseDTO()!,
                 LegalName = itSystem.LegalName,
                 LegalDataProcessorName = itSystem.LegalDataProcessorName,
                 RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided),
@@ -88,7 +88,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             dto.RightsHolder = itSystem.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
             dto.BusinessType = itSystem.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
             dto.Description = itSystem.Description;
-            dto.CreatedBy = itSystem.ObjectOwner.MapIdentityNamePairDTO();
+            dto.CreatedBy = itSystem.ObjectOwner?.MapIdentityNamePairDTO()!;
             dto.Created = itSystem.Created;
             dto.Deactivated = itSystem.Disabled;
             dto.FormerName = itSystem.PreviousName;

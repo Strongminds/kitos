@@ -36,7 +36,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// Responsible for last modification
         /// </summary>
-        public required IdentityNamePairResponseDTO LastModifiedBy { get; set; }
+        public IdentityNamePairResponseDTO? LastModifiedBy { get; set; }
         /// <summary>
         /// IT-System which this organizational usage is based on
         /// </summary>
@@ -46,7 +46,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// Organization in which the system usage has been created
         /// </summary>
         [Required]
-        public required ShallowOrganizationResponseDTO OrganizationContext { get; set; }
+        public ShallowOrganizationResponseDTO? OrganizationContext { get; set; }
         
         [Required]
         public required GeneralDataResponseDTO General { get; set; }

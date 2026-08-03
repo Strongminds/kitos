@@ -422,6 +422,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
             //Assert
             Assert.Equal(requestDto.Name, contractDTO.Name);
+            Assert.NotNull(contractDTO.OrganizationContext);
             Assert.Equal(organization.Name, contractDTO.OrganizationContext.Name);
             Assert.Equal(organization.Cvr, contractDTO.OrganizationContext.Cvr);
             Assert.Equal(organization.Uuid, contractDTO.OrganizationContext.Uuid);
@@ -1645,6 +1646,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             var contractDTO = await ItContractV2Helper.PostContractAsync(token, requestDto);
 
             //Assert
+            Assert.NotNull(contractDTO.OrganizationContext);
             Assert.Equal(organization.Name, contractDTO.OrganizationContext.Name);
             Assert.Equal(organization.Cvr, contractDTO.OrganizationContext.Cvr);
             Assert.Equal(organization.Uuid, contractDTO.OrganizationContext.Uuid);
@@ -2312,6 +2314,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
         {
             Assert.Equal(expectedContent.Uuid, dto.Uuid);
             Assert.Equal(expectedContent.Name, dto.Name);
+            Assert.NotNull(dto.OrganizationContext);
             Assert.Equal(expectedOrganization.Uuid, dto.OrganizationContext.Uuid);
             Assert.Equal(expectedOrganization.Name, dto.OrganizationContext.Name);
             Assert.Equal(expectedOrganization.Cvr, dto.OrganizationContext.Cvr);

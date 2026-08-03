@@ -81,7 +81,7 @@ namespace Presentation.Web.Models.API.V2.Response.System
         /// Responsible for creation.
         /// </summary>
         [Required]
-        public required IdentityNamePairResponseDTO CreatedBy { get; set; }
+        public IdentityNamePairResponseDTO? CreatedBy { get; set; }
 
         /// <summary>
         /// Archive duty recommendation from "Rigsarkivet"

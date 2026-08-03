@@ -93,7 +93,7 @@ namespace Core.ApplicationServices.Model.SystemUsage
 
         private static List<ArchiveReference> CreateArchiveReferences(ArchiveItSystemUsageParameters parameters)
         {
-            return parameters.ArchiveReferences
+            return (parameters.ArchiveReferences ?? [])
                 .Select(reference => new ArchiveReference
                 {
                     Label = reference.Name,

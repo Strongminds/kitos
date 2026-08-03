@@ -65,6 +65,6 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// Responsible for creation
         /// </summary>
         [Required]
-        public required IdentityNamePairResponseDTO CreatedBy { get; set; }
+        public IdentityNamePairResponseDTO? CreatedBy { get; set; }
     }
 }

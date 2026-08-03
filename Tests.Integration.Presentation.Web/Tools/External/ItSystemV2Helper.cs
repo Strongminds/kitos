@@ -41,6 +41,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<ItSystemResponseDTO> CreateSystemAsync(string token, CreateItSystemRequestDTO request)
         {
             using var response = await SendCreateSystemAsync(token, request);
+            var res = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             return await response.ReadResponseBodyAsAsync<ItSystemResponseDTO>();

@@ -20,7 +20,7 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// Responsible for last modification
         /// </summary>
         [Required]
-        public required IdentityNamePairResponseDTO LastModifiedBy { get; set; }
+        public IdentityNamePairResponseDTO? LastModifiedBy { get; set; }
 
         [Required]
         public RegistrationScopeChoice Scope { get; set; }
@@ -39,7 +39,7 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// Organization in which this it-interface master data was created
         /// </summary>
         [Required]
-        public required ShallowOrganizationResponseDTO OrganizationContext { get; set; }
+        public ShallowOrganizationResponseDTO? OrganizationContext { get; set; }
         /// <summary>
         /// Organization that holds the rights to this it-interface
         /// </summary>
