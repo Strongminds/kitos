@@ -14,6 +14,7 @@ namespace Core.DomainModel.ItContract.Read
         public Guid SupplierUuid { get; set; }
         public string SupplierName { get; set; }
         public string SupplierCvr { get; set; }
+        public string SupplierForeignCvr { get; set; }
         public bool IsSupplierDisabled { get; set; }
         public Guid? HighestCriticalityUuid { get; set; }
         public string HighestCriticalityName { get; set; }
