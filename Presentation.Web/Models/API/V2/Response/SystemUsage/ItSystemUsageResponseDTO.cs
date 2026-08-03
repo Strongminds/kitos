@@ -36,7 +36,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// Responsible for last modification
         /// </summary>
-        public IdentityNamePairResponseDTO? LastModifiedBy { get; set; }
+        public required IdentityNamePairResponseDTO LastModifiedBy { get; set; }
         /// <summary>
         /// IT-System which this organizational usage is based on
         /// </summary>
@@ -46,7 +46,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// Organization in which the system usage has been created
         /// </summary>
         [Required]
-        public ShallowOrganizationResponseDTO OrganizationContext { get; set; }
+        public required ShallowOrganizationResponseDTO OrganizationContext { get; set; }
         
         [Required]
         public required GeneralDataResponseDTO General { get; set; }
@@ -64,7 +64,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// Defines IT-System KLE deviations locally within an organization. All deviations are in the context of the inherited deviations which are found on the IT-System context
         /// </summary>
         [Required]
-        public LocalKLEDeviationsResponseDTO LocalKLEDeviations { get; set; }
+        public required LocalKLEDeviationsResponseDTO LocalKLEDeviations { get; set; }
         /// <summary>
         /// User defined external references
         /// </summary>

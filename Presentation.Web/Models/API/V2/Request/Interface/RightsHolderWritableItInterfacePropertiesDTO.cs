@@ -20,7 +20,7 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(ItInterface.MaxNameLength)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Identifier for IT-Interface
@@ -38,12 +38,12 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// General description of the IT-Interface
         /// </summary>
         [Required]
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// Url reference for further information
         /// </summary>
         [Required]
-        public string UrlReference { get; set; }
+        public required string UrlReference { get; set; }
     }
 }

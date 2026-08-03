@@ -1,4 +1,5 @@
 ﻿using Core.DomainModel.Shared;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Presentation.Web.Models.API.V1.GDPR
 {
@@ -8,6 +9,7 @@ namespace Presentation.Web.Models.API.V1.GDPR
         public YesNoUndecidedOption? TransferToInsecureThirdCountries { get; set; }
         public NamedEntityWithExpirationStatusDTO? InsecureCountry { get; set; }
 
+        [SetsRequiredMembers]
         public SubDataProcessorResponseDTO(
             int id,
             string name,

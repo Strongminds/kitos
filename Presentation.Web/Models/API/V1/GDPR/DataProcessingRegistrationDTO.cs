@@ -2,11 +2,13 @@
 using Presentation.Web.Models.API.V1.References;
 using Presentation.Web.Models.API.V1.Shared;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Presentation.Web.Models.API.V1.GDPR
 {
     public class DataProcessingRegistrationDTO : NamedEntityDTO
     {
+        [SetsRequiredMembers]
         public DataProcessingRegistrationDTO(int id, string name)
             : base(id, name)
         {

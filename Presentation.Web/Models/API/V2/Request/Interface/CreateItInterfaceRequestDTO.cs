@@ -69,11 +69,11 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// <summary>
         /// General description of the IT-Interface
         /// </summary>
-        public string? Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// Url reference for further information
         /// </summary>
-        public string? UrlReference { get; set; }
+        public required string UrlReference { get; set; }
     }
 }

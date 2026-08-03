@@ -35,6 +35,6 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// Defines the date at which the payment was audited
         /// </summary>
         public DateTime? AuditDate { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
     }
 }

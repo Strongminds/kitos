@@ -23,7 +23,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
 
         public RightsHolderItSystemResponseDTO ToRightsHolderResponseDTO(ItSystem itSystem)
         {
-            var dto = new RightsHolderItSystemResponseDTO { ExternalReferences = [], KLE = [], MainContractSuppliers = [] };
+            var dto = new RightsHolderItSystemResponseDTO
+            {
+                ExternalReferences = [],
+                KLE = [],
+                MainContractSuppliers = [], 
+                Name = itSystem.Name,
+                CreatedBy = itSystem.ObjectOwner.MapIdentityNamePairDTO(),
+                RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided)
+            };
             MapBaseInformation(itSystem, dto);
             return dto;
         }
@@ -37,12 +45,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                     .Select(systemUsage => systemUsage.Organization)
                     .Select(organization => organization.MapShallowOrganizationResponseDTO())
                     .ToList(),
+                Name = itSystem.Name,
                 LastModified = itSystem.LastChanged,
+                CreatedBy = itSystem.ObjectOwner.MapIdentityNamePairDTO(),
                 LastModifiedBy = itSystem.LastChangedByUser.MapIdentityNamePairDTO(),
                 Scope = itSystem.AccessModifier.ToChoice(),
                 OrganizationContext = itSystem.Organization.MapShallowOrganizationResponseDTO(),
                 LegalName = itSystem.LegalName,
                 LegalDataProcessorName = itSystem.LegalDataProcessorName,
+                RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided),
                 ExternalReferences = [],
                 KLE = [],
                 MainContractSuppliers = []
@@ -74,7 +85,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
         {
             dto.Uuid = itSystem.Uuid;
             dto.ExternalUuid = itSystem.ExternalUuid;
-            dto.Name = itSystem.Name;
             dto.RightsHolder = itSystem.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
             dto.BusinessType = itSystem.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
             dto.Description = itSystem.Description;
@@ -84,7 +94,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             dto.FormerName = itSystem.PreviousName;
             dto.ParentSystem = itSystem.Parent?.Transform(parent => parent.MapIdentityNamePairDTO());
             dto.ExternalReferences = _referenceResponseMapper.MapExternalReferences(itSystem.ExternalReferences).ToList();
-            dto.RecommendedArchiveDuty = new RecommendedArchiveDutyResponseDTO(itSystem.ArchiveDutyComment, itSystem.ArchiveDuty?.ToChoice() ?? RecommendedArchiveDutyChoice.Undecided);
             dto.KLE = itSystem
                 .TaskRefs
                 .Select(taskRef => taskRef.MapIdentityNamePairDTO())

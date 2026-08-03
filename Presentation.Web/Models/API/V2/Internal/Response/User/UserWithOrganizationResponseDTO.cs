@@ -5,7 +5,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response.User
 {
     public class UserWithOrganizationResponseDTO : UserWithApiAccessResponseDTO
     {
-        public string OrgName { get; set; }
+        public required string OrgName { get; set; }
         protected UserWithOrganizationResponseDTO()
         {
         }

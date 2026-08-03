@@ -31,7 +31,7 @@ namespace Presentation.Web.Models.API.V2.Response.System
         /// Name of IT-System
         /// </summary>
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Former name of IT-System (if any)
@@ -47,13 +47,13 @@ namespace Presentation.Web.Models.API.V2.Response.System
         /// User defined external references
         /// </summary>
         [Required]
-        public IEnumerable<ExternalReferenceDataResponseDTO> ExternalReferences { get; set; }
+        public required IEnumerable<ExternalReferenceDataResponseDTO> ExternalReferences { get; set; }
 
         /// <summary>
         /// List of KLE number representations as name and UUID pairs
         /// </summary>
         [Required]
-        public IEnumerable<IdentityNamePairResponseDTO> KLE { get; set; }
+        public required IEnumerable<IdentityNamePairResponseDTO> KLE { get; set; }
 
         /// <summary>
         /// Active status
@@ -81,17 +81,17 @@ namespace Presentation.Web.Models.API.V2.Response.System
         /// Responsible for creation.
         /// </summary>
         [Required]
-        public IdentityNamePairResponseDTO CreatedBy { get; set; }
+        public required IdentityNamePairResponseDTO CreatedBy { get; set; }
 
         /// <summary>
         /// Archive duty recommendation from "Rigsarkivet"
         /// </summary>
         [Required]
-        public RecommendedArchiveDutyResponseDTO RecommendedArchiveDuty { get; set; }
+        public required RecommendedArchiveDutyResponseDTO RecommendedArchiveDuty { get; set; }
         /// <summary>
         ///A list of unique suppliers associated with each usage's main contract.
         /// </summary>
         [Required]
-        public IEnumerable<ShallowOrganizationResponseDTO> MainContractSuppliers { get; set; }
+        public required IEnumerable<ShallowOrganizationResponseDTO> MainContractSuppliers { get; set; }
     }
 }

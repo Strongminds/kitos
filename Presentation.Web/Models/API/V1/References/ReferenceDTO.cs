@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Presentation.Web.Models.API.V1.References
 {
     public class ReferenceDTO : NamedEntityDTO
     {
+        [SetsRequiredMembers]
         public ReferenceDTO(int id, string name)
             : base(id, name)
         {

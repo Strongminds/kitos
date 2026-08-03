@@ -9,6 +9,7 @@ using Core.DomainModel.Organization;
 using Newtonsoft.Json;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Conflicts;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;

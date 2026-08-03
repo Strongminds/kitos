@@ -1,7 +1,10 @@
-﻿namespace Presentation.Web.Models.API.V1
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Presentation.Web.Models.API.V1
 {
     public class ShallowOrganizationDTO : NamedEntityDTO
     {
+        [SetsRequiredMembers]
         public ShallowOrganizationDTO(int id, string name) : base(id, name)
         {
 
