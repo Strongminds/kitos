@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.DomainModel.BackgroundJobs;
 using Core.DomainModel.ItContract;
-using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools;
@@ -17,7 +15,7 @@ namespace Tests.Integration.Presentation.Web.Contract
     [Collection(nameof(SequentialTestGroup))]
     public class ItContractSupplierOverviewReadModelsApiTest : BaseTest, IAsyncLifetime
     {
-        private ShallowOrganizationResponseDTO _organization;
+        private ShallowOrganizationResponseDTO _organization = null!;
 
         public async Task InitializeAsync()
         {

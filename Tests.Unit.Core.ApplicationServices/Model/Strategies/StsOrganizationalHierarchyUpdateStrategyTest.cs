@@ -454,7 +454,7 @@ namespace Tests.Unit.Core.Model.Strategies
             //Assert
             Assert.True(consequences.Ok);
             Assert.DoesNotContain(root.FlattenHierarchy(), child => expectedRemovedUnits.Contains(child));
-            var actualConverted = Assert.Single(root.FlattenHierarchy().Where(x => x == nodeExpectedToBeConverted));
+            var actualConverted = Assert.Single(root.FlattenHierarchy(), x => x == nodeExpectedToBeConverted);
             Assert.Equal(OrganizationUnitOrigin.Kitos, actualConverted.Origin);
             Assert.Null(actualConverted.ExternalOriginUuid);
         }
@@ -471,7 +471,7 @@ namespace Tests.Unit.Core.Model.Strategies
             //Assert
             Assert.True(consequences.Ok);
 
-            var expectedConversion = Assert.Single(root.FlattenHierarchy().Where(x => x == removedNodeInUse));
+            var expectedConversion = Assert.Single(root.FlattenHierarchy(), x => x == removedNodeInUse);
             Assert.Equal(OrganizationUnitOrigin.Kitos, expectedConversion.Origin);
             Assert.Null(expectedConversion.ExternalOriginUuid);
         }
@@ -531,9 +531,9 @@ namespace Tests.Unit.Core.Model.Strategies
             Assert.Equal(2, addedUnits.Count);
             Assert.Contains(addedUnits, unit => expectedNewUnits.Any(x => x.ExternalOriginUuid.GetValueOrDefault() == unit.unitToAdd.Uuid));
 
-            var addedRoot = Assert.Single(addedUnits.Where(x => x.unitToAdd.Uuid == expectedSubTree.ExternalOriginUuid.GetValueOrDefault()));
+            var addedRoot = Assert.Single(addedUnits, x => x.unitToAdd.Uuid == expectedSubTree.ExternalOriginUuid.GetValueOrDefault());
             Assert.Equal(randomParentOfNewSubTree.ExternalOriginUuid.GetValueOrDefault(), addedRoot.parent.Uuid);
-            var addedChild = Assert.Single(addedUnits.Where(x => x.unitToAdd.Uuid == expectedChild.ExternalOriginUuid.GetValueOrDefault()));
+            var addedChild = Assert.Single(addedUnits, x => x.unitToAdd.Uuid == expectedChild.ExternalOriginUuid.GetValueOrDefault());
             Assert.Equal(addedRoot.unitToAdd, addedChild.parent);
         }
 

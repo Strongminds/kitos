@@ -465,9 +465,9 @@ namespace Tests.Unit.Core.ApplicationServices
 
             //Assert
             Assert.Equal(2, result.Count());
-            var rightsHolderItInterfaceResult = Assert.Single(result.Where(x => x.Uuid == rightsHolderItInterfaceUuid));
+            var rightsHolderItInterfaceResult = Assert.Single(result, x => x.Uuid == rightsHolderItInterfaceUuid);
             Assert.Equal(rightsHolderItInterfaceUuid, rightsHolderItInterfaceResult.Uuid);
-            var organizationItInterfaceResult = Assert.Single(result.Where(x => x.Uuid == organizationItInterfaceUuid));
+            var organizationItInterfaceResult = Assert.Single(result, x => x.Uuid == organizationItInterfaceUuid);
             Assert.Equal(organizationItInterfaceUuid, organizationItInterfaceResult.Uuid);
         }
 

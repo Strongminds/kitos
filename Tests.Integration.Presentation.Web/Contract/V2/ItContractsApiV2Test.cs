@@ -2420,6 +2420,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             }
             else
             {
+                Assert.NotNull(actual.ProcurementPlan);
                 Assert.Equal(expected.ProcurementPlan.QuarterOfYear, actual.ProcurementPlan.QuarterOfYear);
                 Assert.Equal(expected.ProcurementPlan.Year, actual.ProcurementPlan.Year);
                 Assert.Equal(expected.ProcurementInitiated, actual.ProcurementInitiated);

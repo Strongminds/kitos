@@ -316,6 +316,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             DatabaseAccess.MutateDatabase(db =>
             {
                 var dbInterface = db.ItInterfaces.AsQueryable().ByUuid(itInterface2.Uuid);
+                Assert.NotNull(dbInterface);
                 dbInterface.Disabled = true;
                 db.SaveChanges();
             });
@@ -326,11 +327,12 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             //Assert
             if (shouldIncludeDeactivated)
             {
-                Assert.Equal(pageSize, result.Count());
-                var interface1DTO = result.First(x => x.Name.Equals(itInterface1.Name));
+                var resultList = result.ToList();
+                Assert.Equal(pageSize, resultList.Count);
+                var interface1DTO = resultList.First(x => x.Name.Equals(itInterface1.Name));
                 CheckBaseDTOValues(system, itInterface1, interface1DTO);
                 Assert.False(interface1DTO.Deactivated);
-                var interface2DTO = result.First(x => x.Name.Equals(itInterface2.Name));
+                var interface2DTO = resultList.First(x => x.Name.Equals(itInterface2.Name));
                 CheckBaseDTOValues(system, itInterface2, interface2DTO);
                 Assert.True(interface2DTO.Deactivated);
             }

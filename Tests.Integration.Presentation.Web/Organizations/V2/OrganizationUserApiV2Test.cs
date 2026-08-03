@@ -220,7 +220,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private static void ExpectResult(List<OrganizationUserResponseDTO> result, User expectedUserSource, params OrganizationUserRole[] roles)
         {
-            var dto = Assert.Single(result.Where(x => x.Uuid == expectedUserSource.Uuid));
+            var dto = Assert.Single(result, x => x.Uuid == expectedUserSource.Uuid);
             AssertUser(expectedUserSource, dto, roles);
         }
 

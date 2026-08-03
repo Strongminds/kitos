@@ -19,8 +19,8 @@ namespace Tests.Unit.Core.DomainServices.Organizations
     public class StsOrganizationServiceTest : WithAutoFixture
     {
         private const string ValidCvr = "12345678";
-        private StsOrganizationService _sut;
-        private Mock<IStsOrganizationCompanyLookupService> _companyLookupServiceMock;
+        private StsOrganizationService _sut = null!;
+        private Mock<IStsOrganizationCompanyLookupService> _companyLookupServiceMock = null!;
 
         protected override void OnFixtureCreated(Fixture fixture)
         {

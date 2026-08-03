@@ -114,6 +114,7 @@ namespace Tests.Integration.Presentation.Web.Organizations
             DatabaseAccess.MapFromEntitySet<Organization, bool>(orgs =>
             {
                 var organization = orgs.AsQueryable().ByUuid(targetOrgUuid);
+                Assert.NotNull(organization);
                 var dbRoot = organization.GetRoot();
                 Assert.NotNull(organization.StsOrganizationConnection);
                 Assert.True(organization.StsOrganizationConnection.Connected);

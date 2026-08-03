@@ -1817,10 +1817,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.Equal(2, dprs.Count());
-            var result1 = Assert.Single(dprs.Where(x => x.OrganizationId == org1));
+            var result1 = Assert.Single(dprs, x => x.OrganizationId == org1);
             Assert.Same(registration1, result1);
 
-            var result2 = Assert.Single(dprs.Where(x => x.OrganizationId == org2));
+            var result2 = Assert.Single(dprs, x => x.OrganizationId == org2);
             Assert.Same(registration2, result2);
         }
 

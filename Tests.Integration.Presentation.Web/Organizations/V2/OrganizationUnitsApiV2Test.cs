@@ -38,7 +38,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             //Assert
             Assert.Equal(4, units.Count); //Organizational hierarchy always contains at least 1 (the root created with the organization and then comes the user defined units)
-            var root = Assert.Single(units.Where(x => x.Name == organization.Name));
+            var root = Assert.Single(units, x => x.Name == organization.Name);
             Assert.Null(root.ParentOrganizationUnit);
             AssertCreatedOrganizationUnit(units, unit1, (root.Uuid, root.Name));
             AssertCreatedOrganizationUnit(units, unit1_1, (unit1.Uuid, unit1.Name));
@@ -440,7 +440,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
         private static void AssertCreatedOrganizationUnit(IEnumerable<OrganizationUnitResponseDTO> allUnits, OrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot, params TaskRef[] kle)
         {
-            var dto = Assert.Single(allUnits.Where(x => x.Uuid == expectedUnit.Uuid));
+            var dto = Assert.Single(allUnits, x => x.Uuid == expectedUnit.Uuid);
             AssertCreatedOrganizationUnit(dto, expectedUnit, expectedRoot);
         }
 

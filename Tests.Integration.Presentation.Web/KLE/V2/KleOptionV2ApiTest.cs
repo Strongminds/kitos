@@ -148,6 +148,7 @@ namespace Tests.Integration.Presentation.Web.KLE.V2
             //Assert
             Assert.Equal(child.Uuid, response.Payload.Uuid);
             Assert.Equal(child.TaskKey, response.Payload.KleNumber);
+            Assert.NotNull(response.Payload.ParentKle);
             Assert.Equal(child.Parent.Uuid, response.Payload.ParentKle.Uuid);
             Assert.Equal(child.Parent.TaskKey, response.Payload.ParentKle.Name);
             Assert.Equal(child.Description, response.Payload.Description);

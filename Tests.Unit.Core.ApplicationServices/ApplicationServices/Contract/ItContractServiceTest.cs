@@ -364,10 +364,10 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             //Assert
             Assert.Equal(2, contracts.Count());
-            var result1 = Assert.Single(contracts.Where(x => x.OrganizationId == org1));
+            var result1 = Assert.Single(contracts, x => x.OrganizationId == org1);
             Assert.Same(contract1, result1);
 
-            var result2 = Assert.Single(contracts.Where(x => x.OrganizationId == org2));
+            var result2 = Assert.Single(contracts, x => x.OrganizationId == org2);
             Assert.Same(contract2, result2);
         }
 
