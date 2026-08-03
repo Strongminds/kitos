@@ -92,6 +92,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, createLocalOptionResponse.StatusCode);
             var createContent = await createLocalOptionResponse.Content.ReadAsStringAsync();
             var createResponseDto = JsonConvert.DeserializeObject<LocalRoleOptionResponseDTO>(createContent);
+            Assert.NotNull(createResponseDto);
             Assert.Equal(globalOption.Uuid, createResponseDto.Uuid);
 
             using var response = await LocalOptionTypeV2Helper.DeleteLocalOptionType(organization.Uuid, globalOption.Uuid, OrganizationUnitRolesUrlSuffix, OrganizationUnitsApiPrefix);

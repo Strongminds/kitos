@@ -179,7 +179,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True");
         }
 
-        private static string GetEnvironmentVariable(string name, bool mandatory = true, string defaultValue = null, bool allowAppSettingsFallback = true)
+        private static string GetEnvironmentVariable(string name, bool mandatory = true, string? defaultValue = null, bool allowAppSettingsFallback = true)
         {
             var variableName = name;
 

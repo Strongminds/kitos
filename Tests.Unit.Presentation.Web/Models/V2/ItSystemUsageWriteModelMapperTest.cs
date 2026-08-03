@@ -1347,6 +1347,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.Validity?.ValidFrom, AssertPropertyContainsDataChange(output.ValidFrom));
             Assert.Equal(input.Validity?.ValidTo, AssertPropertyContainsDataChange(output.ValidTo));
             Assert.Equal(input.Notes, AssertPropertyContainsDataChange(output.Notes));
+            Assert.NotNull(input.NumberOfExpectedUsers);
             Assert.Equal(input.NumberOfExpectedUsers.LowerBound,
                 AssertPropertyContainsDataChange(output.NumberOfExpectedUsersInterval).lower);
             Assert.Equal(input.NumberOfExpectedUsers.UpperBound,

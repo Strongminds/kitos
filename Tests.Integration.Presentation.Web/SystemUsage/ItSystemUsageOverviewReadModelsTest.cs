@@ -312,6 +312,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(organizationId, readModel.OrganizationId);
             Assert.Equal(systemUsageVersion, readModel.Version);
             Assert.Equal(systemUsageLocalCallName, readModel.LocalCallName);
+            Assert.NotNull(updatedSystemUsage.CreatedBy);
+            Assert.NotNull(updatedSystemUsage.LastModifiedBy);
             Assert.Equal(updatedSystemUsage.CreatedBy.Name, readModel.ObjectOwnerName);
             Assert.Equal(updatedSystemUsage.LastModifiedBy.Name, readModel.LastChangedByName);
             Assert.Equal(concluded.Date, readModel.Concluded?.Date);

@@ -70,7 +70,7 @@ namespace Tests.Unit.Core.ApplicationServices
         {
             //Arrange
             var interfaceId = A<int>();
-            ExpectGetInterfaceReturns(interfaceId, default(ItInterface));
+            ExpectGetInterfaceReturns(interfaceId, null);
 
             //Act
             var result = _sut.UpdateExposingSystem(interfaceId, A<int>());
@@ -105,7 +105,7 @@ namespace Tests.Unit.Core.ApplicationServices
 
             ExpectGetInterfaceReturns(interfaceId, itInterface);
             ExpectAllowModifyReturns(itInterface, true);
-            ExpectGetSystemReturns(newSystemId, default(ItSystem));
+            ExpectGetSystemReturns(newSystemId, null);
 
             //Act
             var result = _sut.UpdateExposingSystem(interfaceId, newSystemId);
@@ -1751,7 +1751,7 @@ namespace Tests.Unit.Core.ApplicationServices
             return transaction;
         }
 
-        private void ExpectGetInterfaceReturns(int interfaceId, ItInterface value)
+        private void ExpectGetInterfaceReturns(int interfaceId, ItInterface? value)
         {
             _repository.Setup(x => x.GetInterface(interfaceId)).Returns(value);
         }
@@ -1771,7 +1771,7 @@ namespace Tests.Unit.Core.ApplicationServices
             _authorizationContext.Setup(x => x.AllowReads(entity)).Returns(value);
         }
 
-        private void ExpectGetSystemReturns(int newSystemId, ItSystem value)
+        private void ExpectGetSystemReturns(int newSystemId, ItSystem? value)
         {
             _systemRepository.Setup(x => x.GetSystem(newSystemId)).Returns(value);
         }

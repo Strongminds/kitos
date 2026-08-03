@@ -1354,26 +1354,22 @@ namespace Tests.Unit.Core.Model
 
         public static readonly object[][] ValidationInvalidData =
         {
-            new object[]
-            {
+            [
                 LifeCycleStatusType.NotInUse, null,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
-            },
-            new object[]
-            {
+            ],
+            [
                 LifeCycleStatusType.Pilot, null,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
-            },
-            new object[]
-            {
+            ],
+            [
                 null, new ItContractItSystemUsage {ItContract = new ItContract {Terminated = DateTime.UtcNow.AddDays(-1)}},
                 new List<ItSystemUsageValidationError> {ItSystemUsageValidationError.MainContractNotActive}
-            },
-            new object[]
-            {
+            ],
+            [
                 LifeCycleStatusType.NotInUse, new ItContractItSystemUsage {ItContract = new ItContract {Terminated = DateTime.UtcNow.AddDays(-1)}},
                 new List<ItSystemUsageValidationError> {ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle, ItSystemUsageValidationError.MainContractNotActive}
-            },
+            ],
         };
 
         public static readonly object[][] DateValidationInvalidData =

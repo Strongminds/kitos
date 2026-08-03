@@ -328,6 +328,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.Deactivated, AssertPropertyContainsDataChange(output.Deactivated));
             Assert.Equal(input.Scope?.FromChoice(), AssertPropertyContainsDataChange(output.Scope));
             Assert.Equal(input.RightsHolderUuid, AssertPropertyContainsDataChange(output.RightsHolderUuid));
+            Assert.NotNull(input.RecommendedArchiveDuty);
             Assert.Equal(input.RecommendedArchiveDuty.Comment,
                 AssertPropertyContainsDataChange(AssertPropertyContainsDataChange(output.ArchivingRecommendation).comment));
             Assert.Equal(input.RecommendedArchiveDuty?.Id?.FromChoice(),

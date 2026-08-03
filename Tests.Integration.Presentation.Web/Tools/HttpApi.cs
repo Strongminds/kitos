@@ -160,7 +160,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             return StatelessHttpClient.SendAsync(requestMessage);
         }
 
-        public static Task<HttpResponseMessage> DeleteWithTokenAsync(Uri url, string token, object body = null)
+        public static Task<HttpResponseMessage> DeleteWithTokenAsync(Uri url, string token, object? body = null)
         {
             var requestMessage = CreateMessageWithContent(HttpMethod.Delete, url, body);
             requestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse("bearer " + token);
@@ -214,7 +214,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             }, acceptUnAuthorized == false);
         }
 
-        public static Task<HttpResponseMessage> PatchWithCookieAsync(Uri url, Cookie cookie, object body, bool acceptUnAuthorized = false)
+        public static Task<HttpResponseMessage> PatchWithCookieAsync(Uri url, Cookie cookie, object? body, bool acceptUnAuthorized = false)
         {
             return WithRetryPolicy(async () =>
             {

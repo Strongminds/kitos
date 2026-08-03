@@ -3899,7 +3899,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _contractServiceMock.Setup(x => x.GetContract(newContractId)).Returns(result);
         }
 
-        private ItContractItSystemUsage CreateContractAssociation(Organization parentOrganization, ItContract newContract = null)
+        private ItContractItSystemUsage CreateContractAssociation(Organization parentOrganization, ItContract? newContract = null)
         {
             var itContract = newContract ?? CreateItContract(parentOrganization, Maybe<Guid>.None);
             return new ItContractItSystemUsage

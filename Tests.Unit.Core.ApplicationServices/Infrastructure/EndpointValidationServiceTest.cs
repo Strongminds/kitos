@@ -58,6 +58,7 @@ namespace Tests.Unit.Core.Infrastructure
             Assert.Equal(success, validation.Success);
             if (!success)
             {
+                Assert.NotNull(validation.Error);
                 Assert.Equal(expectedErrorType.GetValueOrDefault(), validation.Error.ErrorType);
                 Assert.Equal(expectedStatusCode, validation.Error.StatusCode);
             }

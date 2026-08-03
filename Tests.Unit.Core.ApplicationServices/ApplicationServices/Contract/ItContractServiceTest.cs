@@ -92,7 +92,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
         {
             //Arrange
             var contractId = A<int>();
-            ExpectGetContractReturns(contractId, default);
+            ExpectGetContractReturns(contractId, null);
 
             //Act
             var result = _sut.Delete(contractId);
@@ -879,7 +879,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             _authorizationContext.Setup(x => x.AllowModify(itContract)).Returns(value);
         }
 
-        private void ExpectGetContractReturns(int contractId, ItContract itContract)
+        private void ExpectGetContractReturns(int contractId, ItContract? itContract)
         {
             _contractRepository.Setup(x => x.GetById(contractId)).Returns(itContract);
         }

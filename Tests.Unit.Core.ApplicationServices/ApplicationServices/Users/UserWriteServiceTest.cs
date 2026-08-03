@@ -650,7 +650,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             _userServiceMock.Verify(x => x.IssuePasswordReset(It.IsAny<User>(), null, null), Times.Never());
         }
 
-        private void ExpectGetUserByEmailReturns(string email, User user)
+        private void ExpectGetUserByEmailReturns(string email, User? user)
         {
             _userRepositoryMock.Setup(x => x.GetByEmail(email)).Returns(user);
         }

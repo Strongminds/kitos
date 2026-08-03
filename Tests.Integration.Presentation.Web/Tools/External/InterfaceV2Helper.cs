@@ -89,10 +89,10 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             Guid? exposedBySystemUuid = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
-            string nameEquals = null,
+            string? nameEquals = null,
             Guid? usedInOrganizationUuid = null,
-            string nameContains = null,
-            string interfaceId = null,
+            string? nameContains = null,
+            string? interfaceId = null,
             Guid? organizationUuid = null,
             Guid? availableInOrganizationUuid = null
             )
@@ -110,10 +110,10 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             Guid? exposedBySystemUuid = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
-            string nameEquals = null,
+            string? nameEquals = null,
             Guid? usedInOrganizationUuid = null,
-            string nameContains = null,
-            string interfaceId = null,
+            string? nameContains = null,
+            string? interfaceId = null,
             Guid? organizationUuid = null,
             Guid? availableInOrganizationUuid = null
             )
@@ -319,7 +319,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             T value)
         {
             if (!(propertySelector.Body is MemberExpression m))
-                throw new ArgumentException("Selector must be a simple member access", nameof(propertySelector));
+                throw new ArgumentException(@"Selector must be a simple member access", nameof(propertySelector));
 
             var propertyName = m.Member.Name;
             var kvp = new KeyValuePair<string, object>(propertyName, value!);
