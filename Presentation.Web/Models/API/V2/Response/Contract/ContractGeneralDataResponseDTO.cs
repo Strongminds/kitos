@@ -21,12 +21,14 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// Optionally assigned agreement elements
         /// </summary>
-        public required IEnumerable<IdentityNamePairResponseDTO> AgreementElements { get; set; }
+        [Required]
+        public IEnumerable<IdentityNamePairResponseDTO> AgreementElements { get; set; }
         public string? Notes { get; set; }
         /// <summary>
         /// Validity of the it-contract
         /// </summary>
-        public ContractValidityResponseDTO? Validity { get; set; }
+        [Required]
+        public ContractValidityResponseDTO Validity { get; set; }
         /// <summary>
         /// Optionally assigned criticality
         /// </summary>

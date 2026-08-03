@@ -25,7 +25,7 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(ItContractConstraints.MaxNameLength)]
-        public required string Name { get; set; }
+        public required string? Name { get; set; }
         /// <summary>
         /// User defined external references.
         /// The external reference marked as "master reference" will be shown in overviews

@@ -5,6 +5,7 @@ namespace Presentation.Web.Models.API.V2.SharedProperties
 {
     public interface IHasOrganizationContext
     {
-        public ShallowOrganizationResponseDTO? OrganizationContext { get; set; }
+        [Required]
+        public ShallowOrganizationResponseDTO OrganizationContext { get; set; }
     }
 }

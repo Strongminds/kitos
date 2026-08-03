@@ -10,10 +10,5 @@ namespace Presentation.Web.Models.API.V2.Internal.Common
         {
             UserFullName = userName;
         }
-
-        public NamedEntityWithUserFullNameV2DTO()
-        {
-            
-        }
     }
 }

@@ -45,7 +45,8 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// Organization in which the system usage has been created
         /// </summary>
-        public ShallowOrganizationResponseDTO? OrganizationContext { get; set; }
+        [Required]
+        public ShallowOrganizationResponseDTO OrganizationContext { get; set; }
         
         [Required]
         public required GeneralDataResponseDTO General { get; set; }
@@ -62,7 +63,8 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         /// <summary>
         /// Defines IT-System KLE deviations locally within an organization. All deviations are in the context of the inherited deviations which are found on the IT-System context
         /// </summary>
-        public LocalKLEDeviationsResponseDTO? LocalKLEDeviations { get; set; }
+        [Required]
+        public LocalKLEDeviationsResponseDTO LocalKLEDeviations { get; set; }
         /// <summary>
         /// User defined external references
         /// </summary>

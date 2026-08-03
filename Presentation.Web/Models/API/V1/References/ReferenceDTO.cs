@@ -10,9 +10,9 @@ namespace Presentation.Web.Models.API.V1.References
 
         }
 
-        public string ReferenceId { get; set; }
+        public required string ReferenceId { get; set; }
 
-        public string Url { get; set; }
+        public required string Url { get; set; }
 
         public bool MasterReference { get; set; }
 

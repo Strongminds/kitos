@@ -21,7 +21,8 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// <summary>
         /// Name of IT-Interface
         /// </summary>
-        public string? Name { get; set; }
+        [Required]
+        public string Name { get; set; }
 
         /// <summary>
         /// Identifier for IT-Interface
@@ -51,16 +52,19 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// <summary>
         /// Active status
         /// </summary>
+        [Required]
         public bool Deactivated { get; set; }
 
         /// <summary>
         /// Date of creation. (on some legacy systems , this information is not available. If so, it will be null)
         /// </summary>
+        [Required]
         public DateTime? Created { get; set; }
 
         /// <summary>
         /// Responsible for creation
         /// </summary>
-        public IdentityNamePairResponseDTO? CreatedBy { get; set; }
+        [Required]
+        public IdentityNamePairResponseDTO CreatedBy { get; set; }
     }
 }

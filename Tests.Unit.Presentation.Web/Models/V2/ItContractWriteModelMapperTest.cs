@@ -47,7 +47,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [InlineData("")]
         [InlineData(null)]
         [InlineData("test")]
-        public void Can_Map_Name_From_Post(string name)
+        public void Can_Map_Name_From_Post(string? name)
         {
             //Arrange
             var requestDto = new CreateNewContractRequestDTO { Name = name };
@@ -63,7 +63,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [InlineData("")]
         [InlineData(null)]
         [InlineData("test")]
-        public void Can_Map_Name_From_Put(string name)
+        public void Can_Map_Name_From_Put(string? name)
         {
             //Arrange
             var requestDto = new UpdateContractRequestDTO { Name = name };
@@ -79,7 +79,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         [InlineData("")]
         [InlineData(null)]
         [InlineData("test")]
-        public void Can_Map_Name_From_Patch(string name)
+        public void Can_Map_Name_From_Patch(string? name)
         {
             //Arrange
             var requestDto = new UpdateContractRequestDTO { Name = name };

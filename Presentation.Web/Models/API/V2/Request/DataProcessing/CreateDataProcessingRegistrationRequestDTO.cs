@@ -24,7 +24,7 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         ///     - Name must be unique within the organization
         /// </summary>
         [MaxLength(DataProcessingRegistrationConstraints.MaxNameLength)]
-        public required string Name { get; set; }
+        public required string? Name { get; set; }
         /// <summary>
         /// User defined external references.
         /// The external reference marked as "master reference" will be shown in overviews
