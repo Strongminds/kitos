@@ -64,6 +64,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertUser(itSystemUsage.ObjectOwner, dto.CreatedBy);
             AssertUser(itSystemUsage.LastChangedByUser, dto.LastModifiedBy);
             AssertIdentity(itSystemUsage.ItSystem, dto.SystemContext);
+            Assert.NotNull(dto.OrganizationContext);
             AssertOrganization(itSystemUsage.Organization, dto.OrganizationContext);
         }
 
@@ -150,7 +151,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             var expectedAdditions = itSystemUsage.TaskRefs.Select(tr => (tr.TaskKey, tr.Uuid)).ToList();
-            var actualAdditions = dto.LocalKLEDeviations.AddedKLE.Select(kle => (kle.Name, kle.Uuid)).ToList();
+            var actualAdditions = dto.LocalKLEDeviations!.AddedKLE.Select(kle => (kle.Name, kle.Uuid)).ToList();
             Assert.Equal(expectedAdditions, actualAdditions);
 
             var expectedRemovals = itSystemUsage.TaskRefsOptOut.Select(tr => (tr.TaskKey, tr.Uuid)).ToList();
@@ -563,7 +564,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             itSystemUsage.UsageRelations = new[]
             {
-                CreateOutgoingSystemRelation(itSystemUsage,false,false,false),
+                CreateOutgoingSystemRelation(itSystemUsage),
                 CreateOutgoingSystemRelation(itSystemUsage,false,false,true),
                 CreateOutgoingSystemRelation(itSystemUsage,false,true,true),
                 CreateOutgoingSystemRelation(itSystemUsage,true,true,true)

@@ -47,6 +47,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             //Assert
             Assert.Equal(dpr.Uuid, dto.Uuid);
             Assert.Equal(dpr.LastChanged, dto.LastModified);
+            Assert.NotNull(dto.CreatedBy);
+            Assert.NotNull(dto.LastModifiedBy);
+            Assert.NotNull(dto.OrganizationContext);
             AssertUser(dpr.ObjectOwner, dto.CreatedBy);
             AssertUser(dpr.LastChangedByUser, dto.LastModifiedBy);
             AssertOrganization(dpr.Organization, dto.OrganizationContext);
@@ -132,6 +135,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertIdentity(dpr.MainContract, general.MainContract);
             AssertOptionalIdentities(dpr.AssociatedContracts, general.AssociatedContracts);
             Assert.Equal(dpr.IsActiveAccordingToMainContract, general.Validity.Valid);
+            Assert.NotNull(general.ResponsibleOrganizationUnit);
             Assert.Equal(dpr.ResponsibleOrganizationUnit.Uuid, general.ResponsibleOrganizationUnit.Uuid);
             Assert.Equal(dpr.ResponsibleOrganizationUnit.Name, general.ResponsibleOrganizationUnit.Name);
         }

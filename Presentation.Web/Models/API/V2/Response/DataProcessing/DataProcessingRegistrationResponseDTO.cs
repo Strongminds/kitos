@@ -11,7 +11,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
 {
     public class DataProcessingRegistrationResponseDTO : IHasNameExternal, IHasUuidExternal, IHasEntityCreator, IHasLastModified, IHasOrganizationContext
     {
-        public required string Name { get; set; }
+        public required string? Name { get; set; }
         public required Guid Uuid { get; set; }
         public IdentityNamePairResponseDTO? CreatedBy { get; set; }
         /// <summary>

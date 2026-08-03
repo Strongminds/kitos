@@ -16,7 +16,7 @@ namespace Presentation.Web.Models.API.V2.Response.Generic.Identity
         /// Human readable name of the entity
         /// </summary>
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         protected IdentityNamePairResponseDTO()
         {

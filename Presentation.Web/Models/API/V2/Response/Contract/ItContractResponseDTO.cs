@@ -1,7 +1,6 @@
 ﻿using Presentation.Web.Models.API.V2.SharedProperties;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Response.Organization;
@@ -18,7 +17,7 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// <summary>
         /// Name of IT-Contract
         /// </summary>
-        public required string Name { get; set; }
+        public required string? Name { get; set; }
         /// <summary>
         /// Organization in which the contract was created
         /// </summary>

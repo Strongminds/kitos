@@ -372,6 +372,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             //Assert
             Assert.Equal(name, dto.Name);
             Assert.NotEqual(Guid.Empty, dto.Uuid);
+            Assert.NotNull(dto.OrganizationContext);
             AssertOrganizationReference(organization, dto.OrganizationContext);
         }
 
@@ -1092,6 +1093,8 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             AssertMultiAssignment(request.SystemUsageUuids, dto.SystemUsages);
             AssertOversight(oversightInput, dto.Oversight);
             Assert.Equal(request.Name, dto.Name);
+            Assert.NotNull(dto.OrganizationContext);
+            Assert.NotNull(dto.OrganizationContext);
             AssertOrganizationReference(organization, dto.OrganizationContext);
             AssertSingleRight(role, userForRole, dto.Roles);
             AssertExternalReferenceResults(externalReferenceInputs, dto);
@@ -1679,6 +1682,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             IdentityNamePairResponseDTO? inputBasisForTransfer,
             DataProcessingRegistrationResponseDTO actual)
         {
+            Assert.NotNull(actual.OrganizationContext);
             AssertOrganizationReference(organization, actual.OrganizationContext);
             AssertCrossReference(inputDataResponsible, actual.General.DataResponsible);
             Assert.Equal(input.DataResponsibleRemark, actual.General.DataResponsibleRemark);

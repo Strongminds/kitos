@@ -97,13 +97,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
         private void MapCommon(ICommonItInterfaceRequestPropertiesDTO source, ItInterfaceWriteModelParametersBase destination, bool enforceFallbackIfNotProvided)
         {
             var rule = CreateChangeRule<ICommonItInterfaceRequestPropertiesDTO>(enforceFallbackIfNotProvided);
-            destination.Name = rule.MustUpdate(x => x.Name) ? source.Name.AsChangedValue() : OptionalValueChange<string>.None;
+            destination.Name = rule.MustUpdate(x => x.Name) ? source.Name.AsChangedValue()! : OptionalValueChange<string>.None;
             destination.InterfaceId = rule.MustUpdate(x => x.InterfaceId)
                 ? (source.InterfaceId ?? string.Empty).AsChangedValue()
                 : OptionalValueChange<string>.None;
 
             destination.Description = rule.MustUpdate(x => x.Description)
-                ? source.Description.AsChangedValue()
+                ? source.Description.AsChangedValue()!
                 : OptionalValueChange<string>.None;
 
             destination.Version = rule.MustUpdate(x => x.Version)
@@ -111,7 +111,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
                 : OptionalValueChange<string>.None;
 
             destination.UrlReference = rule.MustUpdate(x => x.UrlReference)
-                ? source.UrlReference.AsChangedValue()
+                ? source.UrlReference.AsChangedValue()!
                 : OptionalValueChange<string>.None;
         }
     }

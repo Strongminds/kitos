@@ -290,7 +290,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             bool noDeactivated)
         {
             //Arrange
-            var emptyInput = new CreateItSystemRequestDTO();
+            var emptyInput = new CreateItSystemRequestDTO{Name = string.Empty};
             var definedProperties = GetAllInputPropertyNames<UpdateItSystemRequestDTO>();
             if (noName) definedProperties.Remove(nameof(UpdateItSystemRequestDTO.Name));
             if (noDescription) definedProperties.Remove(nameof(UpdateItSystemRequestDTO.Description));

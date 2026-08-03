@@ -18,7 +18,6 @@ using Core.DomainModel.Shared;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.SharedProperties;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 {
@@ -101,7 +100,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 
             return new ItContractModificationParameters
             {
-                Name = rule.MustUpdate(x => x.Name) ? dto.Name.AsChangedValue() : OptionalValueChange<string>.None,
+                Name = rule.MustUpdate(x => x.Name) ? dto.Name.AsChangedValue()! : OptionalValueChange<string>.None,
                 ParentContractUuid = rule.MustUpdate(x => x.ParentContractUuid)
                     ? dto.ParentContractUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,

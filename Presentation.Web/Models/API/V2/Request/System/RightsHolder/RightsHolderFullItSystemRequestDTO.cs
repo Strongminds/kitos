@@ -1,5 +1,6 @@
 ﻿using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
+using Presentation.Web.Models.API.V2.Request.System.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -37,7 +38,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(Core.DomainModel.ItSystem.ItSystem.MaxNameLength)]
-        public required string Name { get; set; }
+        public required string? Name { get; set; }
 
         /// <summary>
         /// Former name of IT-System (if any)
@@ -48,7 +49,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// Description
         /// </summary>
         [Required(AllowEmptyStrings = false)]
-        public required string Description { get; set; }
+        public required string? Description { get; set; }
 
         /// <summary>
         /// User defined external references.

@@ -337,7 +337,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             if (noScope) rootProperties.Remove(nameof(UpdateItInterfaceRequestDTO.Scope));
             if (noDeactivated) rootProperties.Remove(nameof(UpdateItInterfaceRequestDTO.Deactivated));
             _currentHttpRequestMock.Setup(x => x.GetDefinedJsonProperties(Enumerable.Empty<string>().AsParameterMatch())).Returns(rootProperties);
-            var emptyInput = new CreateItInterfaceRequestDTO();
+            var emptyInput = new CreateItInterfaceRequestDTO{ Name = string.Empty};
 
             //Act
             var output = _sut.FromPOST(emptyInput);

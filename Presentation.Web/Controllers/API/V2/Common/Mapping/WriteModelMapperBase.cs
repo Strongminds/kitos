@@ -169,9 +169,9 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
             return isPartOfScopedReset;
         }
 
-        protected IEnumerable<UpdatedExternalReferenceProperties> BaseMapCreateReferences(IEnumerable<ExternalReferenceDataWriteRequestDTO> references)
+        protected IEnumerable<UpdatedExternalReferenceProperties> BaseMapCreateReferences(IEnumerable<ExternalReferenceDataWriteRequestDTO>? references)
         {
-            return references.Select(MapCommonReference).ToList();
+            return references?.Select(MapCommonReference).ToList() ?? Enumerable.Empty<UpdatedExternalReferenceProperties>();
         }
 
         protected IEnumerable<UpdatedExternalReferenceProperties> BaseMapUpdateReferences(IEnumerable<UpdateExternalReferenceDataWriteRequestDTO> references)
