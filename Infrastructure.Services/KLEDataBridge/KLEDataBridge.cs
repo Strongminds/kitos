@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Xml.Linq;
 
 namespace Infrastructure.Services.KLEDataBridge
@@ -15,8 +15,8 @@ namespace Infrastructure.Services.KLEDataBridge
 
         public XDocument GetAllActiveKleNumbers()
         {
-            using var client = new WebClient();
-            using var stream = client.OpenRead(_kleOnlineUrl.TrimEnd('/') + "/emneplan");
+            using var client = new HttpClient();
+            using var stream = client.GetStreamAsync(_kleOnlineUrl.TrimEnd('/') + "/emneplan").GetAwaiter().GetResult();
             using var reader = new StreamReader(stream);
             return XDocument.Load(reader);
         }

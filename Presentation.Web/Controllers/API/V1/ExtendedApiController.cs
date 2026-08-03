@@ -80,7 +80,7 @@ namespace Presentation.Web.Controllers.API.V1
             return CreateResponse(HttpStatusCode.BadRequest, message);
         }
 
-        protected virtual IActionResult BadRequest(ModelStateDictionary modelState)
+        protected new virtual IActionResult BadRequest(ModelStateDictionary modelState)
         {
             var errorDictionary = modelState.ToDictionary(
                 kvp => kvp.Key,
@@ -99,7 +99,7 @@ namespace Presentation.Web.Controllers.API.V1
             return CreateResponse(HttpStatusCode.Unauthorized, response);
         }
 
-        protected IActionResult NoContent()
+        protected new IActionResult NoContent()
         {
             return base.NoContent();
         }

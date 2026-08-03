@@ -62,7 +62,8 @@ namespace Infrastructure.STS.OrganizationSystem.DomainServices
 
                 var unitUuidAndDataList = listResponseUnits
                     .Select(snapshot => (new Guid(snapshot.ObjektType.UUIDIdentifikator), snapshot.Registrering.OrderByDescending(x => x.Tidspunkt).FirstOrDefault()))
-                    .Where(x => x.Item2 != null);
+                    .Where(x => x.Item2 != null)
+                    .Select(x => (x.Item1, x.Item2!));
                 
                 totalResults.AddRange(unitUuidAndDataList);
 

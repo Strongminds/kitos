@@ -16,16 +16,11 @@ namespace Presentation.Web.Models.API.V1.GDPR
             string cvrNumber,
             NamedEntityWithExpirationStatusDTO? basisForTransfer,
             YesNoUndecidedOption? transferToInsecureThirdCountries,
-            NamedEntityWithExpirationStatusDTO? insecureCountry) : base(id, name)
+            NamedEntityWithExpirationStatusDTO? insecureCountry) : base(id, name, cvrNumber)
         {
             BasisForTransfer = basisForTransfer;
             TransferToInsecureThirdCountries = transferToInsecureThirdCountries;
             InsecureCountry = insecureCountry;
-            CvrNumber = cvrNumber;
-        }
-
-        public SubDataProcessorResponseDTO()
-        {
         }
     }
 }

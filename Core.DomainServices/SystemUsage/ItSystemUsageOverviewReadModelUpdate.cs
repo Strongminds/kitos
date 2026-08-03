@@ -791,9 +791,9 @@ namespace Core.DomainServices.SystemUsage
 
         private static string? GetNameOfItSystemOption<TOption>(
             ItSystem parent,
-            TOption optionEntity,
+            TOption? optionEntity,
             IOptionsService<ItSystem, TOption> service)
-            where TOption : OptionEntity<ItSystem>?
+            where TOption : OptionEntity<ItSystem>
         {
             if (optionEntity != null)
             {
