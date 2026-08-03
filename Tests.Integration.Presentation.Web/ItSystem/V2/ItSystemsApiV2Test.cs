@@ -835,7 +835,9 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             {
                 Name = A<string>(),
                 OrganizationUuid = system.OrganizationContext!.Uuid,
-                ExposedBySystemUuid = system.Uuid
+                ExposedBySystemUuid = system.Uuid,
+                Description = A<string>(),
+                UrlReference = A<string>()
             }), SystemDeletionConflict.HasInterfaceExposures);
         }
 

@@ -276,7 +276,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             {
                 OrganizationUuid = organizationUuid,
                 Name = relationInterfaceName,
-                ExposedBySystemUuid = outGoingRelationSystem.Uuid
+                ExposedBySystemUuid = outGoingRelationSystem.Uuid,
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), incomingRelationSystemUsage.Uuid, new SystemRelationWriteRequestDTO

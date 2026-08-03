@@ -45,9 +45,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         [Theory]
         [InlineData("")]
-        [InlineData(null)]
         [InlineData("test")]
-        public void Can_Map_Name_From_Post(string? name)
+        public void Can_Map_Name_From_Post(string name)
         {
             //Arrange
             var requestDto = new CreateNewContractRequestDTO { Name = name };

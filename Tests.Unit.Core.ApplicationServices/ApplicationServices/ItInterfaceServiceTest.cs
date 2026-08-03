@@ -624,10 +624,10 @@ namespace Tests.Unit.Core.ApplicationServices
         [InlineData(null, "Valid ItInterfaceId")]
         [InlineData("", "Valid ItInterfaceId")]
         [InlineData("Valid Name", null)]
-        public void CreateNewItInterface_Returns_BadInput_If_Name_Or_ItInterfaceId_Is_Not_Valid(string name, string itInterfaceId)
+        public void CreateNewItInterface_Returns_BadInput_If_Name_Or_ItInterfaceId_Is_Not_Valid(string? name, string? itInterfaceId)
         {
             //Arrange
-            var org = new Organization()
+            var org = new Organization
             {
                 Id = A<int>(),
                 Uuid = A<Guid>()

@@ -355,6 +355,8 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
                 OrganizationUuid = organization.Uuid,
                 Name = CreateName(),
                 InterfaceId = withId ? CreateName() : null,
+                Description = A<string>(),
+                UrlReference = A<string>()
             };
 
             //Act
@@ -377,7 +379,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             {
                 OrganizationUuid = organization.Uuid,
                 Name = CreateName(),
-                Scope = RegistrationScopeChoice.Local
+                Scope = RegistrationScopeChoice.Local,
+                Description = A<string>(),
+                UrlReference = A<string>()
             };
 
             //Act
@@ -400,7 +404,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             {
                 OrganizationUuid = organization.Uuid,
                 Name = CreateName(),
-                Scope = RegistrationScopeChoice.Global
+                Scope = RegistrationScopeChoice.Global,
+                Description = A<string>(),
+                UrlReference = A<string>()
             };
 
             //Act
@@ -506,7 +512,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var itInterface = await InterfaceV2Helper.CreateItInterfaceAsync(globalAdminToken.Token, new CreateItInterfaceRequestDTO
             {
                 Name = A<string>(),
-                OrganizationUuid = org.Uuid
+                OrganizationUuid = org.Uuid,
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
 
             //Act
@@ -539,7 +547,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             {
                 Name = A<string>(),
                 OrganizationUuid = org.Uuid,
-                ExposedBySystemUuid = system.Uuid
+                ExposedBySystemUuid = system.Uuid,
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
 
             //Act

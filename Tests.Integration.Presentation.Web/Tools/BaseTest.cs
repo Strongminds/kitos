@@ -121,6 +121,8 @@ namespace Tests.Integration.Presentation.Web.Tools
             var request = new CreateItInterfaceRequestDTO
             {
                 Name = name ?? A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>(),
                 OrganizationUuid = organizationUuid,
                 Scope = scope,
                 InterfaceId = interfaceId ?? A<string>()

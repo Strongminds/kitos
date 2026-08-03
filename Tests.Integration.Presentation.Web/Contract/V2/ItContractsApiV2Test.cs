@@ -1959,6 +1959,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             //Assert
             Assert.Equal(expectValid, result.General.Validity.Valid);
             Assert.Equal(enforceValid, result.General.Validity.EnforcedValid);
+            Assert.NotNull(result.General.Validity.ValidationErrors);
             if (expectDateError)
             {
                 var dateError = Assert.Single(result.General.Validity.ValidationErrors);
@@ -2045,6 +2046,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             var response = await ItContractV2Helper.PostContractAsync(token, new CreateNewContractRequestDTO { Name = A<string>(), OrganizationUuid = organization.Uuid, ParentContractUuid = invalidContract.Uuid, General = new ContractGeneralDataWriteRequestDTO { Validity = new ContractValidityWriteRequestDTO { RequireValidParent = true } } });
 
             Assert.False(response.General.Validity.Valid);
+            Assert.NotNull(response.General.Validity.ValidationErrors);
             var error = Assert.Single(response.General.Validity.ValidationErrors);
             Assert.Equal(ItContractValidationErrorChoice.InvalidParentContract, error);
         }

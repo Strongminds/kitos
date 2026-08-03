@@ -104,12 +104,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var interface2 = await InterfaceV2Helper.CreateItInterfaceAsync(token, new CreateItInterfaceRequestDTO()
             {
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
             var dtos = new List<SystemRelationWriteRequestDTO>()
@@ -145,12 +149,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var interface2 = await InterfaceV2Helper.CreateItInterfaceAsync(token, new CreateItInterfaceRequestDTO()
             {
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
             var dtos = new List<SystemRelationWriteRequestDTO>()
@@ -2884,6 +2892,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.DocumentBearing, actual.DocumentBearing);
             Assert.Equal(expected.Notes, actual.Notes);
 
+            Assert.NotNull(expected.JournalPeriods);
             Assert.Equal(expected.JournalPeriods.Count(), actual.JournalPeriods.Count());
             var firstJournalPeriod = expected.JournalPeriods.First();
             var journalPeriodFromServer = Assert.Single(actual.JournalPeriods, x => x.ArchiveId == firstJournalPeriod.ArchiveId);

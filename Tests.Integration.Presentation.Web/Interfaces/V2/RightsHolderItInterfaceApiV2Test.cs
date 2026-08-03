@@ -490,7 +490,9 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var updateRequest = new RightsHolderWritableItInterfacePropertiesDTO
             {
                 Name = "",
-                ExposedBySystemUuid = A<Guid>()
+                ExposedBySystemUuid = A<Guid>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             };
 
             //Act

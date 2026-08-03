@@ -156,7 +156,7 @@ namespace Core.ApplicationServices.Interface
                 );
         }
 
-        public Result<ItInterface, OperationError> CreateNewItInterface(int organizationId, string name, string interfaceId, Guid? rightsHolderProvidedUuid = null, AccessModifier? accessModifier = null)
+        public Result<ItInterface, OperationError> CreateNewItInterface(int organizationId, string? name, string? interfaceId, Guid? rightsHolderProvidedUuid = null, AccessModifier? accessModifier = null)
         {
             if (_authorizationContext.AllowCreate<ItInterface>(organizationId))
             {
@@ -486,18 +486,18 @@ namespace Core.ApplicationServices.Interface
             }).Match(_ => Result<DataRow, OperationError>.Success(deleted!), error => error);
         }
 
-        private static bool ValidateName(string name)
+        private static bool ValidateName(string? name)
         {
             return string.IsNullOrWhiteSpace(name) == false &&
                    name.Length <= ItInterface.MaxNameLength;
         }
 
-        private static bool ValidateItInterfaceId(string itInterfaceId)
+        private static bool ValidateItInterfaceId(string? itInterfaceId)
         {
             return itInterfaceId != null;
         }
 
-        private Maybe<OperationError> CheckForUniqueNaming(string name, string itInterfaceId, int orgId)
+        private Maybe<OperationError> CheckForUniqueNaming(string? name, string? itInterfaceId, int orgId)
         {
             if (!ValidateName(name))
                 return new OperationError("Name was not valid", OperationFailure.BadInput);

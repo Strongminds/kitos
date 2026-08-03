@@ -7,7 +7,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response.User
     public class UserWithCrossOrganizationalRightsResponseDTO : UserWithApiAccessResponseDTO
     {
         public bool StakeholderAccess { get; set; }
-        public IEnumerable<string> OrganizationsWhereActive { get; set; }
+        public required IEnumerable<string> OrganizationsWhereActive { get; set; }
 
         public UserWithCrossOrganizationalRightsResponseDTO()
         {
