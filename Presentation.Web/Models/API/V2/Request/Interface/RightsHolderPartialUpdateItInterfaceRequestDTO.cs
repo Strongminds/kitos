@@ -11,7 +11,7 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// Name of IT-Interface
         /// </summary>
         [MaxLength(ItInterface.MaxNameLength)]
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// UUID for IT-System exposing this IT-Interface
@@ -33,11 +33,11 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// <summary>
         /// General description of the IT-Interface
         /// </summary>
-        public string? Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// Url reference for further information
         /// </summary>
-        public string? UrlReference { get; set; }
+        public required string UrlReference { get; set; }
     }
 }

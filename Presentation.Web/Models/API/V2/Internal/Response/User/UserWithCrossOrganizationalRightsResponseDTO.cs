@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Presentation.Web.Models.API.V2.Internal.Response.User
 {
@@ -13,6 +14,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response.User
               
         }
 
+        [SetsRequiredMembers]
         public UserWithCrossOrganizationalRightsResponseDTO(Guid uuid, string name, string email, bool apiAccess, bool stakeholderAccess, IEnumerable<string> organizationsWhereActive) : base(uuid, name, email, apiAccess)
         {
             StakeholderAccess = stakeholderAccess;

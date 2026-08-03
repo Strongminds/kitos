@@ -14,12 +14,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
             var dto = new ItInterfaceResponseDTO
             {
                 LastModified = itInterface.LastChanged,
-                LastModifiedBy = itInterface.LastChangedByUser?.MapIdentityNamePairDTO(),
+                LastModifiedBy = itInterface.LastChangedByUser.MapIdentityNamePairDTO(),
                 Scope = itInterface.AccessModifier.ToChoice(),
                 ItInterfaceType = itInterface.Interface?.MapIdentityNamePairDTO(),
                 Data = itInterface.DataRows.Select(ToDataResponseDTO).ToList(),
-                OrganizationContext = itInterface.Organization?.MapShallowOrganizationResponseDTO(),
-                RightsHolder = itInterface.GetRightsHolderOrganization()?.MapShallowOrganizationResponseDTO()
+                OrganizationContext = itInterface.Organization.MapShallowOrganizationResponseDTO(),
+                RightsHolder = itInterface.GetRightsHolderOrganization().MapShallowOrganizationResponseDTO()
             };
             MapBaseInformation(itInterface, dto);
             return dto;
@@ -65,7 +65,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
             outputDTO.UrlReference = input.Url;
             outputDTO.Deactivated = input.Disabled;
             outputDTO.Created = input.Created;
-            outputDTO.CreatedBy = input.ObjectOwner?.MapIdentityNamePairDTO();
+            outputDTO.CreatedBy = input.ObjectOwner.MapIdentityNamePairDTO();
         }
     }
 }

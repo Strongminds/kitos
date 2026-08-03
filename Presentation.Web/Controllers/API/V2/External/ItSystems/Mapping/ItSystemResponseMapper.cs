@@ -38,9 +38,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
                     .Select(organization => organization.MapShallowOrganizationResponseDTO())
                     .ToList(),
                 LastModified = itSystem.LastChanged,
-                LastModifiedBy = itSystem.LastChangedByUser?.MapIdentityNamePairDTO(),
+                LastModifiedBy = itSystem.LastChangedByUser.MapIdentityNamePairDTO(),
                 Scope = itSystem.AccessModifier.ToChoice(),
-                OrganizationContext = itSystem.Organization?.MapShallowOrganizationResponseDTO(),
+                OrganizationContext = itSystem.Organization.MapShallowOrganizationResponseDTO(),
                 LegalName = itSystem.LegalName,
                 LegalDataProcessorName = itSystem.LegalDataProcessorName,
                 ExternalReferences = [],
@@ -78,7 +78,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems.Mapping
             dto.RightsHolder = itSystem.BelongsTo?.Transform(organization => organization.MapShallowOrganizationResponseDTO());
             dto.BusinessType = itSystem.BusinessType?.Transform(businessType => businessType.MapIdentityNamePairDTO());
             dto.Description = itSystem.Description;
-            dto.CreatedBy = itSystem.ObjectOwner?.MapIdentityNamePairDTO();
+            dto.CreatedBy = itSystem.ObjectOwner.MapIdentityNamePairDTO();
             dto.Created = itSystem.Created;
             dto.Deactivated = itSystem.Disabled;
             dto.FormerName = itSystem.PreviousName;
