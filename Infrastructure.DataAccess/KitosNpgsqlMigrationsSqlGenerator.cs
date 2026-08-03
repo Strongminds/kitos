@@ -1,3 +1,7 @@
+// INpgsqlSingletonOptions and NpgsqlAnnotationNames are internal Npgsql EF Core APIs required
+// by the NpgsqlMigrationsSqlGenerator base class and for setting identity strategy annotations.
+// There is no public alternative; suppress EF1001 for this file.
+#pragma warning disable EF1001
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;

@@ -561,7 +561,7 @@ namespace Tests.Unit.Core.DomainServices.Role
             ExpectAvailableOption(model, role.Id, role);
         }
 
-        private TRight CreateRight(User predefinedUser = null)
+        private TRight CreateRight(User? predefinedUser = null)
         {
             var role = CreateRole();
             var user = predefinedUser ?? CreateUser();

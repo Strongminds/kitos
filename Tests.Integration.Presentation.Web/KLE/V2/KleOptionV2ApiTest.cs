@@ -167,7 +167,7 @@ namespace Tests.Integration.Presentation.Web.KLE.V2
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        private TaskRef CreateTaskRefInDb(int mainGroup, int? @group = null, int? subject = null, string description = null, int? parentId = null)
+        private TaskRef CreateTaskRefInDb(int mainGroup, int? @group = null, int? subject = null, string? description = null, int? parentId = null)
         {
             if (subject.HasValue && !group.HasValue)
                 throw new ArgumentException($"{nameof(@group)} must be defined if {nameof(subject)} is defined.");

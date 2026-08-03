@@ -248,7 +248,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await HttpApi.PostWithTokenAsync(TestEnvironment.CreateUrl("api/v2/it-interfaces"), request, token);
         }
 
-        public static async Task<ItInterfaceResponseDTO> PatchInterfaceAsync(string token, Guid uuid, params KeyValuePair<string, object>[] changedProperties)
+        public static async Task<ItInterfaceResponseDTO> PatchInterfaceAsync(string token, Guid uuid, params KeyValuePair<string, object?>[] changedProperties)
         {
             using var response = await SendPatchInterfaceAsync(token, uuid, changedProperties);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -256,7 +256,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await response.ReadResponseBodyAsAsync<ItInterfaceResponseDTO>();
         }
 
-        public static async Task<HttpResponseMessage> SendPatchInterfaceAsync(string token, Guid uuid, params KeyValuePair<string, object>[] changedProperties)
+        public static async Task<HttpResponseMessage> SendPatchInterfaceAsync(string token, Guid uuid, params KeyValuePair<string, object?>[] changedProperties)
         {
             return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"api/v2/it-interfaces/{uuid}"), token, changedProperties.ToDictionary(x => x.Key, x => x.Value));
         }
@@ -322,7 +322,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
                 throw new ArgumentException(@"Selector must be a simple member access", nameof(propertySelector));
 
             var propertyName = m.Member.Name;
-            var kvp = new KeyValuePair<string, object>(propertyName, value!);
+            var kvp = new KeyValuePair<string, object?>(propertyName, value);
             return await SendPatchInterfaceAsync(token, uuid, kvp);
         }
     }

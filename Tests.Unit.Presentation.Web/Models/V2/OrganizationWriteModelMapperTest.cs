@@ -55,8 +55,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             ExpectHttpRequestPropertyNames<OrganizationUpdateRequestDTO>();
             var dto = A<OrganizationUpdateRequestDTO>();
             var result = _sut.ToOrganizationUpdateParameters(dto);
-            AssertParamHasValidChange(result.Cvr, dto.Cvr);
-            AssertParamHasValidChange(result.Name, dto.Name);
+            AssertParamHasValidChange(result.Cvr, dto.Cvr!);
+            AssertParamHasValidChange(result.Name, dto.Name!);
             Assert.Equal(result.TypeId.NewValue, (int)dto.Type);
             var foreignCountryCodeUuid = dto.ForeignCountryCodeUuid;
             Assert.NotNull(foreignCountryCodeUuid);
@@ -99,7 +99,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             ExpectHttpRequestPropertyNames<OrganizationCreateRequestDTO>();
             var dto = A<OrganizationCreateRequestDTO>();
             var result = _sut.ToOrganizationCreateParameters(dto);
-            AssertParamHasValidChange(result.Cvr, dto.Cvr);
+            AssertParamHasValidChange(result.Cvr, dto.Cvr!);
             AssertParamHasValidChange(result.Name, dto.Name);
             Assert.Equal(result.TypeId.NewValue, (int)dto.Type);
             var foreignCountryCodeUuid = dto.ForeignCountryCodeUuid;

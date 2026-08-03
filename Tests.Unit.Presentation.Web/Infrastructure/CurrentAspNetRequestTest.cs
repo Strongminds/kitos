@@ -88,7 +88,7 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
         {
             //Arrange
             var rootClass = A<RootClass>();
-            rootClass.Child = null;
+            rootClass.Child = null!;
             SetStreamContent(rootClass);
 
             //Act

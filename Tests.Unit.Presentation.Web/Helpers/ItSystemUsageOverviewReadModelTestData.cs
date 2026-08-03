@@ -10,7 +10,7 @@ namespace Tests.Unit.Presentation.Web.Helpers
     public static class ItSystemUsageOverviewReadModelTestData
     {
         private static readonly Fixture Fixture = new();
-        public static ItSystemUsageOverviewReadModel CreateReadModel(bool isActive, DateTime? sourceConcluded, DateTime? sourceExpirationDate, ItContractItSystemUsage mainContract)
+        public static ItSystemUsageOverviewReadModel CreateReadModel(bool isActive, DateTime? sourceConcluded, DateTime? sourceExpirationDate, ItContractItSystemUsage? mainContract)
         {
             var mainContractState = mainContract == null 
                 ? MainContractState.NoContract 

@@ -202,7 +202,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 }
 
                 Console.Out.WriteLine($"[TestEnvironment] '{name}' not set. Using default. allowAppSettingsFallback={allowAppSettingsFallback}");
-                return defaultValue;
+                return defaultValue!;
             }
 
             Console.Out.WriteLine($"[TestEnvironment] '{name}' loaded from {source}. allowAppSettingsFallback={allowAppSettingsFallback}");

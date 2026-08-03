@@ -429,7 +429,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             //Act
             var createdItInterface = await InterfaceV2Helper.CreateItInterfaceAsync(token.Token, input);
             using var deleteWithConflictResult = await InterfaceV2Helper.SendDeleteItInterfaceAsync(token.Token, createdItInterface.Uuid);
-            using var removeExposingSystemResult = await InterfaceV2Helper.SendPatchInterfaceAsync(token.Token, createdItInterface.Uuid, new KeyValuePair<string, object>(nameof(UpdateItInterfaceRequestDTO.ExposedBySystemUuid), null));
+            using var removeExposingSystemResult = await InterfaceV2Helper.SendPatchInterfaceAsync(token.Token, createdItInterface.Uuid, new KeyValuePair<string, object?>(nameof(UpdateItInterfaceRequestDTO.ExposedBySystemUuid), null));
             using var deleteAfterConflictResolutionResult = await InterfaceV2Helper.SendDeleteItInterfaceAsync(token.Token, createdItInterface.Uuid);
             using var getAfterDeleteRespose = await InterfaceV2Helper.SendGetInterfaceAsync(token.Token, createdItInterface.Uuid);
 
@@ -468,7 +468,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             var interfaceType = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItInterfaceTypes, organization.Uuid, 10, 0)).RandomItem();
             var interfaceDataType = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItInterfaceDataTypes, organization.Uuid, 10, 0)).RandomItem();
 
-            var changes = new Dictionary<string, object>();
+            var changes = new Dictionary<string, object?>();
             if (withName) changes.Add(nameof(UpdateItInterfaceRequestDTO.Name), CreateName());
             if (withInterfaceId) changes.Add(nameof(UpdateItInterfaceRequestDTO.InterfaceId), A<string>());
             if (withExposedBySystem)
@@ -486,6 +486,7 @@ namespace Tests.Integration.Presentation.Web.Interfaces.V2
             if (withData) changes.Add(nameof(UpdateItInterfaceRequestDTO.Data), new[] { new ItInterfaceDataRequestDTO() { DataTypeUuid = interfaceDataType.Uuid, Description = A<string>() } });
 
             //Act
+            Assert.NotNull(changes);
             var updatedInterface = await InterfaceV2Helper.PatchInterfaceAsync(token.Token, createdInterface.Uuid, changes.ToArray());
 
             //Assert

@@ -1126,7 +1126,7 @@ namespace Tests.Unit.Core.Model
 
         [Theory]
         [MemberData(nameof(ValidationInvalidData))]
-        public void Invalid_When_LifeCycleStatus_Or_MainContract_Invalid(LifeCycleStatusType lifeCycleStatus, ItContractItSystemUsage mainContract, List<ItSystemUsageValidationError> expectedErrors)
+        public void Invalid_When_LifeCycleStatus_Or_MainContract_Invalid(LifeCycleStatusType? lifeCycleStatus, ItContractItSystemUsage? mainContract, List<ItSystemUsageValidationError> expectedErrors)
         {
             var itSystemUsage = new ItSystemUsage
             {
@@ -1158,7 +1158,7 @@ namespace Tests.Unit.Core.Model
 
         [Theory]
         [MemberData(nameof(ValidationValidData))]
-        public void Valid_When_All_Valid(LifeCycleStatusType lifeCycleStatus, DateTime concluded, DateTime expirationDate, ItContractItSystemUsage mainContract)
+        public void Valid_When_All_Valid(LifeCycleStatusType lifeCycleStatus, DateTime concluded, DateTime expirationDate, ItContractItSystemUsage? mainContract)
         {
             var itSystemUsage = new ItSystemUsage
             {
@@ -1355,15 +1355,15 @@ namespace Tests.Unit.Core.Model
         public static readonly object[][] ValidationInvalidData =
         {
             [
-                LifeCycleStatusType.NotInUse, null,
+                LifeCycleStatusType.NotInUse, null!,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
             ],
             [
-                LifeCycleStatusType.Pilot, null,
+                LifeCycleStatusType.Pilot, null!,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.NotOperationalAccordingToLifeCycle }
             ],
             [
-                null, new ItContractItSystemUsage {ItContract = new ItContract {Terminated = DateTime.UtcNow.AddDays(-1)}},
+                (LifeCycleStatusType?)null!, new ItContractItSystemUsage {ItContract = new ItContract {Terminated = DateTime.UtcNow.AddDays(-1)}},
                 new List<ItSystemUsageValidationError> {ItSystemUsageValidationError.MainContractNotActive}
             ],
             [
@@ -1374,31 +1374,28 @@ namespace Tests.Unit.Core.Model
 
         public static readonly object[][] DateValidationInvalidData =
         {
-            new object[]
-            {
-                DateTime.UtcNow.AddDays(-1), null,
+            [
+                DateTime.UtcNow.AddDays(-1), null!,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.EndDatePassed }
-            },
-            new object[]
-            {
-                null, DateTime.UtcNow.AddDays(-1),
+            ],
+            [
+                null!, DateTime.UtcNow.AddDays(-1),
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.EndDatePassed }
-            },
-            new object[]
-            {
-                DateTime.UtcNow.AddDays(1), null,
+            ],
+            [
+                DateTime.UtcNow.AddDays(1), null!,
                 new List<ItSystemUsageValidationError> { ItSystemUsageValidationError.StartDateNotPassed, ItSystemUsageValidationError.EndDatePassed }
-            }
+            ]
         };
 
         public static readonly object[][] ValidationValidData =
         {
-            new object[] {LifeCycleStatusType.Undecided, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null},
-            new object[] {LifeCycleStatusType.Operational, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null},
-            new object[] {LifeCycleStatusType.PhasingIn, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null},
-            new object[] {LifeCycleStatusType.PhasingOut, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null},
-            new object[] {null, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null},
-            new object[] {null, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), new ItContractItSystemUsage{ ItContract = new ItContract{ Active = true} }},
+            new object[] {LifeCycleStatusType.Undecided, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null!},
+            new object[] {LifeCycleStatusType.Operational, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null!},
+            new object[] {LifeCycleStatusType.PhasingIn, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null!},
+            new object[] {LifeCycleStatusType.PhasingOut, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null!},
+            new object[] {null!, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), null!},
+            new object[] {null!, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), new ItContractItSystemUsage{ ItContract = new ItContract{ Active = true} }},
             new object[] { LifeCycleStatusType.PhasingOut, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), new ItContractItSystemUsage{ ItContract = new ItContract{ Active = true} }},
         };
 

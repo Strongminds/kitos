@@ -31,7 +31,7 @@ namespace Tests.Unit.Core.Model.Strategies
 
         private int GetNewOrgUnitId() => _nextOrgUnitId++;
 
-        private void PrepareConnectedOrganization(OrganizationUnit predefinedRoot = null, bool enforceCompleteSync = false)
+        private void PrepareConnectedOrganization(OrganizationUnit? predefinedRoot = null, bool enforceCompleteSync = false)
         {
             _organization.StsOrganizationConnection = new StsOrganizationConnection
             {
@@ -62,7 +62,7 @@ namespace Tests.Unit.Core.Model.Strategies
             }
         }
 
-        private OrganizationUnit CreateOrganizationUnit(OrganizationUnitOrigin origin, string prefix = null, IEnumerable<OrganizationUnit> children = null)
+        private OrganizationUnit CreateOrganizationUnit(OrganizationUnitOrigin origin, string? prefix = null, IEnumerable<OrganizationUnit>? children = null)
         {
             prefix ??= "<no_prefix>";
             var unit = new OrganizationUnit
@@ -688,9 +688,9 @@ namespace Tests.Unit.Core.Model.Strategies
             Assert.Empty(consequences.OrganizationUnitsBeingMoved);
         }
 
-        private static ExternalOrganizationUnit ConvertToExternalTree(OrganizationUnit root, Func<OrganizationUnit, IEnumerable<OrganizationUnit>, IEnumerable<OrganizationUnit>> customChildren = null)
+        private static ExternalOrganizationUnit ConvertToExternalTree(OrganizationUnit root, Func<OrganizationUnit, IEnumerable<OrganizationUnit>, IEnumerable<OrganizationUnit>>? customChildren = null)
         {
-            customChildren ??= ((unit, existingChildren) => existingChildren);
+            customChildren ??= ((_, existingChildren) => existingChildren);
 
             return new ExternalOrganizationUnit(
                 root.ExternalOriginUuid.GetValueOrDefault(),

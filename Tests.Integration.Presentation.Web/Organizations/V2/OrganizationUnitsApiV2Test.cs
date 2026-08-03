@@ -229,6 +229,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var result = await OrganizationUnitV2Helper.CreateUnitAsync(organization.Uuid, request);
 
             Assert.Equal(request.Name, result.Name);
+            Assert.NotNull(result.ParentOrganizationUnit);
             Assert.Equal(parentUnit.Name, result.ParentOrganizationUnit.Name);
             Assert.Equal(parentUnit.Uuid, result.ParentOrganizationUnit.Uuid);
             Assert.Equal(parentUnit.Origin, result.Origin);
@@ -269,6 +270,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             //Assert
             Assert.Equal(patchRequest.Name, result.Name);
             Assert.Equal(patchRequest.Origin, result.Origin);
+            Assert.NotNull(result.ParentOrganizationUnit);
             Assert.Equal(patchRequest.ParentUuid, result.ParentOrganizationUnit.Uuid);
             Assert.Equal(patchRequest.LocalId, result.UnitId);
         }
@@ -378,7 +380,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var user1 = await CreateUser(organization.Uuid);
             var user2 = await CreateUser(organization.Uuid);
             var userUuids = new List<Guid> { user1.Uuid, user2.Uuid };
-            var orgUnitRoles = await GetOrganizationUnitRoleTypesAsync(organization.Uuid);
+            var orgUnitRoles = (await GetOrganizationUnitRoleTypesAsync(organization.Uuid)).ToList();
             var role1 = orgUnitRoles.First();
             var role2 = orgUnitRoles.Last();
             var assignment1 = new BulkRoleAssignmentRequestDTO { RoleUuid = role1.Uuid, UserUuids = userUuids };

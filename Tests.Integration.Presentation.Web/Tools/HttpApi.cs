@@ -334,6 +334,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             var responseAsJson = await response.Content.ReadAsStringAsync();
             var spec = new { value = new List<T>() };
             var result = JsonConvert.DeserializeAnonymousType(responseAsJson, spec);
+            Assert.NotNull(result);
             return result.value;
         }
 
@@ -462,6 +463,7 @@ namespace Tests.Integration.Presentation.Web.Tools
             {
                 using var crypto = new CryptoService();
                 var user = x.AsQueryable().ByUuid(userUuid);
+                Assert.NotNull(user);
                 user.Password = crypto.Encrypt(password + user.Salt);
                 if(role == OrganizationRole.GlobalAdmin)
                     user.IsGlobalAdmin = true;
