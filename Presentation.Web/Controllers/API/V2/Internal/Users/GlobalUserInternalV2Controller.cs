@@ -68,10 +68,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [ApiResponse(HttpStatusCode.NotFound)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUsers(
-            string nameOrEmailQuery = null,
-            string emailQuery = null,
+            string? nameOrEmailQuery = null,
+            string? emailQuery = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             var queries = new List<IDomainQuery<User>>();
 

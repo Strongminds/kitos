@@ -26,7 +26,7 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         /// Part of payment which is not classified as either operations or acquisition
         /// </summary>
         public int Other { get; set; }
-        public string AccountingEntry { get; set; }
+        public string? AccountingEntry { get; set; }
         /// <summary>
         /// The result of the specific payment audit
         /// </summary>

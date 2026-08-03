@@ -32,7 +32,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        public IActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }

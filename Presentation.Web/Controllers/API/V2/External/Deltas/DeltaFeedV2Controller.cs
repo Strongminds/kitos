@@ -39,7 +39,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Deltas
         public IActionResult GetDeletedObjects(
             TrackedEntityTypeChoice? entityType = null,
             DateTime? deletedSinceUTC = null,
-            [FromQuery] BoundedPaginationQuery pagination = null)
+            [FromQuery] BoundedPaginationQuery? pagination = null)
         {
             var dtos = _trackingService
                 .QueryLifeCycleEvents(TrackedLifeCycleEventType.Deleted, entityType?.ToDomainType(), deletedSinceUTC)

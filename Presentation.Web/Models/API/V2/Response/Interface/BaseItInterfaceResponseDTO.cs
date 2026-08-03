@@ -22,7 +22,7 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// Name of IT-Interface
         /// </summary>
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Identifier for IT-Interface
@@ -65,6 +65,6 @@ namespace Presentation.Web.Models.API.V2.Response.Interface
         /// Responsible for creation
         /// </summary>
         [Required]
-        public IdentityNamePairResponseDTO CreatedBy { get; set; }
+        public required IdentityNamePairResponseDTO CreatedBy { get; set; }
     }
 }

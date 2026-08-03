@@ -21,6 +21,6 @@ namespace Presentation.Web.Models.API.V2.Response.Options
         /// Extended description of the choice
         /// </summary>
         [Required]
-        public string Description { get; set; }
+        public required string Description { get; set; }
     }
 }

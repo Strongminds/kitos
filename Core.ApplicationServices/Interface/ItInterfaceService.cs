@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
@@ -22,6 +19,10 @@ using Core.DomainServices.Repositories.Interface;
 using Core.DomainServices.Repositories.System;
 using Core.DomainServices.Time;
 using Infrastructure.Services.DataAccess;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DataRow = Core.DomainModel.ItSystem.DataRow;
 
 namespace Core.ApplicationServices.Interface
@@ -486,7 +487,7 @@ namespace Core.ApplicationServices.Interface
             }).Match(_ => Result<DataRow, OperationError>.Success(deleted!), error => error);
         }
 
-        private static bool ValidateName(string? name)
+        private static bool ValidateName([NotNullWhen(true)] string? name)
         {
             return string.IsNullOrWhiteSpace(name) == false &&
                    name.Length <= ItInterface.MaxNameLength;

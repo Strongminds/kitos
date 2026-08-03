@@ -35,6 +35,9 @@ namespace Presentation.Web.Swagger
 
         private static void NukeWriteOperationDocs(IOpenApiPathItem pathItem)
         {
+            if (pathItem.Operations == null)
+                return;
+
             pathItem.Operations.Remove(System.Net.Http.HttpMethod.Delete);
             pathItem.Operations.Remove(System.Net.Http.HttpMethod.Post);
             pathItem.Operations.Remove(System.Net.Http.HttpMethod.Patch);

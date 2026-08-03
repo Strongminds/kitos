@@ -11,9 +11,10 @@ namespace Presentation.Web.Swagger
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var isCollectionResult = false;
-            if (operation.Responses.TryGetValue("200", out var okResponse))
+            var responses = operation.Responses ?? [];
+            if (responses.TryGetValue("200", out var okResponse))
             {
-                foreach (var mediaType in okResponse.Content.Values)
+                foreach (var mediaType in okResponse.Content?.Values ?? [])
                 {
                     if (mediaType.Schema?.Type == JsonSchemaType.Array)
                     {
@@ -39,7 +40,7 @@ namespace Presentation.Web.Swagger
 
             var methodInfo = controllerDescriptor.MethodInfo;
             var publicMethodsWithSameName = methodInfo
-                .DeclaringType
+                .DeclaringType?
                 .GetMethods()
                 .Where(x => x.IsPublic)
                 .Where(x => x.Name.Equals(methodInfo.Name, StringComparison.OrdinalIgnoreCase))
@@ -47,10 +48,13 @@ namespace Presentation.Web.Swagger
                 .ThenBy(m => string.Join(",", m.GetParameters().Select(p => p.ParameterType.FullName)))
                 .ToList();
 
-            var indexOfCurrentAction = publicMethodsWithSameName.IndexOf(methodInfo);
-            if (publicMethodsWithSameName.Count > 1 && indexOfCurrentAction != 0)
+            if (publicMethodsWithSameName != null)
             {
-                opsId += "_V" + indexOfCurrentAction;
+                var indexOfCurrentAction = publicMethodsWithSameName.IndexOf(methodInfo);
+                if (publicMethodsWithSameName.Count > 1 && indexOfCurrentAction != 0)
+                {
+                    opsId += "_V" + indexOfCurrentAction;
+                }
             }
 
             var relativePath = apiDescription.RelativePath ?? string.Empty;

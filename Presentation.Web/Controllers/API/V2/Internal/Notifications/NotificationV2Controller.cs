@@ -62,7 +62,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
             [Required][NonEmptyGuid] Guid organizationUuid,
             Guid? ownerResourceUuid = null,
             bool onlyActive = false,
-            [FromQuery] UnboundedPaginationQuery paginationQuery = null)
+            [FromQuery] UnboundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -13,6 +13,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
         {
             var dto = new ItInterfaceResponseDTO
             {
+                Name = itInterface.Name,
+                CreatedBy = itInterface.ObjectOwner.MapIdentityNamePairDTO(),
                 LastModified = itInterface.LastChanged,
                 LastModifiedBy = itInterface.LastChangedByUser.MapIdentityNamePairDTO(),
                 Scope = itInterface.AccessModifier.ToChoice(),
@@ -27,7 +29,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
 
         public RightsHolderItInterfaceResponseDTO ToRightsHolderItInterfaceResponseDTO(ItInterface itInterface)
         {
-            var dto = new RightsHolderItInterfaceResponseDTO();
+            var dto = new RightsHolderItInterfaceResponseDTO
+            {
+                Name = itInterface.Name,
+                CreatedBy = itInterface.ObjectOwner.MapIdentityNamePairDTO()
+            };
             MapBaseInformation(itInterface, dto);
             return dto;
         }

@@ -17,7 +17,7 @@ namespace Presentation.Web.Models.API.V2.Response.Options
         /// <summary>
         /// Description about this roles usage externally
         /// </summary>
-        public string ExternallyAvailableDescription { get; set; }
+        public required string ExternallyAvailableDescription { get; set; }
 
         public RoleOptionResponseDTO() { }
 

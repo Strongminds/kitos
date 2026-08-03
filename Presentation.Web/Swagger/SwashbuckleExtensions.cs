@@ -6,9 +6,9 @@ namespace Presentation.Web.Swagger
 {
     public static class SwashbuckleExtensions
     {
-        public static IEnumerable<OpenApiOperation> EnumerateOperations(this IOpenApiPathItem pathItem)
+        public static IEnumerable<OpenApiOperation> EnumerateOperations(this IOpenApiPathItem? pathItem)
         {
-            if (pathItem == null) yield break;
+            if (pathItem == null || pathItem.Operations == null) yield break;
             foreach (var operation in pathItem.Operations.Values)
                 yield return operation;
         }

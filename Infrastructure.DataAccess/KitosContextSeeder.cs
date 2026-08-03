@@ -351,7 +351,7 @@ namespace Infrastructure.DataAccess
         }
 
         private static void AddPublicMessageIfMissing(KitosContext context, User owner, string title,
-            string shortDescription, string longDescription, string link,
+            string shortDescription, string? longDescription, string link,
             bool isMain = false, PublicMessageStatus status = PublicMessageStatus.Inactive)
         {
             if (!context.PublicMessages.Any(x => x.Title == title))

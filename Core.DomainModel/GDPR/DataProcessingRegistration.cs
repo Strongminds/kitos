@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
@@ -26,23 +27,14 @@ namespace Core.DomainModel.GDPR
     {
         public DataProcessingRegistration()
         {
-            ExternalReferences = new List<ExternalReference>();
-            SystemUsages = new List<ItSystemUsage.ItSystemUsage>();
-            DataProcessors = new List<Organization.Organization>();
-            InsecureCountriesSubjectToDataTransfer = new List<DataProcessingCountryOption>();
-            OversightOptions = new List<DataProcessingOversightOption>();
-            AssociatedContracts = new List<ItContract.ItContract>();
-            OversightDates = new List<DataProcessingRegistrationOversightDate>();
-            UserNotifications = new List<UserNotification>();
-            AssignedSubDataProcessors = new List<SubDataProcessor>();
             Uuid = Guid.NewGuid();
             MarkAsDirty();
         }
 
         public Guid Uuid { get; set; }
 
-        public static bool IsNameValid(string name) => !string.IsNullOrWhiteSpace(name) &&
-                                                       name.Length <= DataProcessingRegistrationConstraints.MaxNameLength;
+        public static bool IsNameValid([NotNullWhen(true)] string name) => !string.IsNullOrWhiteSpace(name) &&
+                                                                           name.Length <= DataProcessingRegistrationConstraints.MaxNameLength;
 
         public Maybe<OperationError> SetName(string newName)
         {
@@ -84,22 +76,22 @@ namespace Core.DomainModel.GDPR
             }
         }
 
-        public virtual ICollection<DataProcessingCountryOption> InsecureCountriesSubjectToDataTransfer { get; set; }
+        public virtual ICollection<DataProcessingCountryOption> InsecureCountriesSubjectToDataTransfer { get; set; } = new List<DataProcessingCountryOption>();
 
         public virtual Organization.Organization Organization { get; set; }
 
         public virtual ICollection<DataProcessingRegistrationReadModel> ReadModels { get; set; }
 
-        public virtual ICollection<ItSystemUsage.ItSystemUsage> SystemUsages { get; set; }
+        public virtual ICollection<ItSystemUsage.ItSystemUsage> SystemUsages { get; set; } = new List<ItSystemUsage.ItSystemUsage>();
 
-        public virtual ICollection<Organization.Organization> DataProcessors { get; set; }
-        public virtual ICollection<SubDataProcessor> AssignedSubDataProcessors { get; set; }
+        public virtual ICollection<Organization.Organization> DataProcessors { get; set; } = new List<Organization.Organization>();
+        public virtual ICollection<SubDataProcessor> AssignedSubDataProcessors { get; set; } = new List<SubDataProcessor>();
         public virtual DataProcessingDataResponsibleOption DataResponsible { get; set; }
         public int? DataResponsible_Id { get; set; }
 
         public string DataResponsibleRemark { get; set; }
 
-        public virtual ICollection<DataProcessingOversightOption> OversightOptions { get; set; }
+        public virtual ICollection<DataProcessingOversightOption> OversightOptions { get; set; } = new List<DataProcessingOversightOption>();
         public string OversightOptionRemark { get; set; }
 
         public Result<Organization.Organization, OperationError> AssignDataProcessor(Organization.Organization dataProcessor)
@@ -289,9 +281,9 @@ namespace Core.DomainModel.GDPR
             };
         }
 
-        public virtual ICollection<UserNotification> UserNotifications { get; set; }
+        public virtual ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
 
-        public virtual ICollection<ExternalReference> ExternalReferences { get; set; }
+        public virtual ICollection<ExternalReference> ExternalReferences { get; set; } = new List<ExternalReference>();
 
         public ReferenceRootType GetRootType() => ReferenceRootType.DataProcessingRegistration;
 
@@ -358,7 +350,7 @@ namespace Core.DomainModel.GDPR
             OversightScheduledInspectionDate = oversightScheduledInspectionDate;
         }
 
-        public virtual ICollection<DataProcessingRegistrationOversightDate> OversightDates { get; set; }
+        public virtual ICollection<DataProcessingRegistrationOversightDate> OversightDates { get; set; } = new List<DataProcessingRegistrationOversightDate>();
 
 
         public Maybe<IEnumerable<DataProcessingRegistrationOversightDate>> SetOversightCompleted(YesNoUndecidedOption completed)
@@ -373,7 +365,7 @@ namespace Core.DomainModel.GDPR
             return Maybe<IEnumerable<DataProcessingRegistrationOversightDate>>.None;
         }
 
-        public virtual ICollection<ItContract.ItContract> AssociatedContracts { get; set; }
+        public virtual ICollection<ItContract.ItContract> AssociatedContracts { get; set; } = new List<ItContract.ItContract>();
         public int? MainContractId { get; set; }
         public virtual ItContract.ItContract MainContract { get; set; }
         public bool IsActiveAccordingToMainContract => CheckContractValidity().IsNone;

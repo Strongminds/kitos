@@ -53,7 +53,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItContracts
         [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetDataProcessingRegistrations(
             [NonEmptyGuid] Guid contractUuid,
-            string nameQuery = null, [FromQuery] int pageSize = 25)
+            string? nameQuery = null, [FromQuery] int pageSize = 25)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -74,7 +74,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
         [ApiResponse(HttpStatusCode.NotFound)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
-        public IActionResult CreateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO request)
+        public IActionResult CreateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO? request)
         {
             if (!ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
             }
 
             return _stsOrganizationSynchronizationService
-                .Connect(organizationUuid, (request?.SynchronizationDepth).FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
+                .Connect(organizationUuid, request.SynchronizationDepth.FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
                 .Match(FromOperationError, Ok);
         }
 
@@ -98,7 +98,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
         [ApiResponse(HttpStatusCode.NotFound)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
-        public IActionResult Disconnect(Guid organizationUuid, [FromBody] DisconnectFromStsOrganizationRequestDTO request)
+        public IActionResult Disconnect(Guid organizationUuid, [FromBody] DisconnectFromStsOrganizationRequestDTO? request)
         {
             if (request == null)
             {
@@ -148,7 +148,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
         [ApiResponse(HttpStatusCode.NotFound)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
-        public IActionResult UpdateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO request)
+        public IActionResult UpdateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO? request)
         {
             if (!ModelState.IsValid)
             {
@@ -161,7 +161,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
             }
 
             return _stsOrganizationSynchronizationService
-                .UpdateConnection(organizationUuid, (request?.SynchronizationDepth).FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
+                .UpdateConnection(organizationUuid, request.SynchronizationDepth.FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
                 .Match(FromOperationError, Ok);
         }
 
