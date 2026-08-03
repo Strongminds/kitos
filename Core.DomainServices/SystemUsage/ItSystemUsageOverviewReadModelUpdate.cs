@@ -475,7 +475,7 @@ namespace Core.DomainServices.SystemUsage
         private static void PatchReference(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
             var title = source.Reference?.Title;
-            destination.LocalReferenceTitle = title?.Substring(0, Math.Min(title.Length, ItSystemUsageOverviewReadModel.MaxReferenceTitleLenght));
+            destination.LocalReferenceTitle = title?.Substring(0, Math.Min(title.Length, ItSystemUsageOverviewReadModel.MaxReferenceTitleLength));
             destination.LocalReferenceUrl = source.Reference?.URL;
             destination.LocalReferenceDocumentId = source.Reference?.ExternalReferenceId;
         }

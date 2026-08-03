@@ -21,13 +21,9 @@ using Presentation.Web.Models.API.V2.SharedProperties;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 {
-    public class ItContractWriteModelMapper : WriteModelMapperBase, IItContractWriteModelMapper
+    public class ItContractWriteModelMapper(ICurrentHttpRequest currentHttpRequest)
+        : WriteModelMapperBase(currentHttpRequest), IItContractWriteModelMapper
     {
-        public ItContractWriteModelMapper(ICurrentHttpRequest currentHttpRequest)
-            : base(currentHttpRequest)
-        {
-        }
-
         public ItContractModificationParameters FromPOST(CreateNewContractRequestDTO dto)
         {
             return MapCreate(dto, false);
@@ -51,7 +47,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         private ItContractModificationParameters MapCreate(
             CreateNewContractRequestDTO dto, bool enforceFallbackIfNotProvided)
         {
-            var parameters = Map<CreateNewContractRequestDTO, ExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
+            var parameters = Map<CreateNewContractRequestDTO, ExternalReferenceDataWriteRequestDTO>(
+                dto,
+                enforceFallbackIfNotProvided,
+                (ClientRequestsChangeTo<IHasNameExternal>(x => x.Name!) || enforceFallbackIfNotProvided)
+                    ? dto.Name.AsChangedValue()!
+                    : OptionalValueChange<string>.None);
             parameters.ExternalReferences = MapCreateReferences(dto);
 
             return parameters;
@@ -60,14 +61,22 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
         private ItContractModificationParameters MapUpdate(
             UpdateContractRequestDTO dto, bool enforceFallbackIfNotProvided)
         {
-            var parameters = Map<UpdateContractRequestDTO, UpdateExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
+            var parameters = Map<UpdateContractRequestDTO, UpdateExternalReferenceDataWriteRequestDTO>(
+                dto,
+                enforceFallbackIfNotProvided,
+                (ClientRequestsChangeTo<UpdateContractRequestDTO>(x => x.Name!) || enforceFallbackIfNotProvided)
+                    ? dto.Name.AsChangedValue()!
+                    : OptionalValueChange<string>.None);
             parameters.ExternalReferences = MapUpdateReferences(dto);
 
             return parameters;
         }
 
-        private ItContractModificationParameters Map<TDto, TExternalReferenceDto>(TDto dto, bool enforceFallbackIfNotProvided)
-            where TDto : ContractWriteRequestDTO, IHasNameExternal, IHasExternalReference<TExternalReferenceDto>
+        private ItContractModificationParameters Map<TDto, TExternalReferenceDto>(
+            TDto dto,
+            bool enforceFallbackIfNotProvided,
+            OptionalValueChange<string> name)
+            where TDto : ContractWriteRequestDTO, IHasExternalReference<TExternalReferenceDto>
             where TExternalReferenceDto : ExternalReferenceDataWriteRequestDTO
         {
             var rule = CreateChangeRule<TDto>(enforceFallbackIfNotProvided);
@@ -88,11 +97,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             dto.Supplier = WithResetDataIfSectionIsNotDefined(dto.Supplier, x => x.Supplier);
             dto.ExternalReferences = WithResetDataIfSectionIsNotDefinedWithFallback(dto.ExternalReferences, x => x.ExternalReferences, Array.Empty<TExternalReferenceDto>);
             dto.SystemUsageUuids = WithResetDataIfSectionIsNotDefinedWithFallback(dto.SystemUsageUuids,
-                x => x.SystemUsageUuids, () => new List<Guid>());
+                x => x.SystemUsageUuids, () => []);
             dto.Roles = WithResetDataIfSectionIsNotDefinedWithFallback(dto.Roles, x => x.Roles,
                 Array.Empty<RoleAssignmentRequestDTO>);
             dto.DataProcessingRegistrationUuids = WithResetDataIfSectionIsNotDefinedWithFallback(
-                dto.DataProcessingRegistrationUuids, x => x.DataProcessingRegistrationUuids, () => new List<Guid>());
+                dto.DataProcessingRegistrationUuids, x => x.DataProcessingRegistrationUuids, () => []);
             dto.AgreementPeriod = WithResetDataIfSectionIsNotDefined(dto.AgreementPeriod, x => x.AgreementPeriod);
             dto.PaymentModel = WithResetDataIfSectionIsNotDefined(dto.PaymentModel, x => x.PaymentModel);
             dto.Payments = WithResetDataIfSectionIsNotDefined(dto.Payments, x => x.Payments);
@@ -100,7 +109,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 
             return new ItContractModificationParameters
             {
-                Name = rule.MustUpdate(x => x.Name) ? dto.Name.AsChangedValue()! : OptionalValueChange<string>.None,
+                Name = name,
                 ParentContractUuid = rule.MustUpdate(x => x.ParentContractUuid)
                     ? dto.ParentContractUuid.AsChangedValue()
                     : OptionalValueChange<Guid?>.None,
@@ -120,8 +129,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 
         private static ItContractPaymentDataModificationParameters MapPayments(ContractPaymentsDataWriteRequestDTO dto)
         {
-            dto.External ??= new List<PaymentRequestDTO>();
-            dto.Internal ??= new List<PaymentRequestDTO>();
+            dto.External ??= [];
+            dto.Internal ??= [];
             return new ItContractPaymentDataModificationParameters()
             {
                 ExternalPayments = dto.External.Select(MapPayment).ToList().AsChangedValue<IEnumerable<ItContractPayment>>(),
@@ -310,7 +319,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                     : OptionalValueChange<Guid?>.None,
 
                 AgreementElementUuids = rule.MustUpdate(x => x.General!.AgreementElementUuids)
-                    ? (dto.AgreementElementUuids ?? new List<Guid>()).AsChangedValue()
+                    ? (dto.AgreementElementUuids ?? []).AsChangedValue()
                     : OptionalValueChange<IEnumerable<Guid>>.None,
 
                 Notes = rule.MustUpdate(x => x.General!.Notes)

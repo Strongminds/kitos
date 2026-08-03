@@ -6,7 +6,7 @@ using Presentation.Web.Models.API.V2.SharedProperties;
 
 namespace Presentation.Web.Models.API.V2.Request.Contract
 {
-    public class UpdateContractRequestDTO : ContractWriteRequestDTO, IHasNameExternal, IHasExternalReference<UpdateExternalReferenceDataWriteRequestDTO>
+    public class UpdateContractRequestDTO : ContractWriteRequestDTO, IHasExternalReference<UpdateExternalReferenceDataWriteRequestDTO>
     {
         /// <summary>
         /// Name of the contract.

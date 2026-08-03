@@ -91,7 +91,7 @@ public class PublishSystemEventsHandlerTest : WithAutoFixture
         return event1.Topic == event2.Topic && DictionariesAreEqual(kvp1, kvp2);
     }
 
-    private static bool DictionariesAreEqual(Dictionary<string, object> dict1, Dictionary<string, object> dict2)
+    private static bool DictionariesAreEqual(Dictionary<string, object?> dict1, Dictionary<string, object?> dict2)
     {
         if (dict1.Count != dict2.Count)
             return false;
