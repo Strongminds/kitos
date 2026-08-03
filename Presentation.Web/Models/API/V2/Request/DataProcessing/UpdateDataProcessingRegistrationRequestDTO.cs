@@ -6,7 +6,7 @@ using Presentation.Web.Models.API.V2.SharedProperties;
 
 namespace Presentation.Web.Models.API.V2.Request.DataProcessing
 {
-    public class UpdateDataProcessingRegistrationRequestDTO : DataProcessingRegistrationWriteRequestDTO, IHasNameExternal, IHasExternalReference<UpdateExternalReferenceDataWriteRequestDTO>
+    public class UpdateDataProcessingRegistrationRequestDTO : DataProcessingRegistrationWriteRequestDTO, IHasExternalReference<UpdateExternalReferenceDataWriteRequestDTO>
     {
         /// <summary>
         /// Name of the registration
