@@ -7,6 +7,7 @@ using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
 using Core.ApplicationServices.Extensions;
+using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.ApplicationServices.Model.System;
 using Core.ApplicationServices.References;
@@ -120,6 +121,33 @@ namespace Tests.Unit.Core.ApplicationServices.ItSystems
             //Assert
             Assert.True(result.Ok);
             transactionMock.Verify(x => x.Commit(), Times.Once);
+        }
+
+        [Fact]
+        public void CreateNewSystem_Can_Clear_KLE_Refs_With_Null_Change_Value()
+        {
+            //Arrange
+            var organizationUuid = A<Guid>();
+            var inputParameters = new SystemUpdateParameters
+            {
+                Name = A<string>().AsChangedValue(),
+                TaskRefUuids = OptionalValueChange<IEnumerable<Guid>>.With(null!)
+            };
+            var transactionMock = ExpectTransactionBegins();
+            var orgDbId = A<int>();
+            var itSystem = new ItSystem { Id = A<int>() };
+
+            ExpectGetOrganizationReturns(organizationUuid, new Organization { Id = orgDbId });
+            ExpectSystemServiceCreateItSystemReturns(orgDbId, inputParameters, itSystem);
+            ExpectUpdateTaskRefsReturns(itSystem.Id, new List<int>(), itSystem);
+
+            //Act
+            var result = _sut.CreateNewSystem(organizationUuid, inputParameters);
+
+            //Assert
+            Assert.True(result.Ok);
+            transactionMock.Verify(x => x.Commit(), Times.Once);
+            _taskRefRepositoryMock.Verify(x => x.GetTaskRef(It.IsAny<Guid>()), Times.Never);
         }
 
         [Fact]

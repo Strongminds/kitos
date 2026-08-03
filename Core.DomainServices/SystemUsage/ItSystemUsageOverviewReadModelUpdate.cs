@@ -199,7 +199,8 @@ namespace Core.DomainServices.SystemUsage
         {
             var usagesFromSource = pickSourceCollection(source)
                 .Select(pickUsageFromRelation)
-                .Where(itSystemUsage => itSystemUsage.ItSystem != null)
+                .Where(itSystemUsage => itSystemUsage != null)
+                .Where(itSystemUsage => itSystemUsage!.ItSystem != null)
                 .ToList();
             var destinationCollection = pickDestinationCollection(destination);
 
