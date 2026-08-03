@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - env: []
-        image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-e862c930e07434b001485e7554231d82de3641a2
+        image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-76c0b77b5aa6ee92ebc0944981a916532da40fcf
         name: kitos-pubsub
         ports:
         - containerPort: 8080
