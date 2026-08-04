@@ -14,25 +14,52 @@ namespace Presentation.Web.Infrastructure.OData
 
             var builder = new StringBuilder(queryString.Length);
             var depth = 0;
+            var inStringLiteral = false;
 
             for (var i = 0; i < queryString.Length; i++)
             {
                 var current = queryString[i];
 
-                switch (current)
+                if (current == '\'' )
                 {
-                    case '(':
-                        depth++;
-                        break;
-                    case ')':
-                        depth = Math.Max(depth - 1, 0);
-                        break;
+                    if (inStringLiteral)
+                    {
+                        // An escaped quote inside a string literal is represented as ''.
+                        // If the next char is also a quote we stay inside the string; otherwise we close it.
+                        if (i + 1 < queryString.Length && queryString[i + 1] == '\'')
+                        {
+                            // Emit both quotes and skip the second one.
+                            builder.Append('\'');
+                            builder.Append('\'');
+                            i++;
+                            continue;
+                        }
+
+                        inStringLiteral = false;
+                    }
+                    else
+                    {
+                        inStringLiteral = true;
+                    }
                 }
 
-                if (current == '&' && depth > 0 && IsNestedSystemQueryOption(queryString, i + 1))
+                if (!inStringLiteral)
                 {
-                    builder.Append(';');
-                    continue;
+                    switch (current)
+                    {
+                        case '(':
+                            depth++;
+                            break;
+                        case ')':
+                            depth = Math.Max(depth - 1, 0);
+                            break;
+                    }
+
+                    if (current == '&' && depth > 0 && IsNestedSystemQueryOption(queryString, i + 1))
+                    {
+                        builder.Append(';');
+                        continue;
+                    }
                 }
 
                 builder.Append(current);
