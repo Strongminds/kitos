@@ -37,14 +37,14 @@ namespace Presentation.Web.Swagger
                     kvp => kvp.Key,
                     kvp =>
                     {
-                        IOpenApiMediaType? existingJsonContent = null;
+                        OpenApiMediaType? existingJsonContent = null;
                         kvp.Value.Content?.TryGetValue(Json, out existingJsonContent);
                         return existingJsonContent?.Schema;
                     });
 
             if (httpMethod != "DELETE")
             {
-                IOpenApiMediaType? existingJsonContent = null;
+                OpenApiMediaType? existingJsonContent = null;
                 operation.RequestBody?.Content?.TryGetValue(Json, out existingJsonContent);
                 existingBodySchema = existingJsonContent?.Schema;
 

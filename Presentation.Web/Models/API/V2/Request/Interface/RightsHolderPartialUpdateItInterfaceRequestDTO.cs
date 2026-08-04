@@ -11,7 +11,17 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// Name of IT-Interface
         /// </summary>
         [MaxLength(ItInterface.MaxNameLength)]
-        public required string Name { get; set; }
+        public string? Name { get; set; }
+        string ICommonItInterfaceRequestPropertiesDTO.Name
+        {
+            get => Name!;
+            set => Name = value;
+        }
+        string IHasNameExternal.Name
+        {
+            get => Name!;
+            set => Name = value;
+        }
 
         /// <summary>
         /// UUID for IT-System exposing this IT-Interface
@@ -33,11 +43,21 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// <summary>
         /// General description of the IT-Interface
         /// </summary>
-        public required string Description { get; set; }
+        public string? Description { get; set; }
+        string ICommonItInterfaceRequestPropertiesDTO.Description
+        {
+            get => Description!;
+            set => Description = value;
+        }
 
         /// <summary>
         /// Url reference for further information
         /// </summary>
-        public required string UrlReference { get; set; }
+        public string? UrlReference { get; set; }
+        string ICommonItInterfaceRequestPropertiesDTO.UrlReference
+        {
+            get => UrlReference!;
+            set => UrlReference = value;
+        }
     }
 }
