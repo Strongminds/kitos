@@ -667,6 +667,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var newUsage = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
 
             //Assert
+            Assert.NotNull(newUsage.OrganizationContext);
             Assert.Equal(organization.Uuid, newUsage.OrganizationContext.Uuid);
             Assert.Equal(organization.Name, newUsage.OrganizationContext.Name);
             Assert.Equal(organization.Cvr, newUsage.OrganizationContext.Cvr);
@@ -3200,6 +3201,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private static void AssertExpectedUsageShallow(ItSystemUsageResponseDTO expectedContent, ItSystemUsageResponseDTO dto)
         {
+            Assert.NotNull(dto.OrganizationContext);
+            Assert.NotNull(expectedContent.OrganizationContext);
             Assert.Equal(expectedContent.OrganizationContext.Uuid, dto.OrganizationContext.Uuid);
             Assert.Equal(expectedContent.OrganizationContext.Name, dto.OrganizationContext.Name);
             Assert.Equal(expectedContent.OrganizationContext.Cvr, dto.OrganizationContext.Cvr);
