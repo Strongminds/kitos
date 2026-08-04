@@ -157,6 +157,7 @@ namespace Presentation.Web.Infrastructure.DI
         public static void Register(IServiceCollection services, IConfiguration configuration, SecurityKey signingKey)
         {
             // Middleware (IMiddleware implementations must be registered in DI)
+            services.AddScoped<NormalizeODataQueryStringMiddleware>();
             services.AddScoped<CorrelationIdMiddleware>();
             services.AddScoped<ApiRequestsLoggingMiddleware>();
             services.AddScoped<DenyUsersWithoutApiAccessMiddleware>();
