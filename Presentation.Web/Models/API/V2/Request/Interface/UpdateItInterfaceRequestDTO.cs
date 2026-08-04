@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System;
 
-#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 namespace Presentation.Web.Models.API.V2.Request.Interface
 {
     public class UpdateItInterfaceRequestDTO : IItInterfaceWritablePropertiesRequestDTO
@@ -46,7 +45,9 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// Name of IT-Interface
         /// </summary>
         [MaxLength(ItInterface.MaxNameLength)]
+#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
         public string? Name { get; set; }
+#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
         /// <summary>
         /// Identifier for IT-Interface
         /// </summary>
@@ -70,4 +71,3 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         public string? UrlReference { get; set; }
     }
 }
-#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
