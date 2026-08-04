@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    easyhosting.io/service-reference: PubSub.Application.Api/Dockerfile
+    easyhosting.io/service-unique-id: b61010b1-47d0-4c23-9294-cb6cbb2804d6
+    easyhosting.io/easy-hosting-domain-name: b61010b1-47d0-4c23-9294-cb6cbb2804d6.kitos-dev.strongminds.easyhosting.strongminds.dev
+  labels:
+    app: kitos-pubsub
+  name: kitos-pubsub
+  namespace: kitos
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: kitos-pubsub
+  template:
+    metadata:
+      annotations:
+        sidecar.opentelemetry.io/inject: "false"
+      labels:
+        app: kitos-pubsub
+    spec:
+      containers:
+      - env:
+        - name: PubSubConnectionString
+          valueFrom:
+            secretKeyRef:
+              key: PubSubConnectionString
+              name: user-secret
+        - name: PubSubMigrationConnectionString
+          valueFrom:
+            secretKeyRef:
+              key: PubSubMigrationConnectionString
+              name: user-secret
+        - name: PubSubApiKey
+          valueFrom:
+            secretKeyRef:
+              key: PubSubApiKey
+              name: user-secret
+        image: '{will be replaced by build pipeline}'
+        name: kitos-pubsub
+        ports:
+        - containerPort: 8080
+          name: https
+          protocol: TCP
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: 1
+          requests:
+            memory: 128Mi
+            cpu: 100m
+      imagePullSecrets:
+      - name: 90d73529-a238-405b-a079-3eea2e8e36e6
