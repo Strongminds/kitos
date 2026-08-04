@@ -13,6 +13,7 @@ namespace Core.ApplicationServices
         void ImportUsers(Stream stream, int organizationId);
         Stream ExportItContracts(Stream stream, int organizationId);
         void ImportItContracts(Stream stream, int organizationId);
+        Result<(Stream stream, string fileName), OperationError> ExportItSystemUsage(Stream stream, Guid systemUsageUuid);
 
         Result<int, OperationError> ResolveOrganizationIdAndValidateAccess(Guid organizationUuid);
     }
