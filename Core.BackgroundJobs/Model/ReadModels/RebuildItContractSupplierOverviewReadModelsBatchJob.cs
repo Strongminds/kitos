@@ -156,7 +156,8 @@ namespace Core.BackgroundJobs.Model.ReadModels
             readModel.SupplierType = contractsAtHighestCriticality.Any(x => x.HasInternalSupplier) ? ItContractSupplierType.Internal : ItContractSupplierType.External;
             readModel.SupplierUuid = supplier.Uuid;
             readModel.SupplierName = supplier.Name;
-            readModel.SupplierCvr = supplier.GetActiveCvr();
+            readModel.SupplierCvr = supplier.Cvr;
+            readModel.SupplierForeignCvr = supplier.ForeignCvr;
             readModel.IsSupplierDisabled = supplier.Disabled;
             readModel.HighestCriticalityUuid = highestCriticality?.CriticalityUuid;
             readModel.HighestCriticalityName = highestCriticality?.CriticalityName;

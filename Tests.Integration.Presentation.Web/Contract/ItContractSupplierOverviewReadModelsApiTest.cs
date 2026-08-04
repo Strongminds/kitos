@@ -139,6 +139,28 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(contractName2, pagedRow.ContractsAtHighestCriticality.Single().ContractName);
         }
 
+        [Fact]
+        public async Task Includes_Supplier_Foreign_Cvr_For_Fallback()
+        {
+            var organizationUuid = _organization.Uuid;
+            var suffix = Guid.NewGuid().ToString("N");
+            var supplier = await CreateOrganizationAsync($"foreign-cvr-{suffix}", cvr: CreateCvr());
+            var criticality = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.CriticalityTypes, organizationUuid, 25, 0))
+                .First();
+
+            var supplierId = SetSupplierForeignCvrAndClearCvr(supplier.Uuid, $"F-{suffix}");
+            ScheduleSupplierOverviewOrganizationUpdate(supplierId);
+
+            await CreateContractWithSupplierAndCriticality(organizationUuid, supplier.Uuid, criticality.Uuid, $"contract-{suffix}");
+            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+
+            var queryResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid)).ToList();
+            var supplierRow = Assert.Single(queryResult,x => x.SupplierUuid == supplier.Uuid);
+
+            Assert.Null(supplierRow.SupplierCvr);
+            Assert.Equal($"F-{suffix}", supplierRow.SupplierForeignCvr);
+        }
+
         private async Task CreateContractWithSupplierAndCriticality(
             Guid organizationUuid,
             Guid supplierUuid,
@@ -180,6 +202,29 @@ namespace Tests.Integration.Presentation.Web.Contract
                 repository.Insert(PendingReadModelUpdate.Create(
                     criticalityId,
                     PendingReadModelUpdateSourceCategory.ItContract_SupplierOverview_CriticalityType));
+            });
+        }
+
+        private static int SetSupplierForeignCvrAndClearCvr(Guid supplierUuid, string foreignCvr)
+        {
+            var supplierId = 0;
+            DatabaseAccess.MutateEntitySet<Organization>(repository =>
+            {
+                var supplier = repository.AsQueryable().First(x => x.Uuid == supplierUuid);
+                supplier.Cvr = null;
+                supplier.ForeignCvr = foreignCvr;
+                supplierId = supplier.Id;
+            });
+            return supplierId;
+        }
+
+        private static void ScheduleSupplierOverviewOrganizationUpdate(int supplierId)
+        {
+            DatabaseAccess.MutateEntitySet<PendingReadModelUpdate>(repository =>
+            {
+                repository.Insert(PendingReadModelUpdate.Create(
+                    supplierId,
+                    PendingReadModelUpdateSourceCategory.ItContract_SupplierOverview_Organization));
             });
         }
     }
