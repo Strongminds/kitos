@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.DomainModel.BackgroundJobs;
 using Core.DomainModel.ItContract;
+using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Integration.Presentation.Web.Tools;
