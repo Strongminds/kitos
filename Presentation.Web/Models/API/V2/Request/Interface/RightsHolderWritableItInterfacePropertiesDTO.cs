@@ -38,12 +38,12 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// General description of the IT-Interface
         /// </summary>
         [Required]
-        public required string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Url reference for further information
         /// </summary>
         [Required]
-        public required string UrlReference { get; set; }
+        public string? UrlReference { get; set; }
     }
 }
