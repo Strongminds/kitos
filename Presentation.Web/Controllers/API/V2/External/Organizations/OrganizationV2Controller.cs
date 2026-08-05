@@ -197,7 +197,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <param name="nameQuery">Query by text in name</param>
         /// <param name="orderByProperty">Ordering property</param>
         /// <param name="paginationQuery">Optional pagination query</param>
-        /// <returns>A list og organization unit representations</returns>
+        /// <returns>A list of organization unit representations</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units")]
         [ApiResponse(typeof(IEnumerable<ExternalOrganizationUnitResponseDTO>), HttpStatusCode.OK)]
