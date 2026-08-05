@@ -28,9 +28,9 @@ namespace Tests.Integration.Presentation.Web.Contract
     [Collection(nameof(SequentialTestGroup))]
     public class ItContractOverviewReadModelsApiTest : BaseTest, IAsyncLifetime
     {
-        private ShallowOrganizationResponseDTO _organization;
-        private ShallowOrganizationResponseDTO _supplier;
-
+        private ShallowOrganizationResponseDTO? _organization;
+        private ShallowOrganizationResponseDTO? _supplier;
+        
         public async Task InitializeAsync()
         {
             _organization = await CreateOrganizationAsync();
@@ -48,7 +48,7 @@ namespace Tests.Integration.Presentation.Web.Contract
         public async Task Can_Query_And_Page_ReadModels()
         {
             ////Arrange
-            var organizationUuid = _organization.Uuid;
+            var organizationUuid = _organization!.Uuid;
             var suffix = A<Guid>().ToString("N");
             var name1 = $"1_{suffix}";
             var name2 = $"2_{suffix}";
@@ -76,7 +76,7 @@ namespace Tests.Integration.Presentation.Web.Contract
         public async Task ReadModels_Contain_Correct_Content()
         {
             //Arrange
-            var organizationUuid = _organization.Uuid;
+            var organizationUuid = _organization!.Uuid;
             var name = CreateName();
             var itSystem1 = await CreateItSystemAsync(organizationUuid);
             var itSystem2 = await CreateItSystemAsync(organizationUuid);
@@ -144,7 +144,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             await ItContractV2Helper.SendPatchContractSupplierAsync(await GetGlobalToken(), itContract.Uuid,
                 new ContractSupplierDataWriteRequestDTO()
                 {
-                    OrganizationUuid = _supplier.Uuid,
+                    OrganizationUuid = _supplier!.Uuid,
                 }).WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
 
             await ItContractV2Helper.SendPatchContractResponsibleAsync(await GetGlobalToken(), itContract.Uuid,
@@ -227,8 +227,9 @@ namespace Tests.Integration.Presentation.Web.Contract
             var user2Id = DatabaseAccess.GetEntityId<User>(user2.Uuid);
             var roles = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.ItContractRoles,
                 organizationUuid, 25, 0);
-            var role1 = roles.RandomItem();
-            var role2 = roles.RandomItem();
+            var rolesList = roles.ToList();
+            var role1 = rolesList.RandomItem();
+            var role2 = rolesList.RandomItem();
             await ItContractV2Helper.SendPatchAddRoleAssignment(itContract.Uuid,
                 new RoleAssignmentRequestDTO
                 { RoleUuid = role1.Uuid, UserUuid = user1.Uuid });
@@ -291,7 +292,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Contains(readModel.RoleAssignments, ra => DatabaseAccess.GetEntityUuid<ItContractRole>(ra.RoleId) == role2.Uuid && ra.UserId == user2Id);
         }
 
-        private static void AssertCsv(string csv, params string[] expectedNames)
+        private static void AssertCsv(string csv, params string?[] expectedNames)
         {
             var dpas = csv.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             Assert.Equal(expectedNames.Length, dpas.Count);

@@ -102,6 +102,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             Assert.Equal(input.Name, AssertPropertyContainsDataChange(output.Name));
+
+            Assert.NotNull(input.General);
+            Assert.NotNull(input.Oversight);
+            Assert.NotNull(input.ExternalReferences);
+            Assert.NotNull(input.Roles);
+
             AssertGeneralData(input.General, output.General.Value);
             AssertOversight(input.Oversight, AssertPropertyContainsDataChange(output.Oversight));
             AssertReferences(input.ExternalReferences.ToList(), AssertPropertyContainsDataChange(output.ExternalReferences).ToList());
@@ -120,6 +126,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             Assert.Equal(input.Name, AssertPropertyContainsDataChange(output.Name));
+
+            Assert.NotNull(input.General);
+            Assert.NotNull(input.Oversight);
+            Assert.NotNull(input.ExternalReferences);
+            Assert.NotNull(input.Roles);
+
             AssertGeneralData(input.General, output.General.Value);
             AssertOversight(input.Oversight, AssertPropertyContainsDataChange(output.Oversight));
             AssertReferences(input.ExternalReferences.ToList(), AssertPropertyContainsDataChange(output.ExternalReferences).ToList());
@@ -138,6 +150,12 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
             //Assert
             Assert.Equal(input.Name, AssertPropertyContainsDataChange(output.Name));
+
+            Assert.NotNull(input.General);
+            Assert.NotNull(input.Oversight);
+            Assert.NotNull(input.ExternalReferences);
+            Assert.NotNull(input.Roles);
+
             AssertGeneralData(input.General, output.General.Value);
             AssertOversight(input.Oversight, AssertPropertyContainsDataChange(output.Oversight));
             AssertReferences(input.ExternalReferences.ToList(), AssertPropertyContainsDataChange(output.ExternalReferences).ToList());
@@ -595,7 +613,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.EnforceInvalidity, AssertPropertyContainsDataChange(output.EnforceInvalidity));
         }
 
-        private static void AssertNullableSubDataProcessorCollection(IEnumerable<DataProcessorRegistrationSubDataProcessorWriteRequestDTO> inputSubDataProcessors, OptionalValueChange<Maybe<IEnumerable<SubDataProcessorParameter>>> outputSubDataProcessors)
+        private static void AssertNullableSubDataProcessorCollection(IEnumerable<DataProcessorRegistrationSubDataProcessorWriteRequestDTO>? inputSubDataProcessors, OptionalValueChange<Maybe<IEnumerable<SubDataProcessorParameter>>> outputSubDataProcessors)
         {
             if (inputSubDataProcessors == null)
                 AssertPropertyContainsResetDataChange(outputSubDataProcessors);
@@ -618,7 +636,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        private static void AssertNullableCollection(IEnumerable<Guid> fromCollection, OptionalValueChange<Maybe<IEnumerable<Guid>>> actualCollection)
+        private static void AssertNullableCollection(IEnumerable<Guid>? fromCollection, OptionalValueChange<Maybe<IEnumerable<Guid>>> actualCollection)
         {
             if (fromCollection == null)
                 AssertPropertyContainsResetDataChange(actualCollection);
@@ -627,9 +645,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     AssertPropertyContainsDataChange(actualCollection));
         }
 
-        private static void AssertOversightDates(IEnumerable<OversightDateDTO> expected, IEnumerable<UpdatedDataProcessingRegistrationOversightDate> actual)
+        private static void AssertOversightDates(IEnumerable<OversightDateDTO>? expected, IEnumerable<UpdatedDataProcessingRegistrationOversightDate> actual)
         {
-            var orderedExpected = expected.OrderBy(x => x.CompletedAt).ToList();
+            var orderedExpected = expected?.OrderBy(x => x.CompletedAt).ToList() ?? new List<OversightDateDTO>();
             var orderedActual = actual.OrderBy(x => x.CompletedAt).ToList();
 
             Assert.Equal(orderedExpected.Count, orderedActual.Count);
@@ -637,8 +655,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             {
                 Assert.Equal(orderedExpected[i].CompletedAt, orderedActual[i].CompletedAt);
                 Assert.Equal(orderedExpected[i].Remark, orderedActual[i].Remark);
-                Assert.Equal(orderedExpected[i].OversightReportLink.Url, orderedActual[i].OversightReportLink);
-                Assert.Equal(orderedExpected[i].OversightReportLink.Name, orderedActual[i].OversightReportLinkName);
+                Assert.Equal(orderedExpected[i].OversightReportLink?.Url, orderedActual[i].OversightReportLink);
+                Assert.Equal(orderedExpected[i].OversightReportLink?.Name, orderedActual[i].OversightReportLinkName);
                 Assert.Equal(orderedExpected[i].OversightOption?.Uuid, orderedActual[i].OversightOptionUuid);
             }
         }

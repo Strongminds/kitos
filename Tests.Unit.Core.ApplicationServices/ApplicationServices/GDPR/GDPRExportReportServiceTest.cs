@@ -30,7 +30,6 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         private readonly Mock<IAuthorizationContext> _authorizationContext;
         private readonly Mock<IItSystemUsageAttachedOptionRepository> _attachedOptionRepository;
         private readonly Mock<ISensitivePersonalDataTypeRepository> _sensitivePersonalDataTypeRepository;
-        private readonly Mock<IEntityIdentityResolver> _entityIdentityResolver;
 
         private const string datahandlerContractTypeName = "Databehandleraftale";
         private const int datahandlerContractTypeId = 5;
@@ -41,12 +40,12 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             _authorizationContext = new Mock<IAuthorizationContext>();
             _attachedOptionRepository = new Mock<IItSystemUsageAttachedOptionRepository>();
             _sensitivePersonalDataTypeRepository = new Mock<ISensitivePersonalDataTypeRepository>();
-            _entityIdentityResolver = new Mock<IEntityIdentityResolver>();
+            var entityIdentityResolver = new Mock<IEntityIdentityResolver>();
             _sut = new GDPRExportService(_usageRepository.Object,
                 _authorizationContext.Object,
                 _attachedOptionRepository.Object,
                 _sensitivePersonalDataTypeRepository.Object,
-                _entityIdentityResolver.Object);
+                entityIdentityResolver.Object);
         }
 
         [Fact]
@@ -304,7 +303,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
         }
 
-        private ItContract CreateItContract(int? contractTypeId, string contractTypeName)
+        private ItContract CreateItContract(int? contractTypeId, string? contractTypeName)
         {
             if (contractTypeId == null)
             {
@@ -331,7 +330,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
         }
 
-        private ItSystemUsage CreateSystemUsage(ItSystem system, ItContract contract, int orgId)
+        private ItSystemUsage CreateSystemUsage(ItSystem system, ItContract? contract, int orgId)
         {
             var usage = new ItSystemUsage()
             {

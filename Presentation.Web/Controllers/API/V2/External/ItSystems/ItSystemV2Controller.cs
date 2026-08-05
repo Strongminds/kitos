@@ -71,6 +71,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="usedInOrganizationUuid">Filter by UUID of an organization which has taken the it-system into use through an it-system-usage resource</param>
         /// <param name="nameContains">Include only systems with a name that contains the content in the parameter</param>
+        /// <param name="paginationQuery">Pagination query parameters</param>
         /// <param name="orderByProperty">Ordering property</param>
         /// <returns></returns>
         [HttpGet]
@@ -82,15 +83,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         public IActionResult GetItSystems(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             [NonEmptyGuid] Guid? businessTypeUuid = null,
-            string kleNumber = null,
+            string? kleNumber = null,
             [NonEmptyGuid] Guid? kleUuid = null,
             int? numberOfUsers = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
             [NonEmptyGuid] Guid? usedInOrganizationUuid = null,
-            string nameContains = null,
+            string? nameContains = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -226,6 +227,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <param name="rightsHolderUuid">Optional filtering if a user is rights holder in multiple organizations and wishes to scope the request to a single one</param>
         /// <param name="includeDeactivated">If set to true, the response will also include deactivated it-interfaces</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
+        /// <param name="paginationQuery"></param>
         /// <returns></returns>
         [HttpGet]
         [AllowRightsHoldersAccess]
@@ -237,7 +239,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -318,6 +320,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
 		/// NOTE: Only active systems can be modified.
         /// </summary>
         /// <param name="uuid">Specific IT-System UUID</param>
+        /// <param name="request">IT-System data to update</param>
         /// <returns>The updated IT-System</returns>
         [HttpPut]
         [AllowRightsHoldersAccess]
@@ -345,6 +348,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// NOTE: Only active systems can be modified.
         /// </summary>
         /// <param name="uuid">Specific IT-System UUID</param>
+        /// <param name="request">IT-System data to update</param>
         /// <returns>The updated IT-System</returns>
         [HttpPatch]
         [AllowRightsHoldersAccess]
@@ -442,6 +446,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// Creates an external reference for the system
         /// </summary>
         /// <param name="systemUuid"></param>
+        /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("it-systems/{systemUuid}/external-references")]
@@ -466,8 +471,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <summary>
         /// Updates a system external reference
         /// </summary>
-        /// <param name="systemUuid"></param>
-        /// <param name="externalReferenceUuid"></param>
+        /// <param name="systemUuid">UUID of the system</param>
+        /// <param name="externalReferenceUuid">UUID of the external reference</param>
+        /// <param name="dto">External reference data</param>
         /// <returns></returns>
         [HttpPut]
         [Route("it-systems/{systemUuid}/external-references/{externalReferenceUuid}")]

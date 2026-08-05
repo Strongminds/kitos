@@ -17,7 +17,8 @@ namespace Presentation.Web.Swagger
             operation.RequestBody?.Content?.Remove(JsonMergePatch);
 
             // Remove merge-patch from all response content
-            foreach (var response in operation.Responses.Values)
+            var responses = operation.Responses ?? [];
+            foreach (var response in responses.Values)
             {
                 response.Content?.Remove(JsonMergePatch);
             }
@@ -31,7 +32,7 @@ namespace Presentation.Web.Swagger
             // Save the body schema before clearing so it can be re-attached after.
             // Swashbuckle generates the correct schema from the [FromBody] parameter; we must not lose it.
             IOpenApiSchema? existingBodySchema = null;
-            var existingResponseSchemas = operation.Responses
+            var existingResponseSchemas = responses
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp =>
@@ -51,7 +52,7 @@ namespace Presentation.Web.Swagger
                     operation.RequestBody.Content?.Clear();
             }
 
-            foreach (var response in operation.Responses.Values)
+            foreach (var response in responses.Values)
                 response.Content?.Clear();
 
             switch (httpMethod)
@@ -85,7 +86,7 @@ namespace Presentation.Web.Swagger
 
         private static void EnsureResponseContent(OpenApiOperation operation, string mediaType, IDictionary<string, IOpenApiSchema?> existingResponseSchemas)
         {
-            foreach (var response in operation.Responses)
+            foreach (var response in operation.Responses ?? [])
             {
                 if (response.Value.Content == null) continue;
 

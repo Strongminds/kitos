@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.DomainModel.BackgroundJobs;
@@ -17,7 +16,7 @@ namespace Tests.Integration.Presentation.Web.Contract
     [Collection(nameof(SequentialTestGroup))]
     public class ItContractSupplierOverviewReadModelsApiTest : BaseTest, IAsyncLifetime
     {
-        private ShallowOrganizationResponseDTO _organization;
+        private ShallowOrganizationResponseDTO _organization = null!;
 
         public async Task InitializeAsync()
         {
@@ -72,7 +71,7 @@ namespace Tests.Integration.Presentation.Web.Contract
 
             Assert.Equal(2, queryResult.Count);
 
-            var supplierARow = Assert.Single(queryResult.Where(x => x.SupplierUuid == supplierA.Uuid));
+            var supplierARow = Assert.Single(queryResult, x => x.SupplierUuid == supplierA.Uuid);
             Assert.Equal(supplierSharedName, supplierARow.SupplierName);
             Assert.Equal(high.Name, supplierARow.HighestCriticalityName);
             Assert.Equal(3, supplierARow.HighestCriticalityRank);
@@ -80,11 +79,11 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Contains(highContractName2, supplierARow.ContractsAtHighestCriticalityCsv);
             Assert.DoesNotContain(lowContractName, supplierARow.ContractsAtHighestCriticalityCsv);
             Assert.DoesNotContain(mediumContractName, supplierARow.ContractsAtHighestCriticalityCsv);
-            Assert.Equal(2, supplierARow.ContractsAtHighestCriticality.Count());
+            Assert.Equal(2, supplierARow.ContractsAtHighestCriticality.Count);
             Assert.Contains(supplierARow.ContractsAtHighestCriticality, x => x.ContractName == highContractName1);
             Assert.Contains(supplierARow.ContractsAtHighestCriticality, x => x.ContractName == highContractName2);
 
-            var supplierBRow = Assert.Single(queryResult.Where(x => x.SupplierUuid == supplierB.Uuid));
+            var supplierBRow = Assert.Single(queryResult,x => x.SupplierUuid == supplierB.Uuid);
             Assert.Equal(supplierSharedName, supplierBRow.SupplierName);
             Assert.Equal(otherSupplierContractName, supplierBRow.ContractsAtHighestCriticality.Single().ContractName);
             Assert.Equal(medium.Name, supplierBRow.HighestCriticalityName);
@@ -97,7 +96,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             await ReadModelTestTools.WaitForReadModelQueueDepletion();
 
             var updatedResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid)).ToList();
-            var updatedSupplierARow = Assert.Single(updatedResult.Where(x => x.SupplierUuid == supplierA.Uuid));
+            var updatedSupplierARow = Assert.Single(updatedResult, x => x.SupplierUuid == supplierA.Uuid);
 
             Assert.Equal(medium.Name, updatedSupplierARow.HighestCriticalityName);
             Assert.Equal(5, updatedSupplierARow.HighestCriticalityRank);

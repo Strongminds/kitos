@@ -14,17 +14,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
     [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/frequency-relation-types")]
-    public class ItSystemLocalFrequencyTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType>
+    public class ItSystemLocalFrequencyTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType>
+            localFrequencyRelationTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalRelationFrequencyType, SystemRelation,
+            RelationFrequencyType>(localFrequencyRelationTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType> _localFrequencyRelationTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItSystemLocalFrequencyTypesInternalV2Controller(IGenericLocalOptionsService<LocalRelationFrequencyType, SystemRelation, RelationFrequencyType> localFrequencyRelationTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localFrequencyRelationTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

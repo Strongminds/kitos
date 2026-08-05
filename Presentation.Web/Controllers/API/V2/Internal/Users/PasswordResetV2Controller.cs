@@ -52,7 +52,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 var response = MapPasswordResetToResponseDTO(requestResult.Value);
                 return Ok(response);
             }
-            catch (Exception e)
+            catch
             {
                 return UnknownError();
             }
@@ -71,7 +71,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                 _userService.ResetPassword(resetRequest, request.Password);
                 return NoContent();
             }
-            catch (Exception e)
+            catch
             {
                 return UnknownError();
             }

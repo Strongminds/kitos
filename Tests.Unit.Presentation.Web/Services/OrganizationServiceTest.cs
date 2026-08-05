@@ -42,9 +42,6 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IOrgUnitService> _orgUnitServiceMock;
         private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IOrganizationRightsService> _organizationRightsServiceMock;
-        private readonly Mock<IGenericRepository<ContactPerson>> _contactPersonRepository;
-        private readonly Mock<IGenericRepository<DataResponsible>> _dataResponsibleRepository;
-        private readonly Mock<IGenericRepository<DataProtectionAdvisor>> _dataProtectionAdvisorRepository;
 
         public OrganizationServiceTest()
         {
@@ -61,14 +58,14 @@ namespace Tests.Unit.Presentation.Web.Services
             _orgUnitServiceMock = new Mock<IOrgUnitService>();
             _domainEventsMock = new Mock<IDomainEvents>();
             _organizationRightsServiceMock = new Mock<IOrganizationRightsService>();
-            _contactPersonRepository = new Mock<IGenericRepository<ContactPerson>>();
-            _dataResponsibleRepository = new Mock<IGenericRepository<DataResponsible>>();
-            _dataProtectionAdvisorRepository = new Mock<IGenericRepository<DataProtectionAdvisor>>();
+            var contactPersonRepository = new Mock<IGenericRepository<ContactPerson>>();
+            var dataResponsibleRepository = new Mock<IGenericRepository<DataResponsible>>();
+            var dataProtectionAdvisorRepository = new Mock<IGenericRepository<DataProtectionAdvisor>>();
 
             _sut = new OrganizationService(
                 _organizationRepository.Object,
                 _orgRightRepository.Object,
-                _contactPersonRepository.Object,
+                contactPersonRepository.Object,
                 _userRepository.Object,
                 _authorizationContext.Object,
                 _userContext.Object,
@@ -78,8 +75,8 @@ namespace Tests.Unit.Presentation.Web.Services
                 _organizationRightsServiceMock.Object,
                 _orgUnitServiceMock.Object,
                 _domainEventsMock.Object,
-                _dataResponsibleRepository.Object,
-                _dataProtectionAdvisorRepository.Object);
+                dataResponsibleRepository.Object,
+                dataProtectionAdvisorRepository.Object);
         }
 
         [Fact]
@@ -96,8 +93,8 @@ namespace Tests.Unit.Presentation.Web.Services
                     ShowDataProcessing = A<bool>()
                 }
             };
-            _repositoryMock.Setup(_ => _.GetByUuid(orgUuid)).Returns(org);
-            _authorizationContext.Setup(_ => _.AllowReads(org)).Returns(true);
+            _repositoryMock.Setup(organizationRepository => organizationRepository.GetByUuid(orgUuid)).Returns(org);
+            _authorizationContext.Setup(context => context.AllowReads(org)).Returns(true);
 
             var uiRootConfig = _sut.GetUIRootConfig(orgUuid);
 
@@ -123,8 +120,8 @@ namespace Tests.Unit.Presentation.Web.Services
                     ShowDataProcessing = A<bool>()
                 }
             };
-            _repositoryMock.Setup(_ => _.GetByUuid(orgUuid)).Returns(Maybe<Organization>.None);
-            _authorizationContext.Setup(_ => _.AllowReads(org)).Returns(true);
+            _repositoryMock.Setup(repository => repository.GetByUuid(orgUuid)).Returns(Maybe<Organization>.None);
+            _authorizationContext.Setup(context => context.AllowReads(org)).Returns(true);
 
             var uiRootConfig = _sut.GetUIRootConfig(orgUuid);
 
@@ -146,8 +143,8 @@ namespace Tests.Unit.Presentation.Web.Services
                     ShowDataProcessing = A<bool>()
                 }
             };
-            _repositoryMock.Setup(_ => _.GetByUuid(orgUuid)).Returns(org);
-            _authorizationContext.Setup(_ => _.AllowReads(org)).Returns(false);
+            _repositoryMock.Setup(organizationRepository => organizationRepository.GetByUuid(orgUuid)).Returns(org);
+            _authorizationContext.Setup(context => context.AllowReads(org)).Returns(false);
 
             var uiRootConfig = _sut.GetUIRootConfig(orgUuid);
 
@@ -184,7 +181,7 @@ namespace Tests.Unit.Presentation.Web.Services
         [Fact]
         public void CreateNewOrganization_Throws_On_Null_Arg()
         {
-            Assert.Throws<ArgumentNullException>(() => _sut.CreateNewOrganization(default(Organization)));
+            Assert.Throws<ArgumentNullException>(() => _sut.CreateNewOrganization(null));
         }
 
         [Fact]
@@ -261,7 +258,7 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.True(result.Ok);
             Assert.Same(newOrg, result.Value);
             transaction.Verify(x => x.Commit(), Times.Once);
-            Assert.Equal(1, newOrg.OrgUnits.Count);
+            Assert.Single(newOrg.OrgUnits);
             Assert.Equal(newOrg.Name, newOrg.OrgUnits.First().Name);
             Assert.NotNull(newOrg.Config);
             _organizationRepository.Verify(x => x.Save(), Times.Once);
@@ -309,7 +306,7 @@ namespace Tests.Unit.Presentation.Web.Services
             //Arrange
             var organizationId = A<int>();
             var userId = A<int>();
-            ExpectGetOrganizationByKeyReturns(organizationId, null);
+            ExpectGetOrganizationByKeyReturns(organizationId);
 
             //Act
             var result = _sut.RemoveUser(organizationId, userId);
@@ -1084,7 +1081,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _authorizationContext.Setup(x => x.AllowCreate<T>(It.IsAny<int>())).Returns(value);
         }
 
-        private void ExpectGetOrganizationByKeyReturns(int organizationId, Organization organization = null)
+        private void ExpectGetOrganizationByKeyReturns(int organizationId, Organization? organization = null)
         {
             _organizationRepository.Setup(x => x.GetByKey(organizationId)).Returns(organization);
         }

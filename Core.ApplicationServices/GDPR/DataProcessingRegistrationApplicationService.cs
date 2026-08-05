@@ -206,7 +206,7 @@ namespace Core.ApplicationServices.GDPR
                 registration => (registration, _roleAssignmentsService.GetApplicableRoles(registration).ToList()));
         }
 
-        public Result<IEnumerable<User>, OperationError> GetUsersWhichCanBeAssignedToRole(int id, int roleId, string nameEmailQuery, int pageSize)
+        public Result<IEnumerable<User>, OperationError> GetUsersWhichCanBeAssignedToRole(int id, int roleId, string? nameEmailQuery, int pageSize)
         {
             if (pageSize < 1)
                 throw new ArgumentException($"{nameof(pageSize)} must be above 0");
@@ -235,7 +235,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _roleAssignmentsService.RemoveRole(registration, roleId, userId));
         }
 
-        public Result<IEnumerable<ItSystemUsage>, OperationError> GetSystemsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<ItSystemUsage>, OperationError> GetSystemsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -266,7 +266,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _systemAssignmentService.RemoveSystem(registration, systemId));
         }
 
-        public Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -297,7 +297,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _dataProcessingRegistrationDataProcessorAssignmentService.RemoveDataProcessor(registration, organizationId));
         }
 
-        public Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -544,7 +544,7 @@ namespace Core.ApplicationServices.GDPR
             });
         }
 
-        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName, Guid? oversightOptionUuid)
+        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string? oversightRemark, string? oversightReportLink, string? oversightReportLinkName, Guid? oversightOptionUuid)
         {
             return Modify(id, registration => ResolveOversightOptionId(oversightOptionUuid)
                 .Bind(oversightOptionId => registration.AssignOversightDate(oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName, oversightOptionId)));

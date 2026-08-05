@@ -14,8 +14,8 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
 {
     public class OrganizationTest : WithAutoFixture
     {
-        private Organization _sut;
-        private OrganizationUnit _root;
+        private Organization _sut = null!;
+        private OrganizationUnit _root = null!;
 
         protected override void OnFixtureCreated(Fixture fixture)
         {

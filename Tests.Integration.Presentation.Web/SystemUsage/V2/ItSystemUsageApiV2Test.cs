@@ -104,12 +104,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var interface2 = await InterfaceV2Helper.CreateItInterfaceAsync(token, new CreateItInterfaceRequestDTO()
             {
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
             var dtos = new List<SystemRelationWriteRequestDTO>()
@@ -145,12 +149,16 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var interface2 = await InterfaceV2Helper.CreateItInterfaceAsync(token, new CreateItInterfaceRequestDTO()
             {
                 ExposedBySystemUuid = system.Uuid,
                 OrganizationUuid = organization.Uuid,
                 Name = A<string>(),
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
             var systemUsage2 = await CreateSystemAndTakeItIntoUsage(organization.Uuid);
             var dtos = new List<SystemRelationWriteRequestDTO>()
@@ -659,6 +667,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var newUsage = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
 
             //Assert
+            Assert.NotNull(newUsage.OrganizationContext);
             Assert.Equal(organization.Uuid, newUsage.OrganizationContext.Uuid);
             Assert.Equal(organization.Name, newUsage.OrganizationContext.Name);
             Assert.Equal(organization.Cvr, newUsage.OrganizationContext.Cvr);
@@ -2574,7 +2583,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var targetInterface = await CreateItInterfaceAsync(organizationUuid);
             await InterfaceV2Helper.SendPatchExposedBySystemAsync(await GetGlobalToken(), targetInterface.Uuid, systemUuid);
-            return (targetInterface.Uuid, targetInterface.Name);
+            return (targetInterface.Uuid, targetInterface.Name!);
         }
 
         private async Task<(GeneralDataWriteRequestDTO,
@@ -2884,6 +2893,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(expected.DocumentBearing, actual.DocumentBearing);
             Assert.Equal(expected.Notes, actual.Notes);
 
+            Assert.NotNull(expected.JournalPeriods);
             Assert.Equal(expected.JournalPeriods.Count(), actual.JournalPeriods.Count());
             var firstJournalPeriod = expected.JournalPeriods.First();
             var journalPeriodFromServer = Assert.Single(actual.JournalPeriods, x => x.ArchiveId == firstJournalPeriod.ArchiveId);
@@ -3191,6 +3201,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private static void AssertExpectedUsageShallow(ItSystemUsageResponseDTO expectedContent, ItSystemUsageResponseDTO dto)
         {
+            Assert.NotNull(dto.OrganizationContext);
+            Assert.NotNull(expectedContent.OrganizationContext);
             Assert.Equal(expectedContent.OrganizationContext.Uuid, dto.OrganizationContext.Uuid);
             Assert.Equal(expectedContent.OrganizationContext.Name, dto.OrganizationContext.Name);
             Assert.Equal(expectedContent.OrganizationContext.Cvr, dto.OrganizationContext.Cvr);

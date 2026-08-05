@@ -332,7 +332,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         /// <summary>
         /// Maps a complete update of the general data update request. Nulled sections are interpreted as intentionally reset
         /// </summary>
-        /// <param name="generalData"></param>
+        /// <param name="source"></param>
+        /// <param name="enforceFallbackIfNotProvided"></param>
         /// <returns></returns>
         private UpdatedSystemUsageGeneralProperties MapGeneralDataUpdate(GeneralDataUpdateRequestDTO source, bool enforceFallbackIfNotProvided)
         {

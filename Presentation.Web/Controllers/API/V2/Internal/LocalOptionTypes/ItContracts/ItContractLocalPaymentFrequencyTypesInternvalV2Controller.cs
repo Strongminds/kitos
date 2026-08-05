@@ -13,17 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/payment-frequency-types")]
-    public class ItContractLocalPaymentFrequencyTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalPaymentFreqencyType, ItContract, PaymentFreqencyType>
+    public class ItContractLocalPaymentFrequencyTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalPaymentFreqencyType, ItContract, PaymentFreqencyType> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalPaymentFreqencyType, ItContract, PaymentFreqencyType>(
+            localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalPaymentFreqencyType, ItContract, PaymentFreqencyType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalPaymentFrequencyTypesInternalV2Controller(IGenericLocalOptionsService<LocalPaymentFreqencyType, ItContract, PaymentFreqencyType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

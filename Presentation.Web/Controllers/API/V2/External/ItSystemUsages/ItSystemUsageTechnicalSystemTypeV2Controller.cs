@@ -23,6 +23,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns It-System Usage technical system type options which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the technical system type availability</param>
+        /// <param name="pagination">pagination parameters for the query</param>
         /// <returns>A list of available It-System Usage technical system types</returns>
         [HttpGet]
         [Route("")]
@@ -31,7 +32,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }

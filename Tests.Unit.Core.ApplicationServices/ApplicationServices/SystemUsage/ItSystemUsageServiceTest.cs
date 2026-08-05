@@ -1414,13 +1414,13 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             return itSystemUsage;
         }
 
-        private void SetupRepositoryQueryWith(IEnumerable<ItSystemUsage> response = null)
+        private void SetupRepositoryQueryWith(IEnumerable<ItSystemUsage>? response = null)
         {
             response = response ?? new ItSystemUsage[0];
             _usageRepository.Setup(x => x.AsQueryable()).Returns(response.AsQueryable());
         }
 
-        private void ExpectGetUsageByKeyReturns(int id, ItSystemUsage itSystemUsage)
+        private void ExpectGetUsageByKeyReturns(int id, ItSystemUsage? itSystemUsage)
         {
             _usageRepository.Setup(x => x.GetByKey(id)).Returns(itSystemUsage);
         }

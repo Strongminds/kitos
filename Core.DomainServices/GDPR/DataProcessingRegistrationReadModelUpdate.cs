@@ -110,9 +110,9 @@ namespace Core.DomainServices.GDPR
             destination.DataProcessorNamesAsCsv = dataProcessors.Select(x => x.Name).ToStringWithDelimiter();
             destination.DataProcessorCvrsAsCsv = dataProcessors.Select(x => x.Cvr).ToStringWithDelimiter();
 
-            var subDataProcessorOrganizations = source.AssignedSubDataProcessors.Select(x => x.Organization);
-            destination.SubDataProcessorNamesAsCsv = subDataProcessorOrganizations.Select(x => x.Name).ToStringWithDelimiter();
-            destination.SubDataProcessorCvrsAsCsv = subDataProcessorOrganizations.Select(x => x.Cvr).ToStringWithDelimiter();
+            var subDataProcessorOrganizations = source.AssignedSubDataProcessors.Select(x => x.Organization).Where(x => x != null);
+            destination.SubDataProcessorNamesAsCsv = subDataProcessorOrganizations.Select(x => x!.Name).ToStringWithDelimiter();
+            destination.SubDataProcessorCvrsAsCsv = subDataProcessorOrganizations.Select(x => x!.Cvr).ToStringWithDelimiter();
         }
 
         private static void PatchIsAgreementConcluded(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
@@ -124,7 +124,7 @@ namespace Core.DomainServices.GDPR
         private static void PatchSystems(DataProcessingRegistration source, DataProcessingRegistrationReadModel destination)
         {
             destination.SystemNamesAsCsv = source.SystemUsages.Select(usage => usage.MapItSystemName()).ToStringWithDelimiter();
-            destination.SystemUuidsAsCsv = source.SystemUsages.Select(x => x.ItSystem.Uuid.ToString()).ToStringWithDelimiter();
+            destination.SystemUuidsAsCsv = source.SystemUsages.Where(x => x.ItSystem != null).Select(x => x.ItSystem!.Uuid.ToString()).ToStringWithDelimiter();
             destination.SystemValiditiesAsCsv = source.SystemUsages.MapDataProcessingRegistrationSystemUsages();
         }
 

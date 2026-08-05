@@ -84,12 +84,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         private static NamedEntityWithUserFullNameV2DTO MapUnitRightToNamedEntityDtoWithUserFullNameDto(OrganizationUnitRight right)
         {
-            return new NamedEntityWithUserFullNameV2DTO
-            {
-                Id = right.Id,
-                Name = right.Role.Name,
-                UserFullName = right.User.GetFullName()
-            };
+            return new NamedEntityWithUserFullNameV2DTO(
+                right.Id, null, right.Role.Name, right.User.GetFullName());
         }
 
         private static NamedEntityV2DTO MapPaymentToNamedEntityDto(EconomyStream payment)

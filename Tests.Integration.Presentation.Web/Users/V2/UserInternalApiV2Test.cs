@@ -124,7 +124,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var user = await CreateUserAsync(organization.Uuid);
 
             //Act
-            var response = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email);
+            var response = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email!);
 
             //Assert
             Assert.Equal(user.Uuid, response.Uuid);
@@ -205,10 +205,10 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             _ = await UsersV2Helper.DeleteUserAndVerifyStatusCode(organization.Uuid, user.Uuid);
 
             //Assert
-            var userInOrg2AfterDeletion = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email);
+            var userInOrg2AfterDeletion = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email!);
             Assert.Equal(userInOrg2.Uuid, userInOrg2AfterDeletion.Uuid);
 
-            var deletedUser = await UsersV2Helper.GetUserByEmail(organization.Uuid, user.Email);
+            var deletedUser = await UsersV2Helper.GetUserByEmail(organization.Uuid, user.Email!);
             Assert.False(deletedUser.IsPartOfCurrentOrganization);
         }
 
@@ -232,9 +232,9 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             await UsersV2Helper.DeleteUserGlobally(user.Uuid);
 
             //Assert
-            var userOrg1 = await UsersV2Helper.GetUserByEmail(organization.Uuid, user.Email);
+            var userOrg1 = await UsersV2Helper.GetUserByEmail(organization.Uuid, user.Email!);
             Assert.Null(userOrg1);
-            var userOrg2 = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email);
+            var userOrg2 = await UsersV2Helper.GetUserByEmail(organization2.Uuid, user.Email!);
             Assert.Null(userOrg2);
         }
 
@@ -266,7 +266,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             var user = await UsersV2Helper.CreateUser(organization.Uuid, userRequest);
 
             //Act
-            var users = await UsersV2Helper.GetUsers(user.Email);
+            var users = await UsersV2Helper.GetUsers(user.Email!);
 
             //Assert
             var responseUser = Assert.Single(users);
@@ -304,7 +304,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [InlineData(OrganizationRole.GlobalAdmin)]
         public async Task Can_Only_Create_Global_Admin_As_Global_Admin(OrganizationRole role)
         {
-            var (org, user) = await CreateOrgAndUser();
+            var (_, user) = await CreateOrgAndUser();
 
             var response = await UsersV2Helper.AddGlobalAdmin(user.Uuid, role);
 
@@ -318,7 +318,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         [InlineData(OrganizationRole.GlobalAdmin)]
         public async Task Can_Only_Remove_Global_Admin_As_Global_Admin(OrganizationRole role)
         {
-            var (org, user) = await CreateOrgAndUser();
+            var (_, user) = await CreateOrgAndUser();
             await UsersV2Helper.AddGlobalAdmin(user.Uuid);
             var cookie = await HttpApi.GetCookieAsync(role);
 
@@ -472,7 +472,7 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             Assert.Equal(request.Email, response.Email);
             Assert.Equal(request.FirstName, response.FirstName);
             Assert.Equal(request.LastName, response.LastName);
-            Assert.Equal(unitUuid, response.DefaultOrganizationUnit.Uuid);
+            Assert.Equal(unitUuid, response.DefaultOrganizationUnit?.Uuid);
 
             AssertBaseUserRequestMatches(request, response);
         }
@@ -487,10 +487,10 @@ namespace Tests.Integration.Presentation.Web.Users.V2
             AssertUserRoles(request.Roles, response.Roles);
         }
 
-        private void AssertUserRoles(IEnumerable<OrganizationRoleChoice> requestRoles, IEnumerable<OrganizationRoleChoice> responseRoles)
+        private void AssertUserRoles(IEnumerable<OrganizationRoleChoice>? requestRoles, IEnumerable<OrganizationRoleChoice>? responseRoles)
         {
-            var requestRolesList = requestRoles.ToList();
-            var responseRolesList = responseRoles.ToList();
+            var requestRolesList = requestRoles?.ToList() ?? new List<OrganizationRoleChoice>();
+            var responseRolesList = responseRoles?.ToList() ?? new List<OrganizationRoleChoice>();
             Assert.Equal(requestRolesList.Count, responseRolesList.Count);
             foreach (var requestRole in requestRolesList)
             {

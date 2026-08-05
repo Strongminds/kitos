@@ -1817,10 +1817,10 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             //Assert
             Assert.Equal(2, dprs.Count());
-            var result1 = Assert.Single(dprs.Where(x => x.OrganizationId == org1));
+            var result1 = Assert.Single(dprs, x => x.OrganizationId == org1);
             Assert.Same(registration1, result1);
 
-            var result2 = Assert.Single(dprs.Where(x => x.OrganizationId == org2));
+            var result2 = Assert.Single(dprs, x => x.OrganizationId == org2);
             Assert.Same(registration2, result2);
         }
 
@@ -2027,10 +2027,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         /// Helper test to make it easy to cover the "Modify succeeds" case
         /// </summary>
         /// <param name="command"></param>
-        /// <param name="assertAdditionalConditions">Additional assertions besides Result=OK AND transaction committed</param>
         private void Test_Command_Which_ModifiesState_With_Success<TSuccess>(
-            Func<DataProcessingRegistration, Result<TSuccess, OperationError>> command,
-            Action<DataProcessingRegistration, TSuccess> assertAdditionalConditions = null)
+            Func<DataProcessingRegistration, Result<TSuccess, OperationError>> command)
         {
             //Arrange
             var id = A<int>();

@@ -128,6 +128,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// </summary>
         /// <param name="organizationUuid">UUID of the organization</param>
         /// <param name="nameOrEmailQuery">Query by text in name or email</param>
+        /// <param name="emailQuery">Query by exact email</param>
         /// <param name="roleQuery">Query by role assignment</param>
         /// <param name="orderByProperty">Property to order by</param>
         /// <param name="paginationQuery">Optional pagination query</param>
@@ -354,4 +355,3 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         }
     }
 }
-

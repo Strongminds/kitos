@@ -113,14 +113,14 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         protected virtual void RaiseCreatedDomainEvent(T entity)
         {
-            DomainEvents?.Raise(new EntityCreatedEvent<T>(entity));
+            DomainEvents.Raise(new EntityCreatedEvent<T>(entity));
         }
 
         public virtual IActionResult Patch(int key, Delta<T> delta)
         {
             var entity = Repository.GetByKey(key);
 
-            if (delta == null)
+            if ((Delta<T>?)delta == null)
             {
                 return BadRequest();
             }
@@ -180,7 +180,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         protected virtual void RaiseUpdatedDomainEvent(T entity)
         {
-            DomainEvents?.Raise(new EntityUpdatedEvent<T>(entity));
+            DomainEvents.Raise(new EntityUpdatedEvent<T>(entity));
         }
 
         public virtual IActionResult Delete(int key)
@@ -212,7 +212,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
         protected virtual void RaiseDeletedDomainEvent(T entity)
         {
-            DomainEvents?.Raise(new EntityBeingDeletedEvent<T>(entity));
+            DomainEvents.Raise(new EntityBeingDeletedEvent<T>(entity));
         }
 
         protected CrossOrganizationDataReadAccessLevel GetCrossOrganizationReadAccessLevel()
@@ -220,9 +220,9 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return AuthorizationStrategy.GetCrossOrganizationReadAccess();
         }
 
-        protected EntityReadAccessLevel GetEntityTypeReadAccessLevel<T>()
+        protected EntityReadAccessLevel GetEntityTypeReadAccessLevel<TEntity>()
         {
-            return AuthorizationStrategy.GetEntityTypeReadAccessLevel<T>();
+            return AuthorizationStrategy.GetEntityTypeReadAccessLevel<TEntity>();
         }
 
         protected OrganizationDataReadAccessLevel GetOrganizationReadAccessLevel(int organizationId)
@@ -240,9 +240,9 @@ namespace Presentation.Web.Controllers.API.V1.OData
             return CrudAuthorization.AllowModify(entity);
         }
 
-        protected bool AllowCreate<T>(int organizationId, IEntity entity)
+        protected bool AllowCreate<TEntity>(int organizationId, IEntity entity)
         {
-            return CrudAuthorization.AllowCreate<T>(organizationId, entity);
+            return CrudAuthorization.AllowCreate<TEntity>(organizationId, entity);
         }
 
         protected bool AllowDelete(IEntity entity)

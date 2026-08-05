@@ -68,7 +68,7 @@ namespace Tests.Unit.Core.DomainServices.Repositories
             _genericRepository.Setup(x => x.AsQueryable()).Returns(response.AsQueryable());
         }
 
-        private Organization CreateOrganization(string cvr = null)
+        private Organization CreateOrganization(string? cvr = null)
         {
             return new Organization
             {

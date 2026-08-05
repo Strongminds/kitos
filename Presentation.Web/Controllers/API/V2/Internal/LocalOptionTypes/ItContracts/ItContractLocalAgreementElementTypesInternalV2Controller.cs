@@ -13,17 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/agreement-element-types")]
-    public class ItContractLocalAgreementElementTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalAgreementElementType, ItContract, AgreementElementType>
+    public class ItContractLocalAgreementElementTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalAgreementElementType, ItContract, AgreementElementType> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalAgreementElementType, ItContract, AgreementElementType>(
+            localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalAgreementElementType, ItContract, AgreementElementType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalAgreementElementTypesInternalV2Controller(IGenericLocalOptionsService<LocalAgreementElementType, ItContract, AgreementElementType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

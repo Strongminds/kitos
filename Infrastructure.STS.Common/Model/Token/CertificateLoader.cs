@@ -22,7 +22,7 @@ namespace Infrastructure.STS.Common.Model.Token
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"Certificate file not found: '{filePath}'", filePath);
 
-            return new X509Certificate2(filePath, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.EphemeralKeySet);
+            return X509CertificateLoader.LoadPkcs12FromFile(filePath, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.EphemeralKeySet);
         }
 
         /// <summary>

@@ -24,6 +24,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns IT-System usage role types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the IT-System usage role availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available IT-System usage role types</returns>
         [HttpGet]
         [Route("")]
@@ -32,7 +33,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -56,5 +57,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         }
     }
 }
-
 

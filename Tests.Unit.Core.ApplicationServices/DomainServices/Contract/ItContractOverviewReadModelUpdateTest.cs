@@ -394,6 +394,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.Parent);
                 Assert.Equal(itContract.Parent.Id, itContractOverviewReadModel.ParentContractId);
                 Assert.Equal(itContract.Parent.Name, itContractOverviewReadModel.ParentContractName);
                 Assert.Equal(itContract.Parent.Uuid, itContractOverviewReadModel.ParentContractUuid);
@@ -429,6 +430,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.Criticality);
                 Assert.Equal(itContract.Criticality.Id, itContractOverviewReadModel.CriticalityId);
                 Assert.Equal(itContract.Criticality.Uuid, itContractOverviewReadModel.CriticalityUuid);
                 Assert.Equal(itContract.Criticality.Name, itContractOverviewReadModel.CriticalityName);
@@ -462,6 +464,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.ResponsibleOrganizationUnit);
                 Assert.Equal(itContract.ResponsibleOrganizationUnit.Id, itContractOverviewReadModel.ResponsibleOrgUnitId);
                 Assert.Equal(itContract.ResponsibleOrganizationUnit.Name, itContractOverviewReadModel.ResponsibleOrgUnitName);
             }
@@ -496,6 +499,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.ContractType);
                 Assert.Equal(itContract.ContractType.Id, itContractOverviewReadModel.ContractTypeId);
                 Assert.Equal(itContract.ContractType.Uuid, itContractOverviewReadModel.ContractTypeUuid);
                 Assert.Equal(itContract.ContractType.Name, itContractOverviewReadModel.ContractTypeName);
@@ -531,6 +535,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.ContractTemplate);
                 Assert.Equal(itContract.ContractTemplate.Id, itContractOverviewReadModel.ContractTemplateId);
                 Assert.Equal(itContract.ContractTemplate.Uuid, itContractOverviewReadModel.ContractTemplateUuid);
                 Assert.Equal(itContract.ContractTemplate.Name, itContractOverviewReadModel.ContractTemplateName);
@@ -566,6 +571,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.PurchaseForm);
                 Assert.Equal(itContract.PurchaseForm.Id, itContractOverviewReadModel.PurchaseFormId);
                 Assert.Equal(itContract.PurchaseForm.Uuid, itContractOverviewReadModel.PurchaseFormUuid);
                 Assert.Equal(itContract.PurchaseForm.Name, itContractOverviewReadModel.PurchaseFormName);
@@ -601,6 +607,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.ProcurementStrategy);
                 Assert.Equal(itContract.ProcurementStrategy.Id, itContractOverviewReadModel.ProcurementStrategyId);
                 Assert.Equal(itContract.ProcurementStrategy.Uuid, itContractOverviewReadModel.ProcurementStrategyUuid);
                 Assert.Equal(itContract.ProcurementStrategy.Name, itContractOverviewReadModel.ProcurementStrategyName);
@@ -828,6 +835,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.Reference);
                 Assert.Equal(itContract.Reference.ExternalReferenceId, itContractOverviewReadModel.ActiveReferenceExternalReferenceId);
                 Assert.Equal(itContract.Reference.Title, itContractOverviewReadModel.ActiveReferenceTitle);
                 Assert.Equal(itContract.Reference.URL, itContractOverviewReadModel.ActiveReferenceUrl);
@@ -862,6 +870,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.PaymentModel);
                 Assert.Equal(itContract.PaymentModel.Id, itContractOverviewReadModel.PaymentModelId);
                 Assert.Equal(itContract.PaymentModel.Uuid, itContractOverviewReadModel.PaymentModelUuid);
                 Assert.Equal(itContract.PaymentModel.Name, itContractOverviewReadModel.PaymentModelName);
@@ -897,6 +906,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.PaymentFreqency);
                 Assert.Equal(itContract.PaymentFreqency.Id, itContractOverviewReadModel.PaymentFrequencyId);
                 Assert.Equal(itContract.PaymentFreqency.Uuid, itContractOverviewReadModel.PaymentFrequencyUuid);
                 Assert.Equal(itContract.PaymentFreqency.Name, itContractOverviewReadModel.PaymentFrequencyName);
@@ -932,6 +942,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.OptionExtend);
                 Assert.Equal(itContract.OptionExtend.Id, itContractOverviewReadModel.OptionExtendId);
                 Assert.Equal(itContract.OptionExtend.Uuid, itContractOverviewReadModel.OptionExtendUuid);
                 Assert.Equal(itContract.OptionExtend.Name, itContractOverviewReadModel.OptionExtendName);
@@ -968,6 +979,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
             }
             else
             {
+                Assert.NotNull(itContract.TerminationDeadline);
                 Assert.Equal(itContract.TerminationDeadline.Id, itContractOverviewReadModel.TerminationDeadlineId);
                 Assert.Equal(itContract.TerminationDeadline.Uuid, itContractOverviewReadModel.TerminationDeadlineUuid);
                 Assert.Equal(itContract.TerminationDeadline.Name, itContractOverviewReadModel.TerminationDeadlineName);

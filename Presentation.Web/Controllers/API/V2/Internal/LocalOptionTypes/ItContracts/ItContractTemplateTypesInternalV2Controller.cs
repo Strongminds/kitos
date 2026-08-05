@@ -13,17 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/template-types")]
-    public class ItContractLocalTemplateTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalItContractTemplateType, ItContract, ItContractTemplateType>
+    public class ItContractLocalTemplateTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalItContractTemplateType, ItContract, ItContractTemplateType>
+            localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalItContractTemplateType, ItContract,
+            ItContractTemplateType>(localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalItContractTemplateType, ItContract, ItContractTemplateType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalTemplateTypesInternalV2Controller(IGenericLocalOptionsService<LocalItContractTemplateType, ItContract, ItContractTemplateType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

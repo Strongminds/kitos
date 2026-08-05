@@ -109,8 +109,8 @@ namespace Core.ApplicationServices.SystemUsage.Relations
             int fromSystemUsageId,
             int relationId,
             int toSystemUsageId,
-            string changedDescription,
-            string changedReference,
+            string? changedDescription,
+            string? changedReference,
             int? toInterfaceId,
             int? toContractId,
             int? toFrequencyId)

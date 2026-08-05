@@ -62,7 +62,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
             [Required][NonEmptyGuid] Guid organizationUuid,
             Guid? ownerResourceUuid = null,
             bool onlyActive = false,
-            [FromQuery] UnboundedPaginationQuery paginationQuery = null)
+            [FromQuery] UnboundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -210,7 +210,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications
         /// </summary>
         /// <param name="ownerResourceType"></param>
         /// <param name="ownerResourceUuid"></param>
-        /// <param name="request"></param>
+        /// <param name="notificationUuid"></param>
         /// <returns></returns>
         [HttpPatch]
         [Route("{ownerResourceType}/{ownerResourceUuid}/scheduled/deactivate/{notificationUuid}")]

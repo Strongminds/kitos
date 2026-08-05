@@ -13,17 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/price-regulation-types")]
-    public class ItContractLocalPriceRegulationTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalPriceRegulationType, ItContract, PriceRegulationType>
+    public class ItContractLocalPriceRegulationTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalPriceRegulationType, ItContract, PriceRegulationType> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalPriceRegulationType, ItContract, PriceRegulationType>(
+            localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalPriceRegulationType, ItContract, PriceRegulationType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalPriceRegulationTypesInternalV2Controller(IGenericLocalOptionsService<LocalPriceRegulationType, ItContract, PriceRegulationType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

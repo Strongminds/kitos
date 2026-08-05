@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Abstractions.Extensions;
+﻿using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
@@ -22,6 +19,10 @@ using Core.DomainServices.Repositories.Interface;
 using Core.DomainServices.Repositories.System;
 using Core.DomainServices.Time;
 using Infrastructure.Services.DataAccess;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DataRow = Core.DomainModel.ItSystem.DataRow;
 
 namespace Core.ApplicationServices.Interface
@@ -156,7 +157,7 @@ namespace Core.ApplicationServices.Interface
                 );
         }
 
-        public Result<ItInterface, OperationError> CreateNewItInterface(int organizationId, string name, string interfaceId, Guid? rightsHolderProvidedUuid = null, AccessModifier? accessModifier = null)
+        public Result<ItInterface, OperationError> CreateNewItInterface(int organizationId, string? name, string? interfaceId, Guid? rightsHolderProvidedUuid = null, AccessModifier? accessModifier = null)
         {
             if (_authorizationContext.AllowCreate<ItInterface>(organizationId))
             {
@@ -486,18 +487,18 @@ namespace Core.ApplicationServices.Interface
             }).Match(_ => Result<DataRow, OperationError>.Success(deleted!), error => error);
         }
 
-        private static bool ValidateName(string name)
+        private static bool ValidateName([NotNullWhen(true)] string? name)
         {
             return string.IsNullOrWhiteSpace(name) == false &&
                    name.Length <= ItInterface.MaxNameLength;
         }
 
-        private static bool ValidateItInterfaceId(string itInterfaceId)
+        private static bool ValidateItInterfaceId(string? itInterfaceId)
         {
             return itInterfaceId != null;
         }
 
-        private Maybe<OperationError> CheckForUniqueNaming(string name, string itInterfaceId, int orgId)
+        private Maybe<OperationError> CheckForUniqueNaming(string? name, string? itInterfaceId, int orgId)
         {
             if (!ValidateName(name))
                 return new OperationError("Name was not valid", OperationFailure.BadInput);

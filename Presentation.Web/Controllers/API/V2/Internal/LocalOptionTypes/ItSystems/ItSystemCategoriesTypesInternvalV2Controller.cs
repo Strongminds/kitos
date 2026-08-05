@@ -14,17 +14,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
     [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/it-system-categories-types")]
-    public class ItSystemLocalItSystemCategoriesTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalItSystemCategories, ItSystemUsage, ItSystemCategories>
+    public class ItSystemLocalItSystemCategoriesTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalItSystemCategories, ItSystemUsage, ItSystemCategories>
+            localItSystemCategoryTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalItSystemCategories, ItSystemUsage, ItSystemCategories>(
+            localItSystemCategoryTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalItSystemCategories, ItSystemUsage, ItSystemCategories> _localItSystemCategoryTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItSystemLocalItSystemCategoriesTypesInternalV2Controller(IGenericLocalOptionsService<LocalItSystemCategories, ItSystemUsage, ItSystemCategories> localItSystemCategoryTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localItSystemCategoryTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

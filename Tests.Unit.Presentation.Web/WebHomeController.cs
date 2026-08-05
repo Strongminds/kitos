@@ -16,7 +16,7 @@ namespace Tests.Unit.Presentation.Web
         {
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["AppSettings:Environment"]).Returns("dev");
-            _homeController = new OldHomeController(null, null, configMock.Object);
+            _homeController = new OldHomeController(null!, null!, configMock.Object);
             _homeController.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
         }
 

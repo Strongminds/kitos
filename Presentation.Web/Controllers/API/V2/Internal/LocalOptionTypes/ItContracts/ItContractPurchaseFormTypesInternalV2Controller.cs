@@ -13,17 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/purchase-form-types")]
-    public class ItContractLocalPurchaseFormTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalPurchaseFormType, ItContract, PurchaseFormType>
+    public class ItContractLocalPurchaseFormTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalPurchaseFormType, ItContract, PurchaseFormType> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalPurchaseFormType, ItContract, PurchaseFormType>(
+            localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalPurchaseFormType, ItContract, PurchaseFormType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalPurchaseFormTypesInternalV2Controller(IGenericLocalOptionsService<LocalPurchaseFormType, ItContract, PurchaseFormType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

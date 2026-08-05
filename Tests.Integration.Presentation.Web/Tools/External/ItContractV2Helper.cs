@@ -20,7 +20,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
 {
     public static class ItContractV2Helper
     {
-        public static async Task<IEnumerable<ItContractResponseDTO>> GetItContractsAsync(string token, Guid? organizationUuid = null, Guid? systemUuid = null, Guid? systemUsageUuid = null, Guid? dataProcessingRegistrationUuid = null, Guid? responsibleOrgUnitUuid = null, Guid? supplierUuid = null, string nameContent = null, string nameEquals = null, DateTime? changedSinceGtEq = null, int page = 0, int pageSize = 10)
+        public static async Task<IEnumerable<ItContractResponseDTO>> GetItContractsAsync(string token, Guid? organizationUuid = null, Guid? systemUuid = null, Guid? systemUsageUuid = null, Guid? dataProcessingRegistrationUuid = null, Guid? responsibleOrgUnitUuid = null, Guid? supplierUuid = null, string? nameContent = null, string? nameEquals = null, DateTime? changedSinceGtEq = null, int page = 0, int pageSize = 10)
         {
             using var response = await SendGetItContractsAsync(token, organizationUuid, systemUuid, systemUsageUuid, dataProcessingRegistrationUuid, responsibleOrgUnitUuid, supplierUuid, nameContent, nameEquals, changedSinceGtEq, page, pageSize);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -28,7 +28,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await response.ReadResponseBodyAsAsync<IEnumerable<ItContractResponseDTO>>();
         }
 
-        public static async Task<HttpResponseMessage> SendGetItContractsAsync(string token, Guid? organizationUuid = null, Guid? systemUuid = null, Guid? systemUsageUuid = null, Guid? dataProcessingRegistrationUuid = null, Guid? responsibleOrgUnitUuid = null, Guid? supplierUuid = null, string nameContent = null, string nameEquals = null, DateTime? changedSinceGtEq = null, int page = 0, int pageSize = 10)
+        public static async Task<HttpResponseMessage> SendGetItContractsAsync(string token, Guid? organizationUuid = null, Guid? systemUuid = null, Guid? systemUsageUuid = null, Guid? dataProcessingRegistrationUuid = null, Guid? responsibleOrgUnitUuid = null, Guid? supplierUuid = null, string? nameContent = null, string? nameEquals = null, DateTime? changedSinceGtEq = null, int page = 0, int pageSize = 10)
         {
             var queryParameters = new List<KeyValuePair<string, string>>()
             {
@@ -177,11 +177,10 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task DeleteContractAsync(string token, Guid contractUuid)
         {
             using var response = await SendDeleteContractAsync(token, contractUuid);
-            var test = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
-        public static async Task<IEnumerable<IdentityNamePairResponseDTO>> GetAvailableDataProcessingRegistrationsAsync(Guid uuid, string nameQuery, Cookie optionalLogin = null)
+        public static async Task<IEnumerable<IdentityNamePairResponseDTO>> GetAvailableDataProcessingRegistrationsAsync(Guid uuid, string nameQuery, Cookie? optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             using var response = await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"api/v2/internal/it-contracts/{uuid}/data-processing-registrations?nameQuery={nameQuery}"), cookie);
@@ -190,7 +189,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await response.ReadResponseBodyAsAsync<IEnumerable<IdentityNamePairResponseDTO>>();
         }
 
-        public static async Task<IEnumerable<RegistrationHierarchyNodeResponseDTO>> GetHierarchyAsync(Guid uuid, Cookie optionalLogin = null)
+        public static async Task<IEnumerable<RegistrationHierarchyNodeResponseDTO>> GetHierarchyAsync(Guid uuid, Cookie? optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
 
@@ -201,7 +200,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             return await response.ReadResponseBodyAsAsync<IEnumerable<RegistrationHierarchyNodeResponseDTO>>();
         }
 
-        public static async Task<IEnumerable<RegistrationHierarchyNodeResponseDTO>> GetSubHierarchyAsync(Guid uuid, Cookie optionalLogin = null)
+        public static async Task<IEnumerable<RegistrationHierarchyNodeResponseDTO>> GetSubHierarchyAsync(Guid uuid, Cookie? optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
 

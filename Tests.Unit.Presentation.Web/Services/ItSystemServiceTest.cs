@@ -41,12 +41,10 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<ITransactionManager> _transactionManager;
         private readonly Mock<IDatabaseTransaction> _dbTransaction;
         private readonly Mock<IReferenceService> _referenceService;
-        private readonly Mock<ILogger> _logger;
         private readonly Mock<IOrganizationalUserContext> _userContext;
         private readonly Mock<IOrganizationRepository> _organizationRepositoryMock;
         private readonly Mock<IOptionsService<ItSystem, BusinessType>> _businessTypeServiceMock;
         private readonly Mock<ITaskRefRepository> _taskRefRepositoryMock;
-        private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IItInterfaceService> _interfaceServiceMock;
         private readonly Mock<IItSystemUsageService> _systemUsageServiceMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
@@ -59,12 +57,12 @@ namespace Tests.Unit.Presentation.Web.Services
             _transactionManager = new Mock<ITransactionManager>();
             _dbTransaction = new Mock<IDatabaseTransaction>();
             _referenceService = new Mock<IReferenceService>();
-            _logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger>();
             _userContext = new Mock<IOrganizationalUserContext>();
             _organizationRepositoryMock = new Mock<IOrganizationRepository>();
             _businessTypeServiceMock = new Mock<IOptionsService<ItSystem, BusinessType>>();
             _taskRefRepositoryMock = new Mock<ITaskRefRepository>();
-            _domainEventsMock = new Mock<IDomainEvents>();
+            var domainEventsMock = new Mock<IDomainEvents>();
             _interfaceServiceMock = new Mock<IItInterfaceService>();
             _systemUsageServiceMock = new Mock<IItSystemUsageService>();
             _organizationServiceMock = new Mock<IOrganizationService>();
@@ -77,9 +75,9 @@ namespace Tests.Unit.Presentation.Web.Services
                 _taskRefRepositoryMock.Object,
                 _businessTypeServiceMock.Object,
                 _organizationRepositoryMock.Object,
-                _logger.Object,
+                logger.Object,
                 _userContext.Object,
-                _domainEventsMock.Object,
+                domainEventsMock.Object,
                 Mock.Of<IOperationClock>(),
                 _interfaceServiceMock.Object,
                 _systemUsageServiceMock.Object,
@@ -1761,7 +1759,7 @@ namespace Tests.Unit.Presentation.Web.Services
 
         private void ExpectGetSystemByUuidReturns(Guid? uuid, Maybe<ItSystem> value)
         {
-            _systemRepository.Setup(x => x.GetSystem(uuid.Value)).Returns(value);
+            _systemRepository.Setup(x => x.GetSystem(uuid!.Value)).Returns(value);
         }
 
         private void ExpectAllowCreateReturns(int organizationId, bool value)
@@ -1769,7 +1767,7 @@ namespace Tests.Unit.Presentation.Web.Services
             _authorizationContext.Setup(x => x.AllowCreate<ItSystem>(organizationId)).Returns(value);
         }
 
-        private void ExpectGetSystemsReturns(OrganizationDataQueryParameters organizationDataQueryParameters, IEnumerable<ItSystem> itSystems)
+        private void ExpectGetSystemsReturns(OrganizationDataQueryParameters? organizationDataQueryParameters, IEnumerable<ItSystem> itSystems)
         {
             _systemRepository.Setup(x => x.GetSystems(organizationDataQueryParameters))
                 .Returns(new EnumerableQuery<ItSystem>(itSystems));
@@ -1780,7 +1778,7 @@ namespace Tests.Unit.Presentation.Web.Services
             return new() { Id = A<int>(), Uuid = A<Guid>(), Name = A<string>() };
         }
 
-        private ItSystem CreateSystem(int? organizationId = null, AccessModifier accessModifier = AccessModifier.Local, int? belongsToId = null, string name = null)
+        private ItSystem CreateSystem(int? organizationId = null, AccessModifier accessModifier = AccessModifier.Local, int? belongsToId = null, string? name = null)
         {
             ItSystem itSystem = new()
             {
@@ -1835,7 +1833,7 @@ namespace Tests.Unit.Presentation.Web.Services
                 .Returns(value);
         }
 
-        private void ExpectGetSystemReturns(int id, ItSystem system)
+        private void ExpectGetSystemReturns(int id, ItSystem? system)
         {
             _systemRepository.Setup(x => x.GetSystem(id)).Returns(system);
         }
