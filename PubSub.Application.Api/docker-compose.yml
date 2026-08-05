@@ -23,8 +23,6 @@ services:
       RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
       PUBSUB_API_KEY: ${PUBSUB_API_KEY}
       ConnectionStrings__DefaultConnection: ${PUBSUB_CONNECTION_STRING}
-    ports:
-      - "443:443"
     networks:
       - app_network
     extra_hosts:
