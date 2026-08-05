@@ -49,7 +49,7 @@ spec:
         - name: AppSettings__BaseUrl
           value: 'https://eh-kitos-dev.strongminds.dk '
         - name: AppSettings__PubSubBaseUrl
-          value: kitos-pubsub-2.kitos
+          value: http:kitos-pubsub-2.kitos
         - name: AppSettings__SecurityKeyString
           valueFrom:
             secretKeyRef:
