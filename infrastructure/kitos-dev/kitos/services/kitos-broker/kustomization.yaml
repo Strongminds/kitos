@@ -4,3 +4,4 @@ resources:
   - deployment.yaml
   - service.yaml
   - networkpolicy.yaml
+  - storage/kitos-broker-storage-pvc.yaml
