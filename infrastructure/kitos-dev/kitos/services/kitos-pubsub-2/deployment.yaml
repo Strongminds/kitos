@@ -39,15 +39,10 @@ spec:
             secretKeyRef:
               key: RabbitMqPassword
               name: user-secret
-        - name: PUBSUB_CONNECTION_STRING
+        - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
               key: PubSubConnectionString
-              name: user-secret
-        - name: PUBSUB_MIGRATION_CONNECTION_STRING
-          valueFrom:
-            secretKeyRef:
-              key: PubSubMigrationConnectionString
               name: user-secret
         image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-344335f7e96102081a14be2a2e420d108da4cd5e
         name: kitos-pubsub-2
