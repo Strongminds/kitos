@@ -15,12 +15,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
 {
     public static class OrganizationUnitV2Helper
     {
-        public static async Task<IEnumerable<OrganizationUnitResponseDTO>> GetOrganizationUnitsAsync(string token, Guid organizationUuid, int page = 0, int pageSize = 10, string? nameQuery = null)
+        public static async Task<IEnumerable<ExternalOrganizationUnitResponseDTO>> GetOrganizationUnitsAsync(string token, Guid organizationUuid, int page = 0, int pageSize = 10, string? nameQuery = null)
         {
             using var response = await SendGetOrganizationUnitsAsync(token, organizationUuid, page, pageSize, nameQuery);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            return await response.ReadResponseBodyAsAsync<IEnumerable<OrganizationUnitResponseDTO>>();
+            return await response.ReadResponseBodyAsAsync<IEnumerable<ExternalOrganizationUnitResponseDTO>>();
         }
 
         public static async Task<HttpResponseMessage> SendGetOrganizationUnitsAsync(string token, Guid organizationUuid, int page = 0, int pageSize = 10, string? nameQuery = null)
@@ -40,12 +40,12 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         }
 
 
-        public static async Task<OrganizationUnitResponseDTO> GetOrganizationUnitAsync(string token, Guid organizationUuid, Guid organizationUnitId)
+        public static async Task<ExternalOrganizationUnitResponseDTO> GetOrganizationUnitAsync(string token, Guid organizationUuid, Guid organizationUnitId)
         {
             using var response = await SendGetOrganizationUnitAsync(token, organizationUuid, organizationUnitId);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            return await response.ReadResponseBodyAsAsync<OrganizationUnitResponseDTO>();
+            return await response.ReadResponseBodyAsAsync<ExternalOrganizationUnitResponseDTO>();
         }
         public static async Task<HttpResponseMessage> SendGetOrganizationUnitAsync(string token, Guid organizationUuid, Guid organizationUnitId)
         {
