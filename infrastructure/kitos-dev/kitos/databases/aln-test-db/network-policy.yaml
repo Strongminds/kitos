@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: aln-test-db
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: kitos
+    app.kubernetes.io/managed-by: easy-hosting
+    network-policy.kubernetes.io/type: ingress
+    network-policy.kubernetes.io/purpose: allow-namespace
+  name: aln-test-db-allow-from-namespace-deny-egress
+  namespace: kitos
+spec:
+  egress: []
+  ingress:
+  - from:
+    - podSelector: {}
+    ports:
+    - port: 5432
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: aln-test-db
+  policyTypes:
+  - Ingress
+  - Egress
