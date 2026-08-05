@@ -49,7 +49,7 @@ spec:
             secretKeyRef:
               key: PubSubMigrationConnectionString
               name: user-secret
-        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-0da8abbdce3d3eadf7f941de17c8c7bfd1a0ff75
+        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-90c15933ea36c0f21ae6da371bc219b11ce9241a
         name: kitos-pubsub-2
         ports:
         - containerPort: 8080

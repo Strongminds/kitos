@@ -72,6 +72,7 @@ namespace Presentation.Web.Infrastructure.Configuration
             }
 
             app.UseStaticFiles();
+            app.UseMiddleware<NormalizeODataQueryStringMiddleware>();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
