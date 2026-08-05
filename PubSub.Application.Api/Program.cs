@@ -12,21 +12,6 @@ builder.Configuration
     .AddJsonFile($"appsettings.{environment}.json")
     .AddEnvironmentVariables();
 
-builder.WebHost.ConfigureKestrel((context, options) =>
-{
-    if (context.HostingEnvironment.IsDevelopment())
-    {
-        // In development/Docker, listen on HTTP (port configured via ASPNETCORE_URLS)
-        return;
-    }
-
-    options.ListenAnyIP(443, listenOptions =>
-    {
-        var certPassword = Environment.GetEnvironmentVariable(Constants.Config.Certificate.CertPassword);
-        listenOptions.UseHttps(Constants.Config.Certificate.CertFilePath, certPassword);
-    });
-});
-
 builder.Services.AddControllers(options =>
 {
     options.Conventions.Insert(0, new ApiVersioningConvention());
@@ -67,8 +52,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
