@@ -63,6 +63,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <param name="nameContent">Name content filter</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="paginationQuery">Pagination parameters</param>
+        /// <param name="responsibleOrgUnitUuid">Responsible organization unit UUID filter</param>
+        /// <param name="supplierUuid">Supplier UUID filter</param>
+        /// <param name="nameEquals">Exact name filter</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]
@@ -77,11 +81,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
             [NonEmptyGuid] Guid? dataProcessingRegistrationUuid = null,
             [NonEmptyGuid] Guid? responsibleOrgUnitUuid = null,
             [NonEmptyGuid] Guid? supplierUuid = null,
-            string nameContent = null,
-            string nameEquals = null,
+            string? nameContent = null,
+            string? nameEquals = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -331,7 +335,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <summary>
         /// Creates an external reference for the contract
         /// </summary>
-        /// <param name="contractUuid"></param>
+        /// <param name="contractUuid">UUID of the contract</param>
+        /// <param name="dto">External reference data</param>
         /// <returns></returns>
         [HttpPost]
         [Route("{contractUuid}/external-references")]
@@ -358,6 +363,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// </summary>
         /// <param name="contractUuid"></param>
         /// <param name="externalReferenceUuid"></param>
+        /// <param name="dto">External reference data</param>
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]

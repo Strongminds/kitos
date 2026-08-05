@@ -6,7 +6,6 @@ using Core.DomainModel;
 using Core.DomainModel.Organization;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Response.User;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
 {
@@ -46,7 +45,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
                 });
         }
 
-        public UserIsPartOfCurrentOrgResponseDTO ToUserWithIsPartOfCurrentOrgResponseDTO(Guid organizationUuid, User user)
+        public UserIsPartOfCurrentOrgResponseDTO? ToUserWithIsPartOfCurrentOrgResponseDTO(Guid organizationUuid, User? user)
         {
             if (user == null)
             {

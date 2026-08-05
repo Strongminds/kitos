@@ -36,7 +36,7 @@ namespace Tests.Unit.Core.Model
         [InlineData(ArchiveDutyRecommendationTypes.DK, "")]
         [InlineData(ArchiveDutyRecommendationTypes.DD, null)]
         [InlineData(ArchiveDutyRecommendationTypes.DD, "")]
-        public void Can_UpdateRecommendedArchiveDuty(ArchiveDutyRecommendationTypes? recommendation, string comment)
+        public void Can_UpdateRecommendedArchiveDuty(ArchiveDutyRecommendationTypes? recommendation, string? comment)
         {
             //Act
             var error = _sut.UpdateRecommendedArchiveDuty(recommendation, comment);

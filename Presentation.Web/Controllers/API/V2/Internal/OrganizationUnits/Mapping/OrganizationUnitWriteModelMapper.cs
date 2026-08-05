@@ -34,7 +34,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits.Mapping
             var parameters = new OrganizationUnitUpdateParameters
             {
                 Name = rule.MustUpdate(x => x.Name)
-                    ? request.Name.AsChangedValue()
+                    ? request.Name.AsChangedValue()!
                     : OptionalValueChange<string>.None,
                 Origin = rule.MustUpdate(x => x.Origin)
                     ? request.Origin.ToOrganizationUnitOrigin().AsChangedValue()

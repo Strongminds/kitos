@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
-using Core.Abstractions.Extensions;
 using Core.ApplicationServices.Authorization;
 using Core.DomainModel;
 using Core.DomainModel.ItSystem;
@@ -18,10 +17,10 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private int _userId;
         private int _otherOrgTypeOrganizationId;
         private int _municipalityOrganizationId;
-        private OrganizationalUserContext _sut;
+        private OrganizationalUserContext _sut = null!;
         private int _unknownOrganizationId;
-        private IReadOnlyDictionary<int, IEnumerable<OrganizationRole>> _rolesPerOrganizationId;
-        private IReadOnlyDictionary<int, OrganizationCategory> _categoryPerOrganizationId;
+        private IReadOnlyDictionary<int, IEnumerable<OrganizationRole>> _rolesPerOrganizationId = null!;
+        private IReadOnlyDictionary<int, OrganizationCategory> _categoryPerOrganizationId = null!;
 
         protected override void OnFixtureCreated(Fixture fixture)
         {
@@ -30,8 +29,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
         }
 
         private void SetupSut(
-            IReadOnlyDictionary<int, IEnumerable<OrganizationRole>> roleMap = null,
-            IReadOnlyDictionary<int, OrganizationCategory> categoryMap = null,
+            IReadOnlyDictionary<int, IEnumerable<OrganizationRole>>? roleMap = null,
+            IReadOnlyDictionary<int, OrganizationCategory>? categoryMap = null,
             bool isStakeHolder = true, bool isSystemIntegrator = true, bool apiAccess = true)
         {
             _userId = A<int>();

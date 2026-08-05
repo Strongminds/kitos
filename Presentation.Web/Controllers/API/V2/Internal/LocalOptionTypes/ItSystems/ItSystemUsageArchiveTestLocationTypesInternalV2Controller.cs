@@ -14,17 +14,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItSystems
 {
     [Route("api/v2/internal/it-systems/{organizationUuid}/local-option-types/archive-test-location-types")]
-    public class ItSystemLocalArchiveTestLocationTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation>
+    public class ItSystemLocalArchiveTestLocationTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation>
+            localArchiveTestLocationTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation>(
+            localArchiveTestLocationTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation> _localArchiveTestLocationTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItSystemLocalArchiveTestLocationTypesInternalV2Controller(IGenericLocalOptionsService<LocalArchiveTestLocation, ItSystemUsage, ArchiveTestLocation> localArchiveTestLocationTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localArchiveTestLocationTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

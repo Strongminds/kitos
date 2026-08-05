@@ -51,7 +51,7 @@ namespace Presentation.Web.Controllers.API.V1
             return CreateResponse(statusCode, e, e.Message);
         }
 
-        protected new IActionResult Created<T>(T response, Uri? location = null)
+        protected IActionResult Created<T>(T response, Uri? location = null)
         {
             if (location != null)
                 return base.Created(location, response);
@@ -63,7 +63,7 @@ namespace Presentation.Web.Controllers.API.V1
             return CreateResponse(HttpStatusCode.OK);
         }
 
-        protected new IActionResult Ok<T>(T response)
+        protected IActionResult Ok<T>(T response)
         {
             return CreateResponse(HttpStatusCode.OK, response);
         }
@@ -75,12 +75,12 @@ namespace Presentation.Web.Controllers.API.V1
             return CreateResponse(HttpStatusCode.InternalServerError, response);
         }
 
-        protected new virtual IActionResult BadRequest(string message = "")
+        protected virtual IActionResult BadRequest(string message = "")
         {
             return CreateResponse(HttpStatusCode.BadRequest, message);
         }
 
-        protected virtual IActionResult BadRequest(ModelStateDictionary modelState)
+        protected new virtual IActionResult BadRequest(ModelStateDictionary modelState)
         {
             var errorDictionary = modelState.ToDictionary(
                 kvp => kvp.Key,
@@ -99,7 +99,7 @@ namespace Presentation.Web.Controllers.API.V1
             return CreateResponse(HttpStatusCode.Unauthorized, response);
         }
 
-        protected IActionResult NoContent()
+        protected new IActionResult NoContent()
         {
             return base.NoContent();
         }

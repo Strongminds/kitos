@@ -276,7 +276,9 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             {
                 OrganizationUuid = organizationUuid,
                 Name = relationInterfaceName,
-                ExposedBySystemUuid = outGoingRelationSystem.Uuid
+                ExposedBySystemUuid = outGoingRelationSystem.Uuid,
+                Description = A<string>(),
+                UrlReference = A<string>()
             });
 
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), incomingRelationSystemUsage.Uuid, new SystemRelationWriteRequestDTO
@@ -310,6 +312,8 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             Assert.Equal(organizationId, readModel.OrganizationId);
             Assert.Equal(systemUsageVersion, readModel.Version);
             Assert.Equal(systemUsageLocalCallName, readModel.LocalCallName);
+            Assert.NotNull(updatedSystemUsage.CreatedBy);
+            Assert.NotNull(updatedSystemUsage.LastModifiedBy);
             Assert.Equal(updatedSystemUsage.CreatedBy.Name, readModel.ObjectOwnerName);
             Assert.Equal(updatedSystemUsage.LastModifiedBy.Name, readModel.LastChangedByName);
             Assert.Equal(concluded.Date, readModel.Concluded?.Date);
@@ -1125,7 +1129,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             return system;
         }
 
-        private static ExpectedUsersIntervalDTO UserIntervalDtoFromUerCount(UserCount count)
+        private static ExpectedUsersIntervalDTO? UserIntervalDtoFromUerCount(UserCount count)
         {
             int lower = 0;
             int? upper = null;

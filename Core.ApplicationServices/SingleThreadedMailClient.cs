@@ -35,7 +35,7 @@ namespace Core.ApplicationServices
         /// <param name="enableSsl">if set to <c>true</c> [enable SSL].</param>
         /// <param name="userName">Optional SMTP username for authentication.</param>
         /// <param name="password">Optional SMTP password for authentication.</param>
-        public SingleThreadedMailClient(string host, int port, bool enableSsl = false, string userName = null, string password = null)
+        public SingleThreadedMailClient(string host, int port, bool enableSsl = false, string? userName = null, string? password = null)
         {
             _clientFactory = () =>
             {

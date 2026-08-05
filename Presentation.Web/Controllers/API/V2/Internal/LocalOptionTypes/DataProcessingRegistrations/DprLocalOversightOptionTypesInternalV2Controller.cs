@@ -14,17 +14,14 @@ using DataProcessingRegistration = Core.DomainModel.GDPR.DataProcessingRegistrat
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProcessingRegistrations
 {
     [Route("api/v2/internal/data-processing/{organizationUuid}/local-option-types/oversight-option-types")]
-    public class DprLocalOversightOptionTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingOversightOption, DataProcessingRegistration, DataProcessingOversightOption>
+    public class DprLocalOversightOptionTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalDataProcessingOversightOption, DataProcessingRegistration,
+            DataProcessingOversightOption> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingOversightOption, DataProcessingRegistration
+            , DataProcessingOversightOption>(localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalDataProcessingOversightOption, DataProcessingRegistration, DataProcessingOversightOption> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public DprLocalOversightOptionTypesInternalV2Controller(IGenericLocalOptionsService<LocalDataProcessingOversightOption, DataProcessingRegistration, DataProcessingOversightOption> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

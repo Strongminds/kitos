@@ -46,7 +46,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 CreatedBy = systemUsage.ObjectOwner?.MapIdentityNamePairDTO(),
                 CreatedAt = systemUsage.Concluded,
                 LastModified = systemUsage.LastChanged,
-                LastModifiedBy = systemUsage.LastChangedByUser?.MapIdentityNamePairDTO(),
+                LastModifiedBy = systemUsage.LastChangedByUser.MapIdentityNamePairDTO(),
                 General = MapGeneral(systemUsage),
                 Roles = MapRoles(systemUsage),
                 LocalKLEDeviations = MapKle(systemUsage),
@@ -75,7 +75,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     .SensitiveDataLevels
                     .Select(MapDataSensitivity)
                     .Where(level => level.HasValue)
-                    .Select(level => level.Value)
+                    .Select(level => level!.Value)
                     .ToList(),
                 SpecificPersonalData = systemUsage.PersonalDataOptions.Select(x => x.PersonalData.ToGDPRPersonalDataChoice()).ToList(),
                 SensitivePersonData = attachedOptions

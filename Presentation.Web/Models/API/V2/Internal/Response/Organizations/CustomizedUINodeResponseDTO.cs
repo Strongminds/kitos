@@ -8,7 +8,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response.Organizations
     {
         [Required]
         [RegexStringValidator(UIModuleConfigurationConstants.ConfigurationKeyRegex)]
-        public string Key { get; set; }
+        public required string Key { get; set; }
         public bool Enabled { get; set; }
     }
 }

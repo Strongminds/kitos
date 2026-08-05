@@ -75,7 +75,7 @@ namespace Core.ApplicationServices.Organizations.Write
                 .Match(supplier =>
                     {
                         using var transaction = _transactionManager.Begin();
-                        _organizationSupplierRepository.Delete(supplier);
+                        _organizationSupplierRepository.Delete(supplier!);
                         _organizationSupplierRepository.Save();
                         transaction.Commit();
 

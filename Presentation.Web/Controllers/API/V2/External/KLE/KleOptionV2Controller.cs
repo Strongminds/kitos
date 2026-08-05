@@ -36,7 +36,7 @@ namespace Presentation.Web.Controllers.API.V2.External.KLE
         /// <param name="parentKleNumber">Query by parent KLE number (exact match)</param>
         /// <param name="kleNumberPrefix">Query by KLE number prefix</param>
         /// <param name="kleDescriptionContent">Query by KLE description content</param>
-        /// <param name="kleCategory">Query by KLE category</param>
+        /// <param name="pagination">Pagination parameters</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]
@@ -45,10 +45,10 @@ namespace Presentation.Web.Controllers.API.V2.External.KLE
         [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult Get(
             [NonEmptyGuid] Guid? parentKleUuid = null,
-            string parentKleNumber = null,
-            string kleNumberPrefix = null,
-            string kleDescriptionContent = null,
-            [FromQuery] UnboundedPaginationQuery pagination = null)
+            string? parentKleNumber = null,
+            string? kleNumberPrefix = null,
+            string? kleDescriptionContent = null,
+            [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

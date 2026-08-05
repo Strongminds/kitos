@@ -83,6 +83,7 @@ namespace Tests.Integration.Presentation.Web.ItSystem.V2
             DatabaseAccess.MutateDatabase(db =>
             {
                 var dbSystem = db.ItSystems.AsQueryable().ByUuid(inactive);
+                Assert.NotNull(dbSystem);
                 dbSystem.Disabled = true;
                 db.SaveChanges();
             });

@@ -13,16 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/it-contract-roles")]
-    public class ItContractLocalRoleOptionTypesInternalV2Controller : BaseLocalRoleOptionTypesInternalV2Controller<LocalItContractRole, ItContractRight, ItContractRole>
+    public class ItContractLocalRoleOptionTypesInternalV2Controller(
+        IGenericLocalRoleOptionsService<LocalItContractRole, ItContractRight, ItContractRole>
+            localRoleOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRoleOptionTypesInternalV2Controller<LocalItContractRole, ItContractRight, ItContractRole>(
+            localRoleOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalRoleOptionsService<LocalItContractRole, ItContractRight, ItContractRole> _localItContractRoleOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalItContractRole, ItContractRight, ItContractRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRoleOptionResponseDTO>), HttpStatusCode.OK)]

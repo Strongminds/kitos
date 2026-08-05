@@ -13,17 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/criticality-types")]
-    public class ItContractLocalCriticalityTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalCriticalityType, ItContract, CriticalityType>
+    public class ItContractLocalCriticalityTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalCriticalityType, ItContract, CriticalityType> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalCriticalityType, ItContract, CriticalityType>(
+            localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalCriticalityType, ItContract, CriticalityType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalCriticalityTypesInternalV2Controller(IGenericLocalOptionsService<LocalCriticalityType, ItContract, CriticalityType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

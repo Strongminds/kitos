@@ -79,7 +79,7 @@ namespace Presentation.Web.Models.Application.Csv
         private ExpandoObject BuildHeaders()
         {
             var headerExpando = new ExpandoObject();
-            var header = (IDictionary<string, object>)headerExpando;
+            var header = (IDictionary<string, object>)headerExpando!;
 
             foreach (var column in _columns)
             {
@@ -94,7 +94,7 @@ namespace Presentation.Web.Models.Application.Csv
             foreach (var rowInput in _rowInputs)
             {
                 var rowExpando = new ExpandoObject();
-                var row = (IDictionary<string, object>)rowExpando;
+                var row = (IDictionary<string, object>)rowExpando!;
 
                 foreach (var column in _columns)
                 {

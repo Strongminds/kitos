@@ -11,7 +11,7 @@ namespace Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences
         /// Reference title as shown in KITOS UI
         /// </summary>
         [Required(AllowEmptyStrings = false)]
-        public string Title { get; set; }
+        public required string Title { get; set; }
         /// <summary>
         /// Document ID/Case number
         /// </summary>

@@ -276,12 +276,13 @@ namespace Core.DomainServices.Contract
             var itSystemUsages = source
                 .AssociatedSystemUsages
                 .Select(x => x.ItSystemUsage)
-                .GroupBy(x => x.Id)
+                .Where(x => x != null)
+                .GroupBy(x => x!.Id)
                 .Select(x => x.First()) //guard against any duplicates
                 .ToList();
 
             destination.ItSystemUsagesCsv = itSystemUsages.Select(MapSystemName).ToStringWithDelimiter();
-            destination.ItSystemUsagesSystemUuidCsv = itSystemUsages.Select(x => x.ItSystem.Uuid.ToString("D")).ToStringWithDelimiter();
+            destination.ItSystemUsagesSystemUuidCsv = itSystemUsages.Where(x => x.ItSystem != null).Select(x => x.ItSystem!.Uuid.ToString("D")).ToStringWithDelimiter();
 
             var actionContexts = itSystemUsages
                 .ComputeMirrorActions
@@ -331,9 +332,13 @@ namespace Core.DomainServices.Contract
         private static void PatchItSystemUsage(ItContractOverviewReadModelItSystemUsage readModel, ItSystemUsage newItem)
         {
             readModel.ItSystemUsageUuid = newItem.Uuid;
-            readModel.ItSystemUsageName = newItem.ItSystem.Name;
-            readModel.ItSystemUsageSystemUuid = newItem.ItSystem.Uuid.ToString("D");
-            readModel.ItSystemIsDisabled = newItem.ItSystem.Disabled;
+            var itSystem = newItem.ItSystem;
+            if (itSystem != null)
+            {
+                readModel.ItSystemUsageName = itSystem.Name;
+                readModel.ItSystemUsageSystemUuid = itSystem.Uuid.ToString("D");
+                readModel.ItSystemIsDisabled = itSystem.Disabled;
+            }
         }
 
         private void MapDataProcessingAgreements(ItContract source, ItContractOverviewReadModel destination)

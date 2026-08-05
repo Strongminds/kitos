@@ -210,6 +210,8 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             Assert.Equal(expected.Remark, actual.Remark);
             Assert.Equal(expected.CompletedAt, actual.CompletedAt);
+            Assert.NotNull(expected.OversightReportLink);
+            Assert.NotNull(actual.OversightReportLink);
             Assert.Equal(expected.OversightReportLink.Name, actual.OversightReportLink.Name);
             Assert.Equal(expected.OversightReportLink.Url, actual.OversightReportLink.Url);
             Assert.Equal(expected.OversightOptionUuid, actual.OversightOption?.Uuid);

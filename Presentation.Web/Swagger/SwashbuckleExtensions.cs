@@ -6,9 +6,9 @@ namespace Presentation.Web.Swagger
 {
     public static class SwashbuckleExtensions
     {
-        public static IEnumerable<OpenApiOperation> EnumerateOperations(this IOpenApiPathItem pathItem)
+        public static IEnumerable<OpenApiOperation> EnumerateOperations(this IOpenApiPathItem? pathItem)
         {
-            if (pathItem == null) yield break;
+            if (pathItem == null || pathItem.Operations == null) yield break;
             foreach (var operation in pathItem.Operations.Values)
                 yield return operation;
         }
@@ -47,7 +47,7 @@ namespace Presentation.Web.Swagger
 
         private static IEnumerable<IOpenApiSchema> EnumerateSchemaRecursive(this IOpenApiSchema schema, IDictionary<string, IOpenApiSchema> schemaByTypeName, ISet<string> visitedDefinitions, bool isRoot = true)
         {
-            var root = schema?.GetRootSchemaOrNull();
+            var root = schema.GetRootSchemaOrNull();
             var rootId = (root as OpenApiSchemaReference)?.Id;
             if (rootId == null) yield break;
 

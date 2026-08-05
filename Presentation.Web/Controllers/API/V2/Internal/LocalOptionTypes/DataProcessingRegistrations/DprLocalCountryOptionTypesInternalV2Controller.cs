@@ -14,17 +14,14 @@ using DataProcessingRegistration = Core.DomainModel.GDPR.DataProcessingRegistrat
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProcessingRegistrations
 {
     [Route("api/v2/internal/data-processing/{organizationUuid}/local-option-types/country-option-types")]
-    public class DprLocalCountryOptionTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingCountryOption, DataProcessingRegistration, DataProcessingCountryOption>
+    public class DprLocalCountryOptionTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalDataProcessingCountryOption, DataProcessingRegistration,
+            DataProcessingCountryOption> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingCountryOption, DataProcessingRegistration,
+            DataProcessingCountryOption>(localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalDataProcessingCountryOption, DataProcessingRegistration, DataProcessingCountryOption> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public DprLocalCountryOptionTypesInternalV2Controller(IGenericLocalOptionsService<LocalDataProcessingCountryOption, DataProcessingRegistration, DataProcessingCountryOption> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

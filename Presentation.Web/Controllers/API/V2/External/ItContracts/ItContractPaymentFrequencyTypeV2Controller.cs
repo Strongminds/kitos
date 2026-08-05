@@ -22,6 +22,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// Returns It-Contract payment frequency type options 
         /// </summary>
         /// <param name="organizationUuid">organization context for the payment frequency types availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available It-Contract payment frequency types</returns>
         [HttpGet]
         [Route("")]
@@ -29,7 +30,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -53,5 +54,4 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         }
     }
 }
-
 

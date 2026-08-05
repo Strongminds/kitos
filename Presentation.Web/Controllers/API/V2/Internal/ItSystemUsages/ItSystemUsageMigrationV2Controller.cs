@@ -100,7 +100,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         /// </summary>
         /// <param name="organizationUuid"></param>
         /// <param name="numberOfItSystems"></param>
-        /// <param name="getPublicFromOtherOrganizations"></param>
         /// <param name="nameContent"></param>
         /// <returns></returns>
         [HttpGet]
@@ -113,7 +112,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystemUsages
         public IActionResult GetUnusedItSystemsBySearchAndOrganization(
             [Required][NonEmptyGuid] Guid organizationUuid,
             [Required] int numberOfItSystems,
-            string nameContent = null)
+            string? nameContent = null)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -61,6 +61,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="orderByProperty">Ordering property</param>
         /// <param name="nameContains">Filter based on whether the name contains the provided value</param>
         /// <param name="nameEquals">Filter based on whether the name equals the provided value</param>
+        /// <param name="paginationQuery">Pagination query parameters</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]

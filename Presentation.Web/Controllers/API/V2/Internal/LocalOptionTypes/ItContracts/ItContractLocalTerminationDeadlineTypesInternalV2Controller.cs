@@ -13,17 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/termination-deadline-types")]
-    public class ItContractLocalTerminationDeadlineTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalTerminationDeadlineType, ItContract, TerminationDeadlineType>
+    public class ItContractLocalTerminationDeadlineTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalTerminationDeadlineType, ItContract, TerminationDeadlineType>
+            localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalTerminationDeadlineType, ItContract,
+            TerminationDeadlineType>(localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalTerminationDeadlineType, ItContract, TerminationDeadlineType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalTerminationDeadlineTypesInternalV2Controller(IGenericLocalOptionsService<LocalTerminationDeadlineType, ItContract, TerminationDeadlineType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
         [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]

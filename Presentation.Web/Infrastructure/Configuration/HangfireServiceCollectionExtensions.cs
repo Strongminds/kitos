@@ -2,7 +2,6 @@ using Core.Abstractions.Helpers;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.Server;
-using Hangfire.SqlServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -30,7 +29,7 @@ namespace Presentation.Web.Infrastructure.Configuration
 
                 if (DatabaseProviderHelper.IsPostgreSqlProvider(hangfireProvider))
                 {
-                    config.UsePostgreSqlStorage(hangfireConnectionString, new PostgreSqlStorageOptions
+                    config.UsePostgreSqlStorage(o => o.UseNpgsqlConnection(hangfireConnectionString), new PostgreSqlStorageOptions
                     {
                         // Ensure Hangfire creates its own schema/tables in fresh PostgreSQL databases.
                         PrepareSchemaIfNecessary = true,
@@ -94,7 +93,14 @@ namespace Presentation.Web.Infrastructure.Configuration
             using var sqlConnection = new Microsoft.Data.SqlClient.SqlConnection(sqlCsb.ConnectionString);
             sqlConnection.Open();
             using var cmd = sqlConnection.CreateCommand();
-            cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{sqlDatabaseName}') CREATE DATABASE [{sqlDatabaseName}]";
+            cmd.CommandText = """
+                IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = @dbName)
+                BEGIN
+                    DECLARE @sql NVARCHAR(MAX) = N'CREATE DATABASE ' + QUOTENAME(@dbName);
+                    EXEC sp_executesql @sql;
+                END
+                """;
+            cmd.Parameters.AddWithValue("@dbName", sqlDatabaseName);
             cmd.ExecuteNonQuery();
         }
 

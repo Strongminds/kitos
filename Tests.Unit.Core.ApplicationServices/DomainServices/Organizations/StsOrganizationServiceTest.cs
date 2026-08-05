@@ -19,8 +19,8 @@ namespace Tests.Unit.Core.DomainServices.Organizations
     public class StsOrganizationServiceTest : WithAutoFixture
     {
         private const string ValidCvr = "12345678";
-        private StsOrganizationService _sut;
-        private Mock<IStsOrganizationCompanyLookupService> _companyLookupServiceMock;
+        private StsOrganizationService _sut = null!;
+        private Mock<IStsOrganizationCompanyLookupService> _companyLookupServiceMock = null!;
 
         protected override void OnFixtureCreated(Fixture fixture)
         {
@@ -37,7 +37,7 @@ namespace Tests.Unit.Core.DomainServices.Organizations
         [InlineData(" ")] //not provided
         [InlineData("1234567")] // less than 8
         [InlineData("12345678912")] //more than 10
-        public void ValidateConnection_Fails_With_Invalid_Cvr(string cvr)
+        public void ValidateConnection_Fails_With_Invalid_Cvr(string? cvr)
         {
             //Arrange
             var organization = new Organization { Cvr = cvr };

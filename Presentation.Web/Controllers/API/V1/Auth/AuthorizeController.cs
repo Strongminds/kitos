@@ -54,13 +54,16 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         public IActionResult GetLogin()
         {
             var user = _userRepository.GetById(_userContext.UserId);
-            Logger?.Debug($"GetLogin called for {user}");
+            Logger.Debug($"GetLogin called for {user}");
+            if (user == null)
+                return Unauthorized();
+
             var response = Map<User, UserDTO>(user);
             return Ok(response);
         }
 
         [HttpGet("api/authorize/GetOrganizations")]
-        public IActionResult GetOrganizations([FromQuery] string orderBy = null, [FromQuery] bool? orderByAsc = true)
+        public IActionResult GetOrganizations([FromQuery] string? orderBy = null, [FromQuery] bool? orderByAsc = true)
         {
             var orgs = GetOrganizationsWithMembershipAccess();
 
@@ -102,6 +105,10 @@ namespace Presentation.Web.Controllers.API.V1.Auth
         public IActionResult GetOrganization(int orgId)
         {
             var user = _userRepository.GetById(_userContext.UserId);
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
             var org = GetOrganizationsWithMembershipAccess().SingleOrDefault(o => o.Id == orgId);
             if (org == null)
             {

@@ -1,3 +1,7 @@
+// INpgsqlSingletonOptions and NpgsqlAnnotationNames are internal Npgsql EF Core APIs required
+// by the NpgsqlMigrationsSqlGenerator base class and for setting identity strategy annotations.
+// There is no public alternative; suppress EF1001 for this file.
+#pragma warning disable EF1001
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -203,7 +207,7 @@ public sealed class KitosNpgsqlMigrationsSqlGenerator(
         operation.NewName = GetPatchedIndexName(operation.NewName, operation.Table);
     }
 
-    private static string? GetPatchedIndexName(string? indexName, string? tableName)
+    private static string GetPatchedIndexName(string indexName, string? tableName)
     {
         if (string.IsNullOrWhiteSpace(indexName))
         {
@@ -232,7 +236,7 @@ public sealed class KitosNpgsqlMigrationsSqlGenerator(
         return $"{candidate[..prefixLength]}_{hash}";
     }
 
-    private static string? GetPatchedConstraintName(string? constraintName, string? tableName)
+    private static string GetPatchedConstraintName(string constraintName, string? tableName)
     {
         if (string.IsNullOrWhiteSpace(constraintName))
         {

@@ -253,7 +253,7 @@ namespace Core.ApplicationServices.System.Write
 
         private Result<ItSystem, OperationError> UpdateTaskRefs(ItSystem system, IEnumerable<Guid> taskRefUuidsChanges)
         {
-            var taskRefUuids = taskRefUuidsChanges.ToList();
+            var taskRefUuids = taskRefUuidsChanges?.ToList() ?? new List<Guid>();
 
             var taskRefIds = new HashSet<int>();
             foreach (var uuid in taskRefUuids)

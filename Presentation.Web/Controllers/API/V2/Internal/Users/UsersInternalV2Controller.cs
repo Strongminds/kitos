@@ -205,7 +205,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             return new UserCollectionEditPermissionsResponseDTO(permissions.CanEditAny, permissions.EditProperties, permissions.EditContractRole, permissions.EditSystemRole, permissions.EditOrganizationRole, permissions.EditLocalAdminRole);
         }
 
-        private UserRightsChangeParameters MapCopyRightsDTOToParameters(MutateUserRightsRequestDTO request)
+        private static UserRightsChangeParameters MapCopyRightsDTOToParameters(MutateUserRightsRequestDTO request)
         {
             var unitRights = MapUserRightsDTOToRoleIdSet(request.UnitRights);
             var systemRights = MapUserRightsDTOToRoleIdSet(request.SystemRights);
@@ -214,9 +214,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             return new UserRightsChangeParameters(new List<OrganizationRole>(), dprRights, systemRights, contractRights, unitRights);
         }
 
-        private IEnumerable<int> MapUserRightsDTOToRoleIdSet(IEnumerable<MutateRightRequestDTO> rights)
+        private static IEnumerable<int> MapUserRightsDTOToRoleIdSet(IEnumerable<MutateRightRequestDTO>? rights)
         {
-            return rights.Select(right => right.RoleId);
+            return rights?.Select(right => right.RoleId) ?? [];
         }
     }
 }

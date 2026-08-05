@@ -8,7 +8,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Request.Notifications
         /// Subject of the Notification
         /// </summary>
         [Required]
-        public string Subject { get; set; }
+        public required string Subject { get; set; }
 
         public string? Body { get; set; }
 
@@ -21,6 +21,6 @@ namespace Presentation.Web.Models.API.V2.Internal.Request.Notifications
         /// Recipients meant to receive the notification
         /// </summary>
         [Required]
-        public RecipientWriteRequestDTO Receivers { get; set; }
+        public required RecipientWriteRequestDTO Receivers { get; set; }
     }
 }

@@ -11,7 +11,9 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// Name of IT-Interface
         /// </summary>
         [MaxLength(ItInterface.MaxNameLength)]
+#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
         public string? Name { get; set; }
+#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
         /// <summary>
         /// UUID for IT-System exposing this IT-Interface
@@ -34,7 +36,6 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// General description of the IT-Interface
         /// </summary>
         public string? Description { get; set; }
-
         /// <summary>
         /// Url reference for further information
         /// </summary>

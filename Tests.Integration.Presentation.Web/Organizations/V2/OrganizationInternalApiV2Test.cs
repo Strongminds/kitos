@@ -9,6 +9,7 @@ using Core.DomainModel.Organization;
 using Newtonsoft.Json;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Conflicts;
 using Presentation.Web.Models.API.V2.Request.Contract;
 using Presentation.Web.Models.API.V2.Response.Contract;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
@@ -145,6 +146,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataResponseDTO>(content);
+            Assert.NotNull(responseDto);
             Assert.Equal(organization.Uuid, responseDto.Uuid);
             Assert.Equal(organization.Cvr, responseDto.Cvr);
             Assert.Equal(organization.Name, responseDto.Name);
@@ -169,6 +171,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataResponseDTO>(content);
+            Assert.NotNull(responseDto);
             Assert.Equal(patchDto.Cvr, responseDto.Cvr);
             Assert.Equal(organizationToPatch.Uuid, responseDto.Uuid);
         }
@@ -186,6 +189,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataResponseDTO>(content);
+            Assert.NotNull(responseDto);
             Assert.Equal(patchDto.Cvr, responseDto.Cvr);
             Assert.Equal(organizationToPatch.Uuid, responseDto.Uuid);
         }
@@ -210,6 +214,8 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, upsertResponse.StatusCode);
             var upsertContent = await upsertResponse.Content.ReadAsStringAsync();
             var upsertResponseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(upsertContent);
+            Assert.NotNull(upsertResponseDto);
+            Assert.NotNull(upsertResponseDto.ContactPerson);
             Assert.Equal(contactPersonDto.Name, upsertResponseDto.ContactPerson.Name);
             Assert.Equal(organization.Uuid, upsertResponseDto.OrganizationUuid);
 
@@ -218,6 +224,8 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
+            Assert.NotNull(responseDto);
+            Assert.NotNull(responseDto.ContactPerson);
             Assert.Equal(contactPersonDto.Name, responseDto.ContactPerson.Name);
             Assert.Equal(organization.Uuid, responseDto.OrganizationUuid);
         }
@@ -232,6 +240,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
+            Assert.NotNull(responseDto);
             Assert.Equal(organization.Uuid, responseDto.OrganizationUuid);
             var cpDto = responseDto.ContactPerson;
             var drDto = responseDto.DataResponsible;
@@ -274,6 +283,10 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
+            Assert.NotNull(responseDto);
+            Assert.NotNull(responseDto.ContactPerson);
+            Assert.NotNull(responseDto.DataResponsible);
+            Assert.NotNull(responseDto.DataProtectionAdvisor);
             Assert.Equal(contactPersonDto.Name, responseDto.ContactPerson.Name);
             Assert.Equal(organization.Uuid, responseDto.OrganizationUuid);
             Assert.Equal(dataResponsibleDto.Name, responseDto.DataResponsible.Name);
@@ -321,16 +334,20 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
+            Assert.NotNull(responseDto);
             Assert.Equal(organization.Uuid, responseDto.OrganizationUuid);
             switch (roleType)
             {
                 case RoleType.ContactPerson:
+                    Assert.NotNull(responseDto.ContactPerson);
                     Assert.Equal(contactPersonDto.LastName, responseDto.ContactPerson.LastName);
                     break;
                 case RoleType.DataResponsible:
+                    Assert.NotNull(responseDto.DataResponsible);
                     Assert.Equal(dataResponsibleDto.Email, responseDto.DataResponsible.Email);
                     break;
                 case RoleType.DataProtectionAdvisor:
+                    Assert.NotNull(responseDto.DataProtectionAdvisor);
                     Assert.Equal(dataProtectionAdvisorDto.Cvr, responseDto.DataProtectionAdvisor.Cvr);
                     break;
                 default:
@@ -350,6 +367,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(content);
+            Assert.NotNull(responseDto);
             Assert.Equal(organization.Uuid, responseDto.OrganizationUuid);
             await GetMasterDataRolesAndAssertNotNull(organization.Uuid);
         }
@@ -517,6 +535,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var getResponse = await OrganizationInternalV2Helper.GetOrganizationMasterDataRoles(orgUuid);
             var getContent = await getResponse.Content.ReadAsStringAsync();
             var getResponseDto = JsonConvert.DeserializeObject<OrganizationMasterDataRolesResponseDTO>(getContent);
+            Assert.NotNull(getResponseDto);
             Assert.NotNull(getResponseDto.ContactPerson);
             Assert.NotNull(getResponseDto.DataResponsible);
             Assert.NotNull(getResponseDto.DataProtectionAdvisor);
@@ -577,6 +596,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<UIModuleCustomizationResponseDTO>(content);
+            Assert.NotNull(responseDto);
             var expectedNodes = expected.Nodes.ToList();
             var actualNodes = responseDto.Nodes.ToList();
             Assert.Equal(expectedNodes.Count, actualNodes.Count);

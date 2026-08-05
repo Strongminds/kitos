@@ -43,6 +43,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
         /// <param name="nameEquals">Include only systems with a name equal to the parameter</param>
         /// <param name="nameContains">Include only systems with a name that contains the content in the parameter</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="paginationQuery">Pagination query parameters</param>
+        /// <param name="excludeUuid">UUID of the system to exclude from the results</param>
+        /// <param name="excludeChildrenOfUuid">UUID of the parent system whose children should be excluded from the results</param>
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/search")]
@@ -53,15 +56,15 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ItSystems
         public IActionResult GetItSystems(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             [NonEmptyGuid] Guid? businessTypeUuid = null,
-            string kleNumber = null,
+            string? kleNumber = null,
             [NonEmptyGuid] Guid? kleUuid = null,
             int? numberOfUsers = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
-            string nameEquals = null,
-            string nameContains = null,
+            string? nameEquals = null,
+            string? nameContains = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null,
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null,
             [NonEmptyGuid] Guid? excludeUuid = null,
             [NonEmptyGuid] Guid? excludeChildrenOfUuid = null)
         {

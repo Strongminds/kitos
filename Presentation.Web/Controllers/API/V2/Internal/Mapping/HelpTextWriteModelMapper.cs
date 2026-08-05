@@ -3,7 +3,6 @@ using Core.ApplicationServices.Model.HelpTexts;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Model.Request;
 using Presentation.Web.Models.API.V2.Internal.Request;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Mapping;
 
@@ -13,9 +12,9 @@ public class HelpTextWriteModelMapper : WriteModelMapperBase, IHelpTextWriteMode
     {
         return new()
         {
-            Key = dto.Key,
-            Description = dto.Description,
-            Title = dto.Title
+            Key = dto.Key ?? string.Empty,
+            Description = dto.Description ?? string.Empty,
+            Title = dto.Title ?? string.Empty
         };
     }
 

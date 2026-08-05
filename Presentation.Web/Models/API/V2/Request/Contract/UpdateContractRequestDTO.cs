@@ -6,7 +6,7 @@ using Presentation.Web.Models.API.V2.SharedProperties;
 
 namespace Presentation.Web.Models.API.V2.Request.Contract
 {
-    public class UpdateContractRequestDTO : ContractWriteRequestDTO, IHasNameExternal, IHasExternalReference<UpdateExternalReferenceDataWriteRequestDTO>
+    public class UpdateContractRequestDTO : ContractWriteRequestDTO, IHasExternalReference<UpdateExternalReferenceDataWriteRequestDTO>
     {
         /// <summary>
         /// Name of the contract.
@@ -15,7 +15,7 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         ///     - Must be unique within the organization
         /// </summary>
         [MaxLength(ItContractConstraints.MaxNameLength)]
-        public string? Name { get; set; }
+        public string? Name {  get; set; }
         /// <summary>
         /// User defined external references.
         /// The external reference marked as "master reference" will be shown in overviews

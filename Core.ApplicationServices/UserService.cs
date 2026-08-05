@@ -119,7 +119,7 @@ namespace Core.ApplicationServices
             if (sendMailOnCreation)
                 IssueAdvisMail(savedUser, false, orgId);
 
-            return savedUser;
+            return savedUser!;
         }
 
         public void UpdateUser(User user, bool? sendMailOnUpdate, int? scopedToOrganizationId)
@@ -287,7 +287,7 @@ namespace Core.ApplicationServices
             return passwordReset;
         }
 
-        public void ResetPassword(PasswordResetRequest passwordResetRequest, string newPassword)
+        public void ResetPassword(PasswordResetRequest? passwordResetRequest, string newPassword)
         {
             if (passwordResetRequest == null)
                 throw new ArgumentNullException(nameof(passwordResetRequest));

@@ -39,7 +39,8 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <summary>
         /// V2 style OData endpoint suited for consumption by clients using UUID's for entity identity
         /// </summary>
-        /// <param name="organizationUuid"></param>
+        /// <param name="organizationUuid">UUID of the organization</param>
+        /// <param name="responsibleOrganizationUnitUuid">UUID of the responsible organization unit</param>
         /// <returns></returns>
         [EnableQuery(MaxNodeCount = 300)]
         [Route("odata/DataProcessingRegistrationReadModels")]

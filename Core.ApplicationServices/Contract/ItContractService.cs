@@ -224,7 +224,7 @@ namespace Core.ApplicationServices.Contract
             return Modify(id, contract => _contractDataProcessingRegistrationAssignmentService.RemoveDataProcessingRegistration(contract, dataProcessingRegistrationId));
         }
 
-        public Result<IEnumerable<DataProcessingRegistration>, OperationError> GetDataProcessingRegistrationsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<DataProcessingRegistration>, OperationError> GetDataProcessingRegistrationsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 

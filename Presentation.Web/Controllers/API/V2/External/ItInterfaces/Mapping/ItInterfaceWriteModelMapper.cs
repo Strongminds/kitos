@@ -9,7 +9,6 @@ using Core.DomainModel;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
 {
@@ -69,7 +68,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
             var rule = CreateChangeRule<IItInterfaceWritablePropertiesRequestDTO>(enforceFallbackIfNotProvided);
             MapCommon(source, destination, enforceFallbackIfNotProvided);
             destination.ExposingSystemUuid = rule.MustUpdate(x => x.ExposedBySystemUuid) ? source.ExposedBySystemUuid.AsChangedValue() : OptionalValueChange<Guid?>.None;
-            destination.Note = rule.MustUpdate(x => x.Note) ? source.Note.AsChangedValue() : OptionalValueChange<string>.None;
+            destination.Note = rule.MustUpdate(x => x.Note) ? source.Note.AsChangedValue()! : OptionalValueChange<string>.None;
             destination.Deactivated = rule.MustUpdate(x => x.Deactivated) ? source.Deactivated.AsChangedValue() : OptionalValueChange<bool>.None;
             destination.InterfaceTypeUuid = rule.MustUpdate(x => x.ItInterfaceTypeUuid) ? source.ItInterfaceTypeUuid.AsChangedValue() : OptionalValueChange<Guid?>.None;
             destination.Scope = rule.MustUpdate(x => x.Scope) ? source.Scope.FromChoice().AsChangedValue() : OptionalValueChange<AccessModifier>.None;
@@ -98,21 +97,21 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
         private void MapCommon(ICommonItInterfaceRequestPropertiesDTO source, ItInterfaceWriteModelParametersBase destination, bool enforceFallbackIfNotProvided)
         {
             var rule = CreateChangeRule<ICommonItInterfaceRequestPropertiesDTO>(enforceFallbackIfNotProvided);
-            destination.Name = rule.MustUpdate(x => x.Name) ? source.Name.AsChangedValue() : OptionalValueChange<string>.None;
+            destination.Name = rule.MustUpdate(x => x.Name) ? source.Name.AsChangedValue()! : OptionalValueChange<string>.None;
             destination.InterfaceId = rule.MustUpdate(x => x.InterfaceId)
                 ? (source.InterfaceId ?? string.Empty).AsChangedValue()
                 : OptionalValueChange<string>.None;
 
             destination.Description = rule.MustUpdate(x => x.Description)
-                ? source.Description.AsChangedValue()
+                ? source.Description.AsChangedValue()!
                 : OptionalValueChange<string>.None;
 
             destination.Version = rule.MustUpdate(x => x.Version)
-                ? source.Version.AsChangedValue()
+                ? source.Version.AsChangedValue()!
                 : OptionalValueChange<string>.None;
 
             destination.UrlReference = rule.MustUpdate(x => x.UrlReference)
-                ? source.UrlReference.AsChangedValue()
+                ? source.UrlReference.AsChangedValue()!
                 : OptionalValueChange<string>.None;
         }
     }

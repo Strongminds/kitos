@@ -47,7 +47,7 @@ internal static class MigrationTestHelper
         var scriptPath = Path.Combine(repositoryRoot, "DeploymentScripts", "PrepareLocalDatabase.ps1");
         var startInfo = new ProcessStartInfo
         {
-            FileName = "powershell",
+            FileName = OperatingSystem.IsWindows() ? "powershell" : "pwsh",
             WorkingDirectory = repositoryRoot,
             UseShellExecute = false,
             RedirectStandardOutput = true,
