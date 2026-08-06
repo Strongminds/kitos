@@ -967,6 +967,21 @@ WHERE datname = @databaseName
         return sqlServerDataType is "uniqueidentifier";
     }
 
+    private static bool IsAdviceSentsOwnerBackfillTarget(TableRef targetTable, string targetColumnName)
+    {
+        return targetTable.Schema.Equals("dbo", StringComparison.OrdinalIgnoreCase)
+               && targetTable.Name.Equals("AdviceSents", StringComparison.OrdinalIgnoreCase)
+               && (targetColumnName.Equals("ObjectOwnerId", StringComparison.OrdinalIgnoreCase)
+                   || targetColumnName.Equals("LastChangedByUserId", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string GetAdviceSentsOwnerBackfillExpression(string targetColumnName)
+    {
+        var targetColumn = SchemaDiscovery.QuoteSqlServerIdentifier(targetColumnName);
+        const string adviceOwnerLookup = "(SELECT TOP 1 [ObjectOwnerId] FROM [dbo].[Advice] WHERE [dbo].[Advice].[Id] = [dbo].[AdviceSents].[AdviceId])";
+        return $"COALESCE({targetColumn}, {adviceOwnerLookup})";
+    }
+
     private static Dictionary<TableRef, HashSet<string>> GetSelfReferenceColumnsByTargetTable(
         IReadOnlyCollection<PostgresForeignKeyDefinition> targetForeignKeys,
         IReadOnlyCollection<TableMatch> matches)
@@ -1101,6 +1116,12 @@ WHERE datname = @databaseName
                             appliedCompatibilityAliases.Add($"{targetColumn.Name}: Guid.Empty replaced with NEWID() (EF6 null-sentinel)");
                         }
                     }
+                }
+
+                if (IsAdviceSentsOwnerBackfillTarget(targetTable, targetColumn.Name))
+                {
+                    selectExpression = GetAdviceSentsOwnerBackfillExpression(targetColumn.Name);
+                    appliedCompatibilityAliases.Add($"{targetColumn.Name}: null values backfilled from Advice.ObjectOwnerId");
                 }
 
                 sourceSelectExpressions.Add(selectExpression);

@@ -36,6 +36,7 @@ namespace Tests.Unit.Core.ApplicationServices
         private readonly Mock<IUserNotificationService> _userNotificationService;
         private readonly Mock<IAdviceRootResolution> _adviceRootResolution;
         private readonly Mock<IOperationClock> _operationClockMock;
+        private readonly Mock<IGenericRepository<AdviceSent>> _adviceSentRepositoryMock;
 
         public AdviceServiceTest()
         {
@@ -43,6 +44,7 @@ namespace Tests.Unit.Core.ApplicationServices
             _operationClockMock.Setup(x => x.Now).Returns(DateTime.Now);
             _mailClientMock = new Mock<IMailClient>();
             _adviceRepositoryMock = new Mock<IGenericRepository<Advice>>();
+            _adviceSentRepositoryMock = new Mock<IGenericRepository<AdviceSent>>();
             _transactionManager = new Mock<ITransactionManager>();
             _hangfireApiMock = new Mock<IHangfireApi>();
             _userNotificationService = new Mock<IUserNotificationService>();
@@ -50,7 +52,7 @@ namespace Tests.Unit.Core.ApplicationServices
             _sut = new AdviceService(
                 _mailClientMock.Object,
                 _adviceRepositoryMock.Object,
-                Mock.Of<IGenericRepository<AdviceSent>>(),
+                _adviceSentRepositoryMock.Object,
                 Mock.Of<IGenericRepository<ItContractRight>>(),
                 Mock.Of<IGenericRepository<ItSystemRight>>(),
                 Mock.Of<IGenericRepository<DataProcessingRegistrationRight>>(),
@@ -305,6 +307,34 @@ namespace Tests.Unit.Core.ApplicationServices
             //Assert
             Assert.True(result);
             _mailClientMock.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Never);
+        }
+
+        [Fact]
+        public void SendAdvice_SavesAdviceSentWithAdviceOwner()
+        {
+            //Arrange
+            var ownerId = A<int>();
+            var immediateAdvice = new Advice
+            {
+                Id = A<int>(),
+                Subject = A<string>(),
+                AdviceType = AdviceType.Immediate,
+                Reciepients = CreateDefaultReceivers(),
+                IsActive = true,
+                ObjectOwnerId = ownerId
+            };
+            SetupAdviceRepository(immediateAdvice);
+            SetupTransactionManager();
+
+            //Act
+            var result = _sut.SendAdvice(immediateAdvice.Id);
+
+            //Assert
+            Assert.True(result);
+            _adviceSentRepositoryMock.Verify(x => x.Insert(It.Is<AdviceSent>(sent =>
+                sent.AdviceId == immediateAdvice.Id &&
+                sent.ObjectOwnerId == ownerId &&
+                sent.LastChangedByUserId == ownerId)), Times.Once);
         }
 
         private void SetupAdviceRepository(Advice advice)
