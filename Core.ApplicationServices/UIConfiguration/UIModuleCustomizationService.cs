@@ -110,7 +110,7 @@ namespace Core.ApplicationServices.UIConfiguration
 
         private static IEnumerable<CustomizedUINode> MapNodeParametersToCustomizedUiNodes(IEnumerable<CustomUINodeParameters> parameters)
         {
-            return parameters.Select(x => new CustomizedUINode { Key = x.Key, Enabled = x.Enabled }).ToList();
+            return parameters.Select(x => new CustomizedUINode { Key = x.Key, Enabled = x.Enabled, Recommended = x.Recommended }).ToList();
         }
 
         private static IEnumerable<CustomizedUINode> GetNodesByOrganizationAndModule(Organization organization, string module)
