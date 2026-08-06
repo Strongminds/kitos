@@ -46,7 +46,7 @@ spec:
               name: user-secret
         - name: ASPNETCORE_ENVIRONMENT
           value: Staging
-        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-d5f15cab61c7be939ea6c7bef7d297f0ca7e02bd
+        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-ec606898958d280325ecbb5e9c120f3d7b9ac44c
         name: kitos-pubsub-2
         ports:
         - containerPort: 8080
