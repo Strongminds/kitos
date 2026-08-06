@@ -13,7 +13,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<bool>(
                 name: "Recommended",
                 table: "CustomizedUiNodes",
-                type: "bit",
                 nullable: false,
                 defaultValue: false);
         }
