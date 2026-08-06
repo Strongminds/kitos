@@ -24,12 +24,12 @@ spec:
     spec:
       containers:
       - env:
-        - name: RABBIT_MQ_USER
+        - name: RABBITMQ_DEFAULT_USER
           valueFrom:
             secretKeyRef:
               key: RabbitMqUsername
               name: user-secret
-        - name: RABBIT_MQ_PASSWORD
+        - name: RABBITMQ_DEFAULT_PASS
           valueFrom:
             secretKeyRef:
               key: RabbitMqPassword
