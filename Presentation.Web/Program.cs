@@ -7,8 +7,8 @@ using Presentation.Web;
 using Presentation.Web.Infrastructure.Configuration;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Models.Application.RuntimeEnv;
-using Serilog;
 using System;
+using System.IO;
 
 // Must be set before any Npgsql type is loaded (including Hangfire's PostgreSQL storage).
 // Allows writing DateTime with Kind=UTC to 'timestamp without time zone' columns.
@@ -28,17 +28,7 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
-var configuredLogPath = builder.Configuration["AppSettings:LogFilePath"];
-builder.Configuration["Serilog:WriteTo:0:Args:path"] = string.IsNullOrWhiteSpace(configuredLogPath)
-    ? System.IO.Path.Combine(System.IO.Path.GetTempPath(), "kitos", "Kitos-.txt")
-    : configuredLogPath;
-
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
+builder.AddKitosSerilog();
 
 var configuration = builder.Configuration;
 var services = builder.Services;
