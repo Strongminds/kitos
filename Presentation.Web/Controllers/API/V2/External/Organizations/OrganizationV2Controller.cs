@@ -197,10 +197,10 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <param name="nameQuery">Query by text in name</param>
         /// <param name="orderByProperty">Ordering property</param>
         /// <param name="paginationQuery">Optional pagination query</param>
-        /// <returns>A list og organization unit representations</returns>
+        /// <returns>A list of organization unit representations</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units")]
-        [ApiResponse(typeof(IEnumerable<OrganizationUnitResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(typeof(IEnumerable<ExternalOrganizationUnitResponseDTO>), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.NotFound)]
@@ -237,7 +237,7 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization unit</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units/{organizationUnitId}")]
-        [ApiResponse(typeof(OrganizationUnitResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(typeof(ExternalOrganizationUnitResponseDTO), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.NotFound)]
         [ApiResponse(HttpStatusCode.Forbidden)]
@@ -274,16 +274,17 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
                 .Transform(Ok);
         }
 
-        private static OrganizationUnitResponseDTO ToOrganizationUnitResponseDto(OrganizationUnit unit)
+        private static ExternalOrganizationUnitResponseDTO ToOrganizationUnitResponseDto(OrganizationUnit unit)
         {
-            return new OrganizationUnitResponseDTO
+            return new ExternalOrganizationUnitResponseDTO
             {
                 Uuid = unit.Uuid,
                 Name = unit.Name,
                 UnitId = unit.LocalId,
                 Ean = unit.Ean,
                 ParentOrganizationUnit = unit.Parent?.Transform(parent => parent?.MapIdentityNamePairDTO()),
-                Origin = unit.Origin.ToOrganizationUnitOriginChoice()
+                Origin = unit.Origin.ToOrganizationUnitOriginChoice(),
+                ExternalOriginUuid = unit.ExternalOriginUuid
             };
         }
 
