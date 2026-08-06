@@ -8,7 +8,6 @@ using Presentation.Web.Infrastructure.Configuration;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Models.Application.RuntimeEnv;
 using System;
-using System.IO;
 
 // Must be set before any Npgsql type is loaded (including Hangfire's PostgreSQL storage).
 // Allows writing DateTime with Kind=UTC to 'timestamp without time zone' columns.
