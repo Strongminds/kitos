@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - env:
-        - name: Serilog__LogFilePath
+        - name: AppSettings__LogFilePath
           valueFrom:
             secretKeyRef:
               key: LogFilePath
