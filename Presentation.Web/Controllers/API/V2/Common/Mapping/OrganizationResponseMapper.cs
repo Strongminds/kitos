@@ -133,7 +133,8 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
             return new CustomizedUINodeResponseDTO
             {
                 Key = node.Key,
-                Enabled = node.Enabled
+                Enabled = node.Enabled,
+                Recommended = node.Recommended
             };
         }
     }

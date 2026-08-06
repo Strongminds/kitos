@@ -606,6 +606,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
                 Assert.NotNull(actual);
                 Assert.Equal(expectedNode.Enabled, actual.Enabled);
+                Assert.Equal(expectedNode.Recommended, actual.Recommended);
             }
         }
 
@@ -633,6 +634,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
                 {
                     Key = GenerateKey(),
                     Enabled = A<bool>(),
+                    Recommended = A<bool>(),
                 });
             }
             return nodes;

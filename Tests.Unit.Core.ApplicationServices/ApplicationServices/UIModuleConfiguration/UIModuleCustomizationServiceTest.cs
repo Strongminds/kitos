@@ -266,7 +266,7 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
             for (var i = 0; i < numberOfElements; i++)
             {
                 key = string.IsNullOrEmpty(key) ? GenerateKey() : key;
-                nodes.Add(new CustomizedUINode{Key = key, Enabled = isEnabled});
+                nodes.Add(new CustomizedUINode{Key = key, Enabled = isEnabled, Recommended = isEnabled});
             }
 
             return nodes;
