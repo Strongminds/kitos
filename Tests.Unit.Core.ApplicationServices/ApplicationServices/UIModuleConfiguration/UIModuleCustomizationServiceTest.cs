@@ -17,7 +17,7 @@ using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
-namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
+namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
 {
     public class UIModuleCustomizationServiceTest : WithAutoFixture
     {
@@ -25,7 +25,6 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
         private readonly Mock<IOrganizationalUserContext> _userContextMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IEntityIdentityResolver> _identityResolverMock;
-        private readonly Mock<IUIModuleCustomizationRepository> _organizationRepositoryMock;
 
         private readonly UIModuleCustomizationService _sut;
 
@@ -35,14 +34,14 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
             _userContextMock = new Mock<IOrganizationalUserContext>();
             _organizationServiceMock = new Mock<IOrganizationService>();
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
-            _organizationRepositoryMock = new Mock<IUIModuleCustomizationRepository>();
+            var organizationRepositoryMock = new Mock<IUIModuleCustomizationRepository>();
 
             _sut = new UIModuleCustomizationService(
                 _transactionManagerMock.Object,
                 _userContextMock.Object,
                 _organizationServiceMock.Object,
                 _identityResolverMock.Object,
-                _organizationRepositoryMock.Object);
+                organizationRepositoryMock.Object);
         }
 
         [Theory]
@@ -121,6 +120,7 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
             Assert.NotNull(defaultNode);
             Assert.Equal(resultNode.Key, defaultNode.Key);
             Assert.Equal(resultNode.Enabled, defaultNode.Enabled);
+            Assert.Equal(resultNode.Recommended, defaultNode.Recommended);
         }
 
         [Fact]
@@ -227,7 +227,7 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
             Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
         }
 
-        private (Organization, global::Core.DomainModel.UIConfiguration.UIModuleCustomization) SetupGetModuleCustomization()
+        private (Organization, UIModuleCustomization) SetupGetModuleCustomization()
         {
             var organizationId = A<int>();
             var orgUuid = new Guid();
@@ -239,7 +239,7 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
             {
                 Id = organizationId,
                 Uuid = orgUuid,
-                UIModuleCustomizations = new List<global::Core.DomainModel.UIConfiguration.UIModuleCustomization>()
+                UIModuleCustomizations = new List<UIModuleCustomization>()
                 {
                     moduleObject1,
                     moduleObject2
@@ -250,9 +250,9 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
             return (organization, moduleObject1);
         }
 
-        private global::Core.DomainModel.UIConfiguration.UIModuleCustomization PrepareTestUiModuleCustomization(int orgId = 0, string module = "", int numberOfElements = 1, string key = "", bool isEnabled = false)
+        private UIModuleCustomization PrepareTestUiModuleCustomization(int orgId = 0, string module = "", int numberOfElements = 1, string key = "", bool isEnabled = false)
         {
-            return new global::Core.DomainModel.UIConfiguration.UIModuleCustomization
+            return new UIModuleCustomization
             {
                 OrganizationId = orgId,
                 Module = module,
@@ -272,18 +272,18 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleCustomization
             return nodes;
         }
         
-        private UIModuleCustomizationParameters PrepareTestUiModuleCustomizationParameters(int orgId = 0, string module = "", int numberOfElements = 1, string key = "", bool isEnabled = false)
+        private UIModuleCustomizationParameters PrepareTestUiModuleCustomizationParameters(int orgId = 0, string module = "", int numberOfElements = 1, string key = "", bool isEnabled = false, bool isRecommended = false)
         {
-            return new UIModuleCustomizationParameters(orgId, module, PrepareTestNodesParameters(numberOfElements, key, isEnabled));
+            return new UIModuleCustomizationParameters(orgId, module, PrepareTestNodesParameters(numberOfElements, key, isEnabled, isRecommended));
         }
 
-        private List<CustomUINodeParameters> PrepareTestNodesParameters(int numberOfElements = 1, string key = "", bool isEnabled = false)
+        private List<CustomUINodeParameters> PrepareTestNodesParameters(int numberOfElements = 1, string key = "", bool isEnabled = false, bool isRecommended = false)
         {
             var nodes = new List<CustomUINodeParameters>();
             for (var i = 0; i < numberOfElements; i++)
             {
                 key = string.IsNullOrEmpty(key) ? GenerateKey() : key;
-                nodes.Add(new CustomUINodeParameters(key, isEnabled));
+                nodes.Add(new CustomUINodeParameters(key, isEnabled, isRecommended));
             }
 
             return nodes;

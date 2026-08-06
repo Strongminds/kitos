@@ -142,7 +142,7 @@ public class OrganizationWriteModelMapper : WriteModelMapperBase, IOrganizationW
 
     private CustomUINodeParameters ToCustomUINodeParameters(CustomizedUINodeRequestDTO node)
     {
-        return new CustomUINodeParameters(node.Key, node.Enabled);
+        return new CustomUINodeParameters(node.Key, node.Enabled, node.Recommended);
     }
 
     private static Maybe<ContactPersonUpdateParameters> ToContactPersonUpdateParameters(ContactPersonRequestDTO? dto)
