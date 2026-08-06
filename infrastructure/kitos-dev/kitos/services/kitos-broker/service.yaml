@@ -7,7 +7,7 @@ spec:
   ports:
   - appProtocol: http
     name: http
-    port: 5672
+    port: 80
     protocol: TCP
     targetPort: 5672
   selector:
