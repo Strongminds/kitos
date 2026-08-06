@@ -32,7 +32,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<PubSubContext>();
-    var allowAutoMigrate = app.Environment.IsDevelopment() || IsAutoMigrateEnabled();
+    var allowAutoMigrate = IsAutoMigrateEnabled(app.Environment);
 
     var pendingMigrations = context.Database.GetPendingMigrations().ToArray();
     if (pendingMigrations.Any())
@@ -60,8 +60,19 @@ app.MapControllers();
 
 await app.RunAsync();
 
-static bool IsAutoMigrateEnabled()
+
+static bool IsLocal(IWebHostEnvironment environment)
 {
+    return environment.IsEnvironment(Constants.Config.Environment.Local);
+}
+
+static bool IsAutoMigrateEnabled(IWebHostEnvironment environment)
+{
+    if (environment.IsDevelopment() || IsLocal(environment))
+    {
+        return true;
+    }
+
     var value = Environment.GetEnvironmentVariable(Constants.Config.Database.AutoMigrate);
     if (string.IsNullOrWhiteSpace(value))
     {
