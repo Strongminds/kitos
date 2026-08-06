@@ -16,6 +16,7 @@
             {
                 public const string CurrentEnvironment = "ASPNETCORE_ENVIRONMENT";
                 public const string Production = "Production";
+                public const string Local = "Local";
             }
 
             public static class MessageBus
