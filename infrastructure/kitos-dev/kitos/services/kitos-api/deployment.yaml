@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - env:
-        - name: Serilog__LogFilePath
+        - name: AppSettings__LogFilePath
           valueFrom:
             secretKeyRef:
               key: LogFilePath
@@ -49,7 +49,10 @@ spec:
         - name: AppSettings__BaseUrl
           value: 'https://eh-kitos-dev.strongminds.dk '
         - name: AppSettings__PubSubBaseUrl
-          value: http://kitos-pubsub-2:8080
+          valueFrom:
+            secretKeyRef:
+              key: PubSubBaseUrl
+              name: user-secret
         - name: AppSettings__SecurityKeyString
           valueFrom:
             secretKeyRef:
@@ -70,7 +73,7 @@ spec:
             secretKeyRef:
               key: SmtpPassword
               name: user-secret
-        image: ghcr.io/strongminds/kitos-kitos-api:sha-d5f15cab61c7be939ea6c7bef7d297f0ca7e02bd
+        image: ghcr.io/strongminds/kitos-kitos-api:sha-ec606898958d280325ecbb5e9c120f3d7b9ac44c
         name: kitos-api
         ports:
         - containerPort: 8080
