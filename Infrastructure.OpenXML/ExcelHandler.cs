@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Core.ApplicationServices;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -250,6 +251,59 @@ namespace Infrastructure.OpenXML
             }
             spreadsheetDocument.Dispose();
 
+            return stream;
+        }
+
+        public Stream Create(DataSet data, Stream stream)
+        {
+            using var document = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.Workbook, true);
+
+            var workbookPart = document.AddWorkbookPart();
+            workbookPart.Workbook = new Workbook();
+            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+
+            uint sheetId = 1;
+            foreach (DataTable table in data.Tables)
+            {
+                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                var sheetData = new SheetData();
+                worksheetPart.Worksheet = new Worksheet(sheetData);
+
+                sheets.AppendChild(new Sheet
+                {
+                    Id = workbookPart.GetIdOfPart(worksheetPart),
+                    SheetId = sheetId++,
+                    Name = table.TableName
+                });
+
+                var headerRow = new Row();
+                foreach (DataColumn column in table.Columns)
+                {
+                    headerRow.AppendChild(new Cell
+                    {
+                        CellValue = new CellValue(column.ColumnName),
+                        DataType = CellValues.String
+                    });
+                }
+                sheetData.AppendChild(headerRow);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    var newRow = new Row();
+                    foreach (DataColumn column in table.Columns)
+                    {
+                        var value = row[column]?.ToString() ?? "";
+                        newRow.AppendChild(new Cell
+                        {
+                            CellValue = new CellValue(value),
+                            DataType = CellValues.String
+                        });
+                    }
+                    sheetData.AppendChild(newRow);
+                }
+            }
+
+            workbookPart.Workbook.Save();
             return stream;
         }
     }

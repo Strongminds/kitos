@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Authorization.Permissions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Presentation.Web.Helpers;
@@ -17,13 +16,13 @@ namespace Presentation.Web.Controllers.API.V1
 {
     [InternalApi]
     [Route("api/local-admin/excel")]
-    public class ExcelController : BaseApiController
+    public class LocalAdminExcelController : BaseApiController
     {
         private readonly IExcelService _excelService;
         private readonly IAuthorizationContext _authorizationContext;
         private readonly IWebHostEnvironment _env;
 
-        public ExcelController(IExcelService excelService, IAuthorizationContext authorizationContext, IWebHostEnvironment env)
+        public LocalAdminExcelController(IExcelService excelService, IAuthorizationContext authorizationContext, IWebHostEnvironment env)
         {
             _excelService = excelService;
             _authorizationContext = authorizationContext;
