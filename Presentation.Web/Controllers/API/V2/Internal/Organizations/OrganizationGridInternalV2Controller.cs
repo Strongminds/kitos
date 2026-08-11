@@ -35,6 +35,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("{overviewType}/save")]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(typeof(OrganizationGridConfigurationResponseDTO), HttpStatusCode.OK)]
         public IActionResult SaveGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType, [FromBody] OrganizationGridConfigurationRequestDTO config)
         {
             if (!ModelState.IsValid)
@@ -48,6 +53,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{overviewType}/delete")]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType)
         {
             if (!ModelState.IsValid)
@@ -62,6 +71,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{overviewType}/get")]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetGridConfiguration([NonEmptyGuid] Guid organizationUuid, [FromRoute] OverviewTypeOptions overviewType)
         {
             if (!ModelState.IsValid) 
@@ -75,6 +88,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("permissions")]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(typeof(OrganizationGridPermissionsResponseDTO), HttpStatusCode.OK)]
         public IActionResult GetOrganizationGridPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

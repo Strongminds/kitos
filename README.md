@@ -22,3 +22,39 @@ This repository maintains the backend services.
 
 ### UI
 The UI is developed and maintained here: https://github.com/os2kitos/kitos_frontend
+
+## Build and test
+
+Build the solution:
+
+```powershell
+msbuild KITOS.sln
+```
+
+Run unit tests:
+
+```powershell
+dotnet test Tests.Unit.Core.ApplicationServices
+dotnet test Tests.Unit.Presentation.Web
+```
+
+Run integration tests:
+
+```powershell
+dotnet test Tests.Integration.Presentation.Web
+```
+
+Integration tests require a running KITOS instance and a database configured through `Tests.Integration.Presentation.Web/Properties/launchSettings.json`.
+
+The default launch profile (`Tests.Integration.Presentation.Web`) now targets **SQL Server** locally:
+
+- `KitosDbProvider=SqlServer`
+- `Database__Provider=SqlServer`
+- `ConnectionStrings__KitosContext=Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True`
+
+An alternative profile is included for **PostgreSQL**:
+
+- `Tests.Integration.Presentation.Web (PostgreSql)`
+- `KitosDbProvider=PostgreSql`
+- `Database__Provider=PostgreSql`
+- `ConnectionStrings__KitosContext=Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres`

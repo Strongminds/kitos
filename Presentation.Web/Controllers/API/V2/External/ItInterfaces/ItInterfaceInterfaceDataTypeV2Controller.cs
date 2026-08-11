@@ -22,10 +22,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces
         /// Returns IT-Interface 'interface data type' options which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the archive locations availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available IT-Interface 'interface data types'</returns>
         [HttpGet]
         [Route("")]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -38,11 +44,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces
         /// <returns>A uuid and name pair with boolean to mark if the option is available in the organization</returns>
         [HttpGet]
         [Route("{interfaceDataTypeUuid}")]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid interfaceDataTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(interfaceDataTypeUuid, organizationUuid);
         }
     }
 }
-
 

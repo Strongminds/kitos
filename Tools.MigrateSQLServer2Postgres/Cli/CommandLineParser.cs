@@ -2,6 +2,8 @@ namespace Tools.MigrateSQLServer2Postgres.Cli;
 
 internal static class CommandLineParser
 {
+    private const string PubSubSubcommand = "pubsub";
+
     public static IReadOnlyList<(string Argument, string Description)> HelpItems { get; } =
     [
         ("--source <sqlServerConnectionString>", "SQL Server source connection string."),
@@ -11,6 +13,16 @@ internal static class CommandLineParser
         ("--interactive", "Launch interactive wizard with arrow-key navigation."),
         ("--help", "Show help.")
     ];
+
+    public static bool IsPubSubSubcommand(string[] args)
+    {
+        return args.Length > 0 && args[0].Equals(PubSubSubcommand, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static string[] StripSubcommand(string[] args)
+    {
+        return args.Length > 0 && IsPubSubSubcommand(args) ? args[1..] : args;
+    }
 
     public static bool IsHelpRequested(string[] args)
     {

@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.Common.Mapping
 {
@@ -10,7 +9,6 @@ namespace Presentation.Web.Controllers.API.V2.Common.Mapping
         /// Determines if the property selected by <param name="pickProperty"> must be mapped as a property update</param>
         /// </summary>
         /// <typeparam name="TProperty"></typeparam>
-        /// <param name="pickProperty"></param>
         /// <returns></returns>
         public bool MustUpdate<TProperty>(Expression<Func<TRoot, TProperty>> pickProperty);
 

@@ -19,7 +19,7 @@ namespace Core.ApplicationServices.Contract
         Result<DataProcessingRegistration, OperationError> AssignDataProcessingRegistration(int id, int dataProcessingRegistrationId);
 
         Result<DataProcessingRegistration, OperationError> RemoveDataProcessingRegistration(int id, int dataProcessingRegistrationId);
-        Result<IEnumerable<DataProcessingRegistration>, OperationError> GetDataProcessingRegistrationsWhichCanBeAssigned(int id, string nameQuery, int pageSize);
+        Result<IEnumerable<DataProcessingRegistration>, OperationError> GetDataProcessingRegistrationsWhichCanBeAssigned(int id, string? nameQuery, int pageSize);
         Result<ItContract, OperationError> GetContract(Guid uuid);
         Result<ItContract, OperationError> GetContract(int id);
         Result<bool,OperationError> CanCreateNewContractWithName(string name, int organizationId);

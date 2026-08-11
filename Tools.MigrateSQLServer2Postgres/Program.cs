@@ -1,5 +1,7 @@
 ﻿using Tools.MigrateSQLServer2Postgres.Cli;
 using Tools.MigrateSQLServer2Postgres.Migration;
+using Tools.MigrateSQLServer2Postgres.PubSub.Cli;
+using Tools.MigrateSQLServer2Postgres.PubSub.Migration;
 
 namespace Tools.MigrateSQLServer2Postgres;
 
@@ -9,26 +11,46 @@ internal static class Program
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        if (CommandLineParser.IsHelpRequested(args))
+        var isPubSub = CommandLineParser.IsPubSubSubcommand(args);
+        var effectiveArgs = CommandLineParser.StripSubcommand(args);
+
+        if (CommandLineParser.IsHelpRequested(effectiveArgs))
         {
-            CliConsole.RenderHelp();
+            if (isPubSub)
+                CliConsole.RenderPubSubHelp();
+            else
+                CliConsole.RenderHelp();
             return 0;
         }
 
         try
         {
-            var isInteractive = CommandLineParser.IsInteractiveRequested(args);
-            var options = isInteractive
-                ? InteractivePrompt.PromptForOptions(args)
-                : CommandLineParser.Parse(args);
+            var isInteractive = CommandLineParser.IsInteractiveRequested(effectiveArgs);
 
-            var runner = new MigrationRunner();
-            return await runner.RunAsync(options, isInteractive);
+            if (isPubSub)
+            {
+                var options = isInteractive
+                    ? PubSubInteractivePrompt.PromptForOptions(effectiveArgs)
+                    : CommandLineParser.Parse(effectiveArgs);
+                var runner = new PubSubMigrationRunner();
+                return await runner.RunAsync(options, isInteractive);
+            }
+            else
+            {
+                var options = isInteractive
+                    ? InteractivePrompt.PromptForOptions(effectiveArgs)
+                    : CommandLineParser.Parse(effectiveArgs);
+                var runner = new MigrationRunner();
+                return await runner.RunAsync(options, isInteractive);
+            }
         }
         catch (CommandLineException cliException)
         {
             CliConsole.Error(cliException.Message);
-            CliConsole.RenderHelp();
+            if (isPubSub)
+                CliConsole.RenderPubSubHelp();
+            else
+                CliConsole.RenderHelp();
             return -1;
         }
         catch (Exception exception)

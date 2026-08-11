@@ -104,6 +104,43 @@ try {
 
     & $testToolsExePath "DropDatabase" "$hangfireDbConnectionString"
     if($LASTEXITCODE -ne 0) { Throw "FAILED TO DROP HANGFIRE DB" }
+
+    if (Is-PostgreSqlProvider $databaseProvider) {
+        Write-Host "Ensuring Hangfire PostgreSQL database exists after reset"
+        New-PostgresDatabase -connectionString "$hangfireDbConnectionString"
+
+        $hangfireParts = ConvertTo-PostgresConnectionParts $hangfireDbConnectionString
+        $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+        if ($hangfireParts.Username -ne $knownAppUser) {
+            $escapedUsername = $knownAppUser.Replace("'", "''").Replace('"', '""')
+            $escapedDatabaseName = $hangfireParts.Database.Replace("'", "''").Replace('"', '""')
+            $grantDatabaseSql = @"
+DO `$`$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
+    END IF;
+END
+`$`$;
+"@
+
+            $grantSchemaSql = @"
+DO `$`$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        GRANT USAGE, CREATE ON SCHEMA public TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$escapedUsername";
+    END IF;
+END
+`$`$;
+"@
+            Invoke-PostgresSql -parts $hangfireParts -database "postgres" -sql $grantDatabaseSql
+            Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql $grantSchemaSql
+        }
+    }
 }
 finally {
     if ($stopWebHostDuringReset) {

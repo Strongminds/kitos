@@ -2,6 +2,7 @@ using System;
 using System.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel.Security;
 using System.Text;
 using Digst.OioIdws.CommonCore;
 using Digst.OioIdws.OioWsTrustCore;
@@ -11,21 +12,11 @@ namespace Kombit.InfrastructureSamples.Token;
 
 public class TokenFetcher
 {
-    private readonly string _clientCertificateThumbprint;
-    private readonly string _stsIssuer;
-    private readonly string _stsEndpoint;
-    private readonly string _stsCertificateAlias;
-    private readonly string _stsCertificateThumbprint;
-    private readonly string _wspCertificateThumbprint;
+    private readonly TokenFetcherConfig _config;
 
-    public TokenFetcher(string clientCertificateThumbprint, string stsIssuer, string stsEndpoint, string stsCertificateAlias, string stsCertificateThumbprint, string wspCertificateThumbprint)
+    public TokenFetcher(TokenFetcherConfig config)
     {
-        _clientCertificateThumbprint = clientCertificateThumbprint;
-        _stsIssuer = stsIssuer;
-        _stsEndpoint = stsEndpoint;
-        _stsCertificateAlias = stsCertificateAlias;
-        _stsCertificateThumbprint = stsCertificateThumbprint;
-        _wspCertificateThumbprint = wspCertificateThumbprint;
+        _config = config ?? throw new ArgumentNullException(nameof(config));
     }
 
     /// <summary>
@@ -63,15 +54,23 @@ public class TokenFetcher
     /// </summary>
     public StsTokenServiceConfiguration BuildServiceConfig(string entityId, string wspEndpoint, string cvr)
     {
-        var clientCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _clientCertificateThumbprint);
-        var stsCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _stsCertificateThumbprint);
-        var wspCert = CertificateLoader.LoadCertificate(StoreName.My, StoreLocation.LocalMachine, _wspCertificateThumbprint);
-        var stsConfig = new StsConfiguration(_stsEndpoint, _stsIssuer, cvr, stsCert);
-        var wspConfig = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCert);
-        return new StsTokenServiceConfiguration(stsConfig, wspConfig, clientCert)
+        var clientCertificate = CertificateLoader.LoadCertificateWithFallback(
+            _config.SsoCertFilePath, _config.SsoCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _config.ClientCertificateThumbprint);
+        var stsCertificate = CertificateLoader.LoadCertificateWithFallback(
+            _config.StsCertFilePath, _config.StsCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _config.StsCertificateThumbprint);
+        var wspCertificate = CertificateLoader.LoadCertificateWithFallback(
+            _config.StsOrganisationCertFilePath, _config.StsOrganisationCertPassword,
+            StoreName.My, StoreLocation.LocalMachine, _config.WspCertificateThumbprint);
+        var stsConfiguration = new StsConfiguration(_config.StsEndpoint, _config.StsIssuer, cvr, stsCertificate);
+        var wspConfiguration = new WspConfiguration(wspEndpoint, entityId, System.ServiceModel.EnvelopeVersion.Soap12, wspCertificate);
+        var tokenServiceConfiguration = new StsTokenServiceConfiguration(stsConfiguration, wspConfiguration, clientCertificate)
         {
             MaxReceivedMessageSize = int.MaxValue
         };
+        ConfigureServiceCertificateAuthentication(tokenServiceConfiguration);
+        return tokenServiceConfiguration;
     }
 
     /// <summary>
@@ -92,4 +91,20 @@ public class TokenFetcher
         var config = BuildServiceConfig(entityId, entityId, cvr);
         return new StsTokenService(config).GetToken();
     }
+
+    private void ConfigureServiceCertificateAuthentication(IStsTokenServiceConfiguration config)
+    {
+        ApplyAuthenticationOverrides(config.StsCertificateAuthentication);
+        ApplyAuthenticationOverrides(config.WspCertificateAuthentication);
+        ApplyAuthenticationOverrides(config.SslCertificateAuthentication);
+    }
+
+    private void ApplyAuthenticationOverrides(X509ServiceCertificateAuthentication authentication)
+    {
+        if (_config.ParsedCertificateValidationMode.HasValue)
+            authentication.CertificateValidationMode = _config.ParsedCertificateValidationMode.Value;
+        if (_config.ParsedRevocationMode.HasValue)
+            authentication.RevocationMode = _config.ParsedRevocationMode.Value;
+    }
+
 }

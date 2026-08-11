@@ -287,6 +287,26 @@ namespace Tests.Unit.Presentation.Web.Authorization
             Assert.True(result);
         }
 
+        [Fact]
+        public void HasAnySupplierChanges_Returns_True_If_Has_OversightDate_OversightOption_Change()
+        {
+            var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters
+            {
+                CompletedAt = OptionalValueChange<DateTime>.None,
+                Remark = OptionalValueChange<string>.None,
+                OversightReportLink = OptionalValueChange<string>.None,
+                OversightReportLinkName = OptionalValueChange<string>.None,
+                OversightOptionUuid = A<Guid?>().AsChangedValue()
+            };
+
+            var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
+            ExpectAnySupplierChangesReturns(keys, true);
+
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
+
+            Assert.True(result);
+        }
+
         private void ExpectOnlySupplierChangesReturns(IEnumerable<string> keys, bool result)
         {
             _supplierDomainServiceMock

@@ -1,4 +1,5 @@
 using Core.DomainModel;
+using Core.DomainModel.Archive;
 using Core.DomainModel.GDPR.Read;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItContract.Read;
@@ -27,8 +28,10 @@ namespace Presentation.Web.Infrastructure.OData
             RegisterEntitySet<ItSystemRight>(builder, "ItSystemRights");
             RegisterEntitySet<ItInterface>(builder, "ItInterfaces");
             RegisterEntitySet<ItContract>(builder, "ItContracts");
+            RegisterEntitySet<ItSystemUsageArchive>(builder, "ItSystemUsageArchives");
             RegisterEntitySet<ItSystemUsageOverviewReadModel>(builder, "ItSystemUsageOverviewReadModels");
             RegisterEntitySet<ItContractOverviewReadModel>(builder, "ItContractOverviewReadModels");
+            RegisterEntitySet<ItContractSupplierOverviewReadModel>(builder, "ItContractSupplierOverviewReadModels");
             RegisterEntitySet<DataProcessingRegistrationReadModel>(builder, "DataProcessingRegistrationReadModels");
 
             // ExternalReference is a navigation target on ItSystem, ItSystemUsage, ItContract etc.

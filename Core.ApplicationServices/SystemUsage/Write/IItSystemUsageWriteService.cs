@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage;
 using Core.ApplicationServices.Model.SystemUsage.Write;
-using Core.DomainModel.ItSystem;
 using Core.DomainModel;
+using Core.DomainModel.Archive;
+using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
+using System;
+using System.Collections.Generic;
 
 namespace Core.ApplicationServices.SystemUsage.Write
 {
@@ -27,5 +29,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
         Result<ExternalReference, OperationError> UpdateExternalReference(Guid usageUuid, Guid externalReferenceUuid, ExternalReferenceProperties externalReferenceProperties);
         Result<ExternalReference, OperationError> DeleteExternalReference(Guid usageUuid, Guid externalReferenceUuid);
         Maybe<OperationError> DeleteByItSystemAndOrganizationUuids(Guid itSystemUuid, Guid organizationUuid);
+
+        Result<ItSystemUsageArchive, OperationError> Archive(Guid systemUsageUuid, ArchiveItSystemUsageParameters parameters);
     }
 }

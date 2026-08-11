@@ -14,19 +14,22 @@ using DataProcessingRegistration = Core.DomainModel.GDPR.DataProcessingRegistrat
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProcessingRegistrations
 {
     [Route("api/v2/internal/data-processing/{organizationUuid}/local-option-types/basis-for-transfer-types")]
-    public class DprLocalBasisForTransferTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption>
+    public class DprLocalBasisForTransferTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration,
+            DataProcessingBasisForTransferOption> localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalDataProcessingBasisForTransferOption,
+            DataProcessingRegistration, DataProcessingBasisForTransferOption>(localOptionTypeService, responseMapper,
+            writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public DprLocalBasisForTransferTypesInternalV2Controller(IGenericLocalOptionsService<LocalDataProcessingBasisForTransferOption, DataProcessingRegistration, DataProcessingBasisForTransferOption> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalBasisForTransferTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -34,6 +37,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpGet]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalBasisForTransferTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -41,6 +49,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateLocalBasisForTransferType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -48,6 +61,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchLocalBasisForTransferType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
@@ -57,6 +75,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.DataProc
 
         [HttpDelete]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteLocalBasisForTransferType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

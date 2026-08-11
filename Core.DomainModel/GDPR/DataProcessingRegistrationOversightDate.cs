@@ -13,6 +13,9 @@ namespace Core.DomainModel.GDPR
         public string OversightReportLink { get; set; }
         public string OversightReportLinkName { get; set; }
 
+        public int? OversightOptionId { get; set; }
+        public virtual DataProcessingOversightOption OversightOption { get; set; }
+
         public int ParentId { get; set; }
         public virtual DataProcessingRegistration Parent { get; set; }
     }

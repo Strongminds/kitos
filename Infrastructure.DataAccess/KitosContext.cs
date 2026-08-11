@@ -23,6 +23,7 @@ using Core.DomainModel.Notification;
 using Core.DomainModel.PublicMessage;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
+using Core.DomainModel.Archive;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Collections.Generic;
 
@@ -104,6 +105,9 @@ namespace Infrastructure.DataAccess
         public DbSet<PublicMessage> PublicMessages { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ArchivePeriod> ArchivePeriods { get; set; }
+        public DbSet<ItSystemUsageArchive> ItSystemUsageArchives { get; set; }
+        public DbSet<ArchiveReference> ArchiveReferences { get; set; }
+        public DbSet<ItSystemUsageArchiveSnapshot> ItSystemUsageArchiveSnapshots { get; set; }
         public DbSet<LocalAgreementElementType> LocalAgreementElementTypes { get; set; }
         public DbSet<LocalArchiveType> LocalArchiveTypes { get; set; }
         public DbSet<LocalArchiveLocation> LocalArchiveLocation { get; set; }
@@ -183,6 +187,8 @@ namespace Infrastructure.DataAccess
         public DbSet<ItContractOverviewReadModelItSystemUsage> ItContractOverviewReadModelItSystemUsages { get; set; }
         public DbSet<ItContractOverviewRoleAssignmentReadModel> ItContractOverviewRoleAssignmentReadModels { get; set; }
         public DbSet<ItContractOverviewReadModelSystemRelation> ItContractOverviewReadModelSystemRelations { get; set; }
+        public DbSet<ItContractSupplierOverviewReadModel> ItContractSupplierOverviewReadModels { get; set; }
+        public DbSet<ItContractSupplierOverviewAtCriticalityContractReadModel> ItContractSupplierOverviewAtCriticalityContractReadModels { get; set; }
         public DbSet<StsOrganizationConnection> StsOrganizationConnections { get; set; }
         public DbSet<StsOrganizationChangeLog> StsOrganizationChangeLogs { get; set; }
         public DbSet<StsOrganizationConsequenceLog> StsOrganizationConsequenceLogs { get; set; }

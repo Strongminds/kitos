@@ -376,6 +376,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             var expectedInterfaces = systemUsage.GetExposedInterfaces();
             Assert.Equal(expectedInterfaces.Select(x => x.ItInterfaceId).ToStringWithDelimiter(), readModel.ItInterfaceIdsAsCsv);
             Assert.Equal(expectedInterfaces.Select(x => x.Version).ToStringWithDelimiter(), readModel.ItInterfaceVersionsAsCsv);
+            Assert.Equal(systemUsage.LicensingAndCodeModels, readModel.LicensingAndCodeModels);
 
             // Sensitive data levels
             var rmSensitiveDataLevel = Assert.Single(readModel.SensitiveDataLevels);

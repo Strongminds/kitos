@@ -112,9 +112,10 @@ namespace Core.DomainServices.SystemUsage
             destination.CriticalityLevelDocumentationName = source.CriticalityLevelDocumentationName;
             destination.IsDataProcessingAgreementRequired = source.IsDataProcessingAgreementRequired;
 
-            var interfaces = source.GetExposedInterfaces();
+            var interfaces = source.GetExposedInterfaces().ToList();
             destination.ItInterfaceIdsAsCsv = interfaces.Select(x => x.ItInterfaceId).ToStringWithDelimiter();
             destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).Where(x => !x.IsWhiteSpace()).ToStringWithDelimiter();
+            destination.LicensingAndCodeModels = source.LicensingAndCodeModels;
 
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
@@ -199,7 +200,7 @@ namespace Core.DomainServices.SystemUsage
             var usagesFromSource = pickSourceCollection(source)
                 .Select(pickUsageFromRelation)
                 .Where(itSystemUsage => itSystemUsage != null)
-                .Where(itSystemUsage => itSystemUsage.ItSystem != null)
+                .Where(itSystemUsage => itSystemUsage!.ItSystem != null)
                 .ToList();
             var destinationCollection = pickDestinationCollection(destination);
 
@@ -208,7 +209,7 @@ namespace Core.DomainServices.SystemUsage
                 .Select(x => x.ItSystem)
                 .Select(x => x.Name)));
 
-            static string CreateRelatedItSystemUsageKey(int Id) => $"I:{Id}";
+            static string CreateRelatedItSystemUsageKey(int id) => $"I:{id}";
 
             var usagesFromSourceByKey =
                 usagesFromSource
@@ -252,7 +253,7 @@ namespace Core.DomainServices.SystemUsage
 
             destination.DependsOnInterfacesNamesAsCsv = string.Join(", ", dependsOnInterfaces.Select(x => x.Name));
 
-            static string CreateDependsOnInterfaceKey(int Id) => $"I:{Id}";
+            static string CreateDependsOnInterfaceKey(int id) => $"I:{id}";
 
             var incomingDependsOnInterfaces = dependsOnInterfaces
                 .GroupBy(x => CreateDependsOnInterfaceKey(x.Id))
@@ -314,7 +315,7 @@ namespace Core.DomainServices.SystemUsage
             destination.RiskAssessmentResult = source.preriskAssessment;
             destination.RiskAssessmentConducted = source.riskAssessment;
 
-            static string CreateDataProcessingRegistrationKey(int Id) => $"I:{Id}";
+            static string CreateDataProcessingRegistrationKey(int id) => $"I:{id}";
 
             var incomingDataProcessingRegistrations = source.AssociatedDataProcessingRegistrations.ToDictionary(x => CreateDataProcessingRegistrationKey(x.Id));
 
@@ -475,7 +476,7 @@ namespace Core.DomainServices.SystemUsage
         private static void PatchReference(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
             var title = source.Reference?.Title;
-            destination.LocalReferenceTitle = title?.Substring(0, Math.Min(title.Length, ItSystemUsageOverviewReadModel.MaxReferenceTitleLenght));
+            destination.LocalReferenceTitle = title?.Substring(0, Math.Min(title.Length, ItSystemUsageOverviewReadModel.MaxReferenceTitleLength));
             destination.LocalReferenceUrl = source.Reference?.URL;
             destination.LocalReferenceDocumentId = source.Reference?.ExternalReferenceId;
         }
@@ -508,7 +509,7 @@ namespace Core.DomainServices.SystemUsage
             var kleNames = string.Join(", ", source.ItSystem.TaskRefs.Select(x => x.Description).Where(d => d != null));
             destination.ItSystemKLENamesAsCsv = string.IsNullOrEmpty(kleNames) ? null : kleNames;
 
-            static string CreateTaskRefKey(string KLEId) => $"I:{KLEId}";
+            static string CreateTaskRefKey(string kleId) => $"I:{kleId}";
 
             var incomingTaskRefs = source.ItSystem.TaskRefs
                 .Where(x => !string.IsNullOrEmpty(x.TaskKey))
@@ -558,7 +559,7 @@ namespace Core.DomainServices.SystemUsage
 
         private void SynchronizeLocalTaskRefs(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            static string CreateLocalTaskRefKey(string KLEId) => $"L:{KLEId}";
+            static string CreateLocalTaskRefKey(string kleId) => $"L:{kleId}";
 
             var incomingTaskRefs = source.TaskRefs
                 .Where(x => !string.IsNullOrEmpty(x.TaskKey))
@@ -791,9 +792,9 @@ namespace Core.DomainServices.SystemUsage
 
         private static string? GetNameOfItSystemOption<TOption>(
             ItSystem parent,
-            TOption optionEntity,
+            TOption? optionEntity,
             IOptionsService<ItSystem, TOption> service)
-            where TOption : OptionEntity<ItSystem>?
+            where TOption : OptionEntity<ItSystem>
         {
             if (optionEntity != null)
             {

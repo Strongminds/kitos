@@ -4,6 +4,7 @@ using Core.Abstractions.Helpers;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Tests.Integration.Presentation.Web.Tools.Model;
 
@@ -13,6 +14,10 @@ namespace Tests.Integration.Presentation.Web.Tools
     {
         private static readonly IReadOnlyDictionary<OrganizationRole, KitosCredentials> UsersFromEnvironment;
         private static readonly IReadOnlyDictionary<OrganizationRole, KitosCredentials> ApiUsersFromEnvironment;
+        private static readonly IConfiguration AppSettings = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+            .Build();
         private static readonly KitosTestEnvironment ActiveEnvironment;
         private static readonly string DefaultUserPassword;
         public const int DefaultOrganizationId = 1;
@@ -21,13 +26,14 @@ namespace Tests.Integration.Presentation.Web.Tools
         public const int DefaultUserId = 1;
         private static readonly string ConnectionString;
         private static readonly string DatabaseProvider;
+        private static readonly string BaseUrl;
 
         static TestEnvironment()
         {
             // Configure Npgsql timestamp compatibility as early as possible in the test process.
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-            var testEnvironment = GetEnvironmentVariable("KitosTestEnvironment", false);
+            var testEnvironment = GetEnvironmentVariable("KitosTestEnvironment", false, allowAppSettingsFallback: false);
             if (string.IsNullOrWhiteSpace(testEnvironment))
             {
                 ActiveEnvironment = KitosTestEnvironment.Local;
@@ -83,6 +89,8 @@ namespace Tests.Integration.Presentation.Web.Tools
                     }
                 };
 
+                Console.Out.WriteLine($"[TestEnvironment] ActiveEnvironment={ActiveEnvironment}, DatabaseProvider={DatabaseProvider}");
+                BaseUrl = "https://localhost:44300";
             }
             else
             {
@@ -104,6 +112,9 @@ namespace Tests.Integration.Presentation.Web.Tools
                     {OrganizationRole.User, LoadUserFromEnvironment(OrganizationRole.User, true)},
                     {OrganizationRole.GlobalAdmin, LoadUserFromEnvironment(OrganizationRole.GlobalAdmin, true)}
                 };
+
+                BaseUrl = $"https://{GetEnvironmentVariable("KitosHostName")}";
+                Console.Out.WriteLine($"[TestEnvironment] ActiveEnvironment={ActiveEnvironment}, DatabaseProvider={DatabaseProvider}");
             }
         }
 
@@ -168,20 +179,33 @@ namespace Tests.Integration.Presentation.Web.Tools
                 @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True");
         }
 
-        private static string GetEnvironmentVariable(string name, bool mandatory = true, string defaultValue = null)
+        private static string GetEnvironmentVariable(string name, bool mandatory = true, string? defaultValue = null, bool allowAppSettingsFallback = true)
         {
             var variableName = name;
 
             var variable = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.Process);
+            var source = "process-env";
+            if (allowAppSettingsFallback && string.IsNullOrWhiteSpace(variable))
+            {
+                // Fall back to appsettings.json — double underscore (__) maps to colon (:) for hierarchy
+                var configKey = name.Replace("__", ":");
+                variable = AppSettings[configKey];
+                source = "appsettings.json";
+            }
+
             if (string.IsNullOrWhiteSpace(variable))
             {
                 if (mandatory)
                 {
+                    Console.Out.WriteLine($"[TestEnvironment] '{name}' missing (mandatory). allowAppSettingsFallback={allowAppSettingsFallback}");
                     throw new ArgumentException($"Error: No environment variable value found for mandatory variable '{name}'");
                 }
 
-                return defaultValue;
+                Console.Out.WriteLine($"[TestEnvironment] '{name}' not set. Using default. allowAppSettingsFallback={allowAppSettingsFallback}");
+                return defaultValue!;
             }
+
+            Console.Out.WriteLine($"[TestEnvironment] '{name}' loaded from {source}. allowAppSettingsFallback={allowAppSettingsFallback}");
             return variable;
         }
 
@@ -203,7 +227,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 case KitosTestEnvironment.Local:
                     return "https://localhost:44300";
                 case KitosTestEnvironment.Integration:
-                    return $"https://{GetEnvironmentVariable("KitosHostName")}";
+                    return BaseUrl;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

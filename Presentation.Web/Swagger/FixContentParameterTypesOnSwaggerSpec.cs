@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.OpenApi;
 using Presentation.Web.Helpers;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -16,7 +17,8 @@ namespace Presentation.Web.Swagger
             operation.RequestBody?.Content?.Remove(JsonMergePatch);
 
             // Remove merge-patch from all response content
-            foreach (var response in operation.Responses.Values)
+            var responses = operation.Responses ?? [];
+            foreach (var response in responses.Values)
             {
                 response.Content?.Remove(JsonMergePatch);
             }
@@ -30,6 +32,16 @@ namespace Presentation.Web.Swagger
             // Save the body schema before clearing so it can be re-attached after.
             // Swashbuckle generates the correct schema from the [FromBody] parameter; we must not lose it.
             IOpenApiSchema? existingBodySchema = null;
+            var existingResponseSchemas = responses
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp =>
+                    {
+                        OpenApiMediaType? existingJsonContent = null;
+                        kvp.Value.Content?.TryGetValue(Json, out existingJsonContent);
+                        return existingJsonContent?.Schema;
+                    });
+
             if (httpMethod != "DELETE")
             {
                 OpenApiMediaType? existingJsonContent = null;
@@ -40,7 +52,7 @@ namespace Presentation.Web.Swagger
                     operation.RequestBody.Content?.Clear();
             }
 
-            foreach (var response in operation.Responses.Values)
+            foreach (var response in responses.Values)
                 response.Content?.Clear();
 
             switch (httpMethod)
@@ -48,15 +60,15 @@ namespace Presentation.Web.Swagger
                 case "POST":
                 case "PUT":
                     EnsureRequestBodyContent(operation, Json, existingBodySchema);
-                    EnsureResponseContent(operation, Json);
+                    EnsureResponseContent(operation, Json, existingResponseSchemas);
                     break;
                 case "PATCH":
                     EnsureRequestBodyContent(operation, JsonMergePatch, existingBodySchema);
                     EnsureRequestBodyContent(operation, Json, existingBodySchema);
-                    EnsureResponseContent(operation, Json);
+                    EnsureResponseContent(operation, Json, existingResponseSchemas);
                     break;
                 case "GET":
-                    EnsureResponseContent(operation, Json);
+                    EnsureResponseContent(operation, Json, existingResponseSchemas);
                     break;
                 default:
                     break;
@@ -72,12 +84,14 @@ namespace Presentation.Web.Swagger
             operation.RequestBody.Content?.TryAdd(mediaType, new OpenApiMediaType { Schema = schema });
         }
 
-        private static void EnsureResponseContent(OpenApiOperation operation, string mediaType)
+        private static void EnsureResponseContent(OpenApiOperation operation, string mediaType, IDictionary<string, IOpenApiSchema?> existingResponseSchemas)
         {
-            foreach (var response in operation.Responses.Values)
+            foreach (var response in operation.Responses ?? [])
             {
-                if (response.Content == null) continue;
-                response.Content.TryAdd(mediaType, new OpenApiMediaType());
+                if (response.Value.Content == null) continue;
+
+                existingResponseSchemas.TryGetValue(response.Key, out var schema);
+                response.Value.Content.TryAdd(mediaType, new OpenApiMediaType { Schema = schema });
             }
         }
     }

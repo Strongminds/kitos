@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
 using System.Net;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Sts
@@ -26,6 +27,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("snapshot")]
+        [ApiResponse(typeof(StsOrganizationOrgUnitDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetSnapshotFromStsOrganization(Guid organizationUuid, int? levels = null)
         {
             return _stsOrganizationSynchronizationService
@@ -36,6 +41,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("connection-status")]
+        [ApiResponse(typeof(StsOrganizationSynchronizationDetailsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetSynchronizationStatus(Guid organizationUuid)
         {
             return _stsOrganizationSynchronizationService
@@ -61,7 +70,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpPost]
         [Route("connection")]
-        public IActionResult CreateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO request)
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult CreateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO? request)
         {
             if (!ModelState.IsValid)
             {
@@ -74,14 +87,18 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
             }
 
             return _stsOrganizationSynchronizationService
-                .Connect(organizationUuid, (request?.SynchronizationDepth).FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
+                .Connect(organizationUuid, request.SynchronizationDepth.FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
                 .Match(FromOperationError, Ok);
         }
 
         [HttpDelete]
         [Consumes("application/json")]
         [Route("connection")]
-        public IActionResult Disconnect(Guid organizationUuid, [FromBody] DisconnectFromStsOrganizationRequestDTO request)
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult Disconnect(Guid organizationUuid, [FromBody] DisconnectFromStsOrganizationRequestDTO? request)
         {
             if (request == null)
             {
@@ -95,6 +112,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpDelete]
         [Route("connection/subscription")]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult DeleteSubscription(Guid organizationUuid)
         {
             return _stsOrganizationSynchronizationService
@@ -104,6 +125,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpGet]
         [Route("connection/update")]
+        [ApiResponse(typeof(ConnectionUpdateConsequencesResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUpdateConsequences(Guid organizationUuid, int? synchronizationDepth = null)
         {
             if (synchronizationDepth is < 1)
@@ -119,7 +144,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
 
         [HttpPut]
         [Route("connection")]
-        public IActionResult UpdateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO request)
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult UpdateConnection(Guid organizationUuid, [FromBody] ConnectToStsOrganizationRequestDTO? request)
         {
             if (!ModelState.IsValid)
             {
@@ -132,12 +161,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
             }
 
             return _stsOrganizationSynchronizationService
-                .UpdateConnection(organizationUuid, (request?.SynchronizationDepth).FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
+                .UpdateConnection(organizationUuid, request.SynchronizationDepth.FromNullableValueType(), request.SubscribeToUpdates.GetValueOrDefault(false))
                 .Match(FromOperationError, Ok);
         }
 
         [HttpGet]
         [Route("connection/change-log")]
+        [ApiResponse(typeof(IEnumerable<StsOrganizationChangeLogResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetChangeLogs(Guid organizationUuid, int numberOfChangeLogs)
         {
             return _stsOrganizationSynchronizationService.GetChangeLogs(organizationUuid, numberOfChangeLogs)

@@ -13,19 +13,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContracts
 {
     [Route("api/v2/internal/it-contracts/{organizationUuid}/local-option-types/template-types")]
-    public class ItContractLocalTemplateTypesInternalV2Controller : BaseLocalRegularOptionTypesInternalV2Controller<LocalItContractTemplateType, ItContract, ItContractTemplateType>
+    public class ItContractLocalTemplateTypesInternalV2Controller(
+        IGenericLocalOptionsService<LocalItContractTemplateType, ItContract, ItContractTemplateType>
+            localOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRegularOptionTypesInternalV2Controller<LocalItContractTemplateType, ItContract,
+            ItContractTemplateType>(localOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalOptionsService<LocalItContractTemplateType, ItContract, ItContractTemplateType> _localOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public ItContractLocalTemplateTypesInternalV2Controller(IGenericLocalOptionsService<LocalItContractTemplateType, ItContract, ItContractTemplateType> localOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper)
-            : base(localOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<LocalRegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalTemplateTypes([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -33,6 +35,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpGet]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalTemplateTypeByOptionId([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -40,6 +47,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateLocalTemplateType([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -47,6 +59,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchLocalTemplateType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRegularOptionUpdateRequestDTO dto)
@@ -56,6 +73,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.ItContra
 
         [HttpDelete]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteLocalTemplateType([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

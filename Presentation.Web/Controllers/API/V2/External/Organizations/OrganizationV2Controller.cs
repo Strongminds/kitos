@@ -63,6 +63,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A list of organizations</returns>
         [HttpGet]
         [Route("organizations")]
+        [ApiResponse(typeof(IEnumerable<OrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
         public IActionResult GetOrganizations(
             bool onlyWhereUserHasMembership = false,
             string? nameContent = null,
@@ -105,6 +108,10 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}")]
+        [ApiResponse(typeof(OrganizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetOrganization([NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -121,12 +128,18 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// </summary>
         /// <param name="organizationUuid">UUID of the organization</param>
         /// <param name="nameOrEmailQuery">Query by text in name or email</param>
+        /// <param name="emailQuery">Query by exact email</param>
         /// <param name="roleQuery">Query by role assignment</param>
         /// <param name="orderByProperty">Property to order by</param>
         /// <param name="paginationQuery">Optional pagination query</param>
         /// <returns>A list og users in a specific organizational context</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users")]
+        [ApiResponse(typeof(IEnumerable<OrganizationUserResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUsers(
             [NonEmptyGuid] Guid organizationUuid,
             string? nameOrEmailQuery = null,
@@ -162,6 +175,11 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>A user in the context of a specific organization</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/users/{userUuid}")]
+        [ApiResponse(typeof(OrganizationUserResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUser([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid userUuid)
         {
             return _userService
@@ -179,9 +197,14 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <param name="nameQuery">Query by text in name</param>
         /// <param name="orderByProperty">Ordering property</param>
         /// <param name="paginationQuery">Optional pagination query</param>
-        /// <returns>A list og organization unit representations</returns>
+        /// <returns>A list of organization unit representations</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units")]
+        [ApiResponse(typeof(IEnumerable<ExternalOrganizationUnitResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUnits(
             [NonEmptyGuid] Guid organizationUuid,
             string? nameQuery = null,
@@ -214,6 +237,11 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         /// <returns>An organization unit</returns>
         [HttpGet]
         [Route("organizations/{organizationUuid}/organization-units/{organizationUnitId}")]
+        [ApiResponse(typeof(ExternalOrganizationUnitResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitId)
         {
             return _organizationService
@@ -230,6 +258,9 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/organizations")]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationsAsRightsHolder([FromQuery] BoundedPaginationQuery? pagination = null)
         {
             if (!ModelState.IsValid)
@@ -243,16 +274,17 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
                 .Transform(Ok);
         }
 
-        private static OrganizationUnitResponseDTO ToOrganizationUnitResponseDto(OrganizationUnit unit)
+        private static ExternalOrganizationUnitResponseDTO ToOrganizationUnitResponseDto(OrganizationUnit unit)
         {
-            return new OrganizationUnitResponseDTO
+            return new ExternalOrganizationUnitResponseDTO
             {
                 Uuid = unit.Uuid,
                 Name = unit.Name,
                 UnitId = unit.LocalId,
                 Ean = unit.Ean,
                 ParentOrganizationUnit = unit.Parent?.Transform(parent => parent?.MapIdentityNamePairDTO()),
-                Origin = unit.Origin.ToOrganizationUnitOriginChoice()
+                Origin = unit.Origin.ToOrganizationUnitOriginChoice(),
+                ExternalOriginUuid = unit.ExternalOriginUuid
             };
         }
 
@@ -324,4 +356,3 @@ namespace Presentation.Web.Controllers.API.V2.External.Organizations
         }
     }
 }
-

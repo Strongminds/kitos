@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using Npgsql;
@@ -147,6 +148,7 @@ using dk.nita.saml20.identity;
 using Presentation.Web.Infrastructure.Middleware;
 using ApplicationAuthenticationState = Presentation.Web.Infrastructure.Authentication.ApplicationAuthenticationState;
 using Core.ApplicationServices.Users;
+using Core.ApplicationServices.Model.SystemUsage;
 
 namespace Presentation.Web.Infrastructure.DI
 {
@@ -155,6 +157,7 @@ namespace Presentation.Web.Infrastructure.DI
         public static void Register(IServiceCollection services, IConfiguration configuration, SecurityKey signingKey)
         {
             // Middleware (IMiddleware implementations must be registered in DI)
+            services.AddScoped<NormalizeODataQueryStringMiddleware>();
             services.AddScoped<CorrelationIdMiddleware>();
             services.AddScoped<ApiRequestsLoggingMiddleware>();
             services.AddScoped<DenyUsersWithoutApiAccessMiddleware>();
@@ -197,7 +200,20 @@ namespace Presentation.Web.Infrastructure.DI
                 SingleThreadedMailClient inner;
                 if (deliveryMethod.Equals("SpecifiedPickupDirectory", StringComparison.OrdinalIgnoreCase))
                 {
-                    var pickupDir = smtpSection["PickupDirectoryLocation"] ?? @"c:\temp\maildrop\";
+                    var configuredPickupDir = smtpSection["PickupDirectoryLocation"];
+                    var pickupDir = string.IsNullOrWhiteSpace(configuredPickupDir)
+                        ? Path.Combine(Path.GetTempPath(), "kitos-maildrop")
+                        : configuredPickupDir;
+
+                    try
+                    {
+                        Directory.CreateDirectory(pickupDir);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException($"Unable to create SMTP pickup directory '{pickupDir}'. Check Smtp:PickupDirectoryLocation.", ex);
+                    }
+
                     inner = new SingleThreadedMailClient(pickupDir);
                 }
                 else
@@ -250,6 +266,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IOrganizationSupplierService, OrganizationSupplierService>();
             services.AddScoped<IItSystemService, ItSystemService>();
             services.AddScoped<IItSystemUsageService, ItSystemUsageService>();
+            services.AddScoped<IItSystemUsageArchiveService, ItSystemUsageArchiveService>();
             services.AddScoped<IItSystemUsageMigrationServiceAdapter, ItSystemUsageMigrationServiceAdapter>();
             services.AddScoped<IItsystemUsageRelationsService, ItsystemUsageRelationsService>();
             services.AddScoped<IItSystemUsageWriteService, ItSystemUsageWriteService>();
@@ -257,6 +274,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItContractService, ItContractService>();
             services.AddScoped<IItContractWriteService, ItContractWriteService>();
             services.AddScoped<IItContractOverviewReadModelsService, ItContractOverviewReadModelsService>();
+            services.AddScoped<IItContractSupplierOverviewReadModelsService, ItContractSupplierOverviewReadModelsService>();
             services.AddScoped<IReadModelUpdate<ItContract, ItContractOverviewReadModel>, ItContractOverviewReadModelUpdate>();
             services.AddSingleton<IUserRepositoryFactory, UserRepositoryFactory>();
             services.AddScoped<IExcelService, ExcelService>();
@@ -343,9 +361,24 @@ namespace Presentation.Web.Infrastructure.DI
             var stsBrugerPort = appSettings["StsBrugerPort"] ?? "";
             var stsPersonPort = appSettings["StsPersonPort"] ?? "";
 
-            services.AddSingleton(_ => new TokenFetcher(
+            // Certificate file paths for container environments (empty = use Windows cert store)
+            var ssoCertFilePath = appSettings["SsoCertFilePath"] ?? "";
+            var ssoCertPassword = appSettings["SsoCertPassword"] ?? "";
+            var stsCertFilePath = appSettings["StsCertFilePath"] ?? "";
+            var stsCertPassword = appSettings["StsCertPassword"] ?? "";
+            var stsOrganisationCertFilePath = appSettings["StsOrganisationCertFilePath"] ?? "";
+            var stsOrganisationCertPassword = appSettings["StsOrganisationCertPassword"] ?? "";
+            var stsCertificateValidationMode = appSettings["StsCertificateValidationMode"] ?? "";
+            var stsCertificateRevocationMode = appSettings["StsCertificateRevocationMode"] ?? "";
+
+            var tokenFetcherConfig = new TokenFetcherConfig(
                 ssoCertificateThumbprint, stsIssuer, stsCertificateEndpoint,
-                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint));
+                stsCertificateAlias, stsCertificateThumbprint, stsOrganisationCertificateThumbprint,
+                ssoCertFilePath, ssoCertPassword,
+                stsCertFilePath, stsCertPassword,
+                stsOrganisationCertFilePath, stsOrganisationCertPassword,
+                stsCertificateValidationMode, stsCertificateRevocationMode);
+            services.AddSingleton(_ => new TokenFetcher(tokenFetcherConfig));
             services.AddScoped<IStsOrganizationService, StsOrganizationService>();
             services.AddScoped<IStsOrganizationCompanyLookupService, StsOrganizationCompanyLookupService>();
             services.AddScoped<IStsOrganizationSystemService, StsOrganizationSystemService>();
@@ -482,6 +515,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IDataProcessingRegistrationOptionRepository, DataProcessingRegistrationOptionRepository>();
             services.AddScoped<IItSystemUsageOverviewReadModelRepository, ItSystemUsageOverviewReadModelRepository>();
             services.AddScoped<IItContractOverviewReadModelRepository, ItContractOverviewReadModelRepository>();
+            services.AddScoped<IItContractSupplierOverviewReadModelRepository, ItContractSupplierOverviewReadModelRepository>();
 
             services.AddScoped<IAuthorizationModelFactory, AuthorizationModelFactory>();
             services.AddScoped<IAuthorizationContextFactory, AuthorizationContextFactory>();
@@ -495,12 +529,53 @@ namespace Presentation.Web.Infrastructure.DI
             {
                 var authentication = sp.GetRequiredService<IAuthenticationContext>();
                 if (authentication.Method != AuthenticationMethod.Anonymous && authentication.UserId.HasValue)
-                    return sp.GetRequiredService<IUserContextFactory>().Create(authentication.UserId.Value);
+                {
+                    var userContextFactory = sp.GetRequiredService<IUserContextFactory>();
+                    try
+                    {
+                        return userContextFactory.Create(authentication.UserId.Value);
+                    }
+                    catch (InvalidCastException ex) when (IsStalePostgreSqlTypeMap(ex))
+                    {
+                        ReloadPostgreSqlTypes(sp);
+                        return userContextFactory.Create(authentication.UserId.Value);
+                    }
+                }
                 return new UnauthenticatedUserContext();
             });
             services.AddScoped<IAuthorizationContext>(sp =>
                 sp.GetRequiredService<IAuthorizationContextFactory>().Create(
                     sp.GetRequiredService<IOrganizationalUserContext>()));
+        }
+
+        private static bool IsStalePostgreSqlTypeMap(InvalidCastException exception)
+        {
+            return exception.Message.Contains("DataTypeName '-.-'", StringComparison.OrdinalIgnoreCase)
+                   || exception.Message.Contains("cache lookup failed for type", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void ReloadPostgreSqlTypes(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<KitosContext>();
+            if (!dbContext.Database.IsNpgsql())
+            {
+                return;
+            }
+
+            dbContext.Database.OpenConnection();
+            try
+            {
+                if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
+                {
+                    npgsqlConnection.ReloadTypes();
+                    NpgsqlConnection.ClearAllPools();
+                }
+            }
+            finally
+            {
+                dbContext.Database.CloseConnection();
+            }
         }
 
 
@@ -524,6 +599,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDomainEvent<SystemUsageDeletedUserNotificationsHandler>(services);
             RegisterDomainEvent<BuildItSystemUsageOverviewReadModelOnChangesHandler>(services);
             RegisterDomainEvent<BuildItContractOverviewReadModelOnChangesHandler>(services);
+            RegisterDomainEvent<BuildItContractSupplierOverviewReadModelOnChangesHandler>(services);
             RegisterDomainEvent<MarkEntityAsDirtyOnChangeEventHandler>(services);
             RegisterDomainEvent<TrackDeletedEntitiesEventHandler>(services);
             RegisterDomainEvent<HandleOrganizationBeingDeleted>(services);
@@ -658,8 +734,10 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState>();
             services.AddScoped<ScheduleUpdatesForItContractOverviewReadModelsWhichChangesActiveState>();
             services.AddScoped<ScheduleItContractOverviewReadModelUpdates>();
+            services.AddScoped<ScheduleItContractSupplierOverviewReadModelUpdates>();
             services.AddScoped<ScheduleUpdatesForDataProcessingRegistrationOverviewReadModelsWhichChangesActiveState>();
             services.AddScoped<RebuildItContractOverviewReadModelsBatchJob>();
+            services.AddScoped<RebuildItContractSupplierOverviewReadModelsBatchJob>();
             services.AddScoped<PurgeDuplicatePendingReadModelUpdates>();
             services.AddScoped<PurgeOrphanedHangfireJobs>();
             services.AddScoped<ScheduleFkOrgUpdatesBackgroundJob>();
@@ -693,6 +771,7 @@ namespace Presentation.Web.Infrastructure.DI
             services.AddScoped<IItSystemUsageResponseMapper, ItSystemUsageResponseMapper>();
             services.AddScoped<IItSystemUsageWriteModelMapper, ItSystemUsageWriteModelMapper>();
             services.AddScoped<IItSystemUsageMigrationResponseMapper, ItSystemUsageMigrationResponseMapper>();
+            services.AddScoped<IItSystemUsageArchiveResponseMapper, ItSystemUsageArchiveResponseMapper>();
             services.AddScoped<IDataProcessingRegistrationWriteModelMapper, DataProcessingRegistrationWriteModelMapper>();
             services.AddScoped<IDataProcessingRegistrationResponseMapper, DataProcessingRegistrationResponseMapper>();
             services.AddScoped<IItContractWriteModelMapper, ItContractWriteModelMapper>();
@@ -837,5 +916,3 @@ namespace Presentation.Web.Infrastructure.DI
         }
     }
 }
-
-

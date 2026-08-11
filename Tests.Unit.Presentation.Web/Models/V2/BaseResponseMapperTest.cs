@@ -11,13 +11,13 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 {
     public class BaseResponseMapperTest : WithAutoFixture
     {
-        protected static void AssertOrganization(Organization organization, ShallowOrganizationResponseDTO shallowOrganizationDTO)
+        protected static void AssertOrganization(Organization organization, ShallowOrganizationResponseDTO? shallowOrganizationDTO)
         {
             AssertIdentity(organization, shallowOrganizationDTO);
-            Assert.Equal(organization.Cvr, shallowOrganizationDTO.Cvr);
+            Assert.Equal(organization.Cvr, shallowOrganizationDTO?.Cvr);
         }
 
-        protected static void AssertOptionalOrganization(Organization organization, ShallowOrganizationResponseDTO shallowOrganizationDTO)
+        protected static void AssertOptionalOrganization(Organization? organization, ShallowOrganizationResponseDTO? shallowOrganizationDTO)
         {
             if (organization == null)
                 Assert.Null(shallowOrganizationDTO);
@@ -25,7 +25,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 AssertOrganization(organization, shallowOrganizationDTO);
         }
 
-        protected static void AssertOptionalIdentity<T>(T optionalExpectedIdentity, IdentityNamePairResponseDTO actualIdentity) where T : IHasUuid, IHasName
+        protected static void AssertOptionalIdentity<T>(T? optionalExpectedIdentity, IdentityNamePairResponseDTO? actualIdentity) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentity == null)
                 Assert.Null(actualIdentity);
@@ -33,18 +33,25 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 AssertIdentity(optionalExpectedIdentity, actualIdentity);
         }
 
-        protected static void AssertIdentity<T>(T sourceIdentity, IdentityNamePairResponseDTO dto) where T : IHasUuid, IHasName
+        protected static void AssertIdentity<T>(T? sourceIdentity, IdentityNamePairResponseDTO? dto) where T : IHasUuid, IHasName
         {
-            Assert.Equal(sourceIdentity.Name, dto.Name);
-            Assert.Equal(sourceIdentity.Uuid, dto.Uuid);
+            if (sourceIdentity == null)
+            {
+                Assert.Null(dto);
+            }
+            else
+            {
+                Assert.Equal(sourceIdentity.Name, dto?.Name);
+                Assert.Equal(sourceIdentity.Uuid, dto?.Uuid);
+            }
         }
 
-        protected static void AssertUser(User user, IdentityNamePairResponseDTO dtoValue)
+        protected static void AssertUser(User user, IdentityNamePairResponseDTO? dtoValue)
         {
-            Assert.Equal((user.GetFullName(), user.Uuid), (dtoValue.Name, dtoValue.Uuid));
+            Assert.Equal((user.GetFullName(), user.Uuid), (dtoValue?.Name, dtoValue?.Uuid));
         }
 
-        protected static void AssertOptionalUser(User user, IdentityNamePairResponseDTO dtoValue)
+        protected static void AssertOptionalUser(User? user, IdentityNamePairResponseDTO? dtoValue)
         {
             if (user == null)
                 Assert.Null(dtoValue);
@@ -67,7 +74,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        public static void AssertOptionalIdentities<T>(IEnumerable<T> optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
+        public static void AssertOptionalIdentities<T>(IEnumerable<T>? optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentities == null)
             {
@@ -89,7 +96,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        public static void AssertOptionalOrganizationIdentities(IEnumerable<Organization> optionalExpectedIdentities, IEnumerable<ShallowOrganizationResponseDTO> actualIdentities)
+        public static void AssertOptionalOrganizationIdentities(IEnumerable<Organization>? optionalExpectedIdentities, IEnumerable<ShallowOrganizationResponseDTO> actualIdentities)
         {
             if (optionalExpectedIdentities == null)
             {

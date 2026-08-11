@@ -30,11 +30,13 @@ namespace Core.Abstractions.Types
             return source == null ? None : Some(source);
         }
 
+        #pragma warning disable CS8601
         private Maybe(bool hasValue, T value = default(T))
         {
             HasValue = hasValue;
             _value = value;
         }
+        #pragma warning restore CS8601
 
         public static Maybe<T> Some(T value)
         {

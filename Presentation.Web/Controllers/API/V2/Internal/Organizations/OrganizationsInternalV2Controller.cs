@@ -4,6 +4,7 @@ using Core.ApplicationServices.Organizations.Write;
 using Core.ApplicationServices.UIConfiguration;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
@@ -15,6 +16,7 @@ using Core.DomainModel;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
+using System.Net;
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
     /// <summary>
@@ -40,6 +42,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/ui-root-config")]
+        [ApiResponse(typeof(UIRootConfigResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUIRootConfig([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationService.GetUIRootConfig(organizationUuid)
@@ -49,6 +55,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/ui-root-config")]
+        [ApiResponse(typeof(UIRootConfigResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult PatchUIRootConfig([NonEmptyGuid] Guid organizationUuid, [FromBody] UIRootConfigUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -62,6 +72,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/permissions")]
+        [ApiResponse(typeof(OrganizationPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationService.GetPermissions(organizationUuid)
@@ -71,6 +85,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/ui-customization/{moduleName}")]
+        [ApiResponse(typeof(UIModuleCustomizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromRoute] string moduleName)
         {
             return _uiModuleCustomizationService.GetModuleCustomizationByOrganizationUuid(organizationUuid, moduleName)
@@ -80,6 +98,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [Route("{organizationUuid}/ui-customization/{moduleName}")]
         [HttpPut]
+        [ApiResponse(typeof(UIModuleCustomizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult PutUIModuleCustomization([NonEmptyGuid] Guid organizationUuid, [FromRoute] string moduleName,
             [FromBody] UIModuleCustomizationRequestDTO dto)
         {
@@ -100,6 +122,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPost]
         [Route("create")]
+        [ApiResponse(typeof(ShallowOrganizationResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult CreateOrganization([FromBody] OrganizationCreateRequestDTO request)
         {
             var parameters = _organizationWriteModelMapper.ToOrganizationCreateParameters(request);
@@ -110,6 +136,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/patch")]
+        [ApiResponse(typeof(OrganizationResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchOrganization([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationUpdateRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -122,6 +153,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpDelete]
         [Route("{organizationUuid}/delete")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteOrganization([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromQuery] bool enforceDeletion)
         {
             return _organizationService.RemoveOrganization(organizationUuid, enforceDeletion)
@@ -130,6 +166,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/disabled-status")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult ChangeDisabledStatus([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationDisabledStatusRequestDTO request)
         {
             return _organizationService.ChangeOrganizationDisabledStatus(organizationUuid, request.Disabled)
@@ -138,6 +179,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/conflicts")]
+        [ApiResponse(typeof(OrganizationRemovalConflictsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetConflicts([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationService.ComputeOrganizationRemovalConflicts(organizationUuid)
@@ -147,6 +193,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpPatch]
         [Route("{organizationUuid}/master-data")]
+        [ApiResponse(typeof(OrganizationMasterDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult PatchOrganizationMasterData([FromRoute] [NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -159,6 +209,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/master-data")]
+        [ApiResponse(typeof(OrganizationMasterDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationMasterData([FromRoute] [NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -170,6 +224,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/master-data/roles")]
+        [ApiResponse(typeof(OrganizationMasterDataRolesResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationMasterDataRoles([FromRoute][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -181,6 +239,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         
         [HttpPatch]
         [Route("{organizationUuid}/master-data/roles")]
+        [ApiResponse(typeof(OrganizationMasterDataRolesResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult UpsertOrganizationMasterDataRoles([FromRoute][NonEmptyGuid] Guid organizationUuid, [FromBody] OrganizationMasterDataRolesRequestDTO requestDto)
         {
             if (!ModelState.IsValid) return BadRequest();

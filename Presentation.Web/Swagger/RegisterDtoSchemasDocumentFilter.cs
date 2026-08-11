@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -42,8 +43,20 @@ namespace Presentation.Web.Swagger
                     !t.IsAbstract &&
                     !t.IsGenericTypeDefinition &&
                     !t.IsNested);
+            var apiResponseTypes = assembly.GetTypes()
+                .Where(t => t.Namespace != null && t.Namespace.StartsWith("Presentation.Web.Controllers.API", StringComparison.Ordinal))
+                .SelectMany(GetProducesResponseTypes)
+                .Where(t => t != null)
+                .Where(t =>
+                    t.Namespace != null &&
+                    t.Namespace.StartsWith(_namespacePrefix, StringComparison.Ordinal) &&
+                    t.IsPublic &&
+                    (t.IsClass || t.IsEnum) &&
+                    !t.IsAbstract &&
+                    !t.IsGenericTypeDefinition &&
+                    !t.IsNested);
 
-            foreach (var type in dtoTypes)
+            foreach (var type in dtoTypes.Concat(apiResponseTypes).Distinct())
             {
                 try
                 {
@@ -52,6 +65,24 @@ namespace Presentation.Web.Swagger
                 catch
                 {
                     // Ignore types that cannot be represented as a schema (e.g. circular refs with no resolution)
+                }
+            }
+        }
+
+        private static IEnumerable<Type> GetProducesResponseTypes(Type controllerType)
+        {
+            foreach (var attr in controllerType.GetCustomAttributes(inherit: true).OfType<ProducesResponseTypeAttribute>())
+            {
+                if (attr.Type != null)
+                    yield return attr.Type;
+            }
+
+            foreach (var method in controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            {
+                foreach (var attr in method.GetCustomAttributes(inherit: true).OfType<ProducesResponseTypeAttribute>())
+                {
+                    if (attr.Type != null)
+                        yield return attr.Type;
                 }
             }
         }

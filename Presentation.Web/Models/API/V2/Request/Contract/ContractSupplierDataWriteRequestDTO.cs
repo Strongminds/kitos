@@ -22,5 +22,34 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         /// Which date was the contract signed by the supplier
         /// </summary>
         public DateTime? SignedAt { get; set; }
+
+        /// <summary>
+        /// Optional reference to the supplier organization unit
+        /// requires IsInternal to be true
+        /// </summary>
+        public Guid? OrganizationUnitUuid { get; set; }
+
+        /// <summary>
+        /// Determines if the contract is internal (supplier is part of the same organization)
+        /// </summary>
+        public bool IsInternal { get; set; }
+        
+        /// <summary>
+        /// Contact person at the supplier organization
+        /// </summary>
+        public string? ContactPerson { get; set; }
+        /// <summary>
+        /// Determines if the contact person is the same as the person who signed the contract
+        /// </summary>
+        public bool UseSignedByForContact { get; set; }
+
+        /// <summary>
+        /// Contact phone number at the supplier organization
+        /// </summary>
+        public string? ContactPhoneNumber { get; set; }
+        /// <summary>
+        /// Contact email at the supplier organization
+        /// </summary>
+        public string? ContactEmail { get; set; }
     }
 }

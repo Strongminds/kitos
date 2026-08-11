@@ -63,9 +63,17 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <param name="nameContent">Name content filter</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="orderByProperty">Ordering property</param>
+        /// <param name="paginationQuery">Pagination parameters</param>
+        /// <param name="responsibleOrgUnitUuid">Responsible organization unit UUID filter</param>
+        /// <param name="supplierUuid">Supplier UUID filter</param>
+        /// <param name="nameEquals">Exact name filter</param>
         /// <returns></returns>
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<ItContractResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItContracts(
             [NonEmptyGuid] Guid? organizationUuid = null,
             [NonEmptyGuid] Guid? systemUuid = null,
@@ -73,11 +81,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
             [NonEmptyGuid] Guid? dataProcessingRegistrationUuid = null,
             [NonEmptyGuid] Guid? responsibleOrgUnitUuid = null,
             [NonEmptyGuid] Guid? supplierUuid = null,
-            string nameContent = null,
-            string nameEquals = null,
+            string? nameContent = null,
+            string? nameEquals = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -158,10 +166,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <summary>
         /// Returns requested IT-Contract
         /// </summary>
-        /// <param name="uuid">Specific IT-Contract UUID</param>
+        /// <param name="contractUuid">Specific IT-Contract UUID</param>
         /// <returns>Specific data related to the IT-Contract</returns>
         [HttpGet]
         [Route("{contractUuid}")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -180,6 +193,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
         public IActionResult PostItContract([FromBody] CreateNewContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -202,6 +220,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PutItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -223,6 +247,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpPatch]
         [Route("{contractUuid}")]
+        [ApiResponse(typeof(ItContractResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchItContract([NonEmptyGuid] Guid contractUuid, [FromBody] UpdateContractRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -239,11 +269,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <summary>
         /// Delete an existing contract
         /// </summary>
-        /// <param name="contractUuid"></param>
-        /// <param name="request"></param>
+        /// <param name="contractUuid">UUID of the contract in KITOS</param>
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteItContract([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -261,6 +295,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("{contractUuid}/permissions")]
+        [ApiResponse(typeof(ItContractPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContractPermissions([NonEmptyGuid] Guid contractUuid)
         {
             if (!ModelState.IsValid)
@@ -280,6 +318,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpGet]
         [Route("permissions")]
+        [ApiResponse(typeof(ResourceCollectionPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContractCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -293,10 +335,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <summary>
         /// Creates an external reference for the contract
         /// </summary>
-        /// <param name="contractUuid"></param>
+        /// <param name="contractUuid">UUID of the contract</param>
+        /// <param name="dto">External reference data</param>
         /// <returns></returns>
         [HttpPost]
         [Route("{contractUuid}/external-references")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid contractUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -315,9 +363,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// </summary>
         /// <param name="contractUuid"></param>
         /// <param name="externalReferenceUuid"></param>
+        /// <param name="dto">External reference data</param>
         /// <returns></returns>
         [HttpPut]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -339,6 +393,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns></returns>
         [HttpDelete]
         [Route("{contractUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid contractUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)

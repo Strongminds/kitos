@@ -22,10 +22,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// Returns It-Contract agreement element type options 
         /// </summary>
         /// <param name="organizationUuid">organization context for the agreement element types availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available It-Contract agreement element types</returns>
         [HttpGet]
         [Route("")]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -38,11 +43,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
         /// <returns>A uuid and name pair with boolean to mark if the agreement element type is available in the organization</returns>
         [HttpGet]
         [Route("{agreementElementTypeUuid}")]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid agreementElementTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(agreementElementTypeUuid, organizationUuid);
         }
     }
 }
-
 

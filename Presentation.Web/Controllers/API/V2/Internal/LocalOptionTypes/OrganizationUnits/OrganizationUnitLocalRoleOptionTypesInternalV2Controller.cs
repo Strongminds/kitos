@@ -13,18 +13,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.OrganizationUnits
 {
     [Route("api/v2/internal/organization-units/{organizationUuid}/local-option-types/organization-unit-roles")]
-    public class OrganizationUnitLocalRoleOptionTypesInternalV2Controller: BaseLocalRoleOptionTypesInternalV2Controller<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>
+    public class OrganizationUnitLocalRoleOptionTypesInternalV2Controller(
+        IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole>
+            localRoleOptionTypeService,
+        ILocalOptionTypeResponseMapper responseMapper,
+        ILocalOptionTypeWriteModelMapper writeModelMapper)
+        : BaseLocalRoleOptionTypesInternalV2Controller<LocalOrganizationUnitRole, OrganizationUnitRight,
+            OrganizationUnitRole>(localRoleOptionTypeService, responseMapper, writeModelMapper)
     {
-        private readonly IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> _localOrganizationUnitRoleOptionTypeService;
-        private readonly ILocalOptionTypeResponseMapper _responseMapper;
-        private readonly ILocalOptionTypeWriteModelMapper _writeModelMapper;
-
-        public OrganizationUnitLocalRoleOptionTypesInternalV2Controller(IGenericLocalRoleOptionsService<LocalOrganizationUnitRole, OrganizationUnitRight, OrganizationUnitRole> localRoleOptionTypeService, ILocalOptionTypeResponseMapper responseMapper, ILocalOptionTypeWriteModelMapper writeModelMapper) : base(localRoleOptionTypeService, responseMapper, writeModelMapper)
-        {
-        }
-
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<LocalRoleOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalOrganizationUnitRoles([NonEmptyGuid][FromRoute] Guid organizationUuid)
         {
             return GetAll(organizationUuid);
@@ -33,6 +36,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpGet]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromRoute] Guid optionUuid)
         {
             return GetSingle(organizationUuid, optionUuid);
@@ -40,6 +48,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult CreateLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid, [FromBody] LocalOptionCreateRequestDTO dto)
         {
             return Create(organizationUuid, dto);
@@ -47,6 +60,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpPatch]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid,
             [FromBody] LocalRoleOptionUpdateRequestDTO dto)
@@ -56,6 +74,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.LocalOptionTypes.Organiza
 
         [HttpDelete]
         [Route("{optionUuid}")]
+        [ApiResponse(typeof(LocalRoleOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeleteLocalOrganizationUnitRole([NonEmptyGuid][FromRoute] Guid organizationUuid,
             [FromRoute] Guid optionUuid)
         {

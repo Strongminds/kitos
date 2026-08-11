@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(ContainerBuild)' != 'true'">win-x64</RuntimeIdentifier>
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
@@ -19,16 +19,19 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Core packages -->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.4.1" />
+    <!-- Pin transitive dependency to 8.4.0 to prevent newer versions from breaking nested $expand/$select queries -->
+    <PackageReference Include="Microsoft.OData.Core" Version="8.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="2.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
-    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.11" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
     <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
@@ -41,7 +44,7 @@
     <PackageReference Include="Polly" Version="8.6.6" />
     <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.10" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.9" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
@@ -100,5 +103,8 @@
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.OioWsTrustCore.dll" />
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.SoapCore.dll" />
     <None Remove="..\Infrastructure.STS.Common\lib\kombit-patched\Digst.OioIdws.WscCore.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\API\V2\Request\Archive\" />
   </ItemGroup>
 </Project>

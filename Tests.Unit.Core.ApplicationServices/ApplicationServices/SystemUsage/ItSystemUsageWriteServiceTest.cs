@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -11,6 +11,7 @@ using Core.ApplicationServices.KLE;
 using Core.ApplicationServices.Model;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.References;
@@ -20,6 +21,7 @@ using Core.ApplicationServices.SystemUsage.Relations;
 using Core.ApplicationServices.SystemUsage.Write;
 using Core.DomainModel;
 using Core.DomainModel.Events;
+using Core.DomainModel.Archive;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
@@ -67,6 +69,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IEntityIdentityResolver> _identityResolverMock;
         private readonly Mock<IItsystemUsageRelationsService> _systemUsageRelationServiceMock;
         private readonly Mock<IGenericRepository<ItSystemUsagePersonalData>> _personalDataOptionsRepository;
+        private readonly Mock<IItSystemUsageArchiveService> _itSystemArchiveServiceMock;
 
         public ItSystemUsageWriteServiceTest()
         {
@@ -92,6 +95,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
             _systemUsageRelationServiceMock = new Mock<IItsystemUsageRelationsService>();
             _personalDataOptionsRepository = new Mock<IGenericRepository<ItSystemUsagePersonalData>>();
+            _itSystemArchiveServiceMock = new Mock<IItSystemUsageArchiveService>();
             _sut = new ItSystemUsageWriteService(_itSystemUsageServiceMock.Object, _transactionManagerMock.Object,
                 _itSystemServiceMock.Object, _organizationServiceMock.Object, _authorizationContextMock.Object,
                 _systemCategoriesOptionsServiceMock.Object, _contractServiceMock.Object,
@@ -106,7 +110,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _identityResolverMock.Object,
                 _personalDataOptionsRepository.Object,
                 _systemUsageCriticalityLevelOptionsServiceMock.Object,
-                _technicalSystemTypeOptionsServiceMock.Object);
+                _technicalSystemTypeOptionsServiceMock.Object,
+                _itSystemArchiveServiceMock.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
@@ -2464,6 +2469,87 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
+        public void Can_Archive_SystemUsage()
+        {
+            //Arrange
+            var systemUsageUuid = A<Guid>();
+            var systemUsageId = A<int>();
+            var archive = new ItSystemUsageArchive
+            {
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                ReferenceName = A<string>()
+            };
+            var archiveParameters = CreateArchiveParameters();
+            var transaction = ExpectTransaction();
+
+            _itSystemArchiveServiceMock.Setup(x => x.Create(systemUsageUuid, archiveParameters)).Returns(archive);
+            ExpectGetReadableItSystemUsageByUuidReturns(systemUsageUuid, new ItSystemUsage { Id = systemUsageId, Uuid = systemUsageUuid });
+            _itSystemUsageServiceMock.Setup(x => x.Delete(systemUsageId)).Returns(new ItSystemUsage { Id = systemUsageId });
+
+            //Act
+            var result = _sut.Archive(systemUsageUuid, archiveParameters);
+
+            //Assert
+            Assert.True(result.Ok);
+            Assert.Same(archive, result.Value);
+            AssertTransactionCommitted(transaction);
+            transaction.Verify(x => x.Rollback(), Times.Never);
+        }
+
+        [Fact]
+        public void Cannot_Archive_SystemUsage_If_Archive_Creation_Fails()
+        {
+            //Arrange
+            var systemUsageUuid = A<Guid>();
+            var archiveParameters = CreateArchiveParameters();
+            var transaction = ExpectTransaction();
+            var error = A<OperationError>();
+
+            _itSystemArchiveServiceMock.Setup(x => x.Create(systemUsageUuid, archiveParameters)).Returns(error);
+
+            //Act
+            var result = _sut.Archive(systemUsageUuid, archiveParameters);
+
+            //Assert
+            Assert.True(result.Failed);
+            Assert.Same(error, result.Error);
+            transaction.Verify(x => x.Commit(), Times.Never);
+            transaction.Verify(x => x.Rollback(), Times.Once);
+            _itSystemUsageServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public void Cannot_Archive_SystemUsage_If_Usage_Deletion_Fails()
+        {
+            //Arrange
+            var systemUsageUuid = A<Guid>();
+            var systemUsageId = A<int>();
+            var archive = new ItSystemUsageArchive
+            {
+                Note = A<string>(),
+                ArchivingDate = A<DateTime>(),
+                ReferenceName = A<string>()
+            };
+            var archiveParameters = CreateArchiveParameters();
+            var transaction = ExpectTransaction();
+            var deletionError = new OperationError("delete failed", OperationFailure.Conflict);
+
+            _itSystemArchiveServiceMock.Setup(x => x.Create(systemUsageUuid, archiveParameters)).Returns(archive);
+            ExpectGetReadableItSystemUsageByUuidReturns(systemUsageUuid, new ItSystemUsage { Id = systemUsageId, Uuid = systemUsageUuid });
+            _itSystemUsageServiceMock.Setup(x => x.Delete(systemUsageId)).Returns(deletionError);
+
+            //Act
+            var result = _sut.Archive(systemUsageUuid, archiveParameters);
+
+            //Assert
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
+            transaction.Verify(x => x.Commit(), Times.Never);
+            transaction.Verify(x => x.Rollback(), Times.Once);
+        }
+
+        [Fact]
         public void Can_Update_All_On_Filled_Out_ItSystemUsage()
         {
             //Arrange
@@ -2679,9 +2765,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var newRelation = new SystemRelation(itSystemUsage);
             ExpectGetSystemUsageReturns(systemUsageUuid, itSystemUsage);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters.ToSystemUsageUuid, toSystemUsageId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId ?? Maybe<int>.None);
             ExpectAddSystemRelationReturns(itSystemUsage, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters.Description, systemRelationParameters.UrlReference, newRelation);
 
             //Act
@@ -2833,9 +2919,9 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectGetSystemUsageReturns(systemUsageUuid, itSystemUsage);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<SystemRelation>(relationUuid, relationId);
             ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItSystemUsage>(systemRelationParameters.ToSystemUsageUuid, toSystemUsageId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId);
-            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItInterface>(systemRelationParameters.UsingInterfaceUuid, interfaceId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<RelationFrequencyType>(systemRelationParameters.RelationFrequencyUuid, frequencyTypeId ?? Maybe<int>.None);
+            ExpectIfUuidHasValueResolveIdentityDbIdReturnsId<ItContract>(systemRelationParameters.AssociatedContractUuid, contractId ?? Maybe<int>.None);
             ExpectModifyRelationReturns(itSystemUsage, relationId, toSystemUsageId, interfaceId, frequencyTypeId, contractId, systemRelationParameters.Description, systemRelationParameters.UrlReference, newRelation);
 
             //Act
@@ -3304,8 +3390,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 {
                     WebAccessibilityCompliance = Maybe<YesNoPartiallyOption>.None.AsChangedValue(),
                     LastWebAccessibilityCheck = Maybe<DateTime>.None.AsChangedValue(),
-                    WebAccessibilityNotes =
-                ((string)null).AsChangedValue()
+                    WebAccessibilityNotes = ((string)null!).AsChangedValue()!
                 }
             };
 
@@ -3544,7 +3629,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     RiskAssessmentConducted = new ChangedValue<YesNoDontKnowIrrelevant?>(null),
                     RiskAssessmentConductedDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
-                    RiskAssessmentNotes = new ChangedValue<string>(null),
+                    RiskAssessmentNotes = new ChangedValue<string>(null!),
                     PlannedRiskAssessmentDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentResult = new ChangedValue<RiskLevel?>(null),
                     DPIAConducted = new ChangedValue<DataOptions?>(null),
@@ -3814,7 +3899,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _contractServiceMock.Setup(x => x.GetContract(newContractId)).Returns(result);
         }
 
-        private ItContractItSystemUsage CreateContractAssociation(Organization parentOrganization, ItContract newContract = null)
+        private ItContractItSystemUsage CreateContractAssociation(Organization parentOrganization, ItContract? newContract = null)
         {
             var itContract = newContract ?? CreateItContract(parentOrganization, Maybe<Guid>.None);
             return new ItContractItSystemUsage
@@ -3909,6 +3994,17 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 }).ToList().FromNullable<IEnumerable<SystemUsageJournalPeriodUpdate>>().AsChangedValue()
             };
             return archivingParameters;
+        }
+
+        private ArchiveItSystemUsageParameters CreateArchiveParameters()
+        {
+            return new ArchiveItSystemUsageParameters
+            {
+                ArchivingDate = A<DateTime>(),
+                TakenIntoUsageDate = A<DateTime>(),
+                ReferenceName = A<string>(),
+                Note = A<string>()
+            };
         }
     }
 }

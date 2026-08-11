@@ -23,10 +23,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// Returns IT-System business types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the business type availability</param>
+        /// <param name="pagination">Optional pagination query</param>
         /// <returns>A list of available IT-System business type specifics formatted as uuid and name pairs</returns>
         [HttpGet]
         [Route("")]
-        public IActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        public IActionResult GetBusinessTypes([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -39,11 +45,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>A uuid and name pair with boolean to mark if the business type is available in the organization</returns>
         [HttpGet]
         [Route("{businessTypeUuid}")]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetBusinessType([NonEmptyGuid] Guid businessTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(businessTypeUuid, organizationUuid);
         }
     }
 }
-
 

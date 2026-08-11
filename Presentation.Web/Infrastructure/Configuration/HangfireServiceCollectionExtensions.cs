@@ -2,7 +2,6 @@ using Core.Abstractions.Helpers;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.Server;
-using Hangfire.SqlServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -30,7 +29,12 @@ namespace Presentation.Web.Infrastructure.Configuration
 
                 if (DatabaseProviderHelper.IsPostgreSqlProvider(hangfireProvider))
                 {
-                    config.UsePostgreSqlStorage(hangfireConnectionString);
+                    config.UsePostgreSqlStorage(o => o.UseNpgsqlConnection(hangfireConnectionString), new PostgreSqlStorageOptions
+                    {
+                        // Ensure Hangfire creates its own schema/tables in fresh PostgreSQL databases.
+                        PrepareSchemaIfNecessary = true,
+                        SchemaName = "hangfire"
+                    });
                 }
                 else
                 {
@@ -69,6 +73,16 @@ namespace Presentation.Web.Infrastructure.Configuration
                     createCmd.ExecuteNonQuery();
                 }
 
+                // Ensure schema exists; Hangfire.PostgreSql will create/migrate its own tables.
+                csb.Database = databaseName;
+                using var hangfireConnection = new NpgsqlConnection(csb.ConnectionString);
+                hangfireConnection.Open();
+                using var bootstrapCmd = hangfireConnection.CreateCommand();
+                bootstrapCmd.CommandText = """
+                    CREATE SCHEMA IF NOT EXISTS hangfire;
+                    """;
+                bootstrapCmd.ExecuteNonQuery();
+
                 return;
             }
 
@@ -79,7 +93,14 @@ namespace Presentation.Web.Infrastructure.Configuration
             using var sqlConnection = new Microsoft.Data.SqlClient.SqlConnection(sqlCsb.ConnectionString);
             sqlConnection.Open();
             using var cmd = sqlConnection.CreateCommand();
-            cmd.CommandText = $"IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{sqlDatabaseName}') CREATE DATABASE [{sqlDatabaseName}]";
+            cmd.CommandText = """
+                IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = @dbName)
+                BEGIN
+                    DECLARE @sql NVARCHAR(MAX) = N'CREATE DATABASE ' + QUOTENAME(@dbName);
+                    EXEC sp_executesql @sql;
+                END
+                """;
+            cmd.Parameters.AddWithValue("@dbName", sqlDatabaseName);
             cmd.ExecuteNonQuery();
         }
 

@@ -41,6 +41,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("{unitUuid}/permissions")]
         [HttpGet]
+        [ApiResponse(typeof(UnitAccessRightsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetPermissions([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid unitUuid)
         {
             return _organizationUnitService.GetAccessRights(organizationUuid, unitUuid)
@@ -50,6 +54,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("all/collection-permissions")]
         [HttpGet]
+        [ApiResponse(typeof(UnitAccessRightsWithUnitDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetCollectionPermissions([NonEmptyGuid] Guid organizationUuid)
         {
             return _organizationUnitService.GetAccessRightsByOrganization(organizationUuid)
@@ -65,6 +73,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("create")]
         [HttpPost]
+        [ApiResponse(typeof(OrganizationUnitResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult CreateUnit([NonEmptyGuid] Guid organizationUuid, [FromBody] CreateOrganizationUnitRequestDTO parameters)
         {
             return _organizationUnitWriteService.Create(organizationUuid, _organizationUnitWriteModelMapper.FromPOST(parameters))
@@ -74,6 +86,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("{organizationUnitUuid}/patch")]
         [HttpPatch]
+        [ApiResponse(typeof(OrganizationUnitResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult PatchUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] UpdateOrganizationUnitRequestDTO parameters)
         {
             return _organizationUnitWriteService.Patch(organizationUuid, organizationUnitUuid,
@@ -84,6 +100,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [Route("{organizationUnitUuid}/delete")]
         [HttpDelete]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult DeleteUnit([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitUuid)
         {
             var result = _organizationUnitService.Delete(organizationUuid, organizationUnitUuid);
@@ -92,6 +112,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpGet]
         [Route("{organizationUnitUuid}/roles")]
+        [ApiResponse(typeof(IEnumerable<OrganizationUnitRolesResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetRoleAssignments([NonEmptyGuid] Guid organizationUuid, [NonEmptyGuid] Guid organizationUnitUuid)
         {
             if (!ModelState.IsValid)
@@ -104,6 +128,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpPost]
         [Route("{organizationUnitUuid}/roles/create")]
+        [ApiResponse(typeof(OrganizationUnitRoleAssignmentResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult CreateRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] CreateOrganizationUnitRoleAssignmentRequestDTO request)
         {
@@ -118,6 +146,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
 
         [HttpPost]
         [Route("{organizationUnitUuid}/roles/bulk/create")]
+        [ApiResponse(typeof(OrganizationUnitResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult CreateBulkRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] BulkRoleAssignmentRequestDTO request)
         {
@@ -132,6 +164,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.OrganizationUnits
         [HttpDelete]
         [Consumes("application/json")]
         [Route("{organizationUnitUuid}/roles/delete")]
+        [ApiResponse(HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult DeleteRoleAssignment(
             [NonEmptyGuid] Guid organizationUnitUuid, [FromBody] DeleteOrganizationUnitRoleAssignmentRequestDTO request)
         {

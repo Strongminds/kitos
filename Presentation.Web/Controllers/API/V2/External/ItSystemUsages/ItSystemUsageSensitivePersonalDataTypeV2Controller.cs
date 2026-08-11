@@ -22,10 +22,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns It-System usage sensitive personal data types which are available for new registrations within the organization
         /// </summary>
         /// <param name="organizationUuid">organization context for the sensitive personal data types availability</param>
+        /// <param name="pagination">pagination parameters for the query</param>
         /// <returns>A list of available It-System usage sensitive personal data types</returns>
         [HttpGet]
         [Route("")]
-        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery pagination = null)
+        [ApiResponse(typeof(IEnumerable<RegularOptionResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        public IActionResult Get([NonEmptyGuid] Guid organizationUuid, [FromQuery] UnboundedPaginationQuery? pagination = null)
         {
             return GetAll(organizationUuid, pagination);
         }
@@ -38,6 +44,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the sensitive personal data type is available in the organization</returns>
         [HttpGet]
         [Route("{sensitivePersonalDataTypeUuid}")]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Get([NonEmptyGuid] Guid sensitivePersonalDataTypeUuid, [NonEmptyGuid] Guid organizationUuid)
         {
             return GetSingle(sensitivePersonalDataTypeUuid, organizationUuid);

@@ -263,59 +263,32 @@ Function Invoke-KitosSqlFile([string]$connectionString, [string]$sqlFilePath) {
     if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed executing $sqlFilePath" }
 }
 
-# Executes a PostgreSQL .sql file through Npgsql.
-Function Invoke-PostgresSqlFile([string]$connectionString, [string]$sqlFilePath) {
-    if (-not (Test-Path $sqlFilePath)) {
-        throw "SQL file not found: $sqlFilePath"
-    }
 
-    Write-Host "Applying PostgreSQL baseline schema from $sqlFilePath"
+# Grants full access on the dbo schema and all its objects to the named user.
+# Needed when the script runs as a superuser (e.g. postgres) while the application connects as a
+# lower-privileged user (e.g. kitos): the dbo schema would otherwise be owned by the
+# superuser and the application user would receive "permission denied for schema dbo".
+Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUser) {
+    if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
 
-    $parts = ConvertTo-PostgresConnectionParts $connectionString
-    Invoke-PostgresSqlFileInternal -parts $parts -sqlFilePath $sqlFilePath
-}
-
-Function Initialize-EFCoreHistoryForNewPostgresDb([string]$connectionString) {
-    $historySqlBuilder = New-Object System.Text.StringBuilder
-    # EF Core is configured with MigrationsHistoryTable("__EFMigrationsHistory", "dbo"), so the
-    # history table must be created and populated in the dbo schema to match.
-    [void]$historySqlBuilder.AppendLine('CREATE SCHEMA IF NOT EXISTS dbo;')
-    [void]$historySqlBuilder.AppendLine('CREATE TABLE IF NOT EXISTS dbo."__EFMigrationsHistory" (')
-    [void]$historySqlBuilder.AppendLine('    "MigrationId" character varying(150) NOT NULL,')
-    [void]$historySqlBuilder.AppendLine('    "ProductVersion" character varying(32) NOT NULL,')
-    [void]$historySqlBuilder.AppendLine('    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")')
-    [void]$historySqlBuilder.AppendLine(');')
-
-    # Pre-mark migrations whose schema is already included in the PostgreSQL baseline SQL.
-    # Any migration added here must have its full schema captured in Baseline.PostgreSql.FullModel.sql.
-    #
-    # - InitialBaseline: always (the full baseline schema).
-    # - AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel: columns already in baseline;
-    #   re-applying would fail with "column already exists".
-    # - BridgeMissingColumnsFromEF6: uses T-SQL IF NOT EXISTS syntax that cannot run on PostgreSQL;
-    #   the bridged columns (SensitivePersonalDataTypeId, RegisterTypeId) are already in baseline.
-    # - EnableCitextForCaseInsensitiveNameColumns: citext columns already applied in baseline;
-    #   running again is harmless but pre-marking keeps history consistent with the baseline state.
-    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260413095837_InitialBaseline', '10.0.6') ON CONFLICT DO NOTHING;")
-    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260415045340_AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel', '10.0.6') ON CONFLICT DO NOTHING;")
-    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260420093000_BridgeMissingColumnsFromEF6', '10.0.6') ON CONFLICT DO NOTHING;")
-    [void]$historySqlBuilder.AppendLine("INSERT INTO dbo.`"__EFMigrationsHistory`" (`"MigrationId`", `"ProductVersion`") VALUES ('20260427113000_EnableCitextForCaseInsensitiveNameColumns', '10.0.6') ON CONFLICT DO NOTHING;")
-
-    $parts = ConvertTo-PostgresConnectionParts $connectionString
-    # Write to a temp file and use psql -f for reliable multi-statement execution,
-    # matching the pattern used by Invoke-PostgresSqlFileInternal.
-    $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
-    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-    [System.IO.File]::WriteAllText($tmpFile, $historySqlBuilder.ToString(), $utf8NoBom)
-    $psqlPath = Get-PostgresCliPath
-    $Env:PGPASSWORD = $parts.Password
-    try {
-        & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d $parts.Database -v ON_ERROR_STOP=1 -f $tmpFile
-        if ($LASTEXITCODE -ne 0) { throw "psql failed initializing EF Core migration history" }
-    } finally {
-        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
-        Remove-Item $tmpFile -ErrorAction SilentlyContinue
-    }
+    Write-Host "Granting dbo schema privileges to '$granteeUser'"
+    $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
+    $escapedDatabaseName = $parts.Database.Replace("'", "''").Replace('"', '""')
+    $sql = @"
+DO `$`$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
+        GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
+    END IF;
+END
+`$`$;
+"@
+    Invoke-PostgresSql -parts $parts -database $parts.Database -sql $sql
 }
 
 # For existing databases (previously managed by EF6), pre-marks EF Core migrations as applied
@@ -390,8 +363,16 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
 
     # Verify TCP connectivity before proceeding with any migration operations.
     if ($isPostgreSql) {
-        if (-not [string]::IsNullOrWhiteSpace($pgParts.Host)) {
-            Wait-ForTcpPort -Hostname $pgParts.Host -Port ([int]$pgParts.Port)
+        $parts = ConvertTo-PostgresConnectionParts $connectionString
+        if (-not $parts.Host) {
+            throw "PostgreSQL connection string must contain Host"
+        }
+
+        $pgHost = $parts.Host.Trim()
+        $isLocalServer = $newDb -eq $true -or ($pgHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+        if (-not $isLocalServer) {
+            $pgPort = if ($parts.Port) { [int]$parts.Port } else { 5432 }
+            Wait-ForTcpPort -Hostname $pgHost -Port $pgPort
         }
     } else {
         # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
@@ -401,7 +382,7 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
         $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
         $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
-        if (-not $isLocalServer -and -not [string]::IsNullOrWhiteSpace($sqlHost)) {
+        if (-not $isLocalServer) {
             $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
             Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
         }
@@ -409,26 +390,27 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
     $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
-    $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
+    # Use Infrastructure.DataAccess as startup for dotnet ef fallback.
+    # This avoids loading Presentation.Web (not required because KitosContextDesignTimeFactory
+    # resolves provider/connection from environment variables).
+    $startupProject = $infraProject
 
     if ($newDb -eq $true) {
         if ($isPostgreSql) {
-            Write-Host "New PostgreSQL database detected - ensuring database exists and applying EF Core baseline schema"
+            Write-Host "New PostgreSQL database detected - ensuring database exists"
             New-PostgresDatabase -connectionString $connectionString
 
-            $baselineSql = "$repoRoot\DeploymentScripts\Baseline.PostgreSql.FullModel.sql"
-            Invoke-PostgresSqlFile -connectionString $connectionString -sqlFilePath $baselineSql
-
-            Initialize-EFCoreHistoryForNewPostgresDb -connectionString $connectionString
+            # When the script runs as a superuser (e.g. postgres) but the application connects as a
+            # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
+            # Grant the known app user access so the running application is not blocked.
+            # This is a no-op when the script already runs as the app user (kitos owns the schema).
+            $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+            if ($pgParts.Username -ne $knownAppUser) {
+                Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
+            }
         } else {
-            # New database: apply the extracted baseline SQL script which creates the full schema
-            # and inserts the InitialBaseline record into __EFMigrationsHistory.
-            # dotnet ef database update will then only apply migrations added after the baseline.
-            $baselineSql = "$repoRoot\DeploymentScripts\Baseline.sql"
-            Write-Host "New SQL Server database detected - creating database and applying baseline schema from $baselineSql"
+            Write-Host "New SQL Server database detected - creating database"
             New-SqlDatabase -connectionString $connectionString
-            Invoke-KitosSqlFile -connectionString $connectionString -sqlFilePath $baselineSql
-            Write-Host "Baseline schema applied"
         }
     }
 
@@ -442,13 +424,6 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     }
     $Env:IgnorePendingModelChangesWarning = "true"
 
-    if (-not $isPostgreSql -and $newDb -eq $false) {
-        Write-Host "Initializing EF Core migration history for existing database"
-        Initialize-EFCoreHistoryForExistingDb -connectionString $connectionString
-    } elseif ($isPostgreSql -and $newDb -eq $false) {
-        Write-Host "Skipping SQL Server-specific EF Core history initialization for PostgreSQL"
-    }
-
     # CI path: use provider-specific pre-built self-contained bundle (no source or SDK required on the agent).
     # Local dev fallback: build and run via dotnet ef when the bundle is not present.
     $bundleExe = if ($isPostgreSql) {
@@ -457,7 +432,37 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         "$PSScriptRoot\..\MigrationsBundle\efbundle.exe"
     }
 
-    if (Test-Path $bundleExe) {
+    $preferBundle = $buildConfiguration -eq "Release" -or $Env:UseMigrationsBundle -eq "true"
+    $useBundle = $preferBundle -and (Test-Path $bundleExe)
+    if ($useBundle) {
+        $migrationInputPaths = @(
+            "$repoRoot\Infrastructure.DataAccess\KitosContext.cs",
+            "$repoRoot\Infrastructure.DataAccess\KitosContextDesignTimeFactory.cs",
+            "$repoRoot\Infrastructure.DataAccess\KitosNpgsqlMigrationsSqlGenerator.cs"
+        )
+        $migrationFiles = Get-ChildItem -Path "$repoRoot\Infrastructure.DataAccess\Migrations\EfCore" -Filter "*.cs" -File -Recurse -ErrorAction SilentlyContinue
+        $migrationInputPaths += $migrationFiles | ForEach-Object { $_.FullName }
+
+        $newestInputUtc = [DateTime]::MinValue
+        foreach ($path in $migrationInputPaths) {
+            if (-not (Test-Path -LiteralPath $path)) {
+                continue
+            }
+
+            $lastWrite = (Get-Item -LiteralPath $path).LastWriteTimeUtc
+            if ($lastWrite -gt $newestInputUtc) {
+                $newestInputUtc = $lastWrite
+            }
+        }
+
+        $bundleTimestampUtc = (Get-Item -LiteralPath $bundleExe).LastWriteTimeUtc
+        if ($bundleTimestampUtc -lt $newestInputUtc) {
+            Write-Warning "Skipping stale migrations bundle at $bundleExe. Newer migration inputs exist ($newestInputUtc). Falling back to dotnet ef."
+            $useBundle = $false
+        }
+    }
+
+    if ($useBundle) {
         Write-Host "Using pre-built migrations bundle at $bundleExe"
         $bundleArgs = @("--connection", "$connectionString")
         $verboseBundleLogging = $Env:VerboseMigrationLogging -eq "true"
@@ -490,8 +495,14 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         }
 
         if ($bundleExitCode -ne 0) { Throw "FAILED TO MIGRATE DB" }
-    } else {
-        Write-Host "Migrations bundle not found, running dotnet ef database update"
+    }
+
+    if (-not $useBundle) {
+        if (-not $preferBundle) {
+            Write-Host "Running dotnet ef database update (bundle disabled for this configuration)"
+        } else {
+            Write-Host "Migrations bundle unavailable or stale, running dotnet ef database update"
+        }
         dotnet ef database update `
             --project "$infraProject" `
             --startup-project "$startupProject" `

@@ -5,6 +5,7 @@ using Presentation.Web.Controllers.API.V2.Internal.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Request;
 using Presentation.Web.Models.API.V2.Internal.Response;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
 
 namespace Presentation.Web.Controllers.API.V2.Internal
 {
@@ -24,6 +25,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("{key}")]
+        [ApiResponse(typeof(HelpTextResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetSingle([FromRoute] string key)
         {
             return _helpTextApplicationService.GetHelpText(key)
@@ -33,6 +39,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpGet]
         [Route("")]
+        [ApiResponse(typeof(IEnumerable<HelpTextResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetAll()
         {
             var helpTexts = _helpTextApplicationService.GetHelpTexts();
@@ -41,6 +52,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpPost]
         [Route("")]
+        [ApiResponse(typeof(HelpTextResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Post([FromBody] HelpTextCreateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -53,6 +69,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpDelete]
         [Route("{key}")]
+        [ApiResponse(typeof(HelpTextResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Delete([FromRoute] string key)
         {
             return _helpTextApplicationService.DeleteHelpText(key)
@@ -61,6 +82,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal
 
         [HttpPatch]
         [Route("{key}")]
+        [ApiResponse(typeof(HelpTextResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult Patch([FromRoute] string key, [FromBody] HelpTextUpdateRequestDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();

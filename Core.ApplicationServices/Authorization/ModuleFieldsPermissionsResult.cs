@@ -34,16 +34,20 @@ namespace Core.ApplicationServices.Authorization
                                 x => x.OversightDate)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
-                            .GetPropertyPath< DataProcessingRegistrationOversightDate >(
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightRemark)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
-                            .GetPropertyPath< DataProcessingRegistrationOversightDate >(
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightReportLink)),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
-                            .GetPropertyPath< DataProcessingRegistrationOversightDate >(
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
                                 x => x.OversightReportLinkName)),
+                    fieldAuthorizationModel.GetFieldPermissions(dpr,
+                        ObjectHelper
+                            .GetPropertyPath<DataProcessingRegistrationOversightDate>(
+                                x => x.OversightOptionId))
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (

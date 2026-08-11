@@ -2,6 +2,6 @@
 {
     public class CombinedPermissionsResponseDTO : ResourcePermissionsResponseDTO
     {
-        public ModuleFieldPermissionsResponseDTO FieldPermissions { get; set; }
+        public required ModuleFieldPermissionsResponseDTO FieldPermissions { get; set; }
     }
 }

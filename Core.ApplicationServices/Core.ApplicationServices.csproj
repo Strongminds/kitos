@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Model\Archive\**" />
+    <EmbeddedResource Remove="Model\Archive\**" />
+    <None Remove="Model\Archive\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="kitos.dk.nita.saml20" Version="1.1.10" />

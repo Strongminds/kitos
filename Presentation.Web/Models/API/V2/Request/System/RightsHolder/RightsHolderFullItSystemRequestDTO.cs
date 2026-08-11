@@ -1,6 +1,6 @@
 ﻿using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
-using Presentation.Web.Models.API.V2.Types.System;
+using Presentation.Web.Models.API.V2.Request.System.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -38,7 +38,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(Core.DomainModel.ItSystem.ItSystem.MaxNameLength)]
-        public string Name { get; set; }
+        public required string? Name { get; set; }
 
         /// <summary>
         /// Former name of IT-System (if any)
@@ -49,7 +49,7 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// Description
         /// </summary>
         [Required(AllowEmptyStrings = false)]
-        public string Description { get; set; }
+        public required string? Description { get; set; }
 
         /// <summary>
         /// User defined external references.
@@ -72,9 +72,5 @@ namespace Presentation.Web.Models.API.V2.Request.System.RightsHolder
         /// UUID's for KLE numbers categorizing this IT-System
         /// </summary>
         public IEnumerable<Guid>? KLEUuids { get; set; }
-        /// <summary>
-        /// The licensing and code model used for this system. Existing models will be replaced by the input data.
-        /// </summary>
-        public IEnumerable<LicensingAndCodeModelChoice>? LicensingAndCodeModels { get; set; }
     }
 }

@@ -11,7 +11,6 @@ using Presentation.Web.Models.API.V2.Response.Generic.Roles;
 using Presentation.Web.Models.API.V2.Types.Contract;
 using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.Organization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
 {
@@ -39,7 +38,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 Procurement = MapProcurement(contract),
                 Supplier = MapSupplier(contract),
                 Responsible = MapResponsible(contract),
-                SystemUsages = contract.AssociatedSystemUsages?.Select(x => x.ItSystemUsage?.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO>(),
+                SystemUsages = contract.AssociatedSystemUsages?.Select(x => x.ItSystemUsage?.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO?>(),
                 DataProcessingRegistrations = contract.DataProcessingRegistrations?.Select(x => x.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO>(),
                 PaymentModel = MapPaymentModel(contract),
                 AgreementPeriod = MapAgreementPeriod(contract),
@@ -151,7 +150,14 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 SignedBy = contract.SupplierContractSigner,
                 Signed = contract.HasSupplierSigned,
                 SignedAt = contract.SupplierSignedDate,
-                Organization = contract.Supplier?.MapShallowOrganizationResponseDTO()
+                Organization = contract.Supplier?.MapShallowOrganizationResponseDTO(),
+                OrganizationUnit = contract.SupplierOrganizationUnit?.MapIdentityNamePairDTO(),
+                IsInternal = contract.HasInternalSupplier,
+                ContactPerson = contract.SupplierContactPerson,
+                UseSignedByForContact = contract.UseSupplierContractSignerAsContactPerson,
+                ContactPhoneNumber = contract.SupplierContactPhoneNumber,
+                ContactEmail = contract.SupplierContactEmail,
+                SupplierType = contract.HasInternalSupplier.ToItContractSupplierTypeChoice()
             };
         }
 
@@ -166,7 +172,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             };
         }
 
-        private static ProcurementPlanDTO MapProcurementPlan(ItContract contract)
+        private static ProcurementPlanDTO? MapProcurementPlan(ItContract contract)
         {
             if (!contract.ProcurementPlanQuarter.HasValue)
                 return null;
@@ -189,7 +195,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                 Notes = contract.Note,
                 ContractTemplate = contract.ContractTemplate?.MapIdentityNamePairDTO(),
                 ContractType = contract.ContractType?.MapIdentityNamePairDTO(),
-                AgreementElements = contract.AssociatedAgreementElementTypes?.Select(x => x.AgreementElementType?.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO>(),
+                AgreementElements = contract.AssociatedAgreementElementTypes?.Select(x => x.AgreementElementType.MapIdentityNamePairDTO()).ToList() ?? new List<IdentityNamePairResponseDTO>(),
                 Criticality = contract.Criticality?.MapIdentityNamePairDTO(),
                 Validity = new ContractValidityResponseDTO
                 {

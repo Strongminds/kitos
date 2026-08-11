@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using Core.ApplicationServices.Model.Shared.Write;
+using Core.ApplicationServices.Model.SystemUsage;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Presentation.Web.Models.API.V2.Request.Generic.ExternalReferences;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 {
@@ -17,5 +17,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         IEnumerable<SystemRelationParameters> MapRelations(IEnumerable<SystemRelationWriteRequestDTO> dtos);
         SystemUsageJournalPeriodProperties MapJournalPeriodProperties(JournalPeriodDTO input);
         ExternalReferenceProperties MapExternalReference(ExternalReferenceDataWriteRequestDTO externalReferenceData);
+        ArchiveItSystemUsageParameters MapArchiveParameters(CreateItSystemUsageArchiveRequestDTO request);
     }
 }

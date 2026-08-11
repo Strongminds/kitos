@@ -16,7 +16,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Additional remark related to the data responsible
         /// </summary>
-        public string DataResponsibleRemark { get; set; }
+        public required string DataResponsibleRemark { get; set; }
         /// <summary>
         /// Determines if a data processing agreement has been concluded
         /// </summary>
@@ -24,7 +24,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// Remark related to whether or not an agreement has been concluded
         /// </summary>
-        public string IsAgreementConcludedRemark { get; set; }
+        public required string IsAgreementConcludedRemark { get; set; }
         /// <summary>
         /// Describes the date when the data processing agreement was concluded
         /// </summary>

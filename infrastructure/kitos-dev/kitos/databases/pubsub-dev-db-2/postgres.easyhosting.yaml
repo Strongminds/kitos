@@ -1,0 +1,12 @@
+apiVersion: easyhosting.io/v1alpha1
+kind: PostgresDatabase
+metadata:
+  name: pubsub-dev-db-2
+  namespace: kitos
+spec:
+  mode: managed
+  engine: cloudnativepg
+  version: "17"
+  database: pubsub-dev-db-2
+  storage: 5Gi
+  backupPolicy: standard

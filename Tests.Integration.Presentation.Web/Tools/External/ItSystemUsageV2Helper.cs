@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -81,7 +81,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             Guid? relationToSystemUuidFilter = null,
             Guid? relationToSystemUsageUuidFilter = null,
             Guid? relationToContractUuidFilter = null,
-            string systemNameContentFilter = null,
+            string? systemNameContentFilter = null,
             DateTime? changedSinceGtEq = null,
             int? page = null,
             int? pageSize = null)
@@ -107,7 +107,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
             Guid? relationToSystemUuidFilter = null,
             Guid? relationToSystemUsageUuidFilter = null,
             Guid? relationToContractUuidFilter = null,
-            string systemNameContentFilter = null,
+            string? systemNameContentFilter = null,
             DateTime? changedSinceGtEq = null,
             int? page = null,
             int? pageSize = null)
@@ -127,8 +127,8 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         private static async Task<HttpResponseMessage> QueryItSystemUsages(string basePath, Guid? organizationFilter,
             Guid? systemUuidFilter,
             Guid? relationToSystemUuidFilter, Guid? relationToSystemUsageUuidFilter, Guid? relationToContractUuidFilter,
-            string systemNameContentFilter, DateTime? changedSinceGtEq, int? page, int? pageSize, string token = null,
-            Cookie cookie = null)
+            string? systemNameContentFilter, DateTime? changedSinceGtEq, int? page, int? pageSize, string? token = null,
+            Cookie? cookie = null)
         {
             var criteria = new List<KeyValuePair<string, string>>();
 
@@ -237,7 +237,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         }
 
         public static async Task<HttpResponseMessage> SendPatchExternalReferences(string token, Guid uuid,
-            IEnumerable<UpdateExternalReferenceDataWriteRequestDTO> payload)
+            IEnumerable<UpdateExternalReferenceDataWriteRequestDTO>? payload)
         {
             return await HttpApi.PatchWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token,
                 (payload ?? new List<UpdateExternalReferenceDataWriteRequestDTO>()).AsPatchPayloadOfProperty(
@@ -296,6 +296,20 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         public static async Task<HttpResponseMessage> SendDeleteAsync(string token, Guid uuid)
         {
             return await HttpApi.DeleteWithTokenAsync(TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{uuid}"), token);
+        }
+
+        public static async Task<ItSystemUsageArchiveResponseDTO> ArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        {
+            using var response = await SendArchiveAsync(token, systemUsageUuid, dto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<ItSystemUsageArchiveResponseDTO>();
+        }
+
+        public static async Task<HttpResponseMessage> SendArchiveAsync(string token, Guid systemUsageUuid, CreateItSystemUsageArchiveRequestDTO dto)
+        {
+            return await HttpApi.PostWithTokenAsync(
+                TestEnvironment.CreateUrl($"{BaseUsageApiPath}/{systemUsageUuid:D}/archive"), dto, token);
         }
 
         public static async Task<OutgoingSystemRelationResponseDTO> PostRelationAsync(string token,
@@ -475,7 +489,7 @@ namespace Tests.Integration.Presentation.Web.Tools.External
         }
 
         public static async Task<IEnumerable<ItSystemUsageOverviewReadModel>> QueryReadModelByNameContent(
-            Guid organizationUuid, string nameContent, int top, int skip, Cookie optionalLogin = null)
+            Guid organizationUuid, string nameContent, int top, int skip, Cookie? optionalLogin = null)
         {
             var cookie = optionalLogin ?? await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             using var response = await HttpApi.GetWithCookieAsync(

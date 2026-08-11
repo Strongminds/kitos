@@ -116,6 +116,10 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasIndex(x => x.ItSystemId)
                 .HasDatabaseName("IX_ItSystemUsage_ItSystemId");
+
+            // LicensingAndCodeModels is persisted as a string but exposed as a collection via the entity property
+            // Ignore the navigation property to prevent EF from trying to map it as an array
+            builder.Ignore(x => x.LicensingAndCodeModels);
         }
     }
 }

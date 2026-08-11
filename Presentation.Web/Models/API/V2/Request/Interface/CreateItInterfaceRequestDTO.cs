@@ -53,7 +53,7 @@ namespace Presentation.Web.Models.API.V2.Request.Interface
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(ItInterface.MaxNameLength)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         /// <summary>
         /// Identifier for IT-Interface
         /// </summary>

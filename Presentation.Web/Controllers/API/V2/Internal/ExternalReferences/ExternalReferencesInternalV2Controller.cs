@@ -31,6 +31,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-systems/{systemUuid}")]
+        [ApiResponse(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemReferences([NonEmptyGuid][FromRoute] Guid systemUuid)
         {
             return _systemService.GetSystem(systemUuid)
@@ -40,6 +45,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-system-usages/{systemUsageUuid}")]
+        [ApiResponse(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemUsageReferences([NonEmptyGuid][FromRoute] Guid systemUsageUuid)
         {
             return _usageService.GetItSystemUsageByUuidAndAuthorizeRead(systemUsageUuid)
@@ -49,6 +59,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("it-contracts/{contractUuid}")]
+        [ApiResponse(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItContractReferences([NonEmptyGuid][FromRoute] Guid contractUuid)
         {
             return _contractService.GetContract(contractUuid)
@@ -58,6 +73,11 @@ namespace Presentation.Web.Controllers.API.V2.Internal.ExternalReferences
 
         [HttpGet]
         [Route("data-processing/{dprUuid}")]
+        [ApiResponse(typeof(IEnumerable<ExternalReferenceWithLastChangedResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetDataProcessingReferences([NonEmptyGuid][FromRoute] Guid dprUuid)
         {
             return _dprService.GetByUuid(dprUuid)

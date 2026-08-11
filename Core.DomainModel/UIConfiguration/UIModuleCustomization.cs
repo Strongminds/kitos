@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Core.Abstractions.Extensions;
@@ -10,10 +9,6 @@ namespace Core.DomainModel.UIConfiguration
 {
     public class UIModuleCustomization : Entity, IOwnedByOrganization
     {
-        public UIModuleCustomization()
-        {
-            Nodes = new List<CustomizedUINode>();
-        }
         public int OrganizationId { get; set; }
         
         /// <summary>
@@ -22,12 +17,12 @@ namespace Core.DomainModel.UIConfiguration
         public string Module { get; set; }
         
         public virtual Organization.Organization Organization{ get; set; }
-        public virtual ICollection<CustomizedUINode> Nodes { get; set; }
+        public virtual ICollection<CustomizedUINode> Nodes { get; set; } = new List<CustomizedUINode>();
 
         public Maybe<OperationError> UpdateConfigurationNodes(IEnumerable<CustomizedUINode> nodes)
         {
             if (nodes == null)
-                throw new ArgumentNullException("Nodes parameter cannot be null");
+                return new OperationError("Nodes parameter cannot be null", OperationFailure.BadInput);
 
             var customizedUiNodes = nodes.ToList();
 

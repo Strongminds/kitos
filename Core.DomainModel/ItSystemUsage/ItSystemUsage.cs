@@ -265,8 +265,8 @@ namespace Core.DomainModel.ItSystemUsage
 
         public virtual ICollection<TechnicalSystemType> TechnicalSystemTypes { get; set; }
 
-        public virtual string? CriticalityLevelDocumentationUrl { get; set; }
-        public virtual string? CriticalityLevelDocumentationName { get; set; }
+        public string CriticalityLevelDocumentationUrl { get; set; }
+        public string CriticalityLevelDocumentationName { get; set; }
 
         public virtual ItSystemCategories ItSystemCategories { get; set; }
 
@@ -300,13 +300,13 @@ namespace Core.DomainModel.ItSystemUsage
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
-        public void UpdateCriticalityLevelDocumentationUrl(string? value) {
+        public void UpdateCriticalityLevelDocumentationUrl(string value) {
             if (value == CriticalityLevelDocumentationUrl) return;
             CriticalityLevelDocumentationUrl = value;
             SetCriticalityFieldsLastChanged();
         }
 
-        public void UpdateCriticalityLevelDocumentationName(string? value)
+        public void UpdateCriticalityLevelDocumentationName(string value)
         {
             if (value == CriticalityLevelDocumentationName) return;
             CriticalityLevelDocumentationName = value;
@@ -1509,5 +1509,17 @@ namespace Core.DomainModel.ItSystemUsage
         {
             ProcessingPurpose = purpose;
         }
+
+        public Maybe<OperationError> SetLicensingAndCodeModels(IEnumerable<LicensingAndCodeModel> newModels)
+        {
+            if (newModels.Any(x => x == LicensingAndCodeModel.Proprietary) && newModels.Any(y => y != LicensingAndCodeModel.Proprietary))
+                return new OperationError($"The Proprietary licensing and code model cannot be set on the same system as another model", OperationFailure.Conflict);
+
+            LicensingAndCodeModels = [.. newModels.Distinct()];
+
+            return Maybe<OperationError>.None;
+        }
+
+        public ICollection<LicensingAndCodeModel> LicensingAndCodeModels { get; set; } = new List<LicensingAndCodeModel>();
     }
 }

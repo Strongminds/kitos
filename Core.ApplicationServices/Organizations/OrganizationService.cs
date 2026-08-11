@@ -129,7 +129,7 @@ namespace Core.ApplicationServices.Organizations
             return organization;
         }
 
-        public bool CanChangeOrganizationType(Organization organization, OrganizationTypeKeys organizationType)
+        public bool CanChangeOrganizationType(Organization? organization, OrganizationTypeKeys organizationType)
         {
             if (organization == null)
             {
@@ -140,7 +140,7 @@ namespace Core.ApplicationServices.Organizations
                 _authorizationContext.HasPermission(new DefineOrganizationTypePermission(organizationType, organization.Id));
         }
 
-        public Result<Organization, OperationFailure> CreateNewOrganization(Organization newOrg)
+        public Result<Organization, OperationFailure> CreateNewOrganization(Organization? newOrg)
         {
             if (newOrg == null)
             {

@@ -71,22 +71,27 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
         /// <param name="usedInOrganizationUuid">Filter by UUID of an organization which has taken the it-system into use through an it-system-usage resource</param>
         /// <param name="nameContains">Include only systems with a name that contains the content in the parameter</param>
+        /// <param name="paginationQuery">Pagination query parameters</param>
         /// <param name="orderByProperty">Ordering property</param>
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems")]
+        [ApiResponse(typeof(IEnumerable<ItSystemResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItSystems(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             [NonEmptyGuid] Guid? businessTypeUuid = null,
-            string kleNumber = null,
+            string? kleNumber = null,
             [NonEmptyGuid] Guid? kleUuid = null,
             int? numberOfUsers = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
             [NonEmptyGuid] Guid? usedInOrganizationUuid = null,
-            string nameContains = null,
+            string? nameContains = null,
             CommonOrderByProperty? orderByProperty = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -105,6 +110,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpPost]
         [Route("it-systems")]
+        [ApiResponse(typeof(ItSystemResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostItSystem([FromBody] CreateItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -124,6 +134,12 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpPatch]
         [Route("it-systems/{uuid}")]
+        [ApiResponse(typeof(ItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PatchItSystem([NonEmptyGuid] Guid uuid, [FromBody] UpdateItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -147,6 +163,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpDelete]
         [Route("it-systems/{uuid}")]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteItSystem([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -164,6 +184,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns>Specific data related to the IT-System</returns>
         [HttpGet]
         [Route("it-systems/{uuid}")]
+        [ApiResponse(typeof(ItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystem([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -182,6 +207,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/{uuid}/hierarchy")]
+        [ApiResponse(typeof(IEnumerable<RegistrationHierarchyNodeWithActivationStatusResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetHierarchy([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -198,15 +227,19 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <param name="rightsHolderUuid">Optional filtering if a user is rights holder in multiple organizations and wishes to scope the request to a single one</param>
         /// <param name="includeDeactivated">If set to true, the response will also include deactivated it-interfaces</param>
         /// <param name="changedSinceGtEq">Include only changes which were LastModified (UTC) is equal to or greater than the provided value</param>
+        /// <param name="paginationQuery"></param>
         /// <returns></returns>
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems")]
+        [ApiResponse(typeof(IEnumerable<RightsHolderItSystemResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult GetItSystemsByRightsHoldersAccess(
             [NonEmptyGuid] Guid? rightsHolderUuid = null,
             bool? includeDeactivated = null,
             DateTime? changedSinceGtEq = null,
-            [FromQuery] BoundedPaginationQuery paginationQuery = null)
+            [FromQuery] BoundedPaginationQuery? paginationQuery = null)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -238,6 +271,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpGet]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems/{uuid}")]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemByRightsHoldersAccess([NonEmptyGuid] Guid uuid)
         {
             if (!ModelState.IsValid)
@@ -257,6 +295,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [HttpPost]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems")]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Conflict)]
         public IActionResult PostItSystemAsRightsHolder([FromBody] RightsHolderFullItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -277,10 +320,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
 		/// NOTE: Only active systems can be modified.
         /// </summary>
         /// <param name="uuid">Specific IT-System UUID</param>
+        /// <param name="request">IT-System data to update</param>
         /// <returns>The updated IT-System</returns>
         [HttpPut]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems/{uuid}")]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PutItSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] RightsHolderFullItSystemRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -299,10 +348,16 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// NOTE: Only active systems can be modified.
         /// </summary>
         /// <param name="uuid">Specific IT-System UUID</param>
+        /// <param name="request">IT-System data to update</param>
         /// <returns>The updated IT-System</returns>
         [HttpPatch]
         [AllowRightsHoldersAccess]
         [Route("rightsholder/it-systems/{uuid}")]
+        [ApiResponse(typeof(RightsHolderItSystemResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult PatchItSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] RightsHolderUpdateSystemPropertiesRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -326,6 +381,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         [AllowRightsHoldersAccess]
         [Consumes("application/json")]
         [Route("rightsholder/it-systems/{uuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult DeactivateSystemAsRightsHolder([NonEmptyGuid] Guid uuid, [FromBody] DeactivationReasonRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -344,6 +404,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/{systemUuid}/permissions")]
+        [ApiResponse(typeof(ItSystemPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemPermissions([NonEmptyGuid] Guid systemUuid)
         {
             if (!ModelState.IsValid)
@@ -363,6 +427,10 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpGet]
         [Route("it-systems/permissions")]
+        [ApiResponse(typeof(ResourceCollectionPermissionsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
         public IActionResult GetItSystemCollectionPermissions([Required][NonEmptyGuid] Guid organizationUuid)
         {
             if (!ModelState.IsValid)
@@ -378,9 +446,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// Creates an external reference for the system
         /// </summary>
         /// <param name="systemUuid"></param>
+        /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("it-systems/{systemUuid}/external-references")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.Created)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PostExternalReference([NonEmptyGuid] Guid systemUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -397,11 +471,17 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <summary>
         /// Updates a system external reference
         /// </summary>
-        /// <param name="systemUuid"></param>
-        /// <param name="externalReferenceUuid"></param>
+        /// <param name="systemUuid">UUID of the system</param>
+        /// <param name="externalReferenceUuid">UUID of the external reference</param>
+        /// <param name="dto">External reference data</param>
         /// <returns></returns>
         [HttpPut]
         [Route("it-systems/{systemUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(typeof(ExternalReferenceDataResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult PutExternalReference([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid externalReferenceUuid, [FromBody] ExternalReferenceDataWriteRequestDTO dto)
         {
             if (!ModelState.IsValid)
@@ -423,6 +503,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystems
         /// <returns></returns>
         [HttpDelete]
         [Route("it-systems/{systemUuid}/external-references/{externalReferenceUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
         public IActionResult DeleteExternalReference([NonEmptyGuid] Guid systemUuid, [NonEmptyGuid] Guid externalReferenceUuid)
         {
             if (!ModelState.IsValid)

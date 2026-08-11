@@ -7,7 +7,6 @@ using Presentation.Web;
 using Presentation.Web.Infrastructure.Configuration;
 using Presentation.Web.Infrastructure.DI;
 using Presentation.Web.Models.Application.RuntimeEnv;
-using Serilog;
 using System;
 
 // Must be set before any Npgsql type is loaded (including Hangfire's PostgreSQL storage).
@@ -28,12 +27,7 @@ System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += static (context, 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
+builder.AddKitosSerilog();
 
 var configuration = builder.Configuration;
 var services = builder.Services;
@@ -62,6 +56,7 @@ var app = builder.Build();
 dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
     app.Services.GetRequiredService<IHttpContextAccessor>());
 
+app.EnsurePostgreSqlExtensions();
 app.UseKitosPipeline();
 app.MapKitosEndpoints();
 app.InitializeHangfireJobs();

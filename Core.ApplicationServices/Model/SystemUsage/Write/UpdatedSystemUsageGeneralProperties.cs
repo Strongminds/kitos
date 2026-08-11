@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Shared;
+using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystem.DataTypes;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Shared;
+using System;
+using System.Collections.Generic;
 
 
 namespace Core.ApplicationServices.Model.SystemUsage.Write
@@ -32,6 +33,6 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<string> Purpose { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<Maybe<IEnumerable<Guid>>> TechnicalSystemTypeUuids { get; set; } = OptionalValueChange<Maybe<IEnumerable<Guid>>>.None;
         public OptionalValueChange<HostedAt?> HostedAt { get; set; } = OptionalValueChange<HostedAt?>.None;
-
+        public OptionalValueChange<IEnumerable<LicensingAndCodeModel>> LicensingAndCodeModels { get; set; } = OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None;
     }
 }

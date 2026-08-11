@@ -1,12 +1,15 @@
 using Core.BackgroundJobs.Model;
 using Hangfire;
 using Hangfire.Common;
+using Infrastructure.DataAccess;
 using Infrastructure.Services.BackgroundJobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using Presentation.Web.Infrastructure.Middleware;
 using Serilog;
 using System;
@@ -69,6 +72,7 @@ namespace Presentation.Web.Infrastructure.Configuration
             }
 
             app.UseStaticFiles();
+            app.UseMiddleware<NormalizeODataQueryStringMiddleware>();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -107,67 +111,100 @@ namespace Presentation.Web.Infrastructure.Configuration
                 recurringJobId: StandardJobIds.CheckExternalLinks,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchLinkCheckAsync(CancellationToken.None)),
                 cronExpression: Cron.Weekly(DayOfWeek.Sunday, 0),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.ScheduleUpdatesForItSystemUsageReadModelsWhichChangesActiveState,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateStaleSystemUsageRmAsync(CancellationToken.None)),
                 cronExpression: Cron.Daily(2),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.ScheduleUpdatesForItContractOverviewReadModelsWhichChangesActiveState,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateStaleContractRmAsync(CancellationToken.None)),
                 cronExpression: Cron.Daily(2),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.ScheduleUpdatesForDataProcessingReadModelsWhichChangesActiveState,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateStaleDataProcessingRegistrationReadModels(CancellationToken.None)),
                 cronExpression: Cron.Daily(2),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.ScheduleFkOrgUpdates,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchUpdateFkOrgSync(CancellationToken.None)),
                 cronExpression: Cron.Weekly(DayOfWeek.Monday, 3),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.RebuildDataProcessingReadModels,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.DataProcessingRegistration, CancellationToken.None)),
                 cronExpression: Cron.Never(),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.RebuildItSystemUsageReadModels,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.ItSystemUsage, CancellationToken.None)),
                 cronExpression: Cron.Never(),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.RebuildItContractReadModels,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.ItContract, CancellationToken.None)),
                 cronExpression: Cron.Never(),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
+
+            recurringJobManager.AddOrUpdate(
+                recurringJobId: StandardJobIds.RebuildItContractSupplierReadModels,
+                job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchFullReadModelRebuild(ReadModelRebuildScope.ItContractSupplier, CancellationToken.None)),
+                cronExpression: Cron.Never(),
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.PurgeOrphanedHangfireJobs,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchPurgeOrphanedHangfireJobs(CancellationToken.None)),
                 cronExpression: Cron.Never(),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.CreateInitialPublicMessages,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchCreatePublicMessagesTask(CancellationToken.None)),
                 cronExpression: Cron.Never(),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
 
             recurringJobManager.AddOrUpdate(
                 recurringJobId: StandardJobIds.CreateMainPublicMessage,
                 job: Job.FromExpression((IBackgroundJobLauncher launcher) => launcher.LaunchCreateMainPublicMessageTask(CancellationToken.None)),
                 cronExpression: Cron.Never(),
-                timeZone: TimeZoneInfo.Local);
+                options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local });
+
+            return app;
+        }
+
+        public static WebApplication EnsurePostgreSqlExtensions(this WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<KitosContext>();
+            if (dbContext.Database.IsNpgsql())
+            {
+                dbContext.Database.OpenConnection();
+                try
+                {
+                    dbContext.Database.ExecuteSqlRaw("CREATE SCHEMA IF NOT EXISTS public; CREATE EXTENSION IF NOT EXISTS citext SCHEMA public;");
+                    if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
+                    {
+                        npgsqlConnection.ReloadTypes();
+                        // Drop all pooled connectors so every subsequent request opens connections
+                        // with fresh type metadata after the extension bootstrap.
+                        NpgsqlConnection.ClearAllPools();
+                    }
+                }
+                finally
+                {
+                    dbContext.Database.CloseConnection();
+                }
+            }
 
             return app;
         }
@@ -249,3 +286,5 @@ namespace Presentation.Web.Infrastructure.Configuration
         }
     }
 }
+
+

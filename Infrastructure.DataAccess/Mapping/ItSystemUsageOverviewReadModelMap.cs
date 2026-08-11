@@ -59,7 +59,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.ItSystemCategoriesName).HasMaxLength(Organization.MaxNameLength);
             builder.HasIndex(x => x.ItSystemCategoriesName).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_ItSystemCategoriesName");
 
-            builder.Property(x => x.LocalReferenceTitle).HasMaxLength(ItSystemUsageOverviewReadModel.MaxReferenceTitleLenght);
+            builder.Property(x => x.LocalReferenceTitle).HasMaxLength(ItSystemUsageOverviewReadModel.MaxReferenceTitleLength);
             builder.HasIndex(x => x.LocalReferenceTitle).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_LocalReferenceTitle");
 
             builder.HasIndex(x => x.ObjectOwnerId).HasDatabaseName("ItSystemUsageOverviewReadModel_Index_ObjectOwnerId");
@@ -124,6 +124,10 @@ namespace Infrastructure.DataAccess.Mapping
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(x => x.SourceEntityUuid).IsRequired();
+
+            // LicensingAndCodeModels is persisted as a string but exposed as a collection via the entity property
+            // Ignore the navigation property to prevent EF from trying to map it as an array
+            builder.Ignore(x => x.LicensingAndCodeModels);
         }
     }
 }

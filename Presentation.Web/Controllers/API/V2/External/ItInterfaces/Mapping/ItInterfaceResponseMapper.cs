@@ -4,7 +4,6 @@ using Presentation.Web.Controllers.API.V2.External.Generic;
 using Presentation.Web.Models.API.V2.Response.Interface;
 using System.Linq;
 using Core.ApplicationServices.Model.Interface;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
 {
@@ -14,13 +13,15 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
         {
             var dto = new ItInterfaceResponseDTO
             {
+                Name = itInterface.Name,
+                CreatedBy = itInterface.ObjectOwner?.MapIdentityNamePairDTO()!,
                 LastModified = itInterface.LastChanged,
-                LastModifiedBy = itInterface.LastChangedByUser?.MapIdentityNamePairDTO(),
+                LastModifiedBy = itInterface.LastChangedByUser?.MapIdentityNamePairDTO()!,
                 Scope = itInterface.AccessModifier.ToChoice(),
                 ItInterfaceType = itInterface.Interface?.MapIdentityNamePairDTO(),
                 Data = itInterface.DataRows.Select(ToDataResponseDTO).ToList(),
-                OrganizationContext = itInterface.Organization?.MapShallowOrganizationResponseDTO(),
-                RightsHolder = itInterface.GetRightsHolderOrganization()?.MapShallowOrganizationResponseDTO()
+                OrganizationContext = itInterface.Organization.MapShallowOrganizationResponseDTO(),
+                RightsHolder = itInterface.GetRightsHolderOrganization()?.MapShallowOrganizationResponseDTO()!
             };
             MapBaseInformation(itInterface, dto);
             return dto;
@@ -28,7 +29,11 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
 
         public RightsHolderItInterfaceResponseDTO ToRightsHolderItInterfaceResponseDTO(ItInterface itInterface)
         {
-            var dto = new RightsHolderItInterfaceResponseDTO();
+            var dto = new RightsHolderItInterfaceResponseDTO
+            {
+                Name = itInterface.Name,
+                CreatedBy = itInterface.ObjectOwner?.MapIdentityNamePairDTO()!
+            };
             MapBaseInformation(itInterface, dto);
             return dto;
         }
@@ -66,7 +71,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItInterfaces.Mapping
             outputDTO.UrlReference = input.Url;
             outputDTO.Deactivated = input.Disabled;
             outputDTO.Created = input.Created;
-            outputDTO.CreatedBy = input.ObjectOwner?.MapIdentityNamePairDTO();
+            outputDTO.CreatedBy = input.ObjectOwner?.MapIdentityNamePairDTO()!;
         }
     }
 }

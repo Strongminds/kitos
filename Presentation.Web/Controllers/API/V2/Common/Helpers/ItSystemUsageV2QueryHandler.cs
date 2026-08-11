@@ -25,10 +25,10 @@ namespace Presentation.Web.Controllers.API.V2.Common.Helpers
             Guid? relatedToSystemUsageUuid = null,
             Guid? relatedToContractUuid = null,
             Guid? systemUuid = null,
-            string systemNameContent = null,
+            string? systemNameContent = null,
             DateTime? changedSinceGtEq = null,
             CommonOrderByProperty? orderByProperty = null,
-            BoundedPaginationQuery paginationQuery = null)
+            BoundedPaginationQuery? paginationQuery = null)
         {
             var conditions = new List<IDomainQuery<ItSystemUsage>>();
 

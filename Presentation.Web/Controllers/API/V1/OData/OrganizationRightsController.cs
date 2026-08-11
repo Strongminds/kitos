@@ -71,6 +71,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         /// <summary>
         /// Always Use 405 - POST /Organizations(orgKey)/Rights instead
         /// </summary>
+        /// <param name="organizationId"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
         [NonAction]
@@ -105,7 +106,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
 
                 return FromOperationFailure(result.Error);
             }
-            catch (Exception e)
+            catch
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
@@ -115,7 +116,6 @@ namespace Presentation.Web.Controllers.API.V1.OData
         public override IActionResult Patch(int key, Delta<OrganizationRight> delta) => throw new NotSupportedException();
     }
 }
-
 
 
 

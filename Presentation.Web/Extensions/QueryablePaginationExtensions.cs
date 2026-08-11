@@ -35,7 +35,7 @@ namespace Presentation.Web.Extensions
                 );
         }
 
-        public static IEnumerable<T> Page<T>(this IEnumerable<T> src, UnboundedPaginationQuery pagination)
+        public static IEnumerable<T> Page<T>(this IEnumerable<T> src, UnboundedPaginationQuery? pagination)
         {
             return pagination
                 .FromNullable()

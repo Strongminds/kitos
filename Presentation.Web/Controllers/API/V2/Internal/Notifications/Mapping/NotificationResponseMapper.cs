@@ -94,7 +94,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Notifications.Mapping
             };
         }
 
-        private static IdentityNamePairResponseDTO MapIEntityWithAdvicesToResponseDTO(NotificationResultModel notification)
+        private static IdentityNamePairResponseDTO? MapIEntityWithAdvicesToResponseDTO(NotificationResultModel notification)
         {
             return notification.RelatedEntityType switch
             {

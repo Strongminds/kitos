@@ -17,17 +17,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistrations.Mapping
 {
-    public class DataProcessingRegistrationWriteModelMapper : WriteModelMapperBase, IDataProcessingRegistrationWriteModelMapper
+    public class DataProcessingRegistrationWriteModelMapper(ICurrentHttpRequest currentHttpRequest)
+        : WriteModelMapperBase(currentHttpRequest), IDataProcessingRegistrationWriteModelMapper
     {
-        public DataProcessingRegistrationWriteModelMapper(ICurrentHttpRequest currentHttpRequest)
-            : base(currentHttpRequest)
-        {
-        }
-
         public DataProcessingRegistrationCreationParameters FromPOST(CreateDataProcessingRegistrationRequestDTO dto)
         {
             return MapCreate(dto, false);
@@ -56,7 +51,12 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         private DataProcessingRegistrationCreationParameters MapCreate(
             CreateDataProcessingRegistrationRequestDTO dto, bool enforceFallbackIfNotProvided)
         {
-            var parameters = Map<DataProcessingRegistrationCreationParameters, CreateDataProcessingRegistrationRequestDTO, ExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
+            var parameters = Map<DataProcessingRegistrationCreationParameters, CreateDataProcessingRegistrationRequestDTO, ExternalReferenceDataWriteRequestDTO>(
+                dto,
+                enforceFallbackIfNotProvided,
+                ClientRequestsChangeTo<IHasNameExternal>(x => x.Name) || enforceFallbackIfNotProvided
+                    ? dto.Name.AsChangedValue()
+                    : OptionalValueChange<string>.None);
             parameters.ExternalReferences = MapCreateReferences(dto);
 
             return parameters;
@@ -65,29 +65,37 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         private DataProcessingRegistrationModificationParameters MapUpdate(
             UpdateDataProcessingRegistrationRequestDTO dto, bool enforceFallbackIfNotProvided)
         {
-            var parameters = Map<DataProcessingRegistrationModificationParameters, UpdateDataProcessingRegistrationRequestDTO, UpdateExternalReferenceDataWriteRequestDTO>(dto, enforceFallbackIfNotProvided);
+            var parameters = Map<DataProcessingRegistrationModificationParameters, UpdateDataProcessingRegistrationRequestDTO, UpdateExternalReferenceDataWriteRequestDTO>(
+                dto,
+                enforceFallbackIfNotProvided,
+                ClientRequestsChangeTo<UpdateDataProcessingRegistrationRequestDTO>(x => x.Name!) || enforceFallbackIfNotProvided
+                    ? dto.Name.AsChangedValue()!
+                    : OptionalValueChange<string>.None);
             parameters.ExternalReferences = MapUpdateReferences(dto);
 
             return parameters;
         }
 
-        private TParameters Map<TParameters, TDto, TExternalReferenceDto>(TDto dto, bool enforceFallbackIfNotProvided)
+        private TParameters Map<TParameters, TDto, TExternalReferenceDto>(
+            TDto dto,
+            bool enforceFallbackIfNotProvided,
+            OptionalValueChange<string> name)
             where TParameters : BaseDataProcessingRegistrationParameters, new()
-            where TDto : DataProcessingRegistrationWriteRequestDTO, IHasNameExternal, IHasExternalReference<TExternalReferenceDto>
+            where TDto : DataProcessingRegistrationWriteRequestDTO, IHasExternalReference<TExternalReferenceDto>
             where TExternalReferenceDto : ExternalReferenceDataWriteRequestDTO
         {
             TSection WithResetDataIfSectionIsNotDefined<TSection>(TSection deserializedValue, Expression<Func<TDto, TSection>> propertySelection) where TSection : new() => WithResetDataIfPropertyIsDefined(deserializedValue, propertySelection, enforceFallbackIfNotProvided);
             TSection WithResetDataIfSectionIsNotDefinedWithFallback<TSection>(TSection deserializedValue, Expression<Func<TDto, TSection>> propertySelection, Func<TSection> fallbackFactory) => WithResetDataIfPropertyIsDefined(deserializedValue, propertySelection, fallbackFactory, enforceFallbackIfNotProvided);
 
             dto.General = WithResetDataIfSectionIsNotDefined(dto.General, x => x.General);
-            dto.SystemUsageUuids = WithResetDataIfSectionIsNotDefinedWithFallback(dto.SystemUsageUuids, x => x.SystemUsageUuids, () => new List<Guid>());
+            dto.SystemUsageUuids = WithResetDataIfSectionIsNotDefinedWithFallback(dto.SystemUsageUuids, x => x.SystemUsageUuids, () => []);
             dto.Oversight = WithResetDataIfSectionIsNotDefined(dto.Oversight, x => x.Oversight);
             dto.Roles = WithResetDataIfSectionIsNotDefinedWithFallback(dto.Roles, x => x.Roles, Array.Empty<RoleAssignmentRequestDTO>);
             dto.ExternalReferences = WithResetDataIfSectionIsNotDefinedWithFallback(dto.ExternalReferences, x => x.ExternalReferences, Array.Empty<TExternalReferenceDto>);
 
             return new TParameters
             {
-                Name = (ClientRequestsChangeTo<IHasNameExternal>(x => x.Name) || enforceFallbackIfNotProvided) ? dto.Name.AsChangedValue() : OptionalValueChange<string>.None,
+                Name = name,
                 General = dto.General.FromNullable().Select(generalData => MapGeneral(generalData, enforceFallbackIfNotProvided)),
                 SystemUsageUuids = dto.SystemUsageUuids.FromNullable(),
                 Oversight = dto.Oversight.FromNullable().Select(oversight => MapOversight(oversight, enforceFallbackIfNotProvided)),
@@ -152,7 +160,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     : OptionalValueChange<YesNoUndecidedOption?>.None,
 
                 SubDataProcessors = rule.MustUpdate(x => x.General!.SubDataProcessors)
-                    ? dto.SubDataProcessors.FromNullable().Select<IEnumerable<SubDataProcessorParameter>>(sdps => sdps.Select(ToSubDataProcessorParameter).ToList()).AsChangedValue()
+                    ? dto.SubDataProcessors.FromNullable().Select<IEnumerable<SubDataProcessorParameter>>(sdps => [.. sdps.Select(ToSubDataProcessorParameter)]).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<SubDataProcessorParameter>>>.None,
 
                 EnforceInvalidity = rule.MustUpdate(x => x.General!.EnforceInvalidity)
@@ -217,8 +225,9 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                             {
                                 CompletedAt = y.CompletedAt,
                                 Remark = y.Remark,
-                                OversightReportLink = y.OversightReportLink?.Url!,
-                                OversightReportLinkName = y.OversightReportLink?.Name!
+                                OversightReportLink = y.OversightReportLink?.Url,
+                                OversightReportLinkName = y.OversightReportLink?.Name,
+                                OversightOptionUuid = y.OversightOption?.Uuid,
                             })).AsChangedValue()
                     : OptionalValueChange<Maybe<IEnumerable<UpdatedDataProcessingRegistrationOversightDate>>>.None
             };
@@ -234,14 +243,17 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                     ? dto.CompletedAt.AsChangedValue()
                     : OptionalValueChange<DateTime>.None,
                 Remark = rule.MustUpdate(x => x.Remark)
-                    ? dto.Remark.AsChangedValue()
+                    ? dto.Remark?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
                     : OptionalValueChange<string>.None,
-                OversightReportLink = rule.MustUpdate(x => x.OversightReportLink.Url)
-                    ? dto.OversightReportLink.Url!.AsChangedValue()
+                OversightReportLink = rule.MustUpdate(x => x.OversightReportLink!.Url)
+                    ? dto.OversightReportLink?.Url?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
                     : OptionalValueChange<string>.None,
-                OversightReportLinkName = rule.MustUpdate(x => x.OversightReportLink.Name)
-                    ? dto.OversightReportLink.Name!.AsChangedValue()
-                    : OptionalValueChange<string>.None
+                OversightReportLinkName = rule.MustUpdate(x => x.OversightReportLink!.Name)
+                    ? dto.OversightReportLink?.Name?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
+                    : OptionalValueChange<string>.None,
+                OversightOptionUuid = rule.MustUpdate(x => x.OversightOptionUuid)
+                    ? dto.OversightOptionUuid.AsChangedValue()
+                    : OptionalValueChange<Guid?>.None
             };
         }
 

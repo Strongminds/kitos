@@ -13,6 +13,7 @@ using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Authorization;
 using Core.DomainServices.Extensions;
+using Core.DomainServices.Generic;
 using Core.DomainServices.GDPR;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Repositories.GDPR;
@@ -47,6 +48,7 @@ namespace Core.ApplicationServices.GDPR
         private readonly IOrganizationService _organizationService;
         private readonly IGenericRepository<DataProcessingRegistrationOversightDate> _oversightDateRepository;
         private readonly IFieldAuthorizationModel _fieldAuthorizationModel;
+        private readonly IEntityIdentityResolver _entityIdentityResolver;
 
         public DataProcessingRegistrationApplicationService(
             IAuthorizationContext authorizationContext,
@@ -66,7 +68,8 @@ namespace Core.ApplicationServices.GDPR
             IGenericRepository<SubDataProcessor> sdpRepository, 
             IOrganizationService organizationService,
             IGenericRepository<DataProcessingRegistrationOversightDate> oversightDateRepository, 
-            IFieldAuthorizationModel fieldAuthorizationModel)
+            IFieldAuthorizationModel fieldAuthorizationModel,
+            IEntityIdentityResolver entityIdentityResolver)
         {
             _authorizationContext = authorizationContext;
             _repository = repository;
@@ -86,6 +89,7 @@ namespace Core.ApplicationServices.GDPR
             _organizationService = organizationService;
             _oversightDateRepository = oversightDateRepository;
             _fieldAuthorizationModel = fieldAuthorizationModel;
+            _entityIdentityResolver = entityIdentityResolver;
         }
 
         public Result<DataProcessingRegistration, OperationError> Create(int organizationId, string name)
@@ -202,7 +206,7 @@ namespace Core.ApplicationServices.GDPR
                 registration => (registration, _roleAssignmentsService.GetApplicableRoles(registration).ToList()));
         }
 
-        public Result<IEnumerable<User>, OperationError> GetUsersWhichCanBeAssignedToRole(int id, int roleId, string nameEmailQuery, int pageSize)
+        public Result<IEnumerable<User>, OperationError> GetUsersWhichCanBeAssignedToRole(int id, int roleId, string? nameEmailQuery, int pageSize)
         {
             if (pageSize < 1)
                 throw new ArgumentException($"{nameof(pageSize)} must be above 0");
@@ -231,7 +235,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _roleAssignmentsService.RemoveRole(registration, roleId, userId));
         }
 
-        public Result<IEnumerable<ItSystemUsage>, OperationError> GetSystemsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<ItSystemUsage>, OperationError> GetSystemsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -262,7 +266,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _systemAssignmentService.RemoveSystem(registration, systemId));
         }
 
-        public Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<Organization>, OperationError> GetDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -293,7 +297,7 @@ namespace Core.ApplicationServices.GDPR
             return Modify(id, registration => _dataProcessingRegistrationDataProcessorAssignmentService.RemoveDataProcessor(registration, organizationId));
         }
 
-        public Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string nameQuery, int pageSize)
+        public Result<IEnumerable<Organization>, OperationError> GetSubDataProcessorsWhichCanBeAssigned(int id, string? nameQuery, int pageSize)
         {
             if (pageSize < 1) throw new ArgumentException($"{nameof(pageSize)} must be above 0");
 
@@ -540,9 +544,22 @@ namespace Core.ApplicationServices.GDPR
             });
         }
 
-        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string oversightRemark, string oversightReportLink, string oversightReportLinkName)
+        public Result<DataProcessingRegistrationOversightDate, OperationError> AssignOversightDate(int id, DateTime oversightDate, string? oversightRemark, string? oversightReportLink, string? oversightReportLinkName, Guid? oversightOptionUuid)
         {
-            return Modify(id, registration => registration.AssignOversightDate(oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName));
+            return Modify(id, registration => ResolveOversightOptionId(oversightOptionUuid)
+                .Bind(oversightOptionId => registration.AssignOversightDate(oversightDate, oversightRemark, oversightReportLink, oversightReportLinkName, oversightOptionId)));
+        }
+
+        private Result<int?, OperationError> ResolveOversightOptionId(Guid? oversightOptionUuid)
+        {
+            if (!oversightOptionUuid.HasValue)
+                return (int?)null;
+
+            var oversightOptionId = _entityIdentityResolver.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid.Value);
+            if (oversightOptionId.IsNone)
+                return new OperationError($"Failed to resolve Id for Uuid {oversightOptionUuid.Value}", OperationFailure.BadInput);
+
+            return oversightOptionId.Value;
         }
         
         public Result<DataProcessingRegistrationOversightDate, OperationError> RemoveOversightDate(int id, int oversightDateId)
