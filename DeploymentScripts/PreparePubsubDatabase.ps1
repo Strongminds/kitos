@@ -33,26 +33,13 @@ if ($databaseProvider -ieq "PostgreSql" -or $databaseProvider -ieq "Postgres" -o
             try { Add-Type -Path $_.FullName -ErrorAction SilentlyContinue } catch {}
         }
 
+        $seedSql = 'CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" ("MigrationId" character varying(150) NOT NULL, "ProductVersion" character varying(32) NOT NULL, CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")); INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion") SELECT ''20250409135507_InitialCreate'', ''10.0.0'' WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = ''Subscriptions'') AND NOT EXISTS (SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = ''20250409135507_InitialCreate'');'
+
         $conn = New-Object Npgsql.NpgsqlConnection($connectionString)
         try {
             $conn.Open()
             $cmd = $conn.CreateCommand()
-
-            $cmd.CommandText = @"
-CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
-    "MigrationId"    character varying(150) NOT NULL,
-    "ProductVersion" character varying(32)  NOT NULL,
-    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
-);
-INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-SELECT '20250409135507_InitialCreate', '10.0.0'
-WHERE EXISTS (
-    SELECT 1 FROM information_schema.tables WHERE table_name = 'Subscriptions'
-)
-AND NOT EXISTS (
-    SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20250409135507_InitialCreate'
-);
-"@
+            $cmd.CommandText = $seedSql
             $rows = $cmd.ExecuteNonQuery()
             if ($rows -gt 0) {
                 Write-Host "Seeded initial migration record into __EFMigrationsHistory."
