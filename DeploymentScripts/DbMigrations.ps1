@@ -388,17 +388,23 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
     }
 
-    # Verify TCP connectivity before proceeding with any sqlcmd or migration operations.
-    # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
-    $parts = ConvertTo-SqlConnectionParts $connectionString
-    $rawServer = $parts.Server -replace '^tcp:', ''
-    $splitParts = $rawServer -split ',', 2
-    # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
-    $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
-    $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
-    if (-not $isLocalServer) {
-        $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
-        Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
+    # Verify TCP connectivity before proceeding with any migration operations.
+    if ($isPostgreSql) {
+        if (-not [string]::IsNullOrWhiteSpace($pgParts.Host)) {
+            Wait-ForTcpPort -Hostname $pgParts.Host -Port ([int]$pgParts.Port)
+        }
+    } else {
+        # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
+        $parts = ConvertTo-SqlConnectionParts $connectionString
+        $rawServer = $parts.Server -replace '^tcp:', ''
+        $splitParts = $rawServer -split ',', 2
+        # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
+        $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
+        $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+        if (-not $isLocalServer -and -not [string]::IsNullOrWhiteSpace($sqlHost)) {
+            $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
+            Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
+        }
     }
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."

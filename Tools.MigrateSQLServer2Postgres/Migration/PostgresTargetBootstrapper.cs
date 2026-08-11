@@ -18,6 +18,13 @@ internal sealed class PostgresTargetBootstrapper
     {
         var repositoryLayout = RepositoryLayoutLocator.Find();
 
+        if (LooksLikePubSubTarget(repositoryLayout.RootPath, targetConnectionString))
+        {
+            CliConsole.Info("Preparing PostgreSQL target from the PubSub EF Core schema.");
+            await BootstrapPubSubDatabaseAsync(targetConnectionString, repositoryLayout.RootPath);
+            return;
+        }
+
         CliConsole.Info($"Applying canonical PostgreSQL baseline from {repositoryLayout.PostgresBaselineScriptPath}.");
         await ApplyBaselineSchemaAsync(targetConnectionString, repositoryLayout.PostgresBaselineScriptPath);
 
@@ -26,6 +33,43 @@ internal sealed class PostgresTargetBootstrapper
 
         CliConsole.Info("Applying PostgreSQL migrations added after the baseline schema.");
         await ApplyPendingEfCoreMigrationsAsync(targetConnectionString, repositoryLayout);
+    }
+
+    private static bool LooksLikePubSubTarget(string repositoryRootPath, string targetConnectionString)
+    {
+        var builder = new NpgsqlConnectionStringBuilder(targetConnectionString);
+        var databaseName = builder.Database ?? string.Empty;
+
+        if (databaseName.Contains("pubsub", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return Directory.Exists(Path.Combine(repositoryRootPath, "PubSub.Infrastructure.DataAccess"));
+    }
+
+    private static async Task BootstrapPubSubDatabaseAsync(string targetConnectionString, string repositoryRootPath)
+    {
+        const string sql = """
+CREATE TABLE IF NOT EXISTS public."Subscriptions"
+(
+    "Uuid" uuid NOT NULL,
+    "Callback" text NOT NULL,
+    "Topic" text NOT NULL,
+    "OwnerId" text NOT NULL,
+    CONSTRAINT "PK_Subscriptions" PRIMARY KEY ("Uuid")
+);
+""";
+
+        await using var targetConnection = new NpgsqlConnection(targetConnectionString);
+        await targetConnection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(sql, targetConnection)
+        {
+            CommandTimeout = 0
+        };
+
+        await command.ExecuteNonQueryAsync();
     }
 
     private static async Task ApplyBaselineSchemaAsync(string targetConnectionString, string baselineScriptPath)
