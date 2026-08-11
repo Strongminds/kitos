@@ -1,6 +1,6 @@
 Function Run-Pubsub-DB-Migrations(
     [string]$connectionString,
-    [string]$provider = "SqlServer"
+    [string]$provider = "PostgreSql"
 ) {
     $dataAccessFolder = Resolve-Path "$PSScriptRoot\..\PubSub.Infrastructure.DataAccess"
 
