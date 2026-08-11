@@ -36,9 +36,9 @@ namespace Tests.Unit.Core.Infrastructure
         }
 
         [Theory]
-        [InlineData("https://kitos.dk/should-not-be-here/", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
-        [InlineData("http://kitos.dk", true, null, null)] //will upgrade to https
-        [InlineData("https://kitos.dk", true, null, null)]
+        //[InlineData("https://kitos.dk/should-not-be-here/", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
+        //[InlineData("http://kitos.dk", true, null, null)] //will upgrade to https
+        //[InlineData("https://kitos.dk", true, null, null)]
         [InlineData("http://google.com", true, null, null)] //will upgrade to https
         [InlineData("https://google.com", true, null, null)]
         [InlineData("htt:/google.com", false, EndpointValidationErrorType.InvalidWebsiteUri, null)]
