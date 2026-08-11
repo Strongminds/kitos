@@ -26,6 +26,7 @@ services:
       PUBSUB_API_KEY: ${PUBSUB_API_KEY}
       CERT_PASSWORD: ${CERT_PASSWORD}
       ConnectionStrings__DefaultConnection: ${PUBSUB_CONNECTION_STRING}
+      Database__Provider: ${DATABASE_PROVIDER}
     ports:
       - "443:443"
     networks:
