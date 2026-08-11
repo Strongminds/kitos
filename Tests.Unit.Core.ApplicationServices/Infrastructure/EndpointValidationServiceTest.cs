@@ -6,6 +6,7 @@ using Moq;
 using Serilog;
 using Xunit;
 
+#pragma warning disable xUnit1030
 namespace Tests.Unit.Core.Infrastructure
 {
     public class EndpointValidationServiceTest
@@ -36,9 +37,9 @@ namespace Tests.Unit.Core.Infrastructure
         }
 
         [Theory]
-        //[InlineData("https://kitos.dk/should-not-be-here/", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
-        //[InlineData("http://kitos.dk", true, null, null)] //will upgrade to https
-        //[InlineData("https://kitos.dk", true, null, null)]
+        [InlineData("https://kitos.dk/should-not-be-here/", false, EndpointValidationErrorType.ErrorResponseCode, HttpStatusCode.NotFound)]
+        [InlineData("http://kitos.dk", true, null, null)] //will upgrade to https
+        [InlineData("https://kitos.dk", true, null, null)]
         [InlineData("http://google.com", true, null, null)] //will upgrade to https
         [InlineData("https://google.com", true, null, null)]
         [InlineData("htt:/google.com", false, EndpointValidationErrorType.InvalidWebsiteUri, null)]
@@ -57,9 +58,11 @@ namespace Tests.Unit.Core.Infrastructure
             Assert.Equal(success, validation.Success);
             if (!success)
             {
+                Assert.NotNull(validation.Error);
                 Assert.Equal(expectedErrorType.GetValueOrDefault(), validation.Error.ErrorType);
                 Assert.Equal(expectedStatusCode, validation.Error.StatusCode);
             }
         }
     }
 }
+#pragma warning restore xUnit1030
