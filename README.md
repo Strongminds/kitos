@@ -48,13 +48,4 @@ Integration tests require a running KITOS instance and a PostgreSQL database con
 
 The default launch profile (`Tests.Integration.Presentation.Web`) now targets **PostgreSQL** locally:
 
-- `KitosDbProvider=PostgreSql`
-- `Database__Provider=PostgreSql`
-- `ConnectionStrings__KitosContext=Host=localhost;Port=5432;Database=kitos;Username=postgres;******`
-
-An alternative profile is included for **PostgreSQL**:
-
-- `Tests.Integration.Presentation.Web (PostgreSql)`
-- `KitosDbProvider=PostgreSql`
-- `Database__Provider=PostgreSql`
-- `ConnectionStrings__KitosContext=Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres`
+- `ConnectionStrings__KitosContext=Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=localNoSecret`
