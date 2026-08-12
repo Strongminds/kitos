@@ -30,7 +30,7 @@ namespace Core.DomainModel.UIConfiguration
             if (keysValidity.HasValue)
                 return new OperationError(keysValidity.Value, OperationFailure.BadInput);
 
-            customizedUiNodes.MirrorTo(Nodes, x => $"K:{x.Key}_S:{x.Enabled}");
+            customizedUiNodes.MirrorTo(Nodes, x => $"K:{x.Key}_S:{x.Enabled}_R:{x.Recommended}");
             return Maybe<OperationError>.None;
         }
 

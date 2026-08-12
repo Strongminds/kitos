@@ -64,5 +64,29 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
             Assert.Single(sut.Nodes);
             Assert.Contains(sut.Nodes, x => x.Key == "New.Key" && x.Enabled);
         }
+
+        [Fact]
+        public void UpdateConfigurationNodes_Updates_Recommended_When_Key_And_Enabled_Are_Unchanged()
+        {
+            var sut = new UIModuleCustomization
+            {
+                Nodes = new List<CustomizedUINode>
+                {
+                    new() { Key = "Existing.Key", Enabled = true, Recommended = false }
+                }
+            };
+            var nodes = new List<CustomizedUINode>
+            {
+                new() { Key = "Existing.Key", Enabled = true, Recommended = true }
+            };
+
+            var result = sut.UpdateConfigurationNodes(nodes);
+
+            Assert.False(result.HasValue);
+            var updatedNode = Assert.Single(sut.Nodes);
+            Assert.Equal("Existing.Key", updatedNode.Key);
+            Assert.True(updatedNode.Enabled);
+            Assert.True(updatedNode.Recommended);
+        }
     }
 }
