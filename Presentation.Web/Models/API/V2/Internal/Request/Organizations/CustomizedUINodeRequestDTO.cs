@@ -10,5 +10,6 @@ namespace Presentation.Web.Models.API.V2.Internal.Request.Organizations
         [RegexStringValidator(UIModuleConfigurationConstants.ConfigurationKeyRegex)]
         public required string Key { get; set; }
         public bool Enabled { get; set; }
+        public bool Recommended { get; set; }
     }
 }

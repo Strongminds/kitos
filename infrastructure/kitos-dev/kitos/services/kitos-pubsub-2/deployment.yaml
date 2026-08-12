@@ -45,8 +45,8 @@ spec:
               key: PubSubConnectionString
               name: user-secret
         - name: ASPNETCORE_ENVIRONMENT
-          value: Staging
-        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-d5f15cab61c7be939ea6c7bef7d297f0ca7e02bd
+          value: Development
+        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-65fa13f78c12446e21de7487aeb0988923c45d05
         name: kitos-pubsub-2
         ports:
         - containerPort: 8080
