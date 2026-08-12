@@ -635,6 +635,7 @@ internal sealed class MigrationRunner
             }
 
             copiedRows = 0;
+            const long progressLogInterval = 100;
             while (await reader.ReadAsync())
             {
                 for (var index = 0; index < copyPlan.InsertTargetColumnNames.Count; index++)
@@ -644,6 +645,10 @@ internal sealed class MigrationRunner
 
                 await insertCommand.ExecuteNonQueryAsync();
                 copiedRows++;
+                if (copiedRows % progressLogInterval == 0)
+                {
+                    CliConsole.Info($"{targetTable}: inserted {copiedRows:N0} rows...");
+                }
             }
         } // reader and selectCommand are disposed here, freeing sourceConnection for reuse
 
@@ -664,6 +669,7 @@ internal sealed class MigrationRunner
         TableRef targetTable,
         DeferredSelfReferenceUpdatePlan updatePlan)
     {
+        CliConsole.Info($"{targetTable}: starting deferred self-reference updates...");
         var deferredSelectExpressions = updatePlan.DeferredColumns.Select(column => column.SelectExpression).ToList();
         var primaryKeySelectExpressions = updatePlan.PrimaryKeyColumns.Select(column => column.SelectExpression).ToList();
         var selectSql = $"SELECT {string.Join(", ", deferredSelectExpressions.Concat(primaryKeySelectExpressions))} FROM {SchemaDiscovery.QualifySqlServerTable(sourceTable)};";
@@ -686,6 +692,8 @@ internal sealed class MigrationRunner
             updateCommand.Parameters.Add(new NpgsqlParameter($"@key{index}", DBNull.Value));
         }
 
+        long updatedRows = 0;
+        const long progressLogInterval = 100;
         while (await reader.ReadAsync())
         {
             for (var index = 0; index < updatePlan.DeferredColumns.Count; index++)
@@ -700,7 +708,14 @@ internal sealed class MigrationRunner
             }
 
             await updateCommand.ExecuteNonQueryAsync();
+            updatedRows++;
+            if (updatedRows % progressLogInterval == 0)
+            {
+                CliConsole.Info($"{targetTable}: applied {updatedRows:N0} deferred self-reference updates...");
+            }
         }
+
+        CliConsole.Info($"{targetTable}: deferred self-reference updates completed ({updatedRows:N0} rows).");
     }
 
     private static async Task<long> CountRowsSqlServerAsync(SqlConnection sourceConnection, TableRef table)
@@ -967,6 +982,21 @@ WHERE datname = @databaseName
         return sqlServerDataType is "uniqueidentifier";
     }
 
+    private static bool IsAdviceSentsOwnerBackfillTarget(TableRef targetTable, string targetColumnName)
+    {
+        return targetTable.Schema.Equals("dbo", StringComparison.OrdinalIgnoreCase)
+               && targetTable.Name.Equals("AdviceSents", StringComparison.OrdinalIgnoreCase)
+               && (targetColumnName.Equals("ObjectOwnerId", StringComparison.OrdinalIgnoreCase)
+                   || targetColumnName.Equals("LastChangedByUserId", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string GetAdviceSentsOwnerBackfillExpression(string targetColumnName)
+    {
+        var targetColumn = SchemaDiscovery.QuoteSqlServerIdentifier(targetColumnName);
+        const string adviceOwnerLookup = "(SELECT TOP 1 [ObjectOwnerId] FROM [dbo].[Advice] WHERE [dbo].[Advice].[Id] = [dbo].[AdviceSents].[AdviceId])";
+        return $"COALESCE({targetColumn}, {adviceOwnerLookup})";
+    }
+
     private static Dictionary<TableRef, HashSet<string>> GetSelfReferenceColumnsByTargetTable(
         IReadOnlyCollection<PostgresForeignKeyDefinition> targetForeignKeys,
         IReadOnlyCollection<TableMatch> matches)
@@ -1101,6 +1131,12 @@ WHERE datname = @databaseName
                             appliedCompatibilityAliases.Add($"{targetColumn.Name}: Guid.Empty replaced with NEWID() (EF6 null-sentinel)");
                         }
                     }
+                }
+
+                if (IsAdviceSentsOwnerBackfillTarget(targetTable, targetColumn.Name))
+                {
+                    selectExpression = GetAdviceSentsOwnerBackfillExpression(targetColumn.Name);
+                    appliedCompatibilityAliases.Add($"{targetColumn.Name}: null values backfilled from Advice.ObjectOwnerId");
                 }
 
                 sourceSelectExpressions.Add(selectExpression);

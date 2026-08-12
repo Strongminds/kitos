@@ -179,6 +179,7 @@ The tool can resolve a limited set of legacy SQL Server shapes into the current 
 * Known column renames such as `ArchiveSupplierId <- SupplierId`
 * EF6-style foreign key names such as `SensitivePersonalDataType_Id -> SensitivePersonalDataTypeId`
 * Bridge-column fallbacks when both old and new SQL Server columns exist, using the new column first and the legacy column when the new column is null
+* Targeted data backfills for known legacy gaps, such as copying `Advice.ObjectOwnerId` into `AdviceSents.ObjectOwnerId` and `AdviceSents.LastChangedByUserId` when the source child row is null
 
 If a source table or column cannot be resolved through those rules, readiness still fails fast.
 

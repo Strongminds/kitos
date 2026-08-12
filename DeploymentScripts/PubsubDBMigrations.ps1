@@ -1,10 +1,12 @@
 Function Run-Pubsub-DB-Migrations(
-    [string]$connectionString
+    [string]$connectionString,
+    [string]$provider = "PostgreSql"
 ) {
     $dataAccessFolder = Resolve-Path "$PSScriptRoot\..\PubSub.Infrastructure.DataAccess"
 
-    # Set the environment variable for the design-time factory
+    # Set the environment variables for the design-time factory
     $env:DEFAULT_CONNECTION_STRING = $connectionString
+    $env:Database__Provider = $provider
 
     & dotnet ef database update --project "$dataAccessFolder" --connection "$connectionString"
 

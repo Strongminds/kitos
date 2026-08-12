@@ -23,4 +23,8 @@
     <ProjectReference Include="..\PubSub.Infrastructure.DataAccess\PubSub.Infrastructure.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PubSub.Infrastructure.DataAccess\PubSub.Infrastructure.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>
