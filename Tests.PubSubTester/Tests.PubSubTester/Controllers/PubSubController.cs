@@ -13,7 +13,7 @@ namespace Tests.PubSubTester.Controllers
     {
         //Select an api url here depending on if you are connecting to a local PubSub api or the one on the staging PubSub server
         //private static readonly string PubSubApiUrl = "http://10.212.74.11:8080";
-        private const string PubSubApiUrl = "https://localhost/";
+        private const string PubSubApiUrl = "https://localhost:7226";
 
         private const string KitosApiUrl = "https://localhost:44300/";
         private const string PubSubTesterBaseUrl = "https://localhost:7118/";
