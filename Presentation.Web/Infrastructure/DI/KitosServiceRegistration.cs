@@ -448,28 +448,17 @@ namespace Presentation.Web.Infrastructure.DI
         {
             var connectionString = configuration.GetConnectionString("KitosContext")
                 ?? throw new InvalidOperationException("KitosContext connection string is required");
-            var provider = configuration["Database:Provider"];
-            var usePostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider);
-
             services.AddDbContext<KitosContext>((sp, options) =>
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
                 options.UseLazyLoadingProxies();
-
-                if (usePostgreSql)
-                {
-                    // Include public in search_path so the citext extension type is discoverable.
-                    // HasDefaultSchema("dbo") causes Npgsql to set search_path=dbo on connect,
-                    // which would exclude public (where citext is installed) unless we override it here.
-                    var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
-                    options.UseNpgsql(pgCsb.ConnectionString,
-                        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"))
-                        .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
-                }
-                else
-                {
-                    options.UseSqlServer(connectionString);
-                }
+                // Include public in search_path so the citext extension type is discoverable.
+                // HasDefaultSchema("dbo") causes Npgsql to set search_path=dbo on connect,
+                // which would exclude public (where citext is installed) unless we override it here.
+                var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
+                options.UseNpgsql(pgCsb.ConnectionString,
+                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"))
+                    .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
 
                 options.AddInterceptors(new EFEntityInterceptor(
                         operationClock: () =>

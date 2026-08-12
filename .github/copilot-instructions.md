@@ -35,7 +35,7 @@ Run a single unit test class:
 dotnet test Tests.Unit.Core.ApplicationServices --filter "FullyQualifiedName~ItSystemWriteServiceTest"
 ```
 
-**Integration tests** require a running KITOS instance and SQL Server at `.\SQLEXPRESS` (database: `Kitos`). Set `KitosTestEnvironment=Local` (default if unset). Integration tests run sequentially within `[Collection(nameof(SequentialTestGroup))]`.
+**Integration tests** require a running KITOS instance and PostgreSQL (default local database: `kitos` on `localhost:5432`). Set `KitosTestEnvironment=Local` (default if unset). Integration tests run sequentially within `[Collection(nameof(SequentialTestGroup))]`.
 
 **EF6 migrations** are in `Infrastructure.DataAccess/Migrations/`. Run via Package Manager Console:
 ```

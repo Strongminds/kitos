@@ -50,7 +50,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 const string localDevUserPassword = "localNoSecret";
                 DefaultUserPassword = "arne123";
                 DatabaseProvider = GetEnvironmentVariable("KitosDbProvider", false,
-                    GetEnvironmentVariable("Database__Provider", false, "SqlServer"));
+                    GetEnvironmentVariable("Database__Provider", false, "PostgreSql"));
                 ConnectionString = ResolveLocalConnectionString(DatabaseProvider);
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
@@ -98,7 +98,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 Console.Out.WriteLine("Tests running towards remote target. Loading configuration from environment.");
                 DefaultUserPassword = GetEnvironmentVariable("DefaultUserPassword");
                 DatabaseProvider = GetEnvironmentVariable("KitosDbProvider", false,
-                    GetEnvironmentVariable("Database__Provider", false, "SqlServer"));
+                    GetEnvironmentVariable("Database__Provider", false, "PostgreSql"));
                 ConnectionString = GetEnvironmentVariable("KitosDbConnectionStringForTeamCity");
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
@@ -151,16 +151,9 @@ namespace Tests.Integration.Presentation.Web.Tools
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>()
                 .UseLazyLoadingProxies();
 
-            if (DatabaseProviderHelper.IsPostgreSqlProvider(DatabaseProvider))
-            {
-                var pgCsb = new NpgsqlConnectionStringBuilder(ConnectionString) { SearchPath = "dbo,public" };
-                optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
-                    npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
-            }
-            else
-            {
-                optionsBuilder.UseSqlServer(ConnectionString);
-            }
+            var pgCsb = new NpgsqlConnectionStringBuilder(ConnectionString) { SearchPath = "dbo,public" };
+            optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
+                npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"));
 
             var options = optionsBuilder.Options;
             return new KitosContext(options);
@@ -169,14 +162,8 @@ namespace Tests.Integration.Presentation.Web.Tools
 
         private static string ResolveLocalConnectionString(string provider)
         {
-            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
-            {
-                return GetEnvironmentVariable("ConnectionStrings__KitosContext", false,
-                    @"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres");
-            }
-
             return GetEnvironmentVariable("ConnectionStrings__KitosContext", false,
-                @"Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True");
+                @"Host=localhost;Port=5432;Database=kitos;Username=postgres;******");
         }
 
         private static string GetEnvironmentVariable(string name, bool mandatory = true, string? defaultValue = null, bool allowAppSettingsFallback = true)

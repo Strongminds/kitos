@@ -1,4 +1,3 @@
-using Core.Abstractions.Helpers;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.Server;
@@ -16,30 +15,20 @@ namespace Presentation.Web.Infrastructure.Configuration
         {
             var hangfireConnectionString = configuration.GetConnectionString("kitos_HangfireDB")
                 ?? throw new InvalidOperationException("kitos_HangfireDB connection string is required");
-            var hangfireProvider = configuration["Hangfire:Provider"] ?? configuration["Database:Provider"];
 
-            EnsureHangfireDatabaseCreated(hangfireConnectionString, hangfireProvider);
+            EnsureHangfireDatabaseCreated(hangfireConnectionString);
 
             services.AddHangfire(config =>
             {
                 config
                     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                     .UseSimpleAssemblyNameTypeSerializer()
-                    .UseRecommendedSerializerSettings();
-
-                if (DatabaseProviderHelper.IsPostgreSqlProvider(hangfireProvider))
-                {
-                    config.UsePostgreSqlStorage(o => o.UseNpgsqlConnection(hangfireConnectionString), new PostgreSqlStorageOptions
+                    .UseRecommendedSerializerSettings()
+                    .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(hangfireConnectionString), new PostgreSqlStorageOptions
                     {
-                        // Ensure Hangfire creates its own schema/tables in fresh PostgreSQL databases.
                         PrepareSchemaIfNecessary = true,
                         SchemaName = "hangfire"
                     });
-                }
-                else
-                {
-                    config.UseSqlServerStorage(hangfireConnectionString);
-                }
             });
 
             services.AddSingleton<IBackgroundProcess>(provider => new KeepReadModelsInSyncProcess(provider));
@@ -48,60 +37,38 @@ namespace Presentation.Web.Infrastructure.Configuration
             return services;
         }
 
-        private static void EnsureHangfireDatabaseCreated(string hangfireConnectionString, string? provider)
+        private static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
         {
-            if (DatabaseProviderHelper.IsPostgreSqlProvider(provider))
+            var csb = new NpgsqlConnectionStringBuilder(hangfireConnectionString);
+            var databaseName = csb.Database;
+            if (string.IsNullOrWhiteSpace(databaseName))
+                throw new InvalidOperationException("Hangfire PostgreSQL connection string must include a database name.");
+
+            csb.Database = "postgres";
+
+            using var connection = new NpgsqlConnection(csb.ConnectionString);
+            connection.Open();
+            using var existsCmd = connection.CreateCommand();
+            existsCmd.CommandText = "SELECT 1 FROM pg_database WHERE datname = @dbName";
+            existsCmd.Parameters.AddWithValue("dbName", databaseName);
+
+            var exists = existsCmd.ExecuteScalar() != null;
+            if (!exists)
             {
-                var csb = new NpgsqlConnectionStringBuilder(hangfireConnectionString);
-                var databaseName = csb.Database;
-                if (string.IsNullOrWhiteSpace(databaseName))
-                    throw new InvalidOperationException("Hangfire PostgreSQL connection string must include a database name.");
-
-                csb.Database = "postgres";
-
-                using var connection = new NpgsqlConnection(csb.ConnectionString);
-                connection.Open();
-                using var existsCmd = connection.CreateCommand();
-                existsCmd.CommandText = "SELECT 1 FROM pg_database WHERE datname = @dbName";
-                existsCmd.Parameters.AddWithValue("dbName", databaseName);
-
-                var exists = existsCmd.ExecuteScalar() != null;
-                if (!exists)
-                {
-                    using var createCmd = connection.CreateCommand();
-                    createCmd.CommandText = $"CREATE DATABASE \"{databaseName.Replace("\"", "\"\"")}\"";
-                    createCmd.ExecuteNonQuery();
-                }
-
-                // Ensure schema exists; Hangfire.PostgreSql will create/migrate its own tables.
-                csb.Database = databaseName;
-                using var hangfireConnection = new NpgsqlConnection(csb.ConnectionString);
-                hangfireConnection.Open();
-                using var bootstrapCmd = hangfireConnection.CreateCommand();
-                bootstrapCmd.CommandText = """
-                    CREATE SCHEMA IF NOT EXISTS hangfire;
-                    """;
-                bootstrapCmd.ExecuteNonQuery();
-
-                return;
+                using var createCmd = connection.CreateCommand();
+                createCmd.CommandText = $"CREATE DATABASE \"{databaseName.Replace("\"", "\"\"")}\"";
+                createCmd.ExecuteNonQuery();
             }
 
-            var sqlCsb = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(hangfireConnectionString);
-            var sqlDatabaseName = sqlCsb.InitialCatalog;
-            sqlCsb.InitialCatalog = "master";
-
-            using var sqlConnection = new Microsoft.Data.SqlClient.SqlConnection(sqlCsb.ConnectionString);
-            sqlConnection.Open();
-            using var cmd = sqlConnection.CreateCommand();
-            cmd.CommandText = """
-                IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = @dbName)
-                BEGIN
-                    DECLARE @sql NVARCHAR(MAX) = N'CREATE DATABASE ' + QUOTENAME(@dbName);
-                    EXEC sp_executesql @sql;
-                END
+            // Ensure schema exists; Hangfire.PostgreSql will create/migrate its own tables.
+            csb.Database = databaseName;
+            using var hangfireConnection = new NpgsqlConnection(csb.ConnectionString);
+            hangfireConnection.Open();
+            using var bootstrapCmd = hangfireConnection.CreateCommand();
+            bootstrapCmd.CommandText = """
+                CREATE SCHEMA IF NOT EXISTS hangfire;
                 """;
-            cmd.Parameters.AddWithValue("@dbName", sqlDatabaseName);
-            cmd.ExecuteNonQuery();
+            bootstrapCmd.ExecuteNonQuery();
         }
 
     }

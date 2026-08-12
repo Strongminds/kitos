@@ -56,23 +56,12 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDatabaseServices(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var provider = configuration["Database:Provider"];
-
         services.AddDbContext<PubSubContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            var isPostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider)
-                               || DatabaseProviderHelper.LooksLikePostgreSqlConnectionString(connectionString);
-            if (isPostgreSql)
-            {
-                var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-                dataSourceBuilder.ConnectionStringBuilder.GssEncryptionMode = GssEncryptionMode.Disable;
-                options.UseNpgsql(dataSourceBuilder.Build());
-            }
-            else
-            {
-                options.UseSqlServer(connectionString);
-            }
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.ConnectionStringBuilder.GssEncryptionMode = GssEncryptionMode.Disable;
+            options.UseNpgsql(dataSourceBuilder.Build());
         });
         return services;
     }

@@ -44,7 +44,7 @@ Run integration tests:
 dotnet test Tests.Integration.Presentation.Web
 ```
 
-Integration tests require a running KITOS instance and a database configured through `Tests.Integration.Presentation.Web/Properties/launchSettings.json`.
+Integration tests require a running KITOS instance and a PostgreSQL database configured through `Tests.Integration.Presentation.Web/Properties/launchSettings.json`.
 
 The default launch profile (`Tests.Integration.Presentation.Web`) now targets **PostgreSQL** locally:
 
