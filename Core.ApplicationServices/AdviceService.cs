@@ -146,7 +146,13 @@ namespace Core.ApplicationServices
                             {
                                 _adviceRepository.Update(advice);
 
-                                _adviceSentRepository.Insert(new AdviceSent { AdviceId = id, AdviceSentDate = _operationClock.Now });
+                                _adviceSentRepository.Insert(new AdviceSent
+                                {
+                                    AdviceId = id,
+                                    AdviceSentDate = _operationClock.Now,
+                                    ObjectOwnerId = advice.ObjectOwnerId,
+                                    LastChangedByUserId = advice.ObjectOwnerId
+                                });
                             }
                         }
 

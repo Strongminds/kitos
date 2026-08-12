@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PubSub.Infrastructure.DataAccess;
@@ -20,10 +19,9 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "10.0.0");
 
-            modelBuilder.Entity("PubSub.Core.Models.Subscription", b =>
+            modelBuilder.Entity("PubSub.Core.DomainModel.Subscriptions.Subscription", b =>
                 {
                     b.Property<Guid>("Uuid")
                         .ValueGeneratedOnAdd();

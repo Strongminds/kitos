@@ -103,6 +103,7 @@
 	Write-Host "Updating appsettings.json"
 	$appSettingsPath = ".\TEMP_PresentationWeb\appsettings.json"
 	$appSettings = Get-Content $appSettingsPath -Raw | ConvertFrom-Json
+	Write-Host "Prepare-Package using KitosDbProvider='$($Env:KitosDbProvider)'"
 
 	# Database provider (resolved in DeploymentSetup.ps1)
 	$appSettings.Database.Provider  = $Env:KitosDbProvider
@@ -153,6 +154,9 @@
 	$appSettings.AppSettings.PubSubBaseUrl                        = $Env:PubSubBaseUrl
 
 	$appSettings | ConvertTo-Json -Depth 10 | Set-Content $appSettingsPath -Encoding UTF8
+
+	$stampedAppSettings = Get-Content $appSettingsPath -Raw | ConvertFrom-Json
+	Write-Host "Stamped appsettings Database.Provider='$($stampedAppSettings.Database.Provider)' Hangfire.Provider='$($stampedAppSettings.Hangfire.Provider)'"
 
 	Write-Host "Update of appsettings.json complete"
 

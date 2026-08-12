@@ -11,7 +11,8 @@ internal static class LegacySqlServerSourceCompatibility
         new Dictionary<string, TableRef>(StringComparer.OrdinalIgnoreCase)
         {
             [ToQualifiedKey("dbo", "LocalFrequencyTypes")] = new("dbo", "LocalRelationFrequencyTypes"),
-            [ToQualifiedKey("dbo", "SsoOrganizationIdentities")] = new("dbo", "StsOrganizationIdentities")
+            [ToQualifiedKey("dbo", "SsoOrganizationIdentities")] = new("dbo", "StsOrganizationIdentities"),
+            [ToQualifiedKey("dbo", "Subscriptions")] = new("public", "Subscriptions")
         };
 
     private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, IReadOnlyList<string>>> LegacySourceColumnAliases =

@@ -16,8 +16,7 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "10.0.0");
 
             modelBuilder.Entity("PubSub.Core.DomainModel.Subscriptions.Subscription", b =>
                 {
