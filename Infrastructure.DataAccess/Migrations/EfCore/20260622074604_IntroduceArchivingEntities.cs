@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -10,31 +10,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            var isSqlServer = migrationBuilder.ActiveProvider == InfrastructureConstants.SqlServerProviderName;
-            var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
-            var uuidType = isSqlServer ? InfrastructureConstants.SqlServerUuidType : InfrastructureConstants.PostgreSqlUuidType;
-            var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
-            var dateTimeType = isSqlServer ? InfrastructureConstants.SqlServerDateTimeType : InfrastructureConstants.PostgreSqlDateTimeType;
-
-            migrationBuilder.CreateTable(
+        {            migrationBuilder.CreateTable(
                 name: "ItSystemUsageArchive",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: intType, nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: intType, nullable: false)
-                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Uuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    SnapshotUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    OrganizationId = table.Column<int>(type: intType, nullable: false),
-                    Note = table.Column<string>(type: maxTextType, nullable: false),
-                    ArchivingDate = table.Column<DateTime>(type: dateTimeType, nullable: false),
-                    ReferenceName = table.Column<string>(type: maxTextType, nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: intType, nullable: false),
-                    LastChanged = table.Column<DateTime>(type: dateTimeType, nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: intType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    SnapshotUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: false),
+                    ArchivingDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ReferenceName = table.Column<string>(type: "text", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,18 +54,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ArchiveReference",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: intType, nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: intType, nullable: false)
-                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Uuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    Label = table.Column<string>(type: maxTextType, nullable: false),
-                    Url = table.Column<string>(type: maxTextType, nullable: false),
-                    ItSystemUsageArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: intType, nullable: false),
-                    LastChanged = table.Column<DateTime>(type: dateTimeType, nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: intType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Label = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    ItSystemUsageArchiveUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,21 +91,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Snapshot",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: intType, nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: intType, nullable: false)
-                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Uuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    TakenIntoUsageDate = table.Column<DateTime?>(type: dateTimeType, nullable: true),
-                    LegacyName = table.Column<string>(type: maxTextType, nullable: true),
-                    LocalName = table.Column<string>(type: maxTextType, nullable: true),
-                    LocalId = table.Column<string>(type: maxTextType, nullable: true),
-                    ItSystemUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    ItSystemUsageArchiveUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: intType, nullable: false),
-                    LastChanged = table.Column<DateTime>(type: dateTimeType, nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: intType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    TakenIntoUsageDate = table.Column<DateTime?>(type: "timestamp without time zone", nullable: true),
+                    LegacyName = table.Column<string>(type: "text", nullable: true),
+                    LocalName = table.Column<string>(type: "text", nullable: true),
+                    LocalId = table.Column<string>(type: "text", nullable: true),
+                    ItSystemUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItSystemUsageArchiveUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

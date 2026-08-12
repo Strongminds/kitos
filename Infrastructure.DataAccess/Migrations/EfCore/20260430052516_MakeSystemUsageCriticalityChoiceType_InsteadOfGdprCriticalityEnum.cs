@@ -10,15 +10,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-            var varchar150Type = isSqlServer ? "nvarchar(150)" : "character varying(150)";
-            var datetimeType = isSqlServer ? "datetime2" : "timestamp without time zone";
-            var uuidType = isSqlServer ? "uniqueidentifier" : "uuid";
-            var boolType = isSqlServer ? "bit" : "boolean";
-
-            migrationBuilder.DropIndex(
+        {            migrationBuilder.DropIndex(
                 name: "ItSystemUsageOverviewReadModel_Index_GdprCriticality",
                 table: "ItSystemUsageOverviewReadModels");
 
@@ -39,49 +31,46 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "CriticalityLevelDocumentationUrl",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CriticalityLevelDocumentationUrlName",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
                 name: "SystemUsageCriticalityLevelUuid",
                 table: "ItSystemUsageOverviewReadModels",
-                type: uuidType,
+                type: "uuid",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CriticalityLevelDocumentationName",
                 table: "ItSystemUsage",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "CriticalityLevelDocumentationUrl",
                 table: "ItSystemUsage",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "LocalSystemUsageCriticalityLevelTypes",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: "integer", nullable: false)
-                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: datetimeType, nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: maxTextType, nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: boolType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -108,21 +97,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "SystemUsageCriticalityLevelTypes",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: "integer", nullable: false)
-                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: datetimeType, nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: varchar150Type, maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: boolType, nullable: false),
-                    IsObligatory = table.Column<bool>(type: boolType, nullable: false),
-                    Description = table.Column<string>(type: maxTextType, nullable: true),
-                    IsEnabled = table.Column<bool>(type: boolType, nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: uuidType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -177,8 +163,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "Uuid",
                 unique: true);
 
-            var seedAndRemapSql = ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase)
-                ? @"
+            var seedAndRemapSql = @"
                 DO $$
                 BEGIN
                     -- If a global admin user exists, seed option types and remap old enum values.
@@ -220,49 +205,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                           AND ""SystemUsageCriticalityLevelId"" NOT IN (SELECT ""Id"" FROM dbo.""SystemUsageCriticalityLevelTypes"");
                     END IF;
                 END
-                $$;"
-                : @"
-                -- If a global admin user exists, seed option types and remap old enum values.
-                -- On a fresh empty database (no users yet) the whole block is skipped;
-                -- the application-level option type seeder handles that case on first startup.
-                IF EXISTS (SELECT 1 FROM dbo.[User] WHERE IsGlobalAdmin = 1)
-                BEGIN
-                    INSERT INTO dbo.SystemUsageCriticalityLevelTypes
-                        (ObjectOwnerId, LastChanged, LastChangedByUserId, Name, IsLocallyAvailable, IsObligatory, [Description], IsEnabled, Priority, Uuid)
-                    SELECT
-                        (SELECT TOP 1 Id FROM dbo.[User] WHERE IsGlobalAdmin = 1 ORDER BY Id),
-                        GETUTCDATE(),
-                        (SELECT TOP 1 Id FROM dbo.[User] WHERE IsGlobalAdmin = 1 ORDER BY Id),
-                        v.Name, v.IsLocallyAvailable, v.IsObligatory, NULL, v.IsEnabled, v.Priority, NEWID()
-                    FROM (VALUES
-                        (N'Ikke kritisk', 1, 0, 1, 0),
-                        (N'Lav',          1, 0, 1, 1),
-                        (N'Mellem',       1, 0, 1, 2),
-                        (N'Høj',          1, 0, 1, 3),
-                        (N'Meget høj',    1, 0, 1, 4)
-                    ) AS v(Name, IsLocallyAvailable, IsObligatory, IsEnabled, Priority);
-
-                    -- Remap old enum integers to new option type FK IDs
-                    UPDATE isu
-                    SET isu.SystemUsageCriticalityLevelId = opt.Id
-                    FROM dbo.ItSystemUsage isu
-                    INNER JOIN dbo.SystemUsageCriticalityLevelTypes opt
-                        ON opt.Name = CASE isu.SystemUsageCriticalityLevelId
-                            WHEN 0 THEN N'Ikke kritisk'
-                            WHEN 1 THEN N'Lav'
-                            WHEN 2 THEN N'Mellem'
-                            WHEN 3 THEN N'Høj'
-                            WHEN 4 THEN N'Meget høj'
-                        END
-                    WHERE isu.SystemUsageCriticalityLevelId IS NOT NULL;
-
-                    -- Null out any rows whose value was not a recognised enum integer (defensive cleanup)
-                    UPDATE dbo.ItSystemUsage
-                    SET SystemUsageCriticalityLevelId = NULL
-                    WHERE SystemUsageCriticalityLevelId IS NOT NULL
-                      AND SystemUsageCriticalityLevelId NOT IN (SELECT Id FROM dbo.SystemUsageCriticalityLevelTypes);
-                END
-                ";
+                $$;";
 
             migrationBuilder.Sql(seedAndRemapSql);
 
@@ -324,7 +267,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "GdprCriticality",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "int",
+                type: "integer",
                 nullable: true);
 
             migrationBuilder.CreateIndex(

@@ -9,37 +9,27 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-            var varchar15Type = isSqlServer ? "nvarchar(15)" : "character varying(15)";
-            var varchar150Type = isSqlServer ? "nvarchar(150)" : "character varying(150)";
-            var intType = isSqlServer ? "int" : "integer";
-
-            migrationBuilder.AddColumn<string>(
+        {            migrationBuilder.AddColumn<string>(
                 name: "LocalKleIdsAsCsv",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "LocalKleNamesAsCsv",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "ItSystemUsageOverviewLocalTaskRefReadModels",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: intType, nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: "serial", nullable: false),
-                    KLEId = table.Column<string>(type: varchar15Type, maxLength: 15, nullable: true),
-                    KLEName = table.Column<string>(type: varchar150Type, maxLength: 150, nullable: true),
-                    ParentId = table.Column<int>(type: intType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    KLEId = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
+                    KLEName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

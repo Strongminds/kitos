@@ -10,14 +10,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var columnType = ActiveProvider.Contains("Npgsql", System.StringComparison.OrdinalIgnoreCase)
-                ? "boolean"
-                : "bit";
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsSupplierDisabled",
                 table: "ItContractOverviewReadModels",
-                type: columnType,
+                type: "boolean",
                 nullable: false,
                 defaultValue: false);
         }

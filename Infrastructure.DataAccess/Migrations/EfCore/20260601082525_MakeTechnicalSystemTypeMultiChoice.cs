@@ -10,19 +10,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-            var varchar150Type = isSqlServer ? "nvarchar(150)" : "character varying(150)";
-            var uuidType = isSqlServer ? "uniqueidentifier" : "uuid";
-
-            // Create the many-to-many join table
+        {            // Create the many-to-many join table
             migrationBuilder.CreateTable(
                 name: "ItSystemUsageTechnicalSystemTypes",
                 columns: table => new
                 {
-                    ReferencesId = table.Column<int>(type: "int", nullable: false),
-                    TechnicalSystemTypesId = table.Column<int>(type: "int", nullable: false)
+                    ReferencesId = table.Column<int>(type: "integer", nullable: false),
+                    TechnicalSystemTypesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,15 +41,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 column: "TechnicalSystemTypesId");
 
             // Migrate existing single-choice data to the new join table
-            var migrateExistingDataSql = isSqlServer
-                ? @"
-                    INSERT INTO dbo.ItSystemUsageTechnicalSystemTypes (ReferencesId, TechnicalSystemTypesId)
-                    SELECT Id, TechnicalSystemTypeId
-                    FROM dbo.ItSystemUsage
-                    WHERE TechnicalSystemTypeId IS NOT NULL
-                "
-                : @"
-                    INSERT INTO dbo.""ItSystemUsageTechnicalSystemTypes"" (""ReferencesId"", ""TechnicalSystemTypesId"")
+            var migrateExistingDataSql = @"INSERT INTO dbo.""ItSystemUsageTechnicalSystemTypes"" (""ReferencesId"", ""TechnicalSystemTypesId"")
                     SELECT ""Id"", ""TechnicalSystemTypeId""
                     FROM dbo.""ItSystemUsage""
                     WHERE ""TechnicalSystemTypeId"" IS NOT NULL
@@ -93,7 +79,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "TechnicalSystemTypeNamesAsCsv",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             // Create the new read model child table
@@ -101,14 +87,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewTechnicalSystemTypeReadModel",
                 columns: table => new
                 {
-                    Id = isSqlServer
-                        ? table.Column<int>(type: "int", nullable: false)
-                            .Annotation("SqlServer:Identity", "1, 1")
-                        : table.Column<int>(type: "integer", nullable: false)
-                            .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TechnicalSystemTypeUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    TechnicalSystemTypeName = table.Column<string>(type: varchar150Type, maxLength: 150, nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TechnicalSystemTypeUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    TechnicalSystemTypeName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,10 +118,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-            var uuidType = isSqlServer ? "uniqueidentifier" : "uuid";
-
             // Drop the new read model table
             migrationBuilder.DropTable(
                 name: "ItSystemUsageOverviewTechnicalSystemTypeReadModel");
@@ -152,13 +131,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<Guid>(
                 name: "TechnicalSystemTypeUuid",
                 table: "ItSystemUsageOverviewReadModels",
-                type: uuidType,
+                type: "uuid",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "TechnicalSystemTypeName",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
@@ -170,22 +149,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "TechnicalSystemTypeId",
                 table: "ItSystemUsage",
-                type: "int",
+                type: "integer",
                 nullable: true);
 
             // Migrate data back from join table (take first entry per usage)
-            var migrateBackSql = isSqlServer
-                ? @"
-                    UPDATE u
-                    SET u.TechnicalSystemTypeId = jt.TechnicalSystemTypesId
-                    FROM dbo.ItSystemUsage u
-                    INNER JOIN (
-                        SELECT ReferencesId, MIN(TechnicalSystemTypesId) AS TechnicalSystemTypesId
-                        FROM dbo.ItSystemUsageTechnicalSystemTypes
-                        GROUP BY ReferencesId
-                    ) jt ON u.Id = jt.ReferencesId
-                "
-                : @"
+            var migrateBackSql = @"
                     UPDATE dbo.""ItSystemUsage"" AS u
                     SET ""TechnicalSystemTypeId"" = jt.""TechnicalSystemTypesId""
                     FROM (
@@ -195,7 +163,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     ) AS jt
                     WHERE u.""Id"" = jt.""ReferencesId""
                 ";
-
             migrationBuilder.Sql(migrateBackSql);
 
             migrationBuilder.CreateIndex(

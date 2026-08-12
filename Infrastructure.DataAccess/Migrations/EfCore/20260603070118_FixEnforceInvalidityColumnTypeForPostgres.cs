@@ -13,12 +13,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AlterColumn<bool>(
                 name: "EnforceInvalidity",
                 table: "DataProcessingRegistrations",
-                type: "bit",
+                type: "boolean",
                 nullable: true,
                 oldClrType: typeof(bool),
-                oldType: "bit",
-                oldNullable: true)
-                .Annotation("Npgsql:ColumnType", "boolean");
+                oldType: "boolean",
+                oldNullable: true);
         }
 
         /// <inheritdoc />
@@ -27,10 +26,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AlterColumn<bool>(
                 name: "EnforceInvalidity",
                 table: "DataProcessingRegistrations",
-                type: "bit",
+                type: "boolean",
                 nullable: true,
                 oldClrType: typeof(bool),
-                oldType: "bit",
+                oldType: "boolean",
                 oldNullable: true);
         }
     }

@@ -15,7 +15,7 @@ Function Get-DatabaseProvider {
     # cannot be used with SQL Server, so detect from it first.
     if ($connectionString -and (LooksLikePostgreSqlConnectionString $connectionString)) { return "PostgreSql" }
     if ($Env:Database__Provider) { return $Env:Database__Provider }
-    return "SqlServer"
+    return "PostgreSql"
 }
 
 Function Is-PostgreSqlProvider([string]$provider) {

@@ -10,13 +10,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == InfrastructureConstants.SqlServerProviderName;
-            var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
-
             migrationBuilder.AddColumn<string>(
                 name: "SupplierForeignCvr",
                 table: "ItContractSupplierOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
         }
 

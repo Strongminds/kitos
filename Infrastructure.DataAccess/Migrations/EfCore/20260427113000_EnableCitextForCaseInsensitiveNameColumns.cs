@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 
@@ -40,11 +40,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (!ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
             // citext must be installed in the public schema so it is accessible via PostgreSQL's
             // default search_path ("$user",public). The public schema is recreated here if it was
             // dropped, keeping app tables in dbo as intended.
@@ -65,11 +60,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (!ActiveProvider.Contains("Npgsql", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
             AlterColumnToType(migrationBuilder, "ItSystem", "Name", "character varying(100)");
             AlterColumnToType(migrationBuilder, "ItInterface", "Name", "character varying(100)");
             AlterColumnToType(migrationBuilder, "ItContract", "Name", "character varying(200)");

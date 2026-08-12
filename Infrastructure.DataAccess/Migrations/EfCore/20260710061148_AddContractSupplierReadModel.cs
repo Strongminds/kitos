@@ -11,39 +11,29 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == InfrastructureConstants.SqlServerProviderName;
-            var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
-            var uuidType = isSqlServer ? InfrastructureConstants.SqlServerUuidType : InfrastructureConstants.PostgreSqlUuidType;
-            var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
-            var boolType = isSqlServer ? "bit" : "boolean";
-            var supplierNameType = isSqlServer ? "nvarchar(100)" : "character varying(100)";
-            var supplierCvrType = isSqlServer ? "nvarchar(10)" : "character varying(10)";
-            var highestCriticalityNameType = isSqlServer ? "nvarchar(150)" : "character varying(150)";
-            var contractNameType = isSqlServer ? "nvarchar(200)" : "character varying(200)";
-
             migrationBuilder.AddColumn<bool>(
                 name: "HasInternalSupplier",
                 table: "ItContract",
-                type: boolType,
+                type: "boolean",
                 nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "ItContractSupplierOverviewReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: intType, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: intType, nullable: false),
-                    SupplierId = table.Column<int>(type: intType, nullable: false),
-                    SupplierType = table.Column<int>(type: intType, nullable: false),
-                    SupplierUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    SupplierName = table.Column<string>(type: supplierNameType, maxLength: 100, nullable: true),
-                    SupplierCvr = table.Column<string>(type: supplierCvrType, maxLength: 10, nullable: true),
-                    IsSupplierDisabled = table.Column<bool>(type: boolType, nullable: false),
-                    HighestCriticalityUuid = table.Column<Guid>(type: uuidType, nullable: true),
-                    HighestCriticalityName = table.Column<string>(type: highestCriticalityNameType, maxLength: 150, nullable: true),
-                    HighestCriticalityRank = table.Column<int>(type: intType, nullable: true),
-                    ContractsAtHighestCriticalityCsv = table.Column<string>(type: maxTextType, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        ,
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    SupplierId = table.Column<int>(type: "integer", nullable: false),
+                    SupplierType = table.Column<int>(type: "integer", nullable: false),
+                    SupplierUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    SupplierName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    SupplierCvr = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    IsSupplierDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    HighestCriticalityUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    HighestCriticalityName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    HighestCriticalityRank = table.Column<int>(type: "integer", nullable: true),
+                    ContractsAtHighestCriticalityCsv = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -60,12 +50,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractSupplierOverviewAtCriticalityContractReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: intType, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ContractId = table.Column<int>(type: intType, nullable: false),
-                    ContractUuid = table.Column<Guid>(type: uuidType, nullable: false),
-                    ContractName = table.Column<string>(type: contractNameType, maxLength: 200, nullable: true),
-                    ParentId = table.Column<int>(type: intType, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        ,
+                    ContractId = table.Column<int>(type: "integer", nullable: false),
+                    ContractUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ContractName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
