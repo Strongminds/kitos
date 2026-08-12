@@ -11,8 +11,7 @@ namespace Infrastructure.DataAccess
     /// The connection string is read from the environment variable
     /// <c>ConnectionStrings__KitosContext</c> (standard .NET hierarchical config format).
     ///
-    /// Set it before running any 'dotnet ef' command, e.g.:
-    ///   $env:ConnectionStrings__KitosContext = "Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres"
+    /// Set it before running any 'dotnet ef' command
     /// </summary>
     public class KitosContextDesignTimeFactory : IDesignTimeDbContextFactory<KitosContext>
     {
@@ -25,7 +24,7 @@ namespace Infrastructure.DataAccess
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new InvalidOperationException(
                     $"Design-time DB context requires the '{EnvVar}' environment variable to be set. " +
-                    "Example: $env:ConnectionStrings__KitosContext = \"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=postgres\"");
+                    "Example: $env:ConnectionStrings__KitosContext = \"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=localNoSecret\"");
 
             var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();

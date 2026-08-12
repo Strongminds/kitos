@@ -45,7 +45,7 @@ try {
     # during bundle creation. The real connection string is passed at runtime via --connection.
     New-MigrationsBundle `
         -provider "PostgreSql" `
-        -connectionString "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=dummy" `
+        -connectionString "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=localNoSecret" `
         -outputPath $postgresBundleExe
 }
 finally {

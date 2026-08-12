@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.Abstractions.Helpers;
 using Core.DomainModel.Organization;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +50,7 @@ namespace Tests.Integration.Presentation.Web.Tools
                 DefaultUserPassword = "arne123";
                 DatabaseProvider = GetEnvironmentVariable("KitosDbProvider", false,
                     GetEnvironmentVariable("Database__Provider", false, "PostgreSql"));
-                ConnectionString = ResolveLocalConnectionString(DatabaseProvider);
+                ConnectionString = ResolveLocalConnectionString();
                 UsersFromEnvironment = new Dictionary<OrganizationRole, KitosCredentials>
                 {
                     {
@@ -160,10 +159,10 @@ namespace Tests.Integration.Presentation.Web.Tools
         }
 
 
-        private static string ResolveLocalConnectionString(string provider)
+        private static string ResolveLocalConnectionString()
         {
             return GetEnvironmentVariable("ConnectionStrings__KitosContext", false,
-                @"Host=localhost;Port=5432;Database=kitos;Username=postgres;******");
+                @"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=localNoSecret");
         }
 
         private static string GetEnvironmentVariable(string name, bool mandatory = true, string? defaultValue = null, bool allowAppSettingsFallback = true)
