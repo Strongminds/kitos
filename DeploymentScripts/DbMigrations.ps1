@@ -1,8 +1,6 @@
 Function LooksLikePostgreSqlConnectionString([string]$connectionString) {
     if (-not $connectionString) { return $false }
-    # SQL Server-specific keys — cannot be a PostgreSQL connection string
-    if ($connectionString -imatch 'Initial Catalog=' -or $connectionString -imatch 'Data Source=') { return $false }
-    # PostgreSQL-specific keys (User ID= is ambiguous; it is also used by SQL Server)
+    # PostgreSQL-specific keys
     return (
         $connectionString -imatch 'Host=' -or
         $connectionString -imatch 'Username='
@@ -12,7 +10,7 @@ Function LooksLikePostgreSqlConnectionString([string]$connectionString) {
 Function Get-DatabaseProvider {
     param([string]$connectionString = $null)
     # Connection string format is authoritative: a PostgreSQL-formatted connection string
-    # cannot be used with SQL Server, so detect from it first.
+    # cannot be used with any other provider, so detect from it first.
     if ($connectionString -and (LooksLikePostgreSqlConnectionString $connectionString)) { return "PostgreSql" }
     if ($Env:Database__Provider) { return $Env:Database__Provider }
     return "PostgreSql"
@@ -215,55 +213,6 @@ Function Wait-ForTcpPort {
     throw "TCP connectivity was not established to $Hostname`:$Port after $MaxAttempts attempts."
 }
 
-Function ConvertTo-SqlConnectionParts([string]$connectionString) {
-    $cs = @{}
-    ($connectionString -split ';') | Where-Object { $_ -match '=' } | ForEach-Object {
-        $kv = $_ -split '=', 2
-        $cs[$kv[0].Trim()] = $kv[1].Trim()
-    }
-    $server = if ($cs['Server']) { $cs['Server'] } else { $cs['Data Source'] }
-    
-    # Only prepend tcp: for remote servers. Local instances (.\X, (local), localhost, (localdb)\X)
-    # use named pipes or shared memory and fail when forced onto TCP.
-    $isLocal = $server -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|$)'
-    if ($server -and -not $isLocal -and $server -notmatch '^(tcp|np|lpc):') {
-        $server = "tcp:$server"
-    }
-    return @{
-        Server    = $server
-        Database  = if ($cs['Initial Catalog']) { $cs['Initial Catalog'] } else { $cs['Database'] }
-        Trusted   = $cs['Integrated Security'] -in @('true', 'sspi', 'yes')
-        TrustCert = $cs['TrustServerCertificate'] -eq 'true'
-        UserId    = $cs['User ID']
-        Password  = $cs['Password']
-    }
-}
-
-Function Get-SqlcmdAuthArgs($parts) {
-    $authArgs = @()
-    if ($parts.Trusted) { $authArgs += '-E' } else { $authArgs += @('-U', $parts.UserId, '-P', $parts.Password) }
-    if ($parts.TrustCert) { $authArgs += '-C' }
-    return $authArgs
-}
-
-# Creates the database via master if it does not already exist.
-Function New-SqlDatabase([string]$connectionString) {
-    $parts = ConvertTo-SqlConnectionParts $connectionString
-    $authArgs = Get-SqlcmdAuthArgs $parts
-    $createSql = "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'$($parts.Database)') CREATE DATABASE [$($parts.Database)]"
-    & sqlcmd -S $parts.Server -d master @authArgs -Q $createSql -b
-    if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed creating database $($parts.Database)" }
-}
-
-# Executes a .sql file via sqlcmd, which natively handles GO batch separators.
-Function Invoke-KitosSqlFile([string]$connectionString, [string]$sqlFilePath) {
-    $parts = ConvertTo-SqlConnectionParts $connectionString
-    $authArgs = Get-SqlcmdAuthArgs $parts
-    & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $sqlFilePath -b -I
-    if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed executing $sqlFilePath" }
-}
-
-
 # Grants full access on the dbo schema and all its objects to the named user.
 # Needed when the script runs as a superuser (e.g. postgres) while the application connects as a
 # lower-privileged user (e.g. kitos): the dbo schema would otherwise be owned by the
@@ -291,61 +240,11 @@ END
     Invoke-PostgresSql -parts $parts -database $parts.Database -sql $sql
 }
 
-# For existing databases (previously managed by EF6), pre-marks EF Core migrations as applied
-# so that dotnet ef does not attempt to re-apply schema changes that are already present.
-#
-# Rules:
-#   - InitialBaseline: always pre-marked because the full schema already exists.
-#   - AddExternalAndInternalPaymentOrganizationUnits_ToContractReadModel: pre-marked only when
-#     the matching EF6 entry is found in __MigrationHistory (name match, any timestamp prefix).
-Function Initialize-EFCoreHistoryForExistingDb([string]$connectionString) {
-    $parts = ConvertTo-SqlConnectionParts $connectionString
-    $authArgs = Get-SqlcmdAuthArgs $parts
-
-    $sql = @"
--- Ensure the EF Core history table exists before any inserts.
--- dotnet ef creates it automatically, but we run before dotnet ef.
-IF OBJECT_ID('[__EFMigrationsHistory]', 'U') IS NULL
-BEGIN
-    CREATE TABLE [__EFMigrationsHistory] (
-        [MigrationId]    nvarchar(150) NOT NULL,
-        [ProductVersion] nvarchar(32)  NOT NULL,
-        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
-    )
-END
-
--- InitialBaseline: existing DB already has the full schema, never re-apply it.
-IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] LIKE '%_InitialBaseline')
-BEGIN
-    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES ('20260413095837_InitialBaseline', '10.0.6')
-    PRINT 'Pre-marked InitialBaseline'
-END
-"@
-
-    $tmpFile = [System.IO.Path]::GetTempFileName() -replace '\.tmp$', '.sql'
-    # Write without BOM — PowerShell 5.x Set-Content -Encoding UTF8 emits a BOM which
-    # causes sqlcmd to fail parsing the file on some versions.
-    [System.IO.File]::WriteAllText($tmpFile, $sql, (New-Object System.Text.UTF8Encoding $false))
-    try {
-        & sqlcmd -S $parts.Server -d $parts.Database @authArgs -i $tmpFile -b
-        if ($LASTEXITCODE -ne 0) { Throw "sqlcmd failed initializing EF Core migration history" }
-    } finally {
-        Remove-Item $tmpFile -ErrorAction SilentlyContinue
-    }
-}
-
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [string]$buildConfiguration = "Release") {
     Write-Host "Executing db migrations"
-    $provider = Get-DatabaseProvider -connectionString $connectionString
-    $isPostgreSql = Is-PostgreSqlProvider $provider
-    Write-Host "Database provider: $provider"
-
-    if ($isPostgreSql) {
-        $connectionString = Normalize-PostgresConnectionString -connectionString $connectionString
-        $pgParts = ConvertTo-PostgresConnectionParts $connectionString
-        Write-Host "Using PostgreSQL connection target Host=$($pgParts.Host);Database=$($pgParts.Database)"
-    }
+    $connectionString = Normalize-PostgresConnectionString -connectionString $connectionString
+    $pgParts = ConvertTo-PostgresConnectionParts $connectionString
+    Write-Host "Using PostgreSQL connection target Host=$($pgParts.Host);Database=$($pgParts.Database)"
 
     if ($newDb -eq $true) {
         Write-Host "Enabling seed for new database"
@@ -355,37 +254,12 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         $Env:SeedNewDb = "no"
     }
 
-    # Microsoft.Data.SqlClient v4+ requires explicit certificate trust for local SQL Server instances.
-    # Only applied for fresh SQL Server databases - production runs on a server with a trusted certificate.
-    if (-not $isPostgreSql -and $newDb -eq $true -and $connectionString -notmatch "TrustServerCertificate\s*=\s*True") {
-        $connectionString = $connectionString.TrimEnd(";") + ";TrustServerCertificate=True"
-    }
-
     # Verify TCP connectivity before proceeding with any migration operations.
-    if ($isPostgreSql) {
-        $parts = ConvertTo-PostgresConnectionParts $connectionString
-        if (-not $parts.Host) {
-            throw "PostgreSQL connection string must contain Host"
-        }
-
-        $pgHost = $parts.Host.Trim()
-        $isLocalServer = $newDb -eq $true -or ($pgHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
-        if (-not $isLocalServer) {
-            $pgPort = if ($parts.Port) { [int]$parts.Port } else { 5432 }
-            Wait-ForTcpPort -Hostname $pgHost -Port $pgPort
-        }
-    } else {
-        # Skip for local SQL Server instances — they use named pipes or shared memory, not TCP.
-        $parts = ConvertTo-SqlConnectionParts $connectionString
-        $rawServer = $parts.Server -replace '^tcp:', ''
-        $splitParts = $rawServer -split ',', 2
-        # Strip the named instance suffix (\INSTANCENAME) — only the host/IP is needed for TCP checks.
-        $sqlHost = ($splitParts[0] -split '\\')[0].Trim()
-        $isLocalServer = $newDb -eq $true -or ($sqlHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
-        if (-not $isLocalServer) {
-            $sqlPort = if ($splitParts.Count -gt 1) { [int]$splitParts[1].Trim() } else { 1433 }
-            Wait-ForTcpPort -Hostname $sqlHost -Port $sqlPort
-        }
+    $pgHost = $pgParts.Host.Trim()
+    $isLocalServer = $newDb -eq $true -or ($pgHost -match '^(\.|(\(local\))|localhost|(\(localdb\)))(\\|,|$)')
+    if (-not $isLocalServer) {
+        $pgPort = if ($pgParts.Port) { [int]$pgParts.Port } else { 5432 }
+        Wait-ForTcpPort -Hostname $pgHost -Port $pgPort
     }
 
     $repoRoot = Resolve-Path "$PSScriptRoot\.."
@@ -396,41 +270,28 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     $startupProject = $infraProject
 
     if ($newDb -eq $true) {
-        if ($isPostgreSql) {
-            Write-Host "New PostgreSQL database detected - ensuring database exists"
-            New-PostgresDatabase -connectionString $connectionString
+        Write-Host "New PostgreSQL database detected - ensuring database exists"
+        New-PostgresDatabase -connectionString $connectionString
 
-            # When the script runs as a superuser (e.g. postgres) but the application connects as a
-            # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
-            # Grant the known app user access so the running application is not blocked.
-            # This is a no-op when the script already runs as the app user (kitos owns the schema).
-            $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
-            if ($pgParts.Username -ne $knownAppUser) {
-                Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
-            }
-        } else {
-            Write-Host "New SQL Server database detected - creating database"
-            New-SqlDatabase -connectionString $connectionString
+        # When the script runs as a superuser (e.g. postgres) but the application connects as a
+        # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
+        # Grant the known app user access so the running application is not blocked.
+        # This is a no-op when the script already runs as the app user (kitos owns the schema).
+        $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+        if ($pgParts.Username -ne $knownAppUser) {
+            Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
         }
     }
 
     # Expose the connection string via the standard .NET env var so the
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
     $Env:ConnectionStrings__KitosContext = $connectionString
-    if ($isPostgreSql) {
-        $Env:Database__Provider = $provider
-    } else {
-        $Env:Database__Provider = "SqlServer"
-    }
+    $Env:Database__Provider = "PostgreSql"
     $Env:IgnorePendingModelChangesWarning = "true"
 
-    # CI path: use provider-specific pre-built self-contained bundle (no source or SDK required on the agent).
+    # CI path: use pre-built self-contained bundle (no source or SDK required on the agent).
     # Local dev fallback: build and run via dotnet ef when the bundle is not present.
-    $bundleExe = if ($isPostgreSql) {
-        "$PSScriptRoot\..\MigrationsBundle\efbundle.postgresql.exe"
-    } else {
-        "$PSScriptRoot\..\MigrationsBundle\efbundle.exe"
-    }
+    $bundleExe = "$PSScriptRoot\..\MigrationsBundle\efbundle.postgresql.exe"
 
     $preferBundle = $buildConfiguration -eq "Release" -or $Env:UseMigrationsBundle -eq "true"
     $useBundle = $preferBundle -and (Test-Path $bundleExe)
@@ -485,7 +346,7 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
                     continue
                 }
 
-                if ($text -match '^Failed executing DbCommand .*' -and $newDb -and $isPostgreSql) {
+                if ($text -match '^Failed executing DbCommand .*' -and $newDb) {
                     $skipHistoryProbeLines = 3
                     continue
                 }

@@ -5,4 +5,4 @@ $ErrorActionPreference = "Stop"
 #-------------------------------------------------------------
 Write-Host "Running migrations"
 #-------------------------------------------------------------
-Run-Pubsub-DB-Migrations -connectionString "Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos_PubSub;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;"
+Run-Pubsub-DB-Migrations -connectionString "Host=127.0.0.1;Port=5432;Database=kitos_pubsub;Username=kitos;Password=kitos"

@@ -25,6 +25,7 @@ using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
 using Core.DomainModel.Archive;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System.Collections.Generic;
 
 namespace Infrastructure.DataAccess
@@ -201,6 +202,7 @@ namespace Infrastructure.DataAccess
         {
             if (IsNpgsqlProvider())
             {
+                modelBuilder.UseIdentityByDefaultColumns();
                 modelBuilder.HasDefaultSchema("dbo");
                 modelBuilder.HasPostgresExtension(CaseInsensitiveTextColumnType);
             }

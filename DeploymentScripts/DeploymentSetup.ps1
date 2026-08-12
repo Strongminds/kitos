@@ -25,7 +25,7 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     $Env:ResetPasswordTtl = $parameters["ResetPasswordTtl"]
     $Env:MailSuffix = $parameters["MailSuffix"]
     $Env:KitosEnvName = $parameters["KitosEnvName"]
-    $Env:KitosDbProvider = if ([string]::IsNullOrWhiteSpace($parameters["KitosDbProvider"])) { "SqlServer" } else { $parameters["KitosDbProvider"] }
+    $Env:KitosDbProvider = if ([string]::IsNullOrWhiteSpace($parameters["KitosDbProvider"])) { "PostgreSql" } else { $parameters["KitosDbProvider"] }
     $Env:KitosDbConnectionStringForIIsApp = $parameters["KitosDbConnectionStringForIIsApp"]
     $Env:HangfireDbConnectionStringForIIsApp = $parameters["HangfireDbConnectionStringForIIsApp"]
     $Env:KitosDbConnectionStringForTeamCity = $parameters["KitosDbConnectionStringForTeamCity"]
@@ -52,30 +52,6 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
 
     if($loadTcHangfireConnectionString -eq $true) {
         $Env:HangfireDbConnectionStringForTeamCity = $parameters["HangfireDbConnectionStringForTeamCity"]
-    }
-
-    # When the DB provider is Postgres, override connection strings with values from
-    # the Postgres-specific SSM path (e.g. /kitos/postgre-dev/) so that SQL Server
-    # and Postgres connection strings can be maintained independently.
-    if ($Env:KitosDbProvider -eq "Postgres") {
-        $pgEnvName = "postgres-$envName"
-        Write-Host "KitosDbProvider is Postgres - loading DB connection strings from SSM path: /kitos/$pgEnvName/"
-        $pgParameters = Get-SSM-Parameters -environmentName "$pgEnvName"
-
-        if ($pgParameters.Count -eq 0) {
-            throw "No parameters found for Postgres environment $pgEnvName"
-        }
-
-        $Env:KitosHostName = $pgParameters["HostName"]
-        $Env:MsDeployUrl    = $pgParameters["MsDeployUrl"]
-        $Env:KitosDbConnectionStringForIIsApp    = $pgParameters["KitosDbConnectionStringForIIsApp"]
-        $Env:HangfireDbConnectionStringForIIsApp = $pgParameters["HangfireDbConnectionStringForIIsApp"]
-        $Env:KitosDbConnectionStringForTeamCity  = $pgParameters["KitosDbConnectionStringForTeamCity"]
-        $Env:KitosDbProvider = "Postgres"
-
-        if ($loadTcHangfireConnectionString -eq $true) {
-            $Env:HangfireDbConnectionStringForTeamCity = $pgParameters["HangfireDbConnectionStringForTeamCity"]
-        }
     }
 
     if($loadTestUsers -eq $true) {

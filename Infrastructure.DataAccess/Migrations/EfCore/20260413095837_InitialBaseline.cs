@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -16,6 +17,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -29,6 +31,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "text", nullable: false),
                     Category = table.Column<int>(type: "integer", nullable: false)
@@ -43,6 +46,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     SourceId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -58,6 +62,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
@@ -102,6 +107,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     RelationId = table.Column<int>(type: "integer", nullable: true),
@@ -142,6 +148,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -176,6 +183,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -210,6 +218,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -242,6 +251,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -276,6 +286,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectId = table.Column<int>(type: "integer", nullable: false),
                     ObjectType = table.Column<int>(type: "integer", nullable: false),
@@ -307,6 +318,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -341,6 +353,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
@@ -371,6 +384,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -405,6 +419,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -439,6 +454,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -473,6 +489,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -507,6 +524,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -541,6 +559,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -575,6 +594,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
                     HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
@@ -611,6 +631,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -645,6 +666,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Title = table.Column<string>(type: "text", nullable: true),
                     Key = table.Column<string>(type: "text", nullable: true),
@@ -673,6 +695,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -707,6 +730,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
                     HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
@@ -743,6 +767,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -777,6 +802,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -811,6 +837,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -845,6 +872,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
                     HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
@@ -881,6 +909,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Version = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
@@ -907,6 +936,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -941,6 +971,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
                     HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
@@ -977,6 +1008,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Hash = table.Column<string>(type: "text", nullable: true),
                     Time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1013,6 +1045,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1047,6 +1080,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1081,6 +1115,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1115,6 +1150,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1149,6 +1185,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
@@ -1184,6 +1221,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1218,6 +1256,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1250,6 +1289,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1284,6 +1324,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1318,6 +1359,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1350,6 +1392,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ExternalUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     User_Id = table.Column<int>(type: "integer", nullable: false)
@@ -1370,6 +1413,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1404,6 +1448,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Value = table.Column<string>(type: "text", nullable: true),
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
@@ -1432,6 +1477,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     AdviceSentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     AdviceId = table.Column<int>(type: "integer", nullable: true),
@@ -1467,6 +1513,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
@@ -1526,6 +1573,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     AdviceId = table.Column<int>(type: "integer", nullable: true),
                     ItContractRoleId = table.Column<int>(type: "integer", nullable: true),
@@ -1623,6 +1671,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "text", nullable: true),
                     Cvr = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
@@ -1662,6 +1711,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "text", nullable: true),
                     Cvr = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
@@ -1701,6 +1751,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Url = table.Column<string>(type: "text", nullable: true),
                     Version = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
@@ -1751,6 +1802,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     OverviewType = table.Column<int>(type: "integer", nullable: false),
                     Version = table.Column<string>(type: "text", nullable: false),
@@ -1785,6 +1837,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     EventType = table.Column<int>(type: "integer", nullable: false),
                     OccurredAtUtc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1820,6 +1873,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1855,6 +1909,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1890,6 +1945,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1925,6 +1981,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1960,6 +2017,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1995,6 +2053,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2030,6 +2089,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2065,6 +2125,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2100,6 +2161,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2135,6 +2197,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2170,6 +2233,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2207,6 +2271,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2242,6 +2307,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2277,6 +2343,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2312,6 +2379,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2349,6 +2417,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2384,6 +2453,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2419,6 +2489,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2454,6 +2525,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2491,6 +2563,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2526,6 +2599,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2563,6 +2637,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2598,6 +2673,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2633,6 +2709,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2668,6 +2745,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2703,6 +2781,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2738,6 +2817,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2773,6 +2853,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2808,6 +2889,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2843,6 +2925,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
                     LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -2902,6 +2985,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Origin = table.Column<int>(type: "integer", nullable: false),
                     ExternalOriginUuid = table.Column<Guid>(type: "uuid", nullable: true),
@@ -2949,6 +3033,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ExternalUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     Organization_Id = table.Column<int>(type: "integer", nullable: false)
@@ -2969,6 +3054,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     Connected = table.Column<bool>(type: "boolean", nullable: false),
@@ -3007,6 +3093,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     Module = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -3040,6 +3127,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ValueOfCheckedUrl = table.Column<string>(type: "text", nullable: true),
                     Cause = table.Column<int>(type: "integer", nullable: false),
@@ -3070,6 +3158,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItInterfaceId = table.Column<int>(type: "integer", nullable: false),
                     DataTypeId = table.Column<int>(type: "integer", nullable: true),
@@ -3112,6 +3201,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     PersistId = table.Column<string>(type: "text", nullable: true),
                     Index = table.Column<int>(type: "integer", nullable: false),
@@ -3133,6 +3223,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
@@ -3181,6 +3272,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -3229,6 +3321,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: true),
@@ -3276,6 +3369,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     StsOrganizationConnectionId = table.Column<int>(type: "integer", nullable: false),
                     ResponsibleUserId = table.Column<int>(type: "integer", nullable: true),
@@ -3318,6 +3412,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ModuleId = table.Column<int>(type: "integer", nullable: false),
                     Key = table.Column<string>(type: "text", nullable: false),
@@ -3352,6 +3447,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ChangeLogId = table.Column<int>(type: "integer", nullable: false),
                     ExternalUnitUuid = table.Column<Guid>(type: "uuid", nullable: false),
@@ -3390,6 +3486,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -3423,6 +3520,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ValueOfCheckedUrl = table.Column<string>(type: "text", nullable: true),
                     Cause = table.Column<int>(type: "integer", nullable: false),
@@ -3525,6 +3623,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     OversightDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -3543,6 +3642,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
@@ -3596,6 +3696,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Email = table.Column<string>(type: "text", nullable: true),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -3619,6 +3720,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -3661,6 +3763,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -3766,6 +3869,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ExternPaymentForId = table.Column<int>(type: "integer", nullable: true),
                     InternPaymentForId = table.Column<int>(type: "integer", nullable: true),
@@ -3842,6 +3946,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     ItContract_Id = table.Column<int>(type: "integer", nullable: true),
@@ -3884,6 +3989,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     ReferenceId = table.Column<int>(type: "integer", nullable: true),
@@ -4027,6 +4133,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     BelongsToId = table.Column<int>(type: "integer", nullable: true),
                     ExternalUuid = table.Column<Guid>(type: "uuid", nullable: true),
@@ -4129,6 +4236,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     SourceEntityId = table.Column<int>(type: "integer", nullable: false),
@@ -4221,6 +4329,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -4293,6 +4402,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Concluded = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ExpirationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -4431,6 +4541,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     DataProcessingRegistrationId = table.Column<int>(type: "integer", nullable: false),
                     DataProcessingRegistrationUuid = table.Column<Guid>(type: "uuid", nullable: false),
@@ -4453,6 +4564,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
                     ItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: false),
@@ -4477,6 +4589,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     RelationId = table.Column<int>(type: "integer", nullable: false),
                     FromSystemUsageId = table.Column<int>(type: "integer", nullable: false),
@@ -4499,6 +4612,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     RoleId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
@@ -4553,6 +4667,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -4632,6 +4747,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     SourceEntityId = table.Column<int>(type: "integer", nullable: false),
@@ -4733,6 +4849,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
                     PersonalData = table.Column<int>(type: "integer", nullable: false)
@@ -4753,6 +4870,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: false),
                     SensitivityDataLevel = table.Column<int>(type: "integer", nullable: false)
@@ -4797,6 +4915,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     FromSystemUsageId = table.Column<int>(type: "integer", nullable: false),
@@ -4886,6 +5005,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
@@ -4950,6 +5070,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -4971,6 +5092,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     DataProcessingRegistrationUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     DataProcessingRegistrationId = table.Column<int>(type: "integer", nullable: false),
@@ -4994,6 +5116,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     InterfaceUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     InterfaceId = table.Column<int>(type: "integer", nullable: false),
@@ -5016,6 +5139,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItContractUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     ItContractId = table.Column<int>(type: "integer", nullable: false),
@@ -5038,6 +5162,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
@@ -5060,6 +5185,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     OrganizationUnitUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     OrganizationUnitId = table.Column<int>(type: "integer", nullable: false),
@@ -5082,6 +5208,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     RoleUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -5106,6 +5233,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     SensitivityDataLevel = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: false)
@@ -5126,6 +5254,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     KLEId = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
                     KLEName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
@@ -5147,6 +5276,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: false),
                     ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
