@@ -214,6 +214,36 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         }
 
         [Fact]
+        public async Task GET_OrganizationUnit_Returns_ExternalOriginUuid()
+        {
+            //Arrange
+            var organization = await CreateOrganizationAsync();
+            var (_, token) = await CreateApiUser(organization);
+            var unit = await CreateOrganizationUnitAsync(organization.Uuid);
+            var externalOriginUuid = A<Guid>();
+            
+            // Update the unit to have an ExternalOriginUuid (simulating a unit from STS)
+            DatabaseAccess.MutateEntitySet<OrganizationUnit>(units =>
+            {
+                var unitToUpdate = units.AsQueryable().FirstOrDefault(x => x.Uuid == unit.Uuid);
+                if (unitToUpdate != null)
+                {
+                    unitToUpdate.ExternalOriginUuid = externalOriginUuid;
+                    unitToUpdate.Origin = OrganizationUnitOrigin.STS_Organisation;
+                }
+            });
+
+            //Act
+            var dto = await OrganizationUnitV2Helper.GetOrganizationUnitAsync(token, organization.Uuid, unit.Uuid);
+
+            //Assert
+            Assert.Equal(externalOriginUuid, dto.ExternalOriginUuid);
+            Assert.Equal(unit.Uuid, dto.Uuid);
+            Assert.Equal(unit.Name, dto.Name);
+            Assert.Equal(OrganizationUnitOriginChoice.STSOrganisation, dto.Origin);
+        }
+
+        [Fact]
         public async Task Can_Create_OrganizationUnit()
         {
             //Arrange
@@ -440,18 +470,33 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             return $"{nameof(OrganizationUnitsApiV2Test)}æøå{A<Guid>():N}";
         }
 
-        private static void AssertCreatedOrganizationUnit(IEnumerable<OrganizationUnitResponseDTO> allUnits, OrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot, params TaskRef[] kle)
+        private static void AssertCreatedOrganizationUnit(IEnumerable<ExternalOrganizationUnitResponseDTO> allUnits, OrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot, params TaskRef[] kle)
         {
             var dto = Assert.Single(allUnits, x => x.Uuid == expectedUnit.Uuid);
             AssertCreatedOrganizationUnit(dto, expectedUnit, expectedRoot);
         }
 
-        private static void AssertCreatedOrganizationUnit(OrganizationUnitResponseDTO dto, OrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot)
+        private static void AssertCreatedOrganizationUnit(ExternalOrganizationUnitResponseDTO dto, OrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot)
         {
             Assert.Equal(expectedRoot.Uuid, dto.ParentOrganizationUnit?.Uuid);
             Assert.Equal(expectedRoot.Name, dto.ParentOrganizationUnit?.Name);
             Assert.Equal(expectedUnit.Ean, dto.Ean);
             Assert.Equal(expectedUnit.UnitId, dto.UnitId);
+        }
+
+        private static void AssertCreatedOrganizationUnit(IEnumerable<ExternalOrganizationUnitResponseDTO> allUnits, ExternalOrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot, params TaskRef[] kle)
+        {
+            var dto = Assert.Single(allUnits, x => x.Uuid == expectedUnit.Uuid);
+            AssertCreatedOrganizationUnit(dto, expectedUnit, expectedRoot);
+        }
+
+        private static void AssertCreatedOrganizationUnit(ExternalOrganizationUnitResponseDTO dto, ExternalOrganizationUnitResponseDTO expectedUnit, (Guid Uuid, string Name) expectedRoot)
+        {
+            Assert.Equal(expectedRoot.Uuid, dto.ParentOrganizationUnit?.Uuid);
+            Assert.Equal(expectedRoot.Name, dto.ParentOrganizationUnit?.Name);
+            Assert.Equal(expectedUnit.Ean, dto.Ean);
+            Assert.Equal(expectedUnit.UnitId, dto.UnitId);
+            Assert.Equal(expectedUnit.ExternalOriginUuid, dto.ExternalOriginUuid);
         }
     }
 }
