@@ -26,9 +26,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.DropIndex(
                 name: "IX_LocalId",
                 table: "OrganizationUnit");
-
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var filter = isSqlServer ? "[LocalId] IS NOT NULL" : "\"LocalId\" IS NOT NULL";
+            var filter = "\"LocalId\" IS NOT NULL";
 
             migrationBuilder.CreateIndex(
                 name: "UX_LocalId",

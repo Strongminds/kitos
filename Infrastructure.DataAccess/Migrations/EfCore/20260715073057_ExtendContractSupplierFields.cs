@@ -10,39 +10,34 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == InfrastructureConstants.SqlServerProviderName;
-            var maxTextType = isSqlServer ? InfrastructureConstants.SqlServerMaxTextType : InfrastructureConstants.PostgreSqlMaxTextType;
-            var intType = isSqlServer ? InfrastructureConstants.SqlServerIntType : InfrastructureConstants.PostgreSqlIntType;
-            var boolType = isSqlServer ? "bit" : "boolean";
-
             migrationBuilder.AddColumn<string>(
                 name: "SupplierContactEmail",
                 table: "ItContract",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "SupplierContactPerson",
                 table: "ItContract",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "SupplierContactPhoneNumber",
                 table: "ItContract",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "SupplierOrganizationUnitId",
                 table: "ItContract",
-                type: intType,
+                type: "integer",
                 nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "UseSupplierContractSignerAsContactPerson",
                 table: "ItContract",
-                type: boolType,
+                type: "boolean",
                 nullable: false,
                 defaultValue: true);
 

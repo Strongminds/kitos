@@ -13,13 +13,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "RiskAssessmentConducted",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "int",
+                type: "integer",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "RiskAssessmentResult",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "int",
+                type: "integer",
                 nullable: true);
         }
 

@@ -10,9 +10,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var isSqlServer = migrationBuilder.ActiveProvider == "Microsoft.EntityFrameworkCore.SqlServer";
-            var maxTextType = isSqlServer ? "nvarchar(max)" : "text";
-
             migrationBuilder.RenameColumn(
                 name: "CriticalityLevelDocumentationUrlName",
                 table: "ItSystemUsageOverviewReadModels",
@@ -21,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<string>(
                 name: "CriticalityLevelDocumentationName",
                 table: "ItSystemUsageOverviewReadModels",
-                type: maxTextType,
+                type: "text",
                 nullable: true);
         }
 

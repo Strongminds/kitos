@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,9 +16,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "BrokenExternalReferencesReports",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,10 +30,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OrganizationTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Category = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,11 +45,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PendingReadModelUpdates",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SourceId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Category = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    SourceId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,28 +61,29 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastAdvisDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Deleted = table.Column<bool>(type: "bit", nullable: false),
-                    DefaultUserStartPreference = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HasApiAccess = table.Column<bool>(type: "bit", nullable: true),
-                    HasStakeHolderAccess = table.Column<bool>(type: "bit", nullable: false),
-                    LockedOutDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FailedAttempts = table.Column<int>(type: "int", nullable: false),
-                    IsGlobalAdmin = table.Column<bool>(type: "bit", nullable: false),
-                    IsSystemIntegrator = table.Column<bool>(type: "bit", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    Salt = table.Column<string>(type: "text", nullable: false),
+                    LastAdvisDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DefaultUserStartPreference = table.Column<string>(type: "text", nullable: true),
+                    HasApiAccess = table.Column<bool>(type: "boolean", nullable: true),
+                    HasStakeHolderAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    LockedOutDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    FailedAttempts = table.Column<int>(type: "integer", nullable: false),
+                    IsGlobalAdmin = table.Column<bool>(type: "boolean", nullable: false),
+                    IsSystemIntegrator = table.Column<bool>(type: "boolean", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,24 +106,25 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Advice",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RelationId = table.Column<int>(type: "int", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Scheduling = table.Column<int>(type: "int", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AlarmDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StopDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    SentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    JobId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdviceType = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    RelationId = table.Column<int>(type: "integer", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Scheduling = table.Column<int>(type: "integer", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    AlarmDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    StopDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    SentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Body = table.Column<string>(type: "text", nullable: true),
+                    Subject = table.Column<string>(type: "text", nullable: true),
+                    JobId = table.Column<string>(type: "text", nullable: true),
+                    AdviceType = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -141,18 +147,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "AgreementElementTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -175,18 +182,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ArchiveLocations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -209,18 +217,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ArchiveTestLocations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -241,18 +250,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ArchiveTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -275,15 +285,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "AttachedOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectId = table.Column<int>(type: "int", nullable: false),
-                    ObjectType = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    OptionType = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectType = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    OptionType = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -306,18 +317,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "BusinessTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -340,16 +352,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ContactPersons",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -370,18 +383,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "CountryCodes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -404,18 +418,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "CriticalityTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -438,18 +453,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingBasisForTransferOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -472,18 +488,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingCountryOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -506,18 +523,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingDataResponsibleOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -540,18 +558,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingOversightOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -574,20 +593,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    HasReadAccess = table.Column<bool>(type: "bit", nullable: false),
-                    HasWriteAccess = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -610,18 +630,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -644,14 +665,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "HelpTexts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Key = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Key = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -672,18 +694,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "InterfaceTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -706,20 +729,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    HasReadAccess = table.Column<bool>(type: "bit", nullable: false),
-                    HasWriteAccess = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -742,18 +766,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractTemplateTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -776,18 +801,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -810,18 +836,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemCategories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -844,20 +871,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    HasReadAccess = table.Column<bool>(type: "bit", nullable: false),
-                    HasWriteAccess = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -880,12 +908,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "KLEUpdateHistoryItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Version = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Version = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -906,18 +935,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OptionExtendTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -940,20 +970,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OrganizationUnitRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    HasReadAccess = table.Column<bool>(type: "bit", nullable: false),
-                    HasWriteAccess = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    HasReadAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    HasWriteAccess = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -976,14 +1007,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PasswordResetRequest",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Hash = table.Column<string>(type: "text", nullable: true),
+                    Time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1012,18 +1044,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PaymentFreqencyTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1046,18 +1079,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PaymentModelTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1080,18 +1114,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PriceRegulationTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1114,18 +1149,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ProcurementStrategyTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1148,19 +1184,20 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PublicMessages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    LongDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    ShortDescription = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IconType = table.Column<int>(type: "int", nullable: true),
-                    IsMain = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    LongDescription = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true),
+                    ShortDescription = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true),
+                    IconType = table.Column<int>(type: "integer", nullable: true),
+                    IsMain = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1183,18 +1220,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PurchaseFormTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1217,18 +1255,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "RegisterTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1249,18 +1288,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "RelationFrequencyTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1283,18 +1323,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "SensitiveDataTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1317,18 +1358,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "SensitivePersonalDataTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1349,10 +1391,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "SsoUserIdentities",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternalUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    User_Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ExternalUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    User_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1369,18 +1412,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TerminationDeadlineTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    IsLocallyAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    IsObligatory = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    IsLocallyAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsObligatory = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1403,12 +1447,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Text",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Value = table.Column<string>(type: "text", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1431,13 +1476,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "AdviceSents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AdviceSentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AdviceId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    AdviceSentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    AdviceId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1466,26 +1512,27 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Organization",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
-                    Cvr = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    ForeignCvr = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ForeignCountryCodeId = table.Column<int>(type: "int", nullable: true),
-                    AccessModifier = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Disabled = table.Column<bool>(type: "bit", nullable: false),
-                    ContactPersonId = table.Column<int>(type: "int", nullable: true),
-                    ContactPerson_Id = table.Column<int>(type: "int", nullable: true),
-                    IsDefaultOrganization = table.Column<bool>(type: "bit", nullable: true),
-                    IsSupplier = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Phone = table.Column<string>(type: "text", nullable: true),
+                    Adress = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    TypeId = table.Column<int>(type: "integer", nullable: false),
+                    Cvr = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    ForeignCvr = table.Column<string>(type: "text", nullable: true),
+                    ForeignCountryCodeId = table.Column<int>(type: "integer", nullable: true),
+                    AccessModifier = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Disabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ContactPersonId = table.Column<int>(type: "integer", nullable: true),
+                    ContactPerson_Id = table.Column<int>(type: "integer", nullable: true),
+                    IsDefaultOrganization = table.Column<bool>(type: "boolean", nullable: true),
+                    IsSupplier = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1525,18 +1572,19 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "AdviceUserRelations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AdviceId = table.Column<int>(type: "int", nullable: true),
-                    ItContractRoleId = table.Column<int>(type: "int", nullable: true),
-                    ItSystemRoleId = table.Column<int>(type: "int", nullable: true),
-                    DataProcessingRegistrationRoleId = table.Column<int>(type: "int", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RecieverType = table.Column<int>(type: "int", nullable: false),
-                    RecpientType = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    AdviceId = table.Column<int>(type: "integer", nullable: true),
+                    ItContractRoleId = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemRoleId = table.Column<int>(type: "integer", nullable: true),
+                    DataProcessingRegistrationRoleId = table.Column<int>(type: "integer", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    RecieverType = table.Column<int>(type: "integer", nullable: false),
+                    RecpientType = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1583,17 +1631,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Config",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    ShowItSystemModule = table.Column<bool>(type: "bit", nullable: false),
-                    ShowItContractModule = table.Column<bool>(type: "bit", nullable: false),
-                    ShowDataProcessing = table.Column<bool>(type: "bit", nullable: false),
-                    ShowItSystemPrefix = table.Column<bool>(type: "bit", nullable: false),
-                    ShowItContractPrefix = table.Column<bool>(type: "bit", nullable: false),
-                    ItSupportModuleNameId = table.Column<int>(type: "int", nullable: false),
-                    ItSupportGuide = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    ShowItSystemModule = table.Column<bool>(type: "boolean", nullable: false),
+                    ShowItContractModule = table.Column<bool>(type: "boolean", nullable: false),
+                    ShowDataProcessing = table.Column<bool>(type: "boolean", nullable: false),
+                    ShowItSystemPrefix = table.Column<bool>(type: "boolean", nullable: false),
+                    ShowItContractPrefix = table.Column<bool>(type: "boolean", nullable: false),
+                    ItSupportModuleNameId = table.Column<int>(type: "integer", nullable: false),
+                    ItSupportGuide = table.Column<string>(type: "text", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1622,17 +1670,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProtectionAdvisors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cvr = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Cvr = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    Phone = table.Column<string>(type: "text", nullable: true),
+                    Adress = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1661,17 +1710,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataResponsibles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cvr = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Adress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Cvr = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    Phone = table.Column<string>(type: "text", nullable: true),
+                    Adress = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1700,23 +1750,24 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItInterface",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Version = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    ItInterfaceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    InterfaceId = table.Column<int>(type: "int", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Disabled = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccessModifier = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Url = table.Column<string>(type: "text", nullable: true),
+                    Version = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    ItInterfaceId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    InterfaceId = table.Column<int>(type: "integer", nullable: true),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    Disabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    AccessModifier = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1750,14 +1801,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "KendoOrganizationalConfigurations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OverviewType = table.Column<int>(type: "int", nullable: false),
-                    Version = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    OverviewType = table.Column<int>(type: "integer", nullable: false),
+                    Version = table.Column<string>(type: "text", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1784,16 +1836,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LifeCycleTrackingEvents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventType = table.Column<int>(type: "int", nullable: false),
-                    OccurredAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EntityUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EntityType = table.Column<int>(type: "int", nullable: false),
-                    OptionalOrganizationReferenceId = table.Column<int>(type: "int", nullable: true),
-                    OptionalAccessModifier = table.Column<int>(type: "int", nullable: true),
-                    OptionalRightsHolderOrganizationId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    EventType = table.Column<int>(type: "integer", nullable: false),
+                    OccurredAtUtc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EntityUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    EntityType = table.Column<int>(type: "integer", nullable: false),
+                    OptionalOrganizationReferenceId = table.Column<int>(type: "integer", nullable: true),
+                    OptionalAccessModifier = table.Column<int>(type: "integer", nullable: true),
+                    OptionalRightsHolderOrganizationId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1819,15 +1872,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalAgreementElementTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1854,15 +1908,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalArchiveLocations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1889,15 +1944,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalArchiveTestLocations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1924,15 +1980,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalArchiveTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1959,15 +2016,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalBusinessTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1994,15 +2052,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalCriticalityTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2029,15 +2088,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataProcessingBasisForTransferOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2064,15 +2124,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataProcessingCountryOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2099,15 +2160,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataProcessingDataResponsibleOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2134,15 +2196,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataProcessingOversightOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2169,17 +2232,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataProcessingRegistrationRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsExternallyUsed = table.Column<bool>(type: "bit", nullable: false),
-                    ExternallyUsedDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsExternallyUsed = table.Column<bool>(type: "boolean", nullable: false),
+                    ExternallyUsedDescription = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2206,15 +2270,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalDataTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2241,15 +2306,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalRelationFrequencyTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2276,15 +2342,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalInterfaceTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2311,17 +2378,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalItContractRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsExternallyUsed = table.Column<bool>(type: "bit", nullable: false),
-                    ExternallyUsedDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsExternallyUsed = table.Column<bool>(type: "boolean", nullable: false),
+                    ExternallyUsedDescription = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2348,15 +2416,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalItContractTemplateTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2383,15 +2452,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalItContractTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2418,15 +2488,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalItSystemCategories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2453,17 +2524,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalItSystemRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsExternallyUsed = table.Column<bool>(type: "bit", nullable: false),
-                    ExternallyUsedDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsExternallyUsed = table.Column<bool>(type: "boolean", nullable: false),
+                    ExternallyUsedDescription = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2490,15 +2562,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalOptionExtendTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2525,17 +2598,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalOrganizationUnitRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsExternallyUsed = table.Column<bool>(type: "bit", nullable: false),
-                    ExternallyUsedDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsExternallyUsed = table.Column<bool>(type: "boolean", nullable: false),
+                    ExternallyUsedDescription = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -2562,15 +2636,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalPaymentFreqencyTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2597,15 +2672,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalPaymentModelTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2632,15 +2708,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalPriceRegulationTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2667,15 +2744,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalProcurementStrategyTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2702,15 +2780,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalPurchaseFormTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2737,15 +2816,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalRegisterTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2772,15 +2852,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalSensitiveDataTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2807,15 +2888,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalSensitivePersonalDataTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2842,15 +2924,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "LocalTerminationDeadlineTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    OptionId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    OptionId = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2877,8 +2960,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OrganizationSuppliers",
                 columns: table => new
                 {
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: false)
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    SupplierId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2901,19 +2984,20 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OrganizationUnit",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Origin = table.Column<int>(type: "int", nullable: false),
-                    ExternalOriginUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LocalId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Origin = table.Column<int>(type: "integer", nullable: false),
+                    ExternalOriginUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    LocalId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
                     Ean = table.Column<long>(type: "bigint", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    ParentId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2948,10 +3032,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "StsOrganizationIdentities",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternalUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Organization_Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ExternalUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Organization_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2968,16 +3053,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "StsOrganizationConnections",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Connected = table.Column<bool>(type: "bit", nullable: false),
-                    SynchronizationDepth = table.Column<int>(type: "int", nullable: true),
-                    SubscribeToUpdates = table.Column<bool>(type: "bit", nullable: false),
-                    DateOfLatestCheckBySubscription = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Connected = table.Column<bool>(type: "boolean", nullable: false),
+                    SynchronizationDepth = table.Column<int>(type: "integer", nullable: true),
+                    SubscribeToUpdates = table.Column<bool>(type: "boolean", nullable: false),
+                    DateOfLatestCheckBySubscription = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3006,13 +3092,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "UIModuleCustomizations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Module = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Module = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3039,14 +3126,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "BrokenLinkInInterfaces",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ValueOfCheckedUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cause = table.Column<int>(type: "int", nullable: false),
-                    ErrorResponseCode = table.Column<int>(type: "int", nullable: true),
-                    ReferenceDateOfLatestLinkChange = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BrokenReferenceOrigin_Id = table.Column<int>(type: "int", nullable: false),
-                    ParentReport_Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ValueOfCheckedUrl = table.Column<string>(type: "text", nullable: true),
+                    Cause = table.Column<int>(type: "integer", nullable: false),
+                    ErrorResponseCode = table.Column<int>(type: "integer", nullable: true),
+                    ReferenceDateOfLatestLinkChange = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    BrokenReferenceOrigin_Id = table.Column<int>(type: "integer", nullable: false),
+                    ParentReport_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3069,15 +3157,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataRow",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItInterfaceId = table.Column<int>(type: "int", nullable: false),
-                    DataTypeId = table.Column<int>(type: "int", nullable: true),
-                    Data = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItInterfaceId = table.Column<int>(type: "integer", nullable: false),
+                    DataTypeId = table.Column<int>(type: "integer", nullable: true),
+                    Data = table.Column<string>(type: "text", nullable: true),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3111,11 +3200,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "KendoColumnConfigurations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PersistId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Index = table.Column<int>(type: "int", nullable: false),
-                    KendoOrganizationalConfigurationId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    PersistId = table.Column<string>(type: "text", nullable: true),
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    KendoOrganizationalConfigurationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3132,15 +3222,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OrganizationRights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    DefaultOrgUnitId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    DefaultOrgUnitId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3180,14 +3271,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "OrganizationUnitRights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    ObjectId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3228,19 +3320,20 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TaskRef",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TaskKey = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ActiveFrom = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActiveTo = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    OwnedByOrganizationUnitId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: true),
+                    TaskKey = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
+                    Description = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ActiveFrom = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ActiveTo = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: true),
+                    OwnedByOrganizationUnitId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3275,15 +3368,16 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "StsOrganizationChangeLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StsOrganizationConnectionId = table.Column<int>(type: "int", nullable: false),
-                    ResponsibleUserId = table.Column<int>(type: "int", nullable: true),
-                    ResponsibleType = table.Column<int>(type: "int", nullable: false),
-                    LogTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    StsOrganizationConnectionId = table.Column<int>(type: "integer", nullable: false),
+                    ResponsibleUserId = table.Column<int>(type: "integer", nullable: true),
+                    ResponsibleType = table.Column<int>(type: "integer", nullable: false),
+                    LogTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3317,14 +3411,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "CustomizedUiNodes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ModuleId = table.Column<int>(type: "int", nullable: false),
-                    Key = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Enabled = table.Column<bool>(type: "bit", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ModuleId = table.Column<int>(type: "integer", nullable: false),
+                    Key = table.Column<string>(type: "text", nullable: false),
+                    Enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3351,16 +3446,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "StsOrganizationConsequenceLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ChangeLogId = table.Column<int>(type: "int", nullable: false),
-                    ExternalUnitUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ChangeLogId = table.Column<int>(type: "integer", nullable: false),
+                    ExternalUnitUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3389,17 +3485,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ArchivePeriod",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UniqueArchiveId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    Approved = table.Column<bool>(type: "bit", nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UniqueArchiveId = table.Column<string>(type: "text", nullable: true),
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    Approved = table.Column<bool>(type: "boolean", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3422,14 +3519,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "BrokenLinkInExternalReferences",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ValueOfCheckedUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cause = table.Column<int>(type: "int", nullable: false),
-                    ErrorResponseCode = table.Column<int>(type: "int", nullable: true),
-                    ReferenceDateOfLatestLinkChange = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BrokenReferenceOrigin_Id = table.Column<int>(type: "int", nullable: false),
-                    ParentReport_Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ValueOfCheckedUrl = table.Column<string>(type: "text", nullable: true),
+                    Cause = table.Column<int>(type: "integer", nullable: false),
+                    ErrorResponseCode = table.Column<int>(type: "integer", nullable: true),
+                    ReferenceDateOfLatestLinkChange = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    BrokenReferenceOrigin_Id = table.Column<int>(type: "integer", nullable: false),
+                    ParentReport_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3446,8 +3544,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationDataProcessingCountryOptions",
                 columns: table => new
                 {
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingCountryOption_Id = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: false),
+                    DataProcessingCountryOption_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3464,8 +3562,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationDataProcessingOversightOptions",
                 columns: table => new
                 {
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingOversightOption_Id = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: false),
+                    DataProcessingOversightOption_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3482,8 +3580,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractDataProcessingRegistrations",
                 columns: table => new
                 {
-                    ItContract_Id = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false)
+                    ItContract_Id = table.Column<int>(type: "integer", nullable: false),
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3494,8 +3592,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationItSystemUsages",
                 columns: table => new
                 {
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3506,8 +3604,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationOrganizations",
                 columns: table => new
                 {
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: false),
-                    Organization_Id = table.Column<int>(type: "int", nullable: false)
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: false),
+                    Organization_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3524,14 +3622,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationOversightDates",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OversightDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OversightRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OversightReportLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OversightReportLinkName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    OversightDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    OversightRemark = table.Column<string>(type: "text", nullable: true),
+                    OversightReportLink = table.Column<string>(type: "text", nullable: true),
+                    OversightReportLinkName = table.Column<string>(type: "text", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3542,43 +3641,44 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    SourceEntityId = table.Column<int>(type: "int", nullable: false),
-                    SourceEntityUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MainReferenceUserAssignedId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MainReferenceUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MainReferenceTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    SystemNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SystemUuidsAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DataProcessorNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubDataProcessorNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsAgreementConcluded = table.Column<int>(type: "int", nullable: true),
-                    TransferToInsecureThirdCountries = table.Column<int>(type: "int", nullable: true),
-                    AgreementConcludedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LatestOversightDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LatestOversightRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LatestOversightReportLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LatestOversightReportLinkName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BasisForTransfer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    BasisForTransferUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    OversightInterval = table.Column<int>(type: "int", nullable: true),
-                    DataResponsible = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    DataResponsibleUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    OversightOptionNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsOversightCompleted = table.Column<int>(type: "int", nullable: true),
-                    OversightScheduledInspectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ActiveAccordingToMainContract = table.Column<bool>(type: "bit", nullable: false),
-                    ContractNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastChangedById = table.Column<int>(type: "int", nullable: true),
-                    LastChangedByName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LastChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ResponsibleOrgUnitUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ResponsibleOrgUnitId = table.Column<int>(type: "int", nullable: true),
-                    ResponsibleOrgUnitName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    SourceEntityId = table.Column<int>(type: "integer", nullable: false),
+                    SourceEntityUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    MainReferenceUserAssignedId = table.Column<string>(type: "text", nullable: true),
+                    MainReferenceUrl = table.Column<string>(type: "text", nullable: true),
+                    MainReferenceTitle = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    SystemNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    SystemUuidsAsCsv = table.Column<string>(type: "text", nullable: true),
+                    DataProcessorNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    SubDataProcessorNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    IsAgreementConcluded = table.Column<int>(type: "integer", nullable: true),
+                    TransferToInsecureThirdCountries = table.Column<int>(type: "integer", nullable: true),
+                    AgreementConcludedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LatestOversightDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LatestOversightRemark = table.Column<string>(type: "text", nullable: true),
+                    LatestOversightReportLink = table.Column<string>(type: "text", nullable: true),
+                    LatestOversightReportLinkName = table.Column<string>(type: "text", nullable: true),
+                    BasisForTransfer = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    BasisForTransferUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    OversightInterval = table.Column<int>(type: "integer", nullable: true),
+                    DataResponsible = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    DataResponsibleUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    OversightOptionNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    IsOversightCompleted = table.Column<int>(type: "integer", nullable: true),
+                    OversightScheduledInspectionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    ActiveAccordingToMainContract = table.Column<bool>(type: "boolean", nullable: false),
+                    ContractNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    LastChangedById = table.Column<int>(type: "integer", nullable: true),
+                    LastChangedByName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LastChangedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ResponsibleOrgUnitUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ResponsibleOrgUnitId = table.Column<int>(type: "integer", nullable: true),
+                    ResponsibleOrgUnitName = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3595,13 +3695,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationRoleAssignmentReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    UserFullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3618,14 +3719,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrationRights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    ObjectId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3660,31 +3762,32 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "DataProcessingRegistrations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    HasSubDataProcessors = table.Column<int>(type: "int", nullable: true),
-                    TransferToInsecureThirdCountries = table.Column<int>(type: "int", nullable: true),
-                    DataResponsible_Id = table.Column<int>(type: "int", nullable: true),
-                    DataResponsibleRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OversightOptionRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ReferenceId = table.Column<int>(type: "int", nullable: true),
-                    IsAgreementConcluded = table.Column<int>(type: "int", nullable: true),
-                    AgreementConcludedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AgreementConcludedRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BasisForTransferId = table.Column<int>(type: "int", nullable: true),
-                    OversightInterval = table.Column<int>(type: "int", nullable: true),
-                    OversightIntervalRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ResponsibleOrganizationUnitId = table.Column<int>(type: "int", nullable: true),
-                    IsOversightCompleted = table.Column<int>(type: "int", nullable: true),
-                    OversightCompletedRemark = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OversightScheduledInspectionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    MainContractId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    HasSubDataProcessors = table.Column<int>(type: "integer", nullable: true),
+                    TransferToInsecureThirdCountries = table.Column<int>(type: "integer", nullable: true),
+                    DataResponsible_Id = table.Column<int>(type: "integer", nullable: true),
+                    DataResponsibleRemark = table.Column<string>(type: "text", nullable: true),
+                    OversightOptionRemark = table.Column<string>(type: "text", nullable: true),
+                    ReferenceId = table.Column<int>(type: "integer", nullable: true),
+                    IsAgreementConcluded = table.Column<int>(type: "integer", nullable: true),
+                    AgreementConcludedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    AgreementConcludedRemark = table.Column<string>(type: "text", nullable: true),
+                    BasisForTransferId = table.Column<int>(type: "integer", nullable: true),
+                    OversightInterval = table.Column<int>(type: "integer", nullable: true),
+                    OversightIntervalRemark = table.Column<string>(type: "text", nullable: true),
+                    ResponsibleOrganizationUnitId = table.Column<int>(type: "integer", nullable: true),
+                    IsOversightCompleted = table.Column<int>(type: "integer", nullable: true),
+                    OversightCompletedRemark = table.Column<string>(type: "text", nullable: true),
+                    OversightScheduledInspectionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    MainContractId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3726,11 +3829,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "SubDataProcessors",
                 columns: table => new
                 {
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingRegistrationId = table.Column<int>(type: "int", nullable: false),
-                    SubDataProcessorBasisForTransferId = table.Column<int>(type: "int", nullable: true),
-                    TransferToInsecureCountry = table.Column<int>(type: "int", nullable: true),
-                    InsecureCountryId = table.Column<int>(type: "int", nullable: true)
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    DataProcessingRegistrationId = table.Column<int>(type: "integer", nullable: false),
+                    SubDataProcessorBasisForTransferId = table.Column<int>(type: "integer", nullable: true),
+                    TransferToInsecureCountry = table.Column<int>(type: "integer", nullable: true),
+                    InsecureCountryId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -3765,21 +3868,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "EconomyStream",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternPaymentForId = table.Column<int>(type: "int", nullable: true),
-                    InternPaymentForId = table.Column<int>(type: "int", nullable: true),
-                    OrganizationUnitId = table.Column<int>(type: "int", nullable: true),
-                    Acquisition = table.Column<int>(type: "int", nullable: false),
-                    Operation = table.Column<int>(type: "int", nullable: false),
-                    Other = table.Column<int>(type: "int", nullable: false),
-                    AccountingEntry = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AuditStatus = table.Column<int>(type: "int", nullable: false),
-                    AuditDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ExternPaymentForId = table.Column<int>(type: "integer", nullable: true),
+                    InternPaymentForId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationUnitId = table.Column<int>(type: "integer", nullable: true),
+                    Acquisition = table.Column<int>(type: "integer", nullable: false),
+                    Operation = table.Column<int>(type: "integer", nullable: false),
+                    Other = table.Column<int>(type: "integer", nullable: false),
+                    AccountingEntry = table.Column<string>(type: "text", nullable: true),
+                    AuditStatus = table.Column<int>(type: "integer", nullable: false),
+                    AuditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3808,11 +3912,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "Exhibit",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    ItSystemId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3841,20 +3945,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ExternalReferences",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItContract_Id = table.Column<int>(type: "int", nullable: true),
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: true),
-                    ItSystem_Id = table.Column<int>(type: "int", nullable: true),
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExternalReferenceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    URL = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItContract_Id = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: true),
+                    ItSystem_Id = table.Column<int>(type: "integer", nullable: true),
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    ExternalReferenceId = table.Column<string>(type: "text", nullable: true),
+                    URL = table.Column<string>(type: "text", nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -3883,52 +3988,53 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContract",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReferenceId = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItContractId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SupplierContractSigner = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HasSupplierSigned = table.Column<bool>(type: "bit", nullable: false),
-                    SupplierSignedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ContractSigner = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsSigned = table.Column<bool>(type: "bit", nullable: false),
-                    SignedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ResponsibleOrganizationUnitId = table.Column<int>(type: "int", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: true),
-                    ProcurementStrategyId = table.Column<int>(type: "int", nullable: true),
-                    ProcurementPlanQuarter = table.Column<int>(type: "int", nullable: true),
-                    ProcurementPlanYear = table.Column<int>(type: "int", nullable: true),
-                    ProcurementInitiated = table.Column<int>(type: "int", nullable: true),
-                    ContractTemplateId = table.Column<int>(type: "int", nullable: true),
-                    ContractTypeId = table.Column<int>(type: "int", nullable: true),
-                    PurchaseFormId = table.Column<int>(type: "int", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    RequireValidParent = table.Column<bool>(type: "bit", nullable: false),
-                    CriticalityId = table.Column<int>(type: "int", nullable: true),
-                    Concluded = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DurationYears = table.Column<int>(type: "int", nullable: true),
-                    DurationMonths = table.Column<int>(type: "int", nullable: true),
-                    DurationOngoing = table.Column<bool>(type: "bit", nullable: false),
-                    IrrevocableTo = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Terminated = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TerminationDeadlineId = table.Column<int>(type: "int", nullable: true),
-                    OptionExtendId = table.Column<int>(type: "int", nullable: true),
-                    ExtendMultiplier = table.Column<int>(type: "int", nullable: false),
-                    Running = table.Column<int>(type: "int", nullable: true),
-                    ByEnding = table.Column<int>(type: "int", nullable: true),
-                    OperationRemunerationBegun = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PaymentFreqencyId = table.Column<int>(type: "int", nullable: true),
-                    PaymentModelId = table.Column<int>(type: "int", nullable: true),
-                    PriceRegulationId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReferenceId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    ItContractId = table.Column<string>(type: "text", nullable: true),
+                    SupplierContractSigner = table.Column<string>(type: "text", nullable: true),
+                    HasSupplierSigned = table.Column<bool>(type: "boolean", nullable: false),
+                    SupplierSignedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ContractSigner = table.Column<string>(type: "text", nullable: true),
+                    IsSigned = table.Column<bool>(type: "boolean", nullable: false),
+                    SignedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ResponsibleOrganizationUnitId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    SupplierId = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementStrategyId = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementPlanQuarter = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementPlanYear = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementInitiated = table.Column<int>(type: "integer", nullable: true),
+                    ContractTemplateId = table.Column<int>(type: "integer", nullable: true),
+                    ContractTypeId = table.Column<int>(type: "integer", nullable: true),
+                    PurchaseFormId = table.Column<int>(type: "integer", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: true),
+                    RequireValidParent = table.Column<bool>(type: "boolean", nullable: false),
+                    CriticalityId = table.Column<int>(type: "integer", nullable: true),
+                    Concluded = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DurationYears = table.Column<int>(type: "integer", nullable: true),
+                    DurationMonths = table.Column<int>(type: "integer", nullable: true),
+                    DurationOngoing = table.Column<bool>(type: "boolean", nullable: false),
+                    IrrevocableTo = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Terminated = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    TerminationDeadlineId = table.Column<int>(type: "integer", nullable: true),
+                    OptionExtendId = table.Column<int>(type: "integer", nullable: true),
+                    ExtendMultiplier = table.Column<int>(type: "integer", nullable: false),
+                    Running = table.Column<int>(type: "integer", nullable: true),
+                    ByEnding = table.Column<int>(type: "integer", nullable: true),
+                    OperationRemunerationBegun = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    PaymentFreqencyId = table.Column<int>(type: "integer", nullable: true),
+                    PaymentModelId = table.Column<int>(type: "integer", nullable: true),
+                    PriceRegulationId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4026,30 +4132,31 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystem",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BelongsToId = table.Column<int>(type: "int", nullable: true),
-                    ExternalUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ItSystemId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PreviousName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    BusinessTypeId = table.Column<int>(type: "int", nullable: true),
-                    Disabled = table.Column<bool>(type: "bit", nullable: false),
-                    ReferenceId = table.Column<int>(type: "int", nullable: true),
-                    ArchiveDuty = table.Column<int>(type: "int", nullable: true),
-                    ArchiveDutyComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LegalName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LegalDataProcessorName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    SensitivePersonalDataTypeId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccessModifier = table.Column<int>(type: "int", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    BelongsToId = table.Column<int>(type: "integer", nullable: true),
+                    ExternalUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ItSystemId = table.Column<string>(type: "text", nullable: true),
+                    PreviousName = table.Column<string>(type: "text", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: true),
+                    BusinessTypeId = table.Column<int>(type: "integer", nullable: true),
+                    Disabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ReferenceId = table.Column<int>(type: "integer", nullable: true),
+                    ArchiveDuty = table.Column<int>(type: "integer", nullable: true),
+                    ArchiveDutyComment = table.Column<string>(type: "text", nullable: true),
+                    LegalName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LegalDataProcessorName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    SensitivePersonalDataTypeId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    AccessModifier = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4104,8 +4211,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractAgreementElementTypes",
                 columns: table => new
                 {
-                    ItContract_Id = table.Column<int>(type: "int", nullable: false),
-                    AgreementElementType_Id = table.Column<int>(type: "int", nullable: false)
+                    ItContract_Id = table.Column<int>(type: "integer", nullable: false),
+                    AgreementElementType_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4128,76 +4235,77 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractOverviewReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    SourceEntityId = table.Column<int>(type: "int", nullable: false),
-                    SourceEntityUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ContractId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentContractId = table.Column<int>(type: "int", nullable: true),
-                    ParentContractName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ParentContractUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CriticalityId = table.Column<int>(type: "int", nullable: true),
-                    CriticalityUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CriticalityName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ResponsibleOrgUnitId = table.Column<int>(type: "int", nullable: true),
-                    ResponsibleOrgUnitName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SupplierId = table.Column<int>(type: "int", nullable: true),
-                    SupplierName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ContractSigner = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ContractTypeId = table.Column<int>(type: "int", nullable: true),
-                    ContractTypeUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ContractTypeName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ContractTemplateId = table.Column<int>(type: "int", nullable: true),
-                    ContractTemplateUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ContractTemplateName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    PurchaseFormId = table.Column<int>(type: "int", nullable: true),
-                    PurchaseFormUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PurchaseFormName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ProcurementStrategyId = table.Column<int>(type: "int", nullable: true),
-                    ProcurementStrategyUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ProcurementStrategyName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ProcurementPlanYear = table.Column<int>(type: "int", nullable: true),
-                    ProcurementPlanQuarter = table.Column<int>(type: "int", nullable: true),
-                    ProcurementInitiated = table.Column<int>(type: "int", nullable: true),
-                    DataProcessingAgreementsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItSystemUsagesCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItSystemUsagesSystemUuidCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NumberOfAssociatedSystemRelations = table.Column<int>(type: "int", nullable: false),
-                    ActiveReferenceTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ActiveReferenceUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ActiveReferenceExternalReferenceId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccumulatedAcquisitionCost = table.Column<int>(type: "int", nullable: false),
-                    AccumulatedOperationCost = table.Column<int>(type: "int", nullable: false),
-                    AccumulatedOtherCost = table.Column<int>(type: "int", nullable: false),
-                    OperationRemunerationBegunDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PaymentModelId = table.Column<int>(type: "int", nullable: true),
-                    PaymentModelUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PaymentModelName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    PaymentFrequencyId = table.Column<int>(type: "int", nullable: true),
-                    PaymentFrequencyUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PaymentFrequencyName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    LatestAuditDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AuditStatusWhite = table.Column<int>(type: "int", nullable: false),
-                    AuditStatusRed = table.Column<int>(type: "int", nullable: false),
-                    AuditStatusYellow = table.Column<int>(type: "int", nullable: false),
-                    AuditStatusGreen = table.Column<int>(type: "int", nullable: false),
-                    Duration = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    OptionExtendId = table.Column<int>(type: "int", nullable: true),
-                    OptionExtendUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    OptionExtendName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    TerminationDeadlineId = table.Column<int>(type: "int", nullable: true),
-                    TerminationDeadlineUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TerminationDeadlineName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    IrrevocableTo = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TerminatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastEditedByUserId = table.Column<int>(type: "int", nullable: true),
-                    LastEditedByUserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LastEditedAtDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Concluded = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    SourceEntityId = table.Column<int>(type: "integer", nullable: false),
+                    SourceEntityUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    ContractId = table.Column<string>(type: "text", nullable: true),
+                    ParentContractId = table.Column<int>(type: "integer", nullable: true),
+                    ParentContractName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    ParentContractUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    CriticalityId = table.Column<int>(type: "integer", nullable: true),
+                    CriticalityUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    CriticalityName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ResponsibleOrgUnitId = table.Column<int>(type: "integer", nullable: true),
+                    ResponsibleOrgUnitName = table.Column<string>(type: "text", nullable: true),
+                    SupplierId = table.Column<int>(type: "integer", nullable: true),
+                    SupplierName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ContractSigner = table.Column<string>(type: "text", nullable: true),
+                    ContractTypeId = table.Column<int>(type: "integer", nullable: true),
+                    ContractTypeUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ContractTypeName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ContractTemplateId = table.Column<int>(type: "integer", nullable: true),
+                    ContractTemplateUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ContractTemplateName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    PurchaseFormId = table.Column<int>(type: "integer", nullable: true),
+                    PurchaseFormUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    PurchaseFormName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ProcurementStrategyId = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementStrategyUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ProcurementStrategyName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ProcurementPlanYear = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementPlanQuarter = table.Column<int>(type: "integer", nullable: true),
+                    ProcurementInitiated = table.Column<int>(type: "integer", nullable: true),
+                    DataProcessingAgreementsCsv = table.Column<string>(type: "text", nullable: true),
+                    ItSystemUsagesCsv = table.Column<string>(type: "text", nullable: true),
+                    ItSystemUsagesSystemUuidCsv = table.Column<string>(type: "text", nullable: true),
+                    NumberOfAssociatedSystemRelations = table.Column<int>(type: "integer", nullable: false),
+                    ActiveReferenceTitle = table.Column<string>(type: "text", nullable: true),
+                    ActiveReferenceUrl = table.Column<string>(type: "text", nullable: true),
+                    ActiveReferenceExternalReferenceId = table.Column<string>(type: "text", nullable: true),
+                    AccumulatedAcquisitionCost = table.Column<int>(type: "integer", nullable: false),
+                    AccumulatedOperationCost = table.Column<int>(type: "integer", nullable: false),
+                    AccumulatedOtherCost = table.Column<int>(type: "integer", nullable: false),
+                    OperationRemunerationBegunDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    PaymentModelId = table.Column<int>(type: "integer", nullable: true),
+                    PaymentModelUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    PaymentModelName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    PaymentFrequencyId = table.Column<int>(type: "integer", nullable: true),
+                    PaymentFrequencyUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    PaymentFrequencyName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    LatestAuditDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    AuditStatusWhite = table.Column<int>(type: "integer", nullable: false),
+                    AuditStatusRed = table.Column<int>(type: "integer", nullable: false),
+                    AuditStatusYellow = table.Column<int>(type: "integer", nullable: false),
+                    AuditStatusGreen = table.Column<int>(type: "integer", nullable: false),
+                    Duration = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    OptionExtendId = table.Column<int>(type: "integer", nullable: true),
+                    OptionExtendUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    OptionExtendName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    TerminationDeadlineId = table.Column<int>(type: "integer", nullable: true),
+                    TerminationDeadlineUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    TerminationDeadlineName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    IrrevocableTo = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    TerminatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastEditedByUserId = table.Column<int>(type: "integer", nullable: true),
+                    LastEditedByUserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LastEditedAtDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Concluded = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4220,14 +4328,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractRights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    ObjectId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4268,8 +4377,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TaskRefItSystems",
                 columns: table => new
                 {
-                    ItSystem_Id = table.Column<int>(type: "int", nullable: false),
-                    TaskRef_Id = table.Column<int>(type: "int", nullable: false)
+                    ItSystem_Id = table.Column<int>(type: "integer", nullable: false),
+                    TaskRef_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4292,70 +4401,71 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsage",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Concluded = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LocalSystemId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Version = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LocalCallName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LifeCycleStatus = table.Column<int>(type: "int", nullable: true),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    ItSystemId = table.Column<int>(type: "int", nullable: false),
-                    ArchiveTypeId = table.Column<int>(type: "int", nullable: true),
-                    SensitiveDataTypeId = table.Column<int>(type: "int", nullable: true),
-                    ReferenceId = table.Column<int>(type: "int", nullable: true),
-                    ArchiveDuty = table.Column<int>(type: "int", nullable: true),
-                    ArchiveNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ArchiveFreq = table.Column<int>(type: "int", nullable: true),
-                    Registertype = table.Column<bool>(type: "bit", nullable: true),
-                    ArchiveSupplierId = table.Column<int>(type: "int", nullable: true),
-                    ArchiveLocationId = table.Column<int>(type: "int", nullable: true),
-                    ArchiveTestLocationId = table.Column<int>(type: "int", nullable: true),
-                    ItSystemCategoriesId = table.Column<int>(type: "int", nullable: true),
-                    GdprCriticality = table.Column<int>(type: "int", nullable: true),
-                    UserCount = table.Column<int>(type: "int", nullable: true),
-                    ContainsAITechnology = table.Column<int>(type: "int", nullable: true),
-                    GeneralPurpose = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isBusinessCritical = table.Column<int>(type: "int", nullable: true),
-                    LinkToDirectoryUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LinkToDirectoryUrlName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    precautions = table.Column<int>(type: "int", nullable: true),
-                    precautionsOptionsEncryption = table.Column<bool>(type: "bit", nullable: false),
-                    precautionsOptionsPseudonomisering = table.Column<bool>(type: "bit", nullable: false),
-                    precautionsOptionsAccessControl = table.Column<bool>(type: "bit", nullable: false),
-                    precautionsOptionsLogning = table.Column<bool>(type: "bit", nullable: false),
-                    TechnicalSupervisionDocumentationUrlName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TechnicalSupervisionDocumentationUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserSupervision = table.Column<int>(type: "int", nullable: true),
-                    UserSupervisionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UserSupervisionDocumentationUrlName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserSupervisionDocumentationUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    riskAssessment = table.Column<int>(type: "int", nullable: true),
-                    riskAssesmentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    preriskAssessment = table.Column<int>(type: "int", nullable: true),
-                    PlannedRiskAssessmentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RiskSupervisionDocumentationUrlName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    RiskSupervisionDocumentationUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    noteRisks = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DPIA = table.Column<int>(type: "int", nullable: true),
-                    DPIADateFor = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DPIASupervisionDocumentationUrlName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DPIASupervisionDocumentationUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    answeringDataDPIA = table.Column<int>(type: "int", nullable: true),
-                    DPIAdeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    numberDPIA = table.Column<int>(type: "int", nullable: false),
-                    HostedAt = table.Column<int>(type: "int", nullable: true),
-                    WebAccessibilityCompliance = table.Column<int>(type: "int", nullable: true),
-                    LastWebAccessibilityCheck = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    WebAccessibilityNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ArchiveFromSystem = table.Column<bool>(type: "bit", nullable: true),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RegisterTypeId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Concluded = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    LocalSystemId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Version = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LocalCallName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LifeCycleStatus = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemId = table.Column<int>(type: "integer", nullable: false),
+                    ArchiveTypeId = table.Column<int>(type: "integer", nullable: true),
+                    SensitiveDataTypeId = table.Column<int>(type: "integer", nullable: true),
+                    ReferenceId = table.Column<int>(type: "integer", nullable: true),
+                    ArchiveDuty = table.Column<int>(type: "integer", nullable: true),
+                    ArchiveNotes = table.Column<string>(type: "text", nullable: true),
+                    ArchiveFreq = table.Column<int>(type: "integer", nullable: true),
+                    Registertype = table.Column<bool>(type: "boolean", nullable: true),
+                    ArchiveSupplierId = table.Column<int>(type: "integer", nullable: true),
+                    ArchiveLocationId = table.Column<int>(type: "integer", nullable: true),
+                    ArchiveTestLocationId = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemCategoriesId = table.Column<int>(type: "integer", nullable: true),
+                    GdprCriticality = table.Column<int>(type: "integer", nullable: true),
+                    UserCount = table.Column<int>(type: "integer", nullable: true),
+                    ContainsAITechnology = table.Column<int>(type: "integer", nullable: true),
+                    GeneralPurpose = table.Column<string>(type: "text", nullable: true),
+                    isBusinessCritical = table.Column<int>(type: "integer", nullable: true),
+                    LinkToDirectoryUrl = table.Column<string>(type: "text", nullable: true),
+                    LinkToDirectoryUrlName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    precautions = table.Column<int>(type: "integer", nullable: true),
+                    precautionsOptionsEncryption = table.Column<bool>(type: "boolean", nullable: false),
+                    precautionsOptionsPseudonomisering = table.Column<bool>(type: "boolean", nullable: false),
+                    precautionsOptionsAccessControl = table.Column<bool>(type: "boolean", nullable: false),
+                    precautionsOptionsLogning = table.Column<bool>(type: "boolean", nullable: false),
+                    TechnicalSupervisionDocumentationUrlName = table.Column<string>(type: "text", nullable: true),
+                    TechnicalSupervisionDocumentationUrl = table.Column<string>(type: "text", nullable: true),
+                    UserSupervision = table.Column<int>(type: "integer", nullable: true),
+                    UserSupervisionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    UserSupervisionDocumentationUrlName = table.Column<string>(type: "text", nullable: true),
+                    UserSupervisionDocumentationUrl = table.Column<string>(type: "text", nullable: true),
+                    riskAssessment = table.Column<int>(type: "integer", nullable: true),
+                    riskAssesmentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    preriskAssessment = table.Column<int>(type: "integer", nullable: true),
+                    PlannedRiskAssessmentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    RiskSupervisionDocumentationUrlName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    RiskSupervisionDocumentationUrl = table.Column<string>(type: "text", nullable: true),
+                    noteRisks = table.Column<string>(type: "text", nullable: true),
+                    DPIA = table.Column<int>(type: "integer", nullable: true),
+                    DPIADateFor = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DPIASupervisionDocumentationUrlName = table.Column<string>(type: "text", nullable: true),
+                    DPIASupervisionDocumentationUrl = table.Column<string>(type: "text", nullable: true),
+                    answeringDataDPIA = table.Column<int>(type: "integer", nullable: true),
+                    DPIAdeleteDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    numberDPIA = table.Column<int>(type: "integer", nullable: false),
+                    HostedAt = table.Column<int>(type: "integer", nullable: true),
+                    WebAccessibilityCompliance = table.Column<int>(type: "integer", nullable: true),
+                    LastWebAccessibilityCheck = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    WebAccessibilityNotes = table.Column<string>(type: "text", nullable: true),
+                    ArchiveFromSystem = table.Column<bool>(type: "boolean", nullable: true),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    RegisterTypeId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4430,12 +4540,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractOverviewReadModelDataProcessingAgreements",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DataProcessingRegistrationId = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingRegistrationUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DataProcessingRegistrationName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    DataProcessingRegistrationId = table.Column<int>(type: "integer", nullable: false),
+                    DataProcessingRegistrationUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    DataProcessingRegistrationName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4452,14 +4563,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractOverviewReadModelItSystemUsages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ItSystemUsageUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItSystemUsageSystemUuid = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ItSystemUsageName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ItSystemIsDisabled = table.Column<bool>(type: "bit", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItSystemUsageSystemUuid = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    ItSystemUsageName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    ItSystemIsDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4476,12 +4588,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractOverviewReadModelSystemRelations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RelationId = table.Column<int>(type: "int", nullable: false),
-                    FromSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ToSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    RelationId = table.Column<int>(type: "integer", nullable: false),
+                    FromSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ToSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4498,13 +4611,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractOverviewRoleAssignmentReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    UserFullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4521,9 +4635,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItContractItSystemUsages",
                 columns: table => new
                 {
-                    ItContractId = table.Column<int>(type: "int", nullable: false),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: true)
+                    ItContractId = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4552,14 +4666,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemRights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    ObjectId = table.Column<int>(type: "int", nullable: false),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectId = table.Column<int>(type: "integer", nullable: false),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4600,9 +4715,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOrgUnitUsages",
                 columns: table => new
                 {
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationUnitId = table.Column<int>(type: "int", nullable: false),
-                    ResponsibleItSystemUsage_Id = table.Column<int>(type: "int", nullable: true)
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationUnitId = table.Column<int>(type: "integer", nullable: false),
+                    ResponsibleItSystemUsage_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4631,85 +4746,86 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    SourceEntityId = table.Column<int>(type: "int", nullable: false),
-                    SourceEntityUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ExternalSystemUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    SystemName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SystemPreviousName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SystemDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItSystemDisabled = table.Column<bool>(type: "bit", nullable: false),
-                    ActiveAccordingToValidityPeriod = table.Column<bool>(type: "bit", nullable: false),
-                    ActiveAccordingToLifeCycle = table.Column<bool>(type: "bit", nullable: false),
-                    SystemActive = table.Column<bool>(type: "bit", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentItSystemName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ParentItSystemId = table.Column<int>(type: "int", nullable: true),
-                    ParentItSystemUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ParentItSystemDisabled = table.Column<bool>(type: "bit", nullable: true),
-                    ParentItSystemUsageUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Version = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ContainsAITechnology = table.Column<int>(type: "int", nullable: true),
-                    LocalCallName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LocalSystemId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ItSystemUuid = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ResponsibleOrganizationUnitUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ResponsibleOrganizationUnitId = table.Column<int>(type: "int", nullable: true),
-                    ResponsibleOrganizationUnitName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ItSystemBusinessTypeUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ItSystemBusinessTypeId = table.Column<int>(type: "int", nullable: true),
-                    ItSystemBusinessTypeName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ItSystemRightsHolderId = table.Column<int>(type: "int", nullable: true),
-                    ItSystemRightsHolderName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ItSystemCategoriesId = table.Column<int>(type: "int", nullable: true),
-                    ItSystemCategoriesUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ItSystemCategoriesName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ItSystemKLEIdsAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItSystemKLENamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LocalReferenceDocumentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LocalReferenceUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LocalReferenceTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LastChangedById = table.Column<int>(type: "int", nullable: true),
-                    LastChangedByName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LastChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Concluded = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    MainContractId = table.Column<int>(type: "int", nullable: true),
-                    MainContractSupplierId = table.Column<int>(type: "int", nullable: true),
-                    MainContractSupplierName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    MainContractIsActive = table.Column<int>(type: "int", nullable: false),
-                    SensitiveDataLevelsAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RiskAssessmentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PlannedRiskAssessmentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ArchiveDuty = table.Column<int>(type: "int", nullable: true),
-                    IsHoldingDocument = table.Column<bool>(type: "bit", nullable: false),
-                    RiskSupervisionDocumentationName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    RiskSupervisionDocumentationUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LinkToDirectoryName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    LinkToDirectoryUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LifeCycleStatus = table.Column<int>(type: "int", nullable: true),
-                    DataProcessingRegistrationsConcludedAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DataProcessingRegistrationNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GeneralPurpose = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    HostedAt = table.Column<int>(type: "int", nullable: false),
-                    UserCount = table.Column<int>(type: "int", nullable: false),
-                    GdprCriticality = table.Column<int>(type: "int", nullable: true),
-                    DependsOnInterfacesNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IncomingRelatedItSystemUsagesNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OutgoingRelatedItSystemUsagesNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RelevantOrganizationUnitNamesAsCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AssociatedContractsNamesCsv = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DPIAConducted = table.Column<int>(type: "int", nullable: true),
-                    IsBusinessCritical = table.Column<int>(type: "int", nullable: true),
-                    CatalogArchiveDuty = table.Column<int>(type: "int", nullable: true),
-                    CatalogArchiveDutyComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WebAccessibilityCompliance = table.Column<int>(type: "int", nullable: true),
-                    LastWebAccessibilityCheck = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    WebAccessibilityNotes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    SourceEntityId = table.Column<int>(type: "integer", nullable: false),
+                    SourceEntityUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExternalSystemUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    SystemName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SystemPreviousName = table.Column<string>(type: "text", nullable: true),
+                    SystemDescription = table.Column<string>(type: "text", nullable: true),
+                    ItSystemDisabled = table.Column<bool>(type: "boolean", nullable: false),
+                    ActiveAccordingToValidityPeriod = table.Column<bool>(type: "boolean", nullable: false),
+                    ActiveAccordingToLifeCycle = table.Column<bool>(type: "boolean", nullable: false),
+                    SystemActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    ParentItSystemName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ParentItSystemId = table.Column<int>(type: "integer", nullable: true),
+                    ParentItSystemUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ParentItSystemDisabled = table.Column<bool>(type: "boolean", nullable: true),
+                    ParentItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    Version = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ContainsAITechnology = table.Column<int>(type: "integer", nullable: true),
+                    LocalCallName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LocalSystemId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    ItSystemUuid = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    ResponsibleOrganizationUnitUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ResponsibleOrganizationUnitId = table.Column<int>(type: "integer", nullable: true),
+                    ResponsibleOrganizationUnitName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ItSystemBusinessTypeUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ItSystemBusinessTypeId = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemBusinessTypeName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ItSystemRightsHolderId = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemRightsHolderName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ItSystemCategoriesId = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemCategoriesUuid = table.Column<Guid>(type: "uuid", nullable: true),
+                    ItSystemCategoriesName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ItSystemKLEIdsAsCsv = table.Column<string>(type: "text", nullable: true),
+                    ItSystemKLENamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    LocalReferenceDocumentId = table.Column<string>(type: "text", nullable: true),
+                    LocalReferenceUrl = table.Column<string>(type: "text", nullable: true),
+                    LocalReferenceTitle = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LastChangedById = table.Column<int>(type: "integer", nullable: true),
+                    LastChangedByName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LastChangedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Concluded = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    MainContractId = table.Column<int>(type: "integer", nullable: true),
+                    MainContractSupplierId = table.Column<int>(type: "integer", nullable: true),
+                    MainContractSupplierName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    MainContractIsActive = table.Column<int>(type: "integer", nullable: false),
+                    SensitiveDataLevelsAsCsv = table.Column<string>(type: "text", nullable: true),
+                    RiskAssessmentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    PlannedRiskAssessmentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ArchiveDuty = table.Column<int>(type: "integer", nullable: true),
+                    IsHoldingDocument = table.Column<bool>(type: "boolean", nullable: false),
+                    RiskSupervisionDocumentationName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    RiskSupervisionDocumentationUrl = table.Column<string>(type: "text", nullable: true),
+                    LinkToDirectoryName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    LinkToDirectoryUrl = table.Column<string>(type: "text", nullable: true),
+                    LifeCycleStatus = table.Column<int>(type: "integer", nullable: true),
+                    DataProcessingRegistrationsConcludedAsCsv = table.Column<string>(type: "text", nullable: true),
+                    DataProcessingRegistrationNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    GeneralPurpose = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    HostedAt = table.Column<int>(type: "integer", nullable: false),
+                    UserCount = table.Column<int>(type: "integer", nullable: false),
+                    GdprCriticality = table.Column<int>(type: "integer", nullable: true),
+                    DependsOnInterfacesNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    IncomingRelatedItSystemUsagesNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    OutgoingRelatedItSystemUsagesNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    RelevantOrganizationUnitNamesAsCsv = table.Column<string>(type: "text", nullable: true),
+                    AssociatedContractsNamesCsv = table.Column<string>(type: "text", nullable: true),
+                    DPIAConducted = table.Column<int>(type: "integer", nullable: true),
+                    IsBusinessCritical = table.Column<int>(type: "integer", nullable: true),
+                    CatalogArchiveDuty = table.Column<int>(type: "integer", nullable: true),
+                    CatalogArchiveDutyComment = table.Column<string>(type: "text", nullable: true),
+                    WebAccessibilityCompliance = table.Column<int>(type: "integer", nullable: true),
+                    LastWebAccessibilityCheck = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    WebAccessibilityNotes = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -4732,10 +4848,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsagePersonalDatas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    PersonalData = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    PersonalData = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4752,10 +4869,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageSensitiveDataLevels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false),
-                    SensitivityDataLevel = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: false),
+                    SensitivityDataLevel = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4772,8 +4890,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TaskRefItSystemUsages",
                 columns: table => new
                 {
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false),
-                    TaskRef_Id = table.Column<int>(type: "int", nullable: false)
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: false),
+                    TaskRef_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4796,19 +4914,20 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "SystemRelations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FromSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ToSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    RelationInterfaceId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Reference = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UsageFrequencyId = table.Column<int>(type: "int", nullable: true),
-                    AssociatedContractId = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    FromSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ToSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    RelationInterfaceId = table.Column<int>(type: "integer", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Reference = table.Column<string>(type: "text", nullable: true),
+                    UsageFrequencyId = table.Column<int>(type: "integer", nullable: true),
+                    AssociatedContractId = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4861,8 +4980,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "TaskRefItSystemUsageOptOut",
                 columns: table => new
                 {
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: false),
-                    TaskRef_Id = table.Column<int>(type: "int", nullable: false)
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: false),
+                    TaskRef_Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4885,21 +5004,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "UserNotifications",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Uuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NotificationMessage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NotificationType = table.Column<int>(type: "int", nullable: false),
-                    NotificationRecipientId = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrganizationId = table.Column<int>(type: "int", nullable: false),
-                    Itcontract_Id = table.Column<int>(type: "int", nullable: true),
-                    ItSystemUsage_Id = table.Column<int>(type: "int", nullable: true),
-                    DataProcessingRegistration_Id = table.Column<int>(type: "int", nullable: true),
-                    ObjectOwnerId = table.Column<int>(type: "int", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastChangedByUserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    NotificationMessage = table.Column<string>(type: "text", nullable: false),
+                    NotificationType = table.Column<int>(type: "integer", nullable: false),
+                    NotificationRecipientId = table.Column<int>(type: "integer", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
+                    Itcontract_Id = table.Column<int>(type: "integer", nullable: true),
+                    ItSystemUsage_Id = table.Column<int>(type: "integer", nullable: true),
+                    DataProcessingRegistration_Id = table.Column<int>(type: "integer", nullable: true),
+                    ObjectOwnerId = table.Column<int>(type: "integer", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LastChangedByUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4949,11 +5069,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewArchivePeriodReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4970,13 +5091,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewDataProcessingRegistrationReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DataProcessingRegistrationUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DataProcessingRegistrationId = table.Column<int>(type: "int", nullable: false),
-                    DataProcessingRegistrationName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    IsAgreementConcluded = table.Column<int>(type: "int", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    DataProcessingRegistrationUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    DataProcessingRegistrationId = table.Column<int>(type: "integer", nullable: false),
+                    DataProcessingRegistrationName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    IsAgreementConcluded = table.Column<int>(type: "integer", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -4993,12 +5115,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewInterfaceReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InterfaceUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InterfaceId = table.Column<int>(type: "int", nullable: false),
-                    InterfaceName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    InterfaceUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    InterfaceId = table.Column<int>(type: "integer", nullable: false),
+                    InterfaceName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5015,12 +5138,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewItContractReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItContractUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItContractId = table.Column<int>(type: "int", nullable: false),
-                    ItContractName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItContractUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItContractId = table.Column<int>(type: "integer", nullable: false),
+                    ItContractName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5037,12 +5161,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewUsedBySystemUsageReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItSystemUsageUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ItSystemUsageName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemUsageName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5059,12 +5184,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewRelevantOrgUnitReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrganizationUnitUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationUnitId = table.Column<int>(type: "int", nullable: false),
-                    OrganizationUnitName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    OrganizationUnitUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrganizationUnitId = table.Column<int>(type: "integer", nullable: false),
+                    OrganizationUnitName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5081,14 +5207,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewRoleAssignmentReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserFullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    RoleUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    UserFullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5105,10 +5232,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewSensitiveDataLevelReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SensitivityDataLevel = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    SensitivityDataLevel = table.Column<int>(type: "integer", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5125,11 +5253,12 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewTaskRefReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    KLEId = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    KLEName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    KLEId = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
+                    KLEName = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -5146,12 +5275,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "ItSystemUsageOverviewUsingSystemUsageReadModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItSystemUsageUuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItSystemUsageId = table.Column<int>(type: "int", nullable: false),
-                    ItSystemUsageName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        ,
+                    ItSystemUsageUuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItSystemUsageId = table.Column<int>(type: "integer", nullable: false),
+                    ItSystemUsageName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

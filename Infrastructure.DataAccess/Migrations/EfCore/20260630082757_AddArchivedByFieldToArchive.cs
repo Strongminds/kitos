@@ -13,7 +13,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "ArchivedById",
                 table: "ItSystemUsageArchive",
-                type: "int",
+                type: "integer",
                 nullable: false,
                 defaultValue: 0);
 

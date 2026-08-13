@@ -6,7 +6,6 @@ $repoRoot = Resolve-Path "$PSScriptRoot\.."
 $infraProject = "$repoRoot\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj"
 $startupProject = "$repoRoot\Presentation.Web\Presentation.Web.csproj"
 $bundleDir = "$repoRoot\Output\MigrationsBundle"
-$sqlServerBundleExe = "$bundleDir\efbundle.exe"
 $postgresBundleExe = "$bundleDir\efbundle.postgresql.exe"
 
 New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
@@ -42,16 +41,11 @@ function New-MigrationsBundle(
 }
 
 try {
-    # Supply dummy connection strings so the design-time factory can instantiate KitosContext
+    # Supply a dummy connection string so the design-time factory can instantiate KitosContext
     # during bundle creation. The real connection string is passed at runtime via --connection.
     New-MigrationsBundle `
-        -provider "SqlServer" `
-        -connectionString "Server=.;Database=Kitos;Trusted_Connection=True;TrustServerCertificate=True" `
-        -outputPath $sqlServerBundleExe
-
-    New-MigrationsBundle `
         -provider "PostgreSql" `
-        -connectionString "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=postgres" `
+        -connectionString "Host=127.0.0.1;Port=5432;Database=kitos;Username=postgres;Password=localNoSecret" `
         -outputPath $postgresBundleExe
 }
 finally {
@@ -59,6 +53,5 @@ finally {
     Remove-Item Env:ConnectionStrings__KitosContext -ErrorAction SilentlyContinue
 }
 
-Write-Host "Migrations bundles created at:"
-Write-Host "  $sqlServerBundleExe"
+Write-Host "Migrations bundle created at:"
 Write-Host "  $postgresBundleExe"

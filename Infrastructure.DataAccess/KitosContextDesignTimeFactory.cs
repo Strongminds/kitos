@@ -1,5 +1,4 @@
 using System;
-using Core.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -12,13 +11,11 @@ namespace Infrastructure.DataAccess
     /// The connection string is read from the environment variable
     /// <c>ConnectionStrings__KitosContext</c> (standard .NET hierarchical config format).
     ///
-    /// Set it before running any 'dotnet ef' command, e.g.:
-    ///   $env:ConnectionStrings__KitosContext = "Server=.\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True"
+    /// Set it before running any 'dotnet ef' command
     /// </summary>
     public class KitosContextDesignTimeFactory : IDesignTimeDbContextFactory<KitosContext>
     {
         private const string EnvVar = "ConnectionStrings__KitosContext";
-        private const string ProviderEnvVar = "Database__Provider";
 
         public KitosContext CreateDbContext(string[] args)
         {
@@ -27,28 +24,17 @@ namespace Infrastructure.DataAccess
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new InvalidOperationException(
                     $"Design-time DB context requires the '{EnvVar}' environment variable to be set. " +
-                    "Example: $env:ConnectionStrings__KitosContext = \"Server=.\\SQLEXPRESS;Integrated Security=true;Initial Catalog=Kitos;MultipleActiveResultSets=True;TrustServerCertificate=True\"");
+                    "Example: $env:ConnectionStrings__KitosContext = \"Host=localhost;Port=5432;Database=kitos;Username=postgres;Password=localNoSecret\"");
 
-            var provider = Environment.GetEnvironmentVariable(ProviderEnvVar);
-            var usePostgreSql = DatabaseProviderHelper.IsPostgreSqlProvider(provider)
-                                || DatabaseProviderHelper.LooksLikePostgreSqlConnectionString(connectionString);
+            var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
             var optionsBuilder = new DbContextOptionsBuilder<KitosContext>();
-            optionsBuilder.UseLazyLoadingProxies();
-
-            if (usePostgreSql)
-            {
-                var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
-                optionsBuilder.UseNpgsql(pgCsb.ConnectionString,
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseNpgsql(pgCsb.ConnectionString,
                     npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "dbo"))
-                    .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
-            }
-            else
-            {
-                optionsBuilder.UseSqlServer(connectionString);
-            }
+                .ReplaceService<IMigrationsSqlGenerator, KitosNpgsqlMigrationsSqlGenerator>();
 
             return new KitosContext(optionsBuilder.Options);
         }
-
     }
 }

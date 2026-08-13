@@ -14,7 +14,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
                 table: "User",
-                type: "datetime2",
+                type: "timestamp without time zone",
                 nullable: true);
         }
 

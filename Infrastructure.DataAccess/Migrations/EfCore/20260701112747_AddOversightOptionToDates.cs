@@ -13,7 +13,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "OversightOptionId",
                 table: "DataProcessingRegistrationOversightDates",
-                type: "int",
+                type: "integer",
                 nullable: true);
 
             migrationBuilder.CreateIndex(

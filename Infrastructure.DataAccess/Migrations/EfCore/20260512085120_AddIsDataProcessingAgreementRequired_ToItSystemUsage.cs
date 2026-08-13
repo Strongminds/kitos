@@ -13,13 +13,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.AddColumn<int>(
                 name: "IsDataProcessingAgreementRequired",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "int",
+                type: "integer",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "IsDataProcessingAgreementRequired",
                 table: "ItSystemUsage",
-                type: "int",
+                type: "integer",
                 nullable: true);
         }
 
