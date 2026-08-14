@@ -30,7 +30,13 @@ namespace Presentation.Web.Controllers.API.V1
             _env = env;
         }
 
-        private string GetMapPath(string fileName) => Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, Constants.Excel.ExcelFilePath, fileName);
+        private string GetMapPath(string fileName)
+        {
+            var excelPath = Constants.Excel.ExcelFilePath
+                .TrimStart('~')
+                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            return Path.Combine(_env.ContentRootPath, excelPath, fileName);
+        }
 
         #region Excel Users
 
