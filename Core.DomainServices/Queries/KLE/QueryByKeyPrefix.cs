@@ -15,7 +15,7 @@ namespace Core.DomainServices.Queries.KLE
 
         public IQueryable<TaskRef> Apply(IQueryable<TaskRef> source)
         {
-            return source.Where(x => x.TaskKey.StartsWith(_prefix));
+            return source.Where(x => x.TaskKey.StartsWith(_prefix, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

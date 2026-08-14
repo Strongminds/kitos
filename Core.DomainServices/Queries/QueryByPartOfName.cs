@@ -17,7 +17,7 @@ namespace Core.DomainServices.Queries
 
         public IQueryable<T> Apply(IQueryable<T> source)
         {
-            return source.Where(x => x.Name.Contains(_nameContent));
+            return source.Where(x => x.Name.Contains(_nameContent, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

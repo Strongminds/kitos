@@ -15,7 +15,7 @@ namespace Core.DomainServices.Queries.KLE
 
         public IQueryable<TaskRef> Apply(IQueryable<TaskRef> source)
         {
-            return source.Where(x => x.Description != null && x.Description.Contains(_content));
+            return source.Where(x => x.Description != null && x.Description.Contains(_content, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

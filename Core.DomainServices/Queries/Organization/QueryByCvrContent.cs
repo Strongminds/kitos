@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Core.DomainServices.Queries.Organization
 {
@@ -13,7 +14,7 @@ namespace Core.DomainServices.Queries.Organization
 
         public IQueryable<DomainModel.Organization.Organization> Apply(IQueryable<DomainModel.Organization.Organization> source)
         {
-            return source.Where(x => x.Cvr != null && x.Cvr.Contains(_cvrNumberContent));
+            return source.Where(x => x.Cvr != null && x.Cvr.Contains(_cvrNumberContent, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

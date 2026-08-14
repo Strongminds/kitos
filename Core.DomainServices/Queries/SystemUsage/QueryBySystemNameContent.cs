@@ -15,7 +15,7 @@ namespace Core.DomainServices.Queries.SystemUsage
 
         public IQueryable<ItSystemUsage> Apply(IQueryable<ItSystemUsage> source)
         {
-            return source.Where(systemUsage => systemUsage.ItSystem.Name.Contains(_nameContent));
+            return source.Where(systemUsage => systemUsage.ItSystem.Name.Contains(_nameContent, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
