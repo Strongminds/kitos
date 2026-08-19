@@ -106,18 +106,17 @@
     <Folder Include="Models\API\V2\Request\Archive\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Content\excel\OS2KITOS Organisationsenheder.xlsx">
+    <Content Include="Content\excel\OS2KITOS Organisationsenheder.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Content\excel\OS2KITOS IT Kontrakter.xlsx">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\excel\OS2KITOS IT Kontrakter.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Content\excel\OS2KITOS Brugere.xlsx">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\excel\OS2KITOS Brugere.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 </Project>
