@@ -25,12 +25,8 @@ namespace Core.DomainServices.Queries.User
 
         private static IQueryable<DomainModel.User> Match(IQueryable<DomainModel.User> original, string segment)
         {
-            return original.Where(x => MatchSegment(x.Name, segment) || MatchSegment(x.LastName, segment) || MatchSegment(x.Email, segment));
-        }
-
-        private static bool MatchSegment(string property, string segment)
-        {
-            return property.ToLower().Contains(segment.ToLower());
+            var segmentLower = segment.ToLower();
+            return original.Where(x => x.Name.ToLower().Contains(segmentLower) || x.LastName.ToLower().Contains(segmentLower) || x.Email.ToLower().Contains(segmentLower));
         }
     }
 }
