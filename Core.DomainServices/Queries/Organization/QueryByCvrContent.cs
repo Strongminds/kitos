@@ -6,15 +6,17 @@ namespace Core.DomainServices.Queries.Organization
     public class QueryByCvrContent : IDomainQuery<DomainModel.Organization.Organization>
     {
         private readonly string _cvrNumberContent;
+        private readonly string _cvrNumberContentLower;
 
         public QueryByCvrContent(string cvrNumberContent)
         {
             _cvrNumberContent = cvrNumberContent;
+            _cvrNumberContentLower = cvrNumberContent?.ToLower();
         }
 
         public IQueryable<DomainModel.Organization.Organization> Apply(IQueryable<DomainModel.Organization.Organization> source)
         {
-            return source.Where(x => x.Cvr != null && x.Cvr.Contains(_cvrNumberContent, StringComparison.OrdinalIgnoreCase));
+            return source.Where(x => x.Cvr != null && x.Cvr.ToLower().Contains(_cvrNumberContentLower));
         }
     }
 }

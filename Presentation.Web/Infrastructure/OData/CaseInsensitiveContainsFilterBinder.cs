@@ -10,36 +10,46 @@ namespace Presentation.Web.Infrastructure.OData
 {
     public class CaseInsensitiveContainsFilterBinder: FilterBinder
     {
-        private static readonly MethodInfo ContainsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string), typeof(StringComparison)])!;
-        private static readonly Expression OrdinalIgnoreCase = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        private static readonly MethodInfo ContainsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string)])!;
+        private static readonly MethodInfo StartsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), [typeof(string)])!;
+        private static readonly MethodInfo EndsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), [typeof(string)])!;
+        private static readonly MethodInfo ToLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes)!;
         private const string ContainsFunctionName = "contains";
+        private const string StartsWithFunctionName = "startswith";
+        private const string EndsWithFunctionName = "endswith";
 
         public override Expression BindSingleValueFunctionCallNode(SingleValueFunctionCallNode node, QueryBinderContext context)
         {
-            return node.Name is ContainsFunctionName
-                ? CallCaseInsensitiveContainsExpression(node, context)
-                : base.BindSingleValueFunctionCallNode(node, context);
+            return node.Name switch
+            {
+                ContainsFunctionName => CallCaseInsensitiveStringComparisonExpression(node, context, ContainsMethod),
+                StartsWithFunctionName => CallCaseInsensitiveStringComparisonExpression(node, context, StartsWithMethod),
+                EndsWithFunctionName => CallCaseInsensitiveStringComparisonExpression(node, context, EndsWithMethod),
+                _ => base.BindSingleValueFunctionCallNode(node, context)
+            };
         }
 
-        private Expression CallCaseInsensitiveContainsExpression(SingleValueFunctionCallNode node, QueryBinderContext context)
+        private Expression CallCaseInsensitiveStringComparisonExpression(SingleValueFunctionCallNode node, QueryBinderContext context, MethodInfo stringMethod)
         {
             var parameters = node.Parameters.ToList();
             var left = Bind(parameters[0], context);
             var right = Bind(parameters[1], context);
+            var loweredLeft = Expression.Call(left, ToLowerMethod);
+            var loweredRight = Expression.Call(right, ToLowerMethod);
 
-            Expression containsCall = Expression.Call(left, ContainsMethod, right, OrdinalIgnoreCase);
+            Expression comparisonCall = Expression.Call(loweredLeft, stringMethod, loweredRight);
 
             // Guard against NullReferenceException when the property is null during in-memory filter
             // evaluation (e.g. after ToList()). OData semantics: contains(null, 'x') = false.
             if (!left.Type.IsValueType)
             {
-                containsCall = Expression.Condition(
+                comparisonCall = Expression.Condition(
                     Expression.Equal(left, Expression.Default(left.Type)),
                     Expression.Constant(false),
-                    containsCall);
+                    comparisonCall);
             }
 
-            return containsCall;
+            return comparisonCall;
         }
 
     }
