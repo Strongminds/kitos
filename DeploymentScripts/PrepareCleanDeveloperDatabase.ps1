@@ -120,7 +120,7 @@ GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escaped
 "@
 
             $grantSchemaSql = @"
-DO \$\$
+DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'public') THEN
         EXECUTE format('GRANT USAGE, CREATE ON SCHEMA public TO %I', '$escapedUsername');
@@ -138,7 +138,7 @@ BEGIN
         EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO %I', '$escapedUsername');
     END IF;
 END
-\$\$;
+$$;
 "@
             Invoke-PostgresSql -parts $hangfireParts -database "postgres" -sql $grantDatabaseSql
             Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql $grantSchemaSql
