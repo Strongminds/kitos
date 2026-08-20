@@ -213,6 +213,28 @@ Function Wait-ForTcpPort {
     throw "TCP connectivity was not established to $Hostname`:$Port after $MaxAttempts attempts."
 }
 
+# Ensures the named PostgreSQL role exists, creating it with CREATEDB if it does not.
+# The role password defaults to the role name itself (matching the Docker init-databases.sh
+# convention) but can be overridden via the KITOS_APP_PASSWORD environment variable.
+Function Ensure-PostgresRole([hashtable]$parts, [string]$roleName) {
+    if ([string]::IsNullOrWhiteSpace($roleName)) { return }
+
+    $rolePassword = if ($Env:KITOS_APP_PASSWORD) { $Env:KITOS_APP_PASSWORD } else { $roleName }
+    $escapedRoleName = $roleName.Replace("'", "''").Replace('"', '""')
+    $escapedPassword = $rolePassword.Replace("'", "''")
+    Write-Host "Ensuring PostgreSQL role '$roleName' exists"
+    $sql = @"
+DO `$`$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedRoleName') THEN
+        EXECUTE 'CREATE ROLE "$escapedRoleName" WITH LOGIN PASSWORD ''$escapedPassword'' CREATEDB';
+    END IF;
+END
+`$`$;
+"@
+    Invoke-PostgresSql -parts $parts -database "postgres" -sql $sql
+}
+
 # Grants full access on the dbo schema and all its objects to the named user.
 # Needed when the script runs as a superuser (e.g. postgres) while the application connects as a
 # lower-privileged user (e.g. kitos): the dbo schema would otherwise be owned by the
@@ -272,15 +294,6 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     if ($newDb -eq $true) {
         Write-Host "New PostgreSQL database detected - ensuring database exists"
         New-PostgresDatabase -connectionString $connectionString
-
-        # When the script runs as a superuser (e.g. postgres) but the application connects as a
-        # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
-        # Grant the known app user access so the running application is not blocked.
-        # This is a no-op when the script already runs as the app user (kitos owns the schema).
-        $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
-        if ($pgParts.Username -ne $knownAppUser) {
-            Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
-        }
     }
 
     # Expose the connection string via the standard .NET env var so the
@@ -371,5 +384,17 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
             --configuration "$buildConfiguration"
 
         if ($LASTEXITCODE -ne 0) { Throw "FAILED TO MIGRATE DB" }
+    }
+
+    # When the script runs as a superuser (e.g. postgres) but the application connects as a
+    # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
+    # Grant the known app user access so the running application is not blocked.
+    # Must run after migrations so the dbo schema already exists.
+    # This is a no-op when the script already runs as the app user (kitos owns the schema).
+    if ($newDb -eq $true) {
+        $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+        if ($pgParts.Username -ne $knownAppUser) {
+            Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
+        }
     }
 }
