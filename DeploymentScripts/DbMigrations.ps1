@@ -213,28 +213,6 @@ Function Wait-ForTcpPort {
     throw "TCP connectivity was not established to $Hostname`:$Port after $MaxAttempts attempts."
 }
 
-# Ensures the named PostgreSQL role exists, creating it with CREATEDB if it does not.
-# The role password defaults to the role name itself (matching the Docker init-databases.sh
-# convention) but can be overridden via the KITOS_APP_PASSWORD environment variable.
-Function Ensure-PostgresRole([hashtable]$parts, [string]$roleName) {
-    if ([string]::IsNullOrWhiteSpace($roleName)) { return }
-
-    $rolePassword = if ($Env:KITOS_APP_PASSWORD) { $Env:KITOS_APP_PASSWORD } else { $roleName }
-    $escapedRoleName = $roleName.Replace("'", "''").Replace('"', '""')
-    $escapedPassword = $rolePassword.Replace("'", "''")
-    Write-Host "Ensuring PostgreSQL role '$roleName' exists"
-    $sql = @"
-DO `$`$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedRoleName') THEN
-        EXECUTE 'CREATE ROLE "$escapedRoleName" WITH LOGIN PASSWORD ''$escapedPassword'' CREATEDB';
-    END IF;
-END
-`$`$;
-"@
-    Invoke-PostgresSql -parts $parts -database "postgres" -sql $sql
-}
-
 # Grants full access on the dbo schema and all its objects to the named user.
 # Needed when the script runs as a superuser (e.g. postgres) while the application connects as a
 # lower-privileged user (e.g. kitos): the dbo schema would otherwise be owned by the
@@ -242,31 +220,20 @@ END
 Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUser) {
     if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
 
-    Ensure-PostgresRole -parts $parts -roleName $granteeUser
-
     Write-Host "Granting dbo schema privileges to '$granteeUser'"
     $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
     $escapedDatabaseName = $parts.Database.Replace("'", "''").Replace('"', '""')
-
-    # Grant CONNECT on the postgres maintenance database so the app can probe for DB existence at startup.
-    $grantPostgresSql = @"
-GRANT CONNECT ON DATABASE "postgres" TO "$escapedUsername";
-"@
-    Invoke-PostgresSql -parts $parts -database "postgres" -sql $grantPostgresSql
-
     $sql = @"
 DO `$`$
 BEGIN
-    EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
-    GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
-    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
-    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
-    ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
-    ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
-    -- Also grant public schema access so citext (installed in public) is discoverable.
-    GRANT USAGE ON SCHEMA public TO "$escapedUsername";
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$escapedUsername";
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$escapedUsername";
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
+        GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
+    END IF;
 END
 `$`$;
 "@

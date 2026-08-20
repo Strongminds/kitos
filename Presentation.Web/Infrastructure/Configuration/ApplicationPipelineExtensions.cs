@@ -13,7 +13,6 @@ using Npgsql;
 using Presentation.Web.Infrastructure.Middleware;
 using Serilog;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -189,52 +188,21 @@ namespace Presentation.Web.Infrastructure.Configuration
             var dbContext = scope.ServiceProvider.GetRequiredService<KitosContext>();
             if (dbContext.Database.IsNpgsql())
             {
+                dbContext.Database.OpenConnection();
                 try
                 {
-                    dbContext.Database.OpenConnection();
-                    try
+                    dbContext.Database.ExecuteSqlRaw("CREATE SCHEMA IF NOT EXISTS public; CREATE EXTENSION IF NOT EXISTS citext SCHEMA public;");
+                    if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
                     {
-                        try
-                        {
-                            dbContext.Database.ExecuteSqlRaw(
-                                "CREATE SCHEMA IF NOT EXISTS public; CREATE EXTENSION IF NOT EXISTS citext SCHEMA public;");
-                        }
-                        catch (Exception ex)
-                        {
-                            // CREATE EXTENSION requires superuser. When the app runs as a non-superuser
-                            // (e.g. the kitos role in CI/Docker), this will fail if the extension does
-                            // not yet exist. Verify that citext is actually installed before deciding
-                            // whether this is a fatal error.
-                            var citextExists = dbContext.Database
-                                .SqlQueryRaw<int>("SELECT COUNT(*)::int FROM pg_extension WHERE extname = 'citext'")
-                                .ToList();
-                            if (citextExists.Count == 0 || citextExists[0] == 0)
-                            {
-                                throw new InvalidOperationException(
-                                    "The 'citext' PostgreSQL extension is not installed and could not be created. " +
-                                    "Run the database migrations as a superuser to install it.", ex);
-                            }
-
-                            Log.Warning(ex,
-                                "Could not run CREATE EXTENSION citext (likely insufficient privileges), but citext is already installed — continuing.");
-                        }
-
-                        if (dbContext.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
-                        {
-                            npgsqlConnection.ReloadTypes();
-                            // Drop all pooled connectors so every subsequent request opens connections
-                            // with fresh type metadata after the extension bootstrap.
-                            NpgsqlConnection.ClearAllPools();
-                        }
-                    }
-                    finally
-                    {
-                        dbContext.Database.CloseConnection();
+                        npgsqlConnection.ReloadTypes();
+                        // Drop all pooled connectors so every subsequent request opens connections
+                        // with fresh type metadata after the extension bootstrap.
+                        NpgsqlConnection.ClearAllPools();
                     }
                 }
-                catch (Exception ex)
+                finally
                 {
-                    Log.Error(ex, "Unhandled exception while ensuring PostgreSQL extensions.");
+                    dbContext.Database.CloseConnection();
                 }
             }
 
