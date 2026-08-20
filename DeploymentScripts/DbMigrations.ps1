@@ -247,6 +247,13 @@ Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUs
     Write-Host "Granting dbo schema privileges to '$granteeUser'"
     $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
     $escapedDatabaseName = $parts.Database.Replace("'", "''").Replace('"', '""')
+
+    # Grant CONNECT on the postgres maintenance database so the app can probe for DB existence at startup.
+    $grantPostgresSql = @"
+GRANT CONNECT ON DATABASE "postgres" TO "$escapedUsername";
+"@
+    Invoke-PostgresSql -parts $parts -database "postgres" -sql $grantPostgresSql
+
     $sql = @"
 DO `$`$
 BEGIN
