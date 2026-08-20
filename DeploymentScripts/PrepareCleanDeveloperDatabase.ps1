@@ -119,29 +119,23 @@ try {
 GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername";
 "@
 
-            $grantSchemaSql = @"
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'public') THEN
-        EXECUTE format('GRANT USAGE, CREATE ON SCHEMA public TO %I', '$escapedUsername');
-        EXECUTE format('GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO %I', '$escapedUsername');
-        EXECUTE format('GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO %I', '$escapedUsername');
-        EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO %I', '$escapedUsername');
-        EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO %I', '$escapedUsername');
-    END IF;
-
-    IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'dbo') THEN
-        EXECUTE format('GRANT USAGE, CREATE ON SCHEMA dbo TO %I', '$escapedUsername');
-        EXECUTE format('GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO %I', '$escapedUsername');
-        EXECUTE format('GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO %I', '$escapedUsername');
-        EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO %I', '$escapedUsername');
-        EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO %I', '$escapedUsername');
-    END IF;
-END
-$$;
-"@
             Invoke-PostgresSql -parts $hangfireParts -database "postgres" -sql $grantDatabaseSql
-            Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql $grantSchemaSql
+
+            foreach ($schema in @("public", "dbo")) {
+                $schemaExistsSql = "SELECT 1 FROM information_schema.schemata WHERE schema_name = '$schema'"
+                $psqlPath = Get-PostgresCliPath
+                $Env:PGPASSWORD = $hangfireParts.Password
+                $schemaExists = (& $psqlPath -h $hangfireParts.Host -p $hangfireParts.Port -U $hangfireParts.Username -d $hangfireParts.Database -tAc $schemaExistsSql | Out-String).Trim()
+                Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+
+                if ($schemaExists -eq "1") {
+                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "GRANT USAGE, CREATE ON SCHEMA $schema TO `"$escapedUsername`""
+                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $schema TO `"$escapedUsername`""
+                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA $schema TO `"$escapedUsername`""
+                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON TABLES TO `"$escapedUsername`""
+                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON SEQUENCES TO `"$escapedUsername`""
+                }
+            }
         }
     }
 }
