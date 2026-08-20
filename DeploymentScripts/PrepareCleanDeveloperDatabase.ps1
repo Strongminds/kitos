@@ -112,30 +112,19 @@ try {
         $hangfireParts = ConvertTo-PostgresConnectionParts $hangfireDbConnectionString
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
         if ($hangfireParts.Username -ne $knownAppUser) {
+            Ensure-PostgresRole -parts $hangfireParts -roleName $knownAppUser
             $escapedUsername = $knownAppUser.Replace("'", "''").Replace('"', '""')
             $escapedDatabaseName = $hangfireParts.Database.Replace("'", "''").Replace('"', '""')
             $grantDatabaseSql = @"
-DO `$`$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
-        EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
-    END IF;
-END
-`$`$;
+GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername";
 "@
 
             $grantSchemaSql = @"
-DO `$`$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
-        GRANT USAGE, CREATE ON SCHEMA public TO "$escapedUsername";
-        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$escapedUsername";
-        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$escapedUsername";
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$escapedUsername";
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$escapedUsername";
-    END IF;
-END
-`$`$;
+GRANT USAGE, CREATE ON SCHEMA public TO "$escapedUsername";
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$escapedUsername";
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$escapedUsername";
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$escapedUsername";
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$escapedUsername";
 "@
             Invoke-PostgresSql -parts $hangfireParts -database "postgres" -sql $grantDatabaseSql
             Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql $grantSchemaSql
