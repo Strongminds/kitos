@@ -256,6 +256,10 @@ BEGIN
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
     ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
     ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
+    -- Also grant public schema access so citext (installed in public) is discoverable.
+    GRANT USAGE ON SCHEMA public TO "$escapedUsername";
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$escapedUsername";
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$escapedUsername";
 END
 `$`$;
 "@
