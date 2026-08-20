@@ -121,10 +121,15 @@ GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escaped
 
             $grantSchemaSql = @"
 GRANT USAGE, CREATE ON SCHEMA public TO "$escapedUsername";
+GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$escapedUsername";
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$escapedUsername";
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$escapedUsername";
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$escapedUsername";
+ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
+ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
 "@
             Invoke-PostgresSql -parts $hangfireParts -database "postgres" -sql $grantDatabaseSql
             Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql $grantSchemaSql
