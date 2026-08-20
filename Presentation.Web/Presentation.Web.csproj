@@ -105,4 +105,18 @@
   <ItemGroup>
     <Folder Include="Models\API\V2\Request\Archive\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\excel\OS2KITOS Organisationsenheder.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\excel\OS2KITOS IT Kontrakter.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\excel\OS2KITOS Brugere.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

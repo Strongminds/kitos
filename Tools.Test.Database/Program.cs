@@ -33,7 +33,8 @@ namespace Tools.Test.Database
                 FailOnConnectionToProd(connectionString);
                 var dbOptionsBuilder = new DbContextOptionsBuilder<KitosContext>()
                     .UseLazyLoadingProxies();
-                dbOptionsBuilder.UseNpgsql(connectionString);
+                var pgCsb = new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "dbo,public" };
+                dbOptionsBuilder.UseNpgsql(pgCsb.ConnectionString);
 
                 var dbOptions = dbOptionsBuilder.Options;
                 using (var context = new KitosContext(dbOptions))
