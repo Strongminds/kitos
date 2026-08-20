@@ -272,15 +272,6 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     if ($newDb -eq $true) {
         Write-Host "New PostgreSQL database detected - ensuring database exists"
         New-PostgresDatabase -connectionString $connectionString
-
-        # When the script runs as a superuser (e.g. postgres) but the application connects as a
-        # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
-        # Grant the known app user access so the running application is not blocked.
-        # This is a no-op when the script already runs as the app user (kitos owns the schema).
-        $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
-        if ($pgParts.Username -ne $knownAppUser) {
-            Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
-        }
     }
 
     # Expose the connection string via the standard .NET env var so the
@@ -371,5 +362,17 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
             --configuration "$buildConfiguration"
 
         if ($LASTEXITCODE -ne 0) { Throw "FAILED TO MIGRATE DB" }
+    }
+
+    # When the script runs as a superuser (e.g. postgres) but the application connects as a
+    # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
+    # Grant the known app user access so the running application is not blocked.
+    # Must run after migrations so the dbo schema already exists.
+    # This is a no-op when the script already runs as the app user (kitos owns the schema).
+    if ($newDb -eq $true) {
+        $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+        if ($pgParts.Username -ne $knownAppUser) {
+            Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
+        }
     }
 }
