@@ -773,6 +773,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var relationInterfaceName = A<string>();
             var newRelationInterfaceName = A<string>();
             var organizationUuid = DefaultOrgUuid;
+            var before1 = DateTime.UtcNow;
 
             var system = await CreateItSystemAsync(organizationUuid, systemName);
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
@@ -793,8 +794,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 });
 
 
-            //Wait for read model to rebuild (wait for the LAST mutation)
-            var before1 = DateTime.UtcNow;
             await WaitForReadModelQueueDepletion(before1);
             Console.Out.WriteLine("Read models are up to date");
 
