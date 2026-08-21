@@ -65,7 +65,8 @@ namespace Tests.Integration.Presentation.Web.Contract
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplierB.Uuid, medium.Uuid, otherSupplierContractName);
             await CreateItContractAsync(organizationUuid, withoutSupplierName);
 
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            var before1 = DateTime.UtcNow;
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(before1);
 
             var queryResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid, odataOrderBy: "SupplierName asc")).ToList();
 
@@ -93,7 +94,8 @@ namespace Tests.Integration.Presentation.Web.Contract
             var mediumId = SetCriticalityPriority(medium.Uuid, 5);
             SetCriticalityPriority(high.Uuid, 3);
             ScheduleSupplierOverviewCriticalityUpdate(mediumId);
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            var before2 = DateTime.UtcNow;
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(before2);
 
             var updatedResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid)).ToList();
             var updatedSupplierARow = Assert.Single(updatedResult, x => x.SupplierUuid == supplierA.Uuid);
@@ -126,7 +128,8 @@ namespace Tests.Integration.Presentation.Web.Contract
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplier2.Uuid, criticality.Uuid, contractName2);
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplier3.Uuid, criticality.Uuid, contractName3);
 
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            var before = DateTime.UtcNow;
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(before);
 
             var filtered = (await ItContractV2Helper.QuerySupplierOverviewReadModel(
                 organizationUuid,
@@ -152,8 +155,9 @@ namespace Tests.Integration.Presentation.Web.Contract
             var supplierId = SetSupplierForeignCvrAndClearCvr(supplier.Uuid, $"F-{suffix}");
             ScheduleSupplierOverviewOrganizationUpdate(supplierId);
 
+            var before = DateTime.UtcNow;
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplier.Uuid, criticality.Uuid, $"contract-{suffix}");
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(before);
 
             var queryResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid)).ToList();
             var supplierRow = Assert.Single(queryResult,x => x.SupplierUuid == supplier.Uuid);

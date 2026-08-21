@@ -54,10 +54,11 @@ namespace Tests.Integration.Presentation.Web.Contract
             var name2 = $"2_{suffix}";
             var name3 = $"3_{suffix}";
 
+            var before = DateTime.Now;
             await CreateItContractAsync(organizationUuid, name1);
             await CreateItContractAsync(organizationUuid, name2);
             await CreateItContractAsync(organizationUuid, name3);
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(before);
 
             //Act
             var page1 = (await ItContractV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 0)).ToList();
@@ -77,6 +78,7 @@ namespace Tests.Integration.Presentation.Web.Contract
         {
             //Arrange
             var organizationUuid = _organization!.Uuid;
+            var before = DateTime.Now;
             var name = CreateName();
             var itSystem1 = await CreateItSystemAsync(organizationUuid);
             var itSystem2 = await CreateItSystemAsync(organizationUuid);
@@ -238,7 +240,7 @@ namespace Tests.Integration.Presentation.Web.Contract
                 { RoleUuid = role2.Uuid, UserUuid = user2.Uuid });
 
             //Act
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(before);
 
             var queryResult = (await ItContractV2Helper.QueryReadModelByNameContent(organizationUuid, name, 1, 0)).ToList();
 
