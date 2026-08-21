@@ -34,7 +34,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             var organizationUuid = _organization.Uuid;
             var suffix = Guid.NewGuid().ToString("N");
             var supplierSharedName = $"supplier-{suffix}";
-
+            var before1 = DateTime.UtcNow;
             var supplierA = await CreateOrganizationAsync(supplierSharedName, cvr: CreateCvr());
             var supplierB = await CreateOrganizationAsync(supplierSharedName, cvr: CreateCvr());
 
@@ -65,7 +65,6 @@ namespace Tests.Integration.Presentation.Web.Contract
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplierB.Uuid, medium.Uuid, otherSupplierContractName);
             await CreateItContractAsync(organizationUuid, withoutSupplierName);
 
-            var before1 = DateTime.UtcNow;
             await ReadModelTestTools.WaitForReadModelQueueDepletion(before1);
 
             var queryResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid, odataOrderBy: "SupplierName asc")).ToList();
@@ -89,12 +88,12 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(otherSupplierContractName, supplierBRow.ContractsAtHighestCriticality.Single().ContractName);
             Assert.Equal(medium.Name, supplierBRow.HighestCriticalityName);
             Assert.Equal(2, supplierBRow.HighestCriticalityRank);
+            var before2 = DateTime.UtcNow;
 
             SetCriticalityPriority(low.Uuid, 1);
             var mediumId = SetCriticalityPriority(medium.Uuid, 5);
             SetCriticalityPriority(high.Uuid, 3);
             ScheduleSupplierOverviewCriticalityUpdate(mediumId);
-            var before2 = DateTime.UtcNow;
             await ReadModelTestTools.WaitForReadModelQueueDepletion(before2);
 
             var updatedResult = (await ItContractV2Helper.QuerySupplierOverviewReadModel(organizationUuid)).ToList();
@@ -112,6 +111,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             var organizationUuid = _organization.Uuid;
             var suffix = Guid.NewGuid().ToString("N");
 
+            var before = DateTime.UtcNow;
             var supplier1 = await CreateOrganizationAsync($"alpha-{suffix}", cvr: CreateCvr());
             var supplier2 = await CreateOrganizationAsync($"beta-{suffix}", cvr: CreateCvr());
             var supplier3 = await CreateOrganizationAsync($"gamma-{suffix}", cvr: CreateCvr());
@@ -128,7 +128,6 @@ namespace Tests.Integration.Presentation.Web.Contract
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplier2.Uuid, criticality.Uuid, contractName2);
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplier3.Uuid, criticality.Uuid, contractName3);
 
-            var before = DateTime.UtcNow;
             await ReadModelTestTools.WaitForReadModelQueueDepletion(before);
 
             var filtered = (await ItContractV2Helper.QuerySupplierOverviewReadModel(
@@ -151,11 +150,11 @@ namespace Tests.Integration.Presentation.Web.Contract
             var supplier = await CreateOrganizationAsync($"foreign-cvr-{suffix}", cvr: CreateCvr());
             var criticality = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.CriticalityTypes, organizationUuid, 25, 0))
                 .First();
+            var before = DateTime.UtcNow;
 
             var supplierId = SetSupplierForeignCvrAndClearCvr(supplier.Uuid, $"F-{suffix}");
             ScheduleSupplierOverviewOrganizationUpdate(supplierId);
 
-            var before = DateTime.UtcNow;
             await CreateContractWithSupplierAndCriticality(organizationUuid, supplier.Uuid, criticality.Uuid, $"contract-{suffix}");
             await ReadModelTestTools.WaitForReadModelQueueDepletion(before);
 
