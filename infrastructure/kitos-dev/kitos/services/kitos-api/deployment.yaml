@@ -43,9 +43,15 @@ spec:
         - name: Hangfire__Provider
           value: PostgreSql
         - name: ConnectionStrings__KitosContext
-          value: Host=dev-db-rw;Port=5432;Database=dev-db;Username=kitos;Password=localNoSecret;
+          valueFrom:
+            secretKeyRef:
+              key: KitosDbConnectionString
+              name: user-secret
         - name: ConnectionStrings__kitos_HangfireDB
-          value: Host=hangfire-dev-db-rw;Port=5432;Database=hangfire-dev-db;Username=kitos;Password=lolcaNoSecret;
+          valueFrom:
+            secretKeyRef:
+              key: HangfireDbConnectionString
+              name: user-secret
         - name: AppSettings__BaseUrl
           value: 'https://eh-kitos-dev.strongminds.dk '
         - name: AppSettings__PubSubBaseUrl
