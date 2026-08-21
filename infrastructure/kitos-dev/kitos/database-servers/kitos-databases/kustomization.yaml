@@ -5,3 +5,4 @@ resources:
   - scheduled-backup.yaml
   - network-policy.yaml
   - databases/dev-db
+  - databases/hangfire-dev-db
