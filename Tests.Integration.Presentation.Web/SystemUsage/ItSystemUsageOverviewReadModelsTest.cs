@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -1044,6 +1044,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 await CreateItSystemAsync(organizationUuid, incomingRelationSystemNameInitial);
             var incomingRelationSystemUsage = await TakeSystemIntoUsageAsync(incomingRelationSystem.Uuid, organizationUuid);
 
+            var before1 = DateTime.UtcNow;
             await ItSystemUsageV2Helper.PostRelationAsync(await GetGlobalToken(), systemUsage.Uuid,
                 new SystemRelationWriteRequestDTO
                 {
@@ -1056,7 +1057,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 });
 
             //Await first update
-            var before1 = DateTime.UtcNow;
             await WaitForReadModelQueueDepletion(before1);
 
             //Act + assert - Rename the system used in incoming relation and verify that the readmodel is updated

@@ -1,4 +1,4 @@
-﻿using Core.DomainModel;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
 using System;
 using System.Collections.Generic;
@@ -299,17 +299,17 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(organizationUuid);
             var user = availableUsers.First();
             var roleRequest = new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid };
+            var before1 = DateTime.UtcNow;
             using var response1 = await DataProcessingRegistrationV2Helper.SendPatchAddRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
 
-            var before1 = DateTime.UtcNow;
             await WaitForReadModelQueueDepletion(before1);
 
+            var before2 = DateTime.UtcNow;
             using var response2 =
                 await DataProcessingRegistrationV2Helper.SendPatchRemoveRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-            var before2 = DateTime.UtcNow;
             await WaitForReadModelQueueDepletion(before2);
 
             //Act
