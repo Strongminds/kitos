@@ -396,7 +396,6 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
         if ($pgParts.Username -ne $knownAppUser) {
             Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
-            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "hangfire"
             Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
         }
     }

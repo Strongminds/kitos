@@ -115,7 +115,6 @@ try {
             Ensure-PostgresRole -parts $hangfireParts -roleName $knownAppUser
             Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "hangfire"
             Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "public"
-            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "dbo"
         }
     }
 }
