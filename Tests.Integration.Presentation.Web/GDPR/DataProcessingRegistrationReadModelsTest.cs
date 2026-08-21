@@ -223,6 +223,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dprName = A<string>();
             var contractName = A<string>();
             var organizationUuid = DefaultOrgUuid;
+            var before1 = DateTime.UtcNow;
             var dpr = await CreateDPRAsync(organizationUuid, dprName);
 
             var contract = await CreateItContractAsync(organizationUuid, contractName);
@@ -235,7 +236,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     MainContractUuid = contract.Uuid
                 });
 
-            var before1 = DateTime.UtcNow;
             await WaitForReadModelQueueDepletion(before1);
             await ItContractV2Helper.DeleteContractAsync(await GetGlobalToken(), contract.Uuid);
             var before2 = DateTime.UtcNow;
@@ -258,10 +258,10 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var organizationUuid = DefaultOrgUuid;
             var isAgreementConcluded = YesNoIrrelevantChoice.Yes;
             var agreementConcludedAt = DateTime.SpecifyKind(A<DateTime>().Date.AddHours(12), DateTimeKind.Utc);
+            var before = DateTime.UtcNow;
 
             var registration = await CreateDPRAsync(organizationUuid, name);
 
-            var before = DateTime.UtcNow;
             await DataProcessingRegistrationV2Helper.SendPatchGeneralDataAsync(await GetGlobalToken(),
                 registration.Uuid, new DataProcessingRegistrationGeneralDataWriteRequestDTO
                 {
@@ -292,6 +292,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Arrange
             var name = A<string>();
             var organizationUuid = DefaultOrgUuid;
+            var before1 = DateTime.UtcNow;
 
             var registration = await CreateDPRAsync(organizationUuid, name);
             var registrationId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
@@ -299,7 +300,6 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(organizationUuid);
             var user = availableUsers.First();
             var roleRequest = new RoleAssignmentRequestDTO { RoleUuid = role.Uuid, UserUuid = user.Uuid };
-            var before1 = DateTime.UtcNow;
             using var response1 = await DataProcessingRegistrationV2Helper.SendPatchAddRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
 
