@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: kitos-databases-backup-disabled
+  name: kitos-databases-daily
   namespace: kitos
   labels:
     app.kubernetes.io/managed-by: easyhosting
@@ -9,8 +9,10 @@ metadata:
     easyhosting.io/resource-id: "3d41c24a0af84c85a86d77591cf3a563"
     easyhosting.io/application-id: "kitos"
 spec:
-  suspend: true
   schedule: "0 0 0 * * *"
   backupOwnerReference: self
   cluster:
     name: kitos-databases
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io

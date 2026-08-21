@@ -20,6 +20,12 @@ spec:
       owner: postgres
   storage:
     size: 5Gi
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: true
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: kitos-databases-backup-store
   managed:
     roles:
           - name: kitos
