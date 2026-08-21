@@ -6,3 +6,4 @@ resources:
   - network-policy.yaml
   - databases/dev-db
   - databases/hangfire-dev-db
+  - databases/pubsub-dev-db
