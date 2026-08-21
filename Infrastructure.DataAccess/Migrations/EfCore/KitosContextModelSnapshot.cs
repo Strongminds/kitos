@@ -11722,13 +11722,13 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasOne("Core.DomainModel.ItSystemUsage.ItSystemUsage", null)
                         .WithMany()
                         .HasForeignKey("ItSystemUsage_Id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.DomainModel.Organization.TaskRef", null)
                         .WithMany()
                         .HasForeignKey("TaskRef_Id")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

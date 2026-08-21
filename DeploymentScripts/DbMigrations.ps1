@@ -235,26 +235,27 @@ END
     Invoke-PostgresSql -parts $parts -database "postgres" -sql $sql
 }
 
-# Grants full access on the dbo schema and all its objects to the named user.
-# Needed when the script runs as a superuser (e.g. postgres) while the application connects as a
-# lower-privileged user (e.g. kitos): the dbo schema would otherwise be owned by the
-# superuser and the application user would receive "permission denied for schema dbo".
-Function Grant-PostgresDboSchemaPrivileges([hashtable]$parts, [string]$granteeUser) {
+# Grants full access on a schema and all its objects to the named user.
+Function Grant-PostgresSchemaPrivileges([hashtable]$parts, [string]$granteeUser, [string]$schemaName) {
     if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
+    if ([string]::IsNullOrWhiteSpace($schemaName)) { return }
 
-    Write-Host "Granting dbo schema privileges to '$granteeUser'"
+    Write-Host "Granting $schemaName schema privileges to '$granteeUser'"
     $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
     $escapedDatabaseName = $parts.Database.Replace("'", "''").Replace('"', '""')
+    $escapedSchemaName = $schemaName.Replace("'", "''").Replace('"', '""')
     $sql = @"
 DO `$`$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
         EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
-        GRANT USAGE, CREATE ON SCHEMA dbo TO "$escapedUsername";
-        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dbo TO "$escapedUsername";
-        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dbo TO "$escapedUsername";
-        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON TABLES TO "$escapedUsername";
-        ALTER DEFAULT PRIVILEGES IN SCHEMA dbo GRANT ALL ON SEQUENCES TO "$escapedUsername";
+        IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = '$escapedSchemaName') THEN
+            EXECUTE 'GRANT USAGE, CREATE ON SCHEMA "$escapedSchemaName" TO "$escapedUsername"';
+            EXECUTE 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "$escapedSchemaName" TO "$escapedUsername"';
+            EXECUTE 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "$escapedSchemaName" TO "$escapedUsername"';
+            EXECUTE 'ALTER DEFAULT PRIVILEGES IN SCHEMA "$escapedSchemaName" GRANT ALL ON TABLES TO "$escapedUsername"';
+            EXECUTE 'ALTER DEFAULT PRIVILEGES IN SCHEMA "$escapedSchemaName" GRANT ALL ON SEQUENCES TO "$escapedUsername"';
+        END IF;
     END IF;
 END
 `$`$;
@@ -388,13 +389,14 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
 
     # When the script runs as a superuser (e.g. postgres) but the application connects as a
     # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
-    # Grant the known app user access so the running application is not blocked.
-    # Must run after migrations so the dbo schema already exists.
+    # Grant the known app user access so the running applications are not blocked.
+    # Must run after migrations so the target schema already exists.
     # This is a no-op when the script already runs as the app user (kitos owns the schema).
     if ($newDb -eq $true) {
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
         if ($pgParts.Username -ne $knownAppUser) {
-            Grant-PostgresDboSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser
+            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
+            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
         }
     }
 }

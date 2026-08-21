@@ -40,8 +40,8 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasMany(t => t.ItSystemUsagesOptOut)
                 .WithMany(t => t.TaskRefsOptOut)
                 .UsingEntity(
-                    l => l.HasOne(typeof(Core.DomainModel.ItSystemUsage.ItSystemUsage)).WithMany().HasForeignKey("ItSystemUsage_Id").OnDelete(DeleteBehavior.NoAction),
-                    r => r.HasOne(typeof(TaskRef)).WithMany().HasForeignKey("TaskRef_Id").OnDelete(DeleteBehavior.NoAction),
+                    l => l.HasOne(typeof(Core.DomainModel.ItSystemUsage.ItSystemUsage)).WithMany().HasForeignKey("ItSystemUsage_Id").OnDelete(DeleteBehavior.Cascade),
+                    r => r.HasOne(typeof(TaskRef)).WithMany().HasForeignKey("TaskRef_Id").OnDelete(DeleteBehavior.Cascade),
                     j => { j.ToTable("TaskRefItSystemUsageOptOut"); j.HasKey("ItSystemUsage_Id", "TaskRef_Id"); });
 
             builder.Property(x => x.TaskKey)
