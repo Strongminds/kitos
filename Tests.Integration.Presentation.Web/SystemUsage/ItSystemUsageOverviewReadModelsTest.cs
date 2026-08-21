@@ -1089,6 +1089,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
             var organizationUuid = DefaultOrgUuid;
 
             var systemName = A<string>();
+            var before1 = DateTime.UtcNow;
             var system = await CreateItSystemAsync(organizationUuid, systemName);
             var systemUsage = await TakeSystemIntoUsageAsync(system.Uuid, organizationUuid);
 
@@ -1097,7 +1098,6 @@ namespace Tests.Integration.Presentation.Web.SystemUsage
                 organizationUuid);
             var availableUsers = await OrganizationV2Helper.GetUsersInOrganization(organizationUuid);
             var user = availableUsers.First();
-            var before1 = DateTime.UtcNow;
             using var assignRoleResponse = await ItSystemUsageV2Helper.SendPatchAddRoleAssignment(
                 await GetGlobalToken(), systemUsage.Uuid, new RoleAssignmentRequestDTO
                 {
