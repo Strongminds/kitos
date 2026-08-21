@@ -113,29 +113,9 @@ try {
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
         if ($hangfireParts.Username -ne $knownAppUser) {
             Ensure-PostgresRole -parts $hangfireParts -roleName $knownAppUser
-            $escapedUsername = $knownAppUser.Replace("'", "''").Replace('"', '""')
-            $escapedDatabaseName = $hangfireParts.Database.Replace("'", "''").Replace('"', '""')
-            $grantDatabaseSql = @"
-GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername";
-"@
-
-            Invoke-PostgresSql -parts $hangfireParts -database "postgres" -sql $grantDatabaseSql
-
-            foreach ($schema in @("public", "dbo")) {
-                $schemaExistsSql = "SELECT 1 FROM information_schema.schemata WHERE schema_name = '$schema'"
-                $psqlPath = Get-PostgresCliPath
-                $Env:PGPASSWORD = $hangfireParts.Password
-                $schemaExists = (& $psqlPath -h $hangfireParts.Host -p $hangfireParts.Port -U $hangfireParts.Username -d $hangfireParts.Database -tAc $schemaExistsSql | Out-String).Trim()
-                Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
-
-                if ($schemaExists -eq "1") {
-                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "GRANT USAGE, CREATE ON SCHEMA $schema TO `"$escapedUsername`""
-                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $schema TO `"$escapedUsername`""
-                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA $schema TO `"$escapedUsername`""
-                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON TABLES TO `"$escapedUsername`""
-                    Invoke-PostgresSql -parts $hangfireParts -database $hangfireParts.Database -sql "ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON SEQUENCES TO `"$escapedUsername`""
-                }
-            }
+            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "hangfire"
+            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "public"
+            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "dbo"
         }
     }
 }
