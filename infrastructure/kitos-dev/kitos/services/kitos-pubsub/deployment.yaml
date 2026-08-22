@@ -48,7 +48,10 @@ spec:
           value: Development
         image: '{will be replaced by build pipeline}'
         name: kitos-pubsub
-        ports: []
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
         resources:
           limits:
             memory: 512Mi
