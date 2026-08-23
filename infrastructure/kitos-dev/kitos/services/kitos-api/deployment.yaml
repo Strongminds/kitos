@@ -92,5 +92,14 @@ spec:
           requests:
             memory: 128Mi
             cpu: 100m
+        volumeMounts:
+        - mountPath: /temp
+          name: kitos-api-volume
+          readOnly: false
       imagePullSecrets:
       - name: 90d73529-a238-405b-a079-3eea2e8e36e6
+      volumes:
+      - name: kitos-api-volume
+        persistentVolumeClaim:
+          claimName: kitos-api-volume
+          readOnly: false
