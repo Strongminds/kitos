@@ -1,4 +1,4 @@
-﻿using Core.DomainModel;
+using Core.DomainModel;
 using Core.DomainModel.Organization;
 using System;
 using System.Collections.Generic;
@@ -45,10 +45,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var name2 = $"2_{suffix}";
             var name3 = $"3_{suffix}";
 
+            var before = DateTime.UtcNow;
             await CreateDPRAsync(organizationUuid, name1);
             await CreateDPRAsync(organizationUuid, name2);
             await CreateDPRAsync(organizationUuid, name3);
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before);
 
             //Act
             var page1 = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, suffix, 2, 0)).ToList();
@@ -92,6 +93,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var regId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
 
             var token = await HttpApi.GetTokenAsync(OrganizationRole.GlobalAdmin);
+            var before = DateTime.UtcNow;
             var oversight = new OversightDateDTO { CompletedAt = oversightDate, Remark = oversightRemark, OversightReportLink = new SimpleLinkDTO(){ Url = oversightReportLink, Name = oversightReportLinkName }};
 
             var businessRoleDtos = await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationRoles, organizationUuid, 25, 0);
@@ -163,7 +165,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             using var assignSystemResponse = await DataProcessingRegistrationV2Helper.PatchSystemsAsync(registration.Uuid, usage.Uuid.WrapAsEnumerable());
             Assert.Equal(HttpStatusCode.OK, assignSystemResponse.StatusCode);
 
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before);
 
             //Act
             var readModels = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, name, 1, 0)).ToList();
@@ -221,6 +223,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var dprName = A<string>();
             var contractName = A<string>();
             var organizationUuid = DefaultOrgUuid;
+            var before1 = DateTime.UtcNow;
             var dpr = await CreateDPRAsync(organizationUuid, dprName);
 
             var contract = await CreateItContractAsync(organizationUuid, contractName);
@@ -233,9 +236,10 @@ namespace Tests.Integration.Presentation.Web.GDPR
                     MainContractUuid = contract.Uuid
                 });
 
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before1);
             await ItContractV2Helper.DeleteContractAsync(await GetGlobalToken(), contract.Uuid);
-            await WaitForReadModelQueueDepletion();
+            var before2 = DateTime.UtcNow;
+            await WaitForReadModelQueueDepletion(before2);
 
             //Act
             var readModels = await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, dprName, 1, 0);
@@ -254,6 +258,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             var organizationUuid = DefaultOrgUuid;
             var isAgreementConcluded = YesNoIrrelevantChoice.Yes;
             var agreementConcludedAt = DateTime.SpecifyKind(A<DateTime>().Date.AddHours(12), DateTimeKind.Utc);
+            var before = DateTime.UtcNow;
 
             var registration = await CreateDPRAsync(organizationUuid, name);
 
@@ -265,7 +270,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
                 });
 
             //Wait for read model to rebuild (wait for the LAST mutation)
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before);
 
             //Act
             var result = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, name, 1, 0)).ToList();
@@ -287,6 +292,7 @@ namespace Tests.Integration.Presentation.Web.GDPR
             //Arrange
             var name = A<string>();
             var organizationUuid = DefaultOrgUuid;
+            var before1 = DateTime.UtcNow;
 
             var registration = await CreateDPRAsync(organizationUuid, name);
             var registrationId = DatabaseAccess.GetEntityId<DataProcessingRegistration>(registration.Uuid);
@@ -297,13 +303,14 @@ namespace Tests.Integration.Presentation.Web.GDPR
             using var response1 = await DataProcessingRegistrationV2Helper.SendPatchAddRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
 
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before1);
 
+            var before2 = DateTime.UtcNow;
             using var response2 =
                 await DataProcessingRegistrationV2Helper.SendPatchRemoveRoleAssignment(registration.Uuid, roleRequest);
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before2);
 
             //Act
             var result = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, name, 1, 0)).ToList();
@@ -327,10 +334,11 @@ namespace Tests.Integration.Presentation.Web.GDPR
 
             var registration = await CreateDPRAsync(organizationUuid, name);
             var (userUuid, _, cookie) = await HttpApi.CreateUserAndLogin(email, orgRole, organizationUuid);
+            var before = DateTime.UtcNow;
             using var response = await DataProcessingRegistrationV2Helper.SendPatchName(cookie, registration.Uuid, newName);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            await WaitForReadModelQueueDepletion();
+            await WaitForReadModelQueueDepletion(before);
 
             //Act
             var result = (await DataProcessingRegistrationV2Helper.QueryReadModelByNameContent(organizationUuid, newName, 1, 0)).ToList();
@@ -346,9 +354,9 @@ namespace Tests.Integration.Presentation.Web.GDPR
         {
             Assert.Equal(expected?.Date, actual?.Date);
         }
-        private static async Task WaitForReadModelQueueDepletion()
+        private static async Task WaitForReadModelQueueDepletion(DateTime? createdAfter = null)
         {
-            await ReadModelTestTools.WaitForReadModelQueueDepletion();
+            await ReadModelTestTools.WaitForReadModelQueueDepletion(createdAfter);
         }
     }
 }
