@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel.Organization;
 using Core.DomainModel;
+using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Tests.Toolkit.Patterns;
@@ -11,6 +13,25 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 {
     public class BaseResponseMapperTest : WithAutoFixture
     {
+        [Fact]
+        public void MapShallowOrganizationResponseWithDisabledStateDTO_Maps_Disabled_State()
+        {
+            var organization = new Organization
+            {
+                Uuid = A<Guid>(),
+                Name = A<string>(),
+                Cvr = A<string>(),
+                Disabled = true
+            };
+
+            var dto = organization.MapShallowOrganizationResponseWithDisabledStateDTO();
+
+            Assert.Equal(organization.Uuid, dto.Uuid);
+            Assert.Equal(organization.Name, dto.Name);
+            Assert.Equal(organization.Cvr, dto.Cvr);
+            Assert.True(dto.Disabled);
+        }
+
         protected static void AssertOrganization(Organization organization, ShallowOrganizationResponseDTO? shallowOrganizationDTO)
         {
             AssertIdentity(organization, shallowOrganizationDTO);

@@ -151,6 +151,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.True(actualSubDataProcessors.TryGetValue(expectedSubDataProcessor.Key, out _));
                 var actualSubDataProcessor = actualSubDataProcessors[expectedSubDataProcessor.Key];
                 AssertOrganization(expectedSubDataProcessor.Value.Organization, actualSubDataProcessor.DataProcessorOrganization);
+                Assert.Equal(expectedSubDataProcessor.Value.Organization.Disabled, actualSubDataProcessor.DataProcessorOrganization.Disabled);
                 AssertOptionalIdentity(expectedSubDataProcessor.Value.SubDataProcessorBasisForTransfer, actualSubDataProcessor.BasisForTransfer);
                 AssertYesNoUndecided(expectedSubDataProcessor.Value.TransferToInsecureCountry, actualSubDataProcessor.TransferToInsecureThirdCountry);
                 AssertOptionalIdentity(expectedSubDataProcessor.Value.InsecureCountry, actualSubDataProcessor.InsecureThirdCountrySubjectToDataProcessing);
@@ -302,7 +303,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
 
         private Organization CreateOrganization()
         {
-            return new Organization { Name = A<string>(), Cvr = A<string>(), Uuid = A<Guid>() };
+            return new Organization { Name = A<string>(), Cvr = A<string>(), Uuid = A<Guid>(), Disabled = A<bool>() };
         }
 
         private SubDataProcessor CreateSubDataProcessor(DataProcessingRegistration dataProcessingRegistration, bool withBasisForTransfer, bool withTransferToInsecureThirdCountry, bool withCountry)
