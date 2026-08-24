@@ -105,7 +105,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
                 TransferToInsecureThirdCountries = MapYesNoUndecided(dataProcessingRegistration.TransferToInsecureThirdCountries),
                 BasisForTransfer = dataProcessingRegistration.BasisForTransfer?.MapIdentityNamePairDTO(),
                 InsecureCountriesSubjectToDataTransfer = dataProcessingRegistration.InsecureCountriesSubjectToDataTransfer?.Select(x => x.MapIdentityNamePairDTO()).ToList()!,
-                DataProcessors = dataProcessingRegistration.DataProcessors?.Select(x => x.MapShallowOrganizationResponseDTO()).ToList()!,
+                DataProcessors = dataProcessingRegistration.DataProcessors?.Select(x => x.MapShallowOrganizationResponseWithDisabledStateDTO()).ToList()!,
                 HasSubDataProcessors = MapYesNoUndecided(dataProcessingRegistration.HasSubDataProcessors),
                 SubDataProcessors = dataProcessingRegistration.AssignedSubDataProcessors?.Select(ToSubDataProcessorDTO).ToList()!,
                 MainContract = dataProcessingRegistration.MainContract?.MapIdentityNamePairDTO(),
@@ -130,7 +130,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         {
             return new DataProcessorRegistrationSubDataProcessorResponseDTO()
             {
-                DataProcessorOrganization = organization.Organization.MapShallowOrganizationResponseDTO(),
+                DataProcessorOrganization = organization.Organization.MapShallowOrganizationResponseWithDisabledStateDTO(),
                 BasisForTransfer = organization.SubDataProcessorBasisForTransfer?.MapIdentityNamePairDTO(),
                 TransferToInsecureThirdCountry = organization.TransferToInsecureCountry?.ToYesNoUndecidedChoice(),
                 InsecureThirdCountrySubjectToDataProcessing = organization.InsecureCountry?.MapIdentityNamePairDTO()

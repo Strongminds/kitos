@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Presentation.Web.Models.API.V2.Response.Generic.Identity;
+﻿using Presentation.Web.Models.API.V2.Response.Generic.Identity;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Types.Shared;
 
@@ -10,7 +9,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// The data processor's organization in KITOS
         /// </summary>
-        public required ShallowOrganizationResponseDTO DataProcessorOrganization { get; set; }
+        public required ShallowOrganizationResponseWithDisabledStateDTO DataProcessorOrganization { get; set; }
         /// <summary>
         /// Optional reference to selected basis for transfer option
         /// </summary>
