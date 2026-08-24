@@ -1,7 +1,14 @@
+.$PSScriptRoot\DbMigrations.ps1
+
 Function Run-Pubsub-DB-Migrations(
     [string]$connectionString,
     [string]$provider = "PostgreSql"
 ) {
+    if (Is-PostgreSqlProvider $provider) {
+        $connectionString = Normalize-PostgresConnectionString -connectionString $connectionString
+        New-PostgresDatabase -connectionString $connectionString
+    }
+
     $dataAccessFolder = Resolve-Path "$PSScriptRoot\..\PubSub.Infrastructure.DataAccess"
 
     # Set the environment variables for the design-time factory

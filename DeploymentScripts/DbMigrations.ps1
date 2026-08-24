@@ -75,26 +75,59 @@ Function Get-PostgresCliPath {
     throw "PostgreSQL provider requires psql to be installed and available on PATH."
 }
 
+Function Set-PostgresCliEnvironment([hashtable]$parts) {
+    $state = @{
+        HadPgPassword = Test-Path Env:PGPASSWORD
+        PgPassword    = $Env:PGPASSWORD
+        HadPgSslMode  = Test-Path Env:PGSSLMODE
+        PgSslMode     = $Env:PGSSLMODE
+        SetPgSslMode  = $parts.SslMode -and $parts.SslMode.Equals("Disable", [System.StringComparison]::OrdinalIgnoreCase)
+    }
+
+    $Env:PGPASSWORD = $parts.Password
+    if ($state.SetPgSslMode) {
+        $Env:PGSSLMODE = "disable"
+    }
+
+    return $state
+}
+
+Function Restore-PostgresCliEnvironment([hashtable]$state) {
+    if ($state.HadPgPassword) {
+        $Env:PGPASSWORD = $state.PgPassword
+    } else {
+        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+    }
+
+    if ($state.SetPgSslMode) {
+        if ($state.HadPgSslMode) {
+            $Env:PGSSLMODE = $state.PgSslMode
+        } else {
+            Remove-Item Env:PGSSLMODE -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 Function Invoke-PostgresSql([hashtable]$parts, [string]$database, [string]$sql) {
     $psqlPath = Get-PostgresCliPath
-    $Env:PGPASSWORD = $parts.Password
+    $postgresCliEnvironment = Set-PostgresCliEnvironment -parts $parts
     try {
         & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d $database -v ON_ERROR_STOP=1 -c $sql
         if ($LASTEXITCODE -ne 0) { throw "psql failed executing SQL" }
     } finally {
-        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+        Restore-PostgresCliEnvironment -state $postgresCliEnvironment
     }
 }
 
 Function Invoke-PostgresSqlFileInternal([hashtable]$parts, [string]$sqlFilePath) {
     $normalizedSqlPath = Get-NormalizedPostgresSqlFile -sqlFilePath $sqlFilePath
     $psqlPath = Get-PostgresCliPath
-    $Env:PGPASSWORD = $parts.Password
+    $postgresCliEnvironment = Set-PostgresCliEnvironment -parts $parts
     try {
         & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d $parts.Database -v ON_ERROR_STOP=1 -f $normalizedSqlPath
         if ($LASTEXITCODE -ne 0) { throw "psql failed executing $normalizedSqlPath" }
     } finally {
-        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+        Restore-PostgresCliEnvironment -state $postgresCliEnvironment
         if ($normalizedSqlPath -ne $sqlFilePath) {
             Remove-Item -Path $normalizedSqlPath -ErrorAction SilentlyContinue
         }
@@ -172,18 +205,21 @@ Function New-PostgresDatabase([string]$connectionString) {
     $escapedDatabaseNameForIdentifier = $parts.Database.Replace('"', '""')
     $escapedDatabaseNameForLiteral = $parts.Database.Replace("'", "''")
     $existsQuery = "SELECT 1 FROM pg_database WHERE datname = '$escapedDatabaseNameForLiteral'"
+    $createDatabaseSql = "CREATE DATABASE `"$escapedDatabaseNameForIdentifier`""
     $psqlPath = Get-PostgresCliPath
 
-    $Env:PGPASSWORD = $parts.Password
+    $postgresCliEnvironment = Set-PostgresCliEnvironment -parts $parts
     try {
         $existsOutput = (& $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -tAc $existsQuery | Out-String)
+        if ($LASTEXITCODE -ne 0) { throw "psql failed checking whether database $($parts.Database) exists" }
+
         $exists = if ($existsOutput) { $existsOutput.Trim() } else { "" }
         if ($exists -ne "1") {
-            & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE `"$escapedDatabaseNameForIdentifier`""
+            $createDatabaseSql | & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -v ON_ERROR_STOP=1
             if ($LASTEXITCODE -ne 0) { throw "psql failed creating database $($parts.Database)" }
         }
     } finally {
-        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
+        Restore-PostgresCliEnvironment -state $postgresCliEnvironment
     }
 }
 
@@ -291,10 +327,8 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # resolves provider/connection from environment variables).
     $startupProject = $infraProject
 
-    if ($newDb -eq $true) {
-        Write-Host "New PostgreSQL database detected - ensuring database exists"
-        New-PostgresDatabase -connectionString $connectionString
-    }
+    Write-Host "Ensuring PostgreSQL database exists"
+    New-PostgresDatabase -connectionString $connectionString
 
     # Expose the connection string via the standard .NET env var so the
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
