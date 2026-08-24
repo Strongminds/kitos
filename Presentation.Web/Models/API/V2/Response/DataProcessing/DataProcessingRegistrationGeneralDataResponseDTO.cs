@@ -44,7 +44,7 @@ namespace Presentation.Web.Models.API.V2.Response.DataProcessing
         /// <summary>
         /// UUID's of the organization entities selected as data processors
         /// </summary>
-        public required IEnumerable<ShallowOrganizationResponseDTO> DataProcessors { get; set; }
+        public required IEnumerable<ShallowOrganizationResponseWithDisabledStateDTO> DataProcessors { get; set; }
         /// <summary>
         /// Determines if the data processing involves sub data processors
         /// </summary>

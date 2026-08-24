@@ -192,7 +192,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/data-processors/available")]
-        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseWithDisabledStateDTO>), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
@@ -209,7 +209,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
             return _dataProcessingRegistrationService
                 .GetDataProcessorsWhichCanBeAssigned(idResult.Value, nameQuery, pageSize)
-                .Match(organizations => Ok(organizations.Select(x => x.MapShallowOrganizationResponseDTO()).ToList()), FromOperationError);
+                .Match(organizations => Ok(organizations.Select(x => x.MapShallowOrganizationResponseWithDisabledStateDTO()).ToList()), FromOperationError);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/sub-data-processors/available")]
-        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(typeof(IEnumerable<ShallowOrganizationResponseWithDisabledStateDTO>), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
@@ -237,7 +237,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.DataProcessingRegistratio
 
             return _dataProcessingRegistrationService
                 .GetSubDataProcessorsWhichCanBeAssigned(idResult.Value, nameQuery, pageSize)
-                .Match(organizations => Ok(organizations.Select(x => x.MapShallowOrganizationResponseDTO()).ToList()), FromOperationError);
+                .Match(organizations => Ok(organizations.Select(x => x.MapShallowOrganizationResponseWithDisabledStateDTO()).ToList()), FromOperationError);
         }
 
         /// <summary>
