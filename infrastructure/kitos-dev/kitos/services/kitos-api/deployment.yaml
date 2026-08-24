@@ -43,9 +43,15 @@ spec:
         - name: Hangfire__Provider
           value: PostgreSql
         - name: ConnectionStrings__KitosContext
-          value: Host=dev-db-rw;Port=5432;Database=dev-db;Username=kitos;Password=localNoSecret;
+          valueFrom:
+            secretKeyRef:
+              key: KitosDbConnectionString
+              name: user-secret
         - name: ConnectionStrings__kitos_HangfireDB
-          value: Host=hangfire-dev-db-rw;Port=5432;Database=hangfire-dev-db;Username=kitos;Password=lolcaNoSecret;
+          valueFrom:
+            secretKeyRef:
+              key: HangfireDbConnectionString
+              name: user-secret
         - name: AppSettings__BaseUrl
           value: 'https://eh-kitos-dev.strongminds.dk '
         - name: AppSettings__PubSubBaseUrl
@@ -73,7 +79,7 @@ spec:
             secretKeyRef:
               key: SmtpPassword
               name: user-secret
-        image: ghcr.io/strongminds/kitos-kitos-api:sha-7d44db9665686de9dc663c29475e742fdaa4aa3e
+        image: ghcr.io/strongminds/kitos-kitos-api:sha-86ca6040a3ff9b85685977597f4fbff5b9de0b41
         name: kitos-api
         ports:
         - containerPort: 8080
@@ -86,5 +92,14 @@ spec:
           requests:
             memory: 128Mi
             cpu: 100m
+        volumeMounts:
+        - mountPath: /temp
+          name: kitos-api-volume
+          readOnly: false
       imagePullSecrets:
       - name: 90d73529-a238-405b-a079-3eea2e8e36e6
+      volumes:
+      - name: kitos-api-volume
+        persistentVolumeClaim:
+          claimName: kitos-api-volume
+          readOnly: false

@@ -2,20 +2,20 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   labels:
-    app.kubernetes.io/name: kitos-pubsub-2
+    app.kubernetes.io/name: kitos-pubsub
     app.kubernetes.io/component: service
     app.kubernetes.io/part-of: kitos
     app.kubernetes.io/managed-by: easy-hosting
     network-policy.kubernetes.io/type: egress
     network-policy.kubernetes.io/purpose: allow-egress
-  name: kitos-pubsub-2-allow-all-egress
+  name: kitos-pubsub-allow-all-egress
   namespace: kitos
 spec:
   egress:
   - {}
   podSelector:
     matchLabels:
-      app: kitos-pubsub-2
+      app: kitos-pubsub
   policyTypes:
   - Egress
 ---
@@ -23,13 +23,13 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   labels:
-    app.kubernetes.io/name: kitos-pubsub-2
+    app.kubernetes.io/name: kitos-pubsub
     app.kubernetes.io/component: service
     app.kubernetes.io/part-of: kitos
     app.kubernetes.io/managed-by: easy-hosting
     network-policy.kubernetes.io/type: ingress
     network-policy.kubernetes.io/purpose: allow-namespace
-  name: kitos-pubsub-2-allow-from-namespace
+  name: kitos-pubsub-allow-from-namespace
   namespace: kitos
 spec:
   egress:
@@ -43,7 +43,7 @@ spec:
       protocol: TCP
   podSelector:
     matchLabels:
-      app: kitos-pubsub-2
+      app: kitos-pubsub
   policyTypes:
   - Ingress
   - Egress
@@ -52,13 +52,13 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   labels:
-    app.kubernetes.io/name: kitos-pubsub-2
+    app.kubernetes.io/name: kitos-pubsub
     app.kubernetes.io/component: service
     app.kubernetes.io/part-of: kitos
     app.kubernetes.io/managed-by: easy-hosting
     network-policy.kubernetes.io/type: ingress
     network-policy.kubernetes.io/purpose: allow-lb
-  name: kitos-pubsub-2-allow-public
+  name: kitos-pubsub-allow-public
   namespace: kitos
 spec:
   ingress:
@@ -74,6 +74,6 @@ spec:
       protocol: TCP
   podSelector:
     matchLabels:
-      app: kitos-pubsub-2
+      app: kitos-pubsub
   policyTypes:
   - Ingress

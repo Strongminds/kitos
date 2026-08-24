@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: easy-hosting-issuer
-  name: kitos-pubsub-2
+  name: kitos-pubsub
   namespace: kitos
 spec:
   rules:
@@ -12,17 +12,17 @@ spec:
       paths:
       - backend:
           service:
-            name: kitos-pubsub-2
+            name: kitos-pubsub
             port:
               name: http
         path: /
         pathType: Prefix
-  - host: 38693b73-57a3-4209-bea0-06215de53e07.kitos-dev.strongminds.easyhosting.strongminds.dev
+  - host: d7a6b46d-b788-420b-8ff7-b66d369fd63b.kitos-dev.strongminds.easyhosting.strongminds.dev
     http:
       paths:
       - backend:
           service:
-            name: kitos-pubsub-2
+            name: kitos-pubsub
             port:
               name: http
         path: /
@@ -32,5 +32,5 @@ spec:
     - kitos-pubsub.strongminds.tech
     secretName: kitos-pubsub-strongminds-tech-tls
   - hosts:
-    - 38693b73-57a3-4209-bea0-06215de53e07.kitos-dev.strongminds.easyhosting.strongminds.dev
-    secretName: 38693b73-57a3-4209-bea0-06215de53e07-kitos-dev-strongminds-easyhosting-strongminds-dev-tls
+    - d7a6b46d-b788-420b-8ff7-b66d369fd63b.kitos-dev.strongminds.easyhosting.strongminds.dev
+    secretName: d7a6b46d-b788-420b-8ff7-b66d369fd63b-kitos-dev-strongminds-easyhosting-strongminds-dev-tls

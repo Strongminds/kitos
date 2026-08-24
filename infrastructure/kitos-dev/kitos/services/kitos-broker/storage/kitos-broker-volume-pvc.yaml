@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: kitos-api-storage
+  name: kitos-broker-volume
   namespace: kitos
 spec:
   accessModes:

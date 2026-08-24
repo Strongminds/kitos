@@ -3,24 +3,24 @@ kind: Deployment
 metadata:
   annotations:
     easyhosting.io/service-reference: PubSub.Application.Api/Dockerfile
-    easyhosting.io/service-unique-id: 38693b73-57a3-4209-bea0-06215de53e07
-    easyhosting.io/easy-hosting-domain-name: 38693b73-57a3-4209-bea0-06215de53e07.kitos-dev.strongminds.easyhosting.strongminds.dev
+    easyhosting.io/service-unique-id: d7a6b46d-b788-420b-8ff7-b66d369fd63b
+    easyhosting.io/easy-hosting-domain-name: d7a6b46d-b788-420b-8ff7-b66d369fd63b.kitos-dev.strongminds.easyhosting.strongminds.dev
   labels:
-    app: kitos-pubsub-2
-  name: kitos-pubsub-2
+    app: kitos-pubsub
+  name: kitos-pubsub
   namespace: kitos
 spec:
   replicas: 1
   revisionHistoryLimit: 1
   selector:
     matchLabels:
-      app: kitos-pubsub-2
+      app: kitos-pubsub
   template:
     metadata:
       annotations:
         sidecar.opentelemetry.io/inject: "false"
       labels:
-        app: kitos-pubsub-2
+        app: kitos-pubsub
     spec:
       containers:
       - env:
@@ -46,8 +46,8 @@ spec:
               name: user-secret
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
-        image: ghcr.io/strongminds/kitos-kitos-pubsub-2:sha-7d44db9665686de9dc663c29475e742fdaa4aa3e
-        name: kitos-pubsub-2
+        image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-86ca6040a3ff9b85685977597f4fbff5b9de0b41
+        name: kitos-pubsub
         ports:
         - containerPort: 8080
           name: http
