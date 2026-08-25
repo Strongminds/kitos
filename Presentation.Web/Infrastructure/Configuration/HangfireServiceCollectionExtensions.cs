@@ -40,34 +40,17 @@ namespace Presentation.Web.Infrastructure.Configuration
         private static void EnsureHangfireDatabaseCreated(string hangfireConnectionString)
         {
             var csb = new NpgsqlConnectionStringBuilder(hangfireConnectionString);
-            var databaseName = csb.Database;
-            if (string.IsNullOrWhiteSpace(databaseName))
+            if (string.IsNullOrWhiteSpace(csb.Database))
                 throw new InvalidOperationException("Hangfire PostgreSQL connection string must include a database name.");
 
-            csb.Database = "postgres";
-
-            using var connection = new NpgsqlConnection(csb.ConnectionString);
-            connection.Open();
-            using var existsCmd = connection.CreateCommand();
-            existsCmd.CommandText = "SELECT 1 FROM pg_database WHERE datname = @dbName";
-            existsCmd.Parameters.AddWithValue("dbName", databaseName);
-
-            var exists = existsCmd.ExecuteScalar() != null;
-            if (!exists)
-            {
-                using var createCmd = connection.CreateCommand();
-                createCmd.CommandText = $"CREATE DATABASE \"{databaseName.Replace("\"", "\"\"")}\"";
-                createCmd.ExecuteNonQuery();
-            }
-
-            // Ensure schema exists; Hangfire.PostgreSql will create/migrate its own tables.
-            csb.Database = databaseName;
-            using var hangfireConnection = new NpgsqlConnection(csb.ConnectionString);
+            // The Hangfire database is created by the deployment setup script before the app starts.
+            // Connecting to the postgres maintenance DB as the app user is not supported in all
+            // environments (the app user may only have access to its own databases).
+            // Just ensure the hangfire schema exists; Hangfire.PostgreSql will create its own tables.
+            using var hangfireConnection = new NpgsqlConnection(hangfireConnectionString);
             hangfireConnection.Open();
             using var bootstrapCmd = hangfireConnection.CreateCommand();
-            bootstrapCmd.CommandText = """
-                CREATE SCHEMA IF NOT EXISTS hangfire;
-                """;
+            bootstrapCmd.CommandText = "CREATE SCHEMA IF NOT EXISTS hangfire;";
             bootstrapCmd.ExecuteNonQuery();
         }
 
