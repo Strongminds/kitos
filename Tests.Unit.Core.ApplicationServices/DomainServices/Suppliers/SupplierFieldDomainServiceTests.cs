@@ -1,6 +1,8 @@
 ﻿using Core.Abstractions.Helpers;
 using Core.DomainModel.GDPR;
+using Core.DomainServices.Repositories.Organization;
 using Core.DomainServices.Suppliers;
+using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -9,6 +11,8 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
     public class SupplierFieldDomainServiceTests : WithAutoFixture
     {
         private SupplierFieldDomainService _sut;
+
+        private Mock<IOrganizationRepository> _organizationRepository;
 
         private readonly string _isOversightCompleted =
             ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted);
@@ -21,8 +25,30 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
 
         public SupplierFieldDomainServiceTests()
         {
-            _sut = new SupplierFieldDomainService();
+            _organizationRepository = new Mock<IOrganizationRepository>();
+            _sut = new SupplierFieldDomainService(_organizationRepository.Object);
         }
+
+        [Fact]
+        public void IsSupplierControlled_ShouldReturnTrue_ForSupplierControlledField()
+        {
+            // Act
+            var result = _sut.IsSupplierControlled(_isOversightCompleted);
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void IsSupplierControlled_ShouldReturnFalse_ForNonSupplierControlledField()
+        {
+            // Arrange
+            var nonSupplierControlledProperty = A<string>();
+            // Act
+            var result = _sut.IsSupplierControlled(nonSupplierControlledProperty);
+            // Assert
+            Assert.False(result);
+        }
+
 
         [Fact]
         public void OnlySupplierFieldChanges_ShouldReturnTrue_WhenAllPropertiesAreSupplierControlled()
@@ -51,26 +77,6 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             };
             // Act
             var result = _sut.ContainsOnlySupplierControlledField(properties);
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void IsSupplierControlled_ShouldReturnTrue_ForSupplierControlledField()
-        {
-            // Act
-            var result = _sut.IsSupplierControlled(_isOversightCompleted);
-            // Assert
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void IsSupplierControlled_ShouldReturnFalse_ForNonSupplierControlledField()
-        {
-            // Arrange
-            var nonSupplierControlledProperty = A<string>();
-            // Act
-            var result = _sut.IsSupplierControlled(nonSupplierControlledProperty);
             // Assert
             Assert.False(result);
         }

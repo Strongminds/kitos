@@ -3,6 +3,7 @@ using Core.DomainModel.GDPR;
 using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainServices.Repositories.Organization;
 
 namespace Core.DomainServices.Suppliers
 {
@@ -10,8 +11,9 @@ namespace Core.DomainServices.Suppliers
     {
         private readonly ISet<string> _supplierOnlyControlledFieldKeys;
         private readonly ISet<string> _sharedFieldKeys;
+        private readonly IOrganizationRepository _organizationRepository;
 
-        public SupplierFieldDomainService()
+        public SupplierFieldDomainService(IOrganizationRepository organizationRepository)
         {
             _supplierOnlyControlledFieldKeys = new HashSet<string>
             {
@@ -30,6 +32,7 @@ namespace Core.DomainServices.Suppliers
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment)
             };
+            _organizationRepository = organizationRepository;
         }
 
         public bool ContainsOnlySupplierControlledField(IEnumerable<string> properties)
