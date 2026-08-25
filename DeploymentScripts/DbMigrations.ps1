@@ -271,6 +271,25 @@ END
     Invoke-PostgresSql -parts $parts -database "postgres" -sql $sql
 }
 
+# Grants CONNECT on the postgres maintenance database to the named user.
+# Required so the app can connect to postgres to check/create its own databases at startup.
+Function Grant-PostgresMaintenanceDbConnect([hashtable]$parts, [string]$granteeUser) {
+    if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
+
+    Write-Host "Granting CONNECT on postgres maintenance DB to '$granteeUser'"
+    $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
+    $sql = @"
+DO `$`$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
+        EXECUTE 'GRANT CONNECT ON DATABASE postgres TO "$escapedUsername"';
+    END IF;
+END
+`$`$;
+"@
+    Invoke-PostgresSql -parts $parts -database "postgres" -sql $sql
+}
+
 # Grants full access on a schema and all its objects to the named user.
 Function Grant-PostgresSchemaPrivileges([hashtable]$parts, [string]$granteeUser, [string]$schemaName) {
     if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
@@ -432,5 +451,8 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
         Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
         Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
+        # The app connects to the postgres maintenance DB at startup to check/create the Hangfire DB.
+        # Grant CONNECT so the restricted app user can perform that check.
+        Grant-PostgresMaintenanceDbConnect -parts $pgParts -granteeUser $knownAppUser
     }
 }
