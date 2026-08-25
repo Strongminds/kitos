@@ -215,7 +215,7 @@ Function New-PostgresDatabase([string]$connectionString) {
 
         $exists = if ($existsOutput) { $existsOutput.Trim() } else { "" }
         if ($exists -ne "1") {
-            $createDatabaseSql | & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -v ON_ERROR_STOP=1
+            & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -v ON_ERROR_STOP=1 -c $createDatabaseSql
             if ($LASTEXITCODE -ne 0) { throw "psql failed creating database $($parts.Database)" }
         }
     } finally {
