@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
+using Core.DomainModel.SupplierAssociatedFields;
 
 
 namespace Core.DomainServices.Repositories.Organization
@@ -12,5 +14,7 @@ namespace Core.DomainServices.Repositories.Organization
         Maybe<DomainModel.Organization.Organization> GetByCvr(string cvrNumber);
         Maybe<DomainModel.Organization.Organization> GetByUuid(Guid uuid);
         void Update(DomainModel.Organization.Organization organization);
+
+        Maybe<ICollection<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfiguraitons(Guid organizationUuid);
     }
 }

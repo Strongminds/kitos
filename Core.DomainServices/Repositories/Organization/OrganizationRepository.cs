@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Extensions;
 
 
@@ -44,6 +47,16 @@ namespace Core.DomainServices.Repositories.Organization
         {
             _genericRepository.Update(organization);
             _genericRepository.Save();
+        }
+
+        public Maybe<ICollection<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfiguraitons(Guid organizationUuid)
+        {
+            var organizationMaybe = GetByUuid(organizationUuid);
+            if (organizationMaybe.IsNone) return Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None;
+            var supplierAssociatedFieldConfigurations = organizationMaybe.Value.SupplierAssociatedFieldConfigurations;
+            return supplierAssociatedFieldConfigurations.IsNullOrEmpty()
+                ? Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None
+                : Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.Some(supplierAssociatedFieldConfigurations);
         }
     }
 }

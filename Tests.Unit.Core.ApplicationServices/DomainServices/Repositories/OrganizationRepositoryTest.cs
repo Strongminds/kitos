@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices;
 using Core.DomainServices.Repositories.Organization;
 using Moq;
@@ -17,6 +19,37 @@ namespace Tests.Unit.Core.DomainServices.Repositories
         {
             _genericRepository = new Mock<IGenericRepository<Organization>>();
             _sut = new OrganizationRepository(_genericRepository.Object);
+        }
+
+        [Fact]
+        public void GetSupplierAssociatedFieldConfigurations_Returns_None_If_Empty()
+        {
+            var uuid = A<Guid>();
+            var organization = CreateOrganization();
+            organization.Uuid = uuid;
+            organization.SupplierAssociatedFieldConfigurations = [];
+            ExpectRepositoryContent(organization);
+
+            var result = _sut.GetSupplierAssociatedFieldConfiguraitons(uuid);
+
+            Assert.True(result.IsNone);
+        }
+
+        [Fact]
+        public void GetSupplierAssociatedFieldConfigurations_Returns_Configurations_If_Any()
+        {
+            var uuid = A<Guid>();
+            var organization = CreateOrganization();
+            organization.Uuid = uuid;
+            var expected = new SupplierAssociatedFieldConfiguration() { ControlState = A<SupplierAssociatedFieldControlState>(), FieldKey = A<string>() };
+            organization.SupplierAssociatedFieldConfigurations = [expected];
+            ExpectRepositoryContent(organization);
+
+            var result = _sut.GetSupplierAssociatedFieldConfiguraitons(uuid);
+
+            Assert.True(result.HasValue);
+            var value = result.Value;
+            Assert.Single(value, expected);
         }
 
         [Fact]
