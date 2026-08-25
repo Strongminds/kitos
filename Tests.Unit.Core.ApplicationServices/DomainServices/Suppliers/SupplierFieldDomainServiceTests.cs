@@ -56,6 +56,50 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             Assert.False(result);
         }
 
+        [Fact]
+        public void IsSupplierControlled_ShouldOverrideSharedDefault_WhenOrganizationConfigurationExists()
+        {
+            var orgUuid = A<Guid>();
+            var expectedConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightReportLinkName, ControlState = SupplierAssociatedFieldControlState.SUPPLIER }
+            };
+            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+            
+            var result = _sut.IsSupplierControlled(_oversightReportLinkName, orgUuid);
+            
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void IsSupplierControlled_ShouldOverrideSupplierDefault_WhenOrganizationConfigurationExists()
+        {
+            var orgUuid = A<Guid>();
+            var expectedConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION }
+            };
+            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+            
+            var result = _sut.IsSupplierControlled(_isOversightCompleted, orgUuid);
+            
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void IsSupplierControlled_ShouldReturnTrue_ForDefaultSupplierControlledField_WhenOrganizationConfigurationExistsOnlyForOtherFields()
+        {
+            var orgUuid = A<Guid>();
+            var expectedConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new SupplierAssociatedFieldConfiguration { FieldKey = _remark, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION }
+            };
+            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+
+            var result = _sut.IsSupplierControlled(_isOversightCompleted, orgUuid);
+
+            Assert.True(result);
+        }
 
         [Fact]
         public void OnlySupplierFieldChanges_ShouldReturnTrue_WhenAllPropertiesAreSupplierControlled()
