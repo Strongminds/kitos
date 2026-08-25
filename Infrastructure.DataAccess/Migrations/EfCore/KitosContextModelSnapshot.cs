@@ -7780,7 +7780,32 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.ToTable("BrokenLinkInInterfaces", "dbo");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.RecommendedFields.SupplierAssociatedFieldConfiguration", b =>
+            modelBuilder.Entity("Core.DomainModel.SSO.SsoUserIdentity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ExternalUuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("User_Id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalUuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ExternalUuid");
+
+                    b.HasIndex("User_Id");
+
+                    b.ToTable("SsoUserIdentities", "dbo");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.SupplierAssociatedFields.SupplierAssociatedFieldConfiguration", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -7812,34 +7837,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.HasIndex("ObjectOwnerId");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasIndex("OrganizationId", "FieldKey")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OrganizationId_SupplierAssociatedFieldConfiguration_FieldKey");
 
                     b.ToTable("SupplierAssociatedFieldConfiguration", "dbo");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.SSO.SsoUserIdentity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("ExternalUuid")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("User_Id")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalUuid")
-                        .IsUnique()
-                        .HasDatabaseName("UX_ExternalUuid");
-
-                    b.HasIndex("User_Id");
-
-                    b.ToTable("SsoUserIdentities", "dbo");
                 });
 
             modelBuilder.Entity("Core.DomainModel.Text", b =>
@@ -11533,7 +11535,18 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ParentReport");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.RecommendedFields.SupplierAssociatedFieldConfiguration", b =>
+            modelBuilder.Entity("Core.DomainModel.SSO.SsoUserIdentity", b =>
+                {
+                    b.HasOne("Core.DomainModel.User", "User")
+                        .WithMany("SsoIdentities")
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.SupplierAssociatedFields.SupplierAssociatedFieldConfiguration", b =>
                 {
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
                         .WithMany()
@@ -11554,17 +11567,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ObjectOwner");
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Core.DomainModel.SSO.SsoUserIdentity", b =>
-                {
-                    b.HasOne("Core.DomainModel.User", "User")
-                        .WithMany("SsoIdentities")
-                        .HasForeignKey("User_Id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Core.DomainModel.Text", b =>
