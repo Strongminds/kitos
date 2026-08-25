@@ -64,7 +64,10 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
     private bool CheckForNonSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity);
+        var organizationUuid = entity.Organization?.Uuid;
+        if (!organizationUuid.HasValue) return false;
+
+        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity, organizationUuid.Value);
         if (anySupplierChanges) return false;
         return _authorizationContext.AllowModify(entity);
     }

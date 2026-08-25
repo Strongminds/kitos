@@ -111,7 +111,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             };
 
             // Act
-            var result = _sut.ContainsOnlySupplierControlledField(properties);
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties);
 
             // Assert
             Assert.True(result);
@@ -127,30 +127,32 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
                 _isOversightCompleted, nonSupplierControlledProperty
             };
             // Act
-            var result = _sut.ContainsOnlySupplierControlledField(properties);
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties);
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void AnySupplierFieldChanges_ShouldReturnTrue_WhenAnyPropertyIsSupplierControlled()
+        public void AnySupplierFieldChanges_ShouldReturnTrue_WhenAnyPropertyIsDefaultSupplierControlled_AndNoOrganizationConfig()
         {
             // Arrange
+            var orgUuid = SetupExpectNoConfigurations();
             var nonSupplierControlledProperty = A<string>();
             var properties = new[]
             {
                 nonSupplierControlledProperty, _remark
             };
             // Act
-            var result = _sut.ContainsAnySupplierControlledFields(properties);
+            var result = _sut.ContainsAnySupplierControlledFields(properties, orgUuid);
             // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void AnySupplierFieldChanges_ShouldReturnFalse_WhenNoPropertyIsSupplierControlled()
+        public void AnySupplierFieldChanges_ShouldReturnFalse_WhenNoPropertyIsDefaultSupplierControlled_AndNoOrganizationConfig()
         {
             // Arrange
+            var orgUuid = SetupExpectNoConfigurations();
             var nonSupplierControlledProperty1 = A<string>();
             var nonSupplierControlledProperty2 = A<string>();
             var properties = new[]
@@ -158,7 +160,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
                 nonSupplierControlledProperty1, nonSupplierControlledProperty2
             };
             // Act
-            var result = _sut.ContainsAnySupplierControlledFields(properties);
+            var result = _sut.ContainsAnySupplierControlledFields(properties, orgUuid);
             // Assert
             Assert.False(result);
         }

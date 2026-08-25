@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Abstractions.Types;
@@ -24,12 +24,15 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private readonly SupplierAssociatedFieldsService _sut;
         private readonly int _dprId;
         private readonly DataProcessingRegistration _existingDpr;
+        private readonly Guid _organizationUuid;
         private readonly Mock<ISupplierFieldDomainService> _supplierDomainServiceMock;
         private readonly Mock<ISupplierAssociatedFieldKeyMapper> _mapperMock;
         public SupplierAssociatedFieldsServiceTest()
         {
            _dprId = A<int>();
-           _existingDpr = new DataProcessingRegistration() { Id = _dprId };
+           _organizationUuid = A<Guid>();
+           var org = new Core.DomainModel.Organization.Organization { Uuid = _organizationUuid };
+           _existingDpr = new DataProcessingRegistration() { Id = _dprId, Organization = org };
            _supplierDomainServiceMock = new Mock<ISupplierFieldDomainService>();
            _mapperMock = new Mock<ISupplierAssociatedFieldKeyMapper>();
            _sut = new SupplierAssociatedFieldsService(_supplierDomainServiceMock.Object, _mapperMock.Object);
@@ -54,7 +57,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             ExpectAnySupplierChangesReturns(keys, true);
 
             //Act
-            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr, _organizationUuid);
 
             //Assert
             Assert.True(result);
@@ -181,7 +184,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, false);
 
-            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr, _organizationUuid);
 
             Assert.False(result);
         }
@@ -201,7 +204,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 ExpectAnySupplierChangesReturns(keys, false);
                 ExpectOnlySupplierChangesReturns(keys, false);
 
-                hasAnySupplierChanges = _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
+                hasAnySupplierChanges = _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr, _organizationUuid);
                 hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
             }
             else
@@ -220,7 +223,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 ExpectOnlySupplierChangesReturns(keys, false);
 
                 hasAnySupplierChanges =
-                    _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr);
+                    _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr, _organizationUuid);
                 hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
             }
 
@@ -239,7 +242,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, true);
 
-            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr, _organizationUuid);
             Assert.True(result);
         }
 
@@ -261,7 +264,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectOnlySupplierChangesReturns(keys, false);
                 
-            var requestsChangesToSupplierAssociatedFields = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
+            var requestsChangesToSupplierAssociatedFields = _sut.HasAnySupplierChangesList(parametersList, _existingDpr, _organizationUuid);
 
             Assert.False(requestsChangesToSupplierAssociatedFields);
         }
@@ -282,7 +285,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, true);
 
-            var result = _sut.HasAnySupplierChangesList(parametersList, _existingDpr);
+            var result = _sut.HasAnySupplierChangesList(parametersList, _existingDpr, _organizationUuid);
 
             Assert.True(result);
         }
@@ -302,7 +305,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(), _existingDpr);
             ExpectAnySupplierChangesReturns(keys, true);
 
-            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr);
+            var result = _sut.HasAnySupplierChanges(parameters, _existingDpr, _organizationUuid);
 
             Assert.True(result);
         }
@@ -310,7 +313,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         private void ExpectOnlySupplierChangesReturns(IEnumerable<string> keys, bool result)
         {
             _supplierDomainServiceMock
-                .Setup(x => x.ContainsOnlySupplierControlledField(
+                .Setup(x => x.ContainsOnlySupplierControlledAndSharedFields(
                     It.Is<IEnumerable<string>>(actualKeys =>
                         actualKeys.All(keys.Contains)
                     )
@@ -324,7 +327,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             _supplierDomainServiceMock.Setup(x => x.ContainsAnySupplierControlledFields(
                     It.Is<IEnumerable<string>>(actualKeys =>
                         actualKeys.All(keys.Contains)
-                    )))
+                    ),
+                    It.IsAny<Guid>()))
                 .Returns(result);
         }
 

@@ -186,7 +186,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         private void ExpectHasAnySupplierChangesReturns(bool expectedResult, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)
         {
-            _supplierAssociatedFieldsService.Setup(_ => _.HasAnySupplierChanges(parameters.Object, entity)).Returns(expectedResult);
+            _supplierAssociatedFieldsService.Setup(_ => _.HasAnySupplierChanges(parameters.Object, entity, It.IsAny<Guid>())).Returns(expectedResult);
         }
 
         private void ExpectHasOnlySupplierChangesReturns(bool expectedResult, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)

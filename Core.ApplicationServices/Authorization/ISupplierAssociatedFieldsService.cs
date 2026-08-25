@@ -7,9 +7,9 @@ namespace Core.ApplicationServices.Authorization
 {
     public interface ISupplierAssociatedFieldsService
     {
-        bool HasAnySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity);
+        bool HasAnySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity, Guid organizationUuid);
         bool HasOnlySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity);
-        bool HasAnySupplierChangesList(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity);
+        bool HasAnySupplierChangesList(IEnumerable<ISupplierAssociatedEntityUpdateParameters> parametersEnumerable, IEntity entity, Guid organizationUuid);
         bool RequestsDeleteToEntity<TEntity>(TEntity entity);
         bool IsFieldSupplierControlled(string key, Guid organizationUuid);
     }
