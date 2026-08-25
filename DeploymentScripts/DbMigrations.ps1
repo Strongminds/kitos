@@ -455,5 +455,22 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
         # The app connects to the postgres maintenance DB at startup to check/create the Hangfire DB.
         # Grant CONNECT so the restricted app user can perform that check.
         Grant-PostgresMaintenanceDbConnect -parts $pgParts -granteeUser $knownAppUser
+
+        # Ensure Hangfire DB exists before attempting database-level grants on it.
+        $hangfireConnectionString = if ($Env:HangfireDbConnectionStringForTeamCity) {
+            $Env:HangfireDbConnectionStringForTeamCity
+        } elseif ($Env:HangfireDbConnectionStringForIIsApp) {
+            $Env:HangfireDbConnectionStringForIIsApp
+        } else {
+            $null
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($hangfireConnectionString) -and (LooksLikePostgreSqlConnectionString $hangfireConnectionString)) {
+            Write-Host "Ensuring Hangfire PostgreSQL database exists before granting privileges"
+            New-PostgresDatabase -connectionString $hangfireConnectionString
+            $hangfireParts = ConvertTo-PostgresConnectionParts $hangfireConnectionString
+            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "hangfire"
+            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "public"
+        }
     }
 }
