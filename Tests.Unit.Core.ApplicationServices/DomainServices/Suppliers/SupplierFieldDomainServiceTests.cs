@@ -162,20 +162,23 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             Assert.True(result);
         }
 
-        [Fact]
-        public void ContainsAnySupplierControlledFields_ShouldReturnFalse_WhenAllSupplierDefaultsAreOverriddenToOrganization()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ContainsAnySupplierControlledFields_ShouldReturnFalse_WhenAllSupplierDefaultsAreOverriddenToNonSupplier(bool useShared)
         {
+            var state = useShared ? SupplierAssociatedFieldControlState.SHARED : SupplierAssociatedFieldControlState.ORGANIZATION;
             // Arrange - override all 8 SUPPLIER defaults to ORGANIZATION
             var allSupplierDefaults = new[]
             {
-                new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightDate, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _remark, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightReportLink, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightOptionId, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _containsAITechnology, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _systemUsageCriticalityLevel, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION },
-                new SupplierAssociatedFieldConfiguration { FieldKey = _preriskAssessment, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION }
+                new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightDate, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _remark, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightReportLink, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightOptionId, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _containsAITechnology, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _systemUsageCriticalityLevel, ControlState = state },
+                new SupplierAssociatedFieldConfiguration { FieldKey = _preriskAssessment, ControlState = state }
             };
             var orgUuid = SetupExpectConfiguration(allSupplierDefaults);
             var properties = new[] { _isOversightCompleted, _oversightDate, _remark, _oversightReportLink, _oversightOptionId, _containsAITechnology, _systemUsageCriticalityLevel, _preriskAssessment };
