@@ -3,6 +3,7 @@ using Core.DomainModel.GDPR;
 using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Repositories.Organization;
 
 namespace Core.DomainServices.Suppliers
@@ -11,6 +12,7 @@ namespace Core.DomainServices.Suppliers
     {
         private readonly ISet<string> _supplierOnlyControlledFieldKeys;
         private readonly ISet<string> _sharedFieldKeys;
+        private readonly IEnumerable<SupplierAssociatedFieldConfiguration> _defaultFieldConfigurations;
         private readonly IOrganizationRepository _organizationRepository;
 
         public SupplierFieldDomainService(IOrganizationRepository organizationRepository)
@@ -32,8 +34,25 @@ namespace Core.DomainServices.Suppliers
                 ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName),
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment)
             };
+
+            _defaultFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightOptionId), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName), ControlState = SupplierAssociatedFieldControlState.SHARED },
+                new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment), ControlState = SupplierAssociatedFieldControlState.SHARED },
+            };
+
             _organizationRepository = organizationRepository;
         }
+
+        public IEnumerable<SupplierAssociatedFieldConfiguration> GetDefaultFieldConfigurations => _defaultFieldConfigurations;
 
         public bool ContainsOnlySupplierControlledField(IEnumerable<string> properties)
         {
