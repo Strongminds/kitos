@@ -6,6 +6,7 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Repositories.Organization;
 using System;
+using Core.Abstractions.Types;
 
 namespace Core.DomainServices.Suppliers
 {
@@ -37,19 +38,12 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsOnlySupplierControlledField(IEnumerable<string> properties)
         {
-            return properties.All(x => IsSupplierControlledInDefaultConfigurations(x) || HasSharedAccess(x));
+            return properties.All(x => IsSupplierControlledInDefaultConfigurations(x) || HasSharedAccessInDefaultConfigurations(x));
         }
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties)
         {
             return properties.Any(IsSupplierControlledInDefaultConfigurations);
-        }
-
-        private bool HasSharedAccess(string key)
-        {
-            var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
-            if (configuration == null) return false;
-            return configuration.HasSharedControlState;
         }
 
         public bool IsSupplierControlled(string key, Guid organizationUuid)
@@ -64,9 +58,21 @@ namespace Core.DomainServices.Suppliers
                 : organizationalField.HasSupplierControlState;
         }
 
+        private SupplierAssociatedFieldConfiguration? TryGetFromDefaultConfiguration(string key)
+        {
+            return _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
+        }
+
+        private bool HasSharedAccessInDefaultConfigurations(string key)
+        {
+            var configuration = TryGetFromDefaultConfiguration(key);
+            if (configuration == null) return false;
+            return configuration.HasSharedControlState;
+        }
+
         private bool IsSupplierControlledInDefaultConfigurations(string key)
         {
-            var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
+            var configuration = TryGetFromDefaultConfiguration(key);
             if (configuration == null) return false;
             return configuration.HasSupplierControlState;
         }
