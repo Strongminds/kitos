@@ -169,31 +169,6 @@
 	Copy-Item ".\TEMP_PresentationWeb\App.config" ".\TEMP_PresentationWeb\Presentation.Web.dll.config" -Force
 	Write-Host "Copied App.config → Presentation.Web.dll.config"
 
-	# Enable stdout logging for non-production environments so startup failures are captured.
-	# HTTP 500.30 errors produce no output without this because the app hasn't started yet.
-	$webConfigPath = ".\TEMP_PresentationWeb\Web.config"
-	if ($environmentName -in @("dev", "integration") -and (Test-Path $webConfigPath)) {
-		$webConfigXml = New-Object System.Xml.XmlDocument
-		$webConfigXml.PreserveWhitespace = $true
-		$webConfigXml.Load((Resolve-Path $webConfigPath))
-		$aspNetCore = $webConfigXml.SelectSingleNode("//*[local-name()='aspNetCore']")
-		if ($aspNetCore -ne $null) {
-			$aspNetCore.SetAttribute("stdoutLogEnabled", "true")
-			if (-not $aspNetCore.HasAttribute("stdoutLogFile")) {
-				$aspNetCore.SetAttribute("stdoutLogFile", ".\logs\stdout")
-			}
-			$webConfigXml.Save((Resolve-Path $webConfigPath))
-				# Ensure the logs directory exists in the package so IIS can write stdout logs.
-				$logsDir = ".\TEMP_PresentationWeb\logs"
-				if (-not (Test-Path $logsDir)) {
-					New-Item -ItemType Directory -Path $logsDir | Out-Null
-				}
-				Write-Host "Enabled stdoutLogEnabled in Web.config for environment '$environmentName'"
-		} else {
-			Write-Warning "aspNetCore element not found in Web.config — stdout logging not enabled"
-		}
-	}
-
 	# Handle environment-specific robots file (was previously done via msdeploy -replace)
 	$wwwroot = ".\TEMP_PresentationWeb\wwwroot"
 	$robotsSource = Join-Path $wwwroot $Env:robots

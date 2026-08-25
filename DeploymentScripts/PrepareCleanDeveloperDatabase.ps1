@@ -207,3 +207,73 @@ Invoke-PostgresSql -parts $hangfirePartsCheck -database $hangfirePartsCheck.Data
 
 Write-Host ""
 Write-Host "=== END DB PERMISSION DIAGNOSTICS ==="
+
+#-------------------------------------------------------------
+Write-Host ""
+Write-Host "=== IIS APP CONNECTION STRING DIAGNOSTICS ==="
+# The IIS app uses KitosDbConnectionStringForIIsApp / HangfireDbConnectionStringForIIsApp,
+# which are different SSM values from the TeamCity strings used above.
+# Verify these can actually connect — a mismatch here is the most likely remaining cause.
+#-------------------------------------------------------------
+
+$iisKitosCs    = $Env:KitosDbConnectionStringForIIsApp
+$iisHangfireCs = $Env:HangfireDbConnectionStringForIIsApp
+
+if ([string]::IsNullOrWhiteSpace($iisKitosCs)) {
+    Write-Warning "[IIS] KitosDbConnectionStringForIIsApp is not set — skipping IIS connection checks"
+} else {
+    $iisKitosParts    = ConvertTo-PostgresConnectionParts $iisKitosCs
+    $iisHangfireParts = ConvertTo-PostgresConnectionParts $iisHangfireCs
+
+    Write-Host "IIS Kitos CS:    Host=$($iisKitosParts.Host) Port=$($iisKitosParts.Port) DB=$($iisKitosParts.Database) User=$($iisKitosParts.Username)"
+    Write-Host "IIS Hangfire CS: Host=$($iisHangfireParts.Host) Port=$($iisHangfireParts.Port) DB=$($iisHangfireParts.Database) User=$($iisHangfireParts.Username)"
+    Write-Host ""
+
+    # Test: IIS user can connect to kitos DB
+    Write-Host "--- [IIS-1] IIS kitos DB connect test ---"
+    try {
+        Invoke-PostgresSql -parts $iisKitosParts -database $iisKitosParts.Database -sql "SELECT current_user, current_database();"
+        Write-Host "OK: IIS user can connect to kitos DB"
+    } catch {
+        Write-Warning "FAIL: IIS user cannot connect to kitos DB: $_"
+    }
+
+    # Test: IIS user can connect to postgres maintenance DB (needed at app startup)
+    Write-Host ""
+    Write-Host "--- [IIS-2] IIS user CONNECT on postgres maintenance DB ---"
+    try {
+        Invoke-PostgresSql -parts $iisKitosParts -database "postgres" -sql "SELECT current_user, current_database();"
+        Write-Host "OK: IIS user can connect to postgres maintenance DB"
+    } catch {
+        Write-Warning "FAIL: IIS user cannot connect to postgres maintenance DB: $_"
+    }
+
+    # Test: IIS user can connect to hangfire DB
+    Write-Host ""
+    Write-Host "--- [IIS-3] IIS hangfire DB connect test ---"
+    try {
+        Invoke-PostgresSql -parts $iisHangfireParts -database $iisHangfireParts.Database -sql "SELECT current_user, current_database();"
+        Write-Host "OK: IIS user can connect to hangfire DB"
+    } catch {
+        Write-Warning "FAIL: IIS user cannot connect to hangfire DB: $_"
+    }
+
+    # Test: IIS user privileges on postgres maintenance DB
+    Write-Host ""
+    Write-Host "--- [IIS-4] IIS user privileges ---"
+    $iisUser = $iisKitosParts.Username
+    $iisPrivSql = @"
+SELECT
+    has_database_privilege('$iisUser', 'postgres', 'CONNECT')          AS pg_connect,
+    has_database_privilege('$iisUser', '$($iisKitosParts.Database)', 'CONNECT')     AS kitos_connect,
+    has_database_privilege('$iisUser', '$($iisHangfireParts.Database)', 'CONNECT')  AS hangfire_connect;
+"@
+    try {
+        Invoke-PostgresSql -parts $iisKitosParts -database "postgres" -sql $iisPrivSql
+    } catch {
+        Write-Warning "FAIL: Could not check IIS user privileges: $_"
+    }
+}
+
+Write-Host ""
+Write-Host "=== END IIS APP CONNECTION STRING DIAGNOSTICS ==="
