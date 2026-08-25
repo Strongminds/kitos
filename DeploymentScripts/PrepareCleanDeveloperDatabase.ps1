@@ -143,3 +143,67 @@ Write-Host "Creating test database"
                     "$systemIntegratorEmail" "$systemIntegratorPw"
 
 if($LASTEXITCODE -ne 0)	{ Throw "FAILED TO CREATE TEST DATABASE" }
+
+#-------------------------------------------------------------
+Write-Host ""
+Write-Host "=== DB PERMISSION DIAGNOSTICS ==="
+#-------------------------------------------------------------
+
+$kitosUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
+$kitosParts  = ConvertTo-PostgresConnectionParts $kitosDbConnectionString
+$hangfirePartsCheck = ConvertTo-PostgresConnectionParts $hangfireDbConnectionString
+
+Write-Host "App user being checked: '$kitosUser'"
+Write-Host "Kitos DB:    $($kitosParts.Database) on $($kitosParts.Host):$($kitosParts.Port)"
+Write-Host "Hangfire DB: $($hangfirePartsCheck.Database) on $($hangfirePartsCheck.Host):$($hangfirePartsCheck.Port)"
+Write-Host ""
+
+# 1. Role exists and can login
+Write-Host "--- [1] Role existence and login ---"
+$roleCheckSql = "SELECT rolname, rolcanlogin, rolcreatedb FROM pg_roles WHERE rolname = '$kitosUser';"
+Invoke-PostgresSql -parts $kitosParts -database "postgres" -sql $roleCheckSql
+
+# 2. CONNECT on postgres maintenance DB (needed by EnsureHangfireDatabaseCreated at app startup)
+Write-Host ""
+Write-Host "--- [2] CONNECT privilege on postgres maintenance DB ---"
+$pgConnectSql = "SELECT has_database_privilege('$kitosUser', 'postgres', 'CONNECT') AS can_connect_postgres;"
+Invoke-PostgresSql -parts $kitosParts -database "postgres" -sql $pgConnectSql
+
+# 3. Privileges on kitos DB
+Write-Host ""
+Write-Host "--- [3] Privileges on kitos DB '$($kitosParts.Database)' ---"
+$kitosDbPrivSql = "SELECT has_database_privilege('$kitosUser', '$($kitosParts.Database)', 'CONNECT') AS connect, has_database_privilege('$kitosUser', '$($kitosParts.Database)', 'CREATE') AS create;"
+Invoke-PostgresSql -parts $kitosParts -database "postgres" -sql $kitosDbPrivSql
+
+# 4. Schema privileges in kitos DB
+Write-Host ""
+Write-Host "--- [4] Schema privileges in kitos DB ---"
+$kitosSchemaPrivSql = @"
+SELECT schema_name,
+       has_schema_privilege('$kitosUser', schema_name, 'USAGE') AS usage,
+       has_schema_privilege('$kitosUser', schema_name, 'CREATE') AS create
+FROM information_schema.schemata
+WHERE schema_name IN ('dbo', 'public');
+"@
+Invoke-PostgresSql -parts $kitosParts -database $kitosParts.Database -sql $kitosSchemaPrivSql
+
+# 5. Privileges on hangfire DB
+Write-Host ""
+Write-Host "--- [5] Privileges on hangfire DB '$($hangfirePartsCheck.Database)' ---"
+$hangfireDbPrivSql = "SELECT has_database_privilege('$kitosUser', '$($hangfirePartsCheck.Database)', 'CONNECT') AS connect, has_database_privilege('$kitosUser', '$($hangfirePartsCheck.Database)', 'CREATE') AS create;"
+Invoke-PostgresSql -parts $hangfirePartsCheck -database "postgres" -sql $hangfireDbPrivSql
+
+# 6. Schema privileges in hangfire DB
+Write-Host ""
+Write-Host "--- [6] Schema privileges in hangfire DB ---"
+$hangfireSchemaPrivSql = @"
+SELECT schema_name,
+       has_schema_privilege('$kitosUser', schema_name, 'USAGE') AS usage,
+       has_schema_privilege('$kitosUser', schema_name, 'CREATE') AS create
+FROM information_schema.schemata
+WHERE schema_name IN ('hangfire', 'public');
+"@
+Invoke-PostgresSql -parts $hangfirePartsCheck -database $hangfirePartsCheck.Database -sql $hangfireSchemaPrivSql
+
+Write-Host ""
+Write-Host "=== END DB PERMISSION DIAGNOSTICS ==="
