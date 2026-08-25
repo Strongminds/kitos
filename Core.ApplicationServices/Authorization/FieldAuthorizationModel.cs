@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
 
@@ -68,7 +69,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
         return _authorizationContext.AllowModify(entity);
     }
 
-    public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key)
+    public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key, Guid organizationUuid)
     {
         if (_activeUserContext.IsGlobalAdmin()) 
             return new FieldPermissionsResult{ Enabled = true, Key = key};
@@ -82,6 +83,6 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
             return new FieldPermissionsResult { Enabled = true, Key = key };
 
         return new FieldPermissionsResult
-                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key) == false, Key = key };
+                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key, organizationUuid) == false, Key = key };
     }
 }

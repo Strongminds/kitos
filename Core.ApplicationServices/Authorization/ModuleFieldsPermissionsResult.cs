@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
@@ -20,34 +21,34 @@ namespace Core.ApplicationServices.Authorization
             };
         }
 
-        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromDPRResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<DataProcessingRegistration, OperationError> dprResult)
+        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromDPRResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<DataProcessingRegistration, OperationError> dprResult, Guid organizationUuid)
         {
             return dprResult.Select(dpr =>
                 Create(new List<FieldPermissionsResult>
                 {
                     fieldAuthorizationModel.GetFieldPermissions(dpr, ObjectHelper
                         .GetPropertyPath<DataProcessingRegistration>(
-                            x => x.IsOversightCompleted)),
+                            x => x.IsOversightCompleted), organizationUuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightDate)),
+                                x => x.OversightDate), organizationUuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightRemark)),
+                                x => x.OversightRemark), organizationUuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightReportLink)),
+                                x => x.OversightReportLink), organizationUuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightReportLinkName)),
+                                x => x.OversightReportLinkName), organizationUuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightOptionId))
+                                x => x.OversightOptionId), organizationUuid)
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (
@@ -56,16 +57,16 @@ namespace Core.ApplicationServices.Authorization
             );
         }
 
-        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromUsageResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<ItSystemUsage, OperationError> usageResult)
+        public static Result<ModuleFieldsPermissionsResult, OperationError> CreateFromUsageResult(IFieldAuthorizationModel fieldAuthorizationModel, Result<ItSystemUsage, OperationError> usageResult, Guid organizationUuid)
         {
             return usageResult.Select(usage =>
                 Create(new List<FieldPermissionsResult>
                 {
                     fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper
                         .GetPropertyPath<ItSystemUsage>(
-                            x => x.ContainsAITechnology)),
-                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel)),
-                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment))
+                            x => x.ContainsAITechnology), organizationUuid),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel), organizationUuid),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment), organizationUuid)
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (

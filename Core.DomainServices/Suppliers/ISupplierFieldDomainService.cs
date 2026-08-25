@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Core.DomainServices.Suppliers
 {
@@ -6,6 +7,6 @@ namespace Core.DomainServices.Suppliers
     {
         bool ContainsOnlySupplierControlledField(IEnumerable<string> properties);
         bool ContainsAnySupplierControlledFields(IEnumerable<string> properties);
-        bool IsSupplierControlled(string key);
+        bool IsSupplierControlled(string key, Guid organizationUuid);
     }
 }

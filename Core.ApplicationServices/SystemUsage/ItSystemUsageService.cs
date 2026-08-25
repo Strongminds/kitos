@@ -219,13 +219,13 @@ namespace Core.ApplicationServices.SystemUsage
                 .Match<Result<ItSystemUsage, OperationError>>(usage => usage, () => new OperationError(OperationFailure.NotFound));
         }
 
-        public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid)
+        public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid, Guid organizationUuid)
         {
             return GetItSystemUsageByUuidAndAuthorizeRead(uuid)
                 .Transform(result => ResourcePermissionsResult.FromResolutionResult(result, _authorizationContext).Bind(permissions =>
                 {
                     return ModuleFieldsPermissionsResult
-                        .CreateFromUsageResult(_fieldAuthorizationModel, result)
+                        .CreateFromUsageResult(_fieldAuthorizationModel, result, organizationUuid)
                         .Select(fieldPermissions =>
                             new CombinedPermissionsResult(permissions, fieldPermissions)
                         );

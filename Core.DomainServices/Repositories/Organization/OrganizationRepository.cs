@@ -49,7 +49,7 @@ namespace Core.DomainServices.Repositories.Organization
             _genericRepository.Save();
         }
 
-        public Maybe<ICollection<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfiguraitons(Guid organizationUuid)
+        public Maybe<ICollection<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid)
         {
             var organizationMaybe = GetByUuid(organizationUuid);
             if (organizationMaybe.IsNone) return Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None;

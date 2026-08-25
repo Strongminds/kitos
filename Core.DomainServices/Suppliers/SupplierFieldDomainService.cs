@@ -5,6 +5,7 @@ using System.Linq;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Repositories.Organization;
+using System;
 
 namespace Core.DomainServices.Suppliers
 {
@@ -36,12 +37,12 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsOnlySupplierControlledField(IEnumerable<string> properties)
         {
-            return properties.All(x => IsSupplierControlled(x) || HasSharedAccess(x));
+            return properties.All(x => IsSupplierControlledInDefaultConfigurations(x) || HasSharedAccess(x));
         }
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties)
         {
-            return properties.Any(IsSupplierControlled);
+            return properties.Any(IsSupplierControlledInDefaultConfigurations);
         }
 
         private bool HasSharedAccess(string key)
@@ -51,11 +52,16 @@ namespace Core.DomainServices.Suppliers
             return configuration.ControlState == SupplierAssociatedFieldControlState.SHARED;
         }
 
-        public bool IsSupplierControlled(string key)
+        private bool IsSupplierControlledInDefaultConfigurations(string key)
         {
             var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
             if (configuration == null) return false;
             return configuration.ControlState == SupplierAssociatedFieldControlState.SUPPLIER;
+        }
+
+        public bool IsSupplierControlled(string key, Guid organizationUuid)
+        {
+            return IsSupplierControlledInDefaultConfigurations(key);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Tests.Unit.Core.DomainServices.Repositories
             organization.SupplierAssociatedFieldConfigurations = [];
             ExpectRepositoryContent(organization);
 
-            var result = _sut.GetSupplierAssociatedFieldConfiguraitons(uuid);
+            var result = _sut.GetSupplierAssociatedFieldConfigurations(uuid);
 
             Assert.True(result.IsNone);
         }
@@ -45,7 +45,7 @@ namespace Tests.Unit.Core.DomainServices.Repositories
             organization.SupplierAssociatedFieldConfigurations = [expected];
             ExpectRepositoryContent(organization);
 
-            var result = _sut.GetSupplierAssociatedFieldConfiguraitons(uuid);
+            var result = _sut.GetSupplierAssociatedFieldConfigurations(uuid);
 
             Assert.True(result.HasValue);
             var value = result.Value;

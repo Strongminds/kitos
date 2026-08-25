@@ -1968,7 +1968,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
         private void ExpectGetFieldPermissionsReturns(DataProcessingRegistration registration, string key, bool result)
         {
-            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(registration, key)).Returns(new FieldPermissionsResult{ Enabled = result, Key = key});
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(registration, key, It.IsAny<Guid>())).Returns(new FieldPermissionsResult{ Enabled = result, Key = key});
         }
 
         [Theory]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
@@ -139,12 +140,13 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void GetFieldPermissions_Returns_Expected_Result(bool expected)
         {
             var key = A<string>();
+            var orgUuid = A<Guid>();
 
             IsUserGlobalAdmin(false);
             var entity = SetupEntityWithIdAndSuppliers();
             ExpectIsSupplierControlledFieldReturns(key, expected);
 
-            var result = _sut.GetFieldPermissions(entity.Object, key);
+            var result = _sut.GetFieldPermissions(entity.Object, key, orgUuid);
 
         }
 
@@ -194,7 +196,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         private void ExpectIsSupplierControlledFieldReturns(string key, bool result)
         {
-            _supplierAssociatedFieldsService.Setup(x => x.IsFieldSupplierControlled(key)).Returns(result);
+            _supplierAssociatedFieldsService.Setup(x => x.IsFieldSupplierControlled(key, It.IsAny<Guid>())).Returns(result);
         }
         private void SetupDoesUserHaveSupplierApiAccess(bool value, Mock<IEntityOwnedByOrganization> entity)
         {

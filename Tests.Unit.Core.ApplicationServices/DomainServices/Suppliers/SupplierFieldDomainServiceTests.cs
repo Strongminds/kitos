@@ -1,8 +1,12 @@
 ﻿using Core.Abstractions.Helpers;
+using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Repositories.Organization;
 using Core.DomainServices.Suppliers;
 using Moq;
+using System;
+using System.Collections.Generic;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -30,8 +34,9 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         }
 
         [Fact]
-        public void IsSupplierControlled_ShouldReturnTrue_ForSupplierControlledField()
+        public void IsSupplierControlled_ShouldReturnTrue_ForDefaultSupplierControlledField_WhenNoOrganizationConfiguration()
         {
+            var orgUuid = SetupExpectNoConfigurations();   
             // Act
             var result = _sut.IsSupplierControlled(_isOversightCompleted);
             // Assert
@@ -39,8 +44,10 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         }
 
         [Fact]
-        public void IsSupplierControlled_ShouldReturnFalse_ForNonSupplierControlledField()
+        public void IsSupplierControlled_ShouldReturnFalse_ForDefaultNonSupplierControlledField_WhenNoOrganizationConfiguration()
         {
+            var orgUuid = SetupExpectNoConfigurations();
+
             // Arrange
             var nonSupplierControlledProperty = A<string>();
             // Act
@@ -110,6 +117,14 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             var result = _sut.ContainsAnySupplierControlledFields(properties);
             // Assert
             Assert.False(result);
+        }
+
+        private Guid SetupExpectNoConfigurations()
+        {
+            var orgUuid = A<Guid>();
+            var expectedConfigurations = Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None;
+            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+            return orgUuid;
         }
     }
 }

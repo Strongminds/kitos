@@ -7,6 +7,7 @@ using System.Linq;
 using Core.ApplicationServices.Mapping.Authorization;
 using Core.ApplicationServices.Model.SystemUsage.Write;
 using Core.DomainServices.Suppliers;
+using System;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -86,9 +87,9 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return _supplierFieldDomainService.ContainsAnySupplierControlledFields(keys);
     }
 
-    public bool IsFieldSupplierControlled(string key)
+    public bool IsFieldSupplierControlled(string key, Guid organizationUuid)
     {
-        return _supplierFieldDomainService.IsSupplierControlled(key);
+        return _supplierFieldDomainService.IsSupplierControlled(key, organizationUuid);
     }
 
     private bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity)

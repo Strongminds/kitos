@@ -1234,7 +1234,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(delete);
 
             //Act
-            var result = _sut.GetPermissions(uuid);
+            var result = _sut.GetPermissions(uuid, A<Guid>());
 
             //Assert
             Assert.True(result.Ok);
@@ -1278,7 +1278,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectUsageRepositoryAsQueryable(itSystemUsage);
 
             //Act
-            var result = _sut.GetPermissions(wrongUuid);
+            var result = _sut.GetPermissions(wrongUuid, A<Guid>());
 
             //Assert
             Assert.True(result.Failed);
@@ -1432,7 +1432,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
         private void ExpectGetFieldPermissionsReturns(ItSystemUsage source, string key, bool result)
         {
-            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(source, key)).Returns(new FieldPermissionsResult { Enabled = result, Key = key });
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(source, key, It.IsAny<Guid>())).Returns(new FieldPermissionsResult { Enabled = result, Key = key });
         }
 
         private void ExpectAllowCreateReturns(int orgId, bool value)
