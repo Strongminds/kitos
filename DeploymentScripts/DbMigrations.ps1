@@ -300,11 +300,25 @@ Function Grant-PostgresSchemaPrivileges([hashtable]$parts, [string]$granteeUser,
     $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
     $escapedDatabaseName = $parts.Database.Replace("'", "''").Replace('"', '""')
     $escapedSchemaName = $schemaName.Replace("'", "''").Replace('"', '""')
-    $sql = @"
+
+    # GRANT ON DATABASE is a server-level statement; run it against the postgres maintenance DB
+    # so the database name does not need to be in the psql -d argument (which folds to lowercase).
+    $dbGrantSql = @"
 DO `$`$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
         EXECUTE 'GRANT CONNECT, TEMPORARY, CREATE ON DATABASE "$escapedDatabaseName" TO "$escapedUsername"';
+    END IF;
+END
+`$`$;
+"@
+    Invoke-PostgresSql -parts $parts -database "postgres" -sql $dbGrantSql
+
+    # Schema-level grants must be run connected to the target database.
+    $schemaGrantSql = @"
+DO `$`$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
         IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = '$escapedSchemaName') THEN
             EXECUTE 'GRANT USAGE, CREATE ON SCHEMA "$escapedSchemaName" TO "$escapedUsername"';
             EXECUTE 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "$escapedSchemaName" TO "$escapedUsername"';
@@ -316,7 +330,7 @@ BEGIN
 END
 `$`$;
 "@
-    Invoke-PostgresSql -parts $parts -database $parts.Database -sql $sql
+    Invoke-PostgresSql -parts $parts -database $parts.Database -sql $schemaGrantSql
 }
 
 Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [string]$buildConfiguration = "Release") {
