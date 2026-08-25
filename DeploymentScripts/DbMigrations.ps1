@@ -53,9 +53,10 @@ Function Normalize-PostgresConnectionString([string]$connectionString) {
         throw "PostgreSQL connection string must contain Database"
     }
 
-    # PostgreSQL folds unquoted identifiers to lowercase. Keep db names lowercase to avoid
-    # runtime mismatches between CREATE DATABASE and subsequent connections.
-    $normalizedDatabase = $parts.Database.ToLowerInvariant()
+    # PostgreSQL folds unquoted identifiers to lowercase, but datname in pg_database preserves
+    # the exact case used at CREATE DATABASE time. Keep the original casing so the name in the
+    # setup script matches what the IIS connection string expects.
+    $databaseName = $parts.Database
     $normalizedHost = if ($parts.Host -and $parts.Host.Equals("localhost", [System.StringComparison]::OrdinalIgnoreCase)) {
         "127.0.0.1"
     } else {
@@ -63,7 +64,7 @@ Function Normalize-PostgresConnectionString([string]$connectionString) {
     }
 
     $sslPart = if ($parts.SslMode) { ";SSL Mode=$($parts.SslMode)" } else { "" }
-    return "Host=$normalizedHost;Port=$($parts.Port);Database=$normalizedDatabase;Username=$($parts.Username);Password=$($parts.Password)$sslPart"
+    return "Host=$normalizedHost;Port=$($parts.Port);Database=$databaseName;Username=$($parts.Username);Password=$($parts.Password)$sslPart"
 }
 
 Function Get-PostgresCliPath {
