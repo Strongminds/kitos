@@ -155,7 +155,7 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<ItSystemUsage.ItSystemUsage> ArchiveSupplierForItSystems { get; set; }
         public virtual StsOrganizationConnection StsOrganizationConnection { get; set; }
 
-        public IEnumerable<SupplierAssociatedFieldConfiguration> SupplierAssociatedFieldConfigurations { get; set; }
+        public virtual ICollection<SupplierAssociatedFieldConfiguration> SupplierAssociatedFieldConfigurations { get; set; }
 
         /// <summary>
         /// Determines if this is the "Default" organization in KITOS
