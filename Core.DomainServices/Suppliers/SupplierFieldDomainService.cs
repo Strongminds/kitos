@@ -10,31 +10,11 @@ namespace Core.DomainServices.Suppliers
 {
     public class SupplierFieldDomainService : ISupplierFieldDomainService
     {
-        private readonly ISet<string> _supplierOnlyControlledFieldKeys;
-        private readonly ISet<string> _sharedFieldKeys;
         private readonly IEnumerable<SupplierAssociatedFieldConfiguration> _defaultFieldConfigurations;
         private readonly IOrganizationRepository _organizationRepository;
 
         public SupplierFieldDomainService(IOrganizationRepository organizationRepository)
         {
-            _supplierOnlyControlledFieldKeys = new HashSet<string>
-            {
-                ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted),
-                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightDate),
-                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightRemark),
-                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLink),
-                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightOptionId),
-                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.ContainsAITechnology),
-                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel),
-                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment),
-
-            };
-            _sharedFieldKeys = new HashSet<string>
-            {
-                ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName),
-                ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.riskAssessment)
-            };
-
             _defaultFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>
             {
                 new SupplierAssociatedFieldConfiguration { FieldKey = ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted), ControlState = SupplierAssociatedFieldControlState.SUPPLIER },
@@ -56,17 +36,26 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsOnlySupplierControlledField(IEnumerable<string> properties)
         {
-            return properties.All(x => _supplierOnlyControlledFieldKeys.Contains(x) || _sharedFieldKeys.Contains(x));
+            return properties.All(x => IsSupplierControlled(x) || HasSharedAccess(x));
         }
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties)
         {
-            return properties.Any(_supplierOnlyControlledFieldKeys.Contains);
+            return properties.Any(IsSupplierControlled);
+        }
+
+        private bool HasSharedAccess(string key)
+        {
+            var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
+            if (configuration == null) return false;
+            return configuration.ControlState == SupplierAssociatedFieldControlState.SHARED;
         }
 
         public bool IsSupplierControlled(string key)
         {
-            return _supplierOnlyControlledFieldKeys.Contains(key);
+            var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
+            if (configuration == null) return false;
+            return configuration.ControlState == SupplierAssociatedFieldControlState.SUPPLIER;
         }
     }
 }
