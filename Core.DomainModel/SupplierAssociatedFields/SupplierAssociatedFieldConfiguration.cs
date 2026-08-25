@@ -1,5 +1,4 @@
-﻿
-namespace Core.DomainModel.RecommendedFields
+﻿namespace Core.DomainModel.SupplierAssociatedFields
 {
     public class SupplierAssociatedFieldConfiguration: Entity, IOwnedByOrganization
     {

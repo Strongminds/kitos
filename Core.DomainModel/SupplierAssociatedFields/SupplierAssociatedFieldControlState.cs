@@ -1,4 +1,4 @@
-﻿namespace Core.DomainModel.RecommendedFields
+﻿namespace Core.DomainModel.SupplierAssociatedFields
 {
     public enum SupplierAssociatedFieldControlState
     {

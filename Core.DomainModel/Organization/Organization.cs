@@ -10,7 +10,7 @@ using Core.DomainModel.ItContract.Read;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Notification;
-using Core.DomainModel.RecommendedFields;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
 
