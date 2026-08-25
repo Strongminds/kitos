@@ -425,12 +425,12 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
     # Grant the known app user access so the running applications are not blocked.
     # Must run after migrations so the target schema already exists.
-    # This is a no-op when the script already runs as the app user (kitos owns the schema).
+    # Always grant regardless of whether the connection string user matches the app user:
+    # even when they share the same username, the DB may have been recreated under a superuser
+    # context (e.g. via DropDatabase/New-PostgresDatabase), leaving the app role without access.
     if ($newDb -eq $true) {
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
-        if ($pgParts.Username -ne $knownAppUser) {
-            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
-            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
-        }
+        Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
+        Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
     }
 }
