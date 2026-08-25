@@ -49,14 +49,7 @@ namespace Core.DomainServices.Suppliers
         {
             var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
             if (configuration == null) return false;
-            return configuration.ControlState == SupplierAssociatedFieldControlState.SHARED;
-        }
-
-        private bool IsSupplierControlledInDefaultConfigurations(string key)
-        {
-            var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
-            if (configuration == null) return false;
-            return HasSupplierControlState(configuration);
+            return configuration.HasSharedControlState;
         }
 
         public bool IsSupplierControlled(string key, Guid organizationUuid)
@@ -68,12 +61,14 @@ namespace Core.DomainServices.Suppliers
 
             return organizationalField == null
                 ? IsSupplierControlledInDefaultConfigurations(key)
-                : HasSupplierControlState(organizationalField);
+                : organizationalField.HasSupplierControlState;
         }
 
-        private bool HasSupplierControlState(SupplierAssociatedFieldConfiguration field)
+        private bool IsSupplierControlledInDefaultConfigurations(string key)
         {
-            return field.ControlState == SupplierAssociatedFieldControlState.SUPPLIER;
+            var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
+            if (configuration == null) return false;
+            return configuration.HasSupplierControlState;
         }
     }
 }
