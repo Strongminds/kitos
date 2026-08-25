@@ -15,6 +15,6 @@ namespace Core.DomainServices.Repositories.Organization
         Maybe<DomainModel.Organization.Organization> GetByUuid(Guid uuid);
         void Update(DomainModel.Organization.Organization organization);
 
-        Maybe<ICollection<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid);
+        Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid);
     }
 }

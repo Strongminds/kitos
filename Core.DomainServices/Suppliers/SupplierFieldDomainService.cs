@@ -56,12 +56,24 @@ namespace Core.DomainServices.Suppliers
         {
             var configuration = _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
             if (configuration == null) return false;
-            return configuration.ControlState == SupplierAssociatedFieldControlState.SUPPLIER;
+            return HasSupplierControlState(configuration);
         }
 
         public bool IsSupplierControlled(string key, Guid organizationUuid)
         {
-            return IsSupplierControlledInDefaultConfigurations(key);
+            var organizationalConfigurationsMaybe = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
+            if (organizationalConfigurationsMaybe.IsNone) return IsSupplierControlledInDefaultConfigurations(key);
+            var organizationalConfigurations = organizationalConfigurationsMaybe.Value;
+            var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == key);
+
+            return organizationalField == null
+                ? IsSupplierControlledInDefaultConfigurations(key)
+                : HasSupplierControlState(organizationalField);
+        }
+
+        private bool HasSupplierControlState(SupplierAssociatedFieldConfiguration field)
+        {
+            return field.ControlState == SupplierAssociatedFieldControlState.SUPPLIER;
         }
     }
 }

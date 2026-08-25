@@ -49,14 +49,14 @@ namespace Core.DomainServices.Repositories.Organization
             _genericRepository.Save();
         }
 
-        public Maybe<ICollection<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid)
+        public Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid)
         {
             var organizationMaybe = GetByUuid(organizationUuid);
-            if (organizationMaybe.IsNone) return Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None;
+            if (organizationMaybe.IsNone) return Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;
             var supplierAssociatedFieldConfigurations = organizationMaybe.Value.SupplierAssociatedFieldConfigurations;
             return supplierAssociatedFieldConfigurations.IsNullOrEmpty()
-                ? Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None
-                : Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.Some(supplierAssociatedFieldConfigurations);
+                ? Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None
+                : Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.Some(supplierAssociatedFieldConfigurations.AsEnumerable());
         }
     }
 }

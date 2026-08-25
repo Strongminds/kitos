@@ -1942,7 +1942,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             ExpectGetFieldPermissionsReturns(registration, oversightDateLinkKey, oversightDateLinkEnabled);
 
             //Act
-            var result = _sut.GetPermissions(uuid);
+            var result = _sut.GetPermissions(uuid, A<Guid>());
 
             //Assert
             Assert.True(result.Ok);

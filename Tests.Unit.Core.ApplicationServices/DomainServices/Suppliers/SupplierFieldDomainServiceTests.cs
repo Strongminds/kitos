@@ -38,7 +38,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         {
             var orgUuid = SetupExpectNoConfigurations();   
             // Act
-            var result = _sut.IsSupplierControlled(_isOversightCompleted);
+            var result = _sut.IsSupplierControlled(_isOversightCompleted, orgUuid);
             // Assert
             Assert.True(result);
         }
@@ -51,7 +51,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             // Arrange
             var nonSupplierControlledProperty = A<string>();
             // Act
-            var result = _sut.IsSupplierControlled(nonSupplierControlledProperty);
+            var result = _sut.IsSupplierControlled(nonSupplierControlledProperty, orgUuid);
             // Assert
             Assert.False(result);
         }
@@ -122,7 +122,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         private Guid SetupExpectNoConfigurations()
         {
             var orgUuid = A<Guid>();
-            var expectedConfigurations = Maybe<ICollection<SupplierAssociatedFieldConfiguration>>.None;
+            var expectedConfigurations = Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;
             _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
             return orgUuid;
         }
