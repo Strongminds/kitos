@@ -3359,6 +3359,22 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
+        public void Update_ReturnsBadState_WhenSystemUsageHasNoOrganization()
+        {
+            var withNoOrganization = new ItSystemUsage() {  Uuid = A<Guid>() };
+            var org = new Organization { Uuid = A<Guid>() };
+            SetupSimpleUpdate(withNoOrganization, org);
+            SetupAuthorizationModelReturns();
+            var parameters = new SystemUsageUpdateParameters { GeneralProperties = new UpdatedSystemUsageGeneralProperties { WebAccessibilityCompliance = A<YesNoPartiallyOption>().FromNullable().AsChangedValue(), LastWebAccessibilityCheck = A<DateTime>().FromNullable().AsChangedValue(), WebAccessibilityNotes = A<string>().AsChangedValue() } };
+
+            var resultNoOrganization = _sut.Update(withNoOrganization.Uuid, parameters);
+
+            Assert.True(resultNoOrganization.Failed);
+
+            Assert.Equal(OperationFailure.BadState, resultNoOrganization.Error.FailureType);
+        }
+
+        [Fact]
         public void Can_Update_Web_Accessibility_Properties()
         {
             var usage = new ItSystemUsage { Uuid = A<Guid>() };
