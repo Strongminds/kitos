@@ -35,7 +35,21 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties, Guid organizationUuid)
         {
-            return properties.All(x => IsSupplierControlledInDefaultConfigurations(x) || HasSharedAccessInDefaultConfigurations(x));
+            var organizationalConfigurationsMaybe = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
+            if (organizationalConfigurationsMaybe.IsNone) return properties.Any(HasSupplierOrSharedAccessInDefaultConfigurations);
+            var organizationalConfigurations = organizationalConfigurationsMaybe.Value;
+
+            foreach (var property in properties)
+            {
+                var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == property);
+                if (organizationalField != null && (organizationalField.HasSupplierControlState || organizationalField.HasSharedControlState))
+                    return true;
+
+                if (organizationalField == null && HasSupplierOrSharedAccessInDefaultConfigurations(property))
+                    return true;
+            }
+
+            return false;
 
         }
 
@@ -73,6 +87,13 @@ namespace Core.DomainServices.Suppliers
         private SupplierAssociatedFieldConfiguration? TryGetFromDefaultConfiguration(string key)
         {
             return _defaultFieldConfigurations.FirstOrDefault(x => x.FieldKey == key);
+        }
+
+        private bool HasSupplierOrSharedAccessInDefaultConfigurations(string key)
+        {
+            var configuration = TryGetFromDefaultConfiguration(key);
+            if (configuration == null) return false;
+            return configuration.HasSupplierControlState || configuration.HasSharedControlState;
         }
 
         private bool HasSharedAccessInDefaultConfigurations(string key)
