@@ -35,40 +35,44 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties, Guid organizationUuid)
         {
-            var organizationalConfigurationsMaybe = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
-            if (organizationalConfigurationsMaybe.IsNone) return properties.All(HasSupplierOrSharedAccessInDefaultConfigurations);
-            var organizationalConfigurations = organizationalConfigurationsMaybe.Value;
+            return _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid)
+                .Match(
+                    (organizationalConfigurations) =>
+                       {
+                        foreach (var property in properties)
+                        {
+                            var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == property);
+                            if (organizationalField != null && !(organizationalField.HasSupplierControlState || organizationalField.HasSharedControlState))
+                                return false;
 
-            foreach (var property in properties)
-            {
-                var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == property);
-                if (organizationalField != null && !(organizationalField.HasSupplierControlState || organizationalField.HasSharedControlState))
-                    return false;
-
-                if (organizationalField == null && !HasSupplierOrSharedAccessInDefaultConfigurations(property))
-                    return false;
-            }
-
-            return true;
+                            if (organizationalField == null && !HasSupplierOrSharedAccessInDefaultConfigurations(property))
+                                return false;
+                        }
+                        return true;
+                    },
+                    () => properties.All(HasSupplierOrSharedAccessInDefaultConfigurations)
+            );
         }
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties, Guid organizationUuid)
         {
-            var organizationalConfigurationsMaybe = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
-            if (organizationalConfigurationsMaybe.IsNone) return properties.Any(IsSupplierControlledInDefaultConfigurations);
-            var organizationalConfigurations = organizationalConfigurationsMaybe.Value;
-            
-            foreach (var property in properties)
-            {
-                var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == property);
-                if (organizationalField != null && organizationalField.HasSupplierControlState)
-                    return true;
+            return _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid).Match(
+                (organizationalConfigurations) =>
+                {
+                    foreach (var property in properties)
+                    {
+                        var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == property);
+                        if (organizationalField != null && organizationalField.HasSupplierControlState)
+                            return true;
 
-                if (organizationalField == null && IsSupplierControlledInDefaultConfigurations(property))
-                    return true;
-            }
+                        if (organizationalField == null && IsSupplierControlledInDefaultConfigurations(property))
+                            return true;
+                    }
 
-            return false;
+                    return false;
+                },
+                () => properties.Any(IsSupplierControlledInDefaultConfigurations)
+            );     
         }
 
         public bool IsSupplierControlled(string key, Guid organizationUuid)
