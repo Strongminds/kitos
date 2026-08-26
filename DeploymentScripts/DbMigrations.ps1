@@ -75,59 +75,26 @@ Function Get-PostgresCliPath {
     throw "PostgreSQL provider requires psql to be installed and available on PATH."
 }
 
-Function Set-PostgresCliEnvironment([hashtable]$parts) {
-    $state = @{
-        HadPgPassword = Test-Path Env:PGPASSWORD
-        PgPassword    = $Env:PGPASSWORD
-        HadPgSslMode  = Test-Path Env:PGSSLMODE
-        PgSslMode     = $Env:PGSSLMODE
-        SetPgSslMode  = $parts.SslMode -and $parts.SslMode.Equals("Disable", [System.StringComparison]::OrdinalIgnoreCase)
-    }
-
-    $Env:PGPASSWORD = $parts.Password
-    if ($state.SetPgSslMode) {
-        $Env:PGSSLMODE = "disable"
-    }
-
-    return $state
-}
-
-Function Restore-PostgresCliEnvironment([hashtable]$state) {
-    if ($state.HadPgPassword) {
-        $Env:PGPASSWORD = $state.PgPassword
-    } else {
-        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
-    }
-
-    if ($state.SetPgSslMode) {
-        if ($state.HadPgSslMode) {
-            $Env:PGSSLMODE = $state.PgSslMode
-        } else {
-            Remove-Item Env:PGSSLMODE -ErrorAction SilentlyContinue
-        }
-    }
-}
-
 Function Invoke-PostgresSql([hashtable]$parts, [string]$database, [string]$sql) {
     $psqlPath = Get-PostgresCliPath
-    $postgresCliEnvironment = Set-PostgresCliEnvironment -parts $parts
+    $Env:PGPASSWORD = $parts.Password
     try {
         & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d $database -v ON_ERROR_STOP=1 -c $sql
         if ($LASTEXITCODE -ne 0) { throw "psql failed executing SQL" }
     } finally {
-        Restore-PostgresCliEnvironment -state $postgresCliEnvironment
+        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
     }
 }
 
 Function Invoke-PostgresSqlFileInternal([hashtable]$parts, [string]$sqlFilePath) {
     $normalizedSqlPath = Get-NormalizedPostgresSqlFile -sqlFilePath $sqlFilePath
     $psqlPath = Get-PostgresCliPath
-    $postgresCliEnvironment = Set-PostgresCliEnvironment -parts $parts
+    $Env:PGPASSWORD = $parts.Password
     try {
         & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d $parts.Database -v ON_ERROR_STOP=1 -f $normalizedSqlPath
         if ($LASTEXITCODE -ne 0) { throw "psql failed executing $normalizedSqlPath" }
     } finally {
-        Restore-PostgresCliEnvironment -state $postgresCliEnvironment
+        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
         if ($normalizedSqlPath -ne $sqlFilePath) {
             Remove-Item -Path $normalizedSqlPath -ErrorAction SilentlyContinue
         }
@@ -204,22 +171,19 @@ Function New-PostgresDatabase([string]$connectionString) {
 
     $escapedDatabaseNameForIdentifier = $parts.Database.Replace('"', '""')
     $escapedDatabaseNameForLiteral = $parts.Database.Replace("'", "''")
-    $existsQuery = "SELECT 1 FROM pg_database WHERE LOWER(datname) = LOWER('$escapedDatabaseNameForLiteral')"
-    $createDatabaseSql = "CREATE DATABASE `"$escapedDatabaseNameForIdentifier`""
+    $existsQuery = "SELECT 1 FROM pg_database WHERE datname = '$escapedDatabaseNameForLiteral'"
     $psqlPath = Get-PostgresCliPath
 
-    $postgresCliEnvironment = Set-PostgresCliEnvironment -parts $parts
+    $Env:PGPASSWORD = $parts.Password
     try {
         $existsOutput = (& $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -tAc $existsQuery | Out-String)
-        if ($LASTEXITCODE -ne 0) { throw "psql failed checking whether database $($parts.Database) exists" }
-
         $exists = if ($existsOutput) { $existsOutput.Trim() } else { "" }
         if ($exists -ne "1") {
-            & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -v ON_ERROR_STOP=1 -c $createDatabaseSql
+            & $psqlPath -h $parts.Host -p $parts.Port -U $parts.Username -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE `"$escapedDatabaseNameForIdentifier`""
             if ($LASTEXITCODE -ne 0) { throw "psql failed creating database $($parts.Database)" }
         }
     } finally {
-        Restore-PostgresCliEnvironment -state $postgresCliEnvironment
+        Remove-Item Env:PGPASSWORD -ErrorAction SilentlyContinue
     }
 }
 
@@ -264,25 +228,6 @@ DO `$`$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedRoleName') THEN
         EXECUTE 'CREATE ROLE "$escapedRoleName" WITH LOGIN PASSWORD ''$escapedPassword'' CREATEDB';
-    END IF;
-END
-`$`$;
-"@
-    Invoke-PostgresSql -parts $parts -database "postgres" -sql $sql
-}
-
-# Grants CONNECT on the postgres maintenance database to the named user.
-# Required so the app can connect to postgres to check/create its own databases at startup.
-Function Grant-PostgresMaintenanceDbConnect([hashtable]$parts, [string]$granteeUser) {
-    if ([string]::IsNullOrWhiteSpace($granteeUser)) { return }
-
-    Write-Host "Granting CONNECT on postgres maintenance DB to '$granteeUser'"
-    $escapedUsername = $granteeUser.Replace("'", "''").Replace('"', '""')
-    $sql = @"
-DO `$`$
-BEGIN
-    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$escapedUsername') THEN
-        EXECUTE 'GRANT CONNECT ON DATABASE postgres TO "$escapedUsername"';
     END IF;
 END
 `$`$;
@@ -347,8 +292,10 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # resolves provider/connection from environment variables).
     $startupProject = $infraProject
 
-    Write-Host "Ensuring PostgreSQL database exists"
-    New-PostgresDatabase -connectionString $connectionString
+    if ($newDb -eq $true) {
+        Write-Host "New PostgreSQL database detected - ensuring database exists"
+        New-PostgresDatabase -connectionString $connectionString
+    }
 
     # Expose the connection string via the standard .NET env var so the
     # KitosContextDesignTimeFactory can pick it up without a hardcoded fallback.
@@ -444,15 +391,12 @@ Function Run-DB-Migrations([bool]$newDb = $false, [string]$connectionString, [st
     # different user (e.g. kitos in Docker), the dbo schema ends up owned by the superuser.
     # Grant the known app user access so the running applications are not blocked.
     # Must run after migrations so the target schema already exists.
-    # Always grant regardless of whether the connection string user matches the app user:
-    # even when they share the same username, the DB may have been recreated under a superuser
-    # context (e.g. via DropDatabase/New-PostgresDatabase), leaving the app role without access.
+    # This is a no-op when the script already runs as the app user (kitos owns the schema).
     if ($newDb -eq $true) {
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
-        Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
-        Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
-        # The app connects to the postgres maintenance DB at startup to check/create the Hangfire DB.
-        # Grant CONNECT so the restricted app user can perform that check.
-        Grant-PostgresMaintenanceDbConnect -parts $pgParts -granteeUser $knownAppUser
+        if ($pgParts.Username -ne $knownAppUser) {
+            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "dbo"
+            Grant-PostgresSchemaPrivileges -parts $pgParts -granteeUser $knownAppUser -schemaName "public"
+        }
     }
 }
