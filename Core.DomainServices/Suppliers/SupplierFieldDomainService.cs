@@ -77,14 +77,17 @@ namespace Core.DomainServices.Suppliers
 
         public bool IsSupplierControlled(string key, Guid organizationUuid)
         {
-            var organizationalConfigurationsMaybe = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
-            if (organizationalConfigurationsMaybe.IsNone) return IsSupplierControlledInDefaultConfigurations(key);
-            var organizationalConfigurations = organizationalConfigurationsMaybe.Value;
-            var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == key);
+            return _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid).Match(
+                (organizationalConfigurations) =>
+                {
+                    var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == key);
 
-            return organizationalField == null
-                ? IsSupplierControlledInDefaultConfigurations(key)
-                : organizationalField.HasSupplierControlState;
+                    return organizationalField == null
+                        ? IsSupplierControlledInDefaultConfigurations(key)
+                        : organizationalField.HasSupplierControlState;
+                },
+                () => IsSupplierControlledInDefaultConfigurations(key)
+            );           
         }
 
         private SupplierAssociatedFieldConfiguration? TryGetFromDefaultConfiguration(string key)
@@ -97,13 +100,6 @@ namespace Core.DomainServices.Suppliers
             var configuration = TryGetFromDefaultConfiguration(key);
             if (configuration == null) return false;
             return configuration.HasSupplierControlState || configuration.HasSharedControlState;
-        }
-
-        private bool HasSharedAccessInDefaultConfigurations(string key)
-        {
-            var configuration = TryGetFromDefaultConfiguration(key);
-            if (configuration == null) return false;
-            return configuration.HasSharedControlState;
         }
 
         private bool IsSupplierControlledInDefaultConfigurations(string key)
