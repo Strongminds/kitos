@@ -119,13 +119,13 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         public void OnlySupplierFieldChanges_ShouldReturnTrue_WhenAllPropertiesAreSupplierControlled()
         {
             // Arrange
+            var orgUuid = SetupExpectNoConfigurations();
             var properties = new[]
             {
-                _isOversightCompleted, _remark, _oversightReportLinkName
+                _isOversightCompleted, _remark
             };
 
             // Act
-            var orgUuid = A<Guid>();
             var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
 
             // Assert
@@ -136,13 +136,13 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         public void OnlySupplierFieldChanges_ShouldReturnFalse_WhenAnyPropertyIsNotSupplierControlled()
         {
             // Arrange
+            var orgUuid = SetupExpectNoConfigurations();
             var nonSupplierControlledProperty = A<string>();
             var properties = new[]
             {
                 _isOversightCompleted, nonSupplierControlledProperty
             };
             // Act
-            var orgUuid = A<Guid>();
             var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
             // Assert
             Assert.False(result);
@@ -220,6 +220,66 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             var result = _sut.ContainsAnySupplierControlledFields(properties, orgUuid);
             // Assert
             Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData(SupplierAssociatedFieldControlState.SUPPLIER, SupplierAssociatedFieldControlState.SUPPLIER)]
+        [InlineData(SupplierAssociatedFieldControlState.SHARED, SupplierAssociatedFieldControlState.SHARED)]
+        [InlineData(SupplierAssociatedFieldControlState.SUPPLIER, SupplierAssociatedFieldControlState.SHARED)]
+        public void ContainsOnlySupplierControlledAndSharedFields_ShouldReturnTrue_WhenAllPropsInOrgConfigAreSupplierOrShared(
+            SupplierAssociatedFieldControlState state1, SupplierAssociatedFieldControlState state2)
+        {
+            // Arrange
+            var config1 = new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = state1 };
+            var config2 = new SupplierAssociatedFieldConfiguration { FieldKey = _oversightDate, ControlState = state2 };
+            var orgUuid = SetupExpectConfiguration(config1, config2);
+            var properties = new[] { _isOversightCompleted, _oversightDate };
+            // Act
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void ContainsOnlySupplierControlledAndSharedFields_ShouldReturnFalse_WhenAnyPropInOrgConfigIsOrganizationControlState()
+        {
+            // Arrange
+            var sharedConfig = new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = SupplierAssociatedFieldControlState.SHARED };
+            var supplierConfig = new SupplierAssociatedFieldConfiguration { FieldKey = _oversightDate, ControlState = SupplierAssociatedFieldControlState.SUPPLIER };
+            var organizationConfig = new SupplierAssociatedFieldConfiguration { FieldKey = _remark, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION };
+            var orgUuid = SetupExpectConfiguration(sharedConfig, supplierConfig, organizationConfig);
+            var properties = new[] { _isOversightCompleted, _oversightDate, _remark };
+            // Act
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void ContainsOnlySupplierControlledAndSharedFields_ShouldReturnTrue_WhenNoOrgConfig_AndAllInDefaultMapAreSharedOrSupplier()
+        {
+            // Arrange
+            var orgUuid = SetupExpectNoConfigurations();
+            var properties = new[] { _isOversightCompleted, _oversightDate, _remark };
+            // Act
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void ContainsOnlySupplierControlledAndSharedFields_ShouldReturnFalse_WhenOnePropertyMissingFromBothOrgConfigAndDefaultMap()
+        {
+            // Arrange
+            var config1 = new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = SupplierAssociatedFieldControlState.SUPPLIER };
+            var config2 = new SupplierAssociatedFieldConfiguration { FieldKey = _oversightDate, ControlState = SupplierAssociatedFieldControlState.SHARED };
+            var orgUuid = SetupExpectConfiguration(config1, config2);
+            var unknownProperty = A<string>();
+            var properties = new[] { _isOversightCompleted, _oversightDate, unknownProperty };
+            // Act
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
+            // Assert
+            Assert.False(result);
         }
 
         private Guid SetupExpectConfiguration(params SupplierAssociatedFieldConfiguration[] configurations) {

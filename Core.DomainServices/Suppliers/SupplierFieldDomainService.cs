@@ -42,15 +42,14 @@ namespace Core.DomainServices.Suppliers
             foreach (var property in properties)
             {
                 var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == property);
-                if (organizationalField != null && (organizationalField.HasSupplierControlState || organizationalField.HasSharedControlState))
-                    return true;
+                if (organizationalField != null && !(organizationalField.HasSupplierControlState || organizationalField.HasSharedControlState))
+                    return false;
 
-                if (organizationalField == null && HasSupplierOrSharedAccessInDefaultConfigurations(property))
-                    return true;
+                if (organizationalField == null && !HasSupplierOrSharedAccessInDefaultConfigurations(property))
+                    return false;
             }
 
-            return false;
-
+            return true;
         }
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties, Guid organizationUuid)
