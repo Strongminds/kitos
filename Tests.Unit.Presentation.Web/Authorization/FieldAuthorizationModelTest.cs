@@ -32,8 +32,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var entity = SetupEntityWithIdAndSuppliers();
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
 
-            var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object);
-            var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null);
+            var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object, A<Guid>());
+            var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null, A<Guid>());
 
             Assert.False(withNullEntity);
             Assert.False(withNullParameters);
@@ -45,7 +45,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             IsUserGlobalAdmin(true);
             var entity = SetupEntityWithIdAndSuppliers();
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
 
             Assert.True(result);
         }
@@ -60,7 +60,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
 
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
 
             Assert.Equal(allowModifyResult, result);
             VerifyAllowModify(entity.Object);
@@ -79,7 +79,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             SetupDoesUserHaveSupplierApiAccess(true, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
 
             Assert.Equal(allowModifyResult, result);
             VerifyAllowModify(entity.Object);
@@ -95,7 +95,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             ExpectHasOnlySupplierChangesReturns(true, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
 
             Assert.True(result);
         }
@@ -110,7 +110,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             ExpectHasAnySupplierChangesReturns(true, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(false, entity);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
 
             Assert.False(result);
         }
@@ -128,7 +128,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             SetupDoesUserHaveSupplierApiAccess(false, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
 
             Assert.Equal(allowModifyResult, result);
             VerifyAllowModify(entity.Object);
@@ -191,7 +191,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         private void ExpectHasOnlySupplierChangesReturns(bool expectedResult, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)
         {
-            _supplierAssociatedFieldsService.Setup(_ => _.HasOnlySupplierChanges(parameters.Object, entity)).Returns(expectedResult);
+            _supplierAssociatedFieldsService.Setup(_ => _.HasOnlySupplierChanges(parameters.Object, entity, It.IsAny<Guid>())).Returns(expectedResult);
         }
 
         private void ExpectIsSupplierControlledFieldReturns(string key, bool result)

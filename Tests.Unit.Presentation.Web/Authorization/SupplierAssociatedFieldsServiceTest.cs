@@ -78,7 +78,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = ExpectMapParametersReturns(parameters.GetChangedPropertyKeys(_existingDpr), _existingDpr);
 
             ExpectOnlySupplierChangesReturns(keys, false);
-            var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr);
+            var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr, _organizationUuid);
 
             Assert.False(result);
         }
@@ -131,7 +131,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var keys = parameters.GetChangedPropertyKeys(_existingDpr);
             ExpectOnlySupplierChangesReturns(keys, false);
 
-            var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr);
+            var result = _sut.HasOnlySupplierChanges(parameters, _existingDpr, _organizationUuid);
 
             Assert.False(result);
         }
@@ -205,7 +205,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 ExpectOnlySupplierChangesReturns(keys, false);
 
                 hasAnySupplierChanges = _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr, _organizationUuid);
-                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
+                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr, _organizationUuid);
             }
             else
             {
@@ -224,7 +224,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
                 hasAnySupplierChanges =
                     _sut.HasAnySupplierChanges(noChangesParameters, _existingDpr, _organizationUuid);
-                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr);
+                hasOnlySupplierChanges = _sut.HasOnlySupplierChanges(noChangesParameters, _existingDpr, _organizationUuid);
             }
 
             Assert.False(hasAnySupplierChanges);
@@ -316,8 +316,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
                 .Setup(x => x.ContainsOnlySupplierControlledAndSharedFields(
                     It.Is<IEnumerable<string>>(actualKeys =>
                         actualKeys.All(keys.Contains)
-                    )
-                ))
+                    ),
+                    It.IsAny<Guid>()))
                 .Returns(result);
 
         }

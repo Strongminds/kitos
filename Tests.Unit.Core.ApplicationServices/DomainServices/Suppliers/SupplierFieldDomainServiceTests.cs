@@ -125,7 +125,8 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
             };
 
             // Act
-            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties);
+            var orgUuid = A<Guid>();
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
 
             // Assert
             Assert.True(result);
@@ -141,7 +142,8 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
                 _isOversightCompleted, nonSupplierControlledProperty
             };
             // Act
-            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties);
+            var orgUuid = A<Guid>();
+            var result = _sut.ContainsOnlySupplierControlledAndSharedFields(properties, orgUuid);
             // Assert
             Assert.False(result);
         }
@@ -167,9 +169,7 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         [InlineData(false)]
         public void ContainsAnySupplierControlledFields_ShouldReturnFalse_WhenAllSupplierDefaultsAreOverriddenToNonSupplier(bool useShared)
         {
-            var state = useShared ? SupplierAssociatedFieldControlState.SHARED : SupplierAssociatedFieldControlState.ORGANIZATION;
-            // Arrange - override all 8 SUPPLIER defaults to ORGANIZATION
-            var allSupplierDefaults = new[]
+            var state = useShared ? SupplierAssociatedFieldControlState.SHARED : SupplierAssociatedFieldControlState.ORGANIZATION;            var allSupplierDefaults = new[]
             {
                 new SupplierAssociatedFieldConfiguration { FieldKey = _isOversightCompleted, ControlState = state },
                 new SupplierAssociatedFieldConfiguration { FieldKey = _oversightDate, ControlState = state },

@@ -96,7 +96,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             _authorizationModelMock
                 .Setup(x => x.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(),
-                    It.IsAny<ISupplierAssociatedEntityUpdateParameters>()))
+                    It.IsAny<ISupplierAssociatedEntityUpdateParameters>(), It.IsAny<Guid>()))
                 .Returns(true);
 
             _authorizationModelMock
@@ -2239,7 +2239,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
         private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
         {
-            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns(value);
+            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(dpr, parameters, It.IsAny<Guid>())).Returns(value);
         }
 
         private void ExpectBatchUpdateExternalReferencesReturns(DataProcessingRegistration dpr, IEnumerable<UpdatedExternalReferenceProperties> externalReferences, Maybe<OperationError> value)

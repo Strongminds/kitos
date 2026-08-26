@@ -34,15 +34,15 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         };
     }
 
-    public bool HasOnlySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity)
+    public bool HasOnlySupplierChanges(ISupplierAssociatedEntityUpdateParameters parameters, IEntity entity, Guid organizationUuid)
     {
         return parameters switch
         {
             DataProcessingRegistrationModificationParameters dprParameters => HasOnlyDprSupplierChanges(
-                dprParameters, entity),
+                dprParameters, entity, organizationUuid),
             UpdatedDataProcessingRegistrationOversightDateParameters oversightDateParameters =>
-                HasOnlyOversightDateSupplierChanges(oversightDateParameters, entity),
-            SystemUsageUpdateParameters usageParameters => HasOnlyUsageSupplierChanges(usageParameters, entity),
+                HasOnlyOversightDateSupplierChanges(oversightDateParameters, entity, organizationUuid),
+            SystemUsageUpdateParameters usageParameters => HasOnlyUsageSupplierChanges(usageParameters, entity, organizationUuid),
             _ => false
         };
     }
@@ -92,27 +92,27 @@ public class SupplierAssociatedFieldsService : ISupplierAssociatedFieldsService
         return _supplierFieldDomainService.IsSupplierControlled(key, organizationUuid);
     }
 
-    private bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity)
+    private bool HasOnlyOversightDateSupplierChanges(UpdatedDataProcessingRegistrationOversightDateParameters parameters, IEntity entity, Guid organizationUuid)
     {
         var changedProperties = parameters.GetChangedPropertyKeys();
-        return _supplierFieldDomainService.ContainsOnlySupplierControlledAndSharedFields(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
+        return _supplierFieldDomainService.ContainsOnlySupplierControlledAndSharedFields(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity), organizationUuid);
     }
 
-    private bool HasOnlyDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity)
+    private bool HasOnlyDprSupplierChanges(DataProcessingRegistrationModificationParameters dprParams, IEntity entity, Guid organizationUuid)
     {
         if(entity is not DataProcessingRegistration dpr)
             return false;
 
         var changedProperties = dprParams.GetChangedPropertyKeys(dpr);
 
-        return _supplierFieldDomainService.ContainsOnlySupplierControlledAndSharedFields(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity));
+        return _supplierFieldDomainService.ContainsOnlySupplierControlledAndSharedFields(_mapper.MapParameterKeysToDomainKeys(changedProperties, entity), organizationUuid);
     }
 
-    private bool HasOnlyUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity)
+    private bool HasOnlyUsageSupplierChanges(SystemUsageUpdateParameters parameters, IEntity entity, Guid organizationUuid)
     {
         var changedProperties = parameters.GetChangedPropertyKeys();
         var keys = _mapper.MapParameterKeysToDomainKeys(changedProperties, entity);
-        return _supplierFieldDomainService.ContainsOnlySupplierControlledAndSharedFields(keys);
+        return _supplierFieldDomainService.ContainsOnlySupplierControlledAndSharedFields(keys, organizationUuid);
     }
 }
 

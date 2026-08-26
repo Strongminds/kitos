@@ -20,7 +20,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
 
     public bool AuthorizeUpdate(
         IEntityOwnedByOrganization? entity,
-        ISupplierAssociatedEntityUpdateParameters? parameters)
+        ISupplierAssociatedEntityUpdateParameters? parameters, Guid organizationUuid)
     {
         if (entity == null || parameters == null) return false;
 
@@ -32,7 +32,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
         var supplierIds = entityOrganization!.Suppliers.ToHashSet().Select(x => x.SupplierId);
         var userHasSupplierApiAccess = _activeUserContext.IsSupplierApiUserForOrganizationWithSuppliers(supplierIds);
          return userHasSupplierApiAccess
-            ? CheckForSupplierApiUser(entity, parameters)
+            ? CheckForSupplierApiUser(entity, parameters, organizationUuid)
             : CheckForNonSupplierApiUser(entity, parameters);
     }
 
@@ -54,9 +54,9 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
     }
 
     private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
-        ISupplierAssociatedEntityUpdateParameters parameters)
+        ISupplierAssociatedEntityUpdateParameters parameters, Guid organizationUuid)
     {
-        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity);
+        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity, organizationUuid);
         if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
         return true;
     }

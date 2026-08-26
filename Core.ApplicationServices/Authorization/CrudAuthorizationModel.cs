@@ -1,5 +1,6 @@
 ﻿using Core.ApplicationServices.Model;
 using Core.DomainModel;
+using System;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -12,7 +13,7 @@ public class CrudAuthorizationModel : IAuthorizationModel
         _authorizationContext = authorizationContext;
     }
     public bool AuthorizeUpdate(IEntityOwnedByOrganization entity,
-        ISupplierAssociatedEntityUpdateParameters parameters)
+        ISupplierAssociatedEntityUpdateParameters parameters, Guid organizationUuid)
     {
         return _authorizationContext.AllowModify(entity);
     }

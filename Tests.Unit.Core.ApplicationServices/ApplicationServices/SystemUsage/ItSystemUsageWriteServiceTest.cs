@@ -3408,7 +3408,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var authModel = new Mock<IAuthorizationModel>();
             _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<IEntityOwnedByOrganization>()))
                 .Returns(authModel.Object);
-            authModel.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(result);
+            authModel.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>(), It.IsAny<Guid>())).Returns(result);
             _authorizationContextMock.Setup(x => x.AllowModify(It.IsAny<IEntityOwnedByOrganization>())).Returns(true);
         }
 

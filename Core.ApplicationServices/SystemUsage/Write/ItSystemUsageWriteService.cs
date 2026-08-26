@@ -750,7 +750,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             if (isCreate) return WithWriteAccess(systemUsage);
             var authModel = authorizationContext.GetAuthorizationModel(systemUsage);
-            return authModel.AuthorizeUpdate(systemUsage, parameters) ? systemUsage : new OperationError(OperationFailure.Forbidden);
+            var organizationUuid = systemUsage.Organization?.Uuid;
+            if (!organizationUuid.HasValue) return new OperationError(OperationFailure.BadState);
+            return authModel.AuthorizeUpdate(systemUsage, parameters, organizationUuid.Value) ? systemUsage : new OperationError(OperationFailure.Forbidden);
         }
 
         private Result<ItSystemUsage, OperationError> WithWriteAccess(ItSystemUsage systemUsage)

@@ -33,11 +33,10 @@ namespace Core.DomainServices.Suppliers
             _organizationRepository = organizationRepository;
         }
 
-        public IEnumerable<SupplierAssociatedFieldConfiguration> GetDefaultFieldConfigurations => _defaultFieldConfigurations;
-
-        public bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties)
+        public bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties, Guid organizationUuid)
         {
             return properties.All(x => IsSupplierControlledInDefaultConfigurations(x) || HasSharedAccessInDefaultConfigurations(x));
+
         }
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties, Guid organizationUuid)
