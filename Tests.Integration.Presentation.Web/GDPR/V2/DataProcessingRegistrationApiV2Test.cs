@@ -849,7 +849,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             var input = CreateOversightRequest(
                 withOversightOptions ? new[] { oversightOption!.Uuid } : Array.Empty<Guid>(),
                 withOversightDates ? YesNoUndecidedChoice.Yes : EnumRange.AllExcept(YesNoUndecidedChoice.Yes).RandomItem(),
-                withOversightDates ? new[] { oversightDate1, oversightDate2 } : Array.Empty<OversightDateDTO>());
+                withOversightDates ? new[] { oversightDate1, oversightDate2 } : Array.Empty<ModifyOversightDateDTO>());
 
             var request = new CreateDataProcessingRegistrationRequestDTO
             {
@@ -1660,9 +1660,9 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             AssertOversightDates(expected.OversightDates, actual.OversightDates);
         }
 
-        private static void AssertOversightDates(IEnumerable<OversightDateDTO>? expected, IEnumerable<OversightDateDTO> actual)
+        private static void AssertOversightDates(IEnumerable<ModifyOversightDateDTO>? expected, IEnumerable<OversightDateDTO> actual)
         {
-            var expectedOversightDates = (expected ?? Array.Empty<OversightDateDTO>()).OrderBy(x => x.CompletedAt).ToList();
+            var expectedOversightDates = (expected ?? Array.Empty<ModifyOversightDateDTO>()).OrderBy(x => x.CompletedAt).ToList();
             var actualOversightDates = actual.OrderBy(x => x.CompletedAt).ToList();
             Assert.Equal(expectedOversightDates.Count, actualOversightDates.Count);
             for (var i = 0; i < expectedOversightDates.Count; i++)
@@ -1671,7 +1671,6 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                 Assert.Equal(expectedOversightDates[i].Remark, actualOversightDates[i].Remark);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink?.Url, actualOversightDates[i].OversightReportLink?.Url);
                 Assert.Equal(expectedOversightDates[i].OversightReportLink?.Name, actualOversightDates[i].OversightReportLink?.Name);
-                Assert.Equal(expectedOversightDates[i].OversightOption?.Uuid, actualOversightDates[i].OversightOption?.Uuid);
             }
         }
 
@@ -1766,17 +1765,12 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
                    assignment.User.Name == expectedUser.GetFullName() &&
                    assignment.User.Uuid == expectedUser.Uuid;
         }
-
-        private static bool MatchExpectedBulkAssignment(RoleAssignmentResponseDTO actual, BulkRoleAssignmentRequestDTO expected)
-        {
-            return actual.Role.Uuid == expected.RoleUuid && expected.UserUuids.Contains(actual.User.Uuid);
-        }
-
+        
         #endregion
 
         #region Creaters
 
-        private DataProcessingRegistrationOversightWriteRequestDTO CreateOversightRequest(IEnumerable<Guid> oversightOptionUuids, YesNoUndecidedChoice isOversightCompleted, IEnumerable<OversightDateDTO> oversightDates)
+        private DataProcessingRegistrationOversightWriteRequestDTO CreateOversightRequest(IEnumerable<Guid> oversightOptionUuids, YesNoUndecidedChoice isOversightCompleted, IEnumerable<ModifyOversightDateDTO> oversightDates)
         {
             return new DataProcessingRegistrationOversightWriteRequestDTO()
             {
@@ -1835,9 +1829,9 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             return orderedRandomly;
         }
 
-        private OversightDateDTO CreateOversightDate()
+        private ModifyOversightDateDTO CreateOversightDate()
         {
-            return new OversightDateDTO()
+            return new ModifyOversightDateDTO()
             {
                 CompletedAt = A<DateTime>(),
                 Remark = A<string>(),

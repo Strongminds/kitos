@@ -45,6 +45,6 @@ namespace Presentation.Web.Models.API.V2.Request.DataProcessing
         /// Constraints:
         ///     - IsOversightCompleted equals yes
         /// </summary>
-        public IEnumerable<OversightDateDTO>? OversightDates { get; set; }
+        public IEnumerable<ModifyOversightDateDTO>? OversightDates { get; set; }
     }
 }
