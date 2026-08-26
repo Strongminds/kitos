@@ -264,6 +264,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Id = dprId,
                 Uuid = dprUuid,
+                Organization = new Organization() { Uuid = A<Guid>() }
             };
             var transaction = ExpectTransaction();
             SetupUpdateSuccess(dataProcessingRegistration);
@@ -294,6 +295,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Id = A<int>(),
                 Uuid = dprUuid,
+                Organization = new Organization() {Uuid = A<Guid>() }
             };
             var transaction = ExpectTransaction();
             SetupUpdateSuccess(dataProcessingRegistration);
@@ -320,7 +322,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             var dataProcessingRegistration = new DataProcessingRegistration
             {
                 Id = A<int>(),
-                Uuid = dprUuid
+                Uuid = dprUuid,
+                Organization = new Organization() { Uuid = A<Guid>() }
             };
             var transaction = ExpectTransaction();
             var operationError = A<OperationError>();
@@ -1939,7 +1942,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             };
             var dataProcessingRegistration = new DataProcessingRegistration
             {
-                ResponsibleOrganizationUnit = new OrganizationUnit { Uuid = A<Guid>() }, Uuid = A<Guid>()
+                ResponsibleOrganizationUnit = new OrganizationUnit { Uuid = A<Guid>() }, Uuid = A<Guid>(),
+                Organization = new Organization() { Uuid = A<Guid>() }
             };
             var transaction = ExpectTransaction();
             var dprUuid = dataProcessingRegistration.Uuid;
@@ -1991,7 +1995,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             parameters.OversightOptionUuid = OptionalValueChange<Guid?>.None;
 
             var transaction = ExpectTransaction();
-            SetupGetFromRepository(new DataProcessingRegistration(){ Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes});
+            SetupGetFromRepository(new DataProcessingRegistration() { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes, Organization = new Organization() { Uuid = A<Guid>() } });
             AllowReadsReturns();
 
             // Act
@@ -2013,7 +2017,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             parameters.OversightOptionUuid = OptionalValueChange<Guid?>.With(oversightOptionUuid);
 
             var transaction = ExpectTransaction();
-            SetupGetFromRepository(new DataProcessingRegistration { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes });
+            SetupGetFromRepository(new DataProcessingRegistration { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes, Organization = new Organization() { Uuid = A<Guid>() } });
             _identityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(oversightOptionId);
             AllowReadsReturns();
 
@@ -2036,7 +2040,9 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             parameters.OversightOptionUuid = OptionalValueChange<Guid?>.With(oversightOptionUuid);
 
             var transaction = ExpectTransaction();
-            SetupGetFromRepository(new DataProcessingRegistration { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes });
+            SetupGetFromRepository(new DataProcessingRegistration { Uuid = registrationUuid, IsOversightCompleted = YesNoUndecidedOption.Yes,
+                Organization = new Organization() { Uuid = A<Guid>() }
+            });
             _identityResolverMock.Setup(x => x.ResolveDbId<DataProcessingOversightOption>(oversightOptionUuid)).Returns(Maybe<int>.None);
             AllowReadsReturns();
 
@@ -2069,7 +2075,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 Id = registrationId,
                 OversightDates = new List<DataProcessingRegistrationOversightDate>{oversightDate},
                 IsOversightCompleted = YesNoUndecidedOption.Yes,
-                Uuid = registrationUuid
+                Uuid = registrationUuid,
+                Organization = new Organization() { Uuid = A<Guid>() },
             };
 
             var transaction = ExpectTransaction();
@@ -2105,7 +2112,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
                 IsOversightCompleted = YesNoUndecidedOption.Yes,
-                Uuid = registrationUuid
+                Uuid = registrationUuid,
+                Organization = new Organization() { Uuid = A<Guid>() },
             };
 
             var transaction = ExpectTransaction();
@@ -2141,7 +2149,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 OversightDates = new List<DataProcessingRegistrationOversightDate> { oversightDate },
                 IsOversightCompleted = YesNoUndecidedOption.Yes,
-                Uuid = registrationUuid
+                Uuid = registrationUuid,
+                Organization = new Organization() { Uuid = A<Guid>() }
             };
 
             var transaction = ExpectTransaction();
@@ -2174,7 +2183,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                         Id = A<int>()
                     }
                 },
-                Uuid = registrationUuid
+                Uuid = registrationUuid,
+                Organization = new Organization() { Uuid = A<Guid>() }
             };
             SetupGetFromRepository(dpr);
             SetupAuthorizationModelReturns(false, dpr, parameters);
@@ -2436,6 +2446,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
                 IEnumerable<UpdatedExternalReferenceProperties>? externalReferences = null) where TReturnParameters : BaseDataProcessingRegistrationParameters, new()
         {
             var organizationUuid = A<Guid>();
+            var organization = new Organization() { Uuid = organizationUuid };
             var parameters = new TReturnParameters
             {
                 Name = A<string>().AsChangedValue(),
@@ -2449,7 +2460,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
             {
                 Id = A<int>(),
                 Uuid = A<Guid>(),
-                AssociatedContracts = new List<ItContract> { new() { Id = A<int>() } }
+                AssociatedContracts = new List<ItContract> { new() { Id = A<int>() } },
+                Organization = organization,
             };
             var transaction = ExpectTransaction();
             var orgDbId = A<int>();
