@@ -36,7 +36,7 @@ namespace Core.DomainServices.Suppliers
         public bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties, Guid organizationUuid)
         {
             var organizationalConfigurationsMaybe = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
-            if (organizationalConfigurationsMaybe.IsNone) return properties.Any(HasSupplierOrSharedAccessInDefaultConfigurations);
+            if (organizationalConfigurationsMaybe.IsNone) return properties.All(HasSupplierOrSharedAccessInDefaultConfigurations);
             var organizationalConfigurations = organizationalConfigurationsMaybe.Value;
 
             foreach (var property in properties)
