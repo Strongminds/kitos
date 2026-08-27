@@ -645,9 +645,9 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                     AssertPropertyContainsDataChange(actualCollection));
         }
 
-        private static void AssertOversightDates(IEnumerable<OversightDateDTO>? expected, IEnumerable<UpdatedDataProcessingRegistrationOversightDate> actual)
+        private static void AssertOversightDates(IEnumerable<ModifyOversightDateDTO>? expected, IEnumerable<UpdatedDataProcessingRegistrationOversightDate> actual)
         {
-            var orderedExpected = expected?.OrderBy(x => x.CompletedAt).ToList() ?? new List<OversightDateDTO>();
+            var orderedExpected = expected?.OrderBy(x => x.CompletedAt).ToList() ?? new List<ModifyOversightDateDTO>();
             var orderedActual = actual.OrderBy(x => x.CompletedAt).ToList();
 
             Assert.Equal(orderedExpected.Count, orderedActual.Count);
@@ -657,7 +657,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal(orderedExpected[i].Remark, orderedActual[i].Remark);
                 Assert.Equal(orderedExpected[i].OversightReportLink?.Url, orderedActual[i].OversightReportLink);
                 Assert.Equal(orderedExpected[i].OversightReportLink?.Name, orderedActual[i].OversightReportLinkName);
-                Assert.Equal(orderedExpected[i].OversightOption?.Uuid, orderedActual[i].OversightOptionUuid);
+                Assert.Equal(orderedExpected[i].OversightOptionUuid, orderedActual[i].OversightOptionUuid);
             }
         }
 
