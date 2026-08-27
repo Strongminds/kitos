@@ -111,11 +111,12 @@ try {
 
         $hangfireParts = ConvertTo-PostgresConnectionParts $hangfireDbConnectionString
         $knownAppUser = if ($Env:KITOS_APP_USER) { $Env:KITOS_APP_USER } else { "kitos" }
-        if ($hangfireParts.Username -ne $knownAppUser) {
-            Ensure-PostgresRole -parts $hangfireParts -roleName $knownAppUser
-            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "hangfire"
-            Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "public"
-        }
+        # Always ensure role and grant privileges regardless of username match:
+        # New-PostgresDatabase creates the DB as a superuser, so the app user needs
+        # explicit grants even when the connection string username matches the app user.
+        Ensure-PostgresRole -parts $hangfireParts -roleName $knownAppUser
+        Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "hangfire"
+        Grant-PostgresSchemaPrivileges -parts $hangfireParts -granteeUser $knownAppUser -schemaName "public"
     }
 }
 finally {
