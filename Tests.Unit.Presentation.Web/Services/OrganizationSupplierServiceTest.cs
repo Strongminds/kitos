@@ -90,6 +90,7 @@ namespace Tests.Unit.Presentation.Web.Services
             Assert.Equal(organizationalConfig.Count, overriddenFieldsFromResult.Count);
             Assert.Contains(overriddenFieldsFromResult, x => x.FieldKey == _fieldWithDefaultSupplierControl && x.ControlState == expectedControlState);
             Assert.Contains(overriddenFieldsFromResult, x => x.FieldKey == _fieldWithDefaultSharedControl && x.ControlState == expectedControlState);
+            
             var nonOverriddenFieldsFromResult = result.Where(x => x.FieldKey != _fieldWithDefaultSupplierControl && x.FieldKey != _fieldWithDefaultSharedControl).ToList();
             var defaultFields = SupplierAssociatedFields.DefaultConfiguration.Where(x => x.FieldKey != _fieldWithDefaultSupplierControl && x.FieldKey != _fieldWithDefaultSharedControl).ToList();
             Assert.Equal(defaultFields.Count, nonOverriddenFieldsFromResult.Count);
