@@ -96,8 +96,8 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
             _authorizationModelMock
                 .Setup(x => x.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(),
-                    It.IsAny<ISupplierAssociatedEntityUpdateParameters>(), It.IsAny<Guid>()))
-                .Returns(true);
+                    It.IsAny<ISupplierAssociatedEntityUpdateParameters>()))
+                .Returns((Result<bool, OperationError>)true);
 
             _authorizationModelMock
                 .Setup(x => x.AuthorizeChildEntityDelete(It.IsAny<IEntityOwnedByOrganization>(),
@@ -2249,7 +2249,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
         private void SetupAuthorizationModelReturns(bool value, DataProcessingRegistration dpr, ISupplierAssociatedEntityUpdateParameters parameters)
         {
-            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(dpr, parameters, It.IsAny<Guid>())).Returns(value);
+            _authorizationModelMock.Setup(_ => _.AuthorizeUpdate(dpr, parameters)).Returns((Result<bool, OperationError>)value);
         }
 
         private void ExpectBatchUpdateExternalReferencesReturns(DataProcessingRegistration dpr, IEnumerable<UpdatedExternalReferenceProperties> externalReferences, Maybe<OperationError> value)

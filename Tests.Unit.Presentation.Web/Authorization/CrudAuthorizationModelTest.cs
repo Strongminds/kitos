@@ -21,9 +21,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             authorizationContext.Setup(_ => _.AllowModify(It.IsAny<IEntity>())).Returns(expected);
             var sut = new CrudAuthorizationModel(authorizationContext.Object);
 
-            var result = sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(expected, result);
+            Assert.Equal(expected, result.Ok && result.Value);
             authorizationContext.Verify(_ => _.AllowModify(entity.Object));
 
         }

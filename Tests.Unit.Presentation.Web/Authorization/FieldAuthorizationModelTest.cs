@@ -32,11 +32,11 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var entity = SetupEntityWithIdAndSuppliers();
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
 
-            var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object, A<Guid>());
-            var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null, A<Guid>());
+            var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object);
+            var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null);
 
-            Assert.False(withNullEntity);
-            Assert.False(withNullParameters);
+            Assert.True(withNullEntity.Ok && !withNullEntity.Value);
+            Assert.True(withNullParameters.Ok && !withNullParameters.Value);
         }
 
         [Fact]
@@ -45,9 +45,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             IsUserGlobalAdmin(true);
             var entity = SetupEntityWithIdAndSuppliers();
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.True(result);
+            Assert.True(result.Ok && result.Value);
         }
 
         [Theory]
@@ -60,9 +60,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
 
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(allowModifyResult, result);
+            Assert.Equal(allowModifyResult, result.Ok && result.Value);
             VerifyAllowModify(entity.Object);
         }
 
@@ -79,9 +79,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             SetupDoesUserHaveSupplierApiAccess(true, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(allowModifyResult, result);
+            Assert.Equal(allowModifyResult, result.Ok && result.Value);
             VerifyAllowModify(entity.Object);
         }
 
@@ -95,9 +95,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             ExpectHasOnlySupplierChangesReturns(true, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(true, entity);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.True(result);
+            Assert.True(result.Ok && result.Value);
         }
 
         [Fact]
@@ -110,9 +110,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             ExpectHasAnySupplierChangesReturns(true, parameters, entity.Object);
             SetupDoesUserHaveSupplierApiAccess(false, entity);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.False(result);
+            Assert.True(result.Ok && !result.Value);
         }
 
         [Theory]
@@ -128,9 +128,9 @@ namespace Tests.Unit.Presentation.Web.Authorization
             SetupDoesUserHaveSupplierApiAccess(false, entity);
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
 
-            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object, A<Guid>());
+            var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(allowModifyResult, result);
+            Assert.Equal(allowModifyResult, result.Ok && result.Value);
             VerifyAllowModify(entity.Object);
         }
 
