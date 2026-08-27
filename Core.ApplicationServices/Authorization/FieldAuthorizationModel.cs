@@ -1,7 +1,6 @@
 ﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
-using Core.DomainModel.ItSystemUsage;
 using System;
 using System.Linq;
 
@@ -58,23 +57,36 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
     private Result<bool, OperationError> CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var organizationUuid = entity.Organization?.Uuid;
-        if (!organizationUuid.HasValue) return new OperationError($"No organization UUID found for {typeof(IEntityOwnedByOrganization)} with Id {entity.Id}", OperationFailure.BadState);
-
-        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity, organizationUuid.Value);
-        if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
-        return true;
+        return WithOrganizationUuid(entity)
+            .Select(
+                (organizationUuid) =>
+                    {
+                        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity, organizationUuid);
+                        if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
+                        return true;
+                    }
+            );
     }
 
     private Result<bool, OperationError> CheckForNonSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
+        return WithOrganizationUuid(entity)
+            .Select(
+                (organizationUuid) =>
+                    {
+                        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity, organizationUuid);
+                        if (anySupplierChanges) return false;
+                        return _authorizationContext.AllowModify(entity);
+                    }
+            );       
+    }
+
+    private Result<Guid, OperationError> WithOrganizationUuid(IEntityOwnedByOrganization entity)
+    {
         var organizationUuid = entity.Organization?.Uuid;
         if (!organizationUuid.HasValue) return new OperationError($"No organization UUID found for {typeof(IEntityOwnedByOrganization)} with Id {entity.Id}", OperationFailure.BadState);
-
-        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity, organizationUuid.Value);
-        if (anySupplierChanges) return false;
-        return _authorizationContext.AllowModify(entity);
+        return organizationUuid.Value;
     }
 
     public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key, Guid organizationUuid)
