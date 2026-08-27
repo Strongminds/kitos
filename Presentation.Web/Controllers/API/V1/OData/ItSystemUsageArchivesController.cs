@@ -25,7 +25,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         }
 
         [EnableQuery]
-        [Route("odata/Organizations({organizationUuid})/ItSystemUsageArchives")]
+        [Route("odata/ItSystemUsageArchives")]
         [RequireTopOnOdataThroughKitosToken]
         public IActionResult Get([FromQuery] Guid organizationUuid)
         {
