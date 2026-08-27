@@ -1,10 +1,15 @@
-﻿using Core.Abstractions.Types;
+﻿using Core.Abstractions.Helpers;
+using Core.Abstractions.Types;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Organizations.Write;
+using Core.DomainModel.GDPR;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
+using Core.DomainServices.Repositories.Organization;
+using Core.DomainServices.Suppliers;
 using Infrastructure.Services.DataAccess;
 using Moq;
 using System;
@@ -21,7 +26,13 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IOrganizationService> _organizationService;
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolver;
         private readonly Mock<ITransactionManager> _transactionManager;
+        private readonly Mock<IOrganizationRepository> _organizationRepository;
         private readonly OrganizationSupplierService _sut;
+
+        private readonly string _fieldWithDefaultSupplierControl =
+            ObjectHelper.GetPropertyPath<DataProcessingRegistration>(x => x.IsOversightCompleted);
+        private readonly string _fieldWithDefaultSharedControl =
+            ObjectHelper.GetPropertyPath<DataProcessingRegistrationOversightDate>(x => x.OversightReportLinkName);
 
         public OrganizationSupplierServiceTest()
         {
@@ -29,10 +40,65 @@ namespace Tests.Unit.Presentation.Web.Services
             _organizationService = new Mock<IOrganizationService>();
             _entityIdentityResolver = new Mock<IEntityIdentityResolver>();
             _transactionManager = new Mock<ITransactionManager>();
+            _organizationRepository = new Mock<IOrganizationRepository>();
 
             _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
                 _organizationService.Object, _entityIdentityResolver.Object, 
-                _transactionManager.Object);
+                _transactionManager.Object, _organizationRepository.Object);
+        }
+
+        [Fact]
+        public void GivenNoOrganizationalConfiguration_GetSupplierFieldConfigurations_Returns_DefaultConfigurations()
+        {
+            var expected = SupplierAssociatedFields.DefaultConfiguration;
+            var orgUuid = A<Guid>();
+
+            var result = _sut.GetSupplierFieldConfigurations(orgUuid);
+
+            Assert.Equal(expected.Count, result.Count);
+            foreach (var expectedConfig in expected)
+            {
+                var actualConfig = result.SingleOrDefault(x => x.FieldKey == expectedConfig.FieldKey);
+                Assert.NotNull(actualConfig);
+                Assert.Equal(expectedConfig.ControlState, actualConfig.ControlState);
+            }
+        }
+
+        [Fact]
+        public void GivenOrganizationalConfiguration_GetSupplierFieldConfigurations_OverridesDefaultsWithOrganizationalConfiguration()
+        {
+            var expectedControlState = SupplierAssociatedFieldControlState.ORGANIZATION;
+            var organizationalConfig = new HashSet<SupplierAssociatedFieldConfiguration>
+            {
+                new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = _fieldWithDefaultSupplierControl,
+                    ControlState = expectedControlState
+                },
+                new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = _fieldWithDefaultSharedControl,
+                    ControlState = expectedControlState
+                }
+            };
+            var orgUuid = A<Guid>();
+            _organizationRepository.Setup(_ => _.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(organizationalConfig);
+
+            var result = _sut.GetSupplierFieldConfigurations(orgUuid);
+
+            var overriddenFieldsFromResult = result.Where(x => x.FieldKey == _fieldWithDefaultSupplierControl || x.FieldKey == _fieldWithDefaultSharedControl).ToList();
+            Assert.Equal(organizationalConfig.Count, overriddenFieldsFromResult.Count);
+            Assert.Contains(overriddenFieldsFromResult, x => x.FieldKey == _fieldWithDefaultSupplierControl && x.ControlState == expectedControlState);
+            Assert.Contains(overriddenFieldsFromResult, x => x.FieldKey == _fieldWithDefaultSharedControl && x.ControlState == expectedControlState);
+            var nonOverriddenFieldsFromResult = result.Where(x => x.FieldKey != _fieldWithDefaultSupplierControl && x.FieldKey != _fieldWithDefaultSharedControl).ToList();
+            var defaultFields = SupplierAssociatedFields.DefaultConfiguration.Where(x => x.FieldKey != _fieldWithDefaultSupplierControl && x.FieldKey != _fieldWithDefaultSharedControl).ToList();
+            Assert.Equal(defaultFields.Count, nonOverriddenFieldsFromResult.Count);
+            foreach (var expectedConfig in defaultFields)
+            {
+                var actualConfig = nonOverriddenFieldsFromResult.SingleOrDefault(x => x.FieldKey == expectedConfig.FieldKey);
+                Assert.NotNull(actualConfig);
+                Assert.Equal(expectedConfig.ControlState, actualConfig.ControlState);
+            }
         }
 
         [Fact]

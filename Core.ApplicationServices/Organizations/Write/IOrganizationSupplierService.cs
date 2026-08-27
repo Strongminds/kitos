@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Core.Abstractions.Types;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 
 namespace Core.ApplicationServices.Organizations.Write
 {
@@ -12,5 +13,7 @@ namespace Core.ApplicationServices.Organizations.Write
         Result<IEnumerable<Organization>, OperationError> GetUsingOrganizations(Guid supplierUuid);
         Result<OrganizationSupplier, OperationError> AddSupplierToOrganization(Guid organizationUuid, Guid supplierUuid);
         Maybe<OperationError> RemoveSupplierFromOrganization(Guid organizationUuid, Guid supplierUuid);
+
+        ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid);
     }
 }

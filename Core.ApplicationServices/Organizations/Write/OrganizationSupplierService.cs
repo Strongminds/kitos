@@ -1,13 +1,16 @@
 ﻿using Core.Abstractions.Types;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
+using Core.DomainServices.Queries.Organization;
+using Core.DomainServices.Repositories.Organization;
+using Core.DomainServices.Suppliers;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.DomainServices.Queries.Organization;
 
 namespace Core.ApplicationServices.Organizations.Write
 {
@@ -17,16 +20,19 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly IOrganizationService _organizationService;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly ITransactionManager _transactionManager;
+        private readonly IOrganizationRepository _organizationRepository;
 
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
-            ITransactionManager transactionManager)
+            ITransactionManager transactionManager,
+            IOrganizationRepository organizationRepository)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
             _transactionManager = transactionManager;
+            _organizationRepository = organizationRepository;
         }
 
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
@@ -116,6 +122,28 @@ namespace Core.ApplicationServices.Organizations.Write
             }
 
             return orgIdResult.Value;
+        }
+
+        public ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid)
+        {
+            var configurations = new HashSet<SupplierAssociatedFieldConfiguration>(
+                SupplierAssociatedFields.DefaultConfiguration.Select(c => new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = c.FieldKey,
+                    ControlState = c.ControlState
+                })
+            );
+
+            var organizationalConfigurations = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
+            if (organizationalConfigurations is null) return configurations;
+            
+            foreach (var orgConfig in organizationalConfigurations.Value)
+            {
+                var defaultConfig = configurations.FirstOrDefault(c => c.FieldKey == orgConfig.FieldKey);
+                defaultConfig?.ControlState = orgConfig.ControlState;
+            }
+
+            return configurations;
         }
     }
 }

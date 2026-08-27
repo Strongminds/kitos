@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Core.DomainModel.SupplierAssociatedFields;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
@@ -22,6 +24,16 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public OrganizationSupplierInternalV2Controller(IOrganizationSupplierService organizationSupplierService)
         {
             _organizationSupplierService = organizationSupplierService;
+        }
+
+        [HttpGet]
+        [Route("{organizationUuid}/suppliers/fields")]
+        [ApiResponse(typeof(IEnumerable<IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult GetSupplierFieldConfigurations([NonEmptyGuid] Guid organizationUuid) {
+            var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid)
+                .Select(x => MapSupplierAssociatedFieldConfiguration(x)).ToList();
+            return Ok(configurations);
         }
 
         [HttpGet]
@@ -101,6 +113,25 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         private static ShallowOrganizationResponseDTO MapSingleToResponse(OrganizationSupplier supplier)
         {
             return supplier.Supplier.MapShallowOrganizationResponseDTO();
+        }
+
+        private static SupplierAssociatedFieldConfigurationResponseDto MapSupplierAssociatedFieldConfiguration(SupplierAssociatedFieldConfiguration domainModel)
+        {
+            return new SupplierAssociatedFieldConfigurationResponseDto()
+            {
+                FieldKey = domainModel.FieldKey,
+                ControlState = ToOption(domainModel.ControlState)
+            };
+        }
+
+        private static SupplierAssociatedFieldControlStateOption ToOption(SupplierAssociatedFieldControlState controlState) {
+            return controlState switch
+            {
+                SupplierAssociatedFieldControlState.ORGANIZATION => SupplierAssociatedFieldControlStateOption.ORGANIZATION,
+                SupplierAssociatedFieldControlState.SUPPLIER => SupplierAssociatedFieldControlStateOption.SUPPLIER,
+                SupplierAssociatedFieldControlState.SHARED => SupplierAssociatedFieldControlStateOption.SHARED,
+                _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
+            };
         }
     }
 }
