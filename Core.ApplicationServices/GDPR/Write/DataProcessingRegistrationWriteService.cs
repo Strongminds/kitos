@@ -287,8 +287,9 @@ namespace Core.ApplicationServices.GDPR.Write
             if (!organizationUuid.HasValue) return new OperationError($"No organization UUID found for {typeof(DataProcessingRegistration)} with UUID {dpr.Uuid}", OperationFailure.BadState);
 
             var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
-            var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters, organizationUuid.Value);
-            if (!authorizeUpdate)
+            var authorizeUpdateResult = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters, organizationUuid.Value);
+            if (authorizeUpdateResult.Failed) return authorizeUpdateResult.Error;
+            if (!authorizeUpdateResult.Value)
             {
                 return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
             }

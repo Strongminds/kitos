@@ -1,13 +1,13 @@
-﻿using Core.ApplicationServices.Model;
+﻿using Core.Abstractions.Types;
+using Core.ApplicationServices.Model;
 using Core.DomainModel;
-using System;
 
 namespace Core.ApplicationServices.Authorization
 {
     public interface IAuthorizationModel
     {
-        bool AuthorizeUpdate(IEntityOwnedByOrganization entity,
-            ISupplierAssociatedEntityUpdateParameters parameters, Guid organizationUuid);
+        Result<bool, OperationError> AuthorizeUpdate(IEntityOwnedByOrganization entity,
+            ISupplierAssociatedEntityUpdateParameters parameters);
         bool AuthorizeChildEntityDelete<TChild>(IEntityOwnedByOrganization parent, TChild child) where TChild : class;
     }
 }

@@ -750,11 +750,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
         {
             if (isCreate) return WithWriteAccess(systemUsage);
             var authModel = authorizationContext.GetAuthorizationModel(systemUsage);
-
-            var organizationUuid = systemUsage.Organization?.Uuid;
-            if (!organizationUuid.HasValue) return new OperationError($"No organization UUID found for {typeof(ItSystemUsage)} with UUID {systemUsage.Uuid}", OperationFailure.BadState);
-
-            return authModel.AuthorizeUpdate(systemUsage, parameters, organizationUuid.Value) ? systemUsage : new OperationError(OperationFailure.Forbidden);
+            var authResult = authModel.AuthorizeUpdate(systemUsage, parameters);
+            if (authResult.Failed) return authResult.Error;
+            return authResult.Value ? systemUsage : new OperationError(OperationFailure.Forbidden);
         }
 
         private Result<ItSystemUsage, OperationError> WithWriteAccess(ItSystemUsage systemUsage)
