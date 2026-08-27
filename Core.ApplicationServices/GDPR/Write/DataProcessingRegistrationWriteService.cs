@@ -283,11 +283,8 @@ namespace Core.ApplicationServices.GDPR.Write
         private Maybe<OperationError> AuthorizeUpdate(DataProcessingRegistration dpr,
             ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
         {
-            var organizationUuid = dpr.Organization?.Uuid;
-            if (!organizationUuid.HasValue) return new OperationError($"No organization UUID found for {typeof(DataProcessingRegistration)} with UUID {dpr.Uuid}", OperationFailure.BadState);
-
             var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
-            var authorizeUpdateResult = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters, organizationUuid.Value);
+            var authorizeUpdateResult = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
             if (authorizeUpdateResult.Failed) return authorizeUpdateResult.Error;
             if (!authorizeUpdateResult.Value)
             {
