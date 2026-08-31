@@ -27,15 +27,7 @@ namespace Presentation.Web.Controllers.API.V1.OData
         [EnableQuery]
         [Route("odata/ItSystemUsageArchives")]
         [RequireTopOnOdataThroughKitosToken]
-        public override IActionResult Get()
-        {
-            return base.Get();
-        }
-
-        [EnableQuery]
-        [Route("odata/Organizations({organizationUuid})/ItSystemUsageArchives")]
-        [RequireTopOnOdataThroughKitosToken]
-        public IActionResult GetByOrganizationUuid([FromRoute] Guid organizationUuid)
+        public IActionResult Get([FromQuery] Guid organizationUuid)
         {
             var orgDbId = _identityResolver.ResolveDbId<Organization>(organizationUuid);
             if (orgDbId.IsNone)
