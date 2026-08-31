@@ -1,7 +1,7 @@
 ﻿using Core.Abstractions.Helpers;
-using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItSystemUsage;
+using Core.DomainModel.Organization;
 using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Repositories.Organization;
 using Core.DomainServices.Suppliers;
@@ -63,6 +63,39 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         }
 
         [Fact]
+        public void GetSupplierAssociatedFieldConfigurations_ShouldReturnNone_WhenOrganizationHasNoSupplierFieldConfigurations()
+        {
+            var orgUuid = A<Guid>();
+            var organization = CreateOrganization();
+            organization.Uuid = orgUuid;
+            organization.SupplierAssociatedFieldConfigurations = [];
+            ExpectOrganization(organization);
+
+            var result = _sut.IsSupplierControlled(_isOversightCompleted, orgUuid);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void GetSupplierAssociatedFieldConfigurations_ShouldReturnConfigurations_WhenOrganizationHasSupplierFieldConfigurations()
+        {
+            var orgUuid = A<Guid>();
+            var expected = new SupplierAssociatedFieldConfiguration
+            {
+                FieldKey = _oversightReportLinkName,
+                ControlState = SupplierAssociatedFieldControlState.SUPPLIER
+            };
+            var organization = CreateOrganization();
+            organization.Uuid = orgUuid;
+            organization.SupplierAssociatedFieldConfigurations = [expected];
+            ExpectOrganization(organization);
+
+            var result = _sut.IsSupplierControlled(_oversightReportLinkName, orgUuid);
+
+            Assert.True(result);
+        }
+
+        [Fact]
         public void IsSupplierControlled_ShouldReturnFalse_ForDefaultNonSupplierControlledField_WhenNoOrganizationConfiguration()
         {
             var orgUuid = SetupExpectNoConfigurations();
@@ -79,11 +112,10 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         public void IsSupplierControlled_ShouldOverrideSharedDefault_WhenOrganizationConfigurationExists()
         {
             var orgUuid = A<Guid>();
-            var expectedConfigurations = new List<SupplierAssociatedFieldConfiguration>
-            {
-                new SupplierAssociatedFieldConfiguration { FieldKey = _oversightReportLinkName, ControlState = SupplierAssociatedFieldControlState.SUPPLIER }
-            };
-            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+            var organization = CreateOrganization();
+            organization.Uuid = orgUuid;
+            organization.SupplierAssociatedFieldConfigurations = [new SupplierAssociatedFieldConfiguration { FieldKey = _oversightReportLinkName, ControlState = SupplierAssociatedFieldControlState.SUPPLIER }];
+            ExpectOrganization(organization);
             
             var result = _sut.IsSupplierControlled(_oversightReportLinkName, orgUuid);
             
@@ -105,10 +137,6 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
         {
             var expected = new SupplierAssociatedFieldConfiguration { FieldKey = _remark, ControlState = SupplierAssociatedFieldControlState.ORGANIZATION };
             var orgUuid = SetupExpectConfiguration(expected);
-            var expectedConfigurations = new List<SupplierAssociatedFieldConfiguration>
-            {
-            };
-            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
 
             var result = _sut.IsSupplierControlled(_isOversightCompleted, orgUuid);
 
@@ -284,17 +312,31 @@ namespace Tests.Unit.Core.DomainServices.Suppliers
 
         private Guid SetupExpectConfiguration(params SupplierAssociatedFieldConfiguration[] configurations) {
             var orgUuid = A<Guid>();
-            var expectedConfigurations = new List<SupplierAssociatedFieldConfiguration>(configurations);
-            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+            var organization = CreateOrganization();
+            organization.Uuid = orgUuid;
+            organization.SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>(configurations);
+            ExpectOrganization(organization);
             return orgUuid;
         }
 
         private Guid SetupExpectNoConfigurations()
         {
             var orgUuid = A<Guid>();
-            var expectedConfigurations = Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;
-            _organizationRepository.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(expectedConfigurations);
+            var organization = CreateOrganization();
+            organization.Uuid = orgUuid;
+            organization.SupplierAssociatedFieldConfigurations = [];
+            ExpectOrganization(organization);
             return orgUuid;
+        }
+
+        private void ExpectOrganization(Organization organization)
+        {
+            _organizationRepository.Setup(x => x.GetByUuid(organization.Uuid)).Returns(organization);
+        }
+
+        private static Organization CreateOrganization()
+        {
+            return new Organization();
         }
     }
 }

@@ -6,17 +6,18 @@ namespace Core.DomainServices.Queries.Interface
 {
     public class QueryByNameOrItInterfaceId: IDomainQuery<ItInterface>
     {
-        private readonly string _query;
-        private readonly string _queryLower;
+        private readonly string? _queryLower;
 
-        public QueryByNameOrItInterfaceId(string query)
+        public QueryByNameOrItInterfaceId(string? query)
         {
-            _query = query;
             _queryLower = query?.ToLower();
         }
 
         public IQueryable<ItInterface> Apply(IQueryable<ItInterface> source)
         {
+            if(string.IsNullOrEmpty(_queryLower))
+                return source;
+
             return source.Where(x => x.Name.ToLower().Contains(_queryLower) || x.ItInterfaceId.ToLower().Contains(_queryLower));
         }
     }

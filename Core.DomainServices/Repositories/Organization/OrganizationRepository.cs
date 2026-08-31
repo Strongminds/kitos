@@ -54,6 +54,7 @@ namespace Core.DomainServices.Repositories.Organization
             var organizationMaybe = GetByUuid(organizationUuid);
             if (organizationMaybe.IsNone) return Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;
             var supplierAssociatedFieldConfigurations = organizationMaybe.Value.SupplierAssociatedFieldConfigurations;
+
             return supplierAssociatedFieldConfigurations.IsNullOrEmpty()
                 ? Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None
                 : Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.Some(supplierAssociatedFieldConfigurations.AsEnumerable());
