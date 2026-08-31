@@ -1211,7 +1211,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             //Arrange
             var uuid = A<Guid>();
-            var itSystemUsage = new ItSystemUsage { Uuid = uuid };
+            var orgUuid = A<Guid>();
+            var itSystemUsage = new ItSystemUsage 
+            { 
+                Uuid = uuid,
+                Organization = new Organization { Id = A<int>(), Uuid = orgUuid } 
+            };
             var aiFieldKey =
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
                     x.ContainsAITechnology);
