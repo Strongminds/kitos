@@ -32,7 +32,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetSupplierFieldConfigurations([NonEmptyGuid] Guid organizationUuid) {
             var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid)
-                .Select(x => MapSupplierAssociatedFieldConfiguration(x)).ToList();
+                .Select(MapSupplierAssociatedFieldConfiguration).ToList();
             return Ok(configurations);
         }
 
