@@ -1211,7 +1211,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             //Arrange
             var uuid = A<Guid>();
-            var itSystemUsage = new ItSystemUsage { Uuid = uuid };
+            var orgUuid = A<Guid>();
+            var itSystemUsage = new ItSystemUsage 
+            { 
+                Uuid = uuid,
+                Organization = new Organization { Id = A<int>(), Uuid = orgUuid } 
+            };
             var aiFieldKey =
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
                     x.ContainsAITechnology);
@@ -1432,7 +1437,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
         private void ExpectGetFieldPermissionsReturns(ItSystemUsage source, string key, bool result)
         {
-            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(source, key)).Returns(new FieldPermissionsResult { Enabled = result, Key = key });
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(source, key, It.IsAny<Guid>())).Returns(new FieldPermissionsResult { Enabled = result, Key = key });
         }
 
         private void ExpectAllowCreateReturns(int orgId, bool value)

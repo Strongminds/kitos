@@ -273,6 +273,7 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// Returns the permissions of the authenticated client in the context of a specific Data Processing Registration
         /// </summary>
         /// <param name="dprUuid">UUID of the contract entity</param>
+        /// <param name="organizationUuid">UUID of the organization that the user's permissions are being inspected in</param>
         /// <returns></returns>
         [HttpGet]
         [Route("{dprUuid}/permissions")]
