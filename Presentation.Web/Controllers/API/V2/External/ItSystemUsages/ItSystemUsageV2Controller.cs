@@ -110,7 +110,6 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// Returns the permissions of the authenticated client in the context of a specific IT-System usage (a specific IT-System in a specific Organization)
         /// </summary>
         /// <param name="systemUsageUuid">UUID of the system usage entity</param>
-        /// <param name="organizationUuid">UUID of the organization that the user's permissions are being inspected in</param>
         /// <returns></returns>
         [HttpGet]
         [Route("{systemUsageUuid}/permissions")]
