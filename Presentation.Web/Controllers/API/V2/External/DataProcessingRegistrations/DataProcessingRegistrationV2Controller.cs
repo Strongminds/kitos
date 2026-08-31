@@ -276,18 +276,18 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
         /// <param name="organizationUuid">UUID of the organization that the user's permissions are being inspected in</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{dprUuid}/permissions/{organizationUuid}")]
+        [Route("{dprUuid}/permissions")]
         [ApiResponse(typeof(CombinedPermissionsResponseDTO), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult GetDataProcessingRegistrationPermissions([NonEmptyGuid] Guid dprUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetDataProcessingRegistrationPermissions([NonEmptyGuid] Guid dprUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return _dataProcessingRegistrationService
-                .GetPermissions(dprUuid, organizationUuid)
+                .GetPermissions(dprUuid)
                 .Select(_permissionResponseMapper.Map)
                 .Match(Ok, FromOperationError);
         }

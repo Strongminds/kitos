@@ -286,7 +286,8 @@ namespace Core.ApplicationServices.GDPR.Write
             var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
             var authorizeUpdateResult = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
             if (authorizeUpdateResult.Failed) return authorizeUpdateResult.Error;
-            if (!authorizeUpdateResult.Value)
+            var isAuthorized = authorizeUpdateResult.Value;
+            if (!isAuthorized)
             {
                 return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
             }

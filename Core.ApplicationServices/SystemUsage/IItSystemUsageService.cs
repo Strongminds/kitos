@@ -20,7 +20,7 @@ namespace Core.ApplicationServices.SystemUsage
         ItSystemUsage? GetById(int usageId);
         Result<ItSystemUsage, OperationError> GetItSystemUsageByUuidAndAuthorizeRead(Guid uuid);
         Result<ItSystemUsage, OperationError> GetItSystemUsageByUuid(Guid uuid);
-        Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid, Guid organizationUuid);
+        Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid);
         Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid);
 
         /// <summary>

@@ -1234,7 +1234,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(delete);
 
             //Act
-            var result = _sut.GetPermissions(uuid, A<Guid>());
+            var result = _sut.GetPermissions(uuid);
 
             //Assert
             Assert.True(result.Ok);
@@ -1278,7 +1278,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             ExpectUsageRepositoryAsQueryable(itSystemUsage);
 
             //Act
-            var result = _sut.GetPermissions(wrongUuid, A<Guid>());
+            var result = _sut.GetPermissions(wrongUuid);
 
             //Assert
             Assert.True(result.Failed);

@@ -62,8 +62,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
                 (organizationUuid) =>
                     {
                         var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity, organizationUuid);
-                        if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
-                        return true;
+                        return hasOnlySupplierChanges || _authorizationContext.AllowModify(entity);
                     }
             );
     }
@@ -76,8 +75,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
                 (organizationUuid) =>
                     {
                         var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity, organizationUuid);
-                        if (anySupplierChanges) return false;
-                        return _authorizationContext.AllowModify(entity);
+                        return !anySupplierChanges && _authorizationContext.AllowModify(entity);
                     }
             );       
     }

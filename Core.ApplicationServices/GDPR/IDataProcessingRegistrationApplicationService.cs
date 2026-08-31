@@ -69,7 +69,7 @@ namespace Core.ApplicationServices.GDPR
         IQueryable<DataProcessingRegistration> Query(params IDomainQuery<DataProcessingRegistration>[] conditions);
         Result<DataProcessingRegistration, OperationError> GetByUuid(Guid uuid);
 
-        Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid, Guid organizationUuid);
+        Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid);
         Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid);
     }
 }

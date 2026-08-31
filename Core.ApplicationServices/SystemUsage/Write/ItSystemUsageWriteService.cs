@@ -752,7 +752,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
             var authModel = authorizationContext.GetAuthorizationModel(systemUsage);
             var authResult = authModel.AuthorizeUpdate(systemUsage, parameters);
             if (authResult.Failed) return authResult.Error;
-            return authResult.Value ? systemUsage : new OperationError(OperationFailure.Forbidden);
+
+            var isAuthorized = authResult.Value;
+            return isAuthorized ? systemUsage : new OperationError(OperationFailure.Forbidden);
         }
 
         private Result<ItSystemUsage, OperationError> WithWriteAccess(ItSystemUsage systemUsage)

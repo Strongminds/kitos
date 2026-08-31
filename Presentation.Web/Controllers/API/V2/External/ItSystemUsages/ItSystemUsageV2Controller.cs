@@ -113,18 +113,18 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <param name="organizationUuid">UUID of the organization that the user's permissions are being inspected in</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{systemUsageUuid}/permissions/{organizationUuid}")]
+        [Route("{systemUsageUuid}/permissions")]
         [ApiResponse(typeof(ResourcePermissionsResponseDTO), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.NotFound)]
-        public IActionResult GetItSystemUsagePermissions([NonEmptyGuid] Guid systemUsageUuid, [NonEmptyGuid] Guid organizationUuid)
+        public IActionResult GetItSystemUsagePermissions([NonEmptyGuid] Guid systemUsageUuid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return itSystemUsageService
-                .GetPermissions(systemUsageUuid, organizationUuid)
+                .GetPermissions(systemUsageUuid)
                 .Select(permissionsResponseMapper.Map)
                 .Match(Ok, FromOperationError);
         }
