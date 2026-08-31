@@ -5,7 +5,6 @@ using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Queries.Organization;
-using Core.DomainServices.Repositories.Organization;
 using Core.DomainServices.Suppliers;
 using Infrastructure.Services.DataAccess;
 using System;
@@ -20,19 +19,19 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly IOrganizationService _organizationService;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly ITransactionManager _transactionManager;
-        private readonly IOrganizationRepository _organizationRepository;
+        private readonly ISupplierFieldDomainService _supplierFieldDomainService;
 
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
             ITransactionManager transactionManager,
-            IOrganizationRepository organizationRepository)
+            ISupplierFieldDomainService supplierFieldDomainService)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
             _transactionManager = transactionManager;
-            _organizationRepository = organizationRepository;
+            _supplierFieldDomainService = supplierFieldDomainService;
         }
 
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
@@ -134,7 +133,7 @@ namespace Core.ApplicationServices.Organizations.Write
                 })
             );
 
-            var organizationalConfigurations = _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid);
+            var organizationalConfigurations = _supplierFieldDomainService.GetSupplierAssociatedFieldConfigurations(organizationUuid);
             if (organizationalConfigurations is null) return configurations;
             
             foreach (var orgConfig in organizationalConfigurations.Value)

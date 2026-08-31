@@ -91,7 +91,7 @@ namespace Core.DomainServices.Suppliers
             );
         }
 
-        private Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid)
+        public Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid)
         {
             var organizationMaybe = _organizationRepository.GetByUuid(organizationUuid);
             if (organizationMaybe.IsNone) return Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;

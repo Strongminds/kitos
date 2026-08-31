@@ -620,9 +620,9 @@ namespace Core.ApplicationServices.GDPR
                 );
         }
 
-        public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid, Guid organizationUuid)
+        public Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid)
         {
-            return GetByUuid(uuid).Transform(x => GetPermissions(x, organizationUuid));
+            return GetByUuid(uuid).Transform(GetPermissions);
         }
 
         public Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid)
@@ -632,7 +632,7 @@ namespace Core.ApplicationServices.GDPR
                 .Select(organization => ResourceCollectionPermissionsResult.FromOrganizationId<DataProcessingRegistration>(organization.Id, _authorizationContext));
         }
 
-        private Result<CombinedPermissionsResult, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> dprResult, Guid organizationUuid)
+        private Result<CombinedPermissionsResult, OperationError> GetPermissions(Result<DataProcessingRegistration, OperationError> dprResult)
         {
             return dprResult
                 .Transform
@@ -644,7 +644,7 @@ namespace Core.ApplicationServices.GDPR
                             .Bind(permissions =>
                             {
                                 return ModuleFieldsPermissionsResult
-                                    .CreateFromDPRResult(_fieldAuthorizationModel, dpr, organizationUuid)
+                                    .CreateFromDPRResult(_fieldAuthorizationModel, dpr)
                                     .Select(fieldPermissions =>
                                         new CombinedPermissionsResult(permissions, fieldPermissions)
                                     );
