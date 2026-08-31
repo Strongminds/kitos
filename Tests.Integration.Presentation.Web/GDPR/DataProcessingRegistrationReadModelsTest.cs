@@ -144,7 +144,12 @@ namespace Tests.Integration.Presentation.Web.GDPR
                 {
                     OversightScheduledInspectionDate = oversightScheduledInspectionDate,
                     IsOversightCompleted = oversightCompleted,
-                    OversightDates = oversight.WrapAsEnumerable(),
+                    OversightDates = new[] { new ModifyOversightDateDTO
+                    {
+                        CompletedAt = oversight.CompletedAt,
+                        Remark = oversight.Remark,
+                        OversightReportLink = oversight.OversightReportLink
+                    } },
                     OversightInterval = oversightInterval,
                     OversightOptionUuids = oversightOption.Uuid.WrapAsEnumerable(),
                 });

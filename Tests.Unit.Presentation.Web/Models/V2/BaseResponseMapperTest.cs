@@ -95,7 +95,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             }
         }
 
-        public static void AssertOptionalIdentities<T>(IEnumerable<T>? optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
+        protected static void AssertOptionalIdentities<T>(IEnumerable<T>? optionalExpectedIdentities, IEnumerable<IdentityNamePairResponseDTO> actualIdentities) where T : IHasUuid, IHasName
         {
             if (optionalExpectedIdentities == null)
             {
@@ -113,28 +113,6 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                              .ToList())
                 {
                     AssertOptionalIdentity(comparison.expected, comparison.actual);
-                }
-            }
-        }
-
-        public static void AssertOptionalOrganizationIdentities(IEnumerable<Organization>? optionalExpectedIdentities, IEnumerable<ShallowOrganizationResponseDTO> actualIdentities)
-        {
-            if (optionalExpectedIdentities == null)
-            {
-                Assert.Null(actualIdentities);
-            }
-            else
-            {
-                var orderedOptionalExpectedIdentities = optionalExpectedIdentities.OrderBy(x => x.Uuid).ToList();
-                var orderedActualIdentities = actualIdentities.OrderBy(x => x.Uuid).ToList();
-
-                Assert.Equal(orderedOptionalExpectedIdentities.Count, orderedActualIdentities.Count);
-
-                foreach (var comparison in orderedOptionalExpectedIdentities
-                             .Zip(orderedActualIdentities, (expected, actual) => new { expected, actual })
-                             .ToList())
-                {
-                    AssertOrganization(comparison.expected, comparison.actual);
                 }
             }
         }
