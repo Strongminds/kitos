@@ -26,7 +26,7 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<IOrganizationService> _organizationService;
         private readonly Mock<IEntityIdentityResolver> _entityIdentityResolver;
         private readonly Mock<ITransactionManager> _transactionManager;
-        private readonly Mock<IOrganizationRepository> _organizationRepository;
+        private readonly Mock<ISupplierFieldDomainService> _supplierFieldDomainService;
         private readonly OrganizationSupplierService _sut;
 
         private readonly string _fieldWithDefaultSupplierControl =
@@ -40,11 +40,11 @@ namespace Tests.Unit.Presentation.Web.Services
             _organizationService = new Mock<IOrganizationService>();
             _entityIdentityResolver = new Mock<IEntityIdentityResolver>();
             _transactionManager = new Mock<ITransactionManager>();
-            _organizationRepository = new Mock<IOrganizationRepository>();
+            _supplierFieldDomainService = new Mock<ISupplierFieldDomainService>();
 
             _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
                 _organizationService.Object, _entityIdentityResolver.Object, 
-                _transactionManager.Object, _organizationRepository.Object);
+                _transactionManager.Object, _supplierFieldDomainService.Object);
         }
 
         [Fact]
@@ -65,6 +65,16 @@ namespace Tests.Unit.Presentation.Web.Services
         }
 
         [Fact]
+        public void GivenDefaultConfiguration_GetSupplierFieldConfigurations_Returns_Copy_NotSharedInstances()
+        {
+            var orgUuid = A<Guid>();
+
+            var result = _sut.GetSupplierFieldConfigurations(orgUuid);
+
+            Assert.NotSame(SupplierAssociatedFields.DefaultConfiguration, result);
+        }
+
+        [Fact]
         public void GivenOrganizationalConfiguration_GetSupplierFieldConfigurations_OverridesDefaultsWithOrganizationalConfiguration()
         {
             var expectedControlState = SupplierAssociatedFieldControlState.ORGANIZATION;
@@ -82,7 +92,7 @@ namespace Tests.Unit.Presentation.Web.Services
                 }
             };
             var orgUuid = A<Guid>();
-            _organizationRepository.Setup(_ => _.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(organizationalConfig);
+            _supplierFieldDomainService.Setup(_ => _.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(organizationalConfig);
 
             var result = _sut.GetSupplierFieldConfigurations(orgUuid);
 

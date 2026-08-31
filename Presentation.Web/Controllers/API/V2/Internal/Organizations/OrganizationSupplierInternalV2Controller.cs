@@ -28,9 +28,10 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         [HttpGet]
         [Route("{organizationUuid}/suppliers/fields")]
-        [ApiResponse(typeof(IEnumerable<IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>>), HttpStatusCode.OK)]
+        [ApiResponse(typeof(IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
-        public IActionResult GetSupplierFieldConfigurations([NonEmptyGuid] Guid organizationUuid) {
+        public IActionResult GetSupplierFieldConfigurations([NonEmptyGuid] Guid organizationUuid)
+        {
             var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid)
                 .Select(MapSupplierAssociatedFieldConfiguration).ToList();
             return Ok(configurations);
