@@ -1,11 +1,12 @@
 ﻿using Core.Abstractions.Helpers;
+using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
-using System.Collections.Generic;
-using System.Linq;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices.Repositories.Organization;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Core.DomainServices.Suppliers
 {
@@ -35,7 +36,7 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties, Guid organizationUuid)
         {
-            return _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid)
+            return GetSupplierAssociatedFieldConfigurations(organizationUuid)
                 .Match(
                     (organizationalConfigurations) =>
                        {
@@ -56,7 +57,7 @@ namespace Core.DomainServices.Suppliers
 
         public bool ContainsAnySupplierControlledFields(IEnumerable<string> properties, Guid organizationUuid)
         {
-            return _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid).Match(
+            return GetSupplierAssociatedFieldConfigurations(organizationUuid).Match(
                 (organizationalConfigurations) =>
                 {
                     foreach (var property in properties)
@@ -77,7 +78,7 @@ namespace Core.DomainServices.Suppliers
 
         public bool IsSupplierControlled(string key, Guid organizationUuid)
         {
-            return _organizationRepository.GetSupplierAssociatedFieldConfigurations(organizationUuid).Match(
+            return GetSupplierAssociatedFieldConfigurations(organizationUuid).Match(
                 (organizationalConfigurations) =>
                 {
                     var organizationalField = organizationalConfigurations.FirstOrDefault(x => x.FieldKey == key);
@@ -87,7 +88,18 @@ namespace Core.DomainServices.Suppliers
                         : organizationalField.HasSupplierControlState;
                 },
                 () => IsSupplierControlledInDefaultConfigurations(key)
-            );           
+            );
+        }
+
+        private Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid)
+        {
+            var organizationMaybe = _organizationRepository.GetByUuid(organizationUuid);
+            if (organizationMaybe.IsNone) return Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;
+            var supplierAssociatedFieldConfigurations = organizationMaybe.Value.SupplierAssociatedFieldConfigurations;
+
+            return supplierAssociatedFieldConfigurations.Any()
+                ? Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.Some(supplierAssociatedFieldConfigurations.AsEnumerable())
+                : Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None;
         }
 
         private SupplierAssociatedFieldConfiguration? TryGetFromDefaultConfiguration(string key)
