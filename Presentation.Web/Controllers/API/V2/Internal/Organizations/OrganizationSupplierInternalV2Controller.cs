@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Presentation.Web.Controllers.API.V2.Internal.Organizations.Mapping;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
@@ -150,7 +151,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .Select(c => new SupplierAssociatedFieldConfiguration
                 {
                     FieldKey = c.FieldKey,
-                    ControlState = Enum.Parse<SupplierAssociatedFieldControlState>(c.ControlState)
+                    ControlState = c.ControlState.ToDomain()
                 })
                 .ToList();
 
@@ -193,23 +194,23 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             };
         }
 
-        private static SupplierAssociatedFieldControlStateOption ToOption(SupplierAssociatedFieldControlState controlState) {
+        private static SupplierAssociatedFieldControlStateOption ToOption(FieldControlState controlState) {
             return controlState switch
             {
-                SupplierAssociatedFieldControlState.Organization => SupplierAssociatedFieldControlStateOption.ORGANIZATION,
-                SupplierAssociatedFieldControlState.Supplier => SupplierAssociatedFieldControlStateOption.SUPPLIER,
-                SupplierAssociatedFieldControlState.Shared => SupplierAssociatedFieldControlStateOption.SHARED,
+                FieldControlState.Organization => SupplierAssociatedFieldControlStateOption.ORGANIZATION,
+                FieldControlState.Supplier => SupplierAssociatedFieldControlStateOption.SUPPLIER,
+                FieldControlState.Shared => SupplierAssociatedFieldControlStateOption.SHARED,
                 _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
             };
         }
 
-        private static SupplierAssociatedFieldControlState ToDomain(SupplierAssociatedFieldControlStateOption controlState)
+        private static FieldControlState ToDomain(SupplierAssociatedFieldControlStateOption controlState)
         {
             return controlState switch
             {
-                SupplierAssociatedFieldControlStateOption.ORGANIZATION => SupplierAssociatedFieldControlState.Organization,
-                SupplierAssociatedFieldControlStateOption.SUPPLIER => SupplierAssociatedFieldControlState.Supplier,
-                SupplierAssociatedFieldControlStateOption.SHARED => SupplierAssociatedFieldControlState.Shared,
+                SupplierAssociatedFieldControlStateOption.ORGANIZATION => FieldControlState.Organization,
+                SupplierAssociatedFieldControlStateOption.SUPPLIER => FieldControlState.Supplier,
+                SupplierAssociatedFieldControlStateOption.SHARED => FieldControlState.Shared,
                 _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
             };
         }

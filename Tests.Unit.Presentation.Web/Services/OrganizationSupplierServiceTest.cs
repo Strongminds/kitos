@@ -76,7 +76,7 @@ namespace Tests.Unit.Presentation.Web.Services
         [Fact]
         public void GivenOrganizationalConfiguration_GetSupplierFieldConfigurations_OverridesDefaultsWithOrganizationalConfiguration()
         {
-            var expectedControlState = SupplierAssociatedFieldControlState.Organization;
+            var expectedControlState = FieldControlState.Organization;
             var organizationalConfig = new HashSet<SupplierAssociatedFieldConfiguration>
             {
                 new SupplierAssociatedFieldConfiguration
@@ -120,7 +120,7 @@ namespace Tests.Unit.Presentation.Web.Services
                 new SupplierAssociatedFieldConfiguration
                 {
                     FieldKey = _fieldWithDefaultSupplierControl,
-                    ControlState = SupplierAssociatedFieldControlState.Organization
+                    ControlState = FieldControlState.Organization
                 }
             };
             _organizationService.Setup(x => x.GetOrganization(organizationUuid, null))
@@ -130,13 +130,13 @@ namespace Tests.Unit.Presentation.Web.Services
                 new SupplierAssociatedFieldConfiguration
                 {
                     FieldKey = _fieldWithDefaultSupplierControl,
-                    ControlState = SupplierAssociatedFieldControlState.Supplier
+                    ControlState = FieldControlState.Supplier
                 }
             });
 
             Assert.True(result.Ok);
             var updated = Assert.Single(result.Value);
-            Assert.Equal(SupplierAssociatedFieldControlState.Supplier, updated.ControlState);
+            Assert.Equal(FieldControlState.Supplier, updated.ControlState);
         }
 
         [Fact]
