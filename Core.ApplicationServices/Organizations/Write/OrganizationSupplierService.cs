@@ -1,8 +1,10 @@
 ﻿using Core.Abstractions.Types;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
+using Core.DomainServices.Suppliers;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
@@ -17,16 +19,18 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly IOrganizationService _organizationService;
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly ITransactionManager _transactionManager;
-
+        private readonly ISupplierFieldDomainService _supplierFieldDomainService;
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
-            ITransactionManager transactionManager)
+            ITransactionManager transactionManager,
+            ISupplierFieldDomainService supplierFieldDomainService)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
             _transactionManager = transactionManager;
+            _supplierFieldDomainService = supplierFieldDomainService;
         }
 
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
@@ -116,6 +120,68 @@ namespace Core.ApplicationServices.Organizations.Write
             }
 
             return orgIdResult.Value;
+        }
+
+        public ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid)
+        {
+            var configurations = new HashSet<SupplierAssociatedFieldConfiguration>(
+                SupplierAssociatedFields.DefaultConfiguration.Select(c => new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = c.FieldKey,
+                    ControlState = c.ControlState
+                })
+            );
+
+            var organizationalConfigurations = _supplierFieldDomainService.GetSupplierAssociatedFieldConfigurations(organizationUuid);
+            if (organizationalConfigurations is null) return configurations;
+            
+            foreach (var orgConfig in organizationalConfigurations.Value)
+            {
+                var defaultConfig = configurations.FirstOrDefault(c => c.FieldKey == orgConfig.FieldKey);
+                if (defaultConfig != null)
+                    defaultConfig.ControlState = orgConfig.ControlState;
+            }
+
+            return configurations;
+        }
+
+        public Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(
+            Guid organizationUuid,
+            IEnumerable<SupplierAssociatedFieldConfiguration> configurations)
+        {
+            var organizationResult = _organizationService.GetOrganization(organizationUuid);
+            if (organizationResult.Failed)
+                return organizationResult.Error;
+            var organization = organizationResult.Value;
+
+            var configurationList = configurations?.ToList() ?? new List<SupplierAssociatedFieldConfiguration>();
+            if (configurationList.Any(x => string.IsNullOrWhiteSpace(x.FieldKey)))
+                return new OperationError("FieldKey is required", OperationFailure.BadInput);
+
+            if (configurationList.GroupBy(x => x.FieldKey).Any(x => x.Count() > 1))
+                return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
+
+            var currentConfigurations = organization.SupplierAssociatedFieldConfigurations?.ToList()
+                ?? new List<SupplierAssociatedFieldConfiguration>();
+
+            foreach (var configuration in configurationList)
+            {
+                var existingConfiguration = currentConfigurations.FirstOrDefault(x => x.FieldKey == configuration.FieldKey);
+                if (existingConfiguration == null)
+                {
+                    currentConfigurations.Add(new SupplierAssociatedFieldConfiguration
+                    {
+                        FieldKey = configuration.FieldKey,
+                        ControlState = configuration.ControlState
+                    });
+                    continue;
+                }
+
+                existingConfiguration.ControlState = configuration.ControlState;
+            }
+
+            using var transaction = _transactionManager.Begin();
+            return currentConfigurations.ToHashSet();
         }
     }
 }
