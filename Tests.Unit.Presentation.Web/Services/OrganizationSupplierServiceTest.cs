@@ -41,7 +41,6 @@ namespace Tests.Unit.Presentation.Web.Services
             _entityIdentityResolver = new Mock<IEntityIdentityResolver>();
             _transactionManager = new Mock<ITransactionManager>();
             _supplierFieldDomainService = new Mock<ISupplierFieldDomainService>();
-
             _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
                 _organizationService.Object, _entityIdentityResolver.Object, 
                 _transactionManager.Object, _supplierFieldDomainService.Object);
@@ -110,6 +109,34 @@ namespace Tests.Unit.Presentation.Web.Services
                 Assert.NotNull(actualConfig);
                 Assert.Equal(expectedConfig.ControlState, actualConfig.ControlState);
             }
+        }
+
+        [Fact]
+        public void Can_Upsert_Supplier_Field_Configurations()
+        {
+            var organizationUuid = A<Guid>();
+            var current = new HashSet<SupplierAssociatedFieldConfiguration>
+            {
+                new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = _fieldWithDefaultSupplierControl,
+                    ControlState = SupplierAssociatedFieldControlState.ORGANIZATION
+                }
+            };
+            _organizationService.Setup(x => x.GetOrganization(organizationUuid, null))
+                .Returns(new Organization { Uuid = organizationUuid, SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>(current) });
+            var result = _sut.UpsertSupplierFieldConfigurations(organizationUuid, new[]
+            {
+                new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = _fieldWithDefaultSupplierControl,
+                    ControlState = SupplierAssociatedFieldControlState.SUPPLIER
+                }
+            });
+
+            Assert.True(result.Ok);
+            var updated = Assert.Single(result.Value);
+            Assert.Equal(SupplierAssociatedFieldControlState.SUPPLIER, updated.ControlState);
         }
 
         [Fact]

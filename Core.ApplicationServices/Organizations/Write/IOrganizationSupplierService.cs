@@ -15,5 +15,8 @@ namespace Core.ApplicationServices.Organizations.Write
         Maybe<OperationError> RemoveSupplierFromOrganization(Guid organizationUuid, Guid supplierUuid);
 
         ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid);
+        Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(
+            Guid organizationUuid,
+            IEnumerable<SupplierAssociatedFieldConfiguration> configurations);
     }
 }
