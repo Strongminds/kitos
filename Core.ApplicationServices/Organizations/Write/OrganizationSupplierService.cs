@@ -153,17 +153,17 @@ namespace Core.ApplicationServices.Organizations.Write
                 return organizationResult.Error;
             var organization = organizationResult.Value;
 
-            var configurationList = configurations?.ToList() ?? new List<SupplierAssociatedFieldConfiguration>();
-            if (configurationList.Any(x => string.IsNullOrWhiteSpace(x.FieldKey)))
+            var incomingConfigurations = configurations?.ToList() ?? new List<SupplierAssociatedFieldConfiguration>();
+            if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.FieldKey)))
                 return new OperationError("FieldKey is required", OperationFailure.BadInput);
 
-            if (configurationList.GroupBy(x => x.FieldKey).Any(x => x.Count() > 1))
+            if (incomingConfigurations.GroupBy(x => x.FieldKey).Any(x => x.Count() > 1))
                 return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
 
             var currentConfigurations = organization.SupplierAssociatedFieldConfigurations?.ToList()
                 ?? new List<SupplierAssociatedFieldConfiguration>();
 
-            foreach (var configuration in configurationList)
+            foreach (var configuration in incomingConfigurations)
             {
                 var existingConfiguration = currentConfigurations.FirstOrDefault(x => x.FieldKey == configuration.FieldKey);
                 if (existingConfiguration == null)
