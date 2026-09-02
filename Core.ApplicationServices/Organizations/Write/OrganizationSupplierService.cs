@@ -23,12 +23,14 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly ITransactionManager _transactionManager;
         private readonly ISupplierFieldDomainService _supplierFieldDomainService;
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly IOrganizationUnitService _organizationUnitService;
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
             ITransactionManager transactionManager,
             ISupplierFieldDomainService supplierFieldDomainService,
-            IOrganizationRepository organizationRepository)
+            IOrganizationRepository organizationRepository,
+            IOrganizationUnitService organizationUnitService)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
@@ -36,6 +38,7 @@ namespace Core.ApplicationServices.Organizations.Write
             _transactionManager = transactionManager;
             _supplierFieldDomainService = supplierFieldDomainService;
             _organizationRepository = organizationRepository;
+            _organizationUnitService = organizationUnitService;
         }
 
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
@@ -127,8 +130,14 @@ namespace Core.ApplicationServices.Organizations.Write
             return orgIdResult.Value;
         }
 
-        public ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid)
+        public Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> GetSupplierFieldConfigurations(Guid organizationUuid)
         {
+            var isAllowedReadResult = _organizationService.GetOrganization(organizationUuid);
+            if (isAllowedReadResult.Failed)
+            {
+                return isAllowedReadResult.Error;
+            }
+
             var configurations = new HashSet<SupplierAssociatedFieldConfiguration>(
                 SupplierAssociatedFields.DefaultConfiguration.Select(c => new SupplierAssociatedFieldConfiguration
                 {
@@ -153,7 +162,7 @@ namespace Core.ApplicationServices.Organizations.Write
             Guid organizationUuid,
             SupplierAssociatedFieldConfigurationUpdateParameters parameters)
         {
-            var organizationResult = _organizationService.GetOrganization(organizationUuid);
+            var organizationResult = _organizationUnitService.GetOrganizationAndAuthorizeModification(organizationUuid);
             if (organizationResult.Failed)
                 return organizationResult.Error;
             var organization = organizationResult.Value;

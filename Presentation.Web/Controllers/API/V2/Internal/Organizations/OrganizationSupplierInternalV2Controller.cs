@@ -102,8 +102,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetSupplierFields([NonEmptyGuid] Guid organizationUuid)
         {
-            var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid);
-            return Ok(configurations.Select(MapSupplierAssociatedFieldConfiguration).ToList());
+            return _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid)
+                .Select(configurations => configurations.Select(MapSupplierAssociatedFieldConfiguration).ToList())
+                .Match(Ok, FromOperationError);
         }
 
         [HttpPut]

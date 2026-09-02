@@ -15,7 +15,7 @@ namespace Core.ApplicationServices.Organizations.Write
         Result<OrganizationSupplier, OperationError> AddSupplierToOrganization(Guid organizationUuid, Guid supplierUuid);
         Maybe<OperationError> RemoveSupplierFromOrganization(Guid organizationUuid, Guid supplierUuid);
 
-        ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid);
+        Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> GetSupplierFieldConfigurations(Guid organizationUuid);
         Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(
             Guid organizationUuid,
             SupplierAssociatedFieldConfigurationUpdateParameters parameters);

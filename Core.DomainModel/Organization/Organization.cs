@@ -200,8 +200,8 @@ namespace Core.DomainModel.Organization
 
             foreach (var configuration in incomingConfigurations)
             {
-                var existingConfiguration = currentConfigurations.FirstOrDefault(x => x.FieldKey == configuration.Key);
-                if (existingConfiguration == null)
+                var existingConfiguration = GetFieldConfiguration(configuration.Key);
+                if (existingConfiguration.IsNone)
                 {
                     currentConfigurations.Add(new SupplierAssociatedFieldConfiguration
                     {
@@ -210,12 +210,19 @@ namespace Core.DomainModel.Organization
                     });
                     continue;
                 }
+                var existingConfigurationValue = existingConfiguration.GetValueOrDefault();
 
-                existingConfiguration.ControlState = configuration.Value;
+                existingConfigurationValue.ControlState = configuration.Value;
             }
 
             SupplierAssociatedFieldConfigurations = currentConfigurations;
             return currentConfigurations.ToHashSet();
+        }
+
+        public Maybe<SupplierAssociatedFieldConfiguration> GetFieldConfiguration(string fieldKey)
+        {
+            var configuration = SupplierAssociatedFieldConfigurations?.FirstOrDefault(c => c.FieldKey == fieldKey);
+            return configuration.FromNullable();
         }
 
         public bool HasSuppliers()
