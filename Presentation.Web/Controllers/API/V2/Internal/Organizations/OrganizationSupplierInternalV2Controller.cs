@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Core.DomainModel.SupplierAssociatedFields;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
