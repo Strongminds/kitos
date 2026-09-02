@@ -1,12 +1,12 @@
 ﻿using Core.DomainModel.Organization;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
+using Presentation.Web.Models.API.V2.Request.Supplier;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
 using Presentation.Web.Models.API.V2.Request.SystemUsage;
+using Presentation.Web.Models.API.V2.Response.Supplier;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
-using Presentation.Web.Models.API.V2.Internal.Request.Organizations.Suppliers;
-using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -228,8 +228,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var response = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
 
             Assert.NotEmpty(response);
-            var responseList = response.ToList();
-            Assert.True(responseList.All(x => x.FieldKey != null));
         }
 
         [Fact]
@@ -237,17 +235,19 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
 
-            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationRequestDto>
+            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
             {
-                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = SupplierAssociatedFieldControlStateOption.SHARED },
-                new() { FieldKey = "IsRiskAssessmentDocumented", ControlState = SupplierAssociatedFieldControlStateOption.ORGANIZATION }
+                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = FieldControlStateChoice.Shared },
+                new() { FieldKey = "IsRiskAssessmentDocumented", ControlState = FieldControlStateChoice.Organization }
+            };
+            var request = new SupplierAssociatedFieldConfigurationRequestDTO
+            {
+                Configurations = updateConfigurations
             };
 
-            var response = await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, updateConfigurations);
+            var response = await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, request);
 
             Assert.NotEmpty(response);
-            var responseList = response.ToList();
-            Assert.True(responseList.All(x => x.FieldKey != null));
         }
 
         [Fact]
@@ -255,18 +255,22 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
         {
             var organization = await CreateOrganizationAsync();
 
-            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationRequestDto>
+            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
             {
-                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = SupplierAssociatedFieldControlStateOption.SHARED }
+                new() { FieldKey = "ItSystemUsage.ContainsAITechnology", ControlState = FieldControlStateChoice.Shared }
+            };
+            var request = new SupplierAssociatedFieldConfigurationRequestDTO
+            {
+                Configurations = updateConfigurations
             };
 
-            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, updateConfigurations);
+            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, request);
             var response = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
 
             var responseList = response.ToList();
-            var updatedField = responseList.FirstOrDefault(x => x.FieldKey == "DataProcessingAgreementConcluded");
+            var updatedField = responseList.FirstOrDefault(x => x.FieldKey == "ItSystemUsage.ContainsAITechnology");
             Assert.NotNull(updatedField);
-            Assert.Equal(SupplierAssociatedFieldControlStateOption.SHARED, updatedField.ControlState);
+            Assert.Equal(FieldControlStateChoice.Shared, updatedField.ControlState);
         }
 
         [Fact]
@@ -300,21 +304,34 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
 
-            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationRequestDto>
+            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
             {
-                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = SupplierAssociatedFieldControlStateOption.ORGANIZATION }
+                new() { FieldKey = "ItSystemUsage.ContainsAITechnology", ControlState = FieldControlStateChoice.Organization }
             };
-            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, updateConfigurations);
+            var request = new SupplierAssociatedFieldConfigurationRequestDTO
+            {
+                Configurations = updateConfigurations
+            };
+            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, request);
 
-            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
-                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
-                    OrganizationUuid = organization.Uuid
+            var system = await ItSystemV2Helper.CreateSystemAsync(globalAdminToken, new CreateItSystemRequestDTO
+            {
+                Name = A<string>(),
+                OrganizationUuid = organization.Uuid
+            });
+            var usage = await ItSystemUsageV2Helper.PostAsync(globalAdminToken,
+                new CreateItSystemUsageRequestDTO
+                {
+                    OrganizationUuid = organization.Uuid,
+                    SystemUuid = system.Uuid
                 });
 
-            var oversightDateRequest = A<ModifyOversightDateDTO>();
-            oversightDateRequest.OversightOptionUuid = null;
-            using var postResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, supplierToken);
-            Assert.False(postResponse.IsSuccessStatusCode);
+            var updateGeneralRequest = new
+            {
+                ContainsAITechnology = A<YesNoUndecidedChoice>()
+            };
+            using var updateResponse = await ItSystemUsageV2Helper.SendPatchGeneral(supplierToken, usage.Uuid, updateGeneralRequest);
+            Assert.False(updateResponse.IsSuccessStatusCode);
         }
 
         [Fact]

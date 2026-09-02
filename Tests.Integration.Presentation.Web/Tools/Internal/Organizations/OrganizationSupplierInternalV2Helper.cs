@@ -1,7 +1,7 @@
 ﻿using Core.DomainModel.Organization;
-using Presentation.Web.Models.API.V2.Response.Organization;
-using Presentation.Web.Models.API.V2.Internal.Request.Organizations.Suppliers;
 using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
+using Presentation.Web.Models.API.V2.Request.Supplier;
+using Presentation.Web.Models.API.V2.Response.Organization;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -50,11 +50,11 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
             return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers"), cookie);
         }
 
-        public static async Task<IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>> GetSupplierFields(Guid organizationUuid)
+        public static async Task<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>> GetSupplierFields(Guid organizationUuid)
         {
             using var response = await SendGetSupplierFields(organizationUuid);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>>();
+            return await response.ReadResponseBodyAsAsync<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>>();
         }
 
         public static async Task<HttpResponseMessage> SendGetSupplierFields(Guid organizationUuid)
@@ -63,17 +63,17 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
             return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/fields"), cookie);
         }
 
-        public static async Task<IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>> PutSupplierFields(Guid organizationUuid, IEnumerable<SupplierAssociatedFieldConfigurationRequestDto> configurations)
+        public static async Task<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>> PutSupplierFields(Guid organizationUuid, SupplierAssociatedFieldConfigurationRequestDTO configuration)
         {
-            using var response = await SendPutSupplierFields(organizationUuid, configurations);
+            using var response = await SendPutSupplierFields(organizationUuid, configuration);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            return await response.ReadResponseBodyAsAsync<IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>>();
+            return await response.ReadResponseBodyAsAsync<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>>();
         }
 
-        public static async Task<HttpResponseMessage> SendPutSupplierFields(Guid organizationUuid, IEnumerable<SupplierAssociatedFieldConfigurationRequestDto> configurations)
+        public static async Task<HttpResponseMessage> SendPutSupplierFields(Guid organizationUuid, SupplierAssociatedFieldConfigurationRequestDTO configuration)
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
-            return await HttpApi.PutWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/fields"), cookie, configurations);
+            return await HttpApi.PutWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/fields"), cookie, configuration);
         }
     }
 }
