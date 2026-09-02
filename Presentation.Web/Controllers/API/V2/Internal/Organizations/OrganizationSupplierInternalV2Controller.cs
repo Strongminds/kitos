@@ -1,9 +1,12 @@
 using Core.ApplicationServices.Organizations.Write;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
 using Presentation.Web.Models.API.V2.Internal.Request.Organizations.Suppliers;
 using Presentation.Web.Models.API.V2.Response.Organization;
+using Presentation.Web.Models.API.V2.Response.Supplier;
+using Presentation.Web.Models.API.V2.Request.Supplier;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,6 +123,41 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         {
             return _organizationSupplierService.RemoveSupplierFromOrganization(organizationUuid, supplierUuid)
                 .Match(FromOperationError, Ok);
+        }
+
+        [HttpGet]
+        [Route("{organizationUuid}/suppliers/fields")]
+        [ApiResponse(typeof(IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult GetSupplierFields([NonEmptyGuid] Guid organizationUuid)
+        {
+            var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid);
+            return Ok(configurations.Select(MapConfigurationToResponse).ToList());
+        }
+
+        [HttpPut]
+        [Route("{organizationUuid}/suppliers/fields")]
+        [ApiResponse(typeof(IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult PutSupplierFields([NonEmptyGuid] Guid organizationUuid, [FromBody] SupplierAssociatedFieldConfigurationRequestDTO request)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            var requestConfigurations = request.Configurations
+                .Select(c => new SupplierAssociatedFieldConfiguration
+                {
+                    FieldKey = c.FieldKey,
+                    ControlState = Enum.Parse<SupplierAssociatedFieldControlState>(c.ControlState)
+                })
+                .ToList();
+
+            return _organizationSupplierService.UpsertSupplierFieldConfigurations(organizationUuid, requestConfigurations)
+                .Select(configs => configs.Select(MapConfigurationToResponse).ToList())
+                .Match(Ok, FromOperationError);
         }
 
         private static IEnumerable<ShallowOrganizationResponseDTO> MapOrganizations(IEnumerable<Organization> organizations)
