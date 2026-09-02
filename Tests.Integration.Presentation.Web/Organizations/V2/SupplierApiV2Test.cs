@@ -5,8 +5,11 @@ using Presentation.Web.Models.API.V2.Request.SystemUsage;
 using Presentation.Web.Models.API.V2.Types.DataProcessing;
 using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
+using Presentation.Web.Models.API.V2.Internal.Request.Organizations.Suppliers;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
@@ -215,6 +218,124 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(expected.OversightReportLink.Name, actual.OversightReportLink.Name);
             Assert.Equal(expected.OversightReportLink.Url, actual.OversightReportLink.Url);
             Assert.Equal(expected.OversightOptionUuid, actual.OversightOption?.Uuid);
+        }
+
+        [Fact]
+        public async Task Can_Get_Default_Supplier_Field_Configuration()
+        {
+            var organization = await CreateOrganizationAsync();
+
+            var response = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
+
+            Assert.NotEmpty(response);
+            var responseList = response.ToList();
+            Assert.True(responseList.All(x => x.FieldKey != null));
+        }
+
+        [Fact]
+        public async Task Can_Upsert_Supplier_Field_Configuration()
+        {
+            var organization = await CreateOrganizationAsync();
+
+            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationRequestDto>
+            {
+                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = SupplierAssociatedFieldControlStateOption.SHARED },
+                new() { FieldKey = "IsRiskAssessmentDocumented", ControlState = SupplierAssociatedFieldControlStateOption.ORGANIZATION }
+            };
+
+            var response = await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, updateConfigurations);
+
+            Assert.NotEmpty(response);
+            var responseList = response.ToList();
+            Assert.True(responseList.All(x => x.FieldKey != null));
+        }
+
+        [Fact]
+        public async Task Get_Supplier_Fields_After_Put_Reflects_Updated_Configuration()
+        {
+            var organization = await CreateOrganizationAsync();
+
+            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationRequestDto>
+            {
+                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = SupplierAssociatedFieldControlStateOption.SHARED }
+            };
+
+            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, updateConfigurations);
+            var response = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
+
+            var responseList = response.ToList();
+            var updatedField = responseList.FirstOrDefault(x => x.FieldKey == "DataProcessingAgreementConcluded");
+            Assert.NotNull(updatedField);
+            Assert.Equal(SupplierAssociatedFieldControlStateOption.SHARED, updatedField.ControlState);
+        }
+
+        [Fact]
+        public async Task Supplier_Can_Update_Allowed_Fields_With_Supplier_Control()
+        {
+            var organization = await CreateOrganizationAsync();
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+            var (_, _, supplierToken) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, supplier.Uuid, true);
+            var globalAdminToken = await GetGlobalToken();
+
+            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
+
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
+                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
+                    OrganizationUuid = organization.Uuid
+                });
+
+            var oversightDateRequest = A<ModifyOversightDateDTO>();
+            oversightDateRequest.OversightOptionUuid = null;
+            var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, supplierToken);
+            Assert.NotEqual(Guid.Empty, postResponse.Uuid);
+        }
+
+        [Fact]
+        public async Task Supplier_Cannot_Update_Non_Supplier_Controlled_Fields_After_Config_Change()
+        {
+            var organization = await CreateOrganizationAsync();
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+            var (_, _, supplierToken) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, supplier.Uuid, true);
+            var globalAdminToken = await GetGlobalToken();
+
+            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
+
+            var updateConfigurations = new List<SupplierAssociatedFieldConfigurationRequestDto>
+            {
+                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = SupplierAssociatedFieldControlStateOption.ORGANIZATION }
+            };
+            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, updateConfigurations);
+
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
+                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
+                    OrganizationUuid = organization.Uuid
+                });
+
+            var oversightDateRequest = A<ModifyOversightDateDTO>();
+            oversightDateRequest.OversightOptionUuid = null;
+            using var postResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, supplierToken);
+            Assert.False(postResponse.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task LocalAdmin_Cannot_Update_Supplier_Controlled_Fields()
+        {
+            var organization = await CreateOrganizationAsync();
+            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
+            var (_, _, localAdminToken) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid, true);
+            var globalAdminToken = await GetGlobalToken();
+
+            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
+
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
+                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
+                    OrganizationUuid = organization.Uuid
+                });
+
+            var oversightDateRequest = A<ModifyOversightDateDTO>();
+            oversightDateRequest.OversightOptionUuid = null;
+            using var postResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, localAdminToken);
+            Assert.False(postResponse.IsSuccessStatusCode);
         }
     }
 }
