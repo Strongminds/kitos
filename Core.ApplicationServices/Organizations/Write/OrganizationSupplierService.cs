@@ -180,11 +180,13 @@ namespace Core.ApplicationServices.Organizations.Write
                     configuration.ControlState));
 
             var updatedConfigurations = organization.UpdateFieldConfigurations(configurationsToUpdate);
+            if (updatedConfigurations.Failed)
+                return updatedConfigurations.Error;
 
             _organizationRepository.Update(organization);
             transaction.Commit();
 
-            return Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError>.Success(updatedConfigurations);
+            return Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError>.Success(updatedConfigurations.Value);
         }
     }
 }

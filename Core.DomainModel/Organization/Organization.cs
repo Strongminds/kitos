@@ -182,18 +182,18 @@ namespace Core.DomainModel.Organization
             Suppliers?.Clear();
         }
 
-        public ISet<SupplierAssociatedFieldConfiguration> UpdateFieldConfigurations(
+        public Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpdateFieldConfigurations(
             IEnumerable<KeyValuePair<string, FieldControlState>> configurations)
         {
             if (configurations == null)
-                throw new ArgumentNullException(nameof(configurations));
+                return new OperationError($"No field configuration was provided", OperationFailure.BadInput);
 
             var incomingConfigurations = configurations.ToList();
             if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.Key)))
-                throw new ArgumentException("FieldKey is required", nameof(configurations));
+                return new OperationError("FieldKey is required", OperationFailure.BadInput);
 
             if (incomingConfigurations.GroupBy(x => x.Key).Any(x => x.Count() > 1))
-                throw new ArgumentException("Duplicate fieldKey values are not allowed", nameof(configurations));
+                return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
 
             var currentConfigurations = SupplierAssociatedFieldConfigurations?.ToList()
                 ?? new List<SupplierAssociatedFieldConfiguration>();
