@@ -182,6 +182,42 @@ namespace Core.DomainModel.Organization
             Suppliers?.Clear();
         }
 
+        public ISet<SupplierAssociatedFieldConfiguration> UpdateFieldConfigurations(
+            IEnumerable<KeyValuePair<string, FieldControlState>> configurations)
+        {
+            if (configurations == null)
+                throw new ArgumentNullException(nameof(configurations));
+
+            var incomingConfigurations = configurations.ToList();
+            if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.Key)))
+                throw new ArgumentException("FieldKey is required", nameof(configurations));
+
+            if (incomingConfigurations.GroupBy(x => x.Key).Any(x => x.Count() > 1))
+                throw new ArgumentException("Duplicate fieldKey values are not allowed", nameof(configurations));
+
+            var currentConfigurations = SupplierAssociatedFieldConfigurations?.ToList()
+                ?? new List<SupplierAssociatedFieldConfiguration>();
+
+            foreach (var configuration in incomingConfigurations)
+            {
+                var existingConfiguration = currentConfigurations.FirstOrDefault(x => x.FieldKey == configuration.Key);
+                if (existingConfiguration == null)
+                {
+                    currentConfigurations.Add(new SupplierAssociatedFieldConfiguration
+                    {
+                        FieldKey = configuration.Key,
+                        ControlState = configuration.Value
+                    });
+                    continue;
+                }
+
+                existingConfiguration.ControlState = configuration.Value;
+            }
+
+            SupplierAssociatedFieldConfigurations = currentConfigurations;
+            return currentConfigurations.ToHashSet();
+        }
+
         public bool HasSuppliers()
         {
             return Suppliers is { Count: > 0 };

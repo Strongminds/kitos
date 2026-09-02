@@ -1,4 +1,5 @@
 ﻿using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Organizations.Write;
 using Core.DomainServices.Suppliers;
 using Core.DomainModel.Organization;
 using Core.DomainModel.SupplierAssociatedFields;
@@ -6,6 +7,7 @@ using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
 using Core.DomainServices.Queries.Organization;
+using Core.DomainServices.Repositories.Organization;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
@@ -20,17 +22,20 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly IEntityIdentityResolver _entityIdentityResolver;
         private readonly ITransactionManager _transactionManager;
         private readonly ISupplierFieldDomainService _supplierFieldDomainService;
+        private readonly IOrganizationRepository _organizationRepository;
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
             ITransactionManager transactionManager,
-            ISupplierFieldDomainService supplierFieldDomainService)
+            ISupplierFieldDomainService supplierFieldDomainService,
+            IOrganizationRepository organizationRepository)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
             _entityIdentityResolver = entityIdentityResolver;
             _transactionManager = transactionManager;
             _supplierFieldDomainService = supplierFieldDomainService;
+            _organizationRepository = organizationRepository;
         }
 
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
@@ -133,7 +138,7 @@ namespace Core.ApplicationServices.Organizations.Write
             );
 
             var organizationalConfigurations = _supplierFieldDomainService.GetSupplierAssociatedFieldConfigurations(organizationUuid);
-            if (organizationalConfigurations is null) return configurations;
+            if (!organizationalConfigurations.HasValue) return configurations;
             
             foreach (var orgConfig in organizationalConfigurations.Value)
             {
@@ -146,41 +151,27 @@ namespace Core.ApplicationServices.Organizations.Write
 
         public Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(
             Guid organizationUuid,
-            IEnumerable<SupplierAssociatedFieldConfiguration> configurations)
+            SupplierAssociatedFieldConfigurationUpdateParameters parameters)
         {
             var organizationResult = _organizationService.GetOrganization(organizationUuid);
             if (organizationResult.Failed)
                 return organizationResult.Error;
             var organization = organizationResult.Value;
 
-            var incomingConfigurations = configurations?.ToList() ?? new List<SupplierAssociatedFieldConfiguration>();
-            if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.FieldKey)))
-                return new OperationError("FieldKey is required", OperationFailure.BadInput);
-
-            if (incomingConfigurations.GroupBy(x => x.FieldKey).Any(x => x.Count() > 1))
-                return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
-
-            var currentConfigurations = organization.SupplierAssociatedFieldConfigurations?.ToList()
-                ?? new List<SupplierAssociatedFieldConfiguration>();
-
-            foreach (var configuration in incomingConfigurations)
-            {
-                var existingConfiguration = currentConfigurations.FirstOrDefault(x => x.FieldKey == configuration.FieldKey);
-                if (existingConfiguration == null)
-                {
-                    currentConfigurations.Add(new SupplierAssociatedFieldConfiguration
-                    {
-                        FieldKey = configuration.FieldKey,
-                        ControlState = configuration.ControlState
-                    });
-                    continue;
-                }
-
-                existingConfiguration.ControlState = configuration.ControlState;
-            }
-
             using var transaction = _transactionManager.Begin();
-            return currentConfigurations.ToHashSet();
+
+            var configurationsToUpdate = parameters.Configurations
+                .Where(configuration => SupplierAssociatedFields.DefaultConfiguration.Any(defaultConfig => defaultConfig.FieldKey == configuration.FieldKey))
+                .Select(configuration => new KeyValuePair<string, FieldControlState>(
+                    configuration.FieldKey,
+                    configuration.ControlState));
+
+            var updatedConfigurations = organization.UpdateFieldConfigurations(configurationsToUpdate);
+
+            _organizationRepository.Update(organization);
+            transaction.Commit();
+
+            return Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError>.Success(updatedConfigurations);
         }
     }
 }

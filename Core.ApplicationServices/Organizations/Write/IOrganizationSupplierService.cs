@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Organizations.Write;
 using Core.DomainModel.Organization;
 using Core.DomainModel.SupplierAssociatedFields;
 
@@ -17,6 +18,6 @@ namespace Core.ApplicationServices.Organizations.Write
         ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid);
         Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(
             Guid organizationUuid,
-            IEnumerable<SupplierAssociatedFieldConfiguration> configurations);
+            SupplierAssociatedFieldConfigurationUpdateParameters parameters);
     }
 }
