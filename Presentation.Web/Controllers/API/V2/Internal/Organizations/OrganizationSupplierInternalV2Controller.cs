@@ -134,7 +134,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public IActionResult GetSupplierFields([NonEmptyGuid] Guid organizationUuid)
         {
             var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid);
-            return Ok(configurations.Select(MapConfigurationToResponse).ToList());
+            return Ok(configurations.Select(MapSupplierAssociatedFieldConfiguration).ToList());
         }
 
         [HttpPut]
@@ -156,7 +156,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 .ToList();
 
             return _organizationSupplierService.UpsertSupplierFieldConfigurations(organizationUuid, requestConfigurations)
-                .Select(configs => configs.Select(MapConfigurationToResponse).ToList())
+                .Select(configs => configs.Select(MapSupplierAssociatedFieldConfiguration).ToList())
                 .Match(Ok, FromOperationError);
         }
 
@@ -177,7 +177,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 
         private static SupplierAssociatedFieldConfigurationResponseDto MapSupplierAssociatedFieldConfiguration(SupplierAssociatedFieldConfiguration domainModel)
         {
-            return new SupplierAssociatedFieldConfigurationResponseDto()
+            return new SupplierAssociatedFieldConfigurationResponseDto
             {
                 FieldKey = domainModel.FieldKey,
                 ControlState = ToOption(domainModel.ControlState)
