@@ -1,15 +1,15 @@
 ﻿using Core.Abstractions.Types;
+using Core.DomainServices.Suppliers;
 using Core.DomainModel.Organization;
 using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
 using Core.DomainServices.Queries;
-using Core.DomainServices.Suppliers;
+using Core.DomainServices.Queries.Organization;
 using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.DomainServices.Queries.Organization;
 
 namespace Core.ApplicationServices.Organizations.Write
 {
@@ -138,8 +138,7 @@ namespace Core.ApplicationServices.Organizations.Write
             foreach (var orgConfig in organizationalConfigurations.Value)
             {
                 var defaultConfig = configurations.FirstOrDefault(c => c.FieldKey == orgConfig.FieldKey);
-                if (defaultConfig != null)
-                    defaultConfig.ControlState = orgConfig.ControlState;
+                defaultConfig?.ControlState = orgConfig.ControlState;
             }
 
             return configurations;
@@ -154,17 +153,17 @@ namespace Core.ApplicationServices.Organizations.Write
                 return organizationResult.Error;
             var organization = organizationResult.Value;
 
-            var configurationList = configurations?.ToList() ?? new List<SupplierAssociatedFieldConfiguration>();
-            if (configurationList.Any(x => string.IsNullOrWhiteSpace(x.FieldKey)))
+            var incomingConfigurations = configurations?.ToList() ?? new List<SupplierAssociatedFieldConfiguration>();
+            if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.FieldKey)))
                 return new OperationError("FieldKey is required", OperationFailure.BadInput);
 
-            if (configurationList.GroupBy(x => x.FieldKey).Any(x => x.Count() > 1))
+            if (incomingConfigurations.GroupBy(x => x.FieldKey).Any(x => x.Count() > 1))
                 return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
 
             var currentConfigurations = organization.SupplierAssociatedFieldConfigurations?.ToList()
                 ?? new List<SupplierAssociatedFieldConfiguration>();
 
-            foreach (var configuration in configurationList)
+            foreach (var configuration in incomingConfigurations)
             {
                 var existingConfiguration = currentConfigurations.FirstOrDefault(x => x.FieldKey == configuration.FieldKey);
                 if (existingConfiguration == null)

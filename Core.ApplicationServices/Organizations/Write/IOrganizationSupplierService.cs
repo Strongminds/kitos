@@ -13,7 +13,10 @@ namespace Core.ApplicationServices.Organizations.Write
         Result<IEnumerable<Organization>, OperationError> GetUsingOrganizations(Guid supplierUuid);
         Result<OrganizationSupplier, OperationError> AddSupplierToOrganization(Guid organizationUuid, Guid supplierUuid);
         Maybe<OperationError> RemoveSupplierFromOrganization(Guid organizationUuid, Guid supplierUuid);
+
         ISet<SupplierAssociatedFieldConfiguration> GetSupplierFieldConfigurations(Guid organizationUuid);
-        Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(Guid organizationUuid, IEnumerable<SupplierAssociatedFieldConfiguration> configurations);
+        Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpsertSupplierFieldConfigurations(
+            Guid organizationUuid,
+            IEnumerable<SupplierAssociatedFieldConfiguration> configurations);
     }
 }

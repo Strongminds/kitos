@@ -2,7 +2,6 @@
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.GDPR;
-using Core.ApplicationServices.Model.GDPR;
 using Core.ApplicationServices.Model.GDPR.Write.SubDataProcessor;
 using Core.ApplicationServices.Organizations;
 using Core.DomainModel;
@@ -22,7 +21,6 @@ using Core.DomainServices.Repositories.Reference;
 using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
 using Moq;
-using Presentation.Web.Models.API.V2.Response.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1907,7 +1905,13 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
         {
             //Arrange
             var uuid = A<Guid>();
-            var registration = new DataProcessingRegistration { Id = A<int>(), Uuid = uuid };
+            var orgUuid = A<Guid>();
+            var registration = new DataProcessingRegistration 
+            { 
+                Id = A<int>(), 
+                Uuid = uuid,  
+                Organization = new Organization { Id = A<int>(), Uuid = orgUuid } 
+            };
 
             var oversightDateCollectionEnabled = A<bool>();
             var oversightDateDateEnabled = A<bool>();
@@ -1968,7 +1972,7 @@ namespace Tests.Unit.Core.ApplicationServices.GDPR
 
         private void ExpectGetFieldPermissionsReturns(DataProcessingRegistration registration, string key, bool result)
         {
-            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(registration, key)).Returns(new FieldPermissionsResult{ Enabled = result, Key = key});
+            _fieldAuthorizationModelMock.Setup(x => x.GetFieldPermissions(registration, key, It.IsAny<Guid>())).Returns(new FieldPermissionsResult{ Enabled = result, Key = key});
         }
 
         [Theory]

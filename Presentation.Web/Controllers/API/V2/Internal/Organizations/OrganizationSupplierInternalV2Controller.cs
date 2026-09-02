@@ -3,6 +3,7 @@ using Core.DomainModel.Organization;
 using Core.DomainModel.SupplierAssociatedFields;
 using Presentation.Web.Controllers.API.V2.Common.Mapping;
 using Presentation.Web.Infrastructure.Attributes;
+using Presentation.Web.Models.API.V2.Internal.Request.Organizations.Suppliers;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using Presentation.Web.Models.API.V2.Response.Supplier;
 using Presentation.Web.Models.API.V2.Request.Supplier;
@@ -11,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Core.DomainModel.SupplierAssociatedFields;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 
 namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
 {
@@ -25,6 +28,37 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         public OrganizationSupplierInternalV2Controller(IOrganizationSupplierService organizationSupplierService)
         {
             _organizationSupplierService = organizationSupplierService;
+        }
+
+        [HttpGet]
+        [Route("{organizationUuid}/suppliers/fields")]
+        [ApiResponse(typeof(IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult GetSupplierFieldConfigurations([NonEmptyGuid] Guid organizationUuid)
+        {
+            var configurations = _organizationSupplierService.GetSupplierFieldConfigurations(organizationUuid)
+                .Select(MapSupplierAssociatedFieldConfiguration).ToList();
+            return Ok(configurations);
+        }
+
+        [HttpPut]
+        [Route("{organizationUuid}/suppliers/fields")]
+        [ApiResponse(typeof(IEnumerable<SupplierAssociatedFieldConfigurationResponseDto>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult UpsertSupplierFieldConfigurations(
+            [NonEmptyGuid] Guid organizationUuid,
+            [FromBody] IEnumerable<SupplierAssociatedFieldConfigurationRequestDto> fieldConfigurations)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            var configurations = fieldConfigurations?.Select(MapSupplierAssociatedFieldConfiguration).ToList()
+                ?? new List<SupplierAssociatedFieldConfiguration>();
+
+            return _organizationSupplierService.UpsertSupplierFieldConfigurations(organizationUuid, configurations)
+                .Select(value => value.Select(MapSupplierAssociatedFieldConfiguration))
+                .Match(Ok, FromOperationError);
         }
 
         [HttpGet]
@@ -141,12 +175,43 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
             return supplier.Supplier.MapShallowOrganizationResponseDTO();
         }
 
-        private static SupplierAssociatedFieldConfigurationResponseDTO MapConfigurationToResponse(SupplierAssociatedFieldConfiguration config)
+        private static SupplierAssociatedFieldConfigurationResponseDto MapSupplierAssociatedFieldConfiguration(SupplierAssociatedFieldConfiguration domainModel)
         {
-            return new SupplierAssociatedFieldConfigurationResponseDTO
+            return new SupplierAssociatedFieldConfigurationResponseDto()
             {
-                FieldKey = config.FieldKey,
-                ControlState = config.ControlState.ToString()
+                FieldKey = domainModel.FieldKey,
+                ControlState = ToOption(domainModel.ControlState)
+            };
+        }
+
+        private static SupplierAssociatedFieldConfiguration MapSupplierAssociatedFieldConfiguration(
+            SupplierAssociatedFieldConfigurationRequestDto request)
+        {
+            return new SupplierAssociatedFieldConfiguration
+            {
+                FieldKey = request.FieldKey,
+                ControlState = ToDomain(request.ControlState)
+            };
+        }
+
+        private static SupplierAssociatedFieldControlStateOption ToOption(SupplierAssociatedFieldControlState controlState) {
+            return controlState switch
+            {
+                SupplierAssociatedFieldControlState.ORGANIZATION => SupplierAssociatedFieldControlStateOption.ORGANIZATION,
+                SupplierAssociatedFieldControlState.SUPPLIER => SupplierAssociatedFieldControlStateOption.SUPPLIER,
+                SupplierAssociatedFieldControlState.SHARED => SupplierAssociatedFieldControlStateOption.SHARED,
+                _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
+            };
+        }
+
+        private static SupplierAssociatedFieldControlState ToDomain(SupplierAssociatedFieldControlStateOption controlState)
+        {
+            return controlState switch
+            {
+                SupplierAssociatedFieldControlStateOption.ORGANIZATION => SupplierAssociatedFieldControlState.ORGANIZATION,
+                SupplierAssociatedFieldControlStateOption.SUPPLIER => SupplierAssociatedFieldControlState.SUPPLIER,
+                SupplierAssociatedFieldControlStateOption.SHARED => SupplierAssociatedFieldControlState.SHARED,
+                _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
             };
         }
     }
