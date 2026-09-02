@@ -237,8 +237,8 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             var updateConfigurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
             {
-                new() { FieldKey = "DataProcessingAgreementConcluded", ControlState = FieldControlStateChoice.Shared },
-                new() { FieldKey = "IsRiskAssessmentDocumented", ControlState = FieldControlStateChoice.Organization }
+                new() { FieldKey = "ItSystemUsage.ContainsAITechnology", ControlState = FieldControlStateChoice.Shared },
+                new() { FieldKey = "DataProcessingRegistrationOversightDate.OversightReportLink", ControlState = FieldControlStateChoice.Organization }
             };
             var request = new SupplierAssociatedFieldConfigurationRequestDTO
             {

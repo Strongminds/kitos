@@ -12,6 +12,7 @@ using Infrastructure.Services.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.ApplicationServices.Authorization;
 
 namespace Core.ApplicationServices.Organizations.Write
 {
@@ -23,14 +24,14 @@ namespace Core.ApplicationServices.Organizations.Write
         private readonly ITransactionManager _transactionManager;
         private readonly ISupplierFieldDomainService _supplierFieldDomainService;
         private readonly IOrganizationRepository _organizationRepository;
-        private readonly IOrganizationUnitService _organizationUnitService;
+        private readonly IAuthorizationContext _authorizationContext;
         public OrganizationSupplierService(IGenericRepository<OrganizationSupplier> organizationSupplierRepository,
             IOrganizationService organizationService,
             IEntityIdentityResolver entityIdentityResolver, 
             ITransactionManager transactionManager,
             ISupplierFieldDomainService supplierFieldDomainService,
             IOrganizationRepository organizationRepository,
-            IOrganizationUnitService organizationUnitService)
+            IAuthorizationContext authorizationContext)
         {
             _organizationSupplierRepository = organizationSupplierRepository;
             _organizationService = organizationService;
@@ -38,7 +39,7 @@ namespace Core.ApplicationServices.Organizations.Write
             _transactionManager = transactionManager;
             _supplierFieldDomainService = supplierFieldDomainService;
             _organizationRepository = organizationRepository;
-            _organizationUnitService = organizationUnitService;
+            _authorizationContext = authorizationContext;
         }
 
         public Result<IEnumerable<OrganizationSupplier>, OperationError> GetSuppliersForOrganization(
@@ -162,7 +163,10 @@ namespace Core.ApplicationServices.Organizations.Write
             Guid organizationUuid,
             SupplierAssociatedFieldConfigurationUpdateParameters parameters)
         {
-            var organizationResult = _organizationUnitService.GetOrganizationAndAuthorizeModification(organizationUuid);
+            var organizationResult = _organizationService.GetOrganization(organizationUuid)
+                .Bind(organization => _authorizationContext.AllowModify(organization) 
+                    ? Result<Organization, OperationError>.Success(organization) 
+                    : new OperationError(OperationFailure.Forbidden));
             if (organizationResult.Failed)
                 return organizationResult.Error;
             var organization = organizationResult.Value;

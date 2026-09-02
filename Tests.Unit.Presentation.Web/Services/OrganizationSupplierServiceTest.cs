@@ -16,6 +16,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.ApplicationServices.Authorization;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -29,6 +30,7 @@ namespace Tests.Unit.Presentation.Web.Services
         private readonly Mock<ITransactionManager> _transactionManager;
         private readonly Mock<ISupplierFieldDomainService> _supplierFieldDomainService;
         private readonly Mock<IOrganizationRepository> _organizationRepository;
+        private readonly Mock<IAuthorizationContext> _authorizationContext;
         private readonly OrganizationSupplierService _sut;
 
         private readonly string _fieldWithDefaultSupplierControl =
@@ -38,6 +40,7 @@ namespace Tests.Unit.Presentation.Web.Services
 
         public OrganizationSupplierServiceTest()
         {
+            _authorizationContext = new Mock<IAuthorizationContext>();
             _organizationSupplierRepository = new Mock<IGenericRepository<OrganizationSupplier>>();
             _organizationService = new Mock<IOrganizationService>();
             _entityIdentityResolver = new Mock<IEntityIdentityResolver>();
@@ -45,43 +48,38 @@ namespace Tests.Unit.Presentation.Web.Services
             _supplierFieldDomainService = new Mock<ISupplierFieldDomainService>();
             _organizationRepository = new Mock<IOrganizationRepository>();
             _sut = new OrganizationSupplierService(_organizationSupplierRepository.Object,
-                _organizationService.Object, _entityIdentityResolver.Object, 
-                _transactionManager.Object, _supplierFieldDomainService.Object, _organizationRepository.Object);
+                _organizationService.Object, 
+                _entityIdentityResolver.Object, 
+                _transactionManager.Object,
+                _supplierFieldDomainService.Object,
+                _organizationRepository.Object,
+                _authorizationContext.Object);
         }
 
         [Fact]
-        public void GivenNoOrganizationalConfiguration_GetSupplierFieldConfigurations_Returns_DefaultConfigurations()
+        public void GetSupplierFieldConfigurations_Returns_DefaultConfigurations_If_No_Available()
         {
             var expected = SupplierAssociatedFields.DefaultConfiguration;
             var orgUuid = A<Guid>();
+            _organizationService.Setup(x => x.GetOrganization(orgUuid, null))
+                .Returns(new Organization { Uuid = orgUuid });
             _supplierFieldDomainService.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid))
                 .Returns(Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None);
 
             var result = _sut.GetSupplierFieldConfigurations(orgUuid);
-
-            Assert.Equal(expected.Count, result.Count);
+            Assert.True(result.Ok);
+            var config = result.Value;
+            Assert.Equal(expected.Count, config.Count);
             foreach (var expectedConfig in expected)
             {
-                var actualConfig = result.SingleOrDefault(x => x.FieldKey == expectedConfig.FieldKey);
+                var actualConfig = config.SingleOrDefault(x => x.FieldKey == expectedConfig.FieldKey);
                 Assert.NotNull(actualConfig);
                 Assert.Equal(expectedConfig.ControlState, actualConfig.ControlState);
             }
         }
 
         [Fact]
-        public void GivenDefaultConfiguration_GetSupplierFieldConfigurations_Returns_Copy_NotSharedInstances()
-        {
-            var orgUuid = A<Guid>();
-            _supplierFieldDomainService.Setup(x => x.GetSupplierAssociatedFieldConfigurations(orgUuid))
-                .Returns(Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>>.None);
-
-            var result = _sut.GetSupplierFieldConfigurations(orgUuid);
-
-            Assert.NotSame(SupplierAssociatedFields.DefaultConfiguration, result);
-        }
-
-        [Fact]
-        public void GivenOrganizationalConfiguration_GetSupplierFieldConfigurations_OverridesDefaultsWithOrganizationalConfiguration()
+        public void GetSupplierFieldConfigurations_OverridesDefaultsWithOrganizationalConfiguration()
         {
             var expectedControlState = FieldControlState.Organization;
             var organizationalConfig = new HashSet<SupplierAssociatedFieldConfiguration>
@@ -98,9 +96,15 @@ namespace Tests.Unit.Presentation.Web.Services
                 }
             };
             var orgUuid = A<Guid>();
-            _supplierFieldDomainService.Setup(_ => _.GetSupplierAssociatedFieldConfigurations(orgUuid)).Returns(organizationalConfig);
+            _organizationService.Setup(x => x.GetOrganization(orgUuid, null))
+                .Returns(new Organization { Uuid = orgUuid });
+            _supplierFieldDomainService.Setup(_ => _.GetSupplierAssociatedFieldConfigurations(orgUuid))
+                .Returns(organizationalConfig);
 
-            var result = _sut.GetSupplierFieldConfigurations(orgUuid);
+            var getResult = _sut.GetSupplierFieldConfigurations(orgUuid);
+
+            Assert.True(getResult.Ok);
+            var result = getResult.Value;
 
             var overriddenFieldsFromResult = result.Where(x => x.FieldKey == _fieldWithDefaultSupplierControl || x.FieldKey == _fieldWithDefaultSharedControl).ToList();
             Assert.Equal(organizationalConfig.Count, overriddenFieldsFromResult.Count);
@@ -131,12 +135,16 @@ namespace Tests.Unit.Presentation.Web.Services
                 }
             };
             _organizationService.Setup(x => x.GetOrganization(organizationUuid, null))
-                .Returns(new Organization { Uuid = organizationUuid, SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>(current) });
-            _organizationRepository.Setup(x => x.Update(It.IsAny<Organization>()));
+                .Returns(new Organization
+                {
+                    Uuid = organizationUuid,
+                    SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>(current)
+                });
+            _authorizationContext.Setup(x => x.AllowModify(It.IsAny<Organization>())).Returns(true);
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManager.Setup(x => x.Begin()).Returns(transaction.Object);
-            var result = _sut.UpsertSupplierFieldConfigurations(organizationUuid, new[]
-            {
+            var result = _sut.UpsertSupplierFieldConfigurations(
+                organizationUuid,
                 new SupplierAssociatedFieldConfigurationUpdateParameters
                 {
                     Configurations = new[]
@@ -147,8 +155,7 @@ namespace Tests.Unit.Presentation.Web.Services
                             ControlState = FieldControlState.Supplier
                         }
                     }
-                }
-            }.Single());
+                });
 
             Assert.True(result.Ok);
             var updated = Assert.Single(result.Value);
