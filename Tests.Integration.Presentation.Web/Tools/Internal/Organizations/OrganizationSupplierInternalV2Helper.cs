@@ -1,4 +1,6 @@
 ﻿using Core.DomainModel.Organization;
+using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
+using Presentation.Web.Models.API.V2.Request.Supplier;
 using Presentation.Web.Models.API.V2.Response.Organization;
 using System;
 using System.Collections.Generic;
@@ -46,6 +48,32 @@ namespace Tests.Integration.Presentation.Web.Tools.Internal.Organizations
         {
             var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
             return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers"), cookie);
+        }
+
+        public static async Task<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>> GetSupplierFields(Guid organizationUuid)
+        {
+            using var response = await SendGetSupplierFields(organizationUuid);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>>();
+        }
+
+        public static async Task<HttpResponseMessage> SendGetSupplierFields(Guid organizationUuid)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.GetWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/fields"), cookie);
+        }
+
+        public static async Task<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>> PutSupplierFields(Guid organizationUuid, SupplierAssociatedFieldConfigurationRequestDTO configuration)
+        {
+            using var response = await SendPutSupplierFields(organizationUuid, configuration);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            return await response.ReadResponseBodyAsAsync<IEnumerable<SupplierAssociatedFieldConfigurationResponseDTO>>();
+        }
+
+        public static async Task<HttpResponseMessage> SendPutSupplierFields(Guid organizationUuid, SupplierAssociatedFieldConfigurationRequestDTO configuration)
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            return await HttpApi.PutWithCookieAsync(TestEnvironment.CreateUrl($"{ApiPrefix}/{organizationUuid}/suppliers/fields"), cookie, configuration);
         }
     }
 }

@@ -23,83 +23,83 @@ spec:
         app: kitos-api
     spec:
       containers:
-      - env:
-        - name: AppSettings__LogFilePath
-          valueFrom:
-            secretKeyRef:
-              key: LogFilePath
-              name: user-secret
-        - name: Smtp__PickupDirectoryLocation
-          valueFrom:
-            secretKeyRef:
-              key: PickupDirectoryLocation
-              name: user-secret
-        - name: Smtp__DeliveryMethod
-          value: SpecifiedPickupDirectory
-        - name: ASPNETCORE_ENVIRONMENT
-          value: Dev
-        - name: Database__Provider
-          value: PostgreSql
-        - name: Hangfire__Provider
-          value: PostgreSql
-        - name: ConnectionStrings__KitosContext
-          valueFrom:
-            secretKeyRef:
-              key: KitosDbConnectionString
-              name: user-secret
-        - name: ConnectionStrings__kitos_HangfireDB
-          valueFrom:
-            secretKeyRef:
-              key: HangfireDbConnectionString
-              name: user-secret
-        - name: AppSettings__BaseUrl
-          value: 'https://eh-kitos-dev.strongminds.dk '
-        - name: AppSettings__PubSubBaseUrl
-          valueFrom:
-            secretKeyRef:
-              key: PubSubBaseUrl
-              name: user-secret
-        - name: AppSettings__SecurityKeyString
-          valueFrom:
-            secretKeyRef:
-              key: SecurityKeyString
-              name: user-secret
-        - name: Smtp__Host
-          valueFrom:
-            secretKeyRef:
-              key: SmtpNetworkHost
-              name: user-secret
-        - name: Smtp__Port
-          valueFrom:
-            secretKeyRef:
-              key: SmtpNetworkPort
-              name: user-secret
-        - name: Smtp__Password
-          valueFrom:
-            secretKeyRef:
-              key: SmtpPassword
-              name: user-secret
-        image: ghcr.io/strongminds/kitos-kitos-api:sha-a97cc92689410afb872cc0253e2f352f5622cc1e
-        name: kitos-api
-        ports:
-        - containerPort: 8080
-          name: http
-          protocol: TCP
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: 1
-          requests:
-            memory: 128Mi
-            cpu: 100m
-        volumeMounts:
-        - mountPath: /temp
-          name: kitos-api-volume
-          readOnly: false
+        - env:
+            - name: AppSettings__LogFilePath
+              valueFrom:
+                secretKeyRef:
+                  key: LogFilePath
+                  name: user-secret
+            - name: Smtp__PickupDirectoryLocation
+              valueFrom:
+                secretKeyRef:
+                  key: PickupDirectoryLocation
+                  name: user-secret
+            - name: Smtp__DeliveryMethod
+              value: SpecifiedPickupDirectory
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Dev
+            - name: Database__Provider
+              value: PostgreSql
+            - name: Hangfire__Provider
+              value: PostgreSql
+            - name: ConnectionStrings__KitosContext
+              valueFrom:
+                secretKeyRef:
+                  key: KitosDbConnectionString
+                  name: user-secret
+            - name: ConnectionStrings__kitos_HangfireDB
+              valueFrom:
+                secretKeyRef:
+                  key: HangfireDbConnectionString
+                  name: user-secret
+            - name: AppSettings__BaseUrl
+              value: "https://eh-kitos-dev.strongminds.dk "
+            - name: AppSettings__PubSubBaseUrl
+              valueFrom:
+                secretKeyRef:
+                  key: PubSubBaseUrl
+                  name: user-secret
+            - name: AppSettings__SecurityKeyString
+              valueFrom:
+                secretKeyRef:
+                  key: SecurityKeyString
+                  name: user-secret
+            - name: Smtp__Host
+              valueFrom:
+                secretKeyRef:
+                  key: SmtpNetworkHost
+                  name: user-secret
+            - name: Smtp__Port
+              valueFrom:
+                secretKeyRef:
+                  key: SmtpNetworkPort
+                  name: user-secret
+            - name: Smtp__Password
+              valueFrom:
+                secretKeyRef:
+                  key: SmtpPassword
+                  name: user-secret
+          image: ghcr.io/strongminds/kitos-kitos-api:sha-a97cc92689410afb872cc0253e2f352f5622cc1e
+          name: kitos-api
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 1
+            requests:
+              memory: 128Mi
+              cpu: 100m
+          volumeMounts:
+            - mountPath: /temp
+              name: kitos-api-volume
+              readOnly: false
       imagePullSecrets:
-      - name: 90d73529-a238-405b-a079-3eea2e8e36e6
+        - name: 90d73529-a238-405b-a079-3eea2e8e36e6
       volumes:
-      - name: kitos-api-volume
-        persistentVolumeClaim:
-          claimName: kitos-api-volume
-          readOnly: false
+        - name: kitos-api-volume
+          persistentVolumeClaim:
+            claimName: kitos-api-volume
+            readOnly: false

@@ -22,37 +22,6 @@ namespace Tests.Unit.Core.DomainServices.Repositories
         }
 
         [Fact]
-        public void GetSupplierAssociatedFieldConfigurations_Returns_None_If_Empty()
-        {
-            var uuid = A<Guid>();
-            var organization = CreateOrganization();
-            organization.Uuid = uuid;
-            organization.SupplierAssociatedFieldConfigurations = [];
-            ExpectRepositoryContent(organization);
-
-            var result = _sut.GetSupplierAssociatedFieldConfigurations(uuid);
-
-            Assert.True(result.IsNone);
-        }
-
-        [Fact]
-        public void GetSupplierAssociatedFieldConfigurations_Returns_Configurations_If_Any()
-        {
-            var uuid = A<Guid>();
-            var organization = CreateOrganization();
-            organization.Uuid = uuid;
-            var expected = new SupplierAssociatedFieldConfiguration() { ControlState = A<SupplierAssociatedFieldControlState>(), FieldKey = A<string>() };
-            organization.SupplierAssociatedFieldConfigurations = [expected];
-            ExpectRepositoryContent(organization);
-
-            var result = _sut.GetSupplierAssociatedFieldConfigurations(uuid);
-
-            Assert.True(result.HasValue);
-            var value = result.Value;
-            Assert.Single(value, expected);
-        }
-
-        [Fact]
         public void GetByCvr_Returns_Value()
         {
             //Arrange
