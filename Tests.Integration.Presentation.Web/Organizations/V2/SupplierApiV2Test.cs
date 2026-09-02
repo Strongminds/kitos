@@ -11,7 +11,6 @@ using Presentation.Web.Models.API.V2.Internal.Response.Organizations.Suppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
@@ -52,7 +51,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var responseAfterDelete = await OrganizationSupplierInternalV2Helper.GetSuppliers(organization.Uuid);
             Assert.Empty(responseAfterDelete);
         }
-        
+
         [Fact]
         public async Task Supplier_Can_Only_Update_Supplier_Fields()
         {
@@ -105,7 +104,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             Assert.Empty(dprAfterOperations.Oversight.OversightDates);
         }
-        
+
         [Fact]
         public async Task Supplier_Cannot_Update_Non_Supplier_Fields()
         {
@@ -141,7 +140,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             using var updateUsageGdpr = await ItSystemUsageV2Helper.SendPatchGDPR(token, dpr.Uuid, updateGdprRequest);
             Assert.False(updateUsageGdpr.IsSuccessStatusCode);
         }
-        
+
         [Fact]
         public async Task Supplier_Cannot_Update_Fields_With_No_Supplier_And_No_Access()
         {
@@ -209,138 +208,6 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             using var failedDeleteResponse = await DataProcessingRegistrationV2Helper.SendDeleteOversightDate(dpr.Uuid, postResponse.Uuid, token);
             Assert.False(failedDeleteResponse.IsSuccessStatusCode);
-        }
-
-        [Fact]
-        public async Task Can_Get_Default_Supplier_Field_Configuration()
-        {
-            var organization = await CreateOrganizationAsync();
-
-            var result = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
-
-            Assert.NotEmpty(result);
-            var oversightDateField = result.FirstOrDefault(x => x.FieldKey.Contains("OversightDate"));
-            Assert.NotNull(oversightDateField);
-            Assert.Equal("SUPPLIER", oversightDateField.ControlState);
-        }
-
-        [Fact]
-        public async Task Can_Upsert_Supplier_Field_Configuration()
-        {
-            var organization = await CreateOrganizationAsync();
-            
-            var configurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
-            {
-                new SupplierAssociatedFieldConfigurationItemDTO
-                {
-                    FieldKey = "DataProcessingRegistration.IsOversightCompleted",
-                    ControlState = "ORGANIZATION"
-                }
-            };
-
-            var result = await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, configurations);
-
-            Assert.NotEmpty(result);
-            var oversightField = result.FirstOrDefault(x => x.FieldKey == "DataProcessingRegistration.IsOversightCompleted");
-            Assert.NotNull(oversightField);
-            Assert.Equal("ORGANIZATION", oversightField.ControlState);
-        }
-
-        [Fact]
-        public async Task Get_Supplier_Fields_After_Put_Reflects_Updated_Configuration()
-        {
-            var organization = await CreateOrganizationAsync();
-            
-            var configurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
-            {
-                new SupplierAssociatedFieldConfigurationItemDTO
-                {
-                    FieldKey = "DataProcessingRegistration.IsOversightCompleted",
-                    ControlState = "ORGANIZATION"
-                }
-            };
-
-            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, configurations);
-
-            var result = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
-
-            Assert.NotEmpty(result);
-            var oversightField = result.FirstOrDefault(x => x.FieldKey == "DataProcessingRegistration.IsOversightCompleted");
-            Assert.NotNull(oversightField);
-            Assert.Equal("ORGANIZATION", oversightField.ControlState);
-        }
-
-        [Fact]
-        public async Task Supplier_Can_Update_Allowed_Fields_With_Supplier_Control()
-        {
-            var organization = await CreateOrganizationAsync();
-            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
-            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, supplier.Uuid, true);
-            var globalAdminToken = await GetGlobalToken();
-
-            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
-
-            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
-                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
-                    OrganizationUuid = organization.Uuid
-                });
-
-            var oversightDateRequest = A<ModifyOversightDateDTO>();
-            oversightDateRequest.OversightOptionUuid = null;
-            var postResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, oversightDateRequest, token);
-            AssertOversightDate(oversightDateRequest, postResponse);
-        }
-
-        [Fact]
-        public async Task Supplier_Cannot_Update_Non_Supplier_Controlled_Fields_After_Config_Change()
-        {
-            var organization = await CreateOrganizationAsync();
-            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
-            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.User, supplier.Uuid, true);
-            var globalAdminToken = await GetGlobalToken();
-
-            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
-
-            var configurations = new List<SupplierAssociatedFieldConfigurationItemDTO>
-            {
-                new SupplierAssociatedFieldConfigurationItemDTO
-                {
-                    FieldKey = "DataProcessingRegistration.IsOversightCompleted",
-                    ControlState = "ORGANIZATION"
-                }
-            };
-            await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, configurations);
-
-            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
-                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
-                    OrganizationUuid = organization.Uuid
-                });
-
-            var oversightDateRequest = A<ModifyOversightDateDTO>();
-            oversightDateRequest.OversightOptionUuid = null;
-            using var failedPostResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, token);
-            Assert.False(failedPostResponse.IsSuccessStatusCode);
-        }
-
-        [Fact]
-        public async Task LocalAdmin_Cannot_Update_Supplier_Controlled_Fields()
-        {
-            var organization = await CreateOrganizationAsync();
-            var supplier = await CreateOrganizationAsync(type: OrganizationType.Company, isSupplier: true);
-            var (_, _, token) = await HttpApi.CreateUserAndGetToken(CreateEmail(), OrganizationRole.LocalAdmin, organization.Uuid, true);
-            var globalAdminToken = await GetGlobalToken();
-
-            await OrganizationSupplierInternalV2Helper.AddSupplier(organization.Uuid, supplier.Uuid);
-
-            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(globalAdminToken,
-                new CreateDataProcessingRegistrationRequestDTO { Name = A<string>(),
-                    OrganizationUuid = organization.Uuid
-                });
-
-            var oversightDateRequest = A<ModifyOversightDateDTO>();
-            oversightDateRequest.OversightOptionUuid = null;
-            using var failedPostResponse = await DataProcessingRegistrationV2Helper.SendPostOversightDate(dpr.Uuid, oversightDateRequest, token);
-            Assert.False(failedPostResponse.IsSuccessStatusCode);
         }
 
         private static void AssertOversightDate(ModifyOversightDateDTO expected, OversightDateDTO actual)

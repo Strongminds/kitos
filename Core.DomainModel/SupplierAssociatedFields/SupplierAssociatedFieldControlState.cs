@@ -2,8 +2,8 @@
 {
     public enum SupplierAssociatedFieldControlState
     {
-        ORGANIZATION = 0,
-        SUPPLIER = 1,
-        SHARED = 2,
+        Organization = 0,
+        Supplier = 1,
+        Shared = 2,
     }
 }

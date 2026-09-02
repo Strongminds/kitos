@@ -7,7 +7,7 @@
         public int OrganizationId { get; set; }
         public virtual Organization.Organization Organization { get; set; }
 
-        public bool HasSupplierControlState => ControlState == SupplierAssociatedFieldControlState.SUPPLIER;
-        public bool HasSharedControlState => ControlState == SupplierAssociatedFieldControlState.SHARED;
+        public bool HasSupplierControlState => ControlState == SupplierAssociatedFieldControlState.Supplier;
+        public bool HasSharedControlState => ControlState == SupplierAssociatedFieldControlState.Shared;
     }
 }

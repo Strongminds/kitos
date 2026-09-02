@@ -196,9 +196,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         private static SupplierAssociatedFieldControlStateOption ToOption(SupplierAssociatedFieldControlState controlState) {
             return controlState switch
             {
-                SupplierAssociatedFieldControlState.ORGANIZATION => SupplierAssociatedFieldControlStateOption.ORGANIZATION,
-                SupplierAssociatedFieldControlState.SUPPLIER => SupplierAssociatedFieldControlStateOption.SUPPLIER,
-                SupplierAssociatedFieldControlState.SHARED => SupplierAssociatedFieldControlStateOption.SHARED,
+                SupplierAssociatedFieldControlState.Organization => SupplierAssociatedFieldControlStateOption.ORGANIZATION,
+                SupplierAssociatedFieldControlState.Supplier => SupplierAssociatedFieldControlStateOption.SUPPLIER,
+                SupplierAssociatedFieldControlState.Shared => SupplierAssociatedFieldControlStateOption.SHARED,
                 _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
             };
         }
@@ -207,9 +207,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
         {
             return controlState switch
             {
-                SupplierAssociatedFieldControlStateOption.ORGANIZATION => SupplierAssociatedFieldControlState.ORGANIZATION,
-                SupplierAssociatedFieldControlStateOption.SUPPLIER => SupplierAssociatedFieldControlState.SUPPLIER,
-                SupplierAssociatedFieldControlStateOption.SHARED => SupplierAssociatedFieldControlState.SHARED,
+                SupplierAssociatedFieldControlStateOption.ORGANIZATION => SupplierAssociatedFieldControlState.Organization,
+                SupplierAssociatedFieldControlStateOption.SUPPLIER => SupplierAssociatedFieldControlState.Supplier,
+                SupplierAssociatedFieldControlStateOption.SHARED => SupplierAssociatedFieldControlState.Shared,
                 _ => throw new ArgumentOutOfRangeException(nameof(controlState), controlState, "Invalid value passed as controlState for mapping.")
             };
         }
