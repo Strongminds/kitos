@@ -23,41 +23,41 @@ spec:
         app: kitos-pubsub
     spec:
       containers:
-      - env:
-        - name: PUBSUB_API_KEY
-          valueFrom:
-            secretKeyRef:
-              key: PubSubApiKey
-              name: user-secret
-        - name: RABBIT_MQ_USER
-          valueFrom:
-            secretKeyRef:
-              key: RabbitMqUsername
-              name: user-secret
-        - name: RABBIT_MQ_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: RabbitMqPassword
-              name: user-secret
-        - name: ConnectionStrings__DefaultConnection
-          valueFrom:
-            secretKeyRef:
-              key: PubSubConnectionString
-              name: user-secret
-        - name: ASPNETCORE_ENVIRONMENT
-          value: Development
-        image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-859484415f684b5bc59991d570492546c2b5f8bc
-        name: kitos-pubsub
-        ports:
-        - containerPort: 8080
-          name: http
-          protocol: TCP
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: 1
-          requests:
-            memory: 128Mi
-            cpu: 100m
+        - env:
+            - name: PUBSUB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: PubSubApiKey
+                  name: user-secret
+            - name: RABBIT_MQ_USER
+              valueFrom:
+                secretKeyRef:
+                  key: RabbitMqUsername
+                  name: user-secret
+            - name: RABBIT_MQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: RabbitMqPassword
+                  name: user-secret
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  key: PubSubConnectionString
+                  name: user-secret
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+          image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-a97cc92689410afb872cc0253e2f352f5622cc1e
+          name: kitos-pubsub
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 1
+            requests:
+              memory: 128Mi
+              cpu: 100m
       imagePullSecrets:
-      - name: 90d73529-a238-405b-a079-3eea2e8e36e6
+        - name: 90d73529-a238-405b-a079-3eea2e8e36e6
