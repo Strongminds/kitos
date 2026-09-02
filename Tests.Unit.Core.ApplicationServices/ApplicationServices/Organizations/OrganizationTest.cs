@@ -7,6 +7,7 @@ using Core.DomainModel.Constants;
 using Core.DomainModel.ItContract;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Tests.Toolkit.Patterns;
 using Xunit;
 
@@ -71,6 +72,100 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
             var result = _sut.HasSuppliers();
 
             Assert.True(result);
+        }
+
+        [Fact]
+        public void UpdateFieldConfigurations_GivenNullInput_ReturnsBadInput()
+        {
+            var result = _sut.UpdateFieldConfigurations(null);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void UpdateFieldConfigurations_GivenEmptyFieldKey_ReturnsBadInput()
+        {
+            var result = _sut.UpdateFieldConfigurations(new[]
+            {
+                new KeyValuePair<string, FieldControlState>("", FieldControlState.Organization)
+            });
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void UpdateFieldConfigurations_GivenDuplicateFieldKey_ReturnsBadInput()
+        {
+            var result = _sut.UpdateFieldConfigurations(new[]
+            {
+                new KeyValuePair<string, FieldControlState>("contractOwner", FieldControlState.Organization),
+                new KeyValuePair<string, FieldControlState>("contractOwner", FieldControlState.Supplier)
+            });
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void UpdateFieldConfigurations_AddsNewConfigurations()
+        {
+            var result = _sut.UpdateFieldConfigurations(new[]
+            {
+                new KeyValuePair<string, FieldControlState>("fieldA", FieldControlState.Organization),
+                new KeyValuePair<string, FieldControlState>("fieldB", FieldControlState.Supplier)
+            });
+
+            Assert.True(result.Ok);
+            Assert.Equal(2, _sut.SupplierAssociatedFieldConfigurations.Count);
+            Assert.Equal(FieldControlState.Organization, _sut.GetFieldConfiguration("fieldA").GetValueOrDefault()?.ControlState);
+            Assert.Equal(FieldControlState.Supplier, _sut.GetFieldConfiguration("fieldB").GetValueOrDefault()?.ControlState);
+        }
+
+        [Fact]
+        public void UpdateFieldConfigurations_UpdatesExistingConfiguration()
+        {
+            _sut.SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new() { FieldKey = "fieldA", ControlState = FieldControlState.Organization }
+            };
+
+            var result = _sut.UpdateFieldConfigurations(new[]
+            {
+                new KeyValuePair<string, FieldControlState>("fieldA", FieldControlState.Shared)
+            });
+
+            Assert.True(result.Ok);
+            Assert.Single(_sut.SupplierAssociatedFieldConfigurations);
+            Assert.Equal(FieldControlState.Shared, _sut.GetFieldConfiguration("fieldA").GetValueOrDefault()?.ControlState);
+        }
+
+        [Fact]
+        public void GetFieldConfiguration_GivenUnknownFieldKey_ReturnsNone()
+        {
+            _sut.SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new() { FieldKey = "fieldA", ControlState = FieldControlState.Organization }
+            };
+
+            var result = _sut.GetFieldConfiguration("fieldB");
+
+            Assert.True(result.IsNone);
+        }
+
+        [Fact]
+        public void GetFieldConfiguration_GivenKnownFieldKey_ReturnsConfiguration()
+        {
+            _sut.SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>
+            {
+                new() { FieldKey = "fieldA", ControlState = FieldControlState.Shared }
+            };
+
+            var result = _sut.GetFieldConfiguration("fieldA");
+
+            Assert.True(result.HasValue);
+            Assert.Equal(FieldControlState.Shared, result.GetValueOrDefault()?.ControlState);
         }
 
         [Fact]
