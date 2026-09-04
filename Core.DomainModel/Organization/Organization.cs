@@ -10,6 +10,7 @@ using Core.DomainModel.ItContract.Read;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Notification;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
 
@@ -154,6 +155,7 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<ItSystemUsage.ItSystemUsage> ArchiveSupplierForItSystems { get; set; }
         public virtual StsOrganizationConnection StsOrganizationConnection { get; set; }
 
+        public virtual ICollection<SupplierAssociatedFieldConfiguration> SupplierAssociatedFieldConfigurations { get; set; }
 
         /// <summary>
         /// Determines if this is the "Default" organization in KITOS
@@ -178,6 +180,49 @@ namespace Core.DomainModel.Organization
         public void ClearSuppliers()
         {
             Suppliers?.Clear();
+        }
+
+        public Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpdateFieldConfigurations(
+            IEnumerable<KeyValuePair<string, FieldControlState>> configurations)
+        {
+            if (configurations == null)
+                return new OperationError($"No field configuration was provided", OperationFailure.BadInput);
+
+            var incomingConfigurations = configurations.ToList();
+            if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.Key)))
+                return new OperationError("FieldKey is required", OperationFailure.BadInput);
+
+            if (incomingConfigurations.GroupBy(x => x.Key).Any(x => x.Count() > 1))
+                return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
+
+            var currentConfigurations = SupplierAssociatedFieldConfigurations?.ToList()
+                ?? new List<SupplierAssociatedFieldConfiguration>();
+
+            foreach (var configuration in incomingConfigurations)
+            {
+                var existingConfiguration = GetFieldConfiguration(configuration.Key);
+                if (existingConfiguration.IsNone)
+                {
+                    currentConfigurations.Add(new SupplierAssociatedFieldConfiguration
+                    {
+                        FieldKey = configuration.Key,
+                        ControlState = configuration.Value
+                    });
+                    continue;
+                }
+                var existingConfigurationValue = existingConfiguration.GetValueOrDefault();
+
+                existingConfigurationValue.ControlState = configuration.Value;
+            }
+
+            SupplierAssociatedFieldConfigurations = currentConfigurations;
+            return currentConfigurations.ToHashSet();
+        }
+
+        public Maybe<SupplierAssociatedFieldConfiguration> GetFieldConfiguration(string fieldKey)
+        {
+            var configuration = SupplierAssociatedFieldConfigurations?.FirstOrDefault(c => c.FieldKey == fieldKey);
+            return configuration.FromNullable();
         }
 
         public bool HasSuppliers()

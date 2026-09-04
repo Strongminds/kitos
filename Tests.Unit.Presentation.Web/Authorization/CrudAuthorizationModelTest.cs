@@ -2,11 +2,13 @@
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
 using Moq;
+using System;
+using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Authorization
 {
-    public class CrudAuthorizationModelTest
+    public class CrudAuthorizationModelTest: WithAutoFixture
     {
         [Theory]
         [InlineData(true)]
@@ -21,7 +23,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var result = sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(expected, result);
+            Assert.Equal(expected, result.Ok && result.Value);
             authorizationContext.Verify(_ => _.AllowModify(entity.Object));
 
         }

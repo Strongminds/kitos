@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Abstractions.Helpers;
 using Core.Abstractions.Types;
 using Core.DomainModel.GDPR;
@@ -27,27 +28,27 @@ namespace Core.ApplicationServices.Authorization
                 {
                     fieldAuthorizationModel.GetFieldPermissions(dpr, ObjectHelper
                         .GetPropertyPath<DataProcessingRegistration>(
-                            x => x.IsOversightCompleted)),
+                            x => x.IsOversightCompleted), dpr.Organization.Uuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightDate)),
+                                x => x.OversightDate), dpr.Organization.Uuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightRemark)),
+                                x => x.OversightRemark), dpr.Organization.Uuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightReportLink)),
+                                x => x.OversightReportLink), dpr.Organization.Uuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightReportLinkName)),
+                                x => x.OversightReportLinkName), dpr.Organization.Uuid),
                     fieldAuthorizationModel.GetFieldPermissions(dpr,
                         ObjectHelper
                             .GetPropertyPath<DataProcessingRegistrationOversightDate>(
-                                x => x.OversightOptionId))
+                                x => x.OversightOptionId), dpr.Organization.Uuid)
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (
@@ -63,9 +64,9 @@ namespace Core.ApplicationServices.Authorization
                 {
                     fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper
                         .GetPropertyPath<ItSystemUsage>(
-                            x => x.ContainsAITechnology)),
-                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel)),
-                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment))
+                            x => x.ContainsAITechnology), usage.Organization.Uuid),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.SystemUsageCriticalityLevel), usage.Organization.Uuid),
+                    fieldAuthorizationModel.GetFieldPermissions(usage, ObjectHelper.GetPropertyPath<ItSystemUsage>(x => x.preriskAssessment), usage.Organization.Uuid)
                 })
             ).Match<Result<ModuleFieldsPermissionsResult, OperationError>>
             (

@@ -284,8 +284,10 @@ namespace Core.ApplicationServices.GDPR.Write
             ISupplierAssociatedEntityUpdateParameters parametersAsSupplierAssociatedEntityUpdateParameters)
         {
             var authorizationModel = _authorizationContext.GetAuthorizationModel(dpr);
-            var authorizeUpdate = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
-            if (!authorizeUpdate)
+            var authorizeUpdateResult = authorizationModel.AuthorizeUpdate(dpr, parametersAsSupplierAssociatedEntityUpdateParameters);
+            if (authorizeUpdateResult.Failed) return authorizeUpdateResult.Error;
+            var isAuthorized = authorizeUpdateResult.Value;
+            if (!isAuthorized)
             {
                 return new OperationError($"User is unauthorized to update Data Processing Registration with uuid: {dpr.Uuid}", OperationFailure.Forbidden);
             }
@@ -485,7 +487,10 @@ namespace Core.ApplicationServices.GDPR.Write
                 if (oversightOptionIdResult.Failed)
                     return oversightOptionIdResult.Error;
 
-                var assignResult = dpr.AssignOversightDate(newDate.CompletedAt, newDate.Remark, newDate.OversightReportLink, newDate.OversightReportLinkName, oversightOptionIdResult.Value);
+                if (!newDate.CompletedAt.HasValue)
+                    return new OperationError("CompletedAt must be provided when assigning oversight dates", OperationFailure.BadInput);
+
+                var assignResult = dpr.AssignOversightDate(newDate.CompletedAt.Value, newDate.Remark, newDate.OversightReportLink, newDate.OversightReportLinkName, oversightOptionIdResult.Value);
 
                 if (assignResult.Failed)
                     return new OperationError($"Failed to assign new oversight date with Date: {newDate.CompletedAt} and Remark: {newDate.Remark}. Error message: {assignResult.Error.Message.GetValueOrEmptyString()}", assignResult.Error.FailureType);
@@ -931,6 +936,7 @@ namespace Core.ApplicationServices.GDPR.Write
 
             var oversightDateId = methodParameters.id;
             return registration.WithOptionalUpdate(parameters.CompletedAt,
+
                     (dpr, changedDate) => dpr.ModifyOversightDateDate(oversightDateId, changedDate))
                 .Bind(updateRegistration => updateRegistration.WithOptionalUpdate(parameters.Remark,
                     (dpr, changedRemark) => dpr.ModifyOversightDateRemark(oversightDateId, changedRemark)))
@@ -956,7 +962,13 @@ namespace Core.ApplicationServices.GDPR.Write
             var oversightReportLinkName = parameters.OversightReportLinkName.HasChange ? parameters.OversightReportLinkName.NewValue : null;
             var oversightOptionUuid = parameters.OversightOptionUuid.HasChange ? parameters.OversightOptionUuid.NewValue : null;
             return ResolveOversightOptionId(oversightOptionUuid)
-                .Bind(oversightOptionId => dpr.AssignOversightDate(parameters.CompletedAt.NewValue, remark, oversightReportLink, oversightReportLinkName, oversightOptionId));
+                .Bind(oversightOptionId =>
+                {
+                    if (!parameters.CompletedAt.HasChange || !parameters.CompletedAt.NewValue.HasValue)
+                        return new OperationError("CompletedAt must be provided when creating an oversight date", OperationFailure.BadInput);
+
+                    return dpr.AssignOversightDate(parameters.CompletedAt.NewValue.Value, remark, oversightReportLink, oversightReportLinkName, oversightOptionId);
+                });
         }
 
         private Result<int?, OperationError> ResolveOversightOptionId(Guid? oversightOptionUuid)

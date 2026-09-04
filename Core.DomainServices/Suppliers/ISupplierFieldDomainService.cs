@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Core.Abstractions.Types;
+using Core.DomainModel.SupplierAssociatedFields;
+using System;
+using System.Collections.Generic;
 
 namespace Core.DomainServices.Suppliers
 {
     public interface ISupplierFieldDomainService
     {
-        bool ContainsOnlySupplierControlledField(IEnumerable<string> properties);
-        bool ContainsAnySupplierControlledFields(IEnumerable<string> properties);
-        bool IsSupplierControlled(string key);
+        bool ContainsOnlySupplierControlledAndSharedFields(IEnumerable<string> properties, Guid organizationUuid);
+        bool ContainsAnySupplierControlledFields(IEnumerable<string> properties, Guid organizationUuid);
+        bool IsSupplierControlled(string key, Guid organizationUuid);
+        Maybe<IEnumerable<SupplierAssociatedFieldConfiguration>> GetSupplierAssociatedFieldConfigurations(Guid organizationUuid);
     }
 }

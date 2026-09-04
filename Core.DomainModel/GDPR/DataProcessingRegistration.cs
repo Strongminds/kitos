@@ -461,9 +461,12 @@ namespace Core.DomainModel.GDPR
             return oversightDateToModify;
         }
 
-        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateDate(int oversightId, DateTime oversightDate)
+        public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateDate(int oversightId, DateTime? oversightDate)
         {
-            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightDate = oversightDate);
+            if(oversightDate == null)
+                return new OperationError("CompletedAt cannot be null when provided for oversight date update", OperationFailure.BadInput);
+
+            return ModifyOversightDate(oversightId, existingDate => existingDate.OversightDate = (DateTime)oversightDate);
         }
 
         public Result<DataProcessingRegistrationOversightDate, OperationError> ModifyOversightDateRemark(int oversightId, string oversightRemark)
