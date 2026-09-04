@@ -211,7 +211,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             {
                 var noChangesParameters = new UpdatedDataProcessingRegistrationOversightDateParameters
                 {
-                    CompletedAt = OptionalValueChange<DateTime>.None,
+                    CompletedAt = OptionalValueChange<DateTime?>.None,
                     Remark = OptionalValueChange<string>.None,
                     OversightReportLink = OptionalValueChange<string>.None,
                     OversightReportLinkName = OptionalValueChange<string>.None
@@ -251,7 +251,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters()
             {
-                CompletedAt = OptionalValueChange<DateTime>.None,
+                CompletedAt = OptionalValueChange<DateTime?>.None,
                 OversightReportLink = OptionalValueChange<string>.None,
                 Remark = OptionalValueChange<string>.None,
                 OversightReportLinkName = OptionalValueChange<string>.None
@@ -295,7 +295,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters
             {
-                CompletedAt = OptionalValueChange<DateTime>.None,
+                CompletedAt = OptionalValueChange<DateTime?>.None,
                 Remark = OptionalValueChange<string>.None,
                 OversightReportLink = OptionalValueChange<string>.None,
                 OversightReportLinkName = OptionalValueChange<string>.None,
@@ -343,13 +343,13 @@ namespace Tests.Unit.Presentation.Web.Authorization
         {
             var parameters = new UpdatedDataProcessingRegistrationOversightDateParameters
             {
-                CompletedAt = OptionalValueChange<DateTime>.None,
+                CompletedAt = OptionalValueChange<DateTime?>.None,
                 Remark = OptionalValueChange<string>.None,
                 OversightReportLink = OptionalValueChange<string>.None,
                 OversightReportLinkName = OptionalValueChange<string>.None
             };
             if (completedAt)
-                parameters.CompletedAt = A<DateTime>().AsChangedValue();
+                parameters.CompletedAt = OptionalValueChange<DateTime?>.With(A<DateTime>());
             if (remark)
                 parameters.Remark = A<string>().AsChangedValue();
             if (oversightReportLink)
