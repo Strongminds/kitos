@@ -1546,7 +1546,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
 
             var response = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, request, token);
 
-            Assert.Equal(request.CompletedAt, response.CompletedAt);
+            DateTimeTestHelper.AssertEqual(request.CompletedAt, response.CompletedAt);
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
@@ -1580,7 +1580,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             request.OversightOptionUuid = updatedOption.Uuid;
             var response = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, createResponse.Uuid, request, token);
 
-            Assert.Equal(request.CompletedAt, response.CompletedAt);
+            DateTimeTestHelper.AssertEqual(request.CompletedAt, response.CompletedAt);
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
@@ -1625,7 +1625,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             Assert.Equal(HttpStatusCode.OK, rawResponse.StatusCode);
             var response = await rawResponse.ReadResponseBodyAsAsync<OversightDateDTO>();
 
-            Assert.Equal(createResponse.CompletedAt, response.CompletedAt);
+            DateTimeTestHelper.AssertEqual(createResponse.CompletedAt, response.CompletedAt);
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
