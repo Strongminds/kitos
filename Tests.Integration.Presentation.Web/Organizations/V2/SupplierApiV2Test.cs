@@ -1,4 +1,6 @@
 ﻿using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
+using Core.DomainServices.Suppliers;
 using Presentation.Web.Models.API.V2.Request.DataProcessing;
 using Presentation.Web.Models.API.V2.Request.Supplier;
 using Presentation.Web.Models.API.V2.Request.System.Regular;
@@ -11,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Abstractions.Helpers;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
 using Tests.Integration.Presentation.Web.Tools.Internal.Organizations;
@@ -220,6 +223,28 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(expected.OversightOptionUuid, actual.OversightOption?.Uuid);
         }
 
+        private static FieldControlStateChoice ToChoice(FieldControlState state)
+        {
+            return state switch
+            {
+                FieldControlState.Organization => FieldControlStateChoice.Organization,
+                FieldControlState.Supplier => FieldControlStateChoice.Supplier,
+                FieldControlState.Shared => FieldControlStateChoice.Shared,
+                _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
+            };
+        }
+
+        private static FieldControlStateChoice GetDifferentControlState(FieldControlState defaultState)
+        {
+            return defaultState switch
+            {
+                FieldControlState.Organization => FieldControlStateChoice.Supplier,
+                FieldControlState.Supplier => FieldControlStateChoice.Organization,
+                FieldControlState.Shared => FieldControlStateChoice.Organization,
+                _ => throw new ArgumentOutOfRangeException(nameof(defaultState), defaultState, null)
+            };
+        }
+
         [Fact]
         public async Task Can_Get_Default_Supplier_Field_Configuration()
         {
@@ -227,7 +252,12 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
 
             var response = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
 
-            Assert.NotEmpty(response);
+            Assert.Equal(SupplierAssociatedFields.DefaultConfiguration.Count, response.Count());
+            foreach (var expected in SupplierAssociatedFields.DefaultConfiguration)
+            {
+                var actual = Assert.Single(response, x => x.FieldKey == expected.FieldKey);
+                Assert.Equal(ToChoice(expected.ControlState), actual.ControlState);
+            }
         }
 
         [Fact]
@@ -271,6 +301,40 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             var updatedField = responseList.FirstOrDefault(x => x.FieldKey == "ItSystemUsage.ContainsAITechnology");
             Assert.NotNull(updatedField);
             Assert.Equal(FieldControlStateChoice.Shared, updatedField.ControlState);
+        }
+
+        [Fact]
+        public async Task Ensure_Supplier_Field_Can_Be_Updated_And_Returns_Updated_Control_State()
+        {
+            var organization = await CreateOrganizationAsync();
+
+            foreach (var expected in SupplierAssociatedFields.DefaultConfiguration)
+            {
+                var beforeUpdate = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
+                var current = Assert.Single(beforeUpdate, x => x.FieldKey == expected.FieldKey);
+                Assert.Equal(ToChoice(expected.ControlState), current.ControlState);
+
+                var updatedControlState = GetDifferentControlState(expected.ControlState);
+                var request = new SupplierAssociatedFieldConfigurationRequestDTO
+                {
+                    Configurations = new[]
+                    {
+                        new SupplierAssociatedFieldConfigurationItemDTO
+                        {
+                            FieldKey = expected.FieldKey,
+                            ControlState = updatedControlState
+                        }
+                    }
+                };
+
+                var updateResponse = await OrganizationSupplierInternalV2Helper.PutSupplierFields(organization.Uuid, request);
+                var updated = Assert.Single(updateResponse, x => x.FieldKey == expected.FieldKey);
+                Assert.Equal(updatedControlState, updated.ControlState);
+
+                var afterUpdate = await OrganizationSupplierInternalV2Helper.GetSupplierFields(organization.Uuid);
+                var persisted = Assert.Single(afterUpdate, x => x.FieldKey == expected.FieldKey);
+                Assert.Equal(updatedControlState, persisted.ControlState);
+            }
         }
 
         [Fact]
