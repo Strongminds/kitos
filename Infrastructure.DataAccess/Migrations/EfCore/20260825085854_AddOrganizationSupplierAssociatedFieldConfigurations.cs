@@ -19,7 +19,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FieldKey = table.Column<string>(type: "text", nullable: true),
+                    FieldKey = table.Column<string>(type: "text", nullable: false),
                     ControlState = table.Column<int>(type: "integer", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     ObjectOwnerId = table.Column<int>(type: "integer", nullable: true),

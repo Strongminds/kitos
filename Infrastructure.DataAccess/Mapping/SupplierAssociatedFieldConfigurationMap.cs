@@ -13,6 +13,9 @@ namespace Infrastructure.DataAccess.Mapping
             builder.Property(x => x.OrganizationId)
                 .IsRequired();
 
+            builder.Property(x => x.FieldKey)
+                .IsRequired();
+
             builder.HasIndex(x => new { x.OrganizationId, x.FieldKey })
                 .IsUnique()
                 .HasDatabaseName("UX_OrganizationId_SupplierAssociatedFieldConfiguration_FieldKey");
