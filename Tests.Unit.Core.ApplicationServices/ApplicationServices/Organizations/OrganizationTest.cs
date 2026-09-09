@@ -212,9 +212,9 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
         }
 
         [Fact]
-        public void GivenNonCompanyTypeId_UpdateSupplierToTrue_ReturnsOperationError()
+        public void GivenMunicipalityTypeId_UpdateSupplierToTrue_ReturnsOperationError()
         {
-            const int nonCompanyTypeId = (int)OrganizationTypeKeys.Interessefællesskab;
+            const int nonCompanyTypeId = (int)OrganizationTypeKeys.Kommune;
             _sut.UpdateOrganizationTypeId(nonCompanyTypeId);
             
             var result = _sut.UpdateIsSupplier(true);
