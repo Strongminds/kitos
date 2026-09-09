@@ -52,6 +52,7 @@ namespace Core.DomainModel.Organization
             UIModuleCustomizations = new List<UIModuleCustomization>();
             ArchiveSupplierForItSystems = new List<ItSystemUsage.ItSystemUsage>();
             StsOrganizationIdentities = new List<StsOrganizationIdentity>();
+            SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>();
         }
         public string Name { get; set; }
         public string Phone { get; set; }
@@ -73,7 +74,7 @@ namespace Core.DomainModel.Organization
 
         private void ToggleOffIsSupplierIfNotCompanyType(int typeId)
         {
-            if ((OrganizationTypeKeys)typeId != OrganizationTypeKeys.Virksomhed)
+            if (!IsOrganizationSupplierEligible(typeId))
             {
                 IsSupplier = false;
             }
@@ -646,14 +647,20 @@ namespace Core.DomainModel.Organization
 
         public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
         {
-            if ((OrganizationTypeKeys)TypeId != OrganizationTypeKeys.Virksomhed && isSupplier)
+            if (!IsOrganizationSupplierEligible(TypeId) && isSupplier)
             {
                 return new OperationError(
-                    $"Only organizations of {OrganizationTypeKeys.Virksomhed} type can be marked as a supplier", OperationFailure.BadInput);
+                    $"Only organizations of {OrganizationTypeKeys.Virksomhed} or {OrganizationTypeKeys.Interessefællesskab} type can be marked as a supplier", OperationFailure.BadInput);
             }
             IsSupplier = isSupplier;
             return Maybe<OperationError>.None;
         }
+
+        private bool IsOrganizationSupplierEligible(int typeId)
+        {
+            return (OrganizationTypeKeys)typeId is (OrganizationTypeKeys.Virksomhed or OrganizationTypeKeys.Interessefællesskab);
+        }
+
         public void UpdateShowDataProcessing(Maybe<bool> showDataProcessing)
         {
             HandleConfigPropertyUpdate(showDataProcessing, config => config.ShowDataProcessing = showDataProcessing.Value);
