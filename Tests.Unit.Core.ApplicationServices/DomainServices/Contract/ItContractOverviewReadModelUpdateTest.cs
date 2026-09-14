@@ -329,6 +329,25 @@ namespace Tests.Unit.Core.DomainServices.Contract
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        public void Apply_Can_Map_Note(bool isNull)
+        {
+            //Arrange
+            var itContract = new ItContract
+            {
+                Note = isNull ? null : A<string>()
+            };
+            var itContractOverviewReadModel = new ItContractOverviewReadModel();
+
+            //Act
+            _sut.Apply(itContract, itContractOverviewReadModel);
+
+            //Assert
+            Assert.Equal(itContract.Note, itContractOverviewReadModel.Note);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         public void Apply_Can_Map_Supplier(bool isNull)
         {
             //Arrange

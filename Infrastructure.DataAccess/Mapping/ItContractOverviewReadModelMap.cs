@@ -112,6 +112,7 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.LastEditedAtDate).HasDatabaseName("IX_LastEditedAtDate");
             builder.HasIndex(x => x.Concluded).HasDatabaseName("IX_Concluded");
             builder.HasIndex(x => x.ExpirationDate).HasDatabaseName("IX_ExpirationDate");
+            builder.HasIndex(x => x.Note).HasDatabaseName("IX_Note");
         }
 
         private static void MapOptionTypeReference<T>(
