@@ -2599,9 +2599,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("Name")
                         .HasDatabaseName("IX_Contract_Name");
 
-                    b.HasIndex("Note")
-                        .HasDatabaseName("IX_Note");
-
                     b.HasIndex("NumberOfAssociatedSystemRelations")
                         .HasDatabaseName("IX_NumberOfAssociatedSystemRelations");
 

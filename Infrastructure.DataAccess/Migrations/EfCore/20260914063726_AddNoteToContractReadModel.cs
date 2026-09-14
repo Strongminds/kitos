@@ -16,22 +16,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 table: "ItContractOverviewReadModels",
                 type: "text",
                 nullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Note",
-                schema: "dbo",
-                table: "ItContractOverviewReadModels",
-                column: "Note");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Note",
-                schema: "dbo",
-                table: "ItContractOverviewReadModels");
-
             migrationBuilder.DropColumn(
                 name: "Note",
                 schema: "dbo",
