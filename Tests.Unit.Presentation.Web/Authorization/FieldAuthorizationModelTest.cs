@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
@@ -34,8 +35,8 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var withNullEntity = _sut.AuthorizeUpdate(null, parameters.Object);
             var withNullParameters = _sut.AuthorizeUpdate(entity.Object, null);
 
-            Assert.False(withNullEntity);
-            Assert.False(withNullParameters);
+            Assert.True(withNullEntity.Ok && !withNullEntity.Value);
+            Assert.True(withNullParameters.Ok && !withNullParameters.Value);
         }
 
         [Fact]
@@ -46,7 +47,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             var parameters = new Mock<ISupplierAssociatedEntityUpdateParameters>();
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.True(result);
+            Assert.True(result.Ok && result.Value);
         }
 
         [Theory]
@@ -61,7 +62,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
             SetupAllowModifyReturns(allowModifyResult, entity.Object);
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(allowModifyResult, result);
+            Assert.Equal(allowModifyResult, result.Ok && result.Value);
             VerifyAllowModify(entity.Object);
         }
 
@@ -80,7 +81,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(allowModifyResult, result);
+            Assert.Equal(allowModifyResult, result.Ok && result.Value);
             VerifyAllowModify(entity.Object);
         }
 
@@ -96,7 +97,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.True(result);
+            Assert.True(result.Ok && result.Value);
         }
 
         [Fact]
@@ -111,7 +112,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.False(result);
+            Assert.True(result.Ok && !result.Value);
         }
 
         [Theory]
@@ -129,7 +130,7 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
             var result = _sut.AuthorizeUpdate(entity.Object, parameters.Object);
 
-            Assert.Equal(allowModifyResult, result);
+            Assert.Equal(allowModifyResult, result.Ok && result.Value);
             VerifyAllowModify(entity.Object);
         }
 
@@ -139,12 +140,13 @@ namespace Tests.Unit.Presentation.Web.Authorization
         public void GetFieldPermissions_Returns_Expected_Result(bool expected)
         {
             var key = A<string>();
+            var orgUuid = A<Guid>();
 
             IsUserGlobalAdmin(false);
             var entity = SetupEntityWithIdAndSuppliers();
             ExpectIsSupplierControlledFieldReturns(key, expected);
 
-            var result = _sut.GetFieldPermissions(entity.Object, key);
+            var result = _sut.GetFieldPermissions(entity.Object, key, orgUuid);
 
         }
 
@@ -184,17 +186,17 @@ namespace Tests.Unit.Presentation.Web.Authorization
 
         private void ExpectHasAnySupplierChangesReturns(bool expectedResult, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)
         {
-            _supplierAssociatedFieldsService.Setup(_ => _.HasAnySupplierChanges(parameters.Object, entity)).Returns(expectedResult);
+            _supplierAssociatedFieldsService.Setup(_ => _.HasAnySupplierChanges(parameters.Object, entity, It.IsAny<Guid>())).Returns(expectedResult);
         }
 
         private void ExpectHasOnlySupplierChangesReturns(bool expectedResult, Mock<ISupplierAssociatedEntityUpdateParameters> parameters, IEntity entity)
         {
-            _supplierAssociatedFieldsService.Setup(_ => _.HasOnlySupplierChanges(parameters.Object, entity)).Returns(expectedResult);
+            _supplierAssociatedFieldsService.Setup(_ => _.HasOnlySupplierChanges(parameters.Object, entity, It.IsAny<Guid>())).Returns(expectedResult);
         }
 
         private void ExpectIsSupplierControlledFieldReturns(string key, bool result)
         {
-            _supplierAssociatedFieldsService.Setup(x => x.IsFieldSupplierControlled(key)).Returns(result);
+            _supplierAssociatedFieldsService.Setup(x => x.IsFieldSupplierControlled(key, It.IsAny<Guid>())).Returns(result);
         }
         private void SetupDoesUserHaveSupplierApiAccess(bool value, Mock<IEntityOwnedByOrganization> entity)
         {

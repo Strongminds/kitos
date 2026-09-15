@@ -240,8 +240,8 @@ namespace Presentation.Web.Controllers.API.V2.External.DataProcessingRegistratio
             return new UpdatedDataProcessingRegistrationOversightDateParameters
             {
                 CompletedAt = rule.MustUpdate(x => x.CompletedAt)
-                    ? dto.CompletedAt.AsChangedValue()
-                    : OptionalValueChange<DateTime>.None,
+                    ? OptionalValueChange<DateTime?>.With(dto.CompletedAt)
+                    : OptionalValueChange<DateTime?>.None,
                 Remark = rule.MustUpdate(x => x.Remark)
                     ? dto.Remark?.AsChangedValue() ?? OptionalValueChange<string>.With(string.Empty)
                     : OptionalValueChange<string>.None,

@@ -1546,7 +1546,7 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
 
             var response = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, request, token);
 
-            Assert.Equal(request.CompletedAt, response.CompletedAt);
+            DateTimeTestHelper.AssertEqual(request.CompletedAt, response.CompletedAt);
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
@@ -1580,7 +1580,52 @@ namespace Tests.Integration.Presentation.Web.GDPR.V2
             request.OversightOptionUuid = updatedOption.Uuid;
             var response = await DataProcessingRegistrationV2Helper.PatchOversightDate(dpr.Uuid, createResponse.Uuid, request, token);
 
-            Assert.Equal(request.CompletedAt, response.CompletedAt);
+            DateTimeTestHelper.AssertEqual(request.CompletedAt, response.CompletedAt);
+            Assert.Equal(request.Remark, response.Remark);
+            Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
+            Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
+            Assert.Equal(request.OversightOptionUuid, response.OversightOption?.Uuid);
+        }
+
+        [Fact]
+        public async Task Can_Modify_OversightDate_Without_CompletedAt()
+        {
+            var (token, _, org) = await CreatePrerequisitesAsync();
+            var dpr = await DataProcessingRegistrationV2Helper.PostAsync(token,
+                new CreateDataProcessingRegistrationRequestDTO
+                {
+                    Name = CreateName(),
+                    OrganizationUuid = org.Uuid,
+                    Oversight = new DataProcessingRegistrationOversightWriteRequestDTO
+                    {
+                        IsOversightCompleted = YesNoUndecidedChoice.Yes
+                    }
+                });
+
+            var oversightOptions = (await OptionV2ApiHelper.GetOptionsAsync(OptionV2ApiHelper.ResourceName.DataProcessingRegistrationOversight, org.Uuid, 10, 0)).ToList();
+            var initialOption = oversightOptions.First();
+            var updatedOption = oversightOptions.Skip(1).FirstOrDefault() ?? initialOption;
+
+            var createRequest = A<ModifyOversightDateDTO>();
+            createRequest.OversightOptionUuid = initialOption.Uuid;
+            var createResponse = await DataProcessingRegistrationV2Helper.PostOversightDate(dpr.Uuid, createRequest, token);
+
+            var request = A<ModifyOversightDateDTO>();
+            request.OversightOptionUuid = updatedOption.Uuid;
+            var rawRequest = new
+            {
+                request.Remark,
+                request.OversightReportLink,
+                request.OversightOptionUuid
+            };
+            using var rawResponse = await HttpApi.PatchWithTokenAsync(
+                TestEnvironment.CreateUrl($"api/v2/data-processing-registrations/{dpr.Uuid}/oversight-dates/{createResponse.Uuid}"),
+                token,
+                rawRequest);
+            Assert.Equal(HttpStatusCode.OK, rawResponse.StatusCode);
+            var response = await rawResponse.ReadResponseBodyAsAsync<OversightDateDTO>();
+
+            DateTimeTestHelper.AssertEqual(createResponse.CompletedAt, response.CompletedAt);
             Assert.Equal(request.Remark, response.Remark);
             Assert.Equal(request.OversightReportLink?.Name, response.OversightReportLink?.Name);
             Assert.Equal(request.OversightReportLink?.Url, response.OversightReportLink?.Url);
