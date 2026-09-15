@@ -93,6 +93,6 @@ namespace Core.DomainModel.ItContract.Read
         public DateTime? LastEditedAtDate { get; set; }
         public DateTime? Concluded { get; set; }
         public DateTime? ExpirationDate { get; set; }
-
+        public string Note { get; set; }
     }
 }
