@@ -30,7 +30,15 @@ namespace Core.DomainModel.UIConfiguration
             if (keysValidity.HasValue)
                 return new OperationError(keysValidity.Value, OperationFailure.BadInput);
 
-            customizedUiNodes.MirrorTo(Nodes, x => $"K:{x.Key}_S:{x.Enabled}_R:{x.Recommended}");
+            // Keep persisted nodes when only their flags change, avoiding delete/insert pairs.
+            customizedUiNodes.MirrorTo(Nodes, x => x.Key);
+            var nodesByKey = Nodes.ToDictionary(x => x.Key);
+            foreach (var node in customizedUiNodes)
+            {
+                var existingNode = nodesByKey[node.Key];
+                existingNode.Enabled = node.Enabled;
+                existingNode.Recommended = node.Recommended;
+            }
             return Maybe<OperationError>.None;
         }
 
