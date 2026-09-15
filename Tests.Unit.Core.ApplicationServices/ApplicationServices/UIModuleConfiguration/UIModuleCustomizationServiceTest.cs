@@ -25,6 +25,7 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
         private readonly Mock<IOrganizationalUserContext> _userContextMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IEntityIdentityResolver> _identityResolverMock;
+        private readonly Mock<IUIModuleCustomizationRepository> _repositoryMock;
 
         private readonly UIModuleCustomizationService _sut;
 
@@ -34,14 +35,32 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
             _userContextMock = new Mock<IOrganizationalUserContext>();
             _organizationServiceMock = new Mock<IOrganizationService>();
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
-            var organizationRepositoryMock = new Mock<IUIModuleCustomizationRepository>();
+            _repositoryMock = new Mock<IUIModuleCustomizationRepository>();
 
             _sut = new UIModuleCustomizationService(
                 _transactionManagerMock.Object,
                 _userContextMock.Object,
                 _organizationServiceMock.Object,
                 _identityResolverMock.Object,
-                organizationRepositoryMock.Object);
+                _repositoryMock.Object);
+        }
+
+        [Fact]
+        public void PUT_Updates_Flags_Without_Deleting_Nodes()
+        {
+            var (organization, module) = SetupGetModuleCustomization();
+            var node = Assert.Single(module.Nodes);
+            var parameters = new UIModuleCustomizationParameters(organization.Id, module.Module,
+                new[] { new CustomUINodeParameters(node.Key, !node.Enabled, !node.Recommended) });
+            ExpectTransactionBeginReturns();
+            ExpectHasRoleReturns(organization.Id, OrganizationRole.LocalAdmin, true);
+
+            var result = _sut.UpdateModule(parameters);
+
+            Assert.True(result.IsNone);
+            Assert.Same(node, Assert.Single(module.Nodes));
+            _repositoryMock.Verify(x => x.DeleteNodes(It.IsAny<IEnumerable<CustomizedUINode>>()), Times.Never);
+            _repositoryMock.Verify(x => x.Update(module), Times.Once);
         }
 
         [Theory]
