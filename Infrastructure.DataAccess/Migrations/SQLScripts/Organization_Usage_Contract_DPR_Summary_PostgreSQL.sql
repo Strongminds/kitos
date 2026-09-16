@@ -36,4 +36,4 @@ FROM dbo."Organization" AS o
          LEFT JOIN usage_summary AS u ON u."OrganizationId" = o."Id"
          LEFT JOIN contract_summary AS c ON c."OrganizationId" = o."Id"
          LEFT JOIN dpr_summary AS d ON d."OrganizationId" = o."Id"
-ORDER BY o."Name", o."Uuid";
+ORDER BY COALESCE(u.record_count, 0) DESC, o."Name", o."Uuid";
