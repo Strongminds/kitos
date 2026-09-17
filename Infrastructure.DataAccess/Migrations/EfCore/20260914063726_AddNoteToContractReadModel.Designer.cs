@@ -3,6 +3,7 @@ using System;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    partial class KitosContextModelSnapshot : ModelSnapshot
+    [Migration("20260914063726_AddNoteToContractReadModel")]
+    partial class AddNoteToContractReadModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7808,45 +7811,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.ToTable("SsoUserIdentities", "dbo");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.SupplierAssociatedFields.SupplierAssociatedFieldConfiguration", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ControlState")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("FieldKey")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("LastChanged")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("LastChangedByUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ObjectOwnerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LastChangedByUserId");
-
-                    b.HasIndex("ObjectOwnerId");
-
-                    b.HasIndex("OrganizationId", "FieldKey")
-                        .IsUnique()
-                        .HasDatabaseName("UX_OrganizationId_SupplierAssociatedFieldConfiguration_FieldKey");
-
-                    b.ToTable("SupplierAssociatedFieldConfiguration", "dbo");
-                });
-
             modelBuilder.Entity("Core.DomainModel.Text", b =>
                 {
                     b.Property<int>("Id")
@@ -11549,29 +11513,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Core.DomainModel.SupplierAssociatedFields.SupplierAssociatedFieldConfiguration", b =>
-                {
-                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastChangedByUserId");
-
-                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
-                        .WithMany()
-                        .HasForeignKey("ObjectOwnerId");
-
-                    b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
-                        .WithMany("SupplierAssociatedFieldConfigurations")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LastChangedByUser");
-
-                    b.Navigation("ObjectOwner");
-
-                    b.Navigation("Organization");
-                });
-
             modelBuilder.Entity("Core.DomainModel.Text", b =>
                 {
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
@@ -12181,8 +12122,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("SubDataProcessorRegistrations");
 
                     b.Navigation("Supplier");
-
-                    b.Navigation("SupplierAssociatedFieldConfigurations");
 
                     b.Navigation("Suppliers");
 

@@ -30,7 +30,12 @@ namespace Core.DomainServices.Repositories.UICustomization
 
         public void Update(UIModuleCustomization uiModuleCustomization)
         {
-            _repository.Update(uiModuleCustomization);
+            // New modules have not been saved when there were no nodes to delete.
+            // Marking them as modified would attempt to update a temporary key.
+            if (uiModuleCustomization.Id == 0)
+                _repository.Insert(uiModuleCustomization);
+            else
+                _repository.Update(uiModuleCustomization);
             _domainEvents.Raise(new EntityUpdatedEvent<UIModuleCustomization>(uiModuleCustomization));
             _repository.Save();
         }

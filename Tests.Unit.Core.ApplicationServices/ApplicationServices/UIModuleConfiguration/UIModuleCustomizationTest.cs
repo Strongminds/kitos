@@ -7,6 +7,41 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
 {
     public class UIModuleCustomizationTest
     {
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void UpdateConfigurationNodes_Preserves_Existing_Node_Identity(bool enabled, bool recommended)
+        {
+            var existingNode = new CustomizedUINode
+            {
+                Id = 42, ModuleId = 7, Key = "Existing.Key", Enabled = true, Recommended = false
+            };
+            var removedNode = new CustomizedUINode { Key = "Removed.Key" };
+            var addedNode = new CustomizedUINode { Key = "Added.Key" };
+            var sut = new UIModuleCustomization
+            {
+                Nodes = new List<CustomizedUINode> { existingNode, removedNode }
+            };
+
+            var result = sut.UpdateConfigurationNodes(new[]
+            {
+                new CustomizedUINode { Key = existingNode.Key, Enabled = enabled, Recommended = recommended },
+                addedNode
+            });
+
+            Assert.False(result.HasValue);
+            Assert.Equal(2, sut.Nodes.Count);
+            Assert.Contains(existingNode, sut.Nodes);
+            Assert.Contains(addedNode, sut.Nodes);
+            Assert.DoesNotContain(removedNode, sut.Nodes);
+            Assert.Equal(42, existingNode.Id);
+            Assert.Equal(7, existingNode.ModuleId);
+            Assert.Equal(enabled, existingNode.Enabled);
+            Assert.Equal(recommended, existingNode.Recommended);
+        }
+
         [Fact]
         public void UpdateConfigurationNodes_Returns_BadInput_When_Nodes_Are_Null()
         {

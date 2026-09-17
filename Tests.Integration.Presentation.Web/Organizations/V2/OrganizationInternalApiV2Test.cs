@@ -135,6 +135,65 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             await AssertUICustomizationResponse(dto, response);
         }
 
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task Can_Update_UI_Customization_Flags(bool enabled, bool recommended)
+        {
+            const string moduleName = "ItSystemUsages";
+            var (cookie, organization) = await CreateUiCustomizationPrerequisitesAsync();
+            var node = new CustomizedUINodeRequestDTO
+            {
+                Key = "Existing.Key", Enabled = false, Recommended = false
+            };
+            var dto = new UIModuleCustomizationRequestDTO { Nodes = new[] { node } };
+            using var initialResponse = await OrganizationInternalV2Helper.PutUIModuleCustomization(organization.Uuid, moduleName, dto, cookie);
+            await AssertUICustomizationResponse(dto, initialResponse);
+
+            node.Enabled = enabled;
+            node.Recommended = recommended;
+            using var updateResponse = await OrganizationInternalV2Helper.PutUIModuleCustomization(organization.Uuid, moduleName, dto, cookie);
+            await AssertUICustomizationResponse(dto, updateResponse);
+
+            using var getResponse = await OrganizationInternalV2Helper.GetUIModuleCustomization(organization.Uuid, moduleName);
+            await AssertUICustomizationResponse(dto, getResponse);
+        }
+
+        [Fact]
+        public async Task Can_Add_Remove_And_Update_UI_Customization_Nodes()
+        {
+            const string moduleName = "ItSystemUsages";
+            var (cookie, organization) = await CreateUiCustomizationPrerequisitesAsync();
+            var dto = new UIModuleCustomizationRequestDTO
+            {
+                Nodes = new[]
+                {
+                    new CustomizedUINodeRequestDTO { Key = "Existing.Key", Enabled = false, Recommended = false },
+                    new CustomizedUINodeRequestDTO { Key = "Removed.Key", Enabled = true, Recommended = true }
+                }
+            };
+            using var initialResponse = await OrganizationInternalV2Helper.PutUIModuleCustomization(organization.Uuid, moduleName, dto, cookie);
+            await AssertUICustomizationResponse(dto, initialResponse);
+
+            dto.Nodes = new[]
+            {
+                new CustomizedUINodeRequestDTO { Key = "Existing.Key", Enabled = true, Recommended = true },
+                new CustomizedUINodeRequestDTO { Key = "Added.Key", Enabled = true, Recommended = false }
+            };
+            using var updateResponse = await OrganizationInternalV2Helper.PutUIModuleCustomization(organization.Uuid, moduleName, dto, cookie);
+            await AssertUICustomizationResponse(dto, updateResponse);
+            using var getResponse = await OrganizationInternalV2Helper.GetUIModuleCustomization(organization.Uuid, moduleName);
+            await AssertUICustomizationResponse(dto, getResponse);
+
+            dto.Nodes = Array.Empty<CustomizedUINodeRequestDTO>();
+            using var clearResponse = await OrganizationInternalV2Helper.PutUIModuleCustomization(organization.Uuid, moduleName, dto, cookie);
+            await AssertUICustomizationResponse(dto, clearResponse);
+            using var getEmptyResponse = await OrganizationInternalV2Helper.GetUIModuleCustomization(organization.Uuid, moduleName);
+            await AssertUICustomizationResponse(dto, getEmptyResponse);
+        }
+
         [Fact]
         public async Task Can_Get_Master_Data()
         {
@@ -602,7 +661,7 @@ namespace Tests.Integration.Presentation.Web.Organizations.V2
             Assert.Equal(expectedNodes.Count, actualNodes.Count);
             foreach (var expectedNode in expectedNodes)
             {
-                var actual = actualNodes.FirstOrDefault(nodeDto => nodeDto.Key == expectedNode.Key);
+                var actual = Assert.Single(actualNodes, nodeDto => nodeDto.Key == expectedNode.Key);
 
                 Assert.NotNull(actual);
                 Assert.Equal(expectedNode.Enabled, actual.Enabled);
