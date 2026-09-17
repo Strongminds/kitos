@@ -17,6 +17,7 @@ using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.References;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel;
+using Core.DomainModel.BackgroundJobs;
 using Core.DomainModel.Events;
 using Core.DomainModel.Extensions;
 using Core.DomainModel.GDPR;
@@ -26,6 +27,7 @@ using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
+using Core.DomainServices.Repositories.BackgroundJobs;
 using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
 
@@ -49,6 +51,7 @@ namespace Core.ApplicationServices.Contract.Write
         private readonly IDataProcessingRegistrationApplicationService _dataProcessingRegistrationApplicationService;
         private readonly IGenericRepository<EconomyStream> _economyStreamRepository;
         private readonly IEntityTreeUuidCollector _entityTreeUuidCollector;
+        private readonly IPendingReadModelUpdateRepository _pendingReadModelUpdateRepository;
 
         public ItContractWriteService(
             IItContractService contractService,
@@ -66,7 +69,8 @@ namespace Core.ApplicationServices.Contract.Write
             IRoleAssignmentService<ItContractRight, ItContractRole, ItContract> roleAssignmentService,
             IDataProcessingRegistrationApplicationService dataProcessingRegistrationApplicationService,
             IGenericRepository<EconomyStream> economyStreamRepository,
-            IEntityTreeUuidCollector entityTreeUuidCollector)
+            IEntityTreeUuidCollector entityTreeUuidCollector,
+            IPendingReadModelUpdateRepository pendingReadModelUpdateRepository)
         {
             _contractService = contractService;
             _entityIdentityResolver = entityIdentityResolver;
@@ -84,6 +88,7 @@ namespace Core.ApplicationServices.Contract.Write
             _dataProcessingRegistrationApplicationService = dataProcessingRegistrationApplicationService;
             _economyStreamRepository = economyStreamRepository;
             _entityTreeUuidCollector = entityTreeUuidCollector;
+            _pendingReadModelUpdateRepository = pendingReadModelUpdateRepository;
         }
 
         public Result<ItContract, OperationError> Create(Guid organizationUuid, ItContractModificationParameters parameters)
@@ -110,6 +115,8 @@ namespace Core.ApplicationServices.Contract.Write
 
             if (result.Ok)
             {
+                _pendingReadModelUpdateRepository.Add(PendingReadModelUpdate.Create(result.Value.Id,
+                    PendingReadModelUpdateSourceCategory.ItSystemUsage_Contract));
                 _databaseControl.SaveChanges();
                 transaction.Commit();
             }
