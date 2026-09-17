@@ -45,6 +45,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
         private readonly Mock<IOptionResolver> _optionResolverMock;
         private readonly Mock<ITransactionManager> _transactionManagerMock;
         private readonly Mock<IDatabaseControl> _databaseControlMock;
+        private readonly Mock<IDomainEvents> _domainEventsMock;
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IReferenceService> _referenceServiceMock;
         private readonly Mock<IAuthorizationContext> _authContext;
@@ -58,7 +59,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
             _optionResolverMock = new Mock<IOptionResolver>();
             _transactionManagerMock = new Mock<ITransactionManager>();
-            var domainEventsMock = new Mock<IDomainEvents>();
+            _domainEventsMock = new Mock<IDomainEvents>();
             _databaseControlMock = new Mock<IDatabaseControl>();
             var agreementElementTypeRepository = new Mock<IGenericRepository<ItContractAgreementElementTypes>>();
             _organizationServiceMock = new Mock<IOrganizationService>();
@@ -73,7 +74,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
                 _identityResolverMock.Object,
                 _optionResolverMock.Object,
                 _transactionManagerMock.Object,
-                domainEventsMock.Object,
+                _domainEventsMock.Object,
                 _databaseControlMock.Object,
                 agreementElementTypeRepository.Object,
                 _authContext.Object,
@@ -784,6 +785,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             //Assert
             Assert.True(result.Ok);
+            _domainEventsMock.Verify(x => x.Raise(It.Is<EntityUpdatedEvent<ItContract>>(e => e.Entity == createdContract)), Times.Once);
             AssertTransactionCommitted(transaction);
         }
 
@@ -802,6 +804,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             //Assert
             Assert.True(result.Failed);
+            _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<ItContract>>()), Times.Never);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
 

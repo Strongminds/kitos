@@ -110,6 +110,7 @@ namespace Core.ApplicationServices.Contract.Write
 
             if (result.Ok)
             {
+                _domainEvents.Raise(new EntityUpdatedEvent<ItContract>(result.Value));
                 _databaseControl.SaveChanges();
                 transaction.Commit();
             }
