@@ -82,7 +82,8 @@ namespace Core.ApplicationServices.UIConfiguration
 
                         var deletedNodes = nodesBefore.Except(nodesAfter).ToList();
 
-                        _repository.DeleteNodes(deletedNodes);
+                        if (deletedNodes.Count > 0)
+                            _repository.DeleteNodes(deletedNodes);
                         _repository.Update(result.Value);
 
                         return Maybe<OperationError>.None;
