@@ -90,6 +90,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             var terminated = A<DateTime>();
             var concluded = A<DateTime>();
             var expirationDate = concluded.AddDays(2);
+            var note = A<string>();
             var procurementPlan = A<ProcurementPlanDTO>();
 
             var dpr1 = await CreateDPRAsync(_organization.Uuid);
@@ -196,6 +197,7 @@ namespace Tests.Integration.Presentation.Web.Contract
                     CriticalityUuid = criticality.Uuid,
                     ContractTemplateUuid = contractTemplate.Uuid,
                     ContractTypeUuid = contractType.Uuid,
+                    Notes = note,
                     Validity = new ContractValidityWriteRequestDTO
                     {
                         ValidFrom = concluded,
@@ -254,6 +256,7 @@ namespace Tests.Integration.Presentation.Web.Contract
             Assert.Equal(terminated.Date, readModel.TerminatedAt.GetValueOrDefault().Date);
             Assert.Equal(concluded.Date, readModel.Concluded.GetValueOrDefault().Date);
             Assert.Equal(expirationDate.Date, readModel.ExpirationDate.GetValueOrDefault().Date);
+            Assert.Equal(note, readModel.Note);
             AssertReferencedEntity(_supplier.Name, readModel.SupplierName, _supplier.Uuid, DatabaseAccess.GetEntityUuid<Organization>(readModel.SupplierId ?? 0));
             Assert.Equal(_supplier.Cvr, readModel.SupplierCvr);
             AssertReferencedEntity(parentContract.Name, readModel.ParentContractName, parentContract.Uuid, readModel.ParentContractUuid);
