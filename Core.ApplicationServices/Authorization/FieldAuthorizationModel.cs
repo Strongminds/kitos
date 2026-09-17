@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Model;
 using Core.DomainModel;
+using System;
+using System.Linq;
 
 namespace Core.ApplicationServices.Authorization;
 
@@ -17,7 +19,7 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
         _authorizationContext = authorizationContext;
     }
 
-    public bool AuthorizeUpdate(
+    public Result<bool, OperationError> AuthorizeUpdate(
         IEntityOwnedByOrganization? entity,
         ISupplierAssociatedEntityUpdateParameters? parameters)
     {
@@ -52,23 +54,40 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
             : requestsDeleteForSupplierControlledEntity == false;
     }
 
-    private bool CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
+    private Result<bool, OperationError> CheckForSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity);
-        if (!hasOnlySupplierChanges) return _authorizationContext.AllowModify(entity);
-        return true;
+        return WithOrganizationUuid(entity)
+            .Select(
+                (organizationUuid) =>
+                    {
+                        var hasOnlySupplierChanges = _supplierAssociatedFieldsService.HasOnlySupplierChanges(parameters, entity, organizationUuid);
+                        return hasOnlySupplierChanges || _authorizationContext.AllowModify(entity);
+                    }
+            );
     }
 
-    private bool CheckForNonSupplierApiUser(IEntityOwnedByOrganization entity,
+    private Result<bool, OperationError> CheckForNonSupplierApiUser(IEntityOwnedByOrganization entity,
         ISupplierAssociatedEntityUpdateParameters parameters)
     {
-        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity);
-        if (anySupplierChanges) return false;
-        return _authorizationContext.AllowModify(entity);
+        return WithOrganizationUuid(entity)
+            .Select(
+                (organizationUuid) =>
+                    {
+                        var anySupplierChanges = _supplierAssociatedFieldsService.HasAnySupplierChanges(parameters, entity, organizationUuid);
+                        return !anySupplierChanges && _authorizationContext.AllowModify(entity);
+                    }
+            );       
     }
 
-    public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key)
+    private Result<Guid, OperationError> WithOrganizationUuid(IEntityOwnedByOrganization entity)
+    {
+        var organizationUuid = entity.Organization?.Uuid;
+        if (!organizationUuid.HasValue) return new OperationError($"No organization UUID found for {typeof(IEntityOwnedByOrganization)} with Id {entity.Id}", OperationFailure.BadState);
+        return organizationUuid.Value;
+    }
+
+    public FieldPermissionsResult GetFieldPermissions(IEntityOwnedByOrganization entity, string key, Guid organizationUuid)
     {
         if (_activeUserContext.IsGlobalAdmin()) 
             return new FieldPermissionsResult{ Enabled = true, Key = key};
@@ -82,6 +101,6 @@ public class FieldAuthorizationModel : IAuthorizationModel, IFieldAuthorizationM
             return new FieldPermissionsResult { Enabled = true, Key = key };
 
         return new FieldPermissionsResult
-                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key) == false, Key = key };
+                { Enabled = _supplierAssociatedFieldsService.IsFieldSupplierControlled(key, organizationUuid) == false, Key = key };
     }
 }

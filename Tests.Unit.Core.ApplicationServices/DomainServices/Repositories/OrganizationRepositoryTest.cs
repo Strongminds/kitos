@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Core.DomainModel.Organization;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainServices;
 using Core.DomainServices.Repositories.Organization;
 using Moq;

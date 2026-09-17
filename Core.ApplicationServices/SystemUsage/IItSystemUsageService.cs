@@ -3,7 +3,6 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model.Shared;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
-using Core.DomainModel.ItSystemUsage.GDPR;
 using Core.DomainServices.Queries;
 using System;
 using System.Collections.Generic;
@@ -22,28 +21,11 @@ namespace Core.ApplicationServices.SystemUsage
         Result<ItSystemUsage, OperationError> GetItSystemUsageByUuid(Guid uuid);
         Result<CombinedPermissionsResult, OperationError> GetPermissions(Guid uuid);
         Result<ResourceCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid);
-
-        /// <summary>
-        /// Adds information about which data sensitivity levels are applied to the system usage />
-        /// </summary>
-        /// <param name="itSystemUsageId"></param>
-        /// <param name="sensitiveDataLevel"></param>
-        /// <returns></returns>
-        Result<ItSystemUsageSensitiveDataLevel, OperationError> AddSensitiveDataLevel(int itSystemUsageId, SensitiveDataLevel sensitiveDataLevel);
-
-        /// <summary>
-        /// Removes information about which data sensitivity levels are applied to the system usage />
-        /// </summary>
-        /// <param name="itSystemUsageId"></param>
-        /// <param name="sensitiveDataLevel"></param>
-        /// <returns></returns>
-        Result<ItSystemUsageSensitiveDataLevel, OperationError> RemoveSensitiveDataLevel(int itSystemUsageId, SensitiveDataLevel sensitiveDataLevel);
-
+        
         Result<ArchivePeriod, OperationError> RemoveArchivePeriod(int systemUsageId,Guid archivePeriodUuid);
         Result<IEnumerable<ArchivePeriod>, OperationError> RemoveAllArchivePeriods(int systemUsageId);
         Result<ArchivePeriod, OperationError> AddArchivePeriod(int systemUsageId, DateTime startDate, DateTime endDate, string archiveId, bool approved);
         Result<ArchivePeriod, OperationError> UpdateArchivePeriod(int systemUsageId, Guid archivePeriodUuid, DateTime startDate, DateTime endDate, string archiveId, bool approved);
-        Result<ItSystemUsage, OperationError> GetItSystemUsageById(int usageId);
         Maybe<OperationError> TransferResponsibleUsage(int systemId, Guid targetUnitUuid);
         Maybe<OperationError> TransferRelevantUsage(int systemId, Guid unitUuid, Guid targetUnitUuid);
         Maybe<OperationError> RemoveResponsibleUsage(int id);

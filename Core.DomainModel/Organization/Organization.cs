@@ -10,6 +10,7 @@ using Core.DomainModel.ItContract.Read;
 using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage.Read;
 using Core.DomainModel.Notification;
+using Core.DomainModel.SupplierAssociatedFields;
 using Core.DomainModel.Tracking;
 using Core.DomainModel.UIConfiguration;
 
@@ -51,6 +52,7 @@ namespace Core.DomainModel.Organization
             UIModuleCustomizations = new List<UIModuleCustomization>();
             ArchiveSupplierForItSystems = new List<ItSystemUsage.ItSystemUsage>();
             StsOrganizationIdentities = new List<StsOrganizationIdentity>();
+            SupplierAssociatedFieldConfigurations = new List<SupplierAssociatedFieldConfiguration>();
         }
         public string Name { get; set; }
         public string Phone { get; set; }
@@ -72,7 +74,7 @@ namespace Core.DomainModel.Organization
 
         private void ToggleOffIsSupplierIfNotCompanyType(int typeId)
         {
-            if ((OrganizationTypeKeys)typeId != OrganizationTypeKeys.Virksomhed)
+            if (!IsOrganizationSupplierEligible(typeId))
             {
                 IsSupplier = false;
             }
@@ -154,6 +156,7 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<ItSystemUsage.ItSystemUsage> ArchiveSupplierForItSystems { get; set; }
         public virtual StsOrganizationConnection StsOrganizationConnection { get; set; }
 
+        public virtual ICollection<SupplierAssociatedFieldConfiguration> SupplierAssociatedFieldConfigurations { get; set; }
 
         /// <summary>
         /// Determines if this is the "Default" organization in KITOS
@@ -178,6 +181,49 @@ namespace Core.DomainModel.Organization
         public void ClearSuppliers()
         {
             Suppliers?.Clear();
+        }
+
+        public Result<ISet<SupplierAssociatedFieldConfiguration>, OperationError> UpdateFieldConfigurations(
+            IEnumerable<KeyValuePair<string, FieldControlState>> configurations)
+        {
+            if (configurations == null)
+                return new OperationError($"No field configuration was provided", OperationFailure.BadInput);
+
+            var incomingConfigurations = configurations.ToList();
+            if (incomingConfigurations.Any(x => string.IsNullOrWhiteSpace(x.Key)))
+                return new OperationError("FieldKey is required", OperationFailure.BadInput);
+
+            if (incomingConfigurations.GroupBy(x => x.Key).Any(x => x.Count() > 1))
+                return new OperationError("Duplicate fieldKey values are not allowed", OperationFailure.BadInput);
+
+            var currentConfigurations = SupplierAssociatedFieldConfigurations?.ToList()
+                ?? new List<SupplierAssociatedFieldConfiguration>();
+
+            foreach (var configuration in incomingConfigurations)
+            {
+                var existingConfiguration = GetFieldConfiguration(configuration.Key);
+                if (existingConfiguration.IsNone)
+                {
+                    currentConfigurations.Add(new SupplierAssociatedFieldConfiguration
+                    {
+                        FieldKey = configuration.Key,
+                        ControlState = configuration.Value
+                    });
+                    continue;
+                }
+                var existingConfigurationValue = existingConfiguration.GetValueOrDefault();
+
+                existingConfigurationValue.ControlState = configuration.Value;
+            }
+
+            SupplierAssociatedFieldConfigurations = currentConfigurations;
+            return currentConfigurations.ToHashSet();
+        }
+
+        public Maybe<SupplierAssociatedFieldConfiguration> GetFieldConfiguration(string fieldKey)
+        {
+            var configuration = SupplierAssociatedFieldConfigurations?.FirstOrDefault(c => c.FieldKey == fieldKey);
+            return configuration.FromNullable();
         }
 
         public bool HasSuppliers()
@@ -601,14 +647,20 @@ namespace Core.DomainModel.Organization
 
         public Maybe<OperationError> UpdateIsSupplier(bool isSupplier)
         {
-            if ((OrganizationTypeKeys)TypeId != OrganizationTypeKeys.Virksomhed && isSupplier)
+            if (!IsOrganizationSupplierEligible(TypeId) && isSupplier)
             {
                 return new OperationError(
-                    $"Only organizations of {OrganizationTypeKeys.Virksomhed} type can be marked as a supplier", OperationFailure.BadInput);
+                    $"Only organizations of {OrganizationTypeKeys.Virksomhed} or {OrganizationTypeKeys.Interessefællesskab} type can be marked as a supplier", OperationFailure.BadInput);
             }
             IsSupplier = isSupplier;
             return Maybe<OperationError>.None;
         }
+
+        private bool IsOrganizationSupplierEligible(int typeId)
+        {
+            return (OrganizationTypeKeys)typeId is (OrganizationTypeKeys.Virksomhed or OrganizationTypeKeys.Interessefællesskab);
+        }
+
         public void UpdateShowDataProcessing(Maybe<bool> showDataProcessing)
         {
             HandleConfigPropertyUpdate(showDataProcessing, config => config.ShowDataProcessing = showDataProcessing.Value);

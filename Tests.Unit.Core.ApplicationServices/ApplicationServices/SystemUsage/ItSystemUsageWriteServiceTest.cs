@@ -1347,7 +1347,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         public void Can_Add_Role()
         {
             //Arrange
-            var (_, _, transactionMock, _, _, itSystemUsage) = CreateBasicTestVariables();
+            var (_, _, transactionMock, _, _, itSystemUsage) = CreateBasicTestVariables(true);
             var existingAssignment = A<UserRolePair>();
             itSystemUsage.Rights.Add(new ItSystemRight { Role = new ItSystemRole { Uuid = existingAssignment.RoleUuid }, User = new User { Uuid = existingAssignment.UserUuid } });
             var newAssignment = A<UserRolePair>();
@@ -3363,6 +3363,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             var usage = new ItSystemUsage { Uuid = A<Guid>() };
             var org = new Organization { Uuid = A<Guid>() };
+            usage.Organization = org;
             SetupSimpleUpdate(usage, org);
             SetupAuthorizationModelReturns();
             var parameters = new SystemUsageUpdateParameters { GeneralProperties = new UpdatedSystemUsageGeneralProperties { WebAccessibilityCompliance = A<YesNoPartiallyOption>().FromNullable().AsChangedValue(), LastWebAccessibilityCheck = A<DateTime>().FromNullable().AsChangedValue(), WebAccessibilityNotes = A<string>().AsChangedValue() } };
@@ -3382,6 +3383,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             var usage = new ItSystemUsage { Uuid = A<Guid>(), WebAccessibilityCompliance = A<YesNoPartiallyOption>(), LastWebAccessibilityCheck = A<DateTime>(), WebAccessibilityNotes = A<string>() };
             var org = new Organization { Uuid = A<Guid>() };
+            usage.Organization = org;
             SetupSimpleUpdate(usage, org);
             SetupAuthorizationModelReturns();
             var parameters = new SystemUsageUpdateParameters
@@ -3408,7 +3410,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var authModel = new Mock<IAuthorizationModel>();
             _authorizationContextMock.Setup(_ => _.GetAuthorizationModel(It.IsAny<IEntityOwnedByOrganization>()))
                 .Returns(authModel.Object);
-            authModel.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>())).Returns(result);
+            authModel.Setup(_ => _.AuthorizeUpdate(It.IsAny<IEntityOwnedByOrganization>(), It.IsAny<ISupplierAssociatedEntityUpdateParameters>()))
+                .Returns((Result<bool, OperationError>)result);
             _authorizationContextMock.Setup(x => x.AllowModify(It.IsAny<IEntityOwnedByOrganization>())).Returns(true);
         }
 
@@ -3874,6 +3877,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             {
                 Id = A<int>(),
                 OrganizationId = organization.Id,
+                Organization = organization,
                 ItSystem = itSystem
             };
 

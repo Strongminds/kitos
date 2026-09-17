@@ -1,8 +1,8 @@
-﻿using System;
-using Core.Abstractions.Types;
+﻿using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.GDPR.Write;
 using Core.ApplicationServices.Model.Shared.Write;
 using Core.DomainModel.GDPR;
+using System;
 
 
 namespace Core.ApplicationServices.GDPR.Write
