@@ -21,7 +21,8 @@ namespace Core.DomainModel.Organization
         {
             return new StsOrganizationConnection()
             {
-                Organization = organization
+                Organization = organization,
+                OrganizationId = organization.Id
             };
         }
 
