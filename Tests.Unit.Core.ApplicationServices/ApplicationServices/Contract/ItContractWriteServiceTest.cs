@@ -19,6 +19,7 @@ using Core.ApplicationServices.References;
 using Core.ApplicationServices.Model.Shared;
 using Core.ApplicationServices.SystemUsage;
 using Core.DomainModel;
+using Core.DomainModel.BackgroundJobs;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
@@ -28,6 +29,7 @@ using Core.DomainModel.References;
 using Core.DomainModel.Shared;
 using Core.DomainServices;
 using Core.DomainServices.Generic;
+using Core.DomainServices.Repositories.BackgroundJobs;
 using Core.DomainServices.Role;
 using Infrastructure.Services.DataAccess;
 using Moq;
@@ -45,6 +47,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
         private readonly Mock<IOptionResolver> _optionResolverMock;
         private readonly Mock<ITransactionManager> _transactionManagerMock;
         private readonly Mock<IDatabaseControl> _databaseControlMock;
+        private readonly Mock<IDomainEvents> _domainEventsMock;
+        private readonly Mock<IPendingReadModelUpdateRepository> _pendingReadModelUpdateRepository = new();
         private readonly Mock<IOrganizationService> _organizationServiceMock;
         private readonly Mock<IReferenceService> _referenceServiceMock;
         private readonly Mock<IAuthorizationContext> _authContext;
@@ -58,7 +62,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             _identityResolverMock = new Mock<IEntityIdentityResolver>();
             _optionResolverMock = new Mock<IOptionResolver>();
             _transactionManagerMock = new Mock<ITransactionManager>();
-            var domainEventsMock = new Mock<IDomainEvents>();
+            _domainEventsMock = new Mock<IDomainEvents>();
             _databaseControlMock = new Mock<IDatabaseControl>();
             var agreementElementTypeRepository = new Mock<IGenericRepository<ItContractAgreementElementTypes>>();
             _organizationServiceMock = new Mock<IOrganizationService>();
@@ -73,7 +77,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
                 _identityResolverMock.Object,
                 _optionResolverMock.Object,
                 _transactionManagerMock.Object,
-                domainEventsMock.Object,
+                _domainEventsMock.Object,
                 _databaseControlMock.Object,
                 agreementElementTypeRepository.Object,
                 _authContext.Object,
@@ -84,7 +88,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
                 _roleAssignmentService.Object,
                 dprServiceMock.Object,
                 Mock.Of<IGenericRepository<EconomyStream>>(),
-                _entityTreeUuidCollector.Object);
+                _entityTreeUuidCollector.Object,
+                _pendingReadModelUpdateRepository.Object);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)
@@ -784,6 +789,11 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             //Assert
             Assert.True(result.Ok);
+            _pendingReadModelUpdateRepository.Verify(x => x.Add(It.Is<PendingReadModelUpdate>(update =>
+                update.SourceId == createdContract.Id &&
+                update.Category == PendingReadModelUpdateSourceCategory.ItSystemUsage_Contract)), Times.Once);
+            _pendingReadModelUpdateRepository.VerifyNoOtherCalls();
+            _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<ItContract>>()), Times.Never);
             AssertTransactionCommitted(transaction);
         }
 
@@ -802,6 +812,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             //Assert
             Assert.True(result.Failed);
+            _pendingReadModelUpdateRepository.VerifyNoOtherCalls();
+            _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<ItContract>>()), Times.Never);
             AssertFailureWithKnownError(result, operationError, transaction);
         }
 
