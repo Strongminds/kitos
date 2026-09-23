@@ -11,14 +11,13 @@ using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 
 namespace Core.ApplicationServices.KitosEvents;
-public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>>, IDomainEventHandler<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>
+
+public class PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher)
+    : IDomainEventHandler<EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot>>,
+        IDomainEventHandler<EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot>>
 {
-    private readonly IKitosEventPublisherService _eventPublisher;
     private const string QueueTopic = KitosQueueTopics.SystemChangedEventTopic;
-    public PublishSystemChangesEventHandler(IKitosEventPublisherService eventPublisher)
-    {
-        _eventPublisher = eventPublisher;
-    }
+
     public void Handle(EntityUpdatedEventWithSnapshot<ItSystem, ItSystemSnapshot> domainEvent)
     {
         var changeEvent = CalculateChangeEventFromSystemModel(domainEvent);
@@ -27,7 +26,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
             return;
         }
         var newEvent = new KitosEvent(changeEvent.Value, QueueTopic);
-        _eventPublisher.PublishEvent(newEvent);
+        eventPublisher.PublishEvent(newEvent);
     }
     public void Handle(EntityUpdatedEventWithSnapshot<DataProcessingRegistration, DprSnapshot> domainEvent)
     {
@@ -39,7 +38,7 @@ public class PublishSystemChangesEventHandler : IDomainEventHandler<EntityUpdate
         foreach (var changeEvent in changeEvents.Value)
         {
             var newEvent = new KitosEvent(changeEvent, QueueTopic);
-            _eventPublisher.PublishEvent(newEvent);
+            eventPublisher.PublishEvent(newEvent);
         }
     }
 
