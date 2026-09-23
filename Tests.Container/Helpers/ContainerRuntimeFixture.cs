@@ -1,4 +1,4 @@
-namespace Tests.Infrastructure.Helpers;
+namespace Tests.Container.Helpers;
 
 /// <summary>
 /// xUnit collection fixture that auto-detects whether Docker or Podman is running

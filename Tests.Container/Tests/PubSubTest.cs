@@ -15,7 +15,7 @@ using PubSub.Infrastructure.MessageQueue.Consumer;
 using PubSub.Infrastructure.MessageQueue.Publisher;
 using RabbitMQ.Client;
 
-namespace Tests.Infrastructure.Tests;
+namespace Tests.Container.Tests;
 
 [Collection(MigrationTestsCollection.Name)]
 public sealed class PubSubTest : IAsyncLifetime

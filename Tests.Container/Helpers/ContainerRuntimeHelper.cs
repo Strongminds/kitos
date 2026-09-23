@@ -1,4 +1,4 @@
-namespace Tests.Infrastructure.Helpers;
+namespace Tests.Container.Helpers;
 
 internal enum ContainerRuntime
 {

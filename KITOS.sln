@@ -124,7 +124,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.MigrateSQLServer2Post
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04_Infrastructure", "04_Infrastructure", "{390148C1-9CB3-4B95-A444-0F082082FDE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Infrastructure", "Tests.Infrastructure\Tests.Infrastructure.csproj", "{2BF30CC7-827C-4F5D-9B05-C9DE2A5C20F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Container", "Tests.Container\Tests.Container.csproj", "{2BF30CC7-827C-4F5D-9B05-C9DE2A5C20F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
