@@ -18,6 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
+    <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj" />
+    <ProjectReference Include="..\PubSub.Core.DomainModel\PubSub.Core.DomainModel.csproj" />
+    <ProjectReference Include="..\PubSub.Infrastructure.MessageQueue\PubSub.Infrastructure.MessageQueue.csproj" />
   </ItemGroup>
 
   <ItemGroup>
