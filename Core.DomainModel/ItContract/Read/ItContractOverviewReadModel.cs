@@ -86,6 +86,7 @@ namespace Core.DomainModel.ItContract.Read
         public int? TerminationDeadlineId { get; set; }     // For filtering
         public Guid? TerminationDeadlineUuid { get; set; }     // For filtering
         public string TerminationDeadlineName { get; set; } // For sorting
+        public YearSegmentOption? ByEnding { get; set; }
         public DateTime? IrrevocableTo { get; set; }
         public DateTime? TerminatedAt { get; set; }
         public int? LastEditedByUserId { get; set; }
