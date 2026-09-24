@@ -2,11 +2,29 @@ param(
     [switch]$ResetData,
     [switch]$RebuildApiImages,
     [switch]$NoCache,
-    [string]$KitosDbConnectionString = "Host=localhost;Port=5432;Database=kitos;Username=kitos;Password=kitos",
-    [string]$HangfireDbConnectionString = "Host=localhost;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
+    # Host-side port that postgres is published on. Change this if port 5432 is
+    # already taken on your machine (e.g. by a native PostgreSQL install).
+    [int]$PostgresPort = 5432,
+    [string]$KitosDbConnectionString,
+    [string]$HangfireDbConnectionString,
+    [string]$PubSubDbConnectionString
 )
 
 $ErrorActionPreference = "Stop"
+
+if (-not $KitosDbConnectionString) {
+    $KitosDbConnectionString = "Host=127.0.0.1;Port=$PostgresPort;Database=kitos;Username=kitos;Password=kitos"
+}
+if (-not $HangfireDbConnectionString) {
+    $HangfireDbConnectionString = "Host=127.0.0.1;Port=$PostgresPort;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
+}
+if (-not $PubSubDbConnectionString) {
+    $PubSubDbConnectionString = "Host=127.0.0.1;Port=$PostgresPort;Database=kitos_pubsub;Username=kitos;Password=kitos"
+}
+
+# Published to the podman-compose process so docker-compose.yml's
+# "${POSTGRES_HOST_PORT:-5432}:5432" mapping picks it up.
+$env:POSTGRES_HOST_PORT = $PostgresPort
 
 function Invoke-CheckedCommand {
     param(
@@ -27,6 +45,27 @@ function Invoke-NonBlockingCommand {
     )
 
     & $FilePath @ArgumentList
+}
+
+function Wait-ForContainerHealthy {
+    param(
+        [Parameter(Mandatory = $true)][string]$PodmanPath,
+        [Parameter(Mandatory = $true)][string]$ContainerName,
+        [int]$TimeoutSeconds = 60
+    )
+
+    Write-Host "Waiting for $ContainerName to become healthy"
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        $status = & $PodmanPath inspect --format '{{.State.Health.Status}}' $ContainerName 2>$null
+        if ($LASTEXITCODE -eq 0 -and $status -eq "healthy") {
+            Write-Host "$ContainerName is healthy"
+            return
+        }
+        Start-Sleep -Seconds 2
+    }
+
+    throw "Timed out waiting for $ContainerName to become healthy. Its init scripts (e.g. database/role creation) may not have finished, which can cause spurious 'must be owner' / 'permission denied' errors."
 }
 
 Push-Location $PSScriptRoot
@@ -50,6 +89,7 @@ try {
 
     Write-Host "Starting postgres"
     Invoke-CheckedCommand -FilePath $podman.Source -ArgumentList @("compose", "up", "-d", "postgres")
+    Wait-ForContainerHealthy -PodmanPath $podman.Source -ContainerName "kitos-postgres"
 
     if ($ResetData) {
         Write-Host "Preparing KITOS and Hangfire databases"
@@ -61,7 +101,8 @@ try {
         }
 
         Write-Host "Preparing PubSub database"
-        & "$PSScriptRoot\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1"
+        & "$PSScriptRoot\DeploymentScripts\PrepareLocalPubSubDatabase.Postgres.ps1" `
+            -pubsubDbConnectionString $PubSubDbConnectionString
         if ($LASTEXITCODE -ne 0) {
             throw "PrepareLocalPubSubDatabase.Postgres.ps1 failed"
         }

@@ -1,17 +1,16 @@
 ﻿using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
-using Core.DomainModel.ItSystemUsage;
 
 namespace Core.ApplicationServices.KitosEvents;
 
 public class PublishSystemTakenIntoUsageEventHandler(IKitosEventPublisherService eventPublisher)
-    : IDomainEventHandler<EntityCreatedEvent<ItSystemUsage>>
+    : IDomainEventHandler<SystemTakenIntoUsageEvent>
 {
     private const string QueueTopic = KitosQueueTopics.SystemTakenIntoUsageEventTopic;
 
-    public void Handle(EntityCreatedEvent<ItSystemUsage> domainEvent)
+    public void Handle(SystemTakenIntoUsageEvent domainEvent)
     {
-        var eventBody = new SystemTakenIntoUsageEventBodyModel{ SystemUuid = domainEvent.Entity.ItSystem.Uuid, OrganizationUuid = domainEvent.Entity.Organization.Uuid };
+        var eventBody = new SystemTakenIntoUsageEventBodyModel{ SystemUuid = domainEvent.ItSystemUsage.ItSystem.Uuid, OrganizationUuid = domainEvent.ItSystemUsage.Organization.Uuid };
 
         var newEvent = new KitosEvent(eventBody, QueueTopic);
         eventPublisher.PublishEvent(newEvent);
