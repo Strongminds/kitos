@@ -85,9 +85,9 @@ namespace Core.ApplicationServices.SystemUsage.Write
 
             if (creationResult.Ok)
             {
-                domainEvents.Raise(new SystemTakenIntoUsageEvent(creationResult.Value));
                 databaseControl.SaveChanges();
                 transaction.Commit();
+                domainEvents.Raise(new SystemTakenIntoUsageEvent(creationResult.Value));
             }
 
             return creationResult;
