@@ -768,6 +768,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 YearSegmentOption.EndOfCalendarYear => YearSegmentChoice.EndOfCalendarYear,
                 YearSegmentOption.EndOfQuarter => YearSegmentChoice.EndOfQuarter,
                 YearSegmentOption.EndOfMonth => YearSegmentChoice.EndOfMonth,
+                YearSegmentOption.BillingPeriod => YearSegmentChoice.BillingPeriod,
                 null => null,
                 _ => throw new ArgumentOutOfRangeException(nameof(expectedFromSource), expectedFromSource, null)
             };
