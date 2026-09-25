@@ -2,9 +2,7 @@ using System;
 using Core.ApplicationServices.KitosEvents;
 using Core.ApplicationServices.Model.KitosEvents;
 using Core.DomainModel.Events;
-using Core.DomainModel.ItSystem;
 using Core.DomainModel.ItSystemUsage;
-using Core.DomainModel.Organization;
 using Moq;
 using Tests.Toolkit.Patterns;
 using Xunit;
@@ -27,13 +25,9 @@ public class PublishSystemTakenIntoUsageEventHandlerTest : WithAutoFixture
     {
         var systemUuid = A<Guid>();
         var organizationUuid = A<Guid>();
-        var systemUsage = new ItSystemUsage
-        {
-            ItSystem = new ItSystem { Uuid = systemUuid },
-            Organization = new Organization { Uuid = organizationUuid }
-        };
+        var systemUsage = new ItSystemUsage();
 
-        _sut.Handle(new SystemTakenIntoUsageEvent(systemUsage));
+        _sut.Handle(new SystemTakenIntoUsageEvent(systemUsage, systemUuid, organizationUuid));
 
         _eventPublisher.Verify(x => x.PublishEvent(It.Is<KitosEvent>(e =>
             e.Topic == KitosQueueTopics.SystemTakenIntoUsageEventTopic &&

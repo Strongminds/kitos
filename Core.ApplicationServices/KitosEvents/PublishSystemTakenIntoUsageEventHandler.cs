@@ -10,7 +10,7 @@ public class PublishSystemTakenIntoUsageEventHandler(IKitosEventPublisherService
 
     public void Handle(SystemTakenIntoUsageEvent domainEvent)
     {
-        var eventBody = new SystemTakenIntoUsageEventBodyModel{ SystemUuid = domainEvent.ItSystemUsage.ItSystem.Uuid, OrganizationUuid = domainEvent.ItSystemUsage.Organization.Uuid };
+        var eventBody = new SystemTakenIntoUsageEventBodyModel{ SystemUuid = domainEvent.SystemUuid, OrganizationUuid = domainEvent.OrganizationUuid };
 
         var newEvent = new KitosEvent(eventBody, QueueTopic);
         eventPublisher.PublishEvent(newEvent);
