@@ -20,7 +20,12 @@ namespace Tests.Container.Tests;
 [Collection(MigrationTestsCollection.Name)]
 public sealed class PubSubTest : IAsyncLifetime
 {
+    private const string RabbitMqUserName = "container-test";
+    private const string RabbitMqPassword = "container-test-password";
+
     private readonly IContainer _rabbitMq = new ContainerBuilder("rabbitmq:3.13-alpine")
+        .WithEnvironment("RABBITMQ_DEFAULT_USER", RabbitMqUserName)
+        .WithEnvironment("RABBITMQ_DEFAULT_PASS", RabbitMqPassword)
         .WithPortBinding(5672, true)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(5672))
         .Build();
@@ -51,8 +56,8 @@ public sealed class PubSubTest : IAsyncLifetime
         {
             HostName = _rabbitMq.Hostname,
             Port = _rabbitMq.GetMappedPublicPort(5672),
-            UserName = "guest",
-            Password = "guest"
+            UserName = RabbitMqUserName,
+            Password = RabbitMqPassword
         });
         var serializer = new JsonPayloadSerializer();
         var consumers = messages.Keys
