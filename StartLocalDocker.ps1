@@ -4,6 +4,7 @@ param(
     [switch]$NoCache,
     # Host-side port that postgres is published on. Change this if port 5432 is
     # already taken on your machine (e.g. by a native PostgreSQL install).
+    [ValidateRange(1, 65535)]
     [int]$PostgresPort = 5432,
     [string]$KitosDbConnectionString,
     [string]$HangfireDbConnectionString,
@@ -47,6 +48,48 @@ function Invoke-NonBlockingCommand {
     & $FilePath @ArgumentList
 }
 
+function Assert-PostgresPortAvailable {
+    param(
+        [Parameter(Mandatory = $true)][string]$PodmanPath,
+        [Parameter(Mandatory = $true)][int]$Port
+    )
+
+    # Check Podman as well as the host: forwarded ports may live in its VM.
+    $containers = & $PodmanPath ps --format '{{.Names}}|{{.Ports}}'
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not check running Podman containers before database preparation."
+    }
+
+    $ownedByStack = $false
+    foreach ($container in $containers) {
+        $parts = $container -split '\|', 2
+        if ($parts.Count -ne 2 -or $parts[1] -notmatch ":$Port->") {
+            continue
+        }
+        if ($parts[0] -eq 'kitos-postgres') {
+            # This stack can reuse its running postgres or recreate it on reset.
+            $ownedByStack = $true
+        }
+        else {
+            throw "Postgres host port $Port is already published by Podman container '$($parts[0])'. Choose a free port with -PostgresPort, or stop that container if it is no longer needed. No compose services or volumes have been changed."
+        }
+    }
+
+    if (-not $ownedByStack) {
+        $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, $Port)
+        try {
+            $listener.Server.ExclusiveAddressUse = $true
+            $listener.Start()
+        }
+        catch [System.Net.Sockets.SocketException] {
+            throw "Postgres host port $Port cannot be bound: $($_.Exception.Message). Choose a free port with -PostgresPort, or stop the service using it. No compose services or volumes have been changed."
+        }
+        finally {
+            $listener.Stop()
+        }
+    }
+}
+
 function Wait-ForContainerHealthy {
     param(
         [Parameter(Mandatory = $true)][string]$PodmanPath,
@@ -72,6 +115,8 @@ Push-Location $PSScriptRoot
 try {
     $podman = Get-Command podman -ErrorAction Stop
     Write-Host "Using podman at $($podman.Source)"
+
+    Assert-PostgresPortAvailable -PodmanPath $podman.Source -Port $PostgresPort
 
     if ($ResetData) {
         Write-Host "Resetting compose stack and volumes"
