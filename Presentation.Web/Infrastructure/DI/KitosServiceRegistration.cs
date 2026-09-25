@@ -594,6 +594,7 @@ namespace Presentation.Web.Infrastructure.DI
             RegisterDomainEvent<HandleOrganizationBeingDeleted>(services);
             RegisterDomainEvent<SendEmailToStakeholdersOnExternalOrganizationConnectionUpdatedHandler>(services);
             RegisterDomainEvent<PublishSystemChangesEventHandler>(services);
+            RegisterDomainEvent<PublishSystemTakenIntoUsageEventHandler>(services);
             RegisterDomainEvent<RaiseEntityUpdatedOnSnapshotEventsHandler<ItSystem, ItSystemSnapshot>>(services);
             RegisterDomainEvent<RaiseEntityUpdatedOnSnapshotEventsHandler<DataProcessingRegistration, DprSnapshot>>(services);
             RegisterDomainEvent<UserLoggedInEventHandler>(services);

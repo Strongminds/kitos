@@ -1,8 +1,8 @@
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using Tests.Infrastructure.Helpers;
+using Tests.Container.Helpers;
 
-namespace Tests.Infrastructure.Tests;
+namespace Tests.Container.Tests;
 
 [Collection(MigrationTestsCollection.Name)]
 public sealed class PostgreSqlMigrationTest : IAsyncLifetime
