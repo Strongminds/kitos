@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Core.Abstractions.Types;
 using Core.DomainModel.Events;
 using Core.DomainModel.UIConfiguration;
 namespace Core.DomainServices.Repositories.UICustomization
@@ -20,12 +22,17 @@ namespace Core.DomainServices.Repositories.UICustomization
             _domainEvents = domainEvents;
         }
 
+        public Maybe<UIModuleCustomization> GetByOrganizationAndModule(int organizationId, string module)
+        {
+            return _repository.GetWithReferencePreload(x => x.Nodes)
+                .SingleOrDefault(x => x.OrganizationId == organizationId && x.Module == module);
+        }
+
         public void DeleteNodes(IEnumerable<CustomizedUINode> nodes)
         {
             if (nodes == null) throw new ArgumentNullException(nameof(nodes));
 
             _nodesRepository.RemoveRange(nodes);
-            _repository.Save();
         }
 
         public void Update(UIModuleCustomization uiModuleCustomization)
