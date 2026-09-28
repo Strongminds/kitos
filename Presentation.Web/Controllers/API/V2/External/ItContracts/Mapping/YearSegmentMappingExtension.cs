@@ -14,7 +14,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             (
                 (YearSegmentChoice.EndOfCalendarYear, YearSegmentOption.EndOfCalendarYear),
                 (YearSegmentChoice.EndOfQuarter, YearSegmentOption.EndOfQuarter),
-                (YearSegmentChoice.EndOfMonth, YearSegmentOption.EndOfMonth)
+                (YearSegmentChoice.EndOfMonth, YearSegmentOption.EndOfMonth),
+                (YearSegmentChoice.BillingPeriod, YearSegmentOption.BillingPeriod)
             );
         }
 
