@@ -1,6 +1,6 @@
-using Tests.Infrastructure.Helpers;
+using Tests.Container.Helpers;
 
-namespace Tests.Infrastructure.Tests;
+namespace Tests.Container.Tests;
 
 [CollectionDefinition(Name, DisableParallelization = true)]
 public sealed class MigrationTestsCollection : ICollectionFixture<ContainerRuntimeFixture>

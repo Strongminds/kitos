@@ -87,6 +87,7 @@ namespace Core.ApplicationServices.SystemUsage.Write
             {
                 databaseControl.SaveChanges();
                 transaction.Commit();
+                domainEvents.Raise(new SystemTakenIntoUsageEvent(creationResult.Value, parameters.SystemUuid, parameters.OrganizationUuid));
             }
 
             return creationResult;

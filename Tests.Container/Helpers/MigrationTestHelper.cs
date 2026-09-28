@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Infrastructure.Helpers;
+namespace Tests.Container.Helpers;
 
 internal static class MigrationTestHelper
 {
