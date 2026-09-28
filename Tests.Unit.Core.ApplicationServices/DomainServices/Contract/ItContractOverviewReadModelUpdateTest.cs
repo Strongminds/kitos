@@ -326,6 +326,23 @@ namespace Tests.Unit.Core.DomainServices.Contract
             Assert.Equal(itContract.ExpirationDate?.Date, itContractOverviewReadModel.ExpirationDate);
         }
 
+        [Fact]
+        public void Apply_Can_Map_ByEnding()
+        {
+            //Arrange
+            var itContract = new ItContract
+            {
+                ByEnding = A<YearSegmentOption>()
+            };
+            var itContractOverviewReadModel = new ItContractOverviewReadModel();
+
+            //Act
+            _sut.Apply(itContract, itContractOverviewReadModel);
+
+            //Assert
+            Assert.Equal(itContract.ByEnding, itContractOverviewReadModel.ByEnding);
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
