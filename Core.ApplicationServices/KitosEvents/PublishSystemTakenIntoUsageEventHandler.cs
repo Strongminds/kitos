@@ -6,7 +6,7 @@ namespace Core.ApplicationServices.KitosEvents;
 public class PublishSystemTakenIntoUsageEventHandler(IKitosEventPublisherService eventPublisher)
     : IDomainEventHandler<SystemTakenIntoUsageEvent>
 {
-    private const string QueueTopic = KitosQueueTopics.SystemTakenIntoUsageEventTopic;
+    private const string QueueTopic = KitosQueueTopics.KitosItSystemUsageCreatedEvent;
 
     public void Handle(SystemTakenIntoUsageEvent domainEvent)
     {

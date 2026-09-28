@@ -30,7 +30,7 @@ public class PublishSystemTakenIntoUsageEventHandlerTest : WithAutoFixture
         _sut.Handle(new SystemTakenIntoUsageEvent(systemUsage, systemUuid, organizationUuid));
 
         _eventPublisher.Verify(x => x.PublishEvent(It.Is<KitosEvent>(e =>
-            e.Topic == KitosQueueTopics.SystemTakenIntoUsageEventTopic &&
+            e.Topic == KitosQueueTopics.KitosItSystemUsageCreatedEvent &&
             ((SystemTakenIntoUsageEventBodyModel)e.EventBody).SystemUuid == systemUuid &&
             ((SystemTakenIntoUsageEventBodyModel)e.EventBody).OrganizationUuid == organizationUuid)), Times.Once);
     }

@@ -3,6 +3,6 @@
     public static class KitosQueueTopics
     {
         public const string SystemChangedEventTopic = "KitosITSystemChangedEvent";
-        public const string SystemTakenIntoUsageEventTopic = "KitosITSystemTakenIntoUsageEvent";
+        public const string KitosItSystemUsageCreatedEvent = "KitosItSystemUsageCreatedEvent";
     }
 }
