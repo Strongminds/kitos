@@ -85,6 +85,45 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
         }
 
         [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void PUT_Returns_NotFound_Without_Committing_When_Organization_Doesnt_Exist(bool resolvesUuid)
+        {
+            var parameters = PrepareTestUiModuleCustomizationParameters(A<int>(), "ItSystemUsages");
+            var transaction = ExpectTransactionBeginReturns();
+            var uuid = Guid.NewGuid();
+            _identityResolverMock.Setup(x => x.ResolveUuid<Organization>(parameters.OrganizationId))
+                .Returns(resolvesUuid ? uuid : Maybe<Guid>.None);
+            ExpectOrganizationServiceGetReturns(Result<Organization, OperationError>.Failure(OperationFailure.NotFound), uuid);
+
+            var result = _sut.UpdateModuleAndGet(parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+            transaction.Verify(x => x.Commit(), Times.Never);
+            transaction.Verify(x => x.Dispose(), Times.Once);
+            _repositoryMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void PUT_Returns_Forbidden_Without_Committing_If_Not_LocalAdmin_In_Organization()
+        {
+            var (organization, module) = SetupGetModuleCustomization();
+            var transaction = ExpectTransactionBeginReturns();
+            ExpectHasRoleReturns(organization.Id, OrganizationRole.LocalAdmin, false);
+            var parameters = PrepareTestUiModuleCustomizationParameters(organization.Id, module.Module);
+
+            var result = _sut.UpdateModuleAndGet(parameters);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+            _userContextMock.Verify(x => x.HasRole(organization.Id, OrganizationRole.LocalAdmin), Times.Once);
+            transaction.Verify(x => x.Commit(), Times.Never);
+            transaction.Verify(x => x.Dispose(), Times.Once);
+            _repositoryMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
         [InlineData("1234")]
         [InlineData("Test-abc")]
         [InlineData("Test.123")]
@@ -316,10 +355,11 @@ namespace Tests.Unit.Core.ApplicationServices.UIModuleConfiguration
             _identityResolverMock.Setup(x => x.ResolveDbId<Organization>(uuid)).Returns(dbId);
         }
 
-        private void ExpectTransactionBeginReturns()
+        private Mock<IDatabaseTransaction> ExpectTransactionBeginReturns()
         {
             var transaction = new Mock<IDatabaseTransaction>();
             _transactionManagerMock.Setup(x => x.Begin()).Returns(transaction.Object);
+            return transaction;
         }
 
         private string GenerateKey()
