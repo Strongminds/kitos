@@ -70,6 +70,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IItsystemUsageRelationsService> _systemUsageRelationServiceMock;
         private readonly Mock<IGenericRepository<ItSystemUsagePersonalData>> _personalDataOptionsRepository;
         private readonly Mock<IItSystemUsageArchiveService> _itSystemArchiveServiceMock;
+        private readonly Mock<IDatabaseControl> _databaseControlMock;
 
         public ItSystemUsageWriteServiceTest()
         {
@@ -96,6 +97,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             _systemUsageRelationServiceMock = new Mock<IItsystemUsageRelationsService>();
             _personalDataOptionsRepository = new Mock<IGenericRepository<ItSystemUsagePersonalData>>();
             _itSystemArchiveServiceMock = new Mock<IItSystemUsageArchiveService>();
+            _databaseControlMock = new Mock<IDatabaseControl>();
             _sut = new ItSystemUsageWriteService(_itSystemUsageServiceMock.Object, _transactionManagerMock.Object,
                 _itSystemServiceMock.Object, _organizationServiceMock.Object, _authorizationContextMock.Object,
                 _systemCategoriesOptionsServiceMock.Object, _contractServiceMock.Object,
@@ -103,7 +105,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _sensitiveDataOptionsService.Object,
                 _registerTypeOptionsService.Object,
                 _sensitiveDataLevelRepository.Object,
-                Mock.Of<IDatabaseControl>(), _domainEventsMock.Object, Mock.Of<ILogger>(),
+                _databaseControlMock.Object, _domainEventsMock.Object, Mock.Of<ILogger>(),
                 _archiveTypeOptionsServiceMock.Object, _archiveLocationOptionsServiceMock.Object,
                 _archiveTestLocationOptionsServiceMock.Object,
                 _systemUsageRelationServiceMock.Object,
@@ -143,6 +145,55 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             Assert.True(createResult.Ok);
             Assert.Same(itSystemUsage, createResult.Value);
             AssertTransactionCommitted(transactionMock);
+        }
+
+        [Fact]
+        public void Create_Raises_SystemTakenIntoUsageEvent_After_Transaction_Is_Committed()
+        {
+            //Arrange
+            var systemUuid = A<Guid>();
+            var organizationUuid = A<Guid>();
+            var transactionMock = ExpectTransaction();
+            var organization = CreateOrganization();
+            var itSystem = new ItSystem { Id = A<int>() };
+            var itSystemUsage = new ItSystemUsage();
+            var sequence = new MockSequence();
+
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+            _databaseControlMock.InSequence(sequence).Setup(x => x.SaveChanges());
+            transactionMock.InSequence(sequence).Setup(x => x.Commit());
+            _domainEventsMock.InSequence(sequence).Setup(x => x.Raise(It.Is<SystemTakenIntoUsageEvent>(domainEvent => domainEvent.ItSystemUsage == itSystemUsage)));
+
+            //Act
+            var createResult = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters()));
+
+            //Assert
+            Assert.True(createResult.Ok);
+            _domainEventsMock.Verify(x => x.Raise(It.Is<SystemTakenIntoUsageEvent>(domainEvent => domainEvent.ItSystemUsage == itSystemUsage)), Times.Once);
+        }
+
+        [Fact]
+        public void Create_Does_Not_Raise_SystemTakenIntoUsageEvent_When_Transaction_Commit_Fails()
+        {
+            //Arrange
+            var systemUuid = A<Guid>();
+            var organizationUuid = A<Guid>();
+            var transactionMock = ExpectTransaction();
+            var organization = CreateOrganization();
+            var itSystem = new ItSystem { Id = A<int>() };
+            var itSystemUsage = new ItSystemUsage();
+            var exception = new Exception();
+
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, itSystem, itSystemUsage);
+            transactionMock.Setup(x => x.Commit()).Throws(exception);
+
+            //Act
+            var actualException = Assert.Throws<Exception>(() =>
+                _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters())));
+
+            //Assert
+            Assert.Same(exception, actualException);
+            _domainEventsMock.Verify(x => x.Raise(It.IsAny<SystemTakenIntoUsageEvent>()), Times.Never);
         }
 
         [Fact]
