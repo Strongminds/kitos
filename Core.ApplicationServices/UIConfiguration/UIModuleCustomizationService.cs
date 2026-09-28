@@ -42,12 +42,7 @@ namespace Core.ApplicationServices.UIConfiguration
                 throw new ArgumentNullException("Module parameter is null");
 
             return GetOrganizationById(organizationId)
-                .Bind(organization => organization.GetUiModuleCustomization(module)
-                    .Match(
-                        Result<UIModuleCustomization, OperationError>.Success,
-                        () => Result<UIModuleCustomization, OperationError>.Success(new UIModuleCustomization { OrganizationId = organizationId, Module = module })
-                    )
-                );
+                .Select(_ => GetModule(organizationId, module));
         }
 
         public Result<UIModuleCustomization, OperationError> GetModuleCustomizationByOrganizationUuid(Guid organizationUuid, string module)
@@ -57,44 +52,42 @@ namespace Core.ApplicationServices.UIConfiguration
                     () => new OperationError($"Unable to resolve organization id for organization UUID: {organizationUuid}", OperationFailure.NotFound));
         }
 
-
-        public Maybe<OperationError> UpdateModule(UIModuleCustomizationParameters parameters)
+        public Result<UIModuleCustomization, OperationError> UpdateModuleAndGet(UIModuleCustomizationParameters parameters)
         {
-            if(parameters == null)
-                throw new ArgumentNullException("Parameters are null");
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
 
             using var transaction = _transactionManager.Begin();
-            var error = GetOrganizationById(parameters.OrganizationId)
-                .Match(organization =>
-                    {
-                        if (!_userContext.HasRole(parameters.OrganizationId, OrganizationRole.LocalAdmin))
-                            return new OperationError("User is not a local admin in organization",
-                                OperationFailure.Forbidden);
+            var result = GetOrganizationById(parameters.OrganizationId)
+                .Bind<UIModuleCustomization>(organization =>
+                {
+                    if (!_userContext.HasRole(parameters.OrganizationId, OrganizationRole.LocalAdmin))
+                        return new OperationError("User is not a local admin in organization", OperationFailure.Forbidden);
 
-                        var nodesBefore = GetNodesByOrganizationAndModule(organization, parameters.Module);
+                    if (string.IsNullOrEmpty(parameters.Module))
+                        throw new ArgumentNullException(nameof(parameters.Module));
 
-                        var result = organization.ModifyModuleCustomization(parameters.Module, MapNodeParametersToCustomizedUiNodes(parameters.Nodes));
+                    var module = GetModule(parameters.OrganizationId, parameters.Module);
+                    var nodesBefore = module.Nodes.ToList();
+                    var error = module.UpdateConfigurationNodes(MapNodeParametersToCustomizedUiNodes(parameters.Nodes));
+                    if (error.HasValue)
+                        return error.Value;
 
-                        if (result.Failed)
-                            return result.Error;
-
-                        var nodesAfter = GetNodesByOrganizationAndModule(organization, parameters.Module);
-
-                        var deletedNodes = nodesBefore.Except(nodesAfter).ToList();
-
-                        if (deletedNodes.Count > 0)
-                            _repository.DeleteNodes(deletedNodes);
-                        _repository.Update(result.Value);
-
-                        return Maybe<OperationError>.None;
-                    },
-                    error => error
-                );
-            if (error.IsNone)
-            {
+                    var deletedNodes = nodesBefore.Except(module.Nodes).ToList();
+                    if (deletedNodes.Count > 0)
+                        _repository.DeleteNodes(deletedNodes);
+                    _repository.Update(module);
+                    return module;
+                });
+            if (result.Ok)
                 transaction.Commit();
-            }
-            return error;
+            return result;
+        }
+
+        private UIModuleCustomization GetModule(int organizationId, string module)
+        {
+            return _repository.GetByOrganizationAndModule(organizationId, module)
+                .GetValueOrFallback(new UIModuleCustomization { OrganizationId = organizationId, Module = module });
         }
 
         private Result<Organization, OperationError> GetOrganizationById(int organizationId)
@@ -114,12 +107,5 @@ namespace Core.ApplicationServices.UIConfiguration
             return parameters.Select(x => new CustomizedUINode { Key = x.Key, Enabled = x.Enabled, Recommended = x.Recommended }).ToList();
         }
 
-        private static IEnumerable<CustomizedUINode> GetNodesByOrganizationAndModule(Organization organization, string module)
-        {
-            return organization
-                .GetUiModuleCustomization(module)
-                .Select(x => x.Nodes.ToList())
-                .GetValueOrFallback(new List<CustomizedUINode>());
-        }
     }
 }
