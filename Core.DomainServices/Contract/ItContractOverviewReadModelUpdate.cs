@@ -53,6 +53,7 @@ namespace Core.DomainServices.Contract
             destination.Concluded = source.Concluded?.Date;
             destination.ExpirationDate = source.ExpirationDate?.Date;
             destination.Note = source.Note;
+            destination.ByEnding = source.ByEnding;
 
             //Supplier
             destination.SupplierId = source.Supplier?.Id;
