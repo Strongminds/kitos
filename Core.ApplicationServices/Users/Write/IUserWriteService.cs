@@ -29,6 +29,7 @@ namespace Core.ApplicationServices.Users.Write
         Maybe<OperationError> RemoveLocalAdmin(Guid organizationUuid, Guid userUuid);
 
         Result<User, OperationError> UpdateSystemIntegrator(Guid userUuid, bool systemIntegratorStatus);
+        Result<User, OperationError> UpdatePubSubUser(Guid userUuid, bool pubSubUserStatus);
 
         void RequestPasswordReset(string email);
 
