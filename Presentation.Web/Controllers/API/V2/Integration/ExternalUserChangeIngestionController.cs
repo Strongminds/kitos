@@ -1,0 +1,43 @@
+using System;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Core.ApplicationServices.Users;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.Web.Infrastructure.Attributes;
+using Newtonsoft.Json;
+
+namespace Presentation.Web.Controllers.API.V2.Integration;
+
+/// <summary>Receives user changes from a KITOS-authenticated PubSub account.</summary>
+[Route("api/v2/integrations/fk-organisation/user-changes")]
+[RequirePubSubUser]
+public class ExternalUserChangeIngestionController(ExternalUserChangeIngestionService service)
+    : IntegrationApiV2Controller
+{
+    [HttpPost]
+    [RequestSizeLimit(16384)]
+    public async Task<IActionResult> Receive(CancellationToken cancellationToken)
+    {
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+        var body = await reader.ReadToEndAsync(cancellationToken);
+
+        Publication? publication;
+        try
+        {
+            publication = JsonConvert.DeserializeObject<Publication>(body, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.None,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                MissingMemberHandling = MissingMemberHandling.Error
+            });
+        }
+        catch (JsonException) { return BadRequest("Invalid event envelope."); }
+        if (publication?.Payload == null) return BadRequest("Payload is required.");
+        var result = await service.Ingest(publication.Payload, cancellationToken);
+        return result.Match(change => Ok(new { change.Uuid }), FromOperationError);
+    }
+
+    public record Publication(ExternalUserChangeInput Payload);
+}

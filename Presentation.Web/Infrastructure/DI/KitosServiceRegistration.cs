@@ -156,6 +156,9 @@ namespace Presentation.Web.Infrastructure.DI
     {
         public static void Register(IServiceCollection services, IConfiguration configuration, SecurityKey signingKey)
         {
+            services.AddScoped<Core.DomainServices.Users.IExternalUserChangeStore, global::Infrastructure.DataAccess.Repositories.ExternalUserChangeStore>();
+            services.AddScoped<ExternalUserChangeIngestionService>();
+            services.AddScoped<Services.ExternalUserChangeResolutionService>();
             // Middleware (IMiddleware implementations must be registered in DI)
             services.AddScoped<NormalizeODataQueryStringMiddleware>();
             services.AddScoped<CorrelationIdMiddleware>();

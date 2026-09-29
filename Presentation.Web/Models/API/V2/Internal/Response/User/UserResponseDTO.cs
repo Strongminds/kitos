@@ -14,6 +14,7 @@ namespace Presentation.Web.Models.API.V2.Internal.Response.User
         public string? PhoneNumber { get; set; }
         public DefaultUserStartPreferenceChoice DefaultUserStartPreference { get; set; }
         public bool? HasApiAccess { get; set; }
+        public bool IsPubSubUser { get; set; }
         public bool HasStakeHolderAccess { get; set; }
         public IEnumerable<OrganizationRoleChoice>? Roles { get; set; }
         public IdentityNamePairResponseDTO? DefaultOrganizationUnit { get; set; }

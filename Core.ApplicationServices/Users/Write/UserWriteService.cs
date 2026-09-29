@@ -198,6 +198,15 @@ namespace Core.ApplicationServices.Users.Write
             return UpdateUser(userUuid, user => UpdateSystemIntegrator(user, systemIntegratorStatus));
         }
 
+        public Result<User, OperationError> UpdatePubSubUser(Guid userUuid, bool pubSubUserStatus)
+        {
+            return UpdateUser(userUuid, user => WithGlobalAdminWriteAccess(user).Select(authorizedUser =>
+            {
+                authorizedUser.SetPubSubUserStatus(pubSubUserStatus);
+                return authorizedUser;
+            }));
+        }
+
         public void RequestPasswordReset(string email)
         {
             var userResult = _userRepository.GetByEmail(email).FromNullable();

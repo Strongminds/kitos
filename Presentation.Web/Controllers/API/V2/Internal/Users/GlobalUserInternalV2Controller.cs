@@ -250,6 +250,25 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                     .Match(NoContent, FromOperationError);
         }
 
+        [HttpGet]
+        [Route("pubsub-users")]
+        [ApiResponse(typeof(IEnumerable<UserReferenceResponseDTO>), HttpStatusCode.OK)]
+        public IActionResult GetPubSubUsers()
+        {
+            return Ok(_userService.GetUsers(new QueryByPubSubUser()).AsEnumerable()
+                .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO).ToList());
+        }
+
+        [HttpPatch]
+        [Route("pubsub-users/{userUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        public IActionResult UpdatePubSubUser([NonEmptyGuid] [FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
+        {
+            return _userWriteService.UpdatePubSubUser(userUuid, requestedValue)
+                .Match(NoContent, FromOperationError);
+        }
+
         private static IEnumerable<UserWithOrganizationResponseDTO> ToUserWithOrgDTOs(List<UserRoleAssociationDTO> dtos)
         {
             return dtos.Select(ToUserWithOrgDTO).ToList();
