@@ -45,6 +45,4 @@ public class KitosTokenProvider(IHttpClientFactory clients, IConfiguration confi
         _cachedEndpoint = tokenEndpoint;
         return token.Token;
     }
-
-    private sealed record TokenResponse(string Token, DateTimeOffset Expires, bool LoginSuccessful);
 }

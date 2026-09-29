@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ApplicationServices.Users;
+using Presentation.Web.Models.API.V2.Integration.Request;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Web.Infrastructure.Attributes;
 using Newtonsoft.Json;
@@ -23,10 +24,10 @@ public class ExternalUserChangeIngestionController(ExternalUserChangeIngestionSe
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync(cancellationToken);
 
-        Publication? publication;
+        ExternalUserChangePublication? publication;
         try
         {
-            publication = JsonConvert.DeserializeObject<Publication>(body, new JsonSerializerSettings
+            publication = JsonConvert.DeserializeObject<ExternalUserChangePublication>(body, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.None,
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
@@ -38,6 +39,4 @@ public class ExternalUserChangeIngestionController(ExternalUserChangeIngestionSe
         var result = await service.Ingest(publication.Payload, cancellationToken);
         return result.Match(change => Ok(new { change.Uuid }), FromOperationError);
     }
-
-    public record Publication(ExternalUserChangeInput Payload);
 }

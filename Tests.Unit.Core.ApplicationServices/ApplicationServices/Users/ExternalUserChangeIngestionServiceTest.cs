@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Users;
 using Core.ApplicationServices.Users;
 using Core.DomainModel;
 using Core.DomainModel.Organization;

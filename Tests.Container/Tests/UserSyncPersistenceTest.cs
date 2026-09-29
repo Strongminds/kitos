@@ -1,10 +1,12 @@
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Users;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainModel.SSO;
 using Core.DomainModel.Users;
 using Core.DomainServices.Repositories.SSO;
+using Core.DomainServices.Users;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Infrastructure.DataAccess;
@@ -15,7 +17,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Presentation.Web.Services;
 
 namespace Tests.Container.Tests;
 
@@ -111,7 +112,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
         await using (var db = Context())
             uuid = (await new ExternalUserChangeStore(db).Insert(Change("apply"), default)).Uuid;
         await using (var db = Context())
-            Assert.True((await Resolver(db).Resolve(_organization.Uuid, uuid, true, default)).Ok);
+            Assert.True(Resolver(db).Resolve(_organization.Uuid, uuid, true).Ok);
         await using (var db = Context())
         {
             Assert.False(await db.OrganizationRights.AnyAsync(x => x.UserId == _user.Id && x.OrganizationId == _organization.Id));
@@ -124,7 +125,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
             Assert.NotNull(change.ResolvedAt);
         }
         await using (var db = Context())
-            Assert.True((await Resolver(db).Resolve(_organization.Uuid, uuid, false, default)).Failed);
+            Assert.True(Resolver(db).Resolve(_organization.Uuid, uuid, false).Failed);
     }
 
     [Fact]
@@ -134,7 +135,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
         db.OrganizationRights.RemoveRange(await db.OrganizationRights.Where(x => x.OrganizationId == _otherOrganization.Id).ToListAsync());
         await db.SaveChangesAsync();
         var change = await new ExternalUserChangeStore(db).Insert(Change("last-org"), default);
-        Assert.True((await Resolver(db).Resolve(_organization.Uuid, change.Uuid, true, default)).Ok);
+        Assert.True(Resolver(db).Resolve(_organization.Uuid, change.Uuid, true).Ok);
         await using var verify = Context();
         Assert.True((await verify.Users.SingleAsync(x => x.Id == _user.Id)).Deleted);
         Assert.Empty(await verify.OrganizationRights.Where(x => x.UserId == _user.Id).ToListAsync());
@@ -147,12 +148,12 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
         Guid uuid;
         await using (var db = Context())
             uuid = (await new ExternalUserChangeStore(db).Insert(Change("race"), default)).Uuid;
-        async Task<bool> Resolve(bool apply)
+        bool Resolve(bool apply)
         {
-            await using var db = Context();
-            return (await Resolver(db).Resolve(_organization.Uuid, uuid, apply, default)).Ok;
+            using var db = Context();
+            return Resolver(db).Resolve(_organization.Uuid, uuid, apply).Ok;
         }
-        var results = await Task.WhenAll(Resolve(true), Resolve(false));
+        var results = await Task.WhenAll(Task.Run(() => Resolve(true)), Task.Run(() => Resolve(false)));
         Assert.Single(results, x => x);
         await using var verify = Context();
         var change = await verify.Set<ExternalUserChange>().SingleAsync();
@@ -172,16 +173,20 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
             uuid = (await new ExternalUserChangeStore(db).Insert(change, default)).Uuid;
         }
         await using (var db = Context())
-            Assert.True((await Resolver(db).Resolve(_organization.Uuid, uuid, true, default)).Failed);
+            Assert.True(Resolver(db).Resolve(_organization.Uuid, uuid, true).Failed);
         await using (var db = Context())
-            Assert.True((await Resolver(db).Resolve(_otherOrganization.Uuid, uuid, true, default)).Failed);
+            Assert.True(Resolver(db).Resolve(_otherOrganization.Uuid, uuid, true).Failed);
         await using (var db = Context())
-            Assert.True((await Resolver(db).Resolve(_organization.Uuid, uuid, false, default)).Ok);
+            Assert.True(Resolver(db).Resolve(_organization.Uuid, uuid, false).Ok);
         await using var verify = Context();
         Assert.Equal(2, await verify.OrganizationRights.CountAsync(x => x.UserId == _user.Id));
     }
 
-    private ExternalUserChangeResolutionService Resolver(KitosContext db) => new(db,
+    private ExternalUserChangeResolutionService Resolver(KitosContext db) => new(
+        new ExternalUserChangeResolutionTransaction(db),
+        new GenericRepository<Organization>(db),
+        new GenericRepository<ExternalUserChange>(db),
+        new GenericRepository<OrganizationRight>(db),
         new OrganizationalUserContext(_actor.Id,
             new Dictionary<int, IEnumerable<OrganizationRole>> { [_organization.Id] = [OrganizationRole.LocalAdmin] },
             new Dictionary<int, OrganizationCategory> { [_organization.Id] = OrganizationCategory.Municipality }, false, false, false),

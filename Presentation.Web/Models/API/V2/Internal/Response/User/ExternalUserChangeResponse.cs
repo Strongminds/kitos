@@ -1,7 +1,7 @@
 using System;
 using Core.DomainModel.Users;
 
-namespace Presentation.Web.Controllers.API.V2.Internal.Users;
+namespace Presentation.Web.Models.API.V2.Internal.Response.User;
 
 public record ExternalUserChangeResponse(Guid Uuid, string ExternalMessageId, Guid ExternalUserUuid,
     Guid? UserUuid, string? UserName, string? Email, ExternalUserChangeType ChangeType, ExternalUserChangeStatus Status,

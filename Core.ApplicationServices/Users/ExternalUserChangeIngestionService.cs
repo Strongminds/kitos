@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Users;
 using Core.DomainModel.Users;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Repositories.Organization;
@@ -10,9 +11,6 @@ using Core.DomainServices.Repositories.SSO;
 using Core.DomainServices.Users;
 
 namespace Core.ApplicationServices.Users;
-
-public record ExternalUserChangeInput(string ExternalMessageId, Guid OrganizationUuid,
-    Guid ExternalUserUuid, ExternalUserChangeType ChangeType, DateTime? OccurredAt);
 
 public class ExternalUserChangeIngestionService(
     IExternalUserChangeStore store,

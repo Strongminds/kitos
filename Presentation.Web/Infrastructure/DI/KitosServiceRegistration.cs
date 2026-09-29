@@ -158,7 +158,10 @@ namespace Presentation.Web.Infrastructure.DI
         {
             services.AddScoped<Core.DomainServices.Users.IExternalUserChangeStore, global::Infrastructure.DataAccess.Repositories.ExternalUserChangeStore>();
             services.AddScoped<ExternalUserChangeIngestionService>();
-            services.AddScoped<Services.ExternalUserChangeResolutionService>();
+            services.AddScoped<Core.DomainServices.Users.IExternalUserChangeReadStore, global::Infrastructure.DataAccess.Repositories.ExternalUserChangeReadStore>();
+            services.AddScoped<ExternalUserChangeReadService>();
+            services.AddScoped<Core.DomainServices.Users.IExternalUserChangeResolutionTransaction, global::Infrastructure.DataAccess.Repositories.ExternalUserChangeResolutionTransaction>();
+            services.AddScoped<ExternalUserChangeResolutionService>();
             // Middleware (IMiddleware implementations must be registered in DI)
             services.AddScoped<NormalizeODataQueryStringMiddleware>();
             services.AddScoped<CorrelationIdMiddleware>();
