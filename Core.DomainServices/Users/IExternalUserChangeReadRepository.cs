@@ -4,7 +4,7 @@ using Core.DomainModel.Users;
 
 namespace Core.DomainServices.Users;
 
-public interface IExternalUserChangeReadStore
+public interface IExternalUserChangeReadRepository
 {
     IQueryable<ExternalUserChange> Query(int organizationId);
     int Count(IQueryable<ExternalUserChange> query);

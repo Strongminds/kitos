@@ -13,7 +13,7 @@ using Core.DomainServices.Users;
 namespace Core.ApplicationServices.Users;
 
 public class ExternalUserChangeIngestionService(
-    IExternalUserChangeStore store,
+    IExternalUserChangeRepository repository,
     IOrganizationRepository organizations,
     ISsoUserIdentityRepository identities)
 {
@@ -29,7 +29,7 @@ public class ExternalUserChangeIngestionService(
         var organization = organizations.GetByUuid(input.OrganizationUuid);
         if (organization.IsNone) return new OperationError("Unknown organization.", OperationFailure.NotFound);
 
-        var existing = await store.FindByMessageId(input.ExternalMessageId, cancellationToken);
+        var existing = await repository.FindByMessageId(input.ExternalMessageId, cancellationToken);
         if (existing != null) return CheckDuplicate(existing, input, organization.Value.Id);
 
         var identity = identities.GetByExternalUuid(input.ExternalUserUuid);
@@ -46,7 +46,7 @@ public class ExternalUserChangeIngestionService(
             OccurredAt = NormalizeTimestamp(input.OccurredAt),
             ReceivedAt = DateTime.UtcNow
         };
-        var saved = await store.Insert(change, cancellationToken);
+        var saved = await repository.Insert(change, cancellationToken);
         return CheckDuplicate(saved, input, organization.Value.Id);
     }
 

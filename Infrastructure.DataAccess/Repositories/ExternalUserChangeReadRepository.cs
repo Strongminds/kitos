@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.DataAccess.Repositories;
 
-public class ExternalUserChangeReadStore(KitosContext db) : IExternalUserChangeReadStore
+public class ExternalUserChangeReadRepository(KitosContext db) : IExternalUserChangeReadRepository
 {
     public IQueryable<ExternalUserChange> Query(int organizationId) =>
         db.Set<ExternalUserChange>().AsNoTracking().Where(x => x.OrganizationId == organizationId)

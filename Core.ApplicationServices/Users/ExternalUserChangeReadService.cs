@@ -13,11 +13,11 @@ namespace Core.ApplicationServices.Users;
 public class ExternalUserChangeReadService(
     IOrganizationRepository organizations,
     IOrganizationalUserContext actor,
-    IExternalUserChangeReadStore store)
+    IExternalUserChangeReadRepository repository)
 {
     public Result<int, OperationError> PendingCount(Guid organizationUuid) =>
         GetOrganizationId(organizationUuid)
-            .Select(organizationId => store.Count(store.Query(organizationId)
+            .Select(organizationId => repository.Count(repository.Query(organizationId)
                 .Where(x => x.Status == ExternalUserChangeStatus.Pending)));
 
     public Result<ExternalUserChangeListResult, OperationError> List(
@@ -29,8 +29,8 @@ public class ExternalUserChangeReadService(
 
         var organization = GetOrganizationId(organizationUuid);
         if (organization.Failed) return organization.Error;
-        var query = store.Query(organization.Value);
-        var pendingCount = store.Count(query.Where(x => x.Status == ExternalUserChangeStatus.Pending));
+        var query = repository.Query(organization.Value);
+        var pendingCount = repository.Count(query.Where(x => x.Status == ExternalUserChangeStatus.Pending));
         if (options.Status.HasValue) query = query.Where(x => x.Status == options.Status);
         if (options.ResolvedOnly) query = query.Where(x => x.Status != ExternalUserChangeStatus.Pending);
         if (!string.IsNullOrWhiteSpace(options.Search))
@@ -41,7 +41,7 @@ public class ExternalUserChangeReadService(
                 (x.User != null && (x.User.Name.Contains(options.Search) ||
                     x.User.LastName.Contains(options.Search) || x.User.Email.Contains(options.Search))));
         }
-        var total = store.Count(query);
+        var total = repository.Count(query);
         var ordered = options.Sort switch
         {
             "userName" => options.Descending ? query.OrderByDescending(x => x.User!.Name) : query.OrderBy(x => x.User!.Name),
@@ -50,7 +50,7 @@ public class ExternalUserChangeReadService(
             _ => null
         };
         if (ordered == null) return new OperationError("Unsupported sort field.", OperationFailure.BadInput);
-        var records = store.List(ordered.ThenBy(x => x.Uuid).Skip(options.Skip).Take(options.Take));
+        var records = repository.List(ordered.ThenBy(x => x.Uuid).Skip(options.Skip).Take(options.Take));
         return new ExternalUserChangeListResult(total, pendingCount, records);
     }
 
@@ -58,7 +58,7 @@ public class ExternalUserChangeReadService(
         GetOrganizationId(organizationUuid)
             .Bind<ExternalUserChange>(organizationId =>
             {
-                var change = store.List(store.Query(organizationId).Where(x => x.Uuid == changeUuid)).SingleOrDefault();
+                var change = repository.List(repository.Query(organizationId).Where(x => x.Uuid == changeUuid)).SingleOrDefault();
                 return change == null
                     ? Result<ExternalUserChange, OperationError>.Failure(
                         new OperationError("Change not found.", OperationFailure.NotFound))

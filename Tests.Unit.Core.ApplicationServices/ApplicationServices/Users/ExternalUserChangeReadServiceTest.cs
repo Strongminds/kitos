@@ -20,7 +20,7 @@ public class ExternalUserChangeReadServiceTest
     private readonly Organization _organization = new() { Id = 10, Uuid = Guid.NewGuid() };
     private readonly Mock<IOrganizationRepository> _organizations = new();
     private readonly Mock<IOrganizationalUserContext> _actor = new();
-    private readonly Mock<IExternalUserChangeReadStore> _store = new();
+    private readonly Mock<IExternalUserChangeReadRepository> _repository = new();
     private readonly List<ExternalUserChange> _changes = [];
     private readonly ExternalUserChangeReadService _sut;
 
@@ -28,12 +28,12 @@ public class ExternalUserChangeReadServiceTest
     {
         _organizations.Setup(x => x.GetByUuid(_organization.Uuid)).Returns(_organization);
         _actor.Setup(x => x.HasRole(_organization.Id, OrganizationRole.LocalAdmin)).Returns(true);
-        _store.Setup(x => x.Query(_organization.Id)).Returns(() => _changes.AsQueryable());
-        _store.Setup(x => x.Count(It.IsAny<IQueryable<ExternalUserChange>>()))
+        _repository.Setup(x => x.Query(_organization.Id)).Returns(() => _changes.AsQueryable());
+        _repository.Setup(x => x.Count(It.IsAny<IQueryable<ExternalUserChange>>()))
             .Returns((IQueryable<ExternalUserChange> query) => query.Count());
-        _store.Setup(x => x.List(It.IsAny<IQueryable<ExternalUserChange>>()))
+        _repository.Setup(x => x.List(It.IsAny<IQueryable<ExternalUserChange>>()))
             .Returns((IQueryable<ExternalUserChange> query) => query.ToList());
-        _sut = new(_organizations.Object, _actor.Object, _store.Object);
+        _sut = new(_organizations.Object, _actor.Object, _repository.Object);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class ExternalUserChangeReadServiceTest
             _sut.Detail(_organization.Uuid, _changes[0].Uuid).Error.FailureType);
         Assert.Equal(OperationFailure.Forbidden,
             _sut.List(_organization.Uuid, new(null, 0, 50, null, "receivedAt", true, false)).Error.FailureType);
-        _store.Verify(x => x.Query(It.IsAny<int>()), Times.Never);
+        _repository.Verify(x => x.Query(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]

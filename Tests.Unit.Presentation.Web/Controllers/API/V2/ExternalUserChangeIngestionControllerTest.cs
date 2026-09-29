@@ -29,16 +29,16 @@ public class ExternalUserChangeIngestionControllerTest
         organizations.Setup(x => x.GetByUuid(organization.Uuid)).Returns(organization);
         var identities = new Mock<ISsoUserIdentityRepository>();
         identities.Setup(x => x.GetByExternalUuid(It.IsAny<Guid>())).Returns(Maybe<SsoUserIdentity>.None);
-        var store = new Mock<IExternalUserChangeStore>();
+        var repository = new Mock<IExternalUserChangeRepository>();
         ExternalUserChange? saved = null;
-        store.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()))
+        repository.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ExternalUserChange change, CancellationToken _) => { saved = change; return change; });
         var body = System.Text.Json.JsonSerializer.Serialize(new
         {
             Payload = new { ExternalMessageId = "token-event", OrganizationUuid = organization.Uuid,
                 ExternalUserUuid = Guid.NewGuid(), ChangeType = 1, OccurredAt = (DateTime?)null }
         });
-        var controller = Create(body, new ExternalUserChangeIngestionService(store.Object, organizations.Object, identities.Object));
+        var controller = Create(body, new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object));
         Assert.IsType<OkObjectResult>(await controller.Receive(default));
         Assert.NotNull(saved);
         Assert.Equal(ExternalUserChangeStatus.Pending, saved.Status);

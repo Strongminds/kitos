@@ -18,7 +18,7 @@ namespace Tests.Unit.Core.ApplicationServices.ApplicationServices.Users;
 
 public class ExternalUserChangeIngestionServiceTest
 {
-    private readonly Mock<IExternalUserChangeStore> _store = new();
+    private readonly Mock<IExternalUserChangeRepository> _repository = new();
     private readonly Mock<IOrganizationRepository> _organizations = new();
     private readonly Mock<ISsoUserIdentityRepository> _identities = new();
     private readonly Organization _organization = new() { Id = 12, Uuid = Guid.NewGuid() };
@@ -31,9 +31,9 @@ public class ExternalUserChangeIngestionServiceTest
         _input = new("message-1", _organization.Uuid, Guid.NewGuid(), ExternalUserChangeType.Deleted, DateTime.UtcNow);
         _organizations.Setup(x => x.GetByUuid(_organization.Uuid)).Returns(_organization);
         _identities.Setup(x => x.GetByExternalUuid(It.IsAny<Guid>())).Returns(Maybe<SsoUserIdentity>.None);
-        _store.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()))
+        _repository.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ExternalUserChange change, CancellationToken _) => change);
-        _sut = new(_store.Object, _organizations.Object, _identities.Object);
+        _sut = new(_repository.Object, _organizations.Object, _identities.Object);
     }
 
     [Fact]
@@ -70,25 +70,25 @@ public class ExternalUserChangeIngestionServiceTest
     {
         var existing = Existing();
         existing.Status = ExternalUserChangeStatus.Dismissed;
-        _store.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         var result = await _sut.Ingest(_input);
         Assert.Same(existing, result.Value);
         Assert.Equal(ExternalUserChangeStatus.Dismissed, result.Value.Status);
-        _store.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repository.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task ConcurrentInsertReturnsThePersistedRecord()
     {
         var existing = Existing();
-        _store.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _repository.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         Assert.Same(existing, (await _sut.Ingest(_input)).Value);
     }
 
     [Fact]
     public async Task ReusedMessageIdForDifferentUserIsConflict()
     {
-        _store.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(Existing());
+        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(Existing());
         var result = await _sut.Ingest(_input with { ExternalUserUuid = Guid.NewGuid() });
         Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
     }
@@ -99,7 +99,7 @@ public class ExternalUserChangeIngestionServiceTest
         var occurredAt = new DateTime(2026, 9, 28, 10, 0, 0, DateTimeKind.Utc).AddTicks(17);
         var existing = Existing();
         existing.OccurredAt = occurredAt.AddTicks(-7);
-        _store.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         Assert.True((await _sut.Ingest(_input with { OccurredAt = occurredAt })).Ok);
     }
 
@@ -108,7 +108,7 @@ public class ExternalUserChangeIngestionServiceTest
     {
         var result = await _sut.Ingest(_input with { ChangeType = (ExternalUserChangeType)99 });
         Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
-        _store.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repository.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private ExternalUserChange Existing() => new()
