@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Presentation.Web.Controllers.API.V2.Integration;
+using Presentation.Web.Models.API.V2.Integration.Response;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Controllers.API.V2;
@@ -24,7 +25,7 @@ public class ExternalUserChangeIngestionControllerTest
     [Fact]
     public async Task PubSubEnvelopeCreatesPendingChange()
     {
-        var organization = new Organization { Id = 7, Uuid = Guid.NewGuid() };
+        var organization = new Organization { Id = 7, Uuid = Guid.NewGuid(), FkOrgUsersConnected = true };
         var organizations = new Mock<IOrganizationRepository>();
         organizations.Setup(x => x.GetByUuid(organization.Uuid)).Returns(organization);
         var identities = new Mock<ISsoUserIdentityRepository>();
@@ -39,7 +40,8 @@ public class ExternalUserChangeIngestionControllerTest
                 ExternalUserUuid = Guid.NewGuid(), ChangeType = 1, OccurredAt = (DateTime?)null }
         });
         var controller = Create(body, new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object));
-        Assert.IsType<OkObjectResult>(await controller.Receive(default));
+        var response = Assert.IsType<OkObjectResult>(await controller.Receive(default));
+        Assert.IsType<ExternalUserChangeIngestionResponse>(response.Value);
         Assert.NotNull(saved);
         Assert.Equal(ExternalUserChangeStatus.Pending, saved.Status);
         Assert.Equal("token-event", saved.ExternalMessageId);
