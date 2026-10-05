@@ -21,7 +21,7 @@ public class ExternalUserChangeIngestionServiceTest
     private readonly Mock<IExternalUserChangeRepository> _repository = new();
     private readonly Mock<IOrganizationRepository> _organizations = new();
     private readonly Mock<ISsoUserIdentityRepository> _identities = new();
-    private readonly Organization _organization = new() { Id = 12, Uuid = Guid.NewGuid() };
+    private readonly Organization _organization = new() { Id = 12, Uuid = Guid.NewGuid(), FkOrgUsersConnected = true };
     private readonly User _user = new() { Id = 42 };
     private readonly ExternalUserChangeInput _input;
     private readonly ExternalUserChangeIngestionService _sut;
@@ -101,6 +101,16 @@ public class ExternalUserChangeIngestionServiceTest
         existing.OccurredAt = occurredAt.AddTicks(-7);
         _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
         Assert.True((await _sut.Ingest(_input with { OccurredAt = occurredAt })).Ok);
+    }
+
+    [Fact]
+    public async Task OrganizationWithoutUsersConnectionIsRejectedAsConflict()
+    {
+        _organization.FkOrgUsersConnected = false;
+        var result = await _sut.Ingest(_input);
+        Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
+        _repository.Verify(x => x.FindByMessageId(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repository.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

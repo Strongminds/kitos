@@ -8,4 +8,5 @@ In order to keep track of architectural decisions, use child pages.
 
 ## Pages
 
+- [FK Organization user integration](fk-org-users-integration.md)
 - [The "Default Organization"](the-default-organization.md)

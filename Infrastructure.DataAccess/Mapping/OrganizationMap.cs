@@ -57,6 +57,13 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.Uuid).IsUnique().HasDatabaseName("UX_Organization_UUID");
 
             builder.HasIndex(x => x.IsDefaultOrganization).HasDatabaseName("IX_DEFAULT_ORG");
+
+            builder.Property(x => x.FkOrgUsersConnected).IsRequired();
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.FkOrgUsersConnectedByUserId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

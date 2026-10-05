@@ -156,6 +156,43 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<ItSystemUsage.ItSystemUsage> ArchiveSupplierForItSystems { get; set; }
         public virtual StsOrganizationConnection StsOrganizationConnection { get; set; }
 
+        /// <summary>
+        /// Determines if the organization accepts external user changes from FK Organisation.
+        /// Independent of <see cref="StsOrganizationConnection"/> (the org-unit hierarchy connection).
+        /// </summary>
+        public bool FkOrgUsersConnected { get; set; }
+        /// <summary>
+        /// UTC time of the latest activation of the FK Organisation users connection
+        /// </summary>
+        public DateTime? FkOrgUsersConnectedAt { get; set; }
+        public int? FkOrgUsersConnectedByUserId { get; set; }
+
+        public Maybe<OperationError> ConnectUsersToFkOrganisation(DateTime connectedAtUtc, int? connectedByUserId)
+        {
+            if (FkOrgUsersConnected)
+            {
+                return new OperationError("Users are already connected to FK Organisation", OperationFailure.Conflict);
+            }
+
+            FkOrgUsersConnected = true;
+            FkOrgUsersConnectedAt = connectedAtUtc;
+            FkOrgUsersConnectedByUserId = connectedByUserId;
+            return Maybe<OperationError>.None;
+        }
+
+        public Maybe<OperationError> DisconnectUsersFromFkOrganisation()
+        {
+            if (!FkOrgUsersConnected)
+            {
+                return new OperationError("Users are not connected to FK Organisation", OperationFailure.Conflict);
+            }
+
+            FkOrgUsersConnected = false;
+            FkOrgUsersConnectedAt = null;
+            FkOrgUsersConnectedByUserId = null;
+            return Maybe<OperationError>.None;
+        }
+
         public virtual ICollection<SupplierAssociatedFieldConfiguration> SupplierAssociatedFieldConfigurations { get; set; }
 
         /// <summary>

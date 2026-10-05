@@ -28,6 +28,9 @@ public class ExternalUserChangeIngestionService(
 
         var organization = organizations.GetByUuid(input.OrganizationUuid);
         if (organization.IsNone) return new OperationError("Unknown organization.", OperationFailure.NotFound);
+        // Permanent rejection (409) so the PubSub delivery worker dead-letters the event instead of retrying it.
+        if (!organization.Value.FkOrgUsersConnected)
+            return new OperationError("The organization's users are not connected to FK Organisation.", OperationFailure.Conflict);
 
         var existing = await repository.FindByMessageId(input.ExternalMessageId, cancellationToken);
         if (existing != null) return CheckDuplicate(existing, input, organization.Value.Id);

@@ -17,6 +17,12 @@ namespace Presentation.Web.Controllers.API.V2.Integration;
 public class ExternalUserChangeIngestionController(ExternalUserChangeIngestionService service)
     : IntegrationApiV2Controller
 {
+    /// <summary>Stores a user change event.</summary>
+    /// <remarks>
+    /// Returns 409 Conflict (permanent; dead-lettered by the PubSub delivery worker) when the organization's
+    /// FK Organisation users connection is not enabled, or when the message ID belongs to a different event.
+    /// Identical replays for connected organizations return 200 with the existing change.
+    /// </remarks>
     [HttpPost]
     [RequestSizeLimit(16384)]
     public async Task<IActionResult> Receive(CancellationToken cancellationToken)
