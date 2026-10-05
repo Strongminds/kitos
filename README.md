@@ -23,6 +23,10 @@ This repository maintains the backend services.
 ### UI
 The UI is developed and maintained here: https://github.com/os2kitos/kitos_frontend
 
+## Documentation
+
+Public-safe technical documentation migrated from the KITOS Confluence space is available in [docs](docs/README.md).
+
 ## Build and test
 
 Build the solution:
