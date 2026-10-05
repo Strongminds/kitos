@@ -8,5 +8,4 @@ In order to keep track of architectural decisions, use child pages.
 
 ## Pages
 
-- [Read Models for the overview context](read-models-for-the-overview-context.md)
 - [The "Default Organization"](the-default-organization.md)
