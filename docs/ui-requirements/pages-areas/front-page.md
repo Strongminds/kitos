@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/876576817)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Jira links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4022>
@@ -60,7 +58,8 @@ Users with the “global admin” role have the option to edit the texts using a
 * All enabled components become visible
 * The “user menu” becomes visible with the “name” and “active org name”
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/876576817)
+![Confluence screenshot](./front-page.assets/image-001.png)
+
 ## API endpoints
 
 ### Front page texts

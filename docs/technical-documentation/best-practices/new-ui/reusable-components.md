@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1075871745)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Dropdowns
 
 ## Users dropdown
@@ -16,7 +14,8 @@ The user dropdown is a quick and easy way to make a dropdown for global users. T
 
 As of writing the dropdown only supports one hook, which is a FormGroup and a form name. An example usage can be seen below:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1075871745)
+![Confluence screenshot](./reusable-components.assets/image-001.png)
+
 ## Organization dropdown
 
 ### Purpose
@@ -27,7 +26,8 @@ The organization dropdown is for quickly making a dropdown for organizations. Th
 
 As of writing the dropdown only supports one hook, which is a FormGroup and a form name. An example usage can be seen below:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1075871745)
+![Confluence screenshot](./reusable-components.assets/image-002.png)
+
 
 
 # UI Alignment
@@ -43,4 +43,4 @@ The Section component is meant for creating smaller sections inside of a card wi
 The section only requires assigning it a title + wrapping other elements inside it.
 Color is optional
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1075871745)
+![Confluence screenshot](./reusable-components.assets/image-003.png)

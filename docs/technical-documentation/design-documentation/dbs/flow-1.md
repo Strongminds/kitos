@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1097138177)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Introduction
 
 This document describes Flow 1 and Flow 1.1 for integrating DBS with Kitos.
@@ -57,10 +55,12 @@ DBS can subscribe to these changes with the PubSubApi endpoint below. The provid
 
 To use the Kitos PubSub API, you need a valid token from a Kitos user with the `apiUser` role. This can be retrieved from the Kitos API:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1097138177)
+![Confluence screenshot](./flow-1.assets/image-001.png)
+
 With this token, you can authorize yourself like this:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1097138177)
+![Confluence screenshot](./flow-1.assets/image-002.png)
+
 ### Making a subscription
 
 #### Request

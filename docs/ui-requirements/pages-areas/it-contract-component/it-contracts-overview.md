@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/974225453)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 ## Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4929>
@@ -16,7 +14,8 @@
 
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/974225453)
+![Confluence screenshot](./it-contracts-overview.assets/image-001.png)
+
 
 
 ## API

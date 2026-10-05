@@ -2,9 +2,8 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1046970375)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
+![Confluence screenshot](./ui-notifications.assets/image-001.png)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1046970375)
 As shown above, `notification.service.ts` subscribes to actions and reacts by showing a notification. To use it as a subscriber of actions:
 
 1: inject the service into the component needing a notification.
@@ -15,4 +14,4 @@ As shown above, `notification.service.ts` subscribes to actions and reacts by sh
 
 The above pattern should be used for notifications unless you have some specific requirements that make it undesirable. Such a requirement could be including a custom message from the component in the notification, in which case the service can be injected and called directly, like this:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1046970375)
+![Confluence screenshot](./ui-notifications.assets/image-002.png)

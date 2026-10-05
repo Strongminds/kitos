@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/882442241)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4197>
@@ -18,7 +16,8 @@ Data:
 
 ## UI customization
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/882442241)
+![Confluence screenshot](./06-organization-organisation.assets/image-001.png)
+
 ## Selection of relevant and responsible units
 
 | **UI name** | **Field type** | **READ path** | **WRITE path** | **Constraints** |

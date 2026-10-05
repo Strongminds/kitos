@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Introduction
 
 This documents presents a step-by-step procedure to extend KITOS with a new search-optimized read model intended for an overview page.
@@ -20,14 +18,16 @@ The objects used in this guide will draw from that pull request, though the amou
 
 ## Create the read model domain object
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-001.png)
+
 1. Place the code in a sub-namespace (`Read`) to that of the domain object it is a projection of.
 2. `IOwnedByOrganization` indicates that the read model is a local object belonging to an organization. It adds the `OrganizationId` as well as the `Organization`property and enables queries by organization id.
 3. `IReadModel<>` adds the necessary properties to make this object a read model - a projection based on a source entity. It adds the `Id`property (from `IHasId`) which is just the primary key of the read model’s row, but it also adds the `SourceEntity` / `SourceEntityId` which sets up the ownership of the read model to that of the `SourceEntity`. We can use this property to setup the right cascade path, when we add the Entity Framework map later on.
 
 ## Entity Framework
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-002.png)
+
 1. Cascade is set to false for the organizational relationship
 2. Cascade is set to true on the source entity, ensuring that deleting the source entity will also delete the associated read models.
 
@@ -39,10 +39,12 @@ When the read-model is extended further, remember that the purpose of the read m
 
 In this example, we extend the model with the `Name` property, which must contain the value of the `Name` property of the source `ItContract` object.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-003.png)
+
 In `ItContractOverviewReadModelMap` we add the following mapping:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-004.png)
+
 Notice the following:
 
 * We apply the same length constraint to the column as the one applied on the source object. This allows to add an index to the `varchar()` column.
@@ -56,7 +58,8 @@ Notice the following:
 
 In this example, we extend the model with a reference to the `ContractType` used by the `ItContract`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-005.png)
+
 Notice that we don’t add a reference to the real type but just pick what we need for the read model. For more info about this see [Linked page](../../architecture-decision-log/read-models-for-the-overview-context.md)
 
 * The `Id` of the option type is used when filtering
@@ -69,8 +72,10 @@ Notice that we don’t add a reference to the real type but just pick what we ne
 
 In the `ItContractOverviewReadModelMap` we add the following:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-006.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-007.png)
+
 Notice that indexes are applied to both properties.
 
 #### Example 3: Referencing a collection of assignments which must be both filterable and sortable
@@ -90,32 +95,40 @@ From the requirements above, we know we need the following:
     * Search optimized in by `Name`
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-008.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-009.png)
+
 The `DataProcessingAgreementsCsv` is the concatenation field and will be used when `$orderby` is to be applied.
 
 The collection `DataProcessingAgreements` holds the reference information (`Id`) as well as a copy of the original name which we can apply length constraints to and hence add an index.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-010.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-011.png)
+
 Notice that we don’t know the max size of the `DataProcessingAgreementsCsv`, so we cannot add an index to that field. That is why we store the name in the collection.
 
 In `ItContractOverviewReadModelDataProcessingAgreementMap` we add the following:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-012.png)
+
 ### Extending KitosContext.cs
 
 Add the dbset
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-013.png)
+
 Add the map:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-014.png)
+
 ### Add the migration
 
 * In Visual Studio, open Package Manager Console and set Default Project:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-015.png)
+
 * Then run the command
 
 `Add-Migration Add_ItContractOverviewReadModel`
@@ -128,26 +141,34 @@ Then run the following command
 
 In In `Core.DomainServices`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-016.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-017.png)
+
 In `KernelBuilder::BindDataAccess()`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-018.png)
+
 ## Add the application service
 
 In `Core.ApplicationServices`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-019.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-020.png)
+
 In `KernelBuilder::RegisterServices()`:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-021.png)
+
 ## Expose the read model through odata
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-022.png)
+
 In `WebApiConfig.cs`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-023.png)
+
 1. Bind the model to the controller
 2. Remove source object property from OData EDM model (prevents expand)
 3. Remove source organization property from OData EDM model (prevents expand)
@@ -159,15 +180,18 @@ In `WebApiConfig.cs`
 * Invoke the GET endpoint: `https://localhost:44300/odata/Organizations(1)/ItContractOverviewReadModels`
 * At this point no data is mapped, so the result is expected to be OK but empty:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-024.png)
+
 
 Expected initial result
 ## Create the read model update mapper
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-025.png)
+
 In `KernelBuilder::RegisterServices()`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-026.png)
+
 The purpose of the “Read model mapper” is to merge data from the source into a read model.
 
 The read model may have been loaded from the database or may be new. The code must not make assumptions around this and treat it like a “merge” every time.
@@ -178,10 +202,12 @@ In order to maintain the working state of the read model updates, create a unit 
 
 ## Create the event handler used to subscribe to relevant changes and trigger read model updates (sync/async)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-027.png)
+
 In `KernelBuilder::RegisterDomainEventsEngine()`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-028.png)
+
 The helper `RegisterDomainEvents` will register all instances of`IDomainEventHandler<>` exposed by the provided type.
 
 ### Deferred vs immediate updates
@@ -209,70 +235,88 @@ In order to reduce “changes to dependencies” to “changes to existing read 
 
 * In In `StandardJobIds` add a new id:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-029.png)
+
 * Create an implementation
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-030.png)
+
 The role of this job is to interpret all tracked changes and convert them into changes to the source object, which will then be picket up by the “[rebuild” job.](creating-and-exposing-an-overview-read-m.md)
 
 * In `KernelBuilder::RegisterBackgroundJobs()`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-031.png)
+
 
 
 * In `IBckgroundLauncher`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-032.png)
+
 * In `BackgroundJobLauncher`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-033.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-034.png)
+
 * In `KeepReadModelsInSyncProcess`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-035.png)
+
 ## Hangfire: Build read model bg-job
 
 * In `StandardJobIds` add a new id:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-036.png)
+
 * Add a job implementation:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-037.png)
+
 * In `KernelBuilder::RegisterBackgroundJobs()`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-038.png)
+
 * In `IBckgroundLauncher`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-039.png)
+
 * In `BackgroundJobLauncher`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-040.png)
+
 * In `KeepReadModelsInSyncProcess`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-041.png)
+
 ## Hangfire: Full rebuild job
 
 The full rebuild job is typically used following a deployment where columns have been added or intepretations to existing columns have changed. The full-rebuild job will schedule a read model update to all source entities.
 
 * In `ReadModelRebuildScope.cs` add the new scope (ItContract in the example).
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-042.png)
+
 * In `StandardJobIds` add an Id for the job:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-043.png)
+
 * In `RebuildReadModelsJobFactory` extend the switch case with the new scope:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-044.png)
+
 * In `Startup.cs` add an additional on-demand job:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-045.png)
+
 ## Verify that simple CRUD operations are reflected in the API output
 
 ### Create
 
 * Open KITOS and create an instance of the object
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-046.png)
+
 * Navigate to the object
 * Note the `Id` property in the URL in the browser
 * Visit [https://localhost:44300/odata/Organizations(1)/ItContractOverviewReadModels](https://localhost:44300/odata/Organizations(1)/ItContractOverviewReadModels)
@@ -304,20 +348,26 @@ Some entities such as `ItContract` have state which changes based on non-client 
 
 * In `StandardJobIds` add
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-047.png)
+
 * Add an implementation of the job
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-048.png)
+
 * In `KernelBuilder` add
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-049.png)
+
 * In `BackgroundJobLauncher`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-050.png)
+
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-051.png)
+
 * In `Startup.cs` add:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-052.png)
+
 ## Integration tests
 
 In order to validate that data mapping is exposed correctly through the API, create an API integration test which - as a minimum - tests:
@@ -342,13 +392,16 @@ In this example, we will add the name of the contract as a simple flat property:
 
 * Extend the `ItContractOverviewReadModel` with the `Name property`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-053.png)
+
 * Update the `ItContractOverviewReadModelMap`, adding the same constraints to the name as that of the source while also adding an index.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-054.png)
+
 * Update the `ItContractOverviewReadModelUpdate`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838303745)
+![Confluence screenshot](./creating-and-exposing-an-overview-read-m.assets/image-055.png)
+
 * Add an EF migration to the project
 * Update the database
 * Start Kitos

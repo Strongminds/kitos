@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/963674115)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 ## Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4204>
@@ -12,7 +10,8 @@
 
 ## UI Customization keys
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/963674115)
+![Confluence screenshot](./12-notifications-advis.assets/image-001.png)
+
 ## API
 
 ### Data:

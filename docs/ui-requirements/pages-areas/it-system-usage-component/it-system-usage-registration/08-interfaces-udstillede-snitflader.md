@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/882147353)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4199>
@@ -16,7 +14,8 @@ Data is fetched from the it-interfaces resource by providing the uuid of the mas
 
 # UI customization
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/882147353)
+![Confluence screenshot](./08-interfaces-udstillede-snitflader.assets/image-001.png)
+
 # Component specific requirements
 
 ## List of exposed interfaces

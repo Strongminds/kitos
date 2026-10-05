@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/876576844)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4054>
@@ -34,7 +32,8 @@
 
 # UI Customization keys
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/876576844)
+![Confluence screenshot](./01-front-page-it-system-usage.assets/image-001.png)
+
 # API
 
 `[GET | PATCH] /api/v2/it-system-usages/{systemUsageUuid}`

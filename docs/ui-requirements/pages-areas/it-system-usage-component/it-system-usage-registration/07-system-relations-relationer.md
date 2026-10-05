@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/882343949)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4198>
@@ -48,7 +46,8 @@ Get “exposed interfaces” available for selection in relation, through the:
 
 ## UI customization
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/882343949)
+![Confluence screenshot](./07-system-relations-relationer.assets/image-001.png)
+
 ## Administration of outgoing relations
 
 * Creation and UPDATE goes through dialog

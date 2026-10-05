@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Introduction
 
 This page describes the design of the “Local UI Customization” functionality in KITOS.
@@ -16,6 +14,8 @@ Originally motivated by <https://os2web.atlassian.net/browse/KITOSUDV-2483> and 
 # Problem description
 
 KITOS provides a large number of registration options grouped into several subsets with the largest type being a top level module (IT-Contract, IT-System etc) which may cover one or more sub-modules with data registration fields in them. The following illustration briefly shows the logical grouping of settings and modules.
+
+![Logical grouping of modules and settings](./local-ui-customization.assets/diagram-01.png)
 
 Since KITOS has been built to cater for the needs of all municipalities using KITOS, some options are only relavant to users in a subset of the organizations. To simplify the use of KITOS, the “user group” prioritized the development of functionality to enable the **Local Admin** to:
 
@@ -36,6 +36,8 @@ In KITOS some fields or sub modules are mandatory (e.g. the front page of an IT-
 # Solution overview
 
 The following diagram gives a _high level_ overview of the components which make up the solution for enabling Local Admins to customize the KITOS UI.
+
+![Local UI customization solution overview](./local-ui-customization.assets/diagram-02.png)
 
 As illustrated, the use of the customization model has two use cases.
 
@@ -61,6 +63,8 @@ As illustrated, the use of the customization model has two use cases.
 ## Customization Blue Prints
 
 Customization blue prints are **static definitions** which serve as the configuration reference for UI customization. They are born and maintained inside the frontend application, and are implemented in TypeScript files to allow User Facing Modules to pick strongly typed lookup keys when querying availability state of settings/modules in KITOS.
+
+![Customization blueprint model](./local-ui-customization.assets/diagram-03.png)
 
 ### Mandatory post processing of the Blue Print to add configuration keys (fullKey)
 
@@ -114,6 +118,8 @@ The Customization View model is used by the:
 * “**Read Only**” means that the availability of the node is locked and is enforced on the node level meaning that you may be allowed to edit the availability of a child setting even if the parent is read only (as long the parent is available)
 * “**SubtreeIsComplete**” property set to `true` will cause the node to disable itself, when all of it’s children are disabled. The property is optional.
 
+![Customization view model](./local-ui-customization.assets/diagram-04.png)
+
 ## The Customization Module UI (the user perspective)
 
 The customization UI is implemented generically in an AngularJS directive and can be used as demonstrated in the following example:
@@ -124,7 +130,8 @@ The data attribute `data-customized-module-id` must point to a valid member in t
 
 Example output of the directive:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-001.png)
+
 The directive is typically used on the “Local Admin” pages, which contains customization of “choice types” for each of the top-level KITOS modules e.g. at `/#/local-config/system`.
 
 ## The Backend
@@ -142,6 +149,8 @@ As opposed to the UI model, the backend model is only two levels deep:
 
 * **Level 1: UIModuleCustomization** is the scope of the customized nodes. Each organization may have zero or more module customizations but only one per. `module` (the attribute value in `UIModuleCustomization`)
 * **Level 2: CustomizedUINode** represents a key (e.g. `module1.tab1.setting1`) along with the “enabled” state, which must be used when being [applied to the model in the UI](local-ui-customization.md). In the backend, all nodes are stored in the same list, but based on their “key” their state will be applied correctly once loaded into the UI where the value of `key` will match the `fullKey` of the `ICustomizableUINodeConfig` from the blue print.
+
+![Backend customization data model](./local-ui-customization.assets/diagram-05.png)
 
 ## How persisted settings are applied to blue prints
 
@@ -162,12 +171,14 @@ The following sections explain, in detail, how to perform some common tasks when
 
 If your blueprint relates to a module that did not have customization in v1, add its module key to the `UIModuleConfigKey `enum:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-002.png)
+
 ### Adding a new blueprint
 
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-003.png)
+
 The blueprints describe the default state of each module, and are based on the ones used in the v1 UI which can be copied. Only a few fields have been renamed:
 
 | **V1 name** | **V2 name** |
@@ -178,12 +189,14 @@ The blueprints describe the default state of each module, and are based on the o
 1. Copy your blueprint from the v1 code, apply renamings as above, and save it in `models/ui-config/blueprints`.
 2. in `ui-config.service.ts`, add your new blueprint as a return option to the switch statement in `resolveUIModuleBlueprint(module)`:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-004.png)
+
 #### Adding a new blueprint node
 
 Any new blueprint nodes are added at the appropriate level:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-005.png)
+
 In agreement with OS2 on 13/3/25, remember to set `disableByDefault: true` for fields related to new features so local admins can choose when to enable the features in their organization.
 
 ### Adding a local admin config page
@@ -192,46 +205,55 @@ To add the page where local admins can change the UI config for their municipali
 
 1. In `local-admin.component`, extend it’s ngOnInit with an action dispatch using your new module's key:
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+    ![Confluence screenshot](./local-ui-customization.assets/image-006.png)
+
 2.   Add the same dispatch at the modular level. For example we add a dispatch call for It system usage, in `it-system-usages.component`’s ngOnInit method.
 3. Adapt the `setup `cypress command for e2e tests, so existing tests don’t fail.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-007.png)
+
 4. In the html for you new local admin page, add `app-ui-config` and provide it with the corresponding UIModuleConfigKey:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-008.png)
+
 ### Adding selectors for module tabs and fields/groups
 
 _NOTE: this is a prerequisite for the next two steps where config is applied to the UI._
 
 1. In `store/ui-module-customization/selectors.ts`, use the `createTabEnabledSelector(tabFullKey)` and `createFieldOrGroupEnabledSelector(tabFullKey, fieldKey)` methods to set up new selectors for each tab or field/group you want to be able to toggle, naming them like this:
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+    ![Confluence screenshot](./local-ui-customization.assets/image-009.png)
 
 
 
 
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+
+    ![Confluence screenshot](./local-ui-customization.assets/image-010.png)
+
 
 ### Applying UI config to the module overview
 
 1. To find out which columns are affected by which config settings, consult the v1 ui in `<module>-overview.controller.ts` and look for this kind of inclusionCriterion:
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+    ![Confluence screenshot](./local-ui-customization.assets/image-011.png)
+
 2. In `grid-ui-config.service.ts`, add a private `get<module>GridConfig()`method to combine all relevant tab/field enabling selectors and set up the connections between tabs/fields and grid columns you documented in step 1:
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+    ![Confluence screenshot](./local-ui-customization.assets/image-012.png)
+
 
 
 
 
 3. In `grid-ui-config.service.ts` extend the switch case with your new module key and use the method you created in step 2:
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+    ![Confluence screenshot](./local-ui-customization.assets/image-013.png)
+
 4. Update your grid columns by injecting the `ui-config.service.ts` and pipe the grid columns through the `filterGridColumnsByUIConfig(<moduleKey>)` method.
 
-    [View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+    ![Confluence screenshot](./local-ui-customization.assets/image-014.png)
+
 
 
 
@@ -241,13 +263,16 @@ _NOTE: this is a prerequisite for the next two steps where config is applied to 
 
 1. In the component containing the element that you want to toggle, select its enabled state from the store:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-015.png)
+
 2. Apply the result of this selector where required using `*ngIf` if targeting a regular element:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-016.png)
+
 3. Or using the “enabled” field if targeting a `navigation-drawer` item:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-017.png)
+
 # How-to UI v1
 
 The following sections explain, in detail, how to perform some common tasks when working with the ui module customization  in the v1 UI.
@@ -258,33 +283,40 @@ In the context of an existing configuration, in order to apply it in the UI, the
 
 ### In the view
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-018.png)
+
 ### In the controller
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-019.png)
+
 ### On the overview page
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-020.png)
+
 ### Combining it with the root module availability
 
 In the current solution, there is no logical dependency between the new “UI Customization” and the old “toggle module on/off”.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-021.png)
+
 In the case of the example above, the “Kontrakter” setting is disabled but set as available but once rendered, it should not be available if the “Contracts” module has been disabled.
 
 In order to respect both configurations, we need to add the following:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-022.png)
+
 ## Adding a new customizable component
 
 In order to add a completely new component do the following:
 
 ### Extend the enum
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-023.png)
+
 ### Create the blue print
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-024.png)
+
 ```
 module Kitos.Models.UICustomization.Configs.BluePrints {
     export const ItSystemUsageUiCustomizationBluePrint = {
@@ -319,10 +351,12 @@ module Kitos.Models.UICustomization.Configs.BluePrints {
 
 ### Extend the blue print mapping
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-025.png)
+
 ### Add configuration UI
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/819658753)
+![Confluence screenshot](./local-ui-customization.assets/image-026.png)
+
 ### Apply the configuration
 
 <local-ui-customization.md>

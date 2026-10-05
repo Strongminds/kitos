@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/818872321)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Background
 
 When KITOS was initially created, it spawned an initial “default configuration” called “Fælles Kommune”.
@@ -20,7 +18,8 @@ There was no reasonable way of finding the “logical default organization” (F
 
 In order to provide an in-system answer to the question “which organization is the default?”, we introduced an optional boolean property on the Organiztion object, which marks the organization as “Default”.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/818872321)
+![Confluence screenshot](./the-default-organization.assets/image-001.png)
+
 As part of introduction of this boolean, we added a custom migration script to promote the “Fælles kommune” organization to the “default”.
 
 ## Resolving the default organization

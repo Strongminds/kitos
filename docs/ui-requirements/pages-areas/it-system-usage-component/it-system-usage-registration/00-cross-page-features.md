@@ -2,18 +2,18 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877068335)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Title
 
 shows
 
 `systemContext.name`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877068335)
+![Confluence screenshot](./00-cross-page-features.assets/image-001.png)
+
 # Breadcrumbs
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877068335)
+![Confluence screenshot](./00-cross-page-features.assets/image-002.png)
+
 # Actions
 
 * Delete
@@ -22,4 +22,4 @@ shows
     * Enabled if accesscontrol contains `delete`
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877068335)
+![Confluence screenshot](./00-cross-page-features.assets/image-003.png)

@@ -2,13 +2,12 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964329543)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 ## Title
 
 Shows `interface.name`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964329543)
+![Confluence screenshot](./00-crosspage-remove-usage.assets/image-001.png)
+
 # Actions
 
 * Delete
@@ -17,4 +16,4 @@ Shows `interface.name`
     * Enabled if accesscontrol contains `delete`
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964329543)
+![Confluence screenshot](./00-crosspage-remove-usage.assets/image-002.png)

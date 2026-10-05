@@ -2,18 +2,18 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964296754)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Title
 
 shows
 
 `systemContext.name`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964296754)
+![Confluence screenshot](./00-system-cross-page-features.assets/image-001.png)
+
 # Breadcrumbs
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964296754)
+![Confluence screenshot](./00-system-cross-page-features.assets/image-002.png)
+
 # Actions
 
 * If system is Available:
@@ -42,4 +42,4 @@ shows
     * Enabled if accesscontrol contains `edit`
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964296754)
+![Confluence screenshot](./00-system-cross-page-features.assets/image-003.png)

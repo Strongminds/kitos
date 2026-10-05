@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/974323749)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 ## Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4931>
@@ -18,7 +16,8 @@
 
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/974323749)
+![Confluence screenshot](./02-it-systems.assets/image-001.png)
+
 ## API
 
 **Data**: `GET | PATCH | DELETE /api/v2/it-contracts/{contractUuid}`

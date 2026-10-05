@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Introduction
 
 This page describes the process of adding a new overview, and methods of setting it up.
@@ -82,7 +80,8 @@ Create a new view model, it should contain properties which will be used in the 
 
 Example view model used to create `it-contract-overview`:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-001.png)
+
 ## Create a new view
 
 Add a new class `entity-name-overview.view.html` (in the same folder as the controller)
@@ -103,7 +102,8 @@ The controller is expected to expose a grid (`mainGrid`) and an option object (`
 
 In the constructor create a new launcher using `kendoGridLauncherFactory` (remember to replace the names)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-002.png)
+
 ### Getting data
 
 There are 2 options to get data for the launcher, using either `withFixedSourceUrl` or `withUrlFactory` method. Use the first one when the source url is fixed, and the second one when there might be a need to change the query based on e.g. a property.
@@ -112,7 +112,8 @@ Basically if any change made by the user will affect the query, use the `withUrl
 
 Example using the `urlFactory`, the urlParameters are first created, and later an optional change in query is applied
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-003.png)
+
 ### Standard sorting
 
 To set up the standard property used for sorting call: `withStandardSorting(columnName)` method
@@ -123,17 +124,20 @@ To set up the standard property used for sorting call: `withStandardSorting(colu
 
 If some of the columns require some calculations/reductions/projecctions to be performed on the data before displaying it - e.g. creating a collection - use `withResponseParser()`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-004.png)
+
 ### Adding a toolbar entry
 
 `withToolbarEntry` allows to add a custom entry to the toolbar. Example below creates a new button on the right hand side of the toolbar, and opens a modal on click
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-005.png)
+
 ### Adding a new column
 
 In order to add a new column to the launcher apply the `withColumn` method to the launcher
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-006.png)
+
 #### withDataSourceName
 
 Specifies the property name in the source data and will affect how kendo (by default) choses to interpret filtering and ordering on the column.
@@ -154,7 +158,8 @@ Specifies the data type if it’s a number, boolean or a date (affects displayed
 
 Creates a custom template for each data item
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-007.png)
+
 #### withExcelOutput
 
 Creates a custom template for the excel export.
@@ -180,12 +185,14 @@ Options:
 
 Sets up a dropdown used for filtering, the items should contain _textValue_ and _remoteValue_ properties (it’s possible to also provide _optionalContext_)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-008.png)
+
 #### withInclusionCriterion
 
 Removes the column if it’s hidden in the UI Customization (adding ui customization to the overview is explained later in this guide)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-009.png)
+
 #### withContentAlignment
 
 Uses KendoColumnAlignment enum
@@ -215,7 +222,8 @@ Enables content overflow meaning that long strings will be displayed as “very 
 
 Some overviews may have role columns added to them. First get all available roles, next loop over them and create a new column for each of them
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-010.png)
+
 ## Applying filter fix
 
 In some cases standard filtering might not work correctly, in that case a filter “fix” should be applied.
@@ -224,13 +232,16 @@ First add `withParameterMapping` method to the launcher.
 
 Inside check if any filter exists for the `parameterMap`, if it does apply the fix
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-011.png)
+
+![Confluence screenshot](./creating-an-overview.assets/image-012.png)
+
 ## Applying orderby fix
 
 In the same mehtod as in the filtering there can be applied an ordedby fix
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-013.png)
+
 ## Enabling local admin customization
 
 This feature allows the local admin to create the “default settings” for all users in the organization. Users can change that locally but will be notified that they are now using a non-standard configuration.
@@ -239,18 +250,22 @@ This feature allows the local admin to create the “default settings” for all
 
 Extend the enum:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-014.png)
+
 ### Frontend: In the KendoOrganizationConfigurationDTO.ts
 
 Extend enum so it includes the name of the overview
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-015.png)
+
 ### Frontend: In the overview
 
 Add `withOverviewType` which takes the new member as an argument
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-016.png)
+
+![Confluence screenshot](./creating-an-overview.assets/image-017.png)
+
 ## Choice Types
 
 ### Backend
@@ -259,80 +274,100 @@ Add `withOverviewType` which takes the new member as an argument
 
 Add `{Entity}Options` class, this class will contain all of the available choice types for the overview
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-018.png)
+
 #### In the IEntityService
 
 If it doesn’t already exist add a new method which gets the options
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-019.png)
+
 #### In the EntityService
 
 Inject an optionsService for each of the options required by the overview
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-020.png)
+
 (if it doesn’t exist) create `WIthOrganizationReadAccess` method
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-021.png)
+
 Implement the method that was added to the interface
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-022.png)
+
 #### In the EntityController
 
 Add a new method
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-023.png)
+
 Add mapping methods
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-024.png)
+
 ### Frontend
 
 #### In the {Entity}Service
 
 Extend service interface by adding a new method
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-025.png)
+
 Implement the method
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-026.png)
+
 ### In the Overview
 
 Call the created method in the resolve
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-027.png)
+
 Inject options in the constructor
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-028.png)
+
 Declare a new optionViewModel property (separete property for each of the choice types in the “Options”)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-029.png)
+
 Inside of the constructor create a new instance of the OptionTypeViewModel and assign it to the created property
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-030.png)
+
 Add a new column to the launcher
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-031.png)
+
 Extend the parameterMapping orderby
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-032.png)
+
 Extend the parameterMapping filter
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-033.png)
+
 if the `replaceOptionTypeFilter` method doesn’t exist create it
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-034.png)
+
 ## Adding UI customization state
 
 UI customization in KITOS allows for hiding/showing certain fields/groups ([Linked page](../../design-documentation/customization/local-ui-customization.md)). To add uiState to the overview:
 
 ### Add a new item to _resolve_
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-035.png)
+
 ### Inject UI State
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-036.png)
+
 ### Create blueprint variable
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/831291393)
+![Confluence screenshot](./creating-an-overview.assets/image-037.png)
+
 ### Apply the uiState
 
 To apply the uiState add `withInclusionCriterion` like mentioned in the “Add a new column” section of this guide

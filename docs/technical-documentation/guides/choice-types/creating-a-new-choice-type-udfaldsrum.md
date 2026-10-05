@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Introduction
 
 This page describes the process of adding a new choice type, both to the backend and frontend. It doesn’t include a “how to add a new field to API V2” section, because it is already described in this [guide](../api-v2/adding-a-new-data-property-to-an-existin.md).
@@ -56,21 +54,24 @@ User defined choice types differ greatly from system defined choice types (enums
 
 Create a new class with the choice type, it should reference the root entity .
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-001.png)
+
 
 New Choice Type Entity - CriticalityType
 #### **In the LocalOptions directory**
 
 Create a `Local{Choice Type}` entity
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-002.png)
+
 
 Newly created LocalCriticalityType
 #### **In the RootEntity class**
 
 Remember to reference the newly created Choice Type
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-003.png)
+
 
 CriticalityType added to the ItContract entity
 ### **In the DataAccess project**
@@ -80,20 +81,24 @@ CriticalityType added to the ItContract entity
 Create a new file called `{Choice Type}Map.cs`.
 It should inherit from the `OptionEntityMap<{Choice Type}, {RootEntity}>` class, which covers the basic mappings
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-004.png)
+
 
 CriticalityType mapping
 Add mapping for the newly created _Choice Type_ in the “root” entity mapper
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-005.png)
+
 #### **In the KitosContext class**
 
 Add 2 new lines containing the new _entities_:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-006.png)
+
 In the `OnModelCreating` method include the Map
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-007.png)
+
 Run the following commands in the _package manager console_ to create and apply a migration:
 
 ```
@@ -107,7 +112,8 @@ update-database
 
 Register the new Option and LocalOption in the _KernelBuilder::RegisterOptions_
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-008.png)
+
 
 Service registration for criticality
 #### **In the Controllers/API/V1/OData/OptionControllers**
@@ -125,7 +131,8 @@ public class {Choice Type}Controller : BaseOptionController<{Choice Type}, {Root
 }
 ```
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-009.png)
+
 #### **In the Controllers/API/V1/OData/LocalOptionControllers**
 
 Create a new controller called `Local{Choice Type}Controller.cs`
@@ -160,12 +167,14 @@ public class LocalCriticalityTypesController : LocalOptionBaseController<Local{C
 }
 ```
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-010.png)
+
 #### WebApiConfig.cs
 
 Extend the ODATA Edm with the new types.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-011.png)
+
 ## Frontend
 
 ### **In the app/components/**
@@ -178,7 +187,8 @@ Add a new div, (it will use a directive to create controls for the choice type),
 <div data-global-option-list="" dir-id="{Choice Type}Id" title="{Danish Choice Type name}" state="{directive}" data-options-url="odata/{Choice TypeControllerRoutePrefix}" option-type="type"></div>
 ```
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-012.png)
+
 #### **In the local-config/local-config-{root entity}.view.html**
 
 As in the global-admin add a following div
@@ -187,37 +197,44 @@ As in the global-admin add a following div
 <div data-local-option-list="" title="{Danish choice type name}" dir-id="local{ChoiceType}Id" state="{directive}" option-type="{{localChoice Type.{Choice Type}}}" current-org-id="{{currentOrganizationId}}"></div>
 ```
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-013.png)
+
 # Adding a choice type to a tab
 
 ### Presentation.Web/app/services/localOptionService.ts
 
 Extend the enum and add the enum → OData resource mapping entry.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-014.png)
+
 
 
 ### **In the root controller**
 
 Resolve the available options using the dependency injected `localOptionServiceFactory`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-015.png)
+
 ### **In the tab controller**
 
 Add the before resolved service to the constructor, also add `select2LoadingService` if it’s not included
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-016.png)
+
 Add a function that creates a SingleSelectSelect2 model. This model allows the directive to access the data.
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-017.png)
+
 Call the created function in the constructor
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-018.png)
+
 ### **In the tab view**
 
 Add the following div
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-019.png)
+
 # Adding a choice type to an overview
 
 ## Backend
@@ -226,56 +243,70 @@ Add the following div
 
 Create a RootEntityOptions class (if it doesn’t exist)
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-020.png)
+
 ### **In the IRootEntityService**
 
 Add a new method `GetAssignable{RootEntity}Options`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-021.png)
+
 ### **In the RootEntityService**
 
 Inject the generic IOptionsService using the RootEntity and ChoiceType as type parameters
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-022.png)
+
 Implement the method defined in the interface
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-023.png)
+
 If not implemented, add WithOrganizationReadAccess
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-024.png)
+
 ### **In the Presentetation.Web**
 
 #### **In the Models/API/V1/RootEntity**
 
 Add a new model `RootEntityOptionsDTO` containing ChoiceTypeOptions property
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-025.png)
+
 #### **In the Controllers/API/V1/RootEntityController**
 
 Add a new method, which will use a service to get available options
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-026.png)
+
 Add mapping methods in the same class
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-027.png)
+
 ## Frontend
 
 ### **In the app/component/rootEntity/overview**
 
 Resolve the options
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-028.png)
+
 Inject the options in the constructor and create an instance of the OptionTypeViewModel passing the options as a parameter
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-029.png)
+
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-030.png)
+
 Add the option type column to the kendo launcher
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-031.png)
+
 Extend the paramterMap.$orderby and paramterMap.$filter to allow sorting and filtering by the name of the choice type
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-032.png)
+
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-033.png)
+
 # Adding Choice Type to APIV2
 
 After following the steps covered by the guide [mentioned in the introduction](../api-v2/adding-a-new-data-property-to-an-existin.md), create a new _Controller_ in the `Controllers/API/V2/External/{RootEntity}` directory
@@ -325,7 +356,8 @@ After following the steps covered by the guide [mentioned in the introduction](.
   }
 ```
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-034.png)
+
 
 
 # Testing
@@ -336,18 +368,20 @@ After following the steps covered by the guide [mentioned in the introduction](.
 
 Add a new Resource name
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-035.png)
+
 #### **API V1**
 
 ##### **In the OptionApiTests**
 
 Add InlineData with the new Choice Type name
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-036.png)
+
 #### **API V2**
 
 ##### **In the OptionV2ApiTests**
 
 Add new _Choice Type_ to the `GetRegularResources` method
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/828375071)
+![Confluence screenshot](./creating-a-new-choice-type-udfaldsrum.assets/image-037.png)

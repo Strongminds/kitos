@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877035560)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Description
 
 * Help text dialogs are opened from the “?” typically placed on the right top corner of “blocks”
@@ -23,12 +21,14 @@
 
 ### View
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877035560)
+![Confluence screenshot](./help-text-dialogs.assets/image-001.png)
+
 ### Edit
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877035560)
+![Confluence screenshot](./help-text-dialogs.assets/image-002.png)
+
 
 
 ## Regular user view
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877035560)
+![Confluence screenshot](./help-text-dialogs.assets/image-003.png)

@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/881885185)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Jira Links
 
 <https://os2web.atlassian.net/browse/KITOSUDV-4193>
@@ -20,7 +18,8 @@
 
 # UI Customization keys
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/881885185)
+![Confluence screenshot](./02-contracts.assets/image-001.png)
+
 # API
 
 Data:

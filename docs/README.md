@@ -8,4 +8,4 @@ Public-safe technical documentation migrated from the [KITOS Confluence space](h
 - [Field-based authorization](authorization/field-based-authorization.md).
 - [SwaggerGen tips](tips-for-swaggergen.md).
 
-Confluence-hosted screenshots and other attachments could not be exported through the available API. Image locations link back to their original pages rather than embedding broken temporary `blob:` URLs; view the source page for the illustrations. Some older documentation may not reflect the current implementation.
+Screenshots and diagrams are stored as local image assets alongside their migrated documents. Some older documentation may not reflect the current implementation.

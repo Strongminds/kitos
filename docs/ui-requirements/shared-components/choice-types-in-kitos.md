@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Choice types and config responsibilities
 
 In KITOS, we have to support user defined choice types (closed value range)
@@ -75,41 +73,51 @@ The choice types come in two variants
 
 ## Global admin perspective
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-001.png)
+
 
 Overview
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-002.png)
+
 
 Creating a new optional choice
 
 
 ## Local admin perspective
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-003.png)
+
 
 overview
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-004.png)
+
 
 Edit/reset local description. Reset loads the global description
 
 
 ## User perspective
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-005.png)
+
 
 selection from available choices
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-006.png)
+
 
 selected choice and description
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-007.png)
+
 
 selected obsolete choice
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-008.png)
+
 
 Filtering in overviews
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-009.png)
+
 
 rendering in overviews
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/877527041)
+![Confluence screenshot](./choice-types-in-kitos.assets/image-010.png)
+
 
 Selection of role-type choices. Notice the “(skriv)” which is appended to roles with “write access”

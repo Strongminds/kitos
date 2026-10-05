@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964296705)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 ## Jira Links
 
 ## General requirements
@@ -12,7 +10,8 @@
 
 ## UI Customization keys
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/964296705)
+![Confluence screenshot](./systemkatalog-overview.assets/image-001.png)
+
 ## API (ODATA)
 
 `GET /odata/Organizations({organizationUuid})/ItSystemUsageOverviewReadModels`

@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838467653)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Introduction
 
 This page describes the design of the “Field Help Texts” functionality in KITOS.
@@ -17,6 +15,8 @@ KITOS provides a large number of helper texts, many of them display only “…�
 # Solution Overview
 
 The following diagram gives a high level overview of the components which make up the solution for using the FieldHelpText directive
+
+![Field help text component overview](./field-help-texts.assets/diagram-01.png)
 
 As illustrated, the user views the help texts through the directive. The technical components involved in this case are:
 
@@ -37,17 +37,20 @@ The `extraCssClass` parameter is optional. It allows for adding a custom css cla
 
 Example output of the directive:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838467653)
+![Confluence screenshot](./field-help-texts.assets/image-001.png)
+
 # Applying field help text
 
 ## In the view
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838467653)
+![Confluence screenshot](./field-help-texts.assets/image-002.png)
+
 ## The result
 
 After implementing the directive the UI should look like on the example below:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838467653)
+![Confluence screenshot](./field-help-texts.assets/image-003.png)
+
 When pressing the :question_mark: icon an instance of the HelptTextModal should open and show the help text associated with the `key`:
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/838467653)
+![Confluence screenshot](./field-help-texts.assets/image-004.png)

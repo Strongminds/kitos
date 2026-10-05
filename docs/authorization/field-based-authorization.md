@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1297448961)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # Security model reference
 
 <https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/860946433>
@@ -38,6 +36,8 @@ As part of the initial efforts of allowing external organizations, called suppli
 * If an Organization doesn’t have a supplier assigned, the pre-defined supplier fields should rely on the existing [module access rights](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/860946433/Security#Authorization)
 
 # Overview
+
+![Field-based authorization model](./field-based-authorization.assets/diagram-01.png)
 
 
 
@@ -95,12 +95,14 @@ The properties with changes from an UpdateParameters model for a given entity ar
 
 First, make sure to extend the hard-coded field keys
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1297448961)
+![Confluence screenshot](./field-based-authorization.assets/image-001.png)
+
 ### Extending the mapping
 
 The new field needs to be added to the \_fieldMaps
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1297448961)
+![Confluence screenshot](./field-based-authorization.assets/image-002.png)
+
 If it’s a new entity, the **MapParameterKeysToDomainKeys** method needs to be extended by the entity's type, and a corresponding **Map** method
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/1297448961)
+![Confluence screenshot](./field-based-authorization.assets/image-003.png)

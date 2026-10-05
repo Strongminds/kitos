@@ -2,8 +2,6 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 ## Security model reference
 
 See <https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/860946433>
@@ -53,6 +51,8 @@ Based on that we knew that we needed a model that was capable of answering the f
 
 ## Overview
 
+![Context-based authorization model](./context-based-authorization-model.assets/diagram-01.png)
+
 The authorization model consists of two major components:
 
 * The **User context** which contains information of the currently authenticated user including
@@ -90,34 +90,42 @@ The following section provides decision charts and examples of different situati
 
 ##### Root
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-001.png)
+
 ##### Child
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-002.png)
+
 #### Create
 
 ##### Root
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-003.png)
+
 ##### Child
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-004.png)
+
 #### Modify
 
 ##### Root
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-005.png)
+
 ##### Child
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-006.png)
+
 #### Delete
 
 ##### Root
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-007.png)
+
 ##### Child
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-008.png)
+
 ### Working with queries
 
 Working with queries is different than working with individual objects. Since we don’t want to load all objects into memory to perform access control check there, we must use information on the _user context_ to derive a subset of the collection we want to query before we issue a specific query against it. This section demonstrates the solution to different situations.
@@ -130,23 +138,28 @@ Query authorization and collection reduction is influenced by
 
 #### Broad query on local objects
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-009.png)
+
 #### Specific query in a local context
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-010.png)
+
 #### Specific org query on optionally local objects
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-011.png)
+
 ### Specialized action authorization
 
 Sometimes an action is not related to a specific entity (CRUD) or is a collection query, so to support that scenario, we can either use information from the user context to implement authorization in the application service, or we can create a reusable “permission” which can be re-used.
 
 #### Using permissions
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-012.png)
+
 #### Implementing the permission locally
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/862584879)
+![Confluence screenshot](./context-based-authorization-model.assets/image-013.png)
+
 ### Decision chart for authorizing an command
 
 **TODO**

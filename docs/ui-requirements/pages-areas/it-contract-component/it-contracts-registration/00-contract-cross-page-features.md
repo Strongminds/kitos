@@ -2,16 +2,16 @@
 
 [Original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/978059281)
 
-> Screenshots remain in Confluence; follow the image links below to view them.
-
 # TTitle
 
 Property: `contract.name`
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/978059281)
+![Confluence screenshot](./00-contract-cross-page-features.assets/image-001.png)
+
 # Breadcrumbs
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/978059281)
+![Confluence screenshot](./00-contract-cross-page-features.assets/image-002.png)
+
 # Actions
 
 * Delete
@@ -20,4 +20,4 @@ Property: `contract.name`
     * Enabled when user has delete permission
 
 
-[View image in the original Confluence page](https://strongminds.atlassian.net/wiki/spaces/KITOS/pages/978059281)
+![Confluence screenshot](./00-contract-cross-page-features.assets/image-003.png)
