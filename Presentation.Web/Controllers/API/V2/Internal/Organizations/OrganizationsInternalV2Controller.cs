@@ -111,13 +111,9 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Organizations
                 _organizationWriteModelMapper.ToUIModuleCustomizationParameters(organizationUuid, moduleName, dto);
             if (updateParametersResult.Failed) return FromOperationError(updateParametersResult.Error);
 
-            var updateCustomizationErrorMaybe = _uiModuleCustomizationService.UpdateModule(updateParametersResult.Value);
-
-            return updateCustomizationErrorMaybe.Match(
-                FromOperationError,
-                () => _uiModuleCustomizationService.GetModuleCustomizationByOrganizationUuid(organizationUuid, moduleName)
-                    .Select(_organizationResponseMapper.ToUIModuleCustomizationResponseDTO)
-                    .Match(Ok, FromOperationError));
+            return _uiModuleCustomizationService.UpdateModuleAndGet(updateParametersResult.Value)
+                .Select(_organizationResponseMapper.ToUIModuleCustomizationResponseDTO)
+                .Match(Ok, FromOperationError);
         }
 
         [HttpPost]
