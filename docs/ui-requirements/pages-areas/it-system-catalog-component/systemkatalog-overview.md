@@ -14,11 +14,7 @@
 
 ## API (ODATA)
 
-`GET /odata/Organizations({organizationUuid})/ItSystemUsageOverviewReadModels`
-
-Query params:
-
-* `OrganizationId`
+`GET /odata/Organizations({organizationId})/ItSystems`
 
 ## Column requirements (the order specifies the default order in the grid)
 

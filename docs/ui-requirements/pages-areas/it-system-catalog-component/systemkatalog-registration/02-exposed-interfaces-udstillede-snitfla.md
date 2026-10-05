@@ -16,7 +16,7 @@ None.
 
 ### Data:
 
-`GET /ap``i/v2/it-interface?exposedBySystemUuid={syst``emUuid}`
+`GET /api/v2/it-interfaces?exposedBySystemUuid={systemUuid}`
 
 ### Permissions:
 

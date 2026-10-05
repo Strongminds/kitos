@@ -12,7 +12,7 @@ Shows `interface.name`
 
 * Delete
 
-    * API: `DELETE /api/v2/it-interfaces/{systemUuid}`
+    * API: `DELETE /api/v2/it-interfaces/{interfaceUuid}`
     * Enabled if accesscontrol contains `delete`
 
 

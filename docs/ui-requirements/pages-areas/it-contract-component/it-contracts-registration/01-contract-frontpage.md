@@ -46,7 +46,7 @@
 
 | **UI name** | **Field type** | **READ path** | **WRITE path** | **Constraints** |
 | --- | --- | --- | --- | --- |
-| Ansvarlig enhed | IdentityNamePairResponseDTO | Responsible.OrganizationUnit | Responsbile.OrganizationUnitUuid |  |
+| Ansvarlig enhed | IdentityNamePairResponseDTO | Responsible.OrganizationUnit | Responsible.OrganizationUnitUuid |  |
 | Kontraktunderskriver | string | Responsible.SignedBy | Responsible.SignedBy |  |
 | Dato | DateTime | Responsible.SignedAt | Responsible.SignedAt |  |
 | Underskrevet | bool | Responsible.Signed | Responsible.Signed |  |

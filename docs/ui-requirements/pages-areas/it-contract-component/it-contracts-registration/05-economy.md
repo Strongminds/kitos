@@ -37,7 +37,7 @@ PATCH /api/v2/it-contracts/{contractUuid}
 | **Driftsvederlag påbegyndt** | DateTime (optional) | `paymentModel.operationsRemunerationStartedAt` | `paymentModel.operationsRemunerationStartedAt` |  |
 | **Betalingsfrekvens** | `APIRegularOptionResponseDTO`  (optional) | `paymentModel.paymentFrequency.name` | `paymentModel.paymentFrequencyUuid` |  |
 | **Betalingsmodel** | `APIRegularOptionResponseDTO` (optional) | `paymentModel.paymentModel.name` | `paymentModel.paymentModelUuid` |  |
-| **Prisregulering** | `APIRegularOptionResponseDTO` (optional) | `paymentModel.priceRegulationUuid`.name | `paymentModel.priceRegulationUuid` |  |
+| **Prisregulering** | `APIRegularOptionResponseDTO` (optional) | `paymentModel.priceRegulation.name` | `paymentModel.priceRegulationUuid` |  |
 | **Organisationsenhed** | `APIRegularOptionResponseDTO` (optional), options from /api/v2/organizations/{organizationUuid}/organization-units | `payments[i].organizationUnit.name` | `payments[i].organizationUnitUuid` |  |
 | **Anskaffelse** | int (optional) | `payments[i].acquisition` | `payments[i].acquisition` |  |
 | **Drift/år** | int (optional) | `payments[i].operation` | `payments[i].operation` |  |

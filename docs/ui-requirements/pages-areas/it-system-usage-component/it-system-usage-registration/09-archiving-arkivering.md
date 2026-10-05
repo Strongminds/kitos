@@ -53,7 +53,7 @@ Convenience endpoints for journal periods
 | **Er der arkiveret fra systemet?** | boolean | `archiving.active` | `archiving.active` |  |
 | **Arkiveringsteststed** | Choice type  `GET /api/v2/it-system-usage-archive-test-location-types` | `archiving.testLocation` | `archiving.testLocation` | Choice type rendering |
 | **Arkiveringsbemærkninger** | text area | `archiving.notes` | `archiving.notes` |  |
-| **Arkiveringsfrekvens (antal år)** | postitive number | `archiving.frequencyInMonths` | `archiving.frequencyInMonths` |  |
+| **Arkiveringsfrekvens (antal måneder)** | positive number | `archiving.frequencyInMonths` | `archiving.frequencyInMonths` |  |
 | **Dokumentbærende** | boolean | `archiving.documentBearing` | `archiving.documentBearing` |  |
 
 ## Journal periods

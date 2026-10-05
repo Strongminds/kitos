@@ -55,7 +55,7 @@ Get “exposed interfaces” available for selection in relation, through the:
 
 | **UI name** | **Field type** | **READ path** | **WRITE path** | **Constraints** |
 | --- | --- | --- | --- | --- |
-| IT-System (udstiller) | Internal link | `toSystemUsage` | `toSystemUsageUuid` | Usage MUST be from the sane org and cannot be the “current system usage” |
+| IT-System (udstiller) | Internal link | `toSystemUsage` | `toSystemUsageUuid` | Usage MUST be from the same organisation and cannot be the “current system usage” |
 | Snitflade | Internal link | `relationInterface` | `relationInterfaceUuid` | MUST be exposed by the system master data |
 | Beskrivelse | text area | `description` | `description` |  |
 | Reference | String (if not a link), if a link - render as link | `urlReference` | `urlReference` |  |

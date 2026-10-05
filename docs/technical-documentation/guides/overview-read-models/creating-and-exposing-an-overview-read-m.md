@@ -229,7 +229,7 @@ When change events are handled, the handler may choose to either:
 
 ## Hangfire: Add read model rebuild scheduling job (rebuilds based on changes in dependencies)
 
-The overview read models typically display properties such as “name” from referenced entities as well as displaying data which is derived from registrations in other modules (e.g. system relations involving the contract). For that reason we use the [event handler](creating-and-exposing-an-overview-read-m.md)) to track changes - not only to the source entity but also to entities which may impact the overview read model.
+The overview read models typically display properties such as “name” from referenced entities as well as displaying data which is derived from registrations in other modules (e.g. system relations involving the contract). For that reason we use the [event handler](creating-and-exposing-an-overview-read-m.md) to track changes - not only to the source entity but also to entities which may impact the overview read model.
 
 In order to reduce “changes to dependencies” to “changes to existing read models”, we add a new job:
 

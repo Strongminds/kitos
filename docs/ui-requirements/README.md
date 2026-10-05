@@ -4,7 +4,7 @@
 
 The purpose of this section of the documentation is to capture and communicate UI requirements as well as data-mapping (API) and serve as input to creation of more precise user stories.
 
-We will adress the following:
+We will address the following:
 
 * Read/Write access dependencies
 * Data mapping

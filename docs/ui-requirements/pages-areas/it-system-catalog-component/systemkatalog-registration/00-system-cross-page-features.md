@@ -32,7 +32,7 @@ shows
 
 * Delete
 
-    * API: `DELETE ``/api/v2/it-systems/{systemUuid}`
+    * API: `DELETE /api/v2/it-systems/{systemUuid}`
     * Enabled if accesscontrol contains `delete`
 
 * Make system unavailable

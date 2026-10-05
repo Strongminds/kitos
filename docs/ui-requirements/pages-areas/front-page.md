@@ -68,7 +68,7 @@ Users with the “global admin” role have the option to edit the texts using a
 
 ### Authentication/change org
 
-Login with credentials: \`
+Login with credentials:
 
 * GET XSRF token: `api/authorize/antiforgery`
 * Login: `api/authorize`

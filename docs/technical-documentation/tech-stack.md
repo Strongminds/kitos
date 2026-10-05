@@ -32,7 +32,7 @@ All server side programming is written in [**C#**](https://learn.microsoft.com/e
 
 ### Scheduled tasks
 
-* To support deferred and recurring tasks such as weekly link checks, notifications (_advis_ in danish) etc., KITOS uses [**Hangfire**](https://www.hangfire.io/). Hangfire exposes a UI, which is reachable through `localhost/hangfire` (on the hosting machine through an RDP session).
+* To support deferred and recurring tasks such as weekly link checks and notifications (_advis_ in Danish), KITOS uses [**Hangfire**](https://www.hangfire.io/).
 
 ### Test automation
 
@@ -56,7 +56,7 @@ All server side programming is written in [**C#**](https://learn.microsoft.com/e
 ## Source Control Management (SCM)
 
 * [**Git**](https://git-scm.com/) is used as the sole SCM technology.
-* [**Github**](https://github.com/os2kitos) is used as the source control hosting platform
+* [**GitHub**](https://github.com/os2kitos) is used as the source control hosting platform
 
 ## Build and deployment tools
 

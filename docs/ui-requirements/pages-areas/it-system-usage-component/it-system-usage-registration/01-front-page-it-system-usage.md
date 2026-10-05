@@ -62,10 +62,10 @@ Write access info: <https://os2web.atlassian.net/browse/KITOSUDV-4062>
 | --- | --- | --- | --- | --- |
 | Taget i anvendelse af | Readonly string | `createdBy` |  | Readonly |
 | Sidst redigeret (bruger) | Readonly string | `lastModifiedBy` |  | Readonly |
-| Sidste redigeret (dato) | Readonly DD-MM-YYY string | `lastModified` |  | Readonly |
+| Sidste redigeret (dato) | Readonly DD-MM-YYYY string | `lastModified` |  | Readonly |
 | Livscyklus | Enum choice | `validity.lifeCycleStatus` | `validity.lifeCycleStatus` | Enum choice. Initial value will be null. “undecided” renders as “<empty choice>” |
 | Ibrugtagningsdato | Date | `validity.validFrom` | `validity.validFrom` | Cannot exceed end date |
-| Slutdato for anvendelse | Date | `validity.validTo` | `validity.validTo` | Cannot proceed start date |
+| Slutdato for anvendelse | Date | `validity.validTo` | `validity.validTo` | Cannot precede start date |
 | Status | Readonly status with optional tooltip “info icon” (see design) | `validity.[valid]` Tooltip enriched from: `validity.validAccordingToValidityPeriod` `validity.validAccordingToLifeCycle` `validity.validAccordingToMainContract` |  | Readonly |
 
 ## Tab: “Data fra IT Systemkataloget”
@@ -81,7 +81,7 @@ _**All data on this tab is read only - always**_
 | **UI name** | **Inputtype** | **READ path** | **Constraints** |
 | --- | --- | --- | --- |
 | Tilgæneligt/Ikke tilgængeligt | Colored status | `deactivated` |  |
-| Systemnavn | strimg | `name`  |  |
+| Systemnavn | string | `name`  |  |
 | Overordnet system | string | `parentSystem.name` | Optional |
 | Tidligere systemnavn | string | `formerName` |  |
 | Rettighedshaver | string | `rightsHolder.name` | Optional |
