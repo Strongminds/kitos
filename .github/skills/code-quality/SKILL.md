@@ -22,7 +22,7 @@ Iterate until it reports `Quality gate PASSED`:
 | `Migration consistency FAIL` | Regenerate the migration so `.Designer.cs` and `KitosContextModelSnapshot.cs` are included. |
 | `Tests accompany changes WARN` | Add/adjust unit tests (see section 3). |
 | `Database compatibility WARN` | Ensure SQL Server and PostgreSQL variants exist and match. |
-| `Analyzer baseline not extended WARN` | Revert the relaxation unless explicitly agreed with the user. |
+| `Analyzer rules not relaxed WARN` | Revert the relaxation (lowered/removed rule, `NoWarn`, new baseline entry, …) unless explicitly agreed with the user. |
 | `Unit tests FAIL` | Fix the code (or the test if the requirement changed – say so). |
 
 ## 2. Review the diff against KITOS conventions

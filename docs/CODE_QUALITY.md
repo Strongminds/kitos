@@ -11,15 +11,17 @@ KITOS uses one quality gate for developers, AI agents and CI:
 ## What is checked
 
 1. **Formatting** – `dotnet format whitespace` on changed `*.cs` files only (legacy files are fixed when touched).
-2. **Build with 0 warnings** – `KITOS.sln` is built with `-p:KitosQualityGate=true`, which turns every compiler and analyzer warning into an error. The rules live in `.editorconfig`; `Directory.Build.props` enables the .NET analyzers and code style in build for all projects.
-3. **KITOS conventions** on the diff:
+2. **Build with 0 warnings** – `KITOS.sln` and `Kitos_PubSub.sln` are built with `-p:KitosQualityGate=true`, which turns every compiler and analyzer warning into an error. The rules live in `.editorconfig`; `Directory.Build.props` enables the .NET analyzers and code style in build for all projects.
+3. **KITOS conventions** on the diff against the merge base with `origin/master` (committed, uncommitted, untracked **and deleted** files):
    - no `Console.Write*` / `Debug.Write*` / `Debugger.Break` in production code (FAIL)
-   - warning suppressions need a justification (FAIL)
-   - EF Core migrations include `.Designer.cs` and an updated `KitosContextModelSnapshot.cs` (FAIL)
-   - changed SQL scripts → verify SQL Server and PostgreSQL versions (WARN)
-   - business logic changed without test changes (WARN)
-   - analyzer rules relaxed in `.editorconfig` (WARN – needs reviewer approval)
-4. **Unit tests** – `Tests.Unit.Core.ApplicationServices` and `Tests.Unit.Presentation.Web`.
+   - warning suppressions need a justification: `#pragma warning disable` with a `// reason` on the same line or the line above; `[SuppressMessage(...)]` (also multi-line) with a non-empty `Justification` (FAIL)
+   - added/deleted EF Core migrations come with their `.Designer.cs` and an updated `KitosContextModelSnapshot.cs` (FAIL)
+   - added/changed/deleted SQL scripts → verify SQL Server and PostgreSQL versions (WARN)
+   - business logic (`Core.*`, `Presentation.Web/Controllers`, `PubSub.Core.*`, `PubSub.Application.*`) changed or deleted without test changes (WARN)
+   - analyzer rules relaxed (WARN – needs reviewer approval). The effective severities in every changed, added or deleted `.editorconfig`/`.globalconfig` are compared with the merge base: lowered or removed enforced rules, demoted naming/category-wide severities and changed naming definitions are reported; removing baseline entries or promoting rules is not. Changes to warning/analyzer MSBuild properties (`NoWarn`, `TreatWarningsAsErrors`, `AnalysisLevel`, …), added/deleted `Directory.Build.*` files and changes to the gate itself are reported as well.
+4. **Unit tests** – `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web` and `PubSub.Test`.
+
+The gate stops with an error if the merge base cannot be resolved (e.g. failed fetch), instead of silently checking only local changes.
 
 Useful switches: `-Fix` (apply formatting), `-SkipBuild`, `-SkipTests`, `-BaseRef origin/master`.
 

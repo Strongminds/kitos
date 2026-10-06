@@ -44,7 +44,7 @@ Run integration tests:
 dotnet test Tests.Integration.Presentation.Web
 ```
 
-Run the code quality gate (formatting, 0-warning build, conventions, unit tests – same as the PR check, see [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)):
+Run the code quality gate (formatting, 0-warning build of `KITOS.sln` and `Kitos_PubSub.sln`, conventions, unit tests – same as the PR check, see [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)):
 
 ```powershell
 pwsh ./scripts/quality-check.ps1

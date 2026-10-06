@@ -39,7 +39,7 @@ dotnet test Tests.Unit.Core.ApplicationServices --filter "FullyQualifiedName~ItS
 
 **Quality gate** (same checks as the `PR quality gate` CI workflow – see `docs/CODE_QUALITY.md`):
 ```
-pwsh ./scripts/quality-check.ps1                          # format + build (0 warnings) + conventions + unit tests
+pwsh ./scripts/quality-check.ps1                          # format + build KITOS.sln & Kitos_PubSub.sln (0 warnings) + conventions + unit tests
 pwsh ./scripts/quality-check.ps1 -Fix -SkipBuild -SkipTests  # auto-fix formatting of changed files
 ```
 
