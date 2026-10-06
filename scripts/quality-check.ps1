@@ -227,7 +227,7 @@ function Get-AnalyzerSettings([string[]]$Lines) {
         if ($raw -match '^\s*([#;].*)?$') { continue }
         if ($raw -match '^\s*\[(?<s>.+)\]\s*$') { $section = $Matches.s.Trim(); continue }
         if ($raw -notmatch '^\s*(?<k>[^=#;]+?)\s*=\s*(?<v>[^#;]*?)\s*([#;].*)?$') { continue }
-        $key = $Matches.k.ToLowerInvariant(); $value = $Matches.v.ToLowerInvariant()
+        $key = $Matches.k.ToLowerInvariant(); $value = $Matches.v
         $isSeverity = $key -match '^dotnet_(diagnostic|analyzer_diagnostic)\..*severity$' -or
             $key -match '^dotnet_naming_rule\..+\.severity$' -or
             $key -in @("generated_code", "root") -or
@@ -254,7 +254,7 @@ foreach ($path in ($allChanged | Where-Object { $_ -match '(^|/)\.editorconfig$|
             $oldRank = Get-SeverityRank $key $old[$key]
             if ($isNaming -or $null -eq $oldRank -or $oldRank -ge 3) { $relaxations.Add("${path}: removed $key = $($old[$key])") }
         }
-        elseif ($new[$key] -ne $old[$key]) {
+        elseif ($new[$key] -cne $old[$key]) {
             if ($isNaming) { $relaxations.Add("${path}: $key changed $($old[$key]) -> $($new[$key])"); continue }
             $oldRank = Get-SeverityRank $key $old[$key]; $newRank = Get-SeverityRank $key $new[$key]
             if ($null -eq $newRank -or ($null -ne $oldRank -and $newRank -lt $oldRank)) { $relaxations.Add("${path}: $key lowered $($old[$key]) -> $($new[$key])") }
