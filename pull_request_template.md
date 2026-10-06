@@ -23,3 +23,6 @@ The following procedure dictates the steps needed before a Pull request can be m
 
 - [ ] **Warnings cleanup**:
       _Files with changes should be checked for warnings. Any warnings found should be fixed_
+
+- [ ] **Quality gate green**:
+      _`pwsh ./scripts/quality-check.ps1` passes locally and the "PR quality gate" check is green. Any WARN items are addressed or explained above (see docs/CODE_QUALITY.md)_

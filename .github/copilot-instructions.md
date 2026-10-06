@@ -37,10 +37,29 @@ dotnet test Tests.Unit.Core.ApplicationServices --filter "FullyQualifiedName~ItS
 
 **Integration tests** require a running KITOS instance and PostgreSQL (default local database: `kitos` on `localhost:5432`). Set `KitosTestEnvironment=Local` (default if unset). Integration tests run sequentially within `[Collection(nameof(SequentialTestGroup))]`.
 
+**Quality gate** (same checks as the `PR quality gate` CI workflow – see `docs/CODE_QUALITY.md`):
+```
+pwsh ./scripts/quality-check.ps1                          # format + build (0 warnings) + conventions + unit tests
+pwsh ./scripts/quality-check.ps1 -Fix -SkipBuild -SkipTests  # auto-fix formatting of changed files
+```
+
 **EF6 migrations** are in `Infrastructure.DataAccess/Migrations/`. Run via Package Manager Console:
 ```
 Update-Database -ProjectName Infrastructure.DataAccess
 ```
+
+---
+
+## Definition of done (mandatory for AI agents)
+
+Before reporting a code change as complete:
+
+1. Run `pwsh ./scripts/quality-check.ps1` (use `-SkipTests` only while iterating; the final run must include tests).
+2. On `FAIL`: fix the root cause and re-run until the gate passes. Formatting: re-run with `-Fix`.
+   - **Never** silence the gate: do not add `#pragma warning disable`, `[SuppressMessage]`, `NoWarn`, or relax severities / add baseline entries in `.editorconfig` to get green. If a suppression is genuinely required, add a justification and call it out to the user.
+3. Address each `WARN`: add/adjust unit tests for changed logic; for SQL script changes, confirm both SQL Server and PostgreSQL variants.
+4. Self-review the diff against the `code-quality` skill (`.github/skills/code-quality/SKILL.md`) for KITOS conventions that analyzers cannot check (`Result`/`Maybe`, authorization, transactions, domain events, mappers).
+5. Leave files you touched at least as clean as you found them (no new warnings, no dead code, no debug output).
 
 ---
 
