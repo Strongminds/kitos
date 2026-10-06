@@ -149,6 +149,9 @@ dotnet_diagnostic.CA2100.severity = suggestion
 [Presentation.Web/Infrastructure/Attributes/IgnoreCSRFProtectionAttribute.cs]
 dotnet_diagnostic.CA1018.severity = suggestion
 
+[PubSub.Application.Api/Attributes/ApiVersionAttribute.cs]
+dotnet_diagnostic.CA1018.severity = suggestion
+
 [Core.ApplicationServices/Model/Authentication/BearerTokenConfig.cs]
 dotnet_diagnostic.CA1065.severity = suggestion
 
