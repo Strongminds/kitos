@@ -112,7 +112,7 @@ public class UserChangeDeliveryTest
             if (request.RequestUri!.AbsolutePath == "/api/authorize/GetToken")
             {
                 Logins++;
-                return new HttpResponseMessage(HttpStatusCode.OK) { Content = System.Net.Http.Json.JsonContent.Create(new { Token = "test-token", Expires = DateTime.UtcNow.AddHours(24), LoginSuccessful = true }) };
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = System.Net.Http.Json.JsonContent.Create(new { Response = new { Token = "test-token", Expires = DateTime.UtcNow.AddHours(24), LoginSuccessful = true } }) };
             }
             Payloads.Add(await request.Content!.ReadAsStringAsync(cancellationToken));
             Tokens.Add(request.Headers.Authorization!.ToString());

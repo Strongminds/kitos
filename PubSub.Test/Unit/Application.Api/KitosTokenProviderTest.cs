@@ -40,6 +40,24 @@ public class KitosTokenProviderTest
         Assert.Equal("token-2", await provider.GetToken(endpoint, default));
     }
 
+    [Theory]
+    [InlineData("{}")]
+    [InlineData("{\"response\":null}")]
+    [InlineData("{\"response\":{\"token\":\"\",\"loginSuccessful\":true,\"expires\":\"2099-01-01T00:00:00Z\"}}")]
+    [InlineData("{\"response\":{\"token\":\"test\",\"loginSuccessful\":false,\"expires\":\"2099-01-01T00:00:00Z\"}}")]
+    [InlineData("{\"response\":{\"token\":\"test\",\"loginSuccessful\":true,\"expires\":\"2000-01-01T00:00:00Z\"}}")]
+    [InlineData("{\"token\":\"test\",\"loginSuccessful\":true,\"expires\":\"2099-01-01T00:00:00Z\"}")]
+    public async Task InvalidTokenEnvelopeIsNeverCached(string body)
+    {
+        var clock = new Clock();
+        var handler = new LoginHandler(clock) { Body = body };
+        var provider = Create(handler, clock);
+        var endpoint = new Uri("https://kitos.test/callback");
+        await Assert.ThrowsAsync<HttpRequestException>(() => provider.GetToken(endpoint, default));
+        handler.Body = null;
+        Assert.Equal("token-2", await provider.GetToken(endpoint, default));
+    }
+
     private static KitosTokenProvider Create(LoginHandler handler, Clock clock)
     {
         var clients = new Mock<IHttpClientFactory>();
@@ -60,6 +78,7 @@ public class KitosTokenProviderTest
         public int Calls { get; private set; }
         public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
         public bool Malformed { get; set; }
+        public string? Body { get; set; }
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Calls++;
@@ -70,8 +89,8 @@ public class KitosTokenProviderTest
             Assert.Equal("test-password", credentials.GetProperty("password").GetString());
             return new HttpResponseMessage(Status)
             {
-                Content = Malformed ? new StringContent("not-json") : JsonContent.Create(new
-                { Token = $"token-{Calls}", LoginSuccessful = true, Expires = clock.Now.AddHours(24) })
+                Content = Body != null ? new StringContent(Body) : Malformed ? new StringContent("not-json") : JsonContent.Create(new
+                { Response = new { Token = $"token-{Calls}", LoginSuccessful = true, Expires = clock.Now.AddHours(24) } })
             };
         }
     }

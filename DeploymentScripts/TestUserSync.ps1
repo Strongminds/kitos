@@ -2,13 +2,14 @@ param(
     [Parameter(Mandatory)][uri]$PubSubBaseUrl,
     [Parameter(Mandatory)][guid]$OrganizationUuid,
     [Parameter(Mandatory)][guid]$ExternalUserUuid,
+    [string]$PublishToken = $env:USER_SYNC_PUBLISH_TOKEN,
     [string]$MessageId = [guid]::NewGuid().ToString(),
     [switch]$Duplicate
 )
 $ErrorActionPreference = 'Stop'
 if ($PubSubBaseUrl.Scheme -ne 'https') { throw 'Use an HTTPS PubSub URL.' }
-if ([string]::IsNullOrWhiteSpace($env:USER_SYNC_PUBLISH_TOKEN)) {
-    throw 'Set USER_SYNC_PUBLISH_TOKEN to a test publisher token. Do not pass credentials on the command line.'
+if ([string]::IsNullOrWhiteSpace($PublishToken)) {
+    throw 'Supply -PublishToken or set USER_SYNC_PUBLISH_TOKEN to a test publisher token.'
 }
 $payload = @{
     externalMessageId = $MessageId
@@ -17,7 +18,7 @@ $payload = @{
     changeType = 1
     occurredAt = $null
 } | ConvertTo-Json -Compress
-$headers = @{ Authorization = 'Bearer ' + $env:USER_SYNC_PUBLISH_TOKEN }
+$headers = @{ Authorization = 'Bearer ' + $PublishToken }
 $uri = $PubSubBaseUrl.AbsoluteUri.TrimEnd('/') + '/user-sync/stub'
 $first = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -ContentType 'application/json' -Body $payload
 if ($Duplicate) {

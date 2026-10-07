@@ -35,7 +35,7 @@ public class KitosTokenProvider(IHttpClientFactory clients, IConfiguration confi
         }, cancellationToken);
         response.EnsureSuccessStatusCode();
         TokenResponse? token;
-        try { token = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken); }
+        try { token = (await response.Content.ReadFromJsonAsync<TokenResponseEnvelope>(cancellationToken))?.Response; }
         catch (JsonException) { throw new HttpRequestException("KITOS returned an invalid token response."); }
         if (token == null || !token.LoginSuccessful || string.IsNullOrWhiteSpace(token.Token) ||
             token.Expires <= _time.GetUtcNow().AddMinutes(1))

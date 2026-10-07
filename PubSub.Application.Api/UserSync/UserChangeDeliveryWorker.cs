@@ -55,7 +55,11 @@ public class UserChangeDeliveryWorker(IServiceScopeFactory scopes, IHttpClientFa
                 if (response.IsSuccessStatusCode) delivery.DeliveredAt = DateTime.UtcNow;
                 else if (IsPermanentFailure(response.StatusCode)) delivery.DeadLettered = true;
             }
-            catch (HttpRequestException ex) { delivery.LastStatusCode = (int?)ex.StatusCode; }
+            catch (HttpRequestException ex)
+            {
+                delivery.LastStatusCode = (int?)ex.StatusCode;
+                logger.LogWarning(ex, "User change delivery {DeliveryId} failed during authentication or HTTP delivery", delivery.Uuid);
+            }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) { delivery.LastStatusCode = null; }
             delivery.NextAttemptAt = DateTime.UtcNow.AddSeconds(Math.Min(300, Math.Pow(2, Math.Min(8, delivery.Attempts))));
             delivery.Version = Guid.NewGuid();
