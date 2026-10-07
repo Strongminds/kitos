@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Mail;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authorization;
@@ -19,7 +21,9 @@ using Core.DomainServices.Notifications;
 using Core.DomainServices.Time;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
+using Infrastructure.DataAccess;
 using Infrastructure.Services.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Serilog;
 using Tests.Toolkit.Patterns;
@@ -33,6 +37,8 @@ namespace Tests.Unit.Core.ApplicationServices
         private readonly Mock<IMailClient> _mailClientMock;
         private readonly Mock<IGenericRepository<Advice>> _adviceRepositoryMock;
         private readonly Mock<IGenericRepository<ItContractRight>> _itContractRightsRepositoryMock;
+        private readonly Mock<IGenericRepository<ItSystemRight>> _itSystemRightsRepositoryMock;
+        private readonly Mock<IGenericRepository<DataProcessingRegistrationRight>> _dataProcessingRegistrationRightsRepositoryMock;
         private readonly Mock<ITransactionManager> _transactionManager;
         private readonly Mock<IHangfireApi> _hangfireApiMock;
         private readonly Mock<IUserNotificationService> _userNotificationService;
@@ -47,6 +53,8 @@ namespace Tests.Unit.Core.ApplicationServices
             _mailClientMock = new Mock<IMailClient>();
             _adviceRepositoryMock = new Mock<IGenericRepository<Advice>>();
             _itContractRightsRepositoryMock = new Mock<IGenericRepository<ItContractRight>>();
+            _itSystemRightsRepositoryMock = new Mock<IGenericRepository<ItSystemRight>>();
+            _dataProcessingRegistrationRightsRepositoryMock = new Mock<IGenericRepository<DataProcessingRegistrationRight>>();
             _adviceSentRepositoryMock = new Mock<IGenericRepository<AdviceSent>>();
             _transactionManager = new Mock<ITransactionManager>();
             _hangfireApiMock = new Mock<IHangfireApi>();
@@ -57,8 +65,8 @@ namespace Tests.Unit.Core.ApplicationServices
                 _adviceRepositoryMock.Object,
                 _adviceSentRepositoryMock.Object,
                 _itContractRightsRepositoryMock.Object,
-                Mock.Of<IGenericRepository<ItSystemRight>>(),
-                Mock.Of<IGenericRepository<DataProcessingRegistrationRight>>(),
+                _itSystemRightsRepositoryMock.Object,
+                _dataProcessingRegistrationRightsRepositoryMock.Object,
                 Mock.Of<ILogger>(),
                 _transactionManager.Object,
                 Mock.Of<IOrganizationalUserContext>(),
@@ -98,6 +106,60 @@ namespace Tests.Unit.Core.ApplicationServices
             //Assert
             Assert.True(result);
             _mailClientMock.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(RelatedEntityType.itContract)]
+        [InlineData(RelatedEntityType.itSystemUsage)]
+        [InlineData(RelatedEntityType.dataProcessingRegistration)]
+        public void SendAdvice_GivenRoleRecipient_PostgreSqlProjectsActiveUserEmails(RelatedEntityType entityType)
+        {
+            using var context = new KitosContext(new DbContextOptionsBuilder<KitosContext>()
+                .UseNpgsql("Host=localhost;Database=kitos;Username=postgres")
+                .Options);
+            string? sql = null;
+            void CaptureSql(string query) => sql = query;
+            _itContractRightsRepositoryMock.Setup(x => x.AsQueryable())
+                .Returns(new SqlCapturingQueryable<ItContractRight>(context.Set<ItContractRight>(), CaptureSql));
+            _itSystemRightsRepositoryMock.Setup(x => x.AsQueryable())
+                .Returns(new SqlCapturingQueryable<ItSystemRight>(context.Set<ItSystemRight>(), CaptureSql));
+            _dataProcessingRegistrationRightsRepositoryMock.Setup(x => x.AsQueryable())
+                .Returns(new SqlCapturingQueryable<DataProcessingRegistrationRight>(
+                    context.Set<DataProcessingRegistrationRight>(), CaptureSql));
+            var advice = new Advice
+            {
+                Id = A<int>(),
+                Subject = A<string>(),
+                AdviceType = AdviceType.Immediate,
+                Type = entityType,
+                RelationId = 17,
+                Reciepients = new List<AdviceUserRelation>
+                {
+                    new()
+                    {
+                        RecieverType = RecieverType.RECIEVER,
+                        RecpientType = RecipientType.ROLE,
+                        ItContractRoleId = 23,
+                        ItSystemRoleId = 23,
+                        DataProcessingRegistrationRoleId = 23
+                    }
+                },
+                IsActive = true
+            };
+            SetupAdviceRepository(advice);
+            SetupTransactionManager();
+
+            Assert.Throws<QueryCapturedException>(() => _sut.SendAdvice(advice.Id));
+
+            Assert.NotNull(sql);
+            Assert.Matches("SELECT [a-z][a-z0-9]*\\.\"Email\"\\r?\\nFROM", sql);
+            Assert.Contains("JOIN", sql);
+            Assert.Contains("\"User\"", sql);
+            Assert.Contains("@advice_RelationId='17'", sql);
+            Assert.Matches("\"ObjectId\" = @advice_RelationId", sql);
+            Assert.Matches("@\\w*RoleId='23'", sql);
+            Assert.Matches("\"RoleId\" = @\\w*RoleId", sql);
+            Assert.Matches("NOT \\(?[a-z][a-z0-9]*\\.\"Deleted\"\\)?", sql);
         }
 
         [Fact]
@@ -401,5 +463,38 @@ namespace Tests.Unit.Core.ApplicationServices
         {
             return new List<AdviceUserRelation> { new() { RecieverType = RecieverType.RECIEVER, RecpientType = RecipientType.USER, Email = "test@kitos.dk" } };
         }
+
+        // Preserve Npgsql query translation, but stop before database execution.
+        private sealed class SqlCapturingQueryable<T>(IQueryable<T> query, Action<string> captureSql) : IQueryable<T>
+        {
+            public Type ElementType => typeof(T);
+            public Expression Expression => query.Expression;
+            public IQueryProvider Provider => new SqlCapturingQueryProvider(query.Provider, captureSql);
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                captureSql(query.ToQueryString());
+                throw new QueryCapturedException();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private sealed class SqlCapturingQueryProvider(IQueryProvider provider, Action<string> captureSql) : IQueryProvider
+        {
+            public IQueryable<TElement> CreateQuery<TElement>(Expression expression) =>
+                new SqlCapturingQueryable<TElement>(provider.CreateQuery<TElement>(expression), captureSql);
+
+            public IQueryable CreateQuery(Expression expression) =>
+                throw new NotSupportedException("Only generic query composition is supported.");
+
+            public object? Execute(Expression expression) =>
+                throw new NotSupportedException("Database execution is not supported.");
+
+            public TResult Execute<TResult>(Expression expression) =>
+                throw new NotSupportedException("Database execution is not supported.");
+        }
+
+        private sealed class QueryCapturedException : Exception;
     }
 }

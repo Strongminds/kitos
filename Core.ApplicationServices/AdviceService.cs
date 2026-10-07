@@ -282,35 +282,43 @@ namespace Core.ApplicationServices
             switch (advice.Type)
             {
                 case RelatedEntityType.itContract:
-                    var itContractRoles = _itContractRights.AsQueryable().Where(I => I.ObjectId == advice.RelationId
-                        && I.RoleId == r.ItContractRoleId);
-                    foreach (var t in itContractRoles.ToList())
+                    var itContractRecipientEmails = _itContractRights.AsQueryable()
+                        .Where(right => right.ObjectId == advice.RelationId
+                            && right.RoleId == r.ItContractRoleId
+                            && !right.User.Deleted)
+                        .Select(right => right.User.Email)
+                        .ToList();
+                    foreach (var email in itContractRecipientEmails)
                     {
-                        if (t.User.Deleted) continue;
-                        mailAddressCollection.Add(t.User.Email);
+                        mailAddressCollection.Add(email);
                     }
 
                     break;
                 case RelatedEntityType.itSystemUsage:
 
-                    var systemRoles = _itSystemRights.AsQueryable().Where(I => I.ObjectId == advice.RelationId
-                                                                              && I.RoleId == r.ItSystemRoleId);
-                    foreach (var t in systemRoles.ToList())
+                    var systemRecipientEmails = _itSystemRights.AsQueryable()
+                        .Where(right => right.ObjectId == advice.RelationId
+                            && right.RoleId == r.ItSystemRoleId
+                            && !right.User.Deleted)
+                        .Select(right => right.User.Email)
+                        .ToList();
+                    foreach (var email in systemRecipientEmails)
                     {
-                        if (t.User.Deleted) continue;
-                        mailAddressCollection.Add(t.User.Email);
+                        mailAddressCollection.Add(email);
                     }
 
                     break;
                 case RelatedEntityType.dataProcessingRegistration:
 
-                    var dpaRoles = _dataProcessingRegistrationRights.AsQueryable().Where(I =>
-                        I.ObjectId == advice.RelationId
-                        && I.RoleId == r.DataProcessingRegistrationRoleId);
-                    foreach (var t in dpaRoles.ToList())
+                    var dpaRecipientEmails = _dataProcessingRegistrationRights.AsQueryable()
+                        .Where(right => right.ObjectId == advice.RelationId
+                            && right.RoleId == r.DataProcessingRegistrationRoleId
+                            && !right.User.Deleted)
+                        .Select(right => right.User.Email)
+                        .ToList();
+                    foreach (var email in dpaRecipientEmails)
                     {
-                        if (t.User.Deleted) continue;
-                        mailAddressCollection.Add(t.User.Email);
+                        mailAddressCollection.Add(email);
                     }
 
                     break;
