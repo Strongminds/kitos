@@ -48,6 +48,12 @@ Run integration tests:
 dotnet test Tests.Integration.Presentation.Web
 ```
 
+Run the code quality gate (formatting, 0-warning build of `KITOS.sln` and `Kitos_PubSub.sln`, conventions, unit tests – same as the PR check, see [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)):
+
+```powershell
+pwsh ./scripts/quality-check.ps1
+```
+
 Integration tests require a running KITOS instance and a PostgreSQL database configured through `Tests.Integration.Presentation.Web/Properties/launchSettings.json`.
 
 The default launch profile (`Tests.Integration.Presentation.Web`) now targets **PostgreSQL** locally:
