@@ -864,6 +864,64 @@ namespace Tests.Integration.Presentation.Web.Organizations
                 .FirstOrDefault() + currentLevelContribution;
         }
 
+        [Fact]
+        public async Task Can_Create_And_Delete_Users_Connection_Independently_Of_OrgUnit_Connection()
+        {
+            //Arrange
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var targetOrgUuid = await CreateOrgWithCvr(AuthorizedCvr);
+            var connectionUrl = TestEnvironment.CreateUrl($"{GetBaseConnectionString(targetOrgUuid)}/users/connection");
+            var statusUrl = TestEnvironment.CreateUrl($"{GetBaseConnectionString(targetOrgUuid)}/users/connection-status");
+
+            //Act + Assert - initial state
+            using (var response = await HttpApi.GetWithCookieAsync(statusUrl, cookie).WithExpectedResponseCode(HttpStatusCode.OK))
+            {
+                var status = await response.ReadResponseBodyAsAsync<StsOrganizationUserSynchronizationDetailsResponseDTO>();
+                Assert.True(status.AccessStatus.AccessGranted);
+                Assert.False(status.Connected);
+                Assert.True(status.CanCreateConnection);
+                Assert.False(status.CanDeleteConnection);
+                Assert.Null(status.ConnectedAt);
+            }
+
+            //Act + Assert - connect
+            using (var response = await HttpApi.PostWithCookieAsync(connectionUrl, cookie, null))
+                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            using (var response = await HttpApi.PostWithCookieAsync(connectionUrl, cookie, null))
+                Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+            using (var response = await HttpApi.GetWithCookieAsync(statusUrl, cookie).WithExpectedResponseCode(HttpStatusCode.OK))
+            {
+                var status = await response.ReadResponseBodyAsAsync<StsOrganizationUserSynchronizationDetailsResponseDTO>();
+                Assert.True(status.Connected);
+                Assert.False(status.CanCreateConnection);
+                Assert.True(status.CanDeleteConnection);
+                Assert.NotNull(status.ConnectedAt);
+            }
+            using (var response = await SendGetConnectionStatusAsync(targetOrgUuid, cookie).WithExpectedResponseCode(HttpStatusCode.OK))
+            {
+                var orgUnitStatus = await response.ReadResponseBodyAsAsync<StsOrganizationSynchronizationDetailsResponseDTO>();
+                Assert.False(orgUnitStatus.Connected);
+            }
+
+            //Act + Assert - disconnect
+            using (var response = await HttpApi.DeleteWithCookieAsync(connectionUrl, cookie))
+                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            using (var response = await HttpApi.DeleteWithCookieAsync(connectionUrl, cookie))
+                Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Cannot_Create_Users_Connection_Without_Access()
+        {
+            var cookie = await HttpApi.GetCookieAsync(OrganizationRole.GlobalAdmin);
+            var targetOrgUuid = (await CreateOrganizationAsync()).Uuid;
+            var connectionUrl = TestEnvironment.CreateUrl($"{GetBaseConnectionString(targetOrgUuid)}/users/connection");
+
+            using var response = await HttpApi.PostWithCookieAsync(connectionUrl, cookie, null);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         private static async Task<HttpResponseMessage> SendGetSnapshotAsync(int levels, Guid targetOrgUuid, Cookie cookie)
         {
             var url = TestEnvironment.CreateUrl(

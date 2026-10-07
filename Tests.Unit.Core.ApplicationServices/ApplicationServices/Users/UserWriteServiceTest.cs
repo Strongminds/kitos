@@ -645,6 +645,26 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             Assert.Equal(result.Ok, isGlobalAdmin);
         }
 
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void Only_Global_Admin_Can_Grant_Or_Revoke_PubSub_Status(bool isGlobalAdmin, bool requestedValue)
+        {
+            var user = SetupUser();
+            user.IsPubSubUser = !requestedValue;
+            ExpectGetUserByUuid(user.Uuid, user);
+            ExpectIsGlobalAdminReturns(isGlobalAdmin);
+            ExpectTransactionBegins();
+
+            var result = _sut.UpdatePubSubUser(user.Uuid, requestedValue);
+
+            Assert.Equal(isGlobalAdmin, result.Ok);
+            Assert.Equal(isGlobalAdmin ? requestedValue : !requestedValue, user.IsPubSubUser);
+            _userServiceMock.Verify(x => x.UpdateUser(user, null, null), isGlobalAdmin ? Times.Once() : Times.Never());
+        }
+
         private void VerifyNoPasswordResetsHasBeenIssued()
         {
             _userServiceMock.Verify(x => x.IssuePasswordReset(It.IsAny<User>(), null, null), Times.Never());

@@ -26,6 +26,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddAuthenticationServices(builder.Configuration);
 builder.Services.AddPubSubServices(builder.Configuration);
+builder.Services.AddScoped<PubSub.Application.Api.UserSync.UserChangeOutbox>();
+builder.Services.AddHttpClient("UserSync", client => client.Timeout = TimeSpan.FromSeconds(30))
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+builder.Services.AddHostedService<PubSub.Application.Api.UserSync.UserChangeDeliveryWorker>();
 
 var app = builder.Build();
 

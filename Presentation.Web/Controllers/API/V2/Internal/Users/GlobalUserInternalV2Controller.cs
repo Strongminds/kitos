@@ -250,6 +250,33 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
                     .Match(NoContent, FromOperationError);
         }
 
+        /// <summary>Gets the users configured as PubSub integration accounts.</summary>
+        [HttpGet]
+        [Route("pubsub-users")]
+        [ApiResponse(typeof(IEnumerable<UserReferenceResponseDTO>), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult GetPubSubUsers()
+        {
+            return Ok(_userService.GetUsers(new QueryByPubSubUser()).AsEnumerable()
+                .Select(InternalDtoModelV2MappingExtensions.MapUserReferenceResponseDTO).ToList());
+        }
+
+        /// <summary>Enables or disables a user's PubSub integration account status.</summary>
+        [HttpPatch]
+        [Route("pubsub-users/{userUuid}")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult UpdatePubSubUser([NonEmptyGuid] [FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
+        {
+            return _userWriteService.UpdatePubSubUser(userUuid, requestedValue)
+                .Match(NoContent, FromOperationError);
+        }
+
         private static IEnumerable<UserWithOrganizationResponseDTO> ToUserWithOrgDTOs(List<UserRoleAssociationDTO> dtos)
         {
             return dtos.Select(ToUserWithOrgDTO).ToList();
@@ -281,4 +308,3 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         }
     }
 }
-
