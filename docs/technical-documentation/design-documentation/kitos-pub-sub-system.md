@@ -17,6 +17,17 @@ This requirement caused the need for a PubSub component. The intent is to allow 
 
 The following diagram gives an overview of the solution. At the moment of writing the only known subscriber is DBS; others will subscribe to queues in the same way.
 
+```mermaid
+flowchart LR
+    Kitos -->|Publish change event| PubSubAPI[PubSub API]
+    PubSubAPI -->|Publish by topic| RabbitMQ[(RabbitMQ queue)]
+    RabbitMQ --> Consumer[Background consumer]
+    Consumer -->|Find subscriptions for topic| SubscriptionStore[(Subscription store)]
+    Consumer -->|Signed callback| Subscribers[Subscribers e.g. DBS]
+    Subscribers -->|Subscribe with callback URL and topic| PubSubAPI
+    PubSubAPI -->|Save subscription| SubscriptionStore
+```
+
 As mentioned before PubSub has two use cases: **Publish** and **Subscribe**
 
 * **The publish** endpoint takes a Kitos change event and publishes it using RabbitMQ. A background service upon receiving an event from RabbitMQ interprets the event, retrieves the event subscribers, and pushes the event to callbackUrls defined for each subscriber.
