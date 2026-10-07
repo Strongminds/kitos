@@ -359,7 +359,7 @@ module Kitos.Models.UICustomization.Configs.BluePrints {
 
 ### Apply the configuration
 
-<local-ui-customization.md>
+[Applying customization states to the UI](#applying-customization-states-to-the-ui)
 
 ## Changing an existing customizable component
 
