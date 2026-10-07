@@ -5,6 +5,10 @@ description: "Review and improve KITOS C# code quality. Use after making code ch
 
 # KITOS code quality review
 
+KITOS uses PostgreSQL with EF Core/Npgsql only. Always use EF Core, never EF6.
+Historical EF6 migrations and SQL Server tooling are not the current persistence model.
+Do not introduce SQL Server compatibility branches, SQL variants, or provider tests.
+
 ## 1. Run the automated gate
 
 ```
@@ -21,7 +25,7 @@ Iterate until it reports `Quality gate PASSED`:
 | `Justified suppressions FAIL` | Remove the suppression, or add a `// reason` / `Justification = "..."` and tell the user. |
 | `Migration consistency FAIL` | Regenerate the migration so `.Designer.cs` and `KitosContextModelSnapshot.cs` are included. |
 | `Tests accompany changes WARN` | Add/adjust unit tests (see section 3). |
-| `Database compatibility WARN` | Ensure SQL Server and PostgreSQL variants exist and match. |
+| `Database compatibility WARN` | Validate PostgreSQL SQL syntax, schema compatibility and data preservation. Do not add SQL Server variants. |
 | `Analyzer rules not relaxed WARN` | Revert the relaxation (lowered/removed rule, `NoWarn`, new baseline entry, …) unless explicitly agreed with the user. |
 | `Unit tests FAIL` | Fix the code (or the test if the requirement changed – say so). |
 
@@ -43,7 +47,10 @@ Run `git diff origin/master...HEAD` (plus uncommitted changes) and check each ch
 ### Persistence & transactions
 - [ ] Write operations use `ITransactionManager` (`Begin()` / `Commit()`); no stray `SaveChanges()` outside the established `IDatabaseControl` pattern.
 - [ ] Domain events (`EntityCreatedEvent<T>`, `EntityUpdatedEvent<T>`, `EntityBeingDeletedEvent<T>`) raised from application services.
-- [ ] Schema changes go through a migration; read models updated if list/overview data changed.
+- [ ] Schema changes go through an EF Core migration in `Infrastructure.DataAccess/Migrations/EfCore/`, with `.Designer.cs` and `KitosContextModelSnapshot.cs`; never add EF6 migrations.
+- [ ] Mappings match the PostgreSQL schema and quoted identifier casing; historical EF6 column names are not assumed correct.
+- [ ] Mapping-only fixes to columns already correct in production/staging do not add rename migrations; align the current snapshot and creation baseline for local/dev databases, which are recreated on deployment.
+- [ ] Read models updated if list/overview data changed.
 - [ ] No N+1 queries or unbounded `ToList()` on large sets; list endpoints prefer read models.
 
 ### Structure & naming

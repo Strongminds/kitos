@@ -302,7 +302,7 @@ if ($migrationChanges.Count) {
 
 # 3e. Manual SQL scripts (added, changed or deleted) - database compatibility (PR checklist)
 $sqlScripts = @($changes | Where-Object { $_.Path -match "Migrations/SQLScripts/.+\.sql$" } | ForEach-Object { "$($_.Status) $($_.Path)" })
-if ($sqlScripts.Count) { Add-Result "Database compatibility" "WARN" (@("SQL scripts changed - verify SQL Server and PostgreSQL versions") + $sqlScripts) }
+if ($sqlScripts.Count) { Add-Result "Database compatibility" "WARN" (@("SQL scripts changed - verify PostgreSQL syntax, schema compatibility and data preservation") + $sqlScripts) }
 
 # 3f. Changes (incl. deletions) to business logic should be accompanied by tests
 $logicChanged = @($allChanged | Where-Object { $_ -like "*.cs" -and $_ -match $logicPath -and $_ -notmatch "/Migrations/" })

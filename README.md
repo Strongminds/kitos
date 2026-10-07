@@ -20,6 +20,12 @@ the terms of the Mozilla Public License, v. 2.0.
 ### Backend
 This repository maintains the backend services.
 
+Persistence uses **PostgreSQL with EF Core/Npgsql**. Always use EF Core, never EF6.
+PostgreSQL is the only database target for new work; do not add SQL Server compatibility.
+EF6 migrations and SQL Server tooling retained in the repository are historical artifacts.
+Current entity mappings live in `Infrastructure.DataAccess/Mapping/`; current migrations
+and the model snapshot live in `Infrastructure.DataAccess/Migrations/EfCore/`.
+
 ### UI
 The UI is developed and maintained here: https://github.com/os2kitos/kitos_frontend
 
@@ -49,6 +55,15 @@ Run the code quality gate (formatting, 0-warning build of `KITOS.sln` and `Kitos
 ```powershell
 pwsh ./scripts/quality-check.ps1
 ```
+
+### STS organization identity schema
+
+`dbo.StsOrganizationIdentities` uses `OrganizationId` for its organization foreign key.
+Production and staging already use this name; no migration is needed for the mapping fix.
+Local and development databases are recreated on deployment. The EF Core baseline
+creates `OrganizationId` so recreated databases match the application mapping.
+
+### Integration test database
 
 Integration tests require a running KITOS instance and a PostgreSQL database configured through `Tests.Integration.Presentation.Web/Properties/launchSettings.json`.
 

@@ -6871,7 +6871,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("uuid");
 
                     b.Property<int>("Organization_Id")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("OrganizationId");
 
                     b.HasKey("Id");
 

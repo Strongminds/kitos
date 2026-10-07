@@ -43,10 +43,14 @@ pwsh ./scripts/quality-check.ps1                          # format + build KITOS
 pwsh ./scripts/quality-check.ps1 -Fix -SkipBuild -SkipTests  # auto-fix formatting of changed files
 ```
 
-**EF6 migrations** are in `Infrastructure.DataAccess/Migrations/`. Run via Package Manager Console:
+**EF Core migrations** are in `Infrastructure.DataAccess/Migrations/EfCore/`.
+Set `ConnectionStrings__KitosContext` to the target PostgreSQL connection string before using the EF Core CLI:
 ```
-Update-Database -ProjectName Infrastructure.DataAccess
+dotnet ef migrations add <MigrationName> --project Infrastructure.DataAccess --output-dir Migrations\EfCore
+dotnet ef database update --project Infrastructure.DataAccess
 ```
+
+Migration scaffolding does not require a database connection. Applying migrations changes the target database; do so only when explicitly requested.
 
 ---
 
@@ -57,7 +61,7 @@ Before reporting a code change as complete:
 1. Run `pwsh ./scripts/quality-check.ps1` (use `-SkipTests` only while iterating; the final run must include tests).
 2. On `FAIL`: fix the root cause and re-run until the gate passes. Formatting: re-run with `-Fix`.
    - **Never** silence the gate: do not add `#pragma warning disable`, `[SuppressMessage]`, `NoWarn`, or relax severities / add baseline entries in `.editorconfig` to get green. If a suppression is genuinely required, add a justification and call it out to the user.
-3. Address each `WARN`: add/adjust unit tests for changed logic; for SQL script changes, confirm both SQL Server and PostgreSQL variants.
+3. Address each `WARN`: add/adjust unit tests for changed logic; for SQL script changes, validate PostgreSQL syntax and behavior. Do not add SQL Server variants.
 4. Self-review the diff against the `code-quality` skill (`.github/skills/code-quality/SKILL.md`) for KITOS conventions that analyzers cannot check (`Result`/`Maybe`, authorization, transactions, domain events, mappers).
 5. Leave files you touched at least as clean as you found them (no new warnings, no dead code, no debug output).
 
@@ -74,7 +78,7 @@ Before reporting a code change as complete:
 | `Core.DomainServices` | Repository interfaces, domain service contracts |
 | `Core.ApplicationServices` | Business logic: read/write services, authorization, mapping models |
 | `Core.BackgroundJobs` | Hangfire scheduled jobs |
-| `Infrastructure.DataAccess` | EF6 `KitosContext`, `GenericRepository<T>`, migrations |
+| `Infrastructure.DataAccess` | EF Core `KitosContext`, `GenericRepository<T>`, PostgreSQL migrations |
 | `Infrastructure.Ninject` | DI bindings (Ninject) |
 | `Infrastructure.STS.*` | SAML/KOMBIT STS integration (Danish government SSO) |
 | `Infrastructure.OpenXML` | Excel export |
@@ -96,7 +100,13 @@ Each V2 domain area has paired mapper types:
 
 ### Database
 
-EF6 Code First with SQL Server. `KitosContext` is the single `DbContext`. Access goes through `IGenericRepository<T>` → `GenericRepository<T>`. All schema changes are done via EF migrations.
+The solution has migrated to **PostgreSQL with EF Core and Npgsql**. PostgreSQL is the only supported database for new work; always use EF Core, never EF6. Do not add SQL Server/MSSQL compatibility paths, SQL dialect variants, or provider tests.
+
+`KitosContext` is the single EF Core `DbContext`. Access goes through `IGenericRepository<T>` → `GenericRepository<T>`. Entity mappings use `IEntityTypeConfiguration<T>` in `Infrastructure.DataAccess/Mapping/`. All schema changes use EF Core migrations in `Infrastructure.DataAccess/Migrations/EfCore/`, including the generated `.Designer.cs` and `KitosContextModelSnapshot.cs`.
+
+EF6 migrations directly under `Infrastructure.DataAccess/Migrations/` and remaining SQL Server tooling are historical migration artifacts, not the current persistence model. Do not modify or use them for new schema changes. Verify mappings against the PostgreSQL schema and current EF Core snapshot; do not infer current column names from historical EF6 conventions. PostgreSQL quoted identifiers are case-sensitive.
+
+Production and staging retain their databases; local and development databases are recreated on every deployment. When correcting a mapping to a column already present in production and staging, do not add a migration solely to rename that column. Align the mapping, current snapshot and database-creation baseline instead, and test the recreated schema. Actual changes to the production/staging schema still require EF Core migrations.
 
 ### Option types
 
