@@ -5,6 +5,7 @@ using System.Net.Mail;
 using Core.ApplicationServices;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.ScheduledJobs;
+using Core.DomainModel;
 using Core.DomainModel.Advice;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
@@ -31,6 +32,7 @@ namespace Tests.Unit.Core.ApplicationServices
         private readonly AdviceService _sut;
         private readonly Mock<IMailClient> _mailClientMock;
         private readonly Mock<IGenericRepository<Advice>> _adviceRepositoryMock;
+        private readonly Mock<IGenericRepository<ItContractRight>> _itContractRightsRepositoryMock;
         private readonly Mock<ITransactionManager> _transactionManager;
         private readonly Mock<IHangfireApi> _hangfireApiMock;
         private readonly Mock<IUserNotificationService> _userNotificationService;
@@ -44,6 +46,7 @@ namespace Tests.Unit.Core.ApplicationServices
             _operationClockMock.Setup(x => x.Now).Returns(DateTime.Now);
             _mailClientMock = new Mock<IMailClient>();
             _adviceRepositoryMock = new Mock<IGenericRepository<Advice>>();
+            _itContractRightsRepositoryMock = new Mock<IGenericRepository<ItContractRight>>();
             _adviceSentRepositoryMock = new Mock<IGenericRepository<AdviceSent>>();
             _transactionManager = new Mock<ITransactionManager>();
             _hangfireApiMock = new Mock<IHangfireApi>();
@@ -53,7 +56,7 @@ namespace Tests.Unit.Core.ApplicationServices
                 _mailClientMock.Object,
                 _adviceRepositoryMock.Object,
                 _adviceSentRepositoryMock.Object,
-                Mock.Of<IGenericRepository<ItContractRight>>(),
+                _itContractRightsRepositoryMock.Object,
                 Mock.Of<IGenericRepository<ItSystemRight>>(),
                 Mock.Of<IGenericRepository<DataProcessingRegistrationRight>>(),
                 Mock.Of<ILogger>(),
@@ -95,6 +98,51 @@ namespace Tests.Unit.Core.ApplicationServices
             //Assert
             Assert.True(result);
             _mailClientMock.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Never);
+        }
+
+        [Fact]
+        public void SendAdvice_GivenContractRoleRecipient_EmailIsSentToAssignedUser()
+        {
+            //Arrange
+            const int contractId = 17;
+            const int contractRoleId = 23;
+            const string userEmail = "contract-user@kitos.dk";
+            var advice = new Advice
+            {
+                Id = A<int>(),
+                Subject = A<string>(),
+                AdviceType = AdviceType.Immediate,
+                Type = RelatedEntityType.itContract,
+                RelationId = contractId,
+                Reciepients = new List<AdviceUserRelation>
+                {
+                    new()
+                    {
+                        RecieverType = RecieverType.RECIEVER,
+                        RecpientType = RecipientType.ROLE,
+                        ItContractRoleId = contractRoleId
+                    }
+                },
+                IsActive = true
+            };
+            var assignedRight = new ItContractRight
+            {
+                ObjectId = contractId,
+                RoleId = contractRoleId,
+                User = new User { Email = userEmail }
+            };
+            _itContractRightsRepositoryMock.Setup(x => x.AsQueryable())
+                .Returns(new[] { assignedRight }.AsQueryable);
+            SetupAdviceRepository(advice);
+            SetupTransactionManager();
+
+            //Act
+            var result = _sut.SendAdvice(advice.Id);
+
+            //Assert
+            Assert.True(result);
+            _mailClientMock.Verify(x => x.Send(It.Is<MailMessage>(message =>
+                message.To.Any(recipient => recipient.Address == userEmail))), Times.Once);
         }
 
 
@@ -144,7 +192,7 @@ namespace Tests.Unit.Core.ApplicationServices
 
             //Assert
             Assert.True(result);
-            
+
             _mailClientMock.Verify(x => x.Send(It.IsAny<MailMessage>()), Times.Never());
         }
 

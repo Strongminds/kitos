@@ -284,7 +284,7 @@ namespace Core.ApplicationServices
                 case RelatedEntityType.itContract:
                     var itContractRoles = _itContractRights.AsQueryable().Where(I => I.ObjectId == advice.RelationId
                         && I.RoleId == r.ItContractRoleId);
-                    foreach (var t in itContractRoles)
+                    foreach (var t in itContractRoles.ToList())
                     {
                         if (t.User.Deleted) continue;
                         mailAddressCollection.Add(t.User.Email);
@@ -295,7 +295,7 @@ namespace Core.ApplicationServices
 
                     var systemRoles = _itSystemRights.AsQueryable().Where(I => I.ObjectId == advice.RelationId
                                                                               && I.RoleId == r.ItSystemRoleId);
-                    foreach (var t in systemRoles)
+                    foreach (var t in systemRoles.ToList())
                     {
                         if (t.User.Deleted) continue;
                         mailAddressCollection.Add(t.User.Email);
@@ -307,7 +307,7 @@ namespace Core.ApplicationServices
                     var dpaRoles = _dataProcessingRegistrationRights.AsQueryable().Where(I =>
                         I.ObjectId == advice.RelationId
                         && I.RoleId == r.DataProcessingRegistrationRoleId);
-                    foreach (var t in dpaRoles)
+                    foreach (var t in dpaRoles.ToList())
                     {
                         if (t.User.Deleted) continue;
                         mailAddressCollection.Add(t.User.Email);
