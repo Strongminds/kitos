@@ -39,9 +39,48 @@ When we talk about “synchronization depth” we mean the levels in the organiz
 
 The following diagram illustrates this.
 
+```mermaid
+flowchart TB
+    subgraph Included["Example: synchronization depth 2"]
+        root["Root organization unit (level 1)"] --> childA["Organization unit (level 2)"]
+        root --> childB["Organization unit (level 2)"]
+    end
+    childA -. "Beyond selected depth" .-> grandchild["Organization unit (level 3)"]
+    note["Depth N includes levels 1 through N. No depth limit includes the full hierarchy."]
+```
+
 ## Overview
 
 The following diagram provides a high-level overview of the use cases the synchronization functionality must implement.
+
+```mermaid
+flowchart LR
+    admin[Local Admin]
+    fk[FK Organisation]
+    subgraph Kitos["KITOS organization module"]
+        connect["1. Synchronize hierarchy"]
+        depth["2. Update synchronization depth"]
+        consequences["3. Accept import consequences"]
+        toggle["4. Toggle automatic synchronization"]
+        logs["5. View synchronization log"]
+        migrate["6. Migrate organization unit"]
+        delete["7. Delete KITOS-only organization unit"]
+        background["8. Perform background synchronization"]
+        disconnect["9. Disconnect from FK Organisation"]
+        edit["10. Edit KITOS-only organization units"]
+    end
+    admin --> connect
+    admin --> depth
+    admin --> consequences
+    admin --> toggle
+    admin --> logs
+    admin --> migrate
+    admin --> delete
+    admin --> disconnect
+    admin --> edit
+    fk -->|Hierarchy changes| background
+    toggle -->|When enabled| background
+```
 
 ## Actors
 
@@ -256,6 +295,31 @@ The following class diagram illustrates some of the entities of the component in
 
 This example is based on a request from the UI to display the current access status to FK Organisation _(does KITOS have access to the organization’s data in FK Organisation)_ and is not supposed to illustrate all operations and/or properties of different entities_._
 
+```mermaid
+classDiagram
+    class ImportConfigUI["FK Organization Import Config"]
+    class SyncController["StsOrganizationSynchronizationInternalV2Controller"]
+    class SyncService["StsOrganizationSynchronizationService"]
+    class SystemServiceInterface["IStsOrganizationSystemService"]
+    class SystemService["StsOrganizationSystemService"]
+    class Organization
+    class StsOrganizationIdentity
+    class StsOrganizationConnection
+    class StsOrganizationChangeLog
+    class StsOrganizationConsequenceLog
+
+    ImportConfigUI ..> SyncController : internal API
+    SyncController ..> SyncService
+    SyncService ..> Organization
+    SyncService ..> SystemServiceInterface
+    SystemService ..|> SystemServiceInterface
+    SystemService ..> Organization : resolve hierarchy
+    Organization "1" *-- "0..*" StsOrganizationIdentity
+    Organization "1" *-- "0..1" StsOrganizationConnection
+    StsOrganizationConnection "1" *-- "0..*" StsOrganizationChangeLog
+    StsOrganizationChangeLog "1" *-- "0..*" StsOrganizationConsequenceLog
+```
+
 :warning:  **NOTE on use of FK vs STS:** _From a user’s perspective the current name used for FK Organisation is just that. The systems behind it are prefixed with “STS” (støttesystem in danish), so for that reason, the STS prefix is used for anything but the user-facing components. The rationale behind this is that while the system remains the same over time, the external/business name has a tendency to change._
 
 ### Responsibilities
@@ -312,8 +376,51 @@ In this section, we will add details to selected scenarios using diagramming whi
 
 The diagram above illustrates the translation of the responsibilities identified in <synchronization-of-organizational-hierar.md> into actual runtime behavior.
 
+```mermaid
+sequenceDiagram
+    actor Admin as Local Admin
+    participant UI as FK Organization Import Config
+    participant API as Internal API
+    participant Sync as StsOrganizationSynchronizationService
+    participant FK as FK Organisation
+    participant Org as Organization
+    participant Store as Database
+
+    Note over Admin,FK: The organization must have the required service agreement and access.
+    Admin->>UI: Start synchronization
+    UI->>API: POST connection (depth, subscribeToUpdates)
+    API->>Sync: Connect(organizationUuid, depth, subscribeToUpdates)
+    Sync->>Sync: Check import permission
+    Sync->>FK: Resolve organization hierarchy
+    FK-->>Sync: External organization tree
+    Sync->>Org: Import tree to selected depth and connect
+    Org-->>Sync: Import consequences
+    Sync->>Org: Add import log
+    Sync->>Store: Save changes and commit transaction
+    Sync-->>API: Success
+    API-->>UI: 200 OK
+    UI-->>Admin: Show synchronization result
+```
+
 A few error cases have ben included, but the purpose of the diagram is not to be complete, but to serve as a responsibility segregation guide as well as a business logic placement guide (actual rules about the import are implemented and maintained in the domain model)
 
 ## Updating an existing connection
 
 The following activity diagram describes the decision process provided for a user which is updating an existing connection to FK Organisation.
+
+```mermaid
+flowchart TD
+    start([Start]) --> connected{Connected to FK Organisation?}
+    connected -- No --> unavailable[Connection cannot be updated]
+    connected -- Yes --> change[Choose synchronization depth and automatic updates]
+    change --> preview[Request update consequences]
+    preview --> review[Review consequences]
+    review --> accept{Accept consequences?}
+    accept -- No --> cancel([Cancel update])
+    accept -- Yes --> update[Submit connection update]
+    update --> load[Load external organization hierarchy]
+    load --> filter[Apply selected synchronization depth]
+    filter --> synchronize[Update organization hierarchy and connection settings]
+    synchronize --> log[Record consequences when changes exist]
+    log --> finish([Save and finish])
+```
