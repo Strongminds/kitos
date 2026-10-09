@@ -15,11 +15,12 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Presentation.Web.Controllers.API.V1.OData;
+using Tests.Toolkit.Patterns;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Controllers.API.V1.OData
 {
-    public class ItSystemUsageArchivesControllerTest
+    public class ItSystemUsageArchivesControllerTest : WithAutoFixture
     {
         [Fact]
         public void ActionDiscovery_OnlyExposesOrganizationScopedGet()
