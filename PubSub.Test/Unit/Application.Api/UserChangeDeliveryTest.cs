@@ -87,7 +87,7 @@ public class UserChangeDeliveryTest
         var first = await outbox.Enqueue(message, default);
         Assert.Equal(first.Uuid, (await outbox.Enqueue(message, default)).Uuid);
         Assert.Single(db.UserChangeDeliveries);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => outbox.Enqueue(message with { ExternalUserUuid = Guid.NewGuid() }, default));
+        await Assert.ThrowsAsync<UserChangeConflictException>(() => outbox.Enqueue(message with { ExternalUserUuid = Guid.NewGuid() }, default));
     }
 
     [Theory]

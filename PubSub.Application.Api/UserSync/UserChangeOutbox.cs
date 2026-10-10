@@ -27,5 +27,5 @@ public class UserChangeOutbox(PubSubContext db)
     }
 
     private static UserChangeDelivery CheckDuplicate(UserChangeDelivery existing, string payload) =>
-        existing.Payload == payload ? existing : throw new InvalidOperationException("Message ID already belongs to another event.");
+        existing.Payload == payload ? existing : throw new UserChangeConflictException();
 }

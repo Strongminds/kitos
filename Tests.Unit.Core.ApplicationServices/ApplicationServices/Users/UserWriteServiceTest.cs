@@ -52,8 +52,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             _userRepositoryMock = new Mock<IUserRepository>();
             _loggerMock = new Mock<ILogger>();
 
-            _sut = new UserWriteService(_userServiceMock.Object, 
-                _organizationRightsServiceMock.Object, 
+            _sut = new UserWriteService(_userServiceMock.Object,
+                _organizationRightsServiceMock.Object,
                 _transactionManagerMock.Object,
                 _authorizationContextMock.Object,
                 _organizationServiceMock.Object,
@@ -71,7 +71,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var createParams = SetupUserParameters();
             var orgUuid = A<Guid>();
             var orgId = A<int>();
-            var org = new Organization { Id = orgId};
+            var org = new Organization { Id = orgId };
             var transaction = ExpectTransactionBegins();
 
             ExpectIsEmailInUseReturns(createParams.User.Email, false);
@@ -282,8 +282,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             //Arrange
             var user = SetupUser();
-            var organization = new Organization {Id = A<int>(), Uuid = A<Guid>()};
-            var defaultUnit = new OrganizationUnit {Id = A<int>(), Uuid = A<Guid>()};
+            var organization = new Organization { Id = A<int>(), Uuid = A<Guid>() };
+            var defaultUnit = new OrganizationUnit { Id = A<int>(), Uuid = A<Guid>() };
             var updateParameters = A<UpdateUserParameters>();
             updateParameters.DefaultOrganizationUnitUuid = defaultUnit.Uuid.AsChangedValue();
             ExpectGetUserByUuid(user.Uuid, user);
@@ -325,8 +325,8 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             //Arrange
             var user = SetupUser();
             user.IsGlobalAdmin = false;
-            var organization = new Organization {Id = A<int>(), Uuid = A<Guid>()};
-            var defaultUnit = new OrganizationUnit {Id = A<int>(), Uuid = A<Guid>()};
+            var organization = new Organization { Id = A<int>(), Uuid = A<Guid>() };
+            var defaultUnit = new OrganizationUnit { Id = A<int>(), Uuid = A<Guid>() };
             var updateParameters = new UpdateUserParameters
             {
                 Roles = new List<OrganizationRole>
@@ -370,7 +370,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         }
 
         [Fact]
-        public void Can_Not_Update_User_If_Email_Is_Already_In_Use() 
+        public void Can_Not_Update_User_If_Email_Is_Already_In_Use()
         {
             //Arrange
             var user = SetupUser();
@@ -513,7 +513,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             Assert.True(result.Failed);
         }
 
-        [Fact] 
+        [Fact]
         public void Can_Remove_Global_Admin()
         {
             var user = SetupUser();
@@ -726,7 +726,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
         {
             _userServiceMock.Setup(x => x.AddUser(user, sendMailOnCreation, orgId)).Returns(user);
         }
-        
+
         private void ExpectAddRoleReturns(OrganizationRole role, int organizationId, int userId, Result<OrganizationRight, OperationFailure> result)
         {
             _organizationRightsServiceMock.Setup(x => x.AssignRole(organizationId, userId, role)).Returns(result);
