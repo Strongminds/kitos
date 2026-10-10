@@ -42,7 +42,7 @@ namespace Core.ApplicationServices.Users.Write
             IEntityIdentityResolver entityIdentityResolver,
             IUserRightsService userRightsService,
             IOrganizationalUserContext organizationalUserContext,
-            IUserRepository userRepository, 
+            IUserRepository userRepository,
             ILogger logger)
         {
             _userService = userService;
@@ -99,7 +99,7 @@ namespace Core.ApplicationServices.Users.Write
 
             var getUserResult = _userService.GetUserByUuid(userUuid);
             Result<User, OperationError> updateUserResult;
-            if(parameters.HasOnlyRoleChanges())
+            if (parameters.HasOnlyRoleChanges())
             {
                 updateUserResult = getUserResult
                     .Bind(user => PerformRoleModify(organization, user, parameters));
@@ -107,7 +107,7 @@ namespace Core.ApplicationServices.Users.Write
             else
             {
                 updateUserResult = getUserResult.Bind(user => PerformModify(organization, user, parameters));
-            }           
+            }
 
             if (updateUserResult.Failed)
             {
@@ -137,7 +137,7 @@ namespace Core.ApplicationServices.Users.Write
             _userService.IssueAdvisMail(user.Value, false, orgIdResult.Value);
             return Maybe<OperationError>.None;
         }
-        
+
         public Result<UserCollectionPermissionsResult, OperationError> GetCollectionPermissions(Guid organizationUuid)
         {
             return _organizationService.GetOrganization(organizationUuid)
@@ -243,7 +243,7 @@ namespace Core.ApplicationServices.Users.Write
                         _organizationService.SetDefaultOrgUnit(user, orgIdResult.Value, unitIdResult.Value);
                         return Maybe<OperationError>.None;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _logger.Error(ex.Message, ex);
                         return new OperationError(ex.Message, OperationFailure.UnknownError);
@@ -412,7 +412,7 @@ namespace Core.ApplicationServices.Users.Write
                         (userToUpdate, roles) => UpdateRoles(organization, userToUpdate, roles));
                 });
         }
-        
+
         private Result<User, OperationError> PerformUpdates(User orgUser, Organization organization, UpdateUserParameters parameters)
         {
             return orgUser.WithOptionalUpdate(parameters.FirstName, (user, firstName) => user.UpdateFirstName(firstName))

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Api;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Application.Api.Configuration;
+using PubSub.Application.Api.UserSync.Beskedfordeler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddScoped<PubSub.Application.Api.UserSync.UserChangeOutbox>();
 builder.Services.AddHttpClient("UserSync", client => client.Timeout = TimeSpan.FromSeconds(30))
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddHostedService<PubSub.Application.Api.UserSync.UserChangeDeliveryWorker>();
+builder.AddBeskedfordeler();
 
 var app = builder.Build();
 

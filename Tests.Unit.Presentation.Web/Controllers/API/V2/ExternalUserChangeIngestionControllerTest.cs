@@ -36,8 +36,14 @@ public class ExternalUserChangeIngestionControllerTest
             .ReturnsAsync((ExternalUserChange change, CancellationToken _) => { saved = change; return change; });
         var body = System.Text.Json.JsonSerializer.Serialize(new
         {
-            Payload = new { ExternalMessageId = "token-event", OrganizationUuid = organization.Uuid,
-                ExternalUserUuid = Guid.NewGuid(), ChangeType = 1, OccurredAt = (DateTime?)null }
+            Payload = new
+            {
+                ExternalMessageId = "token-event",
+                OrganizationUuid = organization.Uuid,
+                ExternalUserUuid = Guid.NewGuid(),
+                ChangeType = 1,
+                OccurredAt = (DateTime?)null
+            }
         });
         var controller = Create(body, new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object));
         var response = Assert.IsType<OkObjectResult>(await controller.Receive(default));

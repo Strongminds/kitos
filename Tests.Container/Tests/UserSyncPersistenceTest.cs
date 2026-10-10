@@ -194,13 +194,20 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
 
     private ExternalUserChange Change(string id) => new()
     {
-        ExternalMessageId = id, OrganizationId = _organization.Id, ExternalUserUuid = _externalUuid,
-        UserId = _user.Id, ChangeType = ExternalUserChangeType.Deleted, ReceivedAt = DateTime.UtcNow
+        ExternalMessageId = id,
+        OrganizationId = _organization.Id,
+        ExternalUserUuid = _externalUuid,
+        UserId = _user.Id,
+        ChangeType = ExternalUserChangeType.Deleted,
+        ReceivedAt = DateTime.UtcNow
     };
     private OrganizationRight Right(int organizationId) => new()
     {
-        UserId = _user.Id, OrganizationId = organizationId, Role = OrganizationRole.User,
-        ObjectOwnerId = _actor.Id, LastChangedByUserId = _actor.Id
+        UserId = _user.Id,
+        OrganizationId = organizationId,
+        Role = OrganizationRole.User,
+        ObjectOwnerId = _actor.Id,
+        LastChangedByUserId = _actor.Id
     };
     private static User NewUser(string name) => new() { Name = name, Email = name + "@test.invalid", Password = "test", Salt = "test" };
     private class NoEvents : IDomainEvents { public void Raise<T>(T args) where T : IDomainEvent { } }

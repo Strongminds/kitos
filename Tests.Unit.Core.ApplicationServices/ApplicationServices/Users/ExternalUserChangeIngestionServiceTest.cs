@@ -123,7 +123,10 @@ public class ExternalUserChangeIngestionServiceTest
 
     private ExternalUserChange Existing() => new()
     {
-        ExternalMessageId = _input.ExternalMessageId, OrganizationId = _organization.Id,
-        ExternalUserUuid = _input.ExternalUserUuid, ChangeType = _input.ChangeType, OccurredAt = _input.OccurredAt
+        ExternalMessageId = _input.ExternalMessageId,
+        OrganizationId = _organization.Id,
+        ExternalUserUuid = _input.ExternalUserUuid,
+        ChangeType = _input.ChangeType,
+        OccurredAt = _input.OccurredAt
     };
 }

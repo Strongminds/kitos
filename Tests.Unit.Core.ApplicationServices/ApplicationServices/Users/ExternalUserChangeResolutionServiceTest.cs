@@ -37,8 +37,10 @@ public class ExternalUserChangeResolutionServiceTest
     {
         _change = new ExternalUserChange
         {
-            OrganizationId = _organization.Id, ExternalUserUuid = Guid.NewGuid(),
-            ChangeType = ExternalUserChangeType.Deleted, Status = ExternalUserChangeStatus.Pending
+            OrganizationId = _organization.Id,
+            ExternalUserUuid = Guid.NewGuid(),
+            ChangeType = ExternalUserChangeType.Deleted,
+            Status = ExternalUserChangeStatus.Pending
         };
         _rights = [new OrganizationRight { UserId = _user.Id, OrganizationId = _organization.Id, Role = OrganizationRole.User }];
         var organizations = new Mock<IGenericRepository<Organization>>();

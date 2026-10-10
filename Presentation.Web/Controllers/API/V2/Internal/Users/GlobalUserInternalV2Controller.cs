@@ -36,8 +36,8 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         private readonly IOrganizationResponseMapper _organizationResponseMapper;
         private readonly IUserRightsService _userRightsService;
 
-        public GlobalUserInternalV2Controller(IUserWriteService userWriteService, 
-            IUserService userService, 
+        public GlobalUserInternalV2Controller(IUserWriteService userWriteService,
+            IUserService userService,
             IOrganizationResponseMapper organizationResponseMapper,
             IUserRightsService userRightsService)
         {
@@ -137,7 +137,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [ApiResponse(HttpStatusCode.Unauthorized)]
         public IActionResult GetOrganizationsByUserUuid(Guid userUuid)
         {
-            
+
             return _userService
                 .GetUserOrganizations(userUuid)
                 .Select(x => x.Select(_organizationResponseMapper.ToOrganizationDTO).ToList())
@@ -190,7 +190,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
             return _userWriteService.RemoveLocalAdmin(organizationUuid, userUuid)
                     .Match(FromOperationError, NoContent);
         }
-        
+
         [HttpGet]
         [Route("with-rightsholder-access")]
         [ApiResponse(typeof(IEnumerable<UserWithOrganizationResponseDTO>), HttpStatusCode.OK)]
@@ -244,7 +244,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
-        public IActionResult UpdateSystemIntegrator([NonEmptyGuid] [FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
+        public IActionResult UpdateSystemIntegrator([NonEmptyGuid][FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
         {
             return _userWriteService.UpdateSystemIntegrator(userUuid, requestedValue)
                     .Match(NoContent, FromOperationError);
@@ -271,7 +271,7 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Forbidden)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
-        public IActionResult UpdatePubSubUser([NonEmptyGuid] [FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
+        public IActionResult UpdatePubSubUser([NonEmptyGuid][FromRoute] Guid userUuid, [FromQuery] bool requestedValue)
         {
             return _userWriteService.UpdatePubSubUser(userUuid, requestedValue)
                 .Match(NoContent, FromOperationError);
