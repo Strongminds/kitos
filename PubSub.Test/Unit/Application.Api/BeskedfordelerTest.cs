@@ -57,7 +57,7 @@ public class BeskedfordelerTest
     public async Task Receive_UnconfirmedContract_DoesNotPersistOrAcknowledge()
     {
         await using var db = CreateDb();
-        var receiver = new BeskedfordelerReceiver(new UnsupportedBeskedfordelerDeletionMapper(), new UserChangeOutbox(db));
+        var receiver = new BeskedfordelerReceiver(new OrgBrugerDeletionMapper(new Dictionary<string, Guid> { ["12345678"] = Guid.NewGuid() }), new UserChangeOutbox(db));
         Assert.Equal(BeskedfordelerStatus.NotImplemented, await receiver.Receive(Input(Guid.NewGuid()), default));
         Assert.Empty(db.UserChangeDeliveries);
     }
@@ -186,7 +186,7 @@ public class BeskedfordelerTest
         var mapper = new Mock<IBeskedfordelerDeletionMapper>();
         mapper.Setup(x => x.Map(It.IsAny<XElement>())).Returns(persistenceFailure
             ? new UserDeletionEvent("ignored", Guid.NewGuid(), Guid.NewGuid()) : null);
-        // The test schema validates only the wrapper; official-schema acceptance needs the missing dependencies.
+        // This test isolates controller error handling. Official-schema acceptance is tested separately.
         var schemas = new XmlSchemaSet { XmlResolver = null };
         using var schemaText = new StringReader("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:oio:sts:1.0.0'><xs:element name='ModtagBeskedInput'><xs:complexType><xs:sequence><xs:any processContents='skip'/></xs:sequence></xs:complexType></xs:element></xs:schema>");
         using var schemaReader = XmlReader.Create(schemaText);
@@ -247,7 +247,7 @@ public class BeskedfordelerTest
         }
     }
 
-    // A deliberately small schema tests parser behavior, not the unavailable producer contract.
+    // A deliberately small schema isolates parser behavior from the producer contract.
     private static BeskedfordelerXmlReader Reader()
     {
         var schemas = new XmlSchemaSet { XmlResolver = null };

@@ -14,12 +14,12 @@ public static class BeskedfordelerRegistration
         var fingerprints = builder.Configuration.GetSection("Beskedfordeler:ClientCertificateSha256").Get<string[]>() ?? [];
         if (fingerprints.Length == 0 || fingerprints.Any(value => value.Length != 64 || !value.All(Uri.IsHexDigit)))
             throw new InvalidOperationException("Configure environment-specific Beskedfordeler client certificate SHA-256 fingerprints.");
-        var schemaDirectory = builder.Configuration["Beskedfordeler:SchemaDirectory"];
-        if (string.IsNullOrWhiteSpace(schemaDirectory))
-            throw new InvalidOperationException("Beskedfordeler requires a complete local SchemaDirectory.");
+        var schemaDirectory = builder.Configuration["Beskedfordeler:SchemaDirectory"] ??
+            Path.Combine(AppContext.BaseDirectory, "UserSync", "Beskedfordeler", "Schemas");
         var schemas = BeskedfordelerXmlReader.LoadSchemas(schemaDirectory);
         builder.Services.AddSingleton(new BeskedfordelerXmlReader(schemas));
-        builder.Services.AddScoped<IBeskedfordelerDeletionMapper, UnsupportedBeskedfordelerDeletionMapper>();
+        var organizations = builder.Configuration.GetSection("Beskedfordeler:Organizations").Get<Dictionary<string, Guid>>() ?? [];
+        builder.Services.AddSingleton<IBeskedfordelerDeletionMapper>(new OrgBrugerDeletionMapper(organizations));
         builder.Services.AddScoped<BeskedfordelerReceiver>();
         builder.WebHost.ConfigureKestrel(options => options.ConfigureHttpsDefaults(https =>
         {

@@ -2,9 +2,9 @@
 
 ## Status and scope
 
-This document describes the FK Organization user-change based on the connection to KOMBIT's Beskedfordeler. The KITOS and PubSub user-change pipeline is implemented. A disabled-by-default Beskedfordeler callback foundation is implemented, but **production deletion mapping is not implemented** and the supplied schema bundle is incomplete. The current PubSub JSON stub is a development/test tool, not a production Beskedfordeler callback.
+This document describes the FK Organization user-change based on the connection to KOMBIT's Beskedfordeler. The KITOS and PubSub user-change pipeline is implemented. A disabled-by-default Beskedfordeler callback and the SF1500 `ORG_Bruger` immediate-deactivation mapper are implemented with the complete SF1461 callback schema dependencies. Production activation still requires verified municipality mappings, certificate/subscription provisioning, and external-test acceptance. The current PubSub JSON stub is a development/test tool, not a production Beskedfordeler callback.
 
-The initial supported change is an externally reported user deletion. KITOS records that report for review by the affected organization's local administrator rather than immediately removing access. The flow is designed to accept events from an upstream integration, durably hand them to KITOS, and apply or dismiss them through the internal API.
+The initial supported source event is `BrugerNedlagt` (user becomes inactive), represented by the existing `Deleted` review item. This is not comprehensive detection of physical deletions: the producer explicitly emits no events for `Slet` or `Passiver`. KITOS records that report for review by the affected organization's local administrator rather than immediately removing access. The flow is designed to accept events from an upstream integration, durably hand them to KITOS, and apply or dismiss them through the internal API.
 
 ## End-to-end flow
 
@@ -107,13 +107,13 @@ The PubSub worker will not start delivery if disabled and fails startup validati
 
 ## KOMBIT Beskedfordeler connection
 
-### Proposed integration
+### Implemented integration
 
 The target transport is Beskedfordeler's synchronous REST push callback over mutual TLS. The generic Beskedkuvert envelope uses `ModtagBeskedInput` and contains a `Haendelsesbesked`; its extensible `Beskeddata` element does not define the payload schema for a specific producer event. The Beskedfordeler integration is therefore a separate inbound adapter in PubSub, not a change to the normalized PubSub-to-KITOS contract:
 
 1. Beskedfordeler calls a dedicated HTTPS callback using its XML `ModtagBeskedInput`.
 2. PubSub validates the envelope and authenticates the client certificate against the configured environment-specific KOMBIT/Beskedfordeler trust.
-3. The adapter maps the confirmed user-deletion payload to `UserDeletionEvent` and persists it in the existing durable outbox.
+3. The adapter maps the confirmed immediate-deactivation envelope to `UserDeletionEvent` and persists it in the existing durable outbox.
 4. Only after the outbox commit does PubSub acknowledge with the documented XML `ModtagBeskedOutput` success (`StandardRetur.StatusKode` 20 and HTTP 200).
 5. The existing delivery worker forwards the normalized JSON event to KITOS; KITOS records it for local-administrator review.
 
@@ -127,38 +127,59 @@ When enabled, Kestrel requests certificates on HTTPS connections and permits TLS
 
 | Configuration | Requirement |
 | --- | --- |
-| `Beskedfordeler:Enabled` | Defaults to false when absent. Keep disabled until the producer mapper, full schemas, and acceptance testing are complete. |
-| `Beskedfordeler:SchemaDirectory` | Local directory containing the complete callback XSD set and dependencies. Loaded and compiled at startup. |
+| `Beskedfordeler:Enabled` | Defaults to false when absent. Keep disabled until municipality mappings, provisioning and external-test acceptance are complete. |
+| `Beskedfordeler:SchemaDirectory` | Optional override for the complete callback XSD directory. Defaults to `UserSync/Beskedfordeler/Schemas` under the application output directory; bundled schemas are copied to build/publish output and compiled at startup. |
 | `Beskedfordeler:ClientCertificateSha256` | Array of 64-character hexadecimal SHA-256 certificate fingerprints for the selected environment. Multiple entries support overlap during rotation; restart after changes. |
+| `Beskedfordeler:Organizations` | Required CVR-to-KITOS-organization UUID dictionary. Keys must be eight ASCII digits; values must be non-empty and unique. Use KITOS UUIDs, not FK Organisation UUIDs. Invalid or empty mappings fail startup. |
 | `UserSync:Enabled` | Must also be true, with the existing worker endpoint and credentials configured. |
 
-For environment variables, use `Beskedfordeler__Enabled`, `Beskedfordeler__SchemaDirectory`, and `Beskedfordeler__ClientCertificateSha256__0` (and subsequent indices). Trust and fingerprints must be supplied separately for test and production; no certificates or fingerprints are bundled.
+For environment variables, use `Beskedfordeler__Enabled`, `Beskedfordeler__SchemaDirectory`, and `Beskedfordeler__ClientCertificateSha256__0` (and subsequent indices). Use `Beskedfordeler__Organizations__12345678=<KITOS organization UUID>` for each subscribed municipality. Verify this association against KITOS organisation records; configuration does not discover or validate remote records. Restart after changes. Trust, mappings and fingerprints must be supplied separately for test and production; no certificates, fingerprints or live municipality mappings are bundled.
 
-The reader caps XML at 1 MiB of characters and the endpoint caps the HTTP body at 1 MiB. It prohibits DTDs and external entity resolution and validates XML against the configured schema set. All XSDs are loaded explicitly from the configured local directory; XML cannot select or download schemas. Unknown or invalid structure is rejected. The original supplied callback XSDs are kept under `PubSub.Application.Api/UserSync/Beskedfordeler/Schemas/` as reference assets, not as a complete deployable schema set.
+The reader caps XML at 1 MiB of characters and the endpoint caps the HTTP body at 1 MiB. It prohibits DTDs and external entity resolution and validates XML against the configured schema set. All XSDs are loaded explicitly from the configured local directory; XML cannot select or download schemas. Unknown or invalid structure is rejected. The matching SF1461 callback XSDs and all their transitive dependencies are bundled under `PubSub.Application.Api/UserSync/Beskedfordeler/Schemas/`. `wadl/AnvenderSystem.wadl` is an unchanged contract reference; its original `../xsd` path corresponds to the repository's `Schemas` directory. It is not used for runtime schema resolution.
 
-The receiver uses `Haendelsesbesked/BeskedId/sd:UUIDIdentifikator`, canonicalized as a GUID, for the existing outbox identity. It accepts envelope version `1.0`. `IBeskedfordelerDeletionMapper` is the explicit producer-contract boundary. Its current implementation deliberately returns unsupported for every payload. A confirmed mapper must validate the producer message type and payload and map the KITOS organization, external identity and UTC occurrence timestamp deterministically. It must not interpret envelope actors or object IDs as those identities without producer-specific evidence.
+The receiver uses `Haendelsesbesked/BeskedId/sd:UUIDIdentifikator`, canonicalized as a GUID, for the existing outbox identity and accepts envelope version `1.0`. `OrgBrugerDeletionMapper` implements `IBeskedfordelerDeletionMapper` using SF1500's `Beskedtype_ORG_Bruger_1.0.pdf` (2023-12-06), sections 1-3:
 
-After a successful mapping, the receiver awaits durable outbox persistence before returning `ModtagBeskedOutput` with `StandardRetur/StatusKode` 20. Equivalent normalized replays succeed; conflicting IDs return 40. XML validation failures and invalid mappings return 40, unsupported mappings return 51, database update failures return 53, and unsupported envelope versions return 55. Protocol replies use HTTP 200 and `application/xml`; authentication and disabled-route failures use HTTP 403/404. Unexpected failures/cancellation do not produce a success acknowledgment. Payloads and XML parser diagnostics are not logged.
+| Source field under `Beskedkuvert/Filtreringsdata` | Mapping / validation |
+| --- | --- |
+| `Beskedtype/UUIDIdentifikator` | Must be `94ef3c82-10e9-4d12-a9d9-7a7242d5ba83` (`ORG_Bruger`). |
+| `ObjektRegistrering/ObjektType/UUIDIdentifikator` | Must be `2b808769-8d09-4aa3-ac28-f8ac3526010f` (Bruger). |
+| `ObjektRegistrering/ObjektHandling/UUIDIdentifikator` | Must be `9edb0c34-36e2-4d87-aba8-3ca7ade718ee` (`BrugerNedlagt`). |
+| `ObjektRegistrering/ObjektId/UUIDIdentifikator` | Non-empty FK Bruger UUID becomes `ExternalUserUuid`. |
+| `ObjektRegistrering/ObjektAnsvarligMyndighed/URNIdentifikator` | Responsible municipality CVR resolves through `Beskedfordeler:Organizations` to `OrganizationUuid`. |
+| `TilladtModtager/URNIdentifikator` | The responsible municipality must appear in the delivered recipient list. Accept bare CVR, `urn:oio:cvr:` or `urn:oio:cvr-nr:`; never accept `*` as authorization. |
+| `ObjektRegistrering/Registreringstidspunkt/TidsstempelDatoTid` | Required registration timestamp with explicit timezone, converted to UTC `OccurredAt`. This is registration time, not a future effective date. |
 
-D.09.02 sections 5.2 and 10.2 define protocol codes 20/40/51/53/55. Section 5.2 also contains an apparent typo referring to HTTP status 20; HTTP 200 with XML status 20 follows the architecture decision, but must be verified in the external test environment. The document says 40 temporarily interrupts delivery and other protocol errors stop sending from the mailbox. Do not enable the unsupported mapper against a live subscription.
+The existing SSO flow establishes the user-identity convention: `PrivilegeVerifiedState` passes the SAML UUID to `StsBrugerInfoService`, which reads FK Bruger by that UUID; `UserIdentifiedState` persists it as `SsoUserIdentity.ExternalUuid`. Confirm this with a real test user's event before activation. Never use a Person UUID, an actor UUID, or a CVR as the affected user's identity.
 
-### Not yet implemented / blocking contract details
+`Beskeddata` contains Base64 audit metadata (`Transport`, `Operation`, `TransactionID`, `Bruger`). Its `Bruger` is the actor making the change, not the affected user. The mapper does not decode or use it to decide who loses access. Exactly one `ObjektRegistrering` is supported per message; ambiguous multi-registration messages are rejected rather than partially acknowledged.
 
-The producer-specific mapper and live interoperability testing remain incomplete. The supplied XSDs reference missing `1.1/SagDokObjekt.xsd`, `1.1/OrganisationFaelles.xsd`, and `cached/xmldsig-core-schema.xsd` (plus any transitive dependencies). Obtain the matching complete schema release; do not substitute permissive schemas. Startup rejects incomplete schemas. `Anvendersystem.wadl`, referenced by the push specification, was not supplied and should also be obtained to confirm the callback contract.
+The agreed behavior is to translate immediate deactivation into a pending `Deleted` item for administrator review, preserving the existing apply/dismiss flow. No automatic access removal occurs at receipt.
 
-The producer-specific deletion-message specification or an authoritative sample is needed before that mapping can be safely implemented. Confirm the message-type UUID, organization identifier mapping, external user identity mapping, timestamp meaning, and required/optional fields. The generic Beskedkuvert schema alone is insufficient. Confirm the chosen failure responses and operational handling of permanently invalid messages in an interoperability test so a rejected message does not indefinitely block the mailbox. The development JSON stub must not be registered as the production callback.
+After a successful mapping, the receiver awaits durable outbox persistence before returning `ModtagBeskedOutput` with `StandardRetur/StatusKode` 20. Equivalent normalized replays succeed; conflicting IDs return 40. XML validation failures and invalid normalized events return 40; unsupported source events, missing producer fields, unresolved CVRs, unauthorized recipient mappings and ambiguous registrations return 51, database update failures return 53, and unsupported envelope versions return 55. Protocol replies use HTTP 200 and `application/xml`; authentication and disabled-route failures use HTTP 403/404. Unexpected failures/cancellation do not produce a success acknowledgment. Payloads and XML parser diagnostics are not logged.
 
-The intended first iteration is deletion messages only. Beskedfordeler pull/AMQP support and value-list SOAP operations are out of scope. Mailbox/subscription/service-agreement provisioning and callback URL/certificate registration are external deployment prerequisites.
+D.09.02 sections 5.2 and 10.2 define protocol codes 20/40/51/53/55. Section 5.2 also contains an apparent typo referring to HTTP status 20; the supplied `AnvenderSystem.wadl` explicitly specifies HTTP 200, resolving that ambiguity. The success body still carries XML status 20. The document says 40 temporarily interrupts delivery and other protocol errors stop sending from the mailbox. Restrict the subscription to supported events and configured municipalities. An unexpected event is not acknowledged or discarded; it requires operator investigation because status 51 stops delivery from the mailbox.
+
+### Subscription and remaining deployment work
+
+Use the `ORG_Bruger` message type and version 1.0, filtered to `ObjektHandling` UUID `9edb0c34-36e2-4d87-aba8-3ca7ade718ee`. SF1500 section 4 specifies BeskedModtag role `Modtag`, the sending authority's CVR, message type `94ef3c82-10e9-4d12-a9d9-7a7242d5ba83`, sensitivity `1d81c472-0808-44cc-963d-f5ef0170ae1d`, and municipal administrative area `*`. Verify the configured subscription in the external test environment, including that every delivered message has exactly one relevant registration.
+
+Do not subscribe this adapter to `BrugerPlanlagtNedlagt` (`b91ebc7e-7540-44a0-a360-ea58a3adc0e2`): planned changes emit a notification at registration time, with no second notification when they take effect. Supporting them requires separate effective-date lookup/scheduling and handling later changes or cancellation. Removing a user from one organisation unit is also not interpreted as deactivating the user. `Slet` and `Passiver` emit no events according to the producer contract; comprehensive deletion detection would require a separately designed reconciliation mechanism.
+
+Before activation, configure and verify CVR-to-KITOS UUID mappings, approve service agreements, register the callback URL/server certificate, install environment-specific trust, configure fingerprints, and create the mailbox/subscription. Run external-test delivery with a real matching SSO identity, duplicate messages, failed persistence, unknown municipalities, and certificate rotation/revocation. Confirm failure recovery so a rejected message does not indefinitely block the mailbox. The development JSON stub must not be registered as the production callback.
+
+Pull/AMQP, value-list SOAP operations, planned-event scheduling and deletion reconciliation are out of scope for this adapter. The callback remains disabled unless explicitly enabled.
 
 ## Verification coverage
 
-The branch adds unit coverage for event ingestion, duplicate/conflict handling, pending-change reads, apply/dismiss and batch resolution, PubSub token handling and delivery behavior, integration endpoint authentication, plus persistence coverage for the PubSub outbox. Key suites are `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web`, `PubSub.Test`, and `Tests.Container`. `BeskedfordelerTest` covers response namespaces/codes, duplicate/conflicting IDs, failure to persist, unsupported mapping/version, disabled/unauthenticated callbacks, untrusted certificates, and bounded schema-validating XML parsing with DTD rejection. Its small parser schema is a test fixture, not a substitute for the official schemas. Full official-schema/producer fixtures, actual mTLS handshake tests, certificate rotation/revocation acceptance tests, and end-to-end Beskedfordeler interoperability remain required before activation.
+The branch adds unit coverage for event ingestion, duplicate/conflict handling, pending-change reads, apply/dismiss and batch resolution, PubSub token handling and delivery behavior, integration endpoint authentication, plus persistence coverage for the PubSub outbox. Key suites are `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web`, `PubSub.Test`, and `Tests.Container`. `BeskedfordelerTest` covers response namespaces/codes, duplicate/conflicting IDs, failure to persist, unsupported mapping/version, disabled/unauthenticated callbacks, untrusted certificates, and bounded schema-validating XML parsing with DTD rejection. `OrgBrugerDeletionMapperTest` additionally compiles the bundled official schemas, validates a synthetic source message and success response, exercises durable mapping/replay, and rejects unsupported, ambiguous and unresolved events. Synthetic fixtures are derived from the contract, not captured provider traffic. Actual mTLS handshake tests, certificate rotation/revocation acceptance tests and end-to-end Beskedfordeler interoperability remain required before activation.
 
 ## References
 
+- KOMBIT, _SF1500 Organisation_, integration version 3.3; nested `SF1500 Bilag v3.2/Beskeder/Beskedtype_ORG_Bruger_1.0.pdf`, sections 1-5 (the supplied 3.3 package retains a v3.2 directory name).
 - KOMBIT, _SF1461 Modtag beskeder via Beskedfordeler_, integration version 2.0.
 - KOMBIT, _D.09.02 Beskedfordeler-Besked-FåTilsendt-Snitflade_ (push interface).
 - KOMBIT, _D.09.03 Beskedfordeler-Besked-Hent-Snitflade_ (pull alternative, not selected).
 - KOMBIT, _B.08.09 Underbilag 2O - Beskedkuvert_ and `Beskedkuvert.xsd`.
+- `AnvenderSystem.wadl` from SF1461 annexes confirms POST, application/xml and HTTP 200.
 - `BeskeddataBase64ver.2.00.xsd`, `Beskedfordeler.wsdl`, and related operation/value-list schemas supplied with the integration documentation.
 - Main implementation: `PubSub.Application.Api/UserSync/`, `PubSub.Core.DomainModel/UserSync/`, `Core.ApplicationServices/Users/ExternalUserChange*`, `Core.DomainModel/Users/ExternalUserChange.cs`, and `Presentation.Web/Controllers/API/V2/Integration/ExternalUserChangeIngestionController.cs`.
