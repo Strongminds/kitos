@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- PubSub projects live in the other solution; preserve this test build's configuration. -->
+    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PubSub.Application.Api\PubSub.Application.Api.csproj" />
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
     <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj" />
     <ProjectReference Include="..\Presentation.Web\Presentation.Web.csproj" />

@@ -1,6 +1,6 @@
 namespace PubSub.Core.DomainModel.UserSync;
 
-/// <summary>Durable handoff: upstream may acknowledge only after this record is committed.</summary>
+/// <summary>Legacy outbox retained for restartable cutover and audit; never polled for delivery.</summary>
 public class UserChangeDelivery
 {
     public Guid Uuid { get; set; } = Guid.NewGuid();
@@ -12,4 +12,5 @@ public class UserChangeDelivery
     public bool DeadLettered { get; set; }
     public int? LastStatusCode { get; set; }
     public Guid Version { get; set; } = Guid.NewGuid();
+    public DateTime? RabbitMqMigratedAt { get; set; }
 }

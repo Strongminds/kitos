@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Api.UserSync.Beskedfordeler;
+using PubSub.Application.Api.UserSync;
+using System.Data.Common;
 
 namespace PubSub.Application.Api.Controllers;
 
@@ -38,9 +40,9 @@ public class BeskedfordelerController(IConfiguration configuration,
             // XML diagnostics can contain payload data; never include them in logs or replies.
             return Reply(BeskedfordelerStatus.CannotReceive);
         }
-        catch (DbUpdateException)
+        catch (Exception ex) when (ex is DbUpdateException or DbException or UserChangePublishException)
         {
-            logger.LogWarning("Beskedfordeler outbox persistence failed; message was not acknowledged.");
+            logger.LogWarning("Beskedfordeler durable handoff failed; message was not acknowledged.");
             return Reply(BeskedfordelerStatus.Unavailable);
         }
     }

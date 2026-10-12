@@ -29,10 +29,10 @@ public class OrgBrugerDeletionMapperTest
         Assert.Equal(DateTimeKind.Utc, mapped.OccurredAt!.Value.Kind);
         await using var db = new PubSubContext(new DbContextOptionsBuilder<PubSubContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
-        var receiver = new BeskedfordelerReceiver(Mapper(), new UserChangeOutbox(db));
+        var receiver = new BeskedfordelerReceiver(Mapper(), new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>()));
         Assert.Equal(BeskedfordelerStatus.Accepted, await receiver.Receive(input, default));
         Assert.Equal(BeskedfordelerStatus.Accepted, await receiver.Receive(input, default));
-        Assert.Equal(MessageId.ToString(), Assert.Single(db.UserChangeDeliveries).ExternalMessageId);
+        Assert.Equal(MessageId.ToString(), Assert.Single(db.UserChangeReceipts).ExternalMessageId);
         // Validate the actual protocol reply against the official callback schema too.
         XDocument.Parse(BeskedfordelerResponse.Serialize(BeskedfordelerStatus.Accepted)).Validate(schemas, (_, e) => throw e.Exception);
     }
@@ -59,8 +59,8 @@ public class OrgBrugerDeletionMapperTest
         await using var db = new PubSubContext(new DbContextOptionsBuilder<PubSubContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         Assert.Equal(BeskedfordelerStatus.NotImplemented,
-            await new BeskedfordelerReceiver(Mapper(), new UserChangeOutbox(db)).Receive(input, default));
-        Assert.Empty(db.UserChangeDeliveries);
+            await new BeskedfordelerReceiver(Mapper(), new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>())).Receive(input, default));
+        Assert.Empty(db.UserChangeReceipts);
     }
 
     [Theory]

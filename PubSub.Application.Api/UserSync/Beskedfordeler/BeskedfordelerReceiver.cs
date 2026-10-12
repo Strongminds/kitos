@@ -2,7 +2,7 @@ using System.Xml.Linq;
 
 namespace PubSub.Application.Api.UserSync.Beskedfordeler;
 
-public sealed class BeskedfordelerReceiver(IBeskedfordelerDeletionMapper mapper, UserChangeOutbox outbox)
+public sealed class BeskedfordelerReceiver(IBeskedfordelerDeletionMapper mapper, UserChangeIngress ingress)
 {
     public async Task<BeskedfordelerStatus> Receive(XElement input, CancellationToken cancellationToken)
     {
@@ -21,8 +21,8 @@ public sealed class BeskedfordelerReceiver(IBeskedfordelerDeletionMapper mapper,
 
         try
         {
-            // Enqueue returns only after commit, including an equivalent duplicate.
-            await outbox.Enqueue(deletion, cancellationToken);
+            // Success requires routed broker confirmation and committed receipt acceptance.
+            await ingress.Enqueue(deletion, cancellationToken);
             return BeskedfordelerStatus.Accepted;
         }
         catch (UserChangeConflictException)

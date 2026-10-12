@@ -43,23 +43,23 @@ public class BeskedfordelerTest
         var mapper = new Mock<IBeskedfordelerDeletionMapper>();
         var deletion = new UserDeletionEvent("ignored", Guid.NewGuid(), Guid.NewGuid());
         mapper.Setup(x => x.Map(It.IsAny<XElement>())).Returns(() => deletion);
-        var receiver = new BeskedfordelerReceiver(mapper.Object, new UserChangeOutbox(db));
+        var receiver = new BeskedfordelerReceiver(mapper.Object, new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>()));
         var id = Guid.NewGuid();
         Assert.Equal(BeskedfordelerStatus.Accepted, await receiver.Receive(Input(id), default));
-        Assert.Equal(id.ToString("D"), (await db.UserChangeDeliveries.SingleAsync()).ExternalMessageId);
+        Assert.Equal(id.ToString("D"), (await db.UserChangeReceipts.SingleAsync()).ExternalMessageId);
         Assert.Equal(BeskedfordelerStatus.Accepted, await receiver.Receive(Input(id), default));
         deletion = deletion with { ExternalUserUuid = Guid.NewGuid() };
         Assert.Equal(BeskedfordelerStatus.CannotReceive, await receiver.Receive(Input(id), default));
-        Assert.Equal(1, await db.UserChangeDeliveries.CountAsync());
+        Assert.Equal(1, await db.UserChangeReceipts.CountAsync());
     }
 
     [Fact]
     public async Task Receive_UnconfirmedContract_DoesNotPersistOrAcknowledge()
     {
         await using var db = CreateDb();
-        var receiver = new BeskedfordelerReceiver(new OrgBrugerDeletionMapper(new Dictionary<string, Guid> { ["12345678"] = Guid.NewGuid() }), new UserChangeOutbox(db));
+        var receiver = new BeskedfordelerReceiver(new OrgBrugerDeletionMapper(new Dictionary<string, Guid> { ["12345678"] = Guid.NewGuid() }), new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>()));
         Assert.Equal(BeskedfordelerStatus.NotImplemented, await receiver.Receive(Input(Guid.NewGuid()), default));
-        Assert.Empty(db.UserChangeDeliveries);
+        Assert.Empty(db.UserChangeReceipts);
     }
 
     [Theory]
@@ -73,8 +73,8 @@ public class BeskedfordelerTest
         var input = Input(Guid.NewGuid());
         input.Descendants(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator").Single().Value = id;
         input.Descendants(BeskedfordelerResponse.Envelope + "BeskedVersion").Single().Value = version;
-        Assert.Equal(status, await new BeskedfordelerReceiver(mapper.Object, new UserChangeOutbox(db)).Receive(input, default));
-        Assert.Empty(db.UserChangeDeliveries);
+        Assert.Equal(status, await new BeskedfordelerReceiver(mapper.Object, new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>())).Receive(input, default));
+        Assert.Empty(db.UserChangeReceipts);
     }
 
     [Fact]
@@ -83,9 +83,9 @@ public class BeskedfordelerTest
         await using var db = new FailingDb(new DbContextOptionsBuilder<PubSubContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         var mapper = new Mock<IBeskedfordelerDeletionMapper>();
         mapper.Setup(x => x.Map(It.IsAny<XElement>())).Returns(new UserDeletionEvent("ignored", Guid.NewGuid(), Guid.NewGuid()));
-        var receiver = new BeskedfordelerReceiver(mapper.Object, new UserChangeOutbox(db));
+        var receiver = new BeskedfordelerReceiver(mapper.Object, new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>()));
         await Assert.ThrowsAsync<DbUpdateException>(() => receiver.Receive(Input(Guid.NewGuid()), default));
-        Assert.Empty(db.UserChangeDeliveries);
+        Assert.Empty(db.UserChangeReceipts);
     }
 
     [Theory]
@@ -157,14 +157,14 @@ public class BeskedfordelerTest
         await using var db = new DelayedDb(new DbContextOptionsBuilder<PubSubContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         var mapper = new Mock<IBeskedfordelerDeletionMapper>();
         mapper.Setup(x => x.Map(It.IsAny<XElement>())).Returns(new UserDeletionEvent("ignored", Guid.NewGuid(), Guid.NewGuid()));
-        var receiver = new BeskedfordelerReceiver(mapper.Object, new UserChangeOutbox(db));
+        var receiver = new BeskedfordelerReceiver(mapper.Object, new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>()));
         var pending = receiver.Receive(Input(Guid.NewGuid()), default);
         await db.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
         Assert.False(pending.IsCompleted);
-        Assert.Empty(db.UserChangeDeliveries);
+        Assert.Empty(db.UserChangeReceipts);
         db.AllowCommit.SetResult();
         Assert.Equal(BeskedfordelerStatus.Accepted, await pending.WaitAsync(TimeSpan.FromSeconds(5)));
-        Assert.Single(db.UserChangeDeliveries);
+        Assert.Single(db.UserChangeReceipts);
     }
 
     [Theory]
@@ -194,7 +194,7 @@ public class BeskedfordelerTest
         schemas.Compile();
         using var services = new ServiceCollection()
             .AddSingleton(new BeskedfordelerXmlReader(schemas))
-            .AddSingleton(new BeskedfordelerReceiver(mapper.Object, new UserChangeOutbox(db)))
+            .AddSingleton(new BeskedfordelerReceiver(mapper.Object, new UserChangeIngress(new UserChangeReceiptStore(db), Moq.Mock.Of<IUserChangePublisher>())))
             .BuildServiceProvider();
         var controller = new BeskedfordelerController(config, certificates.Object, services, NullLogger<BeskedfordelerController>.Instance)
         {
@@ -208,7 +208,7 @@ public class BeskedfordelerTest
         Assert.Equal(200, result.StatusCode);
         Assert.Equal("application/xml; charset=utf-8", result.ContentType);
         Assert.Equal(expected.ToString(), XElement.Parse(result.Content!).Descendants(BeskedfordelerResponse.Sagdok + "StatusKode").Single().Value);
-        Assert.Empty(db.UserChangeDeliveries);
+        Assert.Empty(db.UserChangeReceipts);
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class BeskedfordelerTest
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            Started.SetResult();
+            Started.TrySetResult();
             await AllowCommit.Task.WaitAsync(cancellationToken);
             return await base.SaveChangesAsync(cancellationToken);
         }
