@@ -58,13 +58,14 @@ $solutions = @("KITOS.sln", "Kitos_PubSub.sln")
 $unitTestProjects = @(
     "Tests.Unit.Core.ApplicationServices/Tests.Unit.Core.csproj",
     "Tests.Unit.Presentation.Web/Tests.Unit.Presentation.Web.csproj",
+    "Tests.Unit.Mcp/Tests.Unit.Mcp.csproj",
     "PubSub.Test/PubSub.Test.csproj"
 )
 # Presentation.Web pins a Windows RID unless ContainerBuild=true (same switch the Dockerfile uses)
 $platformArgs = if ($IsWindows) { @() } else { @("-p:ContainerBuild=true") }
 
 $nonProductionPath = '^(Tests\.|Tools\.|PubSub\.Test/|DeploymentTools/)|/Migrations/'
-$logicPath = '^(Core\.ApplicationServices|Core\.DomainServices|Core\.DomainModel|Core\.BackgroundJobs|Presentation\.Web/Controllers|PubSub\.Application\.Services|PubSub\.Application\.Api/Controllers|PubSub\.Core\.[^/]+)/'
+$logicPath = '^(Core\.ApplicationServices|Core\.DomainServices|Core\.DomainModel|Core\.BackgroundJobs|Mcp\.Core|Presentation\.Web/Controllers|PubSub\.Application\.Services|PubSub\.Application\.Api/Controllers|PubSub\.Core\.[^/]+)/'
 $testPath = '^(Tests\.|PubSub\.Test/)'
 
 $results = [System.Collections.Generic.List[object]]::new()

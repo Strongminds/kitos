@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
+    <EmbeddedResource Include="Resources\domain-catalog.v1.json" LogicalName="Mcp.Core.Resources.domain-catalog.v1.json" />
+    <InternalsVisibleTo Include="Tests.Unit.Mcp" />
+  </ItemGroup>
+</Project>

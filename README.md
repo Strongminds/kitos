@@ -42,6 +42,7 @@ Run unit tests:
 ```powershell
 dotnet test Tests.Unit.Core.ApplicationServices
 dotnet test Tests.Unit.Presentation.Web
+dotnet test Tests.Unit.Mcp
 ```
 
 Run integration tests:

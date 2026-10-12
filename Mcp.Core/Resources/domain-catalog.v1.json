@@ -1,0 +1,330 @@
+{
+  "version": "1.0.0",
+  "entities": [
+    {
+      "id": "systems",
+      "danishName": "IT-systemer",
+      "englishName": "IT systems",
+      "meaning": "Product master data; names do not uniquely identify systems.",
+      "apiModel": "BaseItSystemResponseDTO",
+      "fields": [
+        {
+          "id": "uuid",
+          "danishName": "UUID",
+          "englishName": "UUID",
+          "type": "Uuid",
+          "nullable": false,
+          "apiProperty": "Uuid",
+          "allowedValues": []
+        },
+        {
+          "id": "name",
+          "danishName": "Navn",
+          "englishName": "Name",
+          "type": "Text",
+          "nullable": false,
+          "apiProperty": "Name",
+          "allowedValues": []
+        },
+        {
+          "id": "deactivated",
+          "danishName": "Deaktiveret",
+          "englishName": "Deactivated",
+          "type": "Boolean",
+          "nullable": false,
+          "apiProperty": "Deactivated",
+          "allowedValues": []
+        }
+      ],
+      "relationships": [
+        {
+          "id": "parentSystem",
+          "targetEntity": "systems",
+          "apiProperty": "ParentSystem",
+          "collection": false,
+          "traversalSupported": true
+        },
+        {
+          "id": "rightsHolder",
+          "targetEntity": "organizations",
+          "apiProperty": "RightsHolder",
+          "collection": false,
+          "traversalSupported": true
+        }
+      ]
+    },
+    {
+      "id": "usages",
+      "danishName": "IT-Systemer i anvendelse",
+      "englishName": "IT system usages",
+      "meaning": "An organization's local registration of a system; registration does not establish current adoption.",
+      "apiModel": "ItSystemUsageResponseDTO",
+      "fields": [
+        {
+          "id": "uuid",
+          "danishName": "UUID",
+          "englishName": "UUID",
+          "type": "Uuid",
+          "nullable": false,
+          "apiProperty": "Uuid",
+          "allowedValues": []
+        },
+        {
+          "id": "lastModified",
+          "danishName": "Senest ændret",
+          "englishName": "Last modified",
+          "type": "Timestamp",
+          "nullable": false,
+          "apiProperty": "LastModified",
+          "allowedValues": []
+        }
+      ],
+      "relationships": [
+        {
+          "id": "system",
+          "targetEntity": "systems",
+          "apiProperty": "SystemContext",
+          "collection": false,
+          "traversalSupported": true
+        },
+        {
+          "id": "organization",
+          "targetEntity": "organizations",
+          "apiProperty": "OrganizationContext",
+          "collection": false,
+          "traversalSupported": true
+        },
+        {
+          "id": "mainContract",
+          "targetEntity": "contracts",
+          "apiProperty": "General.MainContract",
+          "collection": false,
+          "traversalSupported": true
+        }
+      ]
+    },
+    {
+      "id": "organizations",
+      "danishName": "Organisationer",
+      "englishName": "Organizations",
+      "meaning": "Municipalities are classified by organizationType, not by name. Visibility remains caller-dependent.",
+      "apiModel": "OrganizationResponseDTO",
+      "fields": [
+        {
+          "id": "uuid",
+          "danishName": "UUID",
+          "englishName": "UUID",
+          "type": "Uuid",
+          "nullable": false,
+          "apiProperty": "Uuid",
+          "allowedValues": []
+        },
+        {
+          "id": "name",
+          "danishName": "Navn",
+          "englishName": "Name",
+          "type": "Text",
+          "nullable": false,
+          "apiProperty": "Name",
+          "allowedValues": []
+        },
+        {
+          "id": "cvr",
+          "danishName": "CVR",
+          "englishName": "CVR",
+          "type": "Text",
+          "nullable": true,
+          "apiProperty": "Cvr",
+          "allowedValues": []
+        },
+        {
+          "id": "organizationType",
+          "danishName": "Organisationstype",
+          "englishName": "Organization type",
+          "type": "Enumeration",
+          "nullable": false,
+          "apiProperty": "OrganizationType",
+          "allowedValues": [
+            "Municipality",
+            "CommunityOfInterest",
+            "Company",
+            "OtherPublicAuthority"
+          ]
+        },
+        {
+          "id": "disabled",
+          "danishName": "Deaktiveret",
+          "englishName": "Disabled",
+          "type": "Boolean",
+          "nullable": false,
+          "apiProperty": "Disabled",
+          "allowedValues": []
+        }
+      ],
+      "relationships": []
+    },
+    {
+      "id": "contracts",
+      "danishName": "IT-kontrakter",
+      "englishName": "IT contracts",
+      "meaning": "An organization's contract registration, distinct from its system usages.",
+      "apiModel": "ItContractResponseDTO",
+      "fields": [
+        {
+          "id": "uuid",
+          "danishName": "UUID",
+          "englishName": "UUID",
+          "type": "Uuid",
+          "nullable": false,
+          "apiProperty": "Uuid",
+          "allowedValues": []
+        },
+        {
+          "id": "name",
+          "danishName": "Navn",
+          "englishName": "Name",
+          "type": "Text",
+          "nullable": false,
+          "apiProperty": "Name",
+          "allowedValues": []
+        },
+        {
+          "id": "lastModified",
+          "danishName": "Senest ændret",
+          "englishName": "Last modified",
+          "type": "Timestamp",
+          "nullable": false,
+          "apiProperty": "LastModified",
+          "allowedValues": []
+        }
+      ],
+      "relationships": [
+        {
+          "id": "organization",
+          "targetEntity": "organizations",
+          "apiProperty": "OrganizationContext",
+          "collection": false,
+          "traversalSupported": true
+        },
+        {
+          "id": "parentContract",
+          "targetEntity": "contracts",
+          "apiProperty": "ParentContract",
+          "collection": false,
+          "traversalSupported": true
+        },
+        {
+          "id": "systemUsages",
+          "targetEntity": "usages",
+          "apiProperty": "SystemUsages",
+          "collection": true,
+          "traversalSupported": false
+        },
+        {
+          "id": "dataProcessingRegistrations",
+          "targetEntity": "dataProcessingRegistrations",
+          "apiProperty": "DataProcessingRegistrations",
+          "collection": true,
+          "traversalSupported": false
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "danishName": "IT-snitflader",
+      "englishName": "IT interfaces",
+      "meaning": "An interface may refer to the system exposing it.",
+      "apiModel": "BaseItInterfaceResponseDTO",
+      "fields": [
+        {
+          "id": "uuid",
+          "danishName": "UUID",
+          "englishName": "UUID",
+          "type": "Uuid",
+          "nullable": false,
+          "apiProperty": "Uuid",
+          "allowedValues": []
+        },
+        {
+          "id": "name",
+          "danishName": "Navn",
+          "englishName": "Name",
+          "type": "Text",
+          "nullable": false,
+          "apiProperty": "Name",
+          "allowedValues": []
+        },
+        {
+          "id": "deactivated",
+          "danishName": "Deaktiveret",
+          "englishName": "Deactivated",
+          "type": "Boolean",
+          "nullable": false,
+          "apiProperty": "Deactivated",
+          "allowedValues": []
+        }
+      ],
+      "relationships": [
+        {
+          "id": "exposedBySystem",
+          "targetEntity": "systems",
+          "apiProperty": "ExposedBySystem",
+          "collection": false,
+          "traversalSupported": true
+        }
+      ]
+    },
+    {
+      "id": "dataProcessingRegistrations",
+      "danishName": "Databehandling",
+      "englishName": "Data processing registrations",
+      "meaning": "An organization's registration of data processing arrangements.",
+      "apiModel": "DataProcessingRegistrationResponseDTO",
+      "fields": [
+        {
+          "id": "uuid",
+          "danishName": "UUID",
+          "englishName": "UUID",
+          "type": "Uuid",
+          "nullable": false,
+          "apiProperty": "Uuid",
+          "allowedValues": []
+        },
+        {
+          "id": "name",
+          "danishName": "Navn",
+          "englishName": "Name",
+          "type": "Text",
+          "nullable": false,
+          "apiProperty": "Name",
+          "allowedValues": []
+        },
+        {
+          "id": "lastModified",
+          "danishName": "Senest ændret",
+          "englishName": "Last modified",
+          "type": "Timestamp",
+          "nullable": false,
+          "apiProperty": "LastModified",
+          "allowedValues": []
+        }
+      ],
+      "relationships": [
+        {
+          "id": "organization",
+          "targetEntity": "organizations",
+          "apiProperty": "OrganizationContext",
+          "collection": false,
+          "traversalSupported": true
+        },
+        {
+          "id": "systemUsages",
+          "targetEntity": "usages",
+          "apiProperty": "SystemUsages",
+          "collection": true,
+          "traversalSupported": false
+        }
+      ]
+    }
+  ]
+}

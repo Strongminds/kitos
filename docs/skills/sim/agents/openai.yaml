@@ -1,0 +1,4 @@
+interface:
+  display_name: "SIM: System Implement"
+  short_description: "Implement verified chunks with a checklist and next-step handoff"
+  default_prompt: "Use $sim to implement the supplied design in small delegated chunks, maintain a progress checklist, verify each chunk, and ask to proceed with the recommended next step."
