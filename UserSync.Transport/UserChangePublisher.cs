@@ -1,7 +1,7 @@
 using System.Diagnostics.Metrics;
 using RabbitMQ.Client;
 
-namespace PubSub.Application.Api.UserSync;
+namespace UserSync.Transport;
 
 /// <summary>Dedicated connection; channels are isolated so concurrent callbacks cannot interleave publishes.</summary>
 public sealed class UserChangePublisher(IConnectionFactory factory, UserChangeTopology topology) : IUserChangePublisher, IAsyncDisposable

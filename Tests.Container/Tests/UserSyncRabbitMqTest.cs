@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using System.Text;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
@@ -62,30 +63,27 @@ public sealed class UserSyncRabbitMqTest : IAsyncLifetime
         var topology = Topology();
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["UserSync:Enabled"] = "true",
-            ["UserSync:KitosEndpoint"] = "https://kitos.test/callback",
-            ["UserSync:KitosEmail"] = "test",
-            ["UserSync:KitosPassword"] = "test"
+            ["UserSync:ConsumerEnabled"] = "true",
         }).Build();
-        var clients = new KitosClients();
+        var deliveryService = new KitosDelivery();
         await using var publisher = new UserChangePublisher(Factory(), topology);
         using var consumer = new UserChangeConsumer(Factory(), topology, publisher,
-            new KitosUserChangeDelivery(clients, config), config, NullLogger<UserChangeConsumer>.Instance);
+            deliveryService, config, NullLogger<UserChangeConsumer>.Instance);
         var message = new UserDeletionEvent("recover", Guid.NewGuid(), Guid.NewGuid());
         await using (var db = Database())
             Assert.NotNull((await new UserChangeIngress(new UserChangeReceiptStore(db), publisher).Enqueue(message, default)).AcceptedAt);
         await consumer.StartAsync(default);
         try
         {
-            await clients.Handler.Attempted.Task.WaitAsync(TimeSpan.FromSeconds(30));
+            await deliveryService.Attempted.Task.WaitAsync(TimeSpan.FromSeconds(30));
             await _broker.StopAsync();
             await _broker.StartAsync();
-            clients.Handler.Available = true;
-            await clients.Handler.Accepted.Task.WaitAsync(TimeSpan.FromSeconds(60));
+            deliveryService.Available = true;
+            await deliveryService.Accepted.Task.WaitAsync(TimeSpan.FromSeconds(60));
             // Simulate source/transfer ambiguity by delivering the same identity again.
             await publisher.Publish(UserChangeContract.Serialize(message), message.ExternalMessageId, 0, false, default);
-            await clients.Handler.Duplicate.Task.WaitAsync(TimeSpan.FromSeconds(30));
-            Assert.Single(clients.Handler.Changes);
+            await deliveryService.Duplicate.Task.WaitAsync(TimeSpan.FromSeconds(30));
+            Assert.Single(deliveryService.Changes);
         }
         finally
         {
@@ -94,36 +92,23 @@ public sealed class UserSyncRabbitMqTest : IAsyncLifetime
         }
     }
 
-    private sealed class KitosClients : IHttpClientFactory
-    {
-        public KitosHandler Handler { get; } = new();
-        public HttpClient CreateClient(string name) => new(Handler, false);
-    }
-
-    private sealed class KitosHandler : HttpMessageHandler
+    private sealed class KitosDelivery : IUserChangeDelivery
     {
         public volatile bool Available;
-        public HttpStatusCode UnavailableStatus { get; set; } = HttpStatusCode.ServiceUnavailable;
+        public UserChangeDeliveryResult UnavailableStatus { get; set; } = UserChangeDeliveryResult.Retry;
         public ConcurrentDictionary<string, bool> Changes { get; } = new();
         public TaskCompletionSource Attempted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource Accepted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource Duplicate { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public Task<UserChangeDeliveryResult> Deliver(UserDeletionEvent message, CancellationToken cancellationToken)
         {
-            if (request.RequestUri!.AbsolutePath == "/api/authorize/GetToken")
-                return new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = System.Net.Http.Json.JsonContent.Create(new { Response = new { Token = "test", Expires = DateTime.UtcNow.AddHours(1), LoginSuccessful = true } })
-                };
             Attempted.TrySetResult();
-            if (!Available) return new HttpResponseMessage(UnavailableStatus);
-            var message = UserChangeContract.Read(await request.Content!.ReadAsByteArrayAsync(cancellationToken));
+            if (!Available) return Task.FromResult(UnavailableStatus);
             if (!Changes.TryAdd(message.ExternalMessageId, true)) Duplicate.TrySetResult();
             Accepted.TrySetResult();
-            return new HttpResponseMessage(HttpStatusCode.OK);
+            return Task.FromResult(UserChangeDeliveryResult.Accepted);
         }
     }
-
     [Fact]
     public async Task Receipt_ConcurrentReservations_RejectConflictsAndRecoverAcrossContexts()
     {
@@ -201,12 +186,11 @@ public sealed class UserSyncRabbitMqTest : IAsyncLifetime
             "^" + System.Text.RegularExpressions.Regex.Escape(target) + "$", "{\"max-length\":0,\"overflow\":\"reject-publish\"}", "--apply-to", "quorum_queues" });
         Assert.Equal(0, policy.ExitCode);
         await Task.Delay(500);
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-        { ["UserSync:KitosEmail"] = "test", ["UserSync:KitosPassword"] = "test" }).Build();
-        var clients = new KitosClients();
-        clients.Handler.UnavailableStatus = dead ? HttpStatusCode.Conflict : HttpStatusCode.ServiceUnavailable;
+        var config = new ConfigurationBuilder().Build();
+        var deliveryService = new KitosDelivery();
+        deliveryService.UnavailableStatus = dead ? UserChangeDeliveryResult.Rejected : UserChangeDeliveryResult.Retry;
         using var consumer = new UserChangeConsumer(Factory(), topology, publisher,
-            new KitosUserChangeDelivery(clients, config), config, NullLogger<UserChangeConsumer>.Instance);
+            deliveryService, config, NullLogger<UserChangeConsumer>.Instance);
         await using (var connection = await Factory().CreateConnectionAsync())
         await using (var channel = await connection.CreateChannelAsync())
         {
@@ -214,7 +198,7 @@ public sealed class UserSyncRabbitMqTest : IAsyncLifetime
             var properties = new BasicProperties(original.BasicProperties)
             { Headers = new Dictionary<string, object?> { ["user-sync-attempt"] = 8 } };
             var delivery = new BasicDeliverEventArgs("tag", original.DeliveryTag, false, "", topology.Main, properties, original.Body, default);
-            await Assert.ThrowsAsync<UserChangePublishException>(() => consumer.Handle(channel, delivery, new Uri("https://kitos.test/callback"), default));
+            await Assert.ThrowsAsync<UserChangePublishException>(() => consumer.Handle(channel, delivery, default));
         }
         await using var recovered = await Factory().CreateConnectionAsync();
         await using var recoveredChannel = await recovered.CreateChannelAsync();

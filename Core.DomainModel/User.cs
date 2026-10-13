@@ -232,7 +232,6 @@ namespace Core.DomainModel
 
         public bool IsSystemIntegrator { get; set; }
 
-        public bool IsPubSubUser { get; set; }
 
         public Guid Uuid { get; set; }
         public virtual ICollection<LifeCycleTrackingEvent> LifeCycleTrackingEvents { get; set; }
@@ -248,10 +247,6 @@ namespace Core.DomainModel
             IsSystemIntegrator = systemIntegratorStatus;
         }
 
-        public void SetPubSubUserStatus(bool pubSubUserStatus)
-        {
-            IsPubSubUser = pubSubUserStatus;
-        }
         public void SetGlobalAdminStatus(bool globalAdminStatus)
         {
             IsGlobalAdmin = globalAdminStatus;

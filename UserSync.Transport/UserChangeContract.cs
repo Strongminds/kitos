@@ -2,9 +2,9 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using PubSub.Core.DomainModel.UserSync;
 
-namespace PubSub.Application.Api.UserSync;
+
+namespace UserSync.Transport;
 
 public sealed record UserChangeContract(UserDeletionEvent Payload)
 {

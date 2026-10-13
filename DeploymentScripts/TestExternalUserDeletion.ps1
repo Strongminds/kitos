@@ -8,7 +8,7 @@ AdminCredential supplies a KITOS account with local-admin permission in the targ
 organization. If omitted, the script prompts for it. Internal endpoints require
 cookie authentication, not an API token.
 StartPubSub starts a temporary local PubSub process with user sync enabled and
-stops that process on exit. Its KITOS account needs API access and IsPubSubUser.
+stops that process on exit. KITOS must enable UserSync:ConsumerEnabled and configure its broker.
 Without StartPubSub, configure the running PubSub instance with UserSync enabled.
 ConnectUsers explicitly enables the organization's FK Organisation users connection.
 Apply explicitly removes organization access, subject to confirmation. Without
@@ -31,7 +31,6 @@ param(
     [ValidateNotNullOrEmpty()][string]$MessageId = [guid]::NewGuid().ToString(),
     [ValidateRange(1, 3600)][int]$TimeoutSeconds = 120,
     [switch]$StartPubSub,
-    [PSCredential]$PubSubCredential,
     [switch]$ConnectUsers,
     [switch]$Duplicate,
     [switch]$Apply
@@ -112,10 +111,6 @@ try {
         }
         finally { $listener.Dispose() }
 
-        if (!$PubSubCredential) {
-            $PubSubCredential = Get-Credential -Message 'KITOS delivery account (API access and IsPubSubUser required)'
-        }
-        if (!$PubSubCredential) { throw 'A KITOS PubSub delivery credential is required.' }
         $dotnet = (Get-Command dotnet -ErrorAction Stop).Source
         $project = Join-Path $PSScriptRoot '..\PubSub.Application.Api\PubSub.Application.Api.csproj'
         $environment = @{
@@ -123,9 +118,6 @@ try {
             ASPNETCORE_URLS = $PubSubBaseUrl.AbsoluteUri.TrimEnd('/')
             UserSync__Enabled = 'true'
             UserSync__EnableStub = 'true'
-            UserSync__KitosEndpoint = "$kitos/api/v2/integrations/fk-organisation/user-changes"
-            UserSync__KitosEmail = $PubSubCredential.UserName
-            UserSync__KitosPassword = $PubSubCredential.GetNetworkCredential().Password
             JwtValidation__ApiUrl = $kitos
         }
         try {
@@ -133,7 +125,7 @@ try {
                 $previousEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
                 [Environment]::SetEnvironmentVariable($name, $environment[$name], 'Process')
             }
-            $process = Start-Process -FilePath $dotnet -ArgumentList @('run', '--project', "`"$project`"", '--no-launch-profile') -PassThru -NoNewWindow
+            $process = Start-Process -FilePath $dotnet -ArgumentList @('run', '--project', "`"$project`"", '--no-launch-profile') -PassThru -WindowStyle Hidden
         }
         finally {
             foreach ($name in $previousEnvironment.Keys) {

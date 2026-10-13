@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using PubSub.Core.DomainModel.UserSync;
 
 namespace PubSub.Application.Api.UserSync;

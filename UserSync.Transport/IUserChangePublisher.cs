@@ -1,4 +1,4 @@
-namespace PubSub.Application.Api.UserSync;
+namespace UserSync.Transport;
 
 public interface IUserChangePublisher
 {

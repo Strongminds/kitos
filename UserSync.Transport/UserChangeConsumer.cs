@@ -1,12 +1,15 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace PubSub.Application.Api.UserSync;
+namespace UserSync.Transport;
 
 public sealed class UserChangeConsumer(IConnectionFactory factory, UserChangeTopology topology,
-    IUserChangePublisher publisher, KitosUserChangeDelivery delivery, IConfiguration configuration,
+    IUserChangePublisher publisher, IUserChangeDelivery delivery, IConfiguration configuration,
     ILogger<UserChangeConsumer> logger) : BackgroundService
 {
     private static readonly Counter<long> Retries = UserChangePublisher.Meter.CreateCounter<long>("user_sync.delivery.retry");
@@ -15,16 +18,10 @@ public sealed class UserChangeConsumer(IConnectionFactory factory, UserChangeTop
     private static readonly Histogram<double> Age = UserChangePublisher.Meter.CreateHistogram<double>("user_sync.delivery.age", "s");
     private static readonly UpDownCounter<long> Connections = UserChangePublisher.Meter.CreateUpDownCounter<long>("user_sync.consumer.connected");
 
-    public override Task StartAsync(CancellationToken cancellationToken)
-    {
-        if (configuration.GetValue<bool>("UserSync:Enabled")) delivery.ValidateConfiguration();
-        return base.StartAsync(cancellationToken);
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!configuration.GetValue<bool>("UserSync:Enabled")) return;
-        var endpoint = delivery.ValidateConfiguration();
+        if (!configuration.GetValue<bool>("UserSync:ConsumerEnabled")) return;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -41,7 +38,7 @@ public sealed class UserChangeConsumer(IConnectionFactory factory, UserChangeTop
                 consumer.UnregisteredAsync += (_, _) => { ended.TrySetResult(); return Task.CompletedTask; };
                 consumer.ReceivedAsync += async (_, message) =>
                 {
-                    try { await Handle(channel, message, endpoint, stoppingToken); }
+                    try { await Handle(channel, message, stoppingToken); }
                     catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested) { ended.TrySetResult(); }
                     catch (Exception)
                     {
@@ -61,7 +58,14 @@ public sealed class UserChangeConsumer(IConnectionFactory factory, UserChangeTop
         }
     }
 
-    public async Task Handle(IChannel channel, BasicDeliverEventArgs message, Uri endpoint, CancellationToken cancellationToken)
+    private async Task<UserChangeDeliveryResult> Deliver(UserDeletionEvent message, CancellationToken cancellationToken)
+    {
+        try { return await delivery.Deliver(message, cancellationToken); }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch (Exception) { return UserChangeDeliveryResult.Retry; }
+    }
+
+    public async Task Handle(IChannel channel, BasicDeliverEventArgs message, CancellationToken cancellationToken)
     {
         var body = message.Body.ToArray();
         var id = message.BasicProperties.MessageId ?? string.Empty;
@@ -72,13 +76,14 @@ public sealed class UserChangeConsumer(IConnectionFactory factory, UserChangeTop
             var normalized = UserChangeContract.Read(body);
             if (message.BasicProperties.Type != UserChangeContract.Version || normalized.ExternalMessageId != id)
                 throw new ArgumentException("Invalid queue contract metadata.");
-            var status = await delivery.Send(endpoint, body, cancellationToken);
-            success = (int)status is >= 200 and < 300;
-            deadLetter = KitosUserChangeDelivery.IsPermanentFailure(status);
+            var result = await Deliver(normalized, cancellationToken);
+            success = result == UserChangeDeliveryResult.Accepted;
+            deadLetter = result == UserChangeDeliveryResult.Rejected;
         }
         catch (Exception ex) when (ex is JsonException or ArgumentException) { deadLetter = true; }
-        catch (HttpRequestException) { /* Authentication and network failures remain retryable. */ }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) { }
+
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch (Exception) { /* Infrastructure failures retry; no payloads or credentials are logged. */ }
 
         if (!success)
         {
@@ -94,3 +99,4 @@ public sealed class UserChangeConsumer(IConnectionFactory factory, UserChangeTop
         await channel.BasicAckAsync(message.DeliveryTag, false, cancellationToken);
     }
 }
+

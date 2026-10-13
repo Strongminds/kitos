@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using PubSub.Infrastructure.DataAccess;
@@ -34,7 +35,7 @@ public sealed class UserChangeHealthCheck(IServiceScopeFactory scopes, IConnecti
             };
             for (var attempt = 1; attempt <= 8; attempt++)
                 data["retryDepth" + attempt] = (await channel.QueueDeclarePassiveAsync(topology.Retry(attempt), timeout.Token)).MessageCount;
-            return pending > 0 || dead.MessageCount > 0 || main.ConsumerCount == 0
+            return pending > 0
                 ? HealthCheckResult.Degraded("User sync requires operator attention.", data: data)
                 : HealthCheckResult.Healthy("User sync connected.", data);
         }

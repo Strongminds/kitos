@@ -1,4 +1,4 @@
-namespace PubSub.Core.DomainModel.UserSync;
+namespace UserSync.Transport;
 
 /// <summary>Normalized KITOS contract. This is not the Beskedfordeler wire format.</summary>
 public record UserDeletionEvent(string ExternalMessageId, Guid OrganizationUuid,

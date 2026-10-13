@@ -2,6 +2,8 @@
 
 ## Status and scope
 
+**Architecture revision (2026-10-13):** KITOS now owns RabbitMQ consumption and invokes ingestion directly in a fresh dependency scope. The ingestion HTTP endpoint, delivery credentials and IsPubSubUser marker have been removed. IIS lifecycle, production connectivity and cutover rehearsal remain deployment checks.
+
 **Architecture change (2026-10-12):** RabbitMQ now owns delivery and retries. A persistent receipt ledger provides immediate duplicate/conflict checks. Existing outbox rows require the offline cutover below before enabling the new consumer. Production broker, certificate and KOMBIT acceptance checks remain deployment prerequisites.
 
 This document describes the FK Organization user-change based on the connection to KOMBIT's Beskedfordeler. The KITOS and PubSub user-change pipeline is implemented. A disabled-by-default Beskedfordeler callback and the SF1500 `ORG_Bruger` immediate-deactivation mapper are implemented with the complete SF1461 callback schema dependencies. Production activation still requires verified municipality mappings, certificate/subscription provisioning, and external-test acceptance. The current PubSub JSON stub is a development/test tool, not a production Beskedfordeler callback.
@@ -13,18 +15,18 @@ The initial supported source event is `BrugerNedlagt` (user becomes inactive), r
 ```text
 External source
     -> PubSub receipt reservation + confirmed RabbitMQ publish
-    -> dedicated RabbitMQ consumer
-    -> HTTPS KITOS integration API
+    -> KITOS-hosted RabbitMQ consumer
+    -> scoped ExternalUserChangeIngestionService
     -> pending ExternalUserChange
     -> organization's local administrator reviews it
     -> apply deletion or dismiss
 ```
 
-The normalized event is deliberately independent of any particular source transport. KOMBIT XML must be translated to this contract by a producer-specific mapper in the Beskedfordeler adapter; the KITOS ingestion API does not accept KOMBIT XML.
+The normalized event is deliberately independent of any particular source transport. KOMBIT XML must be translated to this contract by a producer-specific mapper in the Beskedfordeler adapter; the KITOS consumer accepts only the normalized queue contract.
 
 ### 1. PubSub event, receipt ledger and RabbitMQ
 
-`PubSub.Core.DomainModel.UserSync.UserDeletionEvent` is the normalized event:
+`UserSync.Transport.UserDeletionEvent` is the normalized event:
 
 | Field               | Meaning                                                                |
 | ------------------- | ---------------------------------------------------------------------- |
@@ -38,7 +40,7 @@ The normalized event is deliberately independent of any particular source transp
 
 For a pending receipt, `UserChangePublisher` publishes the normalized `{ "Payload": ... }` envelope persistently and with mandatory routing, contract version, message ID and correlation ID. RabbitMQ.Client 7.1.2 publisher confirmation tracking rejects nacks and unroutable returns. A 30-second timeout bounds connection, topology declaration and confirmation. Only after confirmation does PubSub commit receipt acceptance and return success. No database transaction spans a broker call. Timeout, cancellation or connection loss may mean the broker accepted a message: the receipt remains pending and equivalent source/operator replay republishes safely. A pending receipt cannot deliver on its own.
 
-`UserChangeConsumer` runs only when `UserSync:Enabled` is true. It uses a dedicated channel with manual acknowledgements, prefetch 1 and sequential dispatch, so its KITOS token cache is not accessed concurrently. It validates the queued contract, sends HTTPS JSON with a normal KITOS PubSub account token, and refreshes/retries once on 401. Login and sends are bounded by a 90-second attempt deadline (individual HTTP calls retain the 30-second client timeout). It acknowledges only after a 2xx KITOS response or a confirmed retry/dead-letter transfer. Network errors, timeouts, 5xx, 408, 429, 401 and 403 retry indefinitely with delays of 2, 4, 8, 16, 32, 64, 128 and then 256 seconds. Other 4xx, including 409, and invalid queue contracts go to the durable dead-letter queue. Failed transfers leave the original unacknowledged, close the session and back off five seconds before reconnecting and subscribing again. A crash between transfer and ack can duplicate work; KITOS ingestion remains idempotent.
+`UserChangeConsumer` is registered only by KITOS when `UserSync:ConsumerEnabled` is true. It uses a dedicated connection/channel, manual acknowledgements, prefetch 1 and sequential dispatch. It validates the existing v1 envelope, message ID and contract type, then resolves `ExternalUserChangeIngestionService` in a fresh async scope without an HTTP request or authenticated user. Success follows database commit, including committed duplicate detection. Invalid contracts, bad input, unknown organizations, disabled users connections and conflicting IDs go to the durable dead-letter queue. Infrastructure failures retry indefinitely after 2, 4, 8, 16, 32, 64, 128 and then 256 seconds. Acknowledgement follows durable ingestion or confirmed routed transfer only. Failed transfers leave the original unacknowledged, close the session and back off five seconds before reconnecting. Cancellation closes the session and allows redelivery. A crash after commit or transfer but before acknowledgement can duplicate delivery; ingestion remains idempotent. The reusable contract, publisher, topology and consumer engine live in `UserSync.Transport`, which has no dependency on either API host.
 
 The dedicated topology is a durable quorum main queue, eight quorum retry queues and a quorum dead-letter queue. Retry queues use TTL with `at-least-once` dead-lettering and `reject-publish` overflow to return safely to main. All queues explicitly disable broker delivery limits (`x-delivery-limit=-1`); main/dead queues have no expiry. Generic topic consumers are unchanged. Require RabbitMQ 4.1 or later with quorum support; do not apply policies introducing message expiry, drop-head overflow or delivery limits. Local Compose pins the 4.1 series and retains the existing data volume; production must verify supported patch version, persistent disks and quorum replication separately. Do not upgrade an existing broker data directory without following RabbitMQ's supported upgrade path.
 
@@ -46,26 +48,9 @@ The `UserSyncStubController` (`POST /user-sync/stub`) only exists to exercise th
 
 ### 2. KITOS ingestion
 
-PubSub posts to `POST /api/v2/integrations/fk-organisation/user-changes` with the normalized envelope:
+KITOS consumes the unchanged `{ "Payload": ... }` envelope with `Type=kitos.user-deletion.v1` and a matching AMQP `MessageId`. `KitosUserChangeDelivery` maps it to `ExternalUserChangeInput` and calls the application service directly. No service-to-service ingestion route or KITOS delivery account is required. The old `IsPubSubUser` field and global-admin marker routes are removed; ordinary accounts and API permissions remain intact.
 
-```json
-{
-  "payload": {
-    "externalMessageId": "source-message-id",
-    "organizationUuid": "00000000-0000-0000-0000-000000000001",
-    "externalUserUuid": "00000000-0000-0000-0000-000000000002",
-    "changeType": 1,
-    "occurredAt": "2026-10-05T08:00:00Z"
-  }
-}
-```
-
-The route is token-authenticated and additionally requires the current account to be a usable KITOS API user marked as a PubSub user (`HasApiAccess` and `IsPubSubUser`). This database permission check means changing or revoking the account permission applies even to an already-issued token. Global administrators manage the marker through `GET /api/v2/internal/users/pubsub-users` and `PATCH /api/v2/internal/users/pubsub-users/{userUuid}?requestedValue=true|false`.
-
-The controller rejects malformed JSON, missing payloads, and oversized bodies. The application service accepts only a non-empty message ID of at most 200 characters, known organization and non-empty external-user UUIDs, the `Deleted` change type, and an optional UTC occurrence timestamp. Invalid input returns a client error; an unknown organization returns not found.
-
-Events are accepted only for organizations whose FK Organisation **users connection** is enabled (see below). For any other organization the endpoint returns `409 Conflict` before deduplication or persistence. 409 was chosen over 422 because the request is well-formed but conflicts with the organization's current state, it maps to the existing `OperationFailure.Conflict`, and it is a permanent client error that `UserChangeConsumer` dead-letters instead of retrying (unlike 401/403/408/429). Identical replays for connected organizations remain idempotent.
-
+The service accepts a non-empty message ID of at most 200 characters, a known organization, a non-empty external-user UUID, change type `1` (`Deleted`), and an optional UTC timestamp. Events require an enabled FK Organisation users connection. Disconnected organizations return `OperationFailure.Conflict` before deduplication or persistence, causing permanent rejection. Equivalent replays for connected organizations remain idempotent.
 #### Users connection
 
 The users connection is an on/off switch per organization, independent of the FK Organisation org-unit connection (`StsOrganizationConnection`); it does not require the org-unit connection. It is managed by local administrators (same permission as the org-unit connection) under `/api/v2/internal/organizations/{organizationUuid}/sts-organization-synchronization`:
@@ -99,37 +84,45 @@ Resolution is performed in a serializable transaction, independently for each ba
 
 ## Persistence and deployment
 
-KITOS adds the `ExternalUserChanges` table with a unique source-message ID, organization/status/receipt-time index, references to the organization, matched user, and resolving user, and a concurrency version. The `User` table gains the `IsPubSubUser` flag (default false). The `Organization` table gains `FkOrgUsersConnected` (default false), `FkOrgUsersConnectedAt` and `FkOrgUsersConnectedByUserId` (FK to `User`, set null on delete). These changes are in the KITOS EF Core migrations `AddExternalUserChanges`, `AddPubSubUser` and `AddFkOrgUsersConnection`. Existing organizations start disconnected, so a local administrator must enable the users connection before PubSub deliveries are accepted.
+KITOS adds the `ExternalUserChanges` table with a unique source-message ID, organization/status/receipt-time index, references to the organization, matched user, and resolving user, and a concurrency version. The unmerged PubSub-user flag migrations have been removed; database changes will be regenerated from the final model without this flag. The `Organization` table gains `FkOrgUsersConnected` (default false), `FkOrgUsersConnectedAt` and `FkOrgUsersConnectedByUserId` (FK to `User`, set null on delete). These changes are in the KITOS EF Core migrations `AddExternalUserChanges` and `AddFkOrgUsersConnection`. Existing organizations start disconnected, so a local administrator must enable the users connection before PubSub deliveries are accepted.
 
-PubSub migration `AddUserChangeReceipts` adds the receipt ledger and a `RabbitMqMigratedAt` checkpoint to the retained historical `UserChangeDeliveries` table. Apply this migration as well as the KITOS migrations. The old table is used only for offline cutover and startup reconciliation; no delivery worker polls it. Keep PubSub's KITOS account credentials in deployment-managed secret configuration; do not commit credentials or certificate private keys.
+PubSub migration `AddUserChangeReceipts` adds the receipt ledger and a `RabbitMqMigratedAt` checkpoint to the retained historical `UserChangeDeliveries` table. Apply this migration as well as the KITOS migrations. The old table is used only for offline cutover and startup reconciliation; no delivery worker polls it. Keep broker credentials in deployment-managed secret configuration; do not commit credentials or certificate private keys.
 
-Relevant PubSub configuration keys are:
+PubSub configuration:
 
-- `UserSync:Enabled` — run the RabbitMQ consumer and allow ingress.
-- `UserSync:KitosEndpoint` — HTTPS KITOS ingestion URL.
-- `UserSync:KitosEmail` and `UserSync:KitosPassword` — KITOS PubSub account credentials.
-- `UserSync:EnableStub` — explicitly enable the test-only JSON publisher where allowed. Its response contains `externalMessageId` and `queueAccepted`.
-- `UserSync:QueuePrefix` — defaults to `kitos.user-sync.v1`; keep stable after publishing. Main uses the prefix, retries append `.retry.1` through `.retry.8`, and dead letters append `.dead`.
-- Existing `RabbitMQ:HostName`, `RABBIT_MQ_USER`, `RABBIT_MQ_PASSWORD` select the broker; optional `RabbitMQ:Port`, `VirtualHost`, `TlsEnabled` and `TlsServerName` configure the connection. TLS uses normal certificate/hostname validation; enable it for production broker transport.
+- `UserSync:Enabled` enables publishing/ingress only; PubSub no longer registers a user-sync consumer.
+- `UserSync:EnableStub` enables the development JSON publisher where allowed.
+- `UserSync:QueuePrefix` defaults to `kitos.user-sync.v1`; retain it for existing backlog.
+- `RabbitMQ:HostName`, `RABBIT_MQ_USER`, `RABBIT_MQ_PASSWORD`, and optional `RabbitMQ:Port`, `VirtualHost`, `TlsEnabled`, `TlsServerName` retain their existing meanings.
 
-The PubSub consumer will not start delivery if disabled and fails startup validation if enabled without an HTTPS endpoint or the required account credentials. The Beskedfordeler callback has separate opt-in configuration described below; actual environment certificates, trust installation, and callback provisioning remain deployment work.
+KITOS configuration:
+
+- `UserSync:ConsumerEnabled` defaults to false; enables the hosted consumer and `/health/user-sync`.
+- `UserSync:QueuePrefix` must match PubSub and existing main/retry/dead queues.
+- `UserSync:Broker:HostName`, `UserName`, `Password` are required when enabled. Optional `Port` defaults to 5671 with TLS or 5672 without, `VirtualHost` defaults to `/`, and `TlsServerName` defaults to the broker hostname. Set `TlsEnabled=true` in production and install normal certificate trust; hostname validation is not bypassed.
+
+KITOS on Server A initiates the private-network connection to RabbitMQ on Server B. Allow outbound/inbound broker TLS traffic between those servers. Use separate broker identities for PubSub and KITOS. Both declare the compatible topology and need configure permission for the exact queue prefix; PubSub publishes to main/dead (including offline cutover), KITOS reads main and publishes retry/dead, and quorum retry dead-lettering routes back to main. Include default-exchange routing and dead-letter permissions required by the broker; restrict access to this vhost/topology and verify effective permissions before activation. Generic PubSub authentication is unchanged.
+
+For IIS, install Application Initialization, set the application pool `startMode=AlwaysRunning`, enable site/application `preloadEnabled`, and disable idle shutdown (`idleTimeout=00:00:00`). Ensure preload actually starts the ASP.NET Core host after machine restart; a hosted service alone cannot start an idle IIS application. Recycling closes consumer sessions; committed but unacknowledged events may redeliver safely. Verify startup without browser traffic, recycle/shutdown and reconnect in the target IIS environment before enabling production. Multiple KITOS instances may compete safely through the unique message ID constraint.
+
+Local Compose provides independent `USER_SYNC_PUBLISHER_ENABLED`, `USER_SYNC_CONSUMER_ENABLED` and `USER_SYNC_STUB_ENABLED` switches, all defaulting to false. `TestExternalUserDeletion.ps1` requires the running KITOS consumer to be configured; it no longer requests delivery credentials.
 
 ### Cutover, replay and rollback
 
 1. Stop ingress at the upstream/proxy and stop **all** old PubSub hosts/workers. Back up PubSub and KITOS databases and broker data. Keep source mailbox messages available for replay. Apply `AddUserChangeReceipts`; keep all historical migrations and old rows.
 2. With ingress paused, run `dotnet PubSub.Application.Api.dll --migrate-user-sync-outbox` from the deployed application directory with its normal database/broker configuration. This offline mode never starts HTTP endpoints or hosted consumers. It checks every uncheckpointed legacy row in bounded batches, validates the old payload and identity, reserves the receipt, publishes pending rows to main and dead-lettered rows to `.dead` with confirmation, then atomically commits receipt acceptance and the row checkpoint. Delivered rows only seed receipts. Empty outboxes are explicitly checked and report zero transfers.
 3. Rerun the same command after interruption. A confirmation followed by a failed checkpoint can produce duplicates, never silent loss. The command fails on corrupt/conflicting legacy data; investigate rather than deleting it. Verify every legacy row has `RabbitMqMigratedAt`, receipt hashes match, and main/dead queue counts account for duplicates and any authorized replay. Enabled normal startup refuses unreconciled legacy rows.
-4. Resume only the new host/consumer and ingress. Keep old rows and backups for audit. Monitor pending receipts and mailbox status; XML status 53 can stop the mailbox, so do not assume automatic source retry. Recover the dependency, coordinate mailbox restart with the provider and replay the original source message ID and event.
+4. Deploy KITOS with its consumer disabled. Stop the old PubSub consumer and settle in-flight work before enabling KITOS on the existing queues. Deploy the publisher-only PubSub host, then enable KITOS consumption and resume ingress. Reconcile main, retry and dead-letter backlog without purging queues. Keep old rows and backups for audit. Monitor pending receipts and mailbox status; XML status 53 can stop the mailbox, so do not assume automatic source retry. Recover the dependency, coordinate mailbox restart with the provider and replay the original source message ID and event.
 
 For pending receipts, replay the original source XML through the authenticated callback. Do not mark receipts accepted by hand: pending receipts contain no payload. For dead letters, an operator must inspect the failure, fix the cause, and republish the **same normalized body and message ID**, with `Type=kitos.user-deletion.v1`, persistent delivery and mandatory publisher confirms. Use a controlled consumer/replay client: acknowledge the dead-letter source only after confirmed routing to main. Do not send accepted dead letters back through ingress: accepted receipts intentionally short-circuit publishing. Keep production stub disabled.
 
-For rollback, pause ingress and stop the new consumer first. Inventory main, retry (including expired retained messages) and dead queues and reconcile every message with KITOS and legacy rows. New messages have no legacy payload row; export/reconstitute them through a reviewed offline procedure before starting an old worker. Already delivered events remain safe to replay with the original identity. Never simply start both workers or clear queues/checkpoints. Preserve the receipt ledger and historical migration; destructive downgrade/table removal is deferred until reconciliation and recovery are verified.
+For rollback, pause ingress and stop the KITOS consumer first. Before restarting an old HTTP consumer, restore the compatible KITOS binary/ingestion endpoint, restore the schema/account permissions and deployment-managed HTTP delivery configuration required by that version, and verify access. The obsolete flag migrations were unmerged and have been removed; there is no flag-removal migration to roll back. Inventory main, retry (including expired retained messages) and dead queues and reconcile every message with KITOS and legacy rows. New messages have no legacy payload row; export/reconstitute them through a reviewed offline procedure before starting an old worker. Already delivered events remain safe to replay with the original identity. Never simply start both workers or clear queues/checkpoints. Preserve the receipt ledger and historical migration; destructive downgrade/table removal is deferred until reconciliation and recovery are verified.
 
-Container validation uses isolated RabbitMQ 4.1 and PostgreSQL 16 instances. The 15 broker/database cases passed, including the existing KITOS persistence suite. The full `pwsh ./scripts/quality-check.ps1 -Fix` gate passed with zero build warnings for both solutions and all unit suites (including 107 PubSub tests); the code-quality self-review is complete. The consumer recovery scenario uses an idempotent HTTP test handler; real KITOS identity/review persistence is covered separately by the PostgreSQL suite. Live KOMBIT/mTLS acceptance and production cutover/rollback rehearsal remain unchecked below.
+Container validation targets isolated RabbitMQ 4.1 and PostgreSQL instances. Transport recovery tests use an in-process delivery adapter; the persistence suite additionally exercises PubSub receipt/publish through competing KITOS consumers, committed duplicate delivery, pending review and apply/dismiss using real broker and database containers. These updated scenarios still require execution with a working container daemon. Live KOMBIT/mTLS acceptance and production cutover/rollback rehearsal remain deployment prerequisites.
 
 ### Operational checks
 
-`/health/user-sync` runs bounded database and passive queue checks and returns aggregate health (no event data). The registered `UserChangeHealthCheck` also provides pending receipt count/oldest age, main and retry depths, consumer count and dead-letter count to health-check integrations. Alert on degraded/unhealthy status, stalled pending receipts and dead letters. Broker management/Prometheus should monitor persistent storage, quorum membership, ready/unacked queue depth and oldest-message age. The `Kitos.PubSub.UserSync` .NET meter exposes confirmed/failed publishes, retries, dead letters, accepted deliveries, connected consumer sessions and delivery age since the latest transfer. Configure a metrics collector; declaring a meter alone does not export it. Logs contain message IDs and failure categories, never bodies or XML diagnostics.
+`/health/user-sync` on PubSub reports receipt-store and broker readiness, including pending receipt count and oldest age. KITOS registers its own endpoint when consumption is enabled and reports main/retry/dead-letter depths and active consumer count. KITOS degrades health for missing consumers or dead letters; PubSub degrades for pending receipts. Broker management/Prometheus should also monitor storage, quorum membership and ready/unacknowledged messages. The existing `Kitos.PubSub.UserSync` meter name is preserved for collector compatibility; label metrics by host/process to distinguish publication and consumption. Declaring a meter does not export metrics. Logs contain message IDs and failure categories, never event bodies or credentials.
 
 ## KOMBIT Beskedfordeler connection
 
@@ -143,7 +136,7 @@ The target transport is Beskedfordeler's synchronous REST push callback over mut
 4. Only after routed broker confirmation and receipt acceptance does PubSub acknowledge with the documented XML `ModtagBeskedOutput` success (`StandardRetur.StatusKode` 20 and HTTP 200).
 5. The dedicated RabbitMQ consumer forwards the normalized JSON event to KITOS; KITOS records it for local-administrator review.
 
-The callback must use server-managed TLS certificate material, require and validate client certificates, separate test and production trust, and allow controlled certificate rotation. It must not use the KITOS PubSub bearer token to authenticate Beskedfordeler. The bearer token remains for the outbound PubSub-to-KITOS hop only. The source `BeskedID` should be the idempotency key: equivalent replays can be acknowledged without creating another delivery, while reuse of an ID for a different event must not be acknowledged as successful. Confirm-and-persist-before-ack keeps the handoff durable; an acknowledgment means PubSub accepted responsibility, not that KITOS has finished delivering or an administrator has applied the change.
+The callback must use server-managed TLS certificate material, require and validate client certificates, separate test and production trust, and allow controlled certificate rotation. Beskedfordeler authentication uses client certificates. There is no outbound PubSub-to-KITOS delivery hop or delivery bearer token. The source `BeskedID` should be the idempotency key: equivalent replays can be acknowledged without creating another delivery, while reuse of an ID for a different event must not be acknowledged as successful. Confirm-and-persist-before-ack keeps the handoff durable; an acknowledgment means PubSub accepted responsibility, not that KITOS has finished delivering or an administrator has applied the change.
 
 ### Prepared receiver and configuration
 
@@ -197,57 +190,66 @@ Pull/AMQP, value-list SOAP operations, planned-event scheduling and deletion rec
 
 ## Verification coverage
 
-The branch adds unit coverage for event ingestion, duplicate/conflict handling, pending-change reads, apply/dismiss and batch resolution, PubSub token handling, confirmation sequencing and manual-ack delivery behavior, integration endpoint authentication, plus receipt, cutover and real RabbitMQ/PostgreSQL coverage in `UserSyncRabbitMqTest`. Key suites are `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web`, `PubSub.Test`, and `Tests.Container`. `BeskedfordelerTest` covers response namespaces/codes, duplicate/conflicting IDs, failure to persist, unsupported mapping/version, disabled/unauthenticated callbacks, untrusted certificates, and bounded schema-validating XML parsing with DTD rejection. `OrgBrugerDeletionMapperTest` additionally compiles the bundled official schemas, validates a synthetic source message and success response, exercises durable mapping/replay, and rejects unsupported, ambiguous and unresolved events. Synthetic fixtures are derived from the contract, not captured provider traffic. Actual mTLS handshake tests, certificate rotation/revocation acceptance tests and end-to-end Beskedfordeler interoperability remain required before activation.
+2026-10-13 local validation: the quality gate passed both solution builds with zero warnings and all unit tests. Container suites compile, but execution requires a running Docker/Podman daemon; the initial run failed during fixture startup because no runtime was detected. IIS lifecycle, Server A-to-B connectivity, production backlog reconciliation and rollback rehearsal remain unverified deployment work.
 
-## Plan: RabbitMQ delivery for FK Organisation user changes
+
+The branch adds unit coverage for event ingestion, duplicate/conflict handling, pending-change reads, apply/dismiss and batch resolution, scoped direct ingestion, confirmation sequencing and manual-ack delivery behavior, and absence of the removed ingestion route, plus receipt, cutover and real RabbitMQ/PostgreSQL coverage in `UserSyncRabbitMqTest`. Key suites are `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web`, `PubSub.Test`, and `Tests.Container`. `BeskedfordelerTest` covers response namespaces/codes, duplicate/conflicting IDs, failure to persist, unsupported mapping/version, disabled/unauthenticated callbacks, untrusted certificates, and bounded schema-validating XML parsing with DTD rejection. `OrgBrugerDeletionMapperTest` additionally compiles the bundled official schemas, validates a synthetic source message and success response, exercises durable mapping/replay, and rejects unsupported, ambiguous and unresolved events. Synthetic fixtures are derived from the contract, not captured provider traffic. Actual mTLS handshake tests, certificate rotation/revocation acceptance tests and end-to-end Beskedfordeler interoperability remain required before activation.
+
+## Plan: KITOS consumes user deletions directly from RabbitMQ
 
 ### Problem / Goal
 
-Replace the database delivery outbox with `KOMBIT -> PubSub REST endpoint -> RabbitMQ -> dedicated consumer -> KITOS`. Preserve the existing mTLS/XML callback, supported event mapping, KITOS JSON contract, and administrator review workflow. The implementation is described above; unchecked verification items below remain explicit deployment or acceptance work.
+Architecture revision requested on 2026-10-13: PubSub receives and interprets KOMBIT Beskedfordeler messages, publishes normalized user-deletion events to RabbitMQ, and a KITOS-owned consumer interprets the events and invokes KITOS application services directly. Remove the service-to-service ingestion API, PubSub's KITOS login/token delivery code, and the user-level IsPubSubUser marker. This replaces the previous HTTP delivery architecture; the sections above describe the implemented direct-consumption flow.
 
-The user explicitly requires immediate rejection of conflicting message IDs at the callback. A small persistent receipt store therefore remains in PubSub, but RabbitMQ owns queued payloads and delivery retries. Delivery is at least once; KITOS remains responsible for preventing duplicate business changes.
+Target flow: KOMBIT -> PubSub on Server B (authenticate, validate XML, map source event, reserve receipt) -> confirmed RabbitMQ publish on Server B -> KITOS consumer on Server A (validate contract, apply domain rules, persist) -> pending ExternalUserChange -> local administrator applies or dismisses deletion.
+
+KITOS initiates the broker connection from Server A to Server B over the private network. PubSub interprets source XML and maps source identifiers; KITOS interprets the normalized event using its organization, identity and review rules. Keep immediate receipt conflict detection, durable publishing, at-least-once delivery, idempotency and organization opt-in. Removing the ingestion API does not remove administrator-facing review or organization-connection APIs.
 
 ### 1. Gather information
 
-- [x] Inspect `BeskedfordelerController`, `BeskedfordelerReceiver`, `OrgBrugerDeletionMapper`, `UserChangeOutbox`, `UserChangeDeliveryWorker`, `KitosTokenProvider`, and KITOS ingestion/idempotency handling.
-- [x] Inspect the existing RabbitMQ publisher, consumer, connection manager, Docker configuration, migrations, and unit/container tests. The generic consumer uses `autoAck: true`; its publisher does not explicitly enable publisher confirms. Neither can be reused unchanged for this delivery guarantee.
-- [x] Confirm the target transport with the user: REST push into PubSub, RabbitMQ handoff, consumer delivery to KITOS. Beskedfordeler AMQP pull is outside this change.
-- [x] Resolve duplicate/conflict semantics with the user: retain synchronous conflict rejection using a separate persistent receipt store.
-- [ ] Before implementation, review this plan and confirm acceptance criteria below. Verify production broker version, persistence/replication, TLS ingress, and whether any environment contains old outbox rows. These are deployment checks, not assumptions that existing data can be discarded.
-
-Proposed implementation boundaries: use a dedicated user-sync queue and consumer inside the existing PubSub host, reusing broker infrastructure and the KITOS token provider where appropriate. Keep generic topic/subscriber delivery behavior outside the scope of this change. Validate/map XML at ingress and queue the normalized event; the consumer validates the queued contract and calls KITOS.
+- [x] Confirm requested ownership and deployment: PubSub and RabbitMQ on Server B; KITOS on IIS on Server A owns consumption; no PubSub-to-KITOS HTTP hop.
+- [x] Inspect consumer, queue contract, HTTP delivery/token providers, KITOS ingestion service and IsPubSubUser dependencies. The ingestion service can be called directly without its HTTP controller.
+- [ ] Inspect KITOS startup, dependency scopes, database commit boundaries and shutdown handling. Verify an IIS-hosted consumer starts without a first web request, handles idle/recycle/shutdown and resumes after downtime. Resolve any hosting limitations before implementation.
+- [x] Inventory integration-only DTOs, filters, flag queries/update methods, API routes, tests, frontend callers and deployment scripts. Preserve shared authentication and generic PubSub behavior.
+- [ ] Verify deployed queue contracts, main/retry/dead-letter backlog and legacy outbox migration status. Existing messages and receipts must remain recoverable.
+- [x] Implementation authorized by the user; preserve the v1 envelope and existing queue topology. Production compatibility and backlog checks remain deployment work.
 
 ### 2. Create tests and necessary validation
 
-- [x] Extend callback tests: invalid authentication/XML/mapping never publishes; new messages cannot receive XML status 20 until a routed publish is confirmed and the receipt is marked accepted; database failure, broker failure, nack, unroutable return, timeout, and cancellation never produce success.
-- [x] Test receipts using a relational database: unique message ID, deterministic versioned hash of normalized event fields, equivalent replay, conflicting replay, and concurrent equal/conflicting requests across instances. Hash canonical values, not raw XML or incidental JSON formatting; align timestamp normalization with KITOS.
-- [x] Inject crashes after receipt reservation, after broker confirmation, and after receipt acceptance but before the HTTP response. Equal retries must recover pending receipts, accepted retries must succeed, conflicts must remain rejected, and duplicate queue deliveries must not create duplicate KITOS changes.
-- [x] Test the dedicated consumer: manual ack after KITOS success; one token refresh/retry on 401; bounded HTTP attempts; delayed retry for network errors, timeouts, 5xx, 408, 429, 401, and 403; permanent rejection including 409 routed to a dead-letter queue. Preserve current error classification unless contract tests identify a necessary change.
-- [x] Use real RabbitMQ container tests for publisher confirms/returns, broker restart with persistent storage, unacked redelivery after consumer termination, reconnect/re-subscription, delayed retry, and failure of retry/dead-letter transfers. Mock-only tests cannot prove broker durability.
-- [x] Test migration with empty and populated outboxes, including delivered, pending, and dead-lettered rows, plus interruption/restart of migration. Retain existing KITOS idempotency, authorization, and review tests.
+- [ ] Preserve PubSub callback/receipt tests: authentication, XML mapping, immediate conflicting-ID rejection, equivalent replay and confirmed routed publication before callback success.
+- [x] Add KITOS consumer tests for version/message-ID/payload validation, mapping to ExternalUserChangeInput, per-delivery dependency scopes and direct service invocation without HTTP or a logged-in user.
+- [ ] Test ack only after database commit or confirmed retry/dead-letter transfer. Cover crash after commit before ack, concurrent equal deliveries and conflicting IDs; only one review item may be created.
+- [x] Test explicit application-result classification: malformed/unsupported events, unknown organizations, disabled users connections and conflicting IDs dead-letter; transient database/broker failures retry without silent discard.
+- [ ] Use real RabbitMQ and relational-database tests for persistence, reconnect, unacked redelivery, delayed retry, failed transfers and competing KITOS instances.
+- [x] Update end-to-end coverage to PubSub -> RabbitMQ -> KITOS consumer -> pending review -> apply/dismiss. Retain identity matching, unmatched identity, organization authorization, disconnection and review-concurrency tests.
+- [ ] Validate flag removal on fresh and upgraded databases and removal of integration-only routes/DTO fields. Plan actual IIS lifecycle and Server A-to-B broker connectivity checks.
 
 ### 3. Implement
 
-- [x] Add a receipt entity/repository and EF migration with unique `ExternalMessageId`, versioned normalized-event hash, state (`Pending`/`Accepted`), and timestamps. No delivery payload, attempt schedule, or background delivery polling belongs in this store. Keep receipts until an explicit retention policy is agreed; do not expire them implicitly.
-- [x] Implement receipt/publish sequencing: authenticate, validate and map; atomically reserve or compare the receipt; reject differing hashes with existing conflict status 40; return success for an already accepted equivalent receipt; otherwise publish persistently with mandatory routing and publisher confirmations, then mark accepted and return status 20. Never hold a database transaction open across a broker call.
-- [x] Treat a publish timeout or connection loss as an ambiguous result. Keep the receipt pending and do not acknowledge success. On equivalent KOMBIT redelivery, republish and retry acceptance. A crash after confirmation can produce duplicate messages; never pretend the database and broker commit atomically. A pending receipt cannot deliver anything on its own: recovery depends on source redelivery or operator replay.
-- [x] Add a dedicated durable main queue, delayed-retry topology, and durable dead-letter queue with explicit declarations, persistent messages, message ID, contract version, and correlation metadata. Reuse the configured broker with separate queue names. Verify RabbitMQ.Client 7.1.2 confirmation/return APIs and supported broker topology before coding.
-- [x] Replace `UserChangeDeliveryWorker` database polling with a hosted consumer using manual acknowledgements, bounded prefetch/concurrency, cancellation-aware shutdown, and connection/channel recovery. Extract/reuse HTTPS KITOS delivery and token renewal; check token-cache concurrency if parallel delivery is enabled.
-- [x] Acknowledge a main-queue delivery only after KITOS accepts it or after a confirmed, routed transfer to the retry/dead-letter queue. On failed transfer leave/requeue the original safely and back off instead of spinning. A crash between transfer confirmation and source ack may duplicate a message and must be tested.
-- [x] Preserve delayed transient retries with a capped backoff (current maximum 256 seconds) and retain permanent failures in the dead-letter queue for explicit operator replay. Do not silently discard messages after an attempt threshold. Use broker-supported at-least-once dead-lettering for delayed return to the main queue, or another confirmed transfer mechanism; ordinary TTL/dead-letter defaults must not introduce an unconfirmed loss window. Verify delivery limits, expiry, and overflow policies do not discard messages.
-- [x] Update `BeskedfordelerReceiver`, controller error handling, DI, and the development stub to use the new receipt/publisher boundary. The stub reports message ID and queue acceptance, not removed outbox delivery fields. Keep mTLS, XML schema checks, supported event scope, feature flags, and KITOS business behavior.
-- [x] Add operational checks and metrics for broker connectivity, pending receipts, confirm failures, queue age/depth, retries, consumer health, and dead letters. Log identifiers and failure categories without event payloads. Document replay preserving the original message ID and event, plus recovery of stalled KOMBIT mailboxes: current documentation says protocol status 53 can stop mailbox delivery, so automatic retries must not be assumed.
-- [x] Implement a staged cutover: pause ingress and the old worker; seed receipts from existing outbox records; migrate pending payloads with publisher confirms and dead-lettered payloads to the dead-letter queue; preserve delivered receipts without redelivery. Make migration restartable and reconcile every record. If no outbox data exists, verify that explicitly and skip transfer. Resume only the new path after reconciliation.
-- [x] Remove runtime outbox dependencies and polling after cutover. Preserve historical migrations and existing data for rollback/audit; defer destructive table removal until migrated counts and recovery have been verified. Rollback must reconcile queued work before restarting the old path. Update this document's current-behavior sections, deployment configuration, and test helpers when implementation is complete.
+- [x] Keep KOMBIT callback authentication, XML validation, supported BrugerNedlagt mapping, receipt ledger and confirmed publisher in PubSub. Preserve the normalized envelope, contract version and message identity for existing queued events.
+- [x] Extract the neutral wire contract and reusable broker pieces into a suitable shared boundary. KITOS must not depend on the PubSub API host to consume or deserialize events.
+- [x] Move the dedicated user-change consumer into the KITOS host as a hosted service with an explicit enable switch, dedicated connection/channel, manual acknowledgements, bounded prefetch, reconnect/backoff and cancellation-aware shutdown. Resolve scoped dependencies separately per delivery.
+- [x] Validate queued events and invoke ExternalUserChangeIngestionService directly. Preserve organization users-connection checks, identity matching, timestamp normalization, unique source IDs and pending administrator review. Receipt must not automatically delete user access.
+- [x] Replace HTTP status handling with explicit business-result handling. Ack only after durable ingestion or confirmed routed retry/dead-letter transfer; failed transfers leave the original unacknowledged. Preserve idempotency across crash windows.
+- [x] Retain durable main/retry/dead-letter topology, capped delayed retries, safe delayed return and explicit operator replay. Define compatible topology declarations and ownership; do not introduce expiry, delivery limits or overflow behavior that loses messages.
+- [ ] Configure KITOS on Server A to connect to RabbitMQ on Server B with a dedicated broker identity and minimum required consume/retry/dead-letter permissions. Separate PubSub publisher permissions. Document firewall, TLS, secrets, IIS startup/idle/recycle settings and health checks.
+- [x] Stop registering the user-sync consumer in PubSub. Remove KitosUserChangeDelivery, KitosTokenProvider, unused token DTOs, the user-sync HTTP client and UserSync:KitosEndpoint/KitosEmail/KitosPassword configuration. Separate producer/consumer enablement so PubSub can publish independently.
+- [x] Remove ExternalUserChangeIngestionController, integration-only request/response models and RequirePubSubUserAttribute when unused. Keep the ingestion application service and administrator review/connection APIs.
+- [x] Remove IsPubSubUser from the user model, mappings, response DTOs, queries, update methods, PubSub-user management routes and associated tests/UI callers. Remove the unmerged flag migrations and align the remaining designer model and snapshot; database changes will be regenerated. Do not delete actual accounts or ordinary API permissions.
+- [ ] Update deployment/Compose configuration, test helpers and observability. KITOS owns consumption, ingestion, retry and dead-letter health; PubSub owns callback, receipt and publish health. Avoid logging credentials or payloads.
+- [ ] Stage cutover: deploy a compatible KITOS consumer disabled; stop the PubSub consumer and settle in-flight work; enable KITOS on the existing queues; reconcile all backlog. Avoid accidentally running both delivery architectures.
+- [ ] Remove the HTTP path and flag after direct delivery is verified. Document ordered rollback: restore compatible endpoint/schema/configuration before restarting the old consumer. Never purge queues; preserve outstanding legacy outbox migration/reconciliation work.
+- [x] After implementation, update the current-behavior, deployment, operational and verification sections above to describe direct KITOS consumption.
 
 ### 4. Validate
 
-- [x] Run `dotnet test PubSub.Test`, affected KITOS ingestion tests, and the relevant `Tests.Container` broker/database suites. Run `pwsh ./scripts/quality-check.ps1` and complete the repository's code-quality self-review for implementation changes.
-- [ ] Demonstrate the complete flow with KITOS unavailable: callback accepts only confirmed queue deliveries, messages survive broker/consumer restart, and recovery creates one KITOS review item per event.
-- [ ] Demonstrate receipt database unavailability, conflicting IDs, ambiguous publish outcomes, consumer termination after KITOS commit but before ack, and retry/dead-letter target failure. Verify recovery without silent loss or duplicate business effects.
-- [ ] Verify broker durability/replication and retention settings in the actual deployment, plus real mTLS handshakes, certificates, and KOMBIT external-test success/failure responses. Verify mailbox recovery after callback failure before production activation.
-- [ ] Rehearse cutover and rollback with representative existing rows; verify no pending/dead-lettered payload is stranded and no active delivery worker queries the old outbox.
-- [ ] Confirm acceptance criteria: the requested RabbitMQ flow is active; conflicting IDs are rejected at the callback; durable broker acceptance precedes callback success; KITOS acceptance or confirmed transfer precedes consumer ack; retries/dead letters are recoverable; source and broker redelivery are idempotent; receipt storage contains no delivery queue; existing KITOS authorization and review behavior are preserved.
+- [ ] Run affected PubSub unit tests, KITOS ingestion/domain/API tests, real broker/database suites, relevant builds and repository quality checks for application changes.
+- [ ] Demonstrate a valid KOMBIT event creates exactly one pending KITOS review item with no PubSub-to-KITOS HTTP call and no PubSub-marked KITOS account.
+- [ ] Demonstrate KITOS downtime, IIS startup without web traffic, recycling, broker interruption and recovery without lost messages or duplicate business changes.
+- [ ] Demonstrate malformed events, business conflicts, transient database failures and failed retry/dead-letter transfers; verify acknowledgements and operator replay.
+- [ ] Rehearse backlog cutover and ordered rollback with main/retry/dead-letter messages. Verify PubSub's removed consumer cannot compete with KITOS.
+- [ ] Verify regenerated schema migrations and absence of runtime IsPubSubUser, ingestion-route and KITOS delivery-credential dependencies. Confirm ordinary authentication and administrator authorization remain intact.
+- [ ] Confirm acceptance criteria: PubSub interprets KOMBIT and durably publishes; KITOS directly consumes and interprets the normalized event; no service-to-service ingestion API or PubSub user flag remains; receipt conflicts, retries and replay are safe; organization opt-in and manual review are preserved. Production KOMBIT/certificate acceptance and broker durability checks remain deployment prerequisites.
 
 ## References
 
@@ -258,6 +260,6 @@ Proposed implementation boundaries: use a dedicated user-sync queue and consumer
 - KOMBIT, _B.08.09 Underbilag 2O - Beskedkuvert_ and `Beskedkuvert.xsd`.
 - `AnvenderSystem.wadl` from SF1461 annexes confirms POST, application/xml and HTTP 200.
 - `BeskeddataBase64ver.2.00.xsd`, `Beskedfordeler.wsdl`, and related operation/value-list schemas supplied with the integration documentation.
-- Main implementation: `PubSub.Application.Api/UserSync/`, `PubSub.Core.DomainModel/UserSync/`, `Core.ApplicationServices/Users/ExternalUserChange*`, `Core.DomainModel/Users/ExternalUserChange.cs`, and `Presentation.Web/Controllers/API/V2/Integration/ExternalUserChangeIngestionController.cs`.
+- Main implementation: `PubSub.Application.Api/UserSync/`, `PubSub.Core.DomainModel/UserSync/`, `Core.ApplicationServices/Users/ExternalUserChange*`, `Core.DomainModel/Users/ExternalUserChange.cs`, `UserSync.Transport/`, and `Presentation.Web/Infrastructure/UserSync/`.
 
 RabbitMQ implementation references: [Client 7.1.2 confirmation tracking](https://github.com/rabbitmq/rabbitmq-dotnet-client/blob/v7.1.2/projects/RabbitMQ.Client/CreateChannelOptions.cs), [quorum at-least-once dead-lettering](https://www.rabbitmq.com/docs/quorum-queues#dead-lettering).

@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using System.Xml;
 using System.Xml.Schema;
 using Microsoft.AspNetCore.Authorization;

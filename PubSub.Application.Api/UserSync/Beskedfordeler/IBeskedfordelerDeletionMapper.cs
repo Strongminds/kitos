@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using System.Xml.Linq;
 using PubSub.Core.DomainModel.UserSync;
 

@@ -119,4 +119,7 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UserSync.Transport\UserSync.Transport.csproj" />
+  </ItemGroup>
 </Project>

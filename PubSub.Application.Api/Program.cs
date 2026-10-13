@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Api;
 using PubSub.Infrastructure.DataAccess;
@@ -35,10 +36,6 @@ builder.Services.AddScoped<UserChangeIngress>();
 builder.Services.AddScoped<UserChangeCutover>();
 builder.Services.AddSingleton<UserChangeTopology>();
 builder.Services.AddSingleton<IUserChangePublisher, UserChangePublisher>();
-builder.Services.AddSingleton<KitosUserChangeDelivery>();
-builder.Services.AddHttpClient("UserSync", client => client.Timeout = TimeSpan.FromSeconds(30))
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
-builder.Services.AddHostedService<UserChangeConsumer>();
 builder.Services.AddHealthChecks().AddCheck<UserChangeHealthCheck>("user-sync");
 builder.AddBeskedfordeler();
 

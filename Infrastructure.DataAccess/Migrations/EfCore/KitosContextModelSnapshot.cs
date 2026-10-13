@@ -8067,11 +8067,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsPubSubUser")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<bool>("IsSystemIntegrator")
                         .HasColumnType("boolean");
 

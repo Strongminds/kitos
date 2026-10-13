@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -21,7 +22,7 @@ public class OrgBrugerDeletionMapperTest
         var schemas = BeskedfordelerXmlReader.LoadSchemas(Path.Combine(AppContext.BaseDirectory, "UserSync", "Beskedfordeler", "Schemas"));
         using var body = new MemoryStream(Encoding.UTF8.GetBytes(Input().ToString()));
         var input = await new BeskedfordelerXmlReader(schemas).Read(body, default);
-        var mapped = Assert.IsType<PubSub.Core.DomainModel.UserSync.UserDeletionEvent>(Mapper().Map(input));
+        var mapped = Assert.IsType<UserDeletionEvent>(Mapper().Map(input));
         Assert.Equal(OrganizationId, mapped.OrganizationUuid);
         Assert.Equal(UserId, mapped.ExternalUserUuid);
         Assert.Equal(1, mapped.ChangeType);

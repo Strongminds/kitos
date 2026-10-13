@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using Microsoft.EntityFrameworkCore;
 using PubSub.Core.DomainModel.UserSync;
 using PubSub.Infrastructure.DataAccess;

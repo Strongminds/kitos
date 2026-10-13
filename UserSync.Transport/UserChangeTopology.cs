@@ -1,6 +1,7 @@
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
-namespace PubSub.Application.Api.UserSync;
+namespace UserSync.Transport;
 
 public sealed class UserChangeTopology(IConfiguration configuration)
 {
