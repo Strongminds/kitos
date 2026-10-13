@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PubSub.Infrastructure.DataAccess;
 
 #nullable disable
@@ -17,103 +16,25 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+                .HasAnnotation("ProductVersion", "10.0.0");
 
             modelBuilder.Entity("PubSub.Core.DomainModel.Subscriptions.Subscription", b =>
                 {
                     b.Property<Guid>("Uuid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Callback")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .IsRequired();
 
                     b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .IsRequired();
 
                     b.Property<string>("Topic")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .IsRequired();
 
                     b.HasKey("Uuid");
 
                     b.ToTable("Subscriptions");
-                });
-
-            modelBuilder.Entity("PubSub.Core.DomainModel.UserSync.UserChangeDelivery", b =>
-                {
-                    b.Property<Guid>("Uuid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Attempts")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("DeadLettered")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("DeliveredAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ExternalMessageId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int?>("LastStatusCode")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("NextAttemptAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("RabbitMqMigratedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Uuid");
-
-                    b.HasIndex("ExternalMessageId")
-                        .IsUnique();
-
-                    b.HasIndex("DeadLettered", "DeliveredAt", "NextAttemptAt");
-
-                    b.ToTable("UserChangeDeliveries");
-                });
-
-            modelBuilder.Entity("PubSub.Core.DomainModel.UserSync.UserChangeReceipt", b =>
-                {
-                    b.Property<string>("ExternalMessageId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime?>("AcceptedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EventHash")
-                        .IsRequired()
-                        .HasMaxLength(67)
-                        .HasColumnType("character varying(67)");
-
-                    b.Property<DateTime>("ReservedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ExternalMessageId");
-
-                    b.HasIndex("AcceptedAt", "ReservedAt");
-
-                    b.ToTable("UserChangeReceipts");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,27 +11,10 @@ namespace PubSub.Infrastructure.DataAccess
         }
 
         public DbSet<Subscription> Subscriptions { get; set; }
-        public DbSet<PubSub.Core.DomainModel.UserSync.UserChangeDelivery> UserChangeDeliveries { get; set; }
-        public DbSet<PubSub.Core.DomainModel.UserSync.UserChangeReceipt> UserChangeReceipts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new Mappings.SubscriptionMappingConfiguration());
-            modelBuilder.Entity<PubSub.Core.DomainModel.UserSync.UserChangeReceipt>(b =>
-            {
-                b.HasKey(x => x.ExternalMessageId);
-                b.Property(x => x.ExternalMessageId).HasMaxLength(200);
-                b.Property(x => x.EventHash).HasMaxLength(67).IsRequired();
-                b.HasIndex(x => new { x.AcceptedAt, x.ReservedAt });
-            });
-            modelBuilder.Entity<PubSub.Core.DomainModel.UserSync.UserChangeDelivery>(b =>
-            {
-                b.HasKey(x => x.Uuid);
-                b.Property(x => x.ExternalMessageId).HasMaxLength(200).IsRequired();
-                b.HasIndex(x => x.ExternalMessageId).IsUnique();
-                b.HasIndex(x => new { x.DeadLettered, x.DeliveredAt, x.NextAttemptAt });
-                b.Property(x => x.Version).IsConcurrencyToken();
-            });
 
             base.OnModelCreating(modelBuilder);
         }

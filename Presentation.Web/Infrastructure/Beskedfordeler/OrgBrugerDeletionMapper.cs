@@ -1,9 +1,11 @@
-using UserSync.Transport;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Core.ApplicationServices.Model.Users;
 using System.Xml;
 using System.Xml.Linq;
-using PubSub.Core.DomainModel.UserSync;
 
-namespace PubSub.Application.Api.UserSync.Beskedfordeler;
+namespace Presentation.Web.Infrastructure.Beskedfordeler;
 
 /// <summary>SF1500 ORG_Bruger 1.0, sections 1-3. Slet and Passiver do not emit events.</summary>
 public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
@@ -21,7 +23,7 @@ public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
         _organizations = new Dictionary<string, Guid>(organizations, StringComparer.Ordinal);
     }
 
-    public UserDeletionEvent? Map(XElement validatedInput)
+    public ExternalUserChangeInput? Map(XElement validatedInput)
     {
         var envelope = BeskedfordelerResponse.Envelope;
         var sagdok = BeskedfordelerResponse.Sagdok;
@@ -29,7 +31,7 @@ public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
         var filter = message?.Element(envelope + "Beskedkuvert")?.Element(envelope + "Filtreringsdata");
         if (ReadUuid(filter, "Beskedtype") != MessageType) return null;
         var registrations = filter?.Elements(envelope + "ObjektRegistrering").ToArray() ?? [];
-        // One source message currently produces one outbox event. Never silently drop additional registrations.
+        // One source message produces one preserved event. Never silently drop additional registrations.
         if (registrations.Length != 1) return null;
         var registration = registrations[0];
         if (ReadUuid(registration, "ObjektType") != UserObjectType ||
@@ -56,7 +58,7 @@ public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
 
         // KITOS SSO reads FK Bruger using the SAML UUID and stores that UUID as SsoUserIdentity.ExternalUuid.
         // Beskeddata/Bruger identifies the actor making the change, not the affected user.
-        return new UserDeletionEvent("assigned-by-receiver", organizationId, userId, OccurredAt: occurredAt);
+        return new ExternalUserChangeInput("assigned-by-receiver", organizationId, userId, Core.DomainModel.Users.ExternalUserChangeType.Deleted, occurredAt);
     }
 
     private static Guid ReadUuid(XElement? parent, string field) =>

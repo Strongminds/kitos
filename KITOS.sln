@@ -126,8 +126,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04_Infrastructure", "04_Inf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Container", "Tests.Container\Tests.Container.csproj", "{2BF30CC7-827C-4F5D-9B05-C9DE2A5C20F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSync.Transport", "UserSync.Transport\UserSync.Transport.csproj", "{E3156FEE-5F3A-4E24-AF80-8C4C23D3CB38}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -246,10 +244,6 @@ Global
 		{2BF30CC7-827C-4F5D-9B05-C9DE2A5C20F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BF30CC7-827C-4F5D-9B05-C9DE2A5C20F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BF30CC7-827C-4F5D-9B05-C9DE2A5C20F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3156FEE-5F3A-4E24-AF80-8C4C23D3CB38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3156FEE-5F3A-4E24-AF80-8C4C23D3CB38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3156FEE-5F3A-4E24-AF80-8C4C23D3CB38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3156FEE-5F3A-4E24-AF80-8C4C23D3CB38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

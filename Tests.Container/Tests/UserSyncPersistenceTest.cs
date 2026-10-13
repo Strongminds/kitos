@@ -1,12 +1,4 @@
 using Core.DomainServices.Repositories.Organization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Presentation.Web.Infrastructure.UserSync;
-using PubSub.Application.Api.UserSync;
-using PubSub.Infrastructure.DataAccess;
-using RabbitMQ.Client;
-using UserSync.Transport;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Users;
 using Core.DomainModel;
@@ -194,83 +186,38 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task DirectConsumer_CompetingInstances_CreateOnePendingReviewAndResolve(bool apply)
+    public async Task Ingestion_CompetingScopes_CreateOnePendingReviewAndPreserveResolution(bool apply)
     {
-        await using var broker = new ContainerBuilder("rabbitmq:4.1-management")
-            .WithEnvironment("RABBITMQ_DEFAULT_USER", "test")
-            .WithEnvironment("RABBITMQ_DEFAULT_PASS", "test")
-            .WithPortBinding(5672, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(5672)).Build();
-        await broker.StartAsync();
         await using (var db = Context())
         {
             var organization = await db.Organizations.SingleAsync(x => x.Id == _organization.Id);
             organization.FkOrgUsersConnected = true;
             await db.SaveChangesAsync();
-            await db.Database.ExecuteSqlRawAsync("CREATE DATABASE pubsub_direct_test");
         }
-        await using var receipts = new PubSubContext(new DbContextOptionsBuilder<PubSubContext>().UseNpgsql(
-            $"Host={_postgres.Hostname};Port={_postgres.GetMappedPublicPort(5432)};Database=pubsub_direct_test;Username=postgres;Password=test-only").Options);
-        await receipts.Database.MigrateAsync();
-        var factory = new ConnectionFactory
+        var input = new Core.ApplicationServices.Model.Users.ExternalUserChangeInput("direct", _organization.Uuid,
+            _externalUuid, ExternalUserChangeType.Deleted, DateTime.UtcNow);
+        void Deliver()
         {
-            HostName = broker.Hostname,
-            Port = broker.GetMappedPublicPort(5672),
-            UserName = "test",
-            Password = "test",
-            AutomaticRecoveryEnabled = false
-        };
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-        { ["UserSync:ConsumerEnabled"] = "true" }).Build();
-        var topology = new UserChangeTopology(configuration);
-        await using var publisher = new UserChangePublisher(factory, topology);
-        var services = new ServiceCollection();
-        services.AddScoped(_ => Context());
-        services.AddScoped(sp =>
-        {
-            var db = sp.GetRequiredService<KitosContext>();
-            return new ExternalUserChangeIngestionService(new ExternalUserChangeRepository(db),
+            using var db = Context();
+            var ingestion = new ExternalUserChangeIngestionService(new ExternalUserChangeRepository(db),
                 new OrganizationRepository(new GenericRepository<Organization>(db)),
                 new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)));
-        });
-        await using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true });
-        var delivery = new KitosUserChangeDelivery(provider.GetRequiredService<IServiceScopeFactory>());
-        using var first = new UserChangeConsumer(factory, topology, publisher, delivery, configuration, NullLogger<UserChangeConsumer>.Instance);
-        using var second = new UserChangeConsumer(factory, topology, publisher, delivery, configuration, NullLogger<UserChangeConsumer>.Instance);
-        var message = new UserDeletionEvent("direct", _organization.Uuid, _externalUuid, OccurredAt: DateTime.UtcNow);
-        await new UserChangeIngress(new UserChangeReceiptStore(receipts), publisher).Enqueue(message, default);
-        // Simulate an ambiguous confirmation/acknowledgement: competing instances see equivalent deliveries.
-        await publisher.Publish(UserChangeContract.Serialize(message), message.ExternalMessageId, 0, false, default);
-        await first.StartAsync(default);
-        await second.StartAsync(default);
-        try
+            Assert.True(ingestion.Ingest(input).Ok);
+        }
+        await Task.WhenAll(Task.Run(Deliver), Task.Run(Deliver));
+        await using (var check = Context())
         {
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            while (true)
-            {
-                await using var db = Context();
-                if (await db.Set<ExternalUserChange>().AnyAsync(timeout.Token)) break;
-                await Task.Delay(100, timeout.Token);
-            }
-            // A further equivalent delivery after commit must not reset or duplicate the review item.
-            Assert.Equal(UserChangeDeliveryResult.Accepted, await delivery.Deliver(message, timeout.Token));
-            await using var check = Context();
-            var pending = Assert.Single(await check.Set<ExternalUserChange>().ToListAsync(timeout.Token));
+            var pending = Assert.Single(await check.Set<ExternalUserChange>().ToListAsync());
             Assert.Equal(ExternalUserChangeStatus.Pending, pending.Status);
             Assert.Equal(_user.Id, pending.UserId);
-            Assert.Equal(2, await check.OrganizationRights.CountAsync(x => x.UserId == _user.Id, timeout.Token));
+            Assert.Equal(2, await check.OrganizationRights.CountAsync(x => x.UserId == _user.Id));
             Assert.True(Resolver(check).Resolve(_organization.Uuid, pending.Uuid, apply).Ok);
-            Assert.Equal(UserChangeDeliveryResult.Accepted, await delivery.Deliver(message, timeout.Token));
-            await using var verify = Context();
-            var resolved = Assert.Single(await verify.Set<ExternalUserChange>().ToListAsync(timeout.Token));
-            Assert.Equal(apply ? ExternalUserChangeStatus.Applied : ExternalUserChangeStatus.Dismissed, resolved.Status);
-            Assert.Equal(apply ? 1 : 2, await verify.OrganizationRights.CountAsync(x => x.UserId == _user.Id, timeout.Token));
         }
-        finally
-        {
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await Task.WhenAll(first.StopAsync(timeout.Token), second.StopAsync(timeout.Token));
-        }
+        Deliver(); // Lost acknowledgement after commit must not reset administrator resolution.
+        await using var verify = Context();
+        var resolved = Assert.Single(await verify.Set<ExternalUserChange>().ToListAsync());
+        Assert.Equal(apply ? ExternalUserChangeStatus.Applied : ExternalUserChangeStatus.Dismissed, resolved.Status);
+        Assert.Equal(apply ? 1 : 2, await verify.OrganizationRights.CountAsync(x => x.UserId == _user.Id));
     }
     private ExternalUserChangeResolutionService Resolver(KitosContext db) => new(
         new ExternalUserChangeResolutionTransaction(db),

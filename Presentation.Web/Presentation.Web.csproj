@@ -120,6 +120,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UserSync.Transport\UserSync.Transport.csproj" />
+    <Content Include="Infrastructure\Beskedfordeler\Schemas\**\*.xsd" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

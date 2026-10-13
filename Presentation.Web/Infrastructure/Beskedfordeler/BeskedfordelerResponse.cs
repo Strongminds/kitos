@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace PubSub.Application.Api.UserSync.Beskedfordeler;
+namespace Presentation.Web.Infrastructure.Beskedfordeler;
 
 public enum BeskedfordelerStatus
 {

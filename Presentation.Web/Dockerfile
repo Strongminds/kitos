@@ -2,7 +2,6 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
 COPY ["Presentation.Web/Presentation.Web.csproj", "Presentation.Web/"]
-COPY ["UserSync.Transport/UserSync.Transport.csproj", "UserSync.Transport/"]
 COPY ["Core.Abstractions/Core.Abstractions.csproj", "Core.Abstractions/"]
 COPY ["Core.ApplicationServices/Core.ApplicationServices.csproj", "Core.ApplicationServices/"]
 COPY ["Core.BackgroundJobs/Core.BackgroundJobs.csproj", "Core.BackgroundJobs/"]

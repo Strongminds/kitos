@@ -1,15 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <!-- PubSub projects live in the other solution; preserve this test build's configuration. -->
-    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="SSH.NET" Version="2026.0.0" />
@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PubSub.Application.Api\PubSub.Application.Api.csproj" />
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
     <ProjectReference Include="..\Core.ApplicationServices\Core.ApplicationServices.csproj" />
     <ProjectReference Include="..\PubSub.Core.DomainModel\PubSub.Core.DomainModel.csproj" />

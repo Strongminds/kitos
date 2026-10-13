@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -31,12 +31,4 @@
     <ProjectReference Include="..\PubSub.Infrastructure.MessageQueue\PubSub.Infrastructure.MessageQueue.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="UserSync\Beskedfordeler\Schemas\**\*.xsd" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Update="UserSync\Beskedfordeler\wadl\*.wadl" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\UserSync.Transport\UserSync.Transport.csproj" />
-  </ItemGroup>
 </Project>

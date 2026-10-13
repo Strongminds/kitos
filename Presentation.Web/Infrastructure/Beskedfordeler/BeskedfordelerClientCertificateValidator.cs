@@ -1,7 +1,10 @@
+using System;
+using System.Linq;
+using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace PubSub.Application.Api.UserSync.Beskedfordeler;
+namespace Presentation.Web.Infrastructure.Beskedfordeler;
 
 public interface IBeskedfordelerClientCertificateValidator
 {

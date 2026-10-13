@@ -1,8 +1,7 @@
-using UserSync.Transport;
+using Core.ApplicationServices.Model.Users;
 using System.Xml.Linq;
-using PubSub.Core.DomainModel.UserSync;
 
-namespace PubSub.Application.Api.UserSync.Beskedfordeler;
+namespace Presentation.Web.Infrastructure.Beskedfordeler;
 
 /// <summary>
 /// Maps confirmed immediate ORG_Bruger deactivations to administrator-reviewed deletions.
@@ -11,5 +10,5 @@ namespace PubSub.Application.Api.UserSync.Beskedfordeler;
 /// </summary>
 public interface IBeskedfordelerDeletionMapper
 {
-    UserDeletionEvent? Map(XElement validatedInput);
+    ExternalUserChangeInput? Map(XElement validatedInput);
 }

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using Presentation.Web.Infrastructure.UserSync;
+using Presentation.Web.Infrastructure.Beskedfordeler;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -51,7 +51,7 @@ services.AddHttpContextAccessor();
 // KITOS services (DI registrations)
 KitosServiceRegistration.Register(services, configuration, signingKey);
 
-services.AddUserSyncConsumer(configuration);
+builder.AddBeskedfordeler();
 
 var app = builder.Build();
 
@@ -63,9 +63,7 @@ dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
 app.EnsurePostgreSqlExtensions();
 app.UseKitosPipeline();
 app.MapKitosEndpoints();
-if (configuration.GetValue<bool>("UserSync:ConsumerEnabled"))
-    app.MapHealthChecks("/health/user-sync", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-    { Predicate = registration => registration.Tags.Contains("user-sync") });
+app.MapBeskedfordeler();
 app.InitializeHangfireJobs();
 
 app.Run();

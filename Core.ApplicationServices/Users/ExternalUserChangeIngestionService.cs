@@ -25,7 +25,7 @@ public class ExternalUserChangeIngestionService(
 
         var organization = organizations.GetByUuid(input.OrganizationUuid);
         if (organization.IsNone) return new OperationError("Unknown organization.", OperationFailure.NotFound);
-        // Disconnected organizations are a permanent rejection for the broker consumer.
+        // Disconnected organizations cannot accept new source events.
         if (!organization.Value.FkOrgUsersConnected)
             return new OperationError("The organization's users are not connected to FK Organisation.", OperationFailure.Conflict);
 

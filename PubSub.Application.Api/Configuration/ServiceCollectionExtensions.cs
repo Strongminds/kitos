@@ -45,16 +45,7 @@ public static class ServiceCollectionExtensions
         var hostName = rabbitMQAppSettings.GetValue<string>(Constants.Config.MessageBus.HostName) ?? throw new ArgumentNullException("No RabbitMQ host name found in settings.");
         var user = configuration.GetValue<string>(Constants.Config.MessageBus.User) ?? throw new ArgumentNullException("No RabbitMQ username found in settings.");
         var password = configuration.GetValue<string>(Constants.Config.MessageBus.Password) ?? throw new ArgumentNullException("No RabbitMQ password found in settings.");
-        var tls = rabbitMQAppSettings.GetValue<bool>("TlsEnabled");
-        return new ConnectionFactory
-        {
-            HostName = hostName,
-            UserName = user,
-            Password = password,
-            Port = rabbitMQAppSettings.GetValue<int?>("Port") ?? (tls ? 5671 : 5672),
-            VirtualHost = rabbitMQAppSettings.GetValue<string>("VirtualHost") ?? "/",
-            Ssl = new SslOption { Enabled = tls, ServerName = rabbitMQAppSettings.GetValue<string>("TlsServerName") ?? hostName }
-        };
+        return new ConnectionFactory { HostName = hostName, UserName = user, Password = password };
     }
 
     public static IServiceCollection AddRequestMapping(this IServiceCollection services)
