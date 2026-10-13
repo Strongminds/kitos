@@ -111,7 +111,7 @@ The agreed behavior is to translate immediate deactivation into a pending `Delet
 
 ## Validation and remaining acceptance checks
 
-2026-10-13 local validation: both solution builds passed with zero warnings; all 4,028 unit tests passed, including 12 focused callback tests. Eight PostgreSQL persistence tests passed, including competing ingestion and replay after apply/dismiss. The PostgreSQL-backed Hangfire restart/failure/requeue test also passed. These storage tests exercise recovery and ingestion separately; they do not constitute an IIS-to-Beskedfordeler end-to-end acceptance test.
+2026-10-13 local validation: both solution builds passed with zero warnings; the full unit suite passed, including 12 focused callback tests. Eight PostgreSQL persistence tests passed, including competing ingestion and replay after apply/dismiss. The PostgreSQL-backed Hangfire restart/failure/requeue test also passed. These storage tests exercise recovery and ingestion separately; they do not constitute an IIS-to-Beskedfordeler end-to-end acceptance test.
 
 Unit tests cover certificate gating, durable enqueue failure/success, exact original payload retention, safe XML validation, replay and conflict behavior. Existing ingestion/review suites cover organization opt-in, identity matching, canonical timestamps and administrator resolution. `BeskedfordelerHangfireRecoveryTest` exercises PostgreSQL-backed Hangfire enqueue, database restart, retained failure and operator requeue; it requires Docker/Podman. `UserSyncPersistenceTest` exercises competing ingestion scopes and preserved apply/dismiss state against PostgreSQL. The target deployment boundary still requires integration acceptance.
 
