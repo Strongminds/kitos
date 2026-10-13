@@ -43,7 +43,7 @@ Never demote a rule to make a PR pass. The **baseline** section in `.editorconfi
 
 ## AI agents
 
-`.github/copilot-instructions.md` contains a mandatory *Definition of done*: agents must run the gate, fix failures and re-run until it passes, and self-review using `.github/skills/code-quality/SKILL.md`, which covers KITOS conventions analyzers cannot check (`Result`/`Maybe`, authorization, transactions, domain events, mappers, tests).
+`.agents/instructions.md` contains a mandatory *Definition of done*: agents must run the gate, fix failures and re-run until it passes, and self-review using `.agents/skills/code-quality/SKILL.md`, which covers KITOS conventions analyzers cannot check (`Result`/`Maybe`, authorization, transactions, domain events, mappers, tests).
 
 ## Making the gate required
 
