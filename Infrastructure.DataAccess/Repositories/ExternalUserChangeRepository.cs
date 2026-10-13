@@ -22,7 +22,7 @@ public class ExternalUserChangeRepository : GenericRepository<ExternalUserChange
         base.Insert(change);
         try
         {
-            _context.SaveChanges();
+            Save();
             return change;
         }
         catch (DbUpdateException)
