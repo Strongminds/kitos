@@ -20,7 +20,7 @@ public static class BeskedfordelerRegistration
     {
 
         var enabled = builder.Configuration.GetValue<bool>("Beskedfordeler:Enabled");
-        var fingerprints = builder.Configuration.GetSection("Beskedfordeler:ClientCertificateSha256").Get<string[]>() ?? [];
+        var fingerprints = BeskedfordelerClientCertificateValidator.GetAllowedFingerprints(builder.Configuration);
         if (enabled && (fingerprints.Length == 0 || fingerprints.Any(value => value.Length != 64 || !value.All(Uri.IsHexDigit))))
             throw new InvalidOperationException("Configure Beskedfordeler client certificate SHA-256 fingerprints.");
         var directory = builder.Configuration["Beskedfordeler:SchemaDirectory"] ??

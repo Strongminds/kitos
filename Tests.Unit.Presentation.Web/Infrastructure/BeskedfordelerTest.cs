@@ -159,6 +159,22 @@ public class BeskedfordelerTest
         await Assert.ThrowsAnyAsync<Exception>(() => Reader().Read(stream, default));
     }
     [Theory]
+    [InlineData(null, 0)]
+    [InlineData("", 0)]
+    [InlineData("  ,  ", 0)]
+    [InlineData("ABC", 1)]
+    [InlineData(" ABC , DEF ", 2)]
+    public void Certificate_AppSetting_ParsesFingerprintList(string? value, int expectedCount)
+    {
+        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().AddInMemoryCollection(
+            new Dictionary<string, string?> { ["AppSettings:BeskedfordelerCertificateSha256"] = value }).Build();
+        var fingerprints = BeskedfordelerClientCertificateValidator.GetAllowedFingerprints(configuration);
+        Assert.Equal(expectedCount, fingerprints.Length);
+        if (expectedCount > 0) Assert.Equal("ABC", fingerprints[0]);
+        if (expectedCount > 1) Assert.Equal("DEF", fingerprints[1]);
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public void Certificate_UntrustedOrExpired_RejectsEvenAllowlistedFingerprint(bool expired)
@@ -169,7 +185,7 @@ public class BeskedfordelerTest
         using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-2),
             DateTimeOffset.UtcNow.AddDays(expired ? -1 : 1));
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().AddInMemoryCollection(
-            new Dictionary<string, string?> { ["Beskedfordeler:ClientCertificateSha256:0"] = certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256) }).Build();
+            new Dictionary<string, string?> { ["AppSettings:BeskedfordelerCertificateSha256"] = certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256) }).Build();
         Assert.False(new BeskedfordelerClientCertificateValidator(configuration).IsValid(certificate));
         Assert.False(new BeskedfordelerClientCertificateValidator(configuration).IsValid(null));
     }

@@ -61,11 +61,11 @@ Resolution is performed in a serializable transaction, independently for each ba
 | Setting | Requirement |
 | --- | --- |
 | `Beskedfordeler:Enabled` | Defaults false. Enables callback and dedicated workers. |
-| `Beskedfordeler:ClientCertificateSha256` | Nonempty array of 64-character SHA-256 certificate fingerprints. Multiple entries allow rotation overlap. |
+| `AppSettings:BeskedfordelerCertificateSha256` | Comma-separated list of 64-character SHA-256 certificate fingerprints. Multiple entries allow rotation overlap. |
 | `Beskedfordeler:SchemaDirectory` | Optional; defaults to `Infrastructure/Beskedfordeler/Schemas` in output. Complete bundled XSDs are owned by Infrastructure.STS.Beskedfordeler and copied transitively on build/publish. |
 | `ConnectionStrings:kitos_HangfireDB` | Existing durable PostgreSQL Hangfire storage. |
 
-Use double underscores in environment variables, e.g. `Beskedfordeler__ClientCertificateSha256__0`. Restart after configuration or trust changes. Enabled startup validates fingerprints and schemas. Organizations sign up through the app; their stored CVR and FK Organisation users connection determine callback routing. No organization UUID mapping belongs in appsettings. No live municipality IDs, fingerprints or private keys are bundled.
+Use double underscores in environment variables, e.g. `AppSettings__BeskedfordelerCertificateSha256`. The deployment pipeline reads the SSM parameter `BeskedfordelerCertificateSha256` into `BeskedfordelerCertificateSha256` and writes it to AppSettings during package preparation. Restart after configuration or trust changes. Enabled startup validates fingerprints and schemas. Organizations sign up through the app; their stored CVR and FK Organisation users connection determine callback routing. No organization UUID mapping belongs in appsettings. No live municipality IDs, fingerprints or private keys are bundled.
 
 The validator checks the sender fingerprint, certificate chain, validity, online revocation (excluding the root) and client-authentication usage. Install the full environment-specific trust chain and permit CRL/OCSP retrieval. Failure to establish trust or revocation status rejects the request. Kestrel requests optional client certificates and uses TLS 1.2/1.3; callback authentication is mandatory even though ordinary routes do not require certificates.
 

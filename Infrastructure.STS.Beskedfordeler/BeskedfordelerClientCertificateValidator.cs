@@ -13,10 +13,14 @@ public interface IBeskedfordelerClientCertificateValidator
 
 public sealed class BeskedfordelerClientCertificateValidator(IConfiguration configuration) : IBeskedfordelerClientCertificateValidator
 {
+    public static string[] GetAllowedFingerprints(IConfiguration configuration) =>
+        (configuration["AppSettings:BeskedfordelerCertificateSha256"] ?? "")
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
     public bool IsValid(X509Certificate2? certificate)
     {
         if (certificate == null) return false;
-        var allowed = configuration.GetSection("Beskedfordeler:ClientCertificateSha256").Get<string[]>() ?? [];
+        var allowed = GetAllowedFingerprints(configuration);
         var fingerprint = certificate.GetCertHashString(HashAlgorithmName.SHA256);
         if (!allowed.Contains(fingerprint, StringComparer.OrdinalIgnoreCase)) return false;
 
