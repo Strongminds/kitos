@@ -36,7 +36,6 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Users.Mapping
                             DefaultUserStartPreferenceChoiceMapper.GetDefaultUserStartPreferenceChoice(
                                 user.DefaultUserStartPreference),
                         HasApiAccess = user.HasApiAccess,
-                        IsPubSubUser = user.IsPubSubUser,
                         HasStakeHolderAccess = user.HasStakeHolderAccess,
                         Roles = user.GetRolesInOrganization(organizationUuid).Select(x => x.ToOrganizationRoleChoice())
                             .ToList(),

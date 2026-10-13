@@ -49,7 +49,6 @@ namespace Infrastructure.DataAccess.Mapping
             builder.ToTable("User");
 
             builder.Property(t => t.IsSystemIntegrator).IsRequired();
-            builder.Property(t => t.IsPubSubUser).IsRequired().HasDefaultValue(false);
             builder.HasIndex(x => x.IsSystemIntegrator).HasDatabaseName("IX_User_IsSystemIntegrator");
         }
     }

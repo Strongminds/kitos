@@ -67,7 +67,8 @@ namespace Core.DomainModel.Organization
             TypeId = typeId;
         }
 
-        public void UpdateOrganizationType(OrganizationType organizationType){
+        public void UpdateOrganizationType(OrganizationType organizationType)
+        {
             ToggleOffIsSupplierIfNotCompanyType(organizationType.Id);
             Type = organizationType;
         }
@@ -92,7 +93,7 @@ namespace Core.DomainModel.Organization
         public string GetActiveCvr() => Cvr ?? ForeignCvr;
 
         public int? ForeignCountryCodeId { get; set; }
-        
+
         public virtual CountryCode ForeignCountryCode { get; set; }
 
         public AccessModifier AccessModifier { get; set; }

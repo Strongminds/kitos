@@ -26,7 +26,7 @@ services:
       retries: 10
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4.1-management
     container_name: kitos-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
@@ -55,6 +55,10 @@ services:
       Hangfire__Provider: PostgreSql
       ConnectionStrings__KitosContext: "Host=postgres;Port=5432;Database=kitos;Username=kitos;Password=kitos"
       ConnectionStrings__kitos_HangfireDB: "Host=postgres;Port=5432;Database=kitos_hangfiredb;Username=kitos;Password=kitos"
+      UserSync__ConsumerEnabled: ${USER_SYNC_CONSUMER_ENABLED:-false}
+      UserSync__Broker__HostName: rabbitmq
+      UserSync__Broker__UserName: guest
+      UserSync__Broker__Password: guest
       AppSettings__BaseUrl: "http://localhost:5000"
       AppSettings__PubSubBaseUrl: "http://pubsub-api:8080"
       AppSettings__SsoCertFilePath: /etc/ssl/certs/${SSO_CERT_FILE_NAME:-kitos-local-pfx}
@@ -101,6 +105,8 @@ services:
       RabbitMQ__HostName: rabbitmq
       RABBIT_MQ_USER: guest
       RABBIT_MQ_PASSWORD: guest
+      UserSync__Enabled: ${USER_SYNC_PUBLISHER_ENABLED:-false}
+      UserSync__EnableStub: ${USER_SYNC_STUB_ENABLED:-false}
       PUBSUB_API_KEY: "local-no-secret"
     ports:
       - "5100:8080"

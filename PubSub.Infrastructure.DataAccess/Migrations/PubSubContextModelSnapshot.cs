@@ -75,6 +75,9 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("RabbitMqMigratedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("Version")
                         .IsConcurrencyToken()
                         .HasColumnType("uuid");
@@ -87,6 +90,30 @@ namespace PubSub.Infrastructure.DataAccess.Migrations
                     b.HasIndex("DeadLettered", "DeliveredAt", "NextAttemptAt");
 
                     b.ToTable("UserChangeDeliveries");
+                });
+
+            modelBuilder.Entity("PubSub.Core.DomainModel.UserSync.UserChangeReceipt", b =>
+                {
+                    b.Property<string>("ExternalMessageId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventHash")
+                        .IsRequired()
+                        .HasMaxLength(67)
+                        .HasColumnType("character varying(67)");
+
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ExternalMessageId");
+
+                    b.HasIndex("AcceptedAt", "ReservedAt");
+
+                    b.ToTable("UserChangeReceipts");
                 });
 #pragma warning restore 612, 618
         }
