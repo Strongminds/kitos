@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace Presentation.Web.Infrastructure.Beskedfordeler;
+namespace Infrastructure.STS.Beskedfordeler;
 
 public enum BeskedfordelerStatus
 {

@@ -25,7 +25,9 @@ using Hangfire.States;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Presentation.Web.Infrastructure.Beskedfordeler;
+using Infrastructure.STS.Beskedfordeler;
+using Presentation.Web.Controllers.API.V2.External;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Infrastructure;
@@ -37,6 +39,23 @@ public class BeskedfordelerTest
     private static readonly Guid MessageId = Guid.NewGuid();
     private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas(
         Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Beskedfordeler", "Schemas")));
+
+    [Fact]
+    public void LegacyJob_CanDeserializeAndRetainsRetryAndQueuePolicies()
+    {
+        var legacyType = typeof(global::Presentation.Web.Infrastructure.Beskedfordeler.BeskedfordelerJob);
+        var method = legacyType.GetMethod(nameof(BeskedfordelerJob.Process))!;
+        var original = new Job(legacyType, method, "cGF5bG9hZA==", CancellationToken.None);
+        var restored = Hangfire.Storage.InvocationData.SerializeJob(original).DeserializeJob();
+
+        Assert.Equal(legacyType, restored.Type);
+        Assert.Equal(typeof(BeskedfordelerJob), restored.Method.DeclaringType);
+        Assert.Equal("cGF5bG9hZA==", restored.Args[0]);
+        Assert.Equal(BeskedfordelerJob.QueueName,
+            Assert.Single(restored.Method.GetCustomAttributes(typeof(QueueAttribute), true).Cast<QueueAttribute>()).Queue);
+        Assert.Equal(8,
+            Assert.Single(restored.Method.GetCustomAttributes(typeof(AutomaticRetryAttribute), true).Cast<AutomaticRetryAttribute>()).Attempts);
+    }
 
     [Theory]
     [InlineData(false, false, 403)]
@@ -57,15 +76,15 @@ public class BeskedfordelerTest
         context.Request.ContentType = "application/xml";
         var original = Encoding.UTF8.GetBytes(Input().ToString());
         context.Request.Body = new MemoryStream(original);
-        var result = await BeskedfordelerEndpoint.Receive(context);
+        var result = await Controller(context, certificates.Object, client.Object).Receive();
         if (!authorized)
         {
-            Assert.Equal(403, ((IStatusCodeHttpResult)result).StatusCode);
+            Assert.Equal(403, ((StatusCodeResult)result).StatusCode);
             Assert.Null(captured);
         }
         else
         {
-            Assert.Contains($">{status}</", ((Microsoft.AspNetCore.Http.HttpResults.ContentHttpResult)result).ResponseContent);
+            Assert.Contains($">{status}</", ((ContentResult)result).Content);
             Assert.Equal(original, Convert.FromBase64String((string)captured!.Args[0]));
         }
     }
@@ -134,37 +153,48 @@ public class BeskedfordelerTest
         context.Request.Scheme = "https";
         context.Request.ContentType = "application/xml";
         context.Request.Body = new MemoryStream(new byte[BeskedfordelerXmlReader.MaxBodySize + 1]);
-        var result = await BeskedfordelerEndpoint.Receive(context);
-        Assert.Contains(">40</", ((Microsoft.AspNetCore.Http.HttpResults.ContentHttpResult)result).ResponseContent);
+        var result = await Controller(context, certificates.Object, client.Object).Receive();
+        Assert.Contains(">40</", ((ContentResult)result).Content);
         client.VerifyNoOtherCalls();
     }
     [Theory]
     [InlineData(false, 404)]
     [InlineData(true, 403)]
-    public async Task Route_HiddenAndIndependentOfUserMiddleware(bool enabled, int expectedStatus)
+    public async Task Route_UsesControllerPipelineAndCertificateAuthentication(bool enabled, int expectedStatus)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Beskedfordeler:Enabled"] = enabled.ToString() });
+        builder.Services.AddControllers().AddApplicationPart(typeof(BeskedfordelerV2Controller).Assembly);
+        builder.Services.AddAuthorization();
         builder.Services.AddSingleton(Mock.Of<IBeskedfordelerClientCertificateValidator>());
+        builder.Services.AddSingleton(Mock.Of<IBackgroundJobClient>());
+        builder.Services.AddSingleton(Reader());
+        builder.Services.AddScoped<BeskedfordelerService>();
         await using var app = builder.Build();
         app.UseRouting();
+        app.UseAuthorization();
+        var reachedMiddleware = false;
         app.Use(async (context, next) =>
         {
-            // A registered callback must execute its own authorization before ordinary user middleware.
-            if (context.GetEndpoint() != null) throw new InvalidOperationException("User middleware reached callback.");
+            reachedMiddleware = true;
             await next(context);
         });
-        app.MapBeskedfordeler();
+        app.MapControllers();
         await app.StartAsync();
-        var endpoints = ((IEndpointRouteBuilder)app).DataSources.SelectMany(x => x.Endpoints).ToArray();
-        if (enabled)
-            Assert.True(Assert.Single(endpoints).Metadata.GetMetadata<IExcludeFromDescriptionMetadata>()!.ExcludeFromDescription);
-        else Assert.Empty(endpoints);
         using var client = app.GetTestClient();
         using var response = await client.PostAsync("https://localhost/api/v2/integration/beskedfordeler", null);
         Assert.Equal(expectedStatus, (int)response.StatusCode);
+        Assert.True(reachedMiddleware);
     }
+
+    private static BeskedfordelerV2Controller Controller(HttpContext context,
+        IBeskedfordelerClientCertificateValidator certificates, IBackgroundJobClient client) =>
+        new(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        { ["Beskedfordeler:Enabled"] = "true" }).Build(), certificates, new BeskedfordelerService(Reader(), client))
+        {
+            ControllerContext = new ControllerContext { HttpContext = context }
+        };
     // Synthetic, schema-valid fixture based on SF1500 ORG_Bruger 1.0 pp. 5-9; not captured production data.
     // The arbitrary audit payload and actor are deliberately unrelated to the affected user/municipality.
     private static XElement Input() => XElement.Parse($$"""

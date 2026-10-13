@@ -1,6 +1,6 @@
+using Infrastructure.STS.Beskedfordeler;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,17 +18,25 @@ public static class BeskedfordelerRegistration
 {
     public static void AddBeskedfordeler(this WebApplicationBuilder builder)
     {
-        if (!builder.Configuration.GetValue<bool>("Beskedfordeler:Enabled")) return;
+
+        var enabled = builder.Configuration.GetValue<bool>("Beskedfordeler:Enabled");
         var fingerprints = builder.Configuration.GetSection("Beskedfordeler:ClientCertificateSha256").Get<string[]>() ?? [];
-        if (fingerprints.Length == 0 || fingerprints.Any(value => value.Length != 64 || !value.All(Uri.IsHexDigit)))
+        if (enabled && (fingerprints.Length == 0 || fingerprints.Any(value => value.Length != 64 || !value.All(Uri.IsHexDigit))))
             throw new InvalidOperationException("Configure Beskedfordeler client certificate SHA-256 fingerprints.");
         var directory = builder.Configuration["Beskedfordeler:SchemaDirectory"] ??
             Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Beskedfordeler", "Schemas");
-        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(directory)));
+        if (enabled)
+            builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(directory)));
+        else
+            builder.Services.AddSingleton(_ => new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(directory)));
+        builder.Services.AddScoped<BeskedfordelerService>();
+        builder.Services.AddSingleton<IBeskedfordelerClientCertificateValidator, BeskedfordelerClientCertificateValidator>();
+        if (!enabled) return;
         var organizations = builder.Configuration.GetSection("Beskedfordeler:Organizations").Get<Dictionary<string, Guid>>() ?? [];
         builder.Services.AddSingleton<IBeskedfordelerDeletionMapper>(new OrgBrugerDeletionMapper(organizations));
-        builder.Services.AddSingleton<IBeskedfordelerClientCertificateValidator, BeskedfordelerClientCertificateValidator>();
+
         builder.Services.AddScoped<BeskedfordelerJob>();
+        builder.Services.AddScoped<global::Infrastructure.STS.Beskedfordeler.BeskedfordelerJob>();
         builder.Services.AddHangfireServer(options =>
         {
             options.Queues = [BeskedfordelerJob.QueueName];
@@ -41,10 +49,4 @@ public static class BeskedfordelerRegistration
         }));
     }
 
-    public static void MapBeskedfordeler(this WebApplication app)
-    {
-        if (app.Configuration.GetValue<bool>("Beskedfordeler:Enabled"))
-            app.MapPost("/api/v2/integration/beskedfordeler", (Func<HttpContext, Task<IResult>>)BeskedfordelerEndpoint.Receive)
-                .AllowAnonymous().ExcludeFromDescription().ShortCircuit();
-    }
 }

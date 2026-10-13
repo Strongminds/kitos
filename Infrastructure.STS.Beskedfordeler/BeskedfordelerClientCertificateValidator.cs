@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Presentation.Web.Infrastructure.Beskedfordeler;
+namespace Infrastructure.STS.Beskedfordeler;
 
 public interface IBeskedfordelerClientCertificateValidator
 {

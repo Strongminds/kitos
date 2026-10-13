@@ -12,11 +12,11 @@ Beskedfordeler -> POST /api/v2/integration/beskedfordeler
               -> pending deletion -> local administrator apply/dismiss
 ```
 
-The endpoint is excluded from API descriptions. It runs at routing through an explicitly short-circuited endpoint, independent of ordinary login, user permission middleware and MVC filters. It accepts only HTTPS with an authorized client certificate from `Connection.GetClientCertificateAsync`; arbitrary certificate headers are not read. All other endpoints retain their authentication behavior.
+The endpoint is exposed by BeskedfordelerV2Controller through the standard KITOS V2 MVC pipeline. It allows requests without a KITOS user token because the callback authenticates the KOMBIT client certificate. It accepts only HTTPS with an authorized client certificate from `Connection.GetClientCertificateAsync`; arbitrary certificate headers are not read. All other endpoints retain their authentication behavior.
 
 The original XML bytes are Base64 encoded in Hangfire job arguments, preserving encoding declarations. There is no separate raw-message inbox or archive. Schema validation prohibits DTDs and external resolution, loads bundled local XSDs only, and limits requests to 1 MiB of bytes and XML characters, including chunked requests. The callback checks message UUID and envelope version 1.0; business interpretation occurs exclusively in the worker.
 
-Protocol replies use HTTP 200 and `application/xml`: 20 after durable enqueue, 40 for invalid XML/envelope, 53 for failed handoff and 55 for unsupported envelope version. Missing/unauthorized certificates receive 403; the route is absent when disabled. The supplied SF1461 `AnvenderSystem.wadl` specifies HTTP 200 with XML status 20. Acceptance means durable handoff, not successful interpretation. Confirm that interpretation with Beskedfordeler in the target integration environment before activation. A lost HTTP reply may enqueue the same message again; processing is idempotent.
+Protocol replies use HTTP 200 and `application/xml`: 20 after durable enqueue, 40 for invalid XML/envelope, 53 for failed handoff and 55 for unsupported envelope version. Missing/unauthorized certificates receive 403; the controller returns 404 when disabled. The supplied SF1461 `AnvenderSystem.wadl` specifies HTTP 200 with XML status 20. Acceptance means durable handoff, not successful interpretation. Confirm that interpretation with Beskedfordeler in the target integration environment before activation. A lost HTTP reply may enqueue the same message again; processing is idempotent.
 
 ## Worker and preserved events
 
@@ -63,7 +63,7 @@ Resolution is performed in a serializable transaction, independently for each ba
 | `Beskedfordeler:Enabled` | Defaults false. Enables callback and dedicated workers. |
 | `Beskedfordeler:ClientCertificateSha256` | Nonempty array of 64-character SHA-256 certificate fingerprints. Multiple entries allow rotation overlap. |
 | `Beskedfordeler:Organizations` | Eight-digit CVR keys mapped to unique, nonempty KITOS organization UUIDs. |
-| `Beskedfordeler:SchemaDirectory` | Optional; defaults to `Infrastructure/Beskedfordeler/Schemas` in output. Complete bundled XSDs are copied on build/publish. |
+| `Beskedfordeler:SchemaDirectory` | Optional; defaults to `Infrastructure/Beskedfordeler/Schemas` in output. Complete bundled XSDs are owned by Infrastructure.STS.Beskedfordeler and copied transitively on build/publish. |
 | `ConnectionStrings:kitos_HangfireDB` | Existing durable PostgreSQL Hangfire storage. |
 
 Use double underscores in environment variables, e.g. `Beskedfordeler__ClientCertificateSha256__0` and `Beskedfordeler__Organizations__12345678`. Restart after configuration or trust changes. Enabled startup validates fingerprints, municipality configuration and schemas. No live municipality IDs, fingerprints or private keys are bundled.
@@ -126,4 +126,4 @@ Before production activation, demonstrate unauthorized, expired, revoked and rot
 - KOMBIT, _B.08.09 Underbilag 2O - Beskedkuvert_ and `Beskedkuvert.xsd`.
 - `AnvenderSystem.wadl` from SF1461 annexes confirms POST, application/xml and HTTP 200.
 - `BeskeddataBase64ver.2.00.xsd`, `Beskedfordeler.wsdl`, and related operation/value-list schemas supplied with the integration documentation.
-- Main implementation: `Presentation.Web/Infrastructure/Beskedfordeler/`, `Core.ApplicationServices/Users/ExternalUserChange*`, and `Core.DomainModel/Users/ExternalUserChange.cs`.
+- Main implementation: `Infrastructure.STS.Beskedfordeler/`, `Presentation.Web/Controllers/API/V2/External/BeskedfordelerV2Controller.cs`, `Core.ApplicationServices/Users/ExternalUserChange*`, and `Core.DomainModel/Users/ExternalUserChange.cs`.

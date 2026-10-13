@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
-namespace Presentation.Web.Infrastructure.Beskedfordeler;
+namespace Infrastructure.STS.Beskedfordeler;
 
 public sealed class BeskedfordelerXmlReader(XmlSchemaSet schemas)
 {

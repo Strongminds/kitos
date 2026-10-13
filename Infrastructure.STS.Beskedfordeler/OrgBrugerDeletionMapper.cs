@@ -5,7 +5,7 @@ using Core.ApplicationServices.Model.Users;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Presentation.Web.Infrastructure.Beskedfordeler;
+namespace Infrastructure.STS.Beskedfordeler;
 
 /// <summary>SF1500 ORG_Bruger 1.0, sections 1-3. Slet and Passiver do not emit events.</summary>
 public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper

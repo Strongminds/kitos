@@ -1,7 +1,7 @@
 using Core.ApplicationServices.Model.Users;
 using System.Xml.Linq;
 
-namespace Presentation.Web.Infrastructure.Beskedfordeler;
+namespace Infrastructure.STS.Beskedfordeler;
 
 /// <summary>
 /// Maps confirmed immediate ORG_Bruger deactivations to administrator-reviewed deletions.

@@ -120,6 +120,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Infrastructure\Beskedfordeler\Schemas\**\*.xsd" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <ProjectReference Include="..\Infrastructure.STS.Beskedfordeler\Infrastructure.STS.Beskedfordeler.csproj" />
   </ItemGroup>
 </Project>
