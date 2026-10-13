@@ -1,3 +1,4 @@
+using UserSync.Transport;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PubSub.Application.Api.UserSync;
@@ -8,7 +9,7 @@ namespace PubSub.Application.Api.Controllers;
 [ApiController]
 [Authorize(Policy = Constants.Config.Validation.CanPublishPolicy)]
 [Route("user-sync/stub")]
-public class UserSyncStubController(UserChangeOutbox outbox, IWebHostEnvironment environment, IConfiguration configuration) : ControllerBase
+public class UserSyncStubController(UserChangeIngress ingress, IWebHostEnvironment environment, IConfiguration configuration) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Send(UserDeletionEvent message, CancellationToken cancellationToken)
@@ -20,9 +21,9 @@ public class UserSyncStubController(UserChangeOutbox outbox, IWebHostEnvironment
         if (!message.IsValid()) return BadRequest("Invalid deletion event.");
         try
         {
-            var delivery = await outbox.Enqueue(message, cancellationToken);
-            return Accepted(new { delivery.Uuid, delivery.DeliveredAt, delivery.DeadLettered });
+            var delivery = await ingress.Enqueue(message, cancellationToken);
+            return Accepted(new { delivery.ExternalMessageId, QueueAccepted = delivery.AcceptedAt != null });
         }
-        catch (InvalidOperationException) { return Conflict("Message ID already belongs to another event."); }
+        catch (UserChangeConflictException) { return Conflict("Message ID already belongs to another event."); }
     }
 }

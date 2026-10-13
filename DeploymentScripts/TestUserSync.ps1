@@ -23,6 +23,7 @@ $uri = $PubSubBaseUrl.AbsoluteUri.TrimEnd('/') + '/user-sync/stub'
 $first = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -ContentType 'application/json' -Body $payload
 if ($Duplicate) {
     $second = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -ContentType 'application/json' -Body $payload
-    if ($first.uuid -ne $second.uuid) { throw 'Duplicate submission returned a different delivery ID.' }
+    if ($first.externalMessageId -ne $second.externalMessageId -or !$second.queueAccepted) { throw 'Duplicate submission was not accepted with the original message ID.' }
 }
+if (!$first.queueAccepted -or $first.externalMessageId -ne $MessageId) { throw 'Message was not durably accepted by the queue.' }
 $first

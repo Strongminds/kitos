@@ -1,9 +1,14 @@
+using UserSync.Transport;
 using Microsoft.EntityFrameworkCore;
 using PubSub.Application.Api;
 using PubSub.Infrastructure.DataAccess;
 using PubSub.Application.Api.Configuration;
+using PubSub.Application.Api.UserSync.Beskedfordeler;
+using PubSub.Application.Api.UserSync;
 
-var builder = WebApplication.CreateBuilder(args);
+const string cutoverArgument = "--migrate-user-sync-outbox";
+var runCutover = args.Contains(cutoverArgument, StringComparer.Ordinal);
+var builder = WebApplication.CreateBuilder(args.Where(x => x != cutoverArgument).ToArray());
 
 var environment = Environment.GetEnvironmentVariable(Constants.Config.Environment.CurrentEnvironment) ?? Constants.Config.Environment.Production;
 builder.Configuration
@@ -26,10 +31,13 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddAuthenticationServices(builder.Configuration);
 builder.Services.AddPubSubServices(builder.Configuration);
-builder.Services.AddScoped<PubSub.Application.Api.UserSync.UserChangeOutbox>();
-builder.Services.AddHttpClient("UserSync", client => client.Timeout = TimeSpan.FromSeconds(30))
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
-builder.Services.AddHostedService<PubSub.Application.Api.UserSync.UserChangeDeliveryWorker>();
+builder.Services.AddScoped<UserChangeReceiptStore>();
+builder.Services.AddScoped<UserChangeIngress>();
+builder.Services.AddScoped<UserChangeCutover>();
+builder.Services.AddSingleton<UserChangeTopology>();
+builder.Services.AddSingleton<IUserChangePublisher, UserChangePublisher>();
+builder.Services.AddHealthChecks().AddCheck<UserChangeHealthCheck>("user-sync");
+builder.AddBeskedfordeler();
 
 var app = builder.Build();
 
@@ -52,6 +60,16 @@ using (var scope = app.Services.CreateScope())
                 $"Pending database migrations detected ({migrationList}). Apply migrations before startup or set {Constants.Config.Database.AutoMigrate}=true to opt in to automatic migrations.");
         }
     }
+
+    if (runCutover)
+    {
+        var count = await scope.ServiceProvider.GetRequiredService<UserChangeCutover>().Run(CancellationToken.None);
+        app.Logger.LogInformation("User sync cutover reconciled {Count} legacy rows; no untransferred rows remain.", count);
+        return;
+    }
+    if (builder.Configuration.GetValue<bool>("UserSync:Enabled") &&
+        await context.UserChangeDeliveries.AnyAsync(x => x.RabbitMqMigratedAt == null))
+        throw new InvalidOperationException("Legacy user sync rows require offline --migrate-user-sync-outbox before enabling delivery.");
 }
 
 app.UseSwagger();
@@ -61,6 +79,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health/user-sync");
 
 await app.RunAsync();
 
