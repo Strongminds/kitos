@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Users;
@@ -36,10 +35,10 @@ public class KitosUserChangeDeliveryTest
         var identities = new Mock<ISsoUserIdentityRepository>();
         identities.Setup(x => x.GetByExternalUuid(message.ExternalUserUuid)).Returns(Maybe<SsoUserIdentity>.None);
         var repository = new Mock<IExternalUserChangeRepository>();
-        repository.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), default))
-            .ReturnsAsync((ExternalUserChange change, CancellationToken _) => change);
+        repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()))
+            .Returns((ExternalUserChange change) => change);
         if (scenario == "conflict")
-            repository.Setup(x => x.FindByMessageId("id", default)).ReturnsAsync(new ExternalUserChange { OrganizationId = 99 });
+            repository.Setup(x => x.FindByMessageId("id")).Returns(new ExternalUserChange { OrganizationId = 99 });
         var services = new ServiceCollection();
         services.AddScoped(_ => { var marker = new ScopeMarker(); instances.Add(marker); return marker; });
         services.AddScoped(sp =>
@@ -54,9 +53,9 @@ public class KitosUserChangeDeliveryTest
         Assert.Equal(2, instances.Count);
         Assert.All(instances, x => Assert.True(x.Disposed));
         if (scenario == "accepted")
-            repository.Verify(x => x.Insert(It.Is<ExternalUserChange>(change =>
+            repository.Verify(x => x.InsertAndSave(It.Is<ExternalUserChange>(change =>
                 change.ExternalMessageId == message.ExternalMessageId && change.ExternalUserUuid == message.ExternalUserUuid &&
-                change.OrganizationId == organization.Id && change.Status == ExternalUserChangeStatus.Pending), default), Times.Exactly(2));
+                change.OrganizationId == organization.Id && change.Status == ExternalUserChangeStatus.Pending)), Times.Exactly(2));
     }
 
     private sealed class ScopeMarker : IDisposable

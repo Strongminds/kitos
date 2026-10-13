@@ -1,5 +1,4 @@
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 using Core.DomainModel.Users;
 using Core.DomainServices.Users;
 using Microsoft.EntityFrameworkCore;
@@ -15,22 +14,22 @@ public class ExternalUserChangeRepository : GenericRepository<ExternalUserChange
         _context = context;
     }
 
-    public Task<ExternalUserChange?> FindByMessageId(string messageId, CancellationToken cancellationToken) =>
-        AsQueryable().SingleOrDefaultAsync(x => x.ExternalMessageId == messageId, cancellationToken);
+    public ExternalUserChange? FindByMessageId(string messageId) =>
+        AsQueryable().SingleOrDefault(x => x.ExternalMessageId == messageId);
 
-    public async Task<ExternalUserChange> Insert(ExternalUserChange change, CancellationToken cancellationToken)
+    public ExternalUserChange InsertAndSave(ExternalUserChange change)
     {
         base.Insert(change);
         try
         {
-            await _context.SaveChangesAsync(cancellationToken);
+            _context.SaveChanges();
             return change;
         }
         catch (DbUpdateException)
         {
             _context.Entry(change).State = EntityState.Detached;
             // Only suppress a failure when the competing transaction actually persisted this ID.
-            var existing = await FindByMessageId(change.ExternalMessageId, cancellationToken);
+            var existing = FindByMessageId(change.ExternalMessageId);
             if (existing != null) return existing;
             throw;
         }

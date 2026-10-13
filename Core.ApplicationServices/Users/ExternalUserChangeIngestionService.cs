@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Users;
 using Core.DomainModel.Users;
@@ -17,8 +15,7 @@ public class ExternalUserChangeIngestionService(
     IOrganizationRepository organizations,
     ISsoUserIdentityRepository identities)
 {
-    public async Task<Result<ExternalUserChange, OperationError>> Ingest(
-        ExternalUserChangeInput input, CancellationToken cancellationToken = default)
+    public Result<ExternalUserChange, OperationError> Ingest(ExternalUserChangeInput input)
     {
         if (string.IsNullOrWhiteSpace(input.ExternalMessageId) || input.ExternalMessageId.Length > 200 ||
             input.OrganizationUuid == Guid.Empty || input.ExternalUserUuid == Guid.Empty ||
@@ -32,7 +29,7 @@ public class ExternalUserChangeIngestionService(
         if (!organization.Value.FkOrgUsersConnected)
             return new OperationError("The organization's users are not connected to FK Organisation.", OperationFailure.Conflict);
 
-        var existing = await repository.FindByMessageId(input.ExternalMessageId, cancellationToken);
+        var existing = repository.FindByMessageId(input.ExternalMessageId);
         if (existing != null) return CheckDuplicate(existing, input, organization.Value.Id);
 
         var identity = identities.GetByExternalUuid(input.ExternalUserUuid);
@@ -49,7 +46,7 @@ public class ExternalUserChangeIngestionService(
             OccurredAt = NormalizeTimestamp(input.OccurredAt),
             ReceivedAt = DateTime.UtcNow
         };
-        var saved = await repository.Insert(change, cancellationToken);
+        var saved = repository.InsertAndSave(change);
         return CheckDuplicate(saved, input, organization.Value.Id);
     }
 

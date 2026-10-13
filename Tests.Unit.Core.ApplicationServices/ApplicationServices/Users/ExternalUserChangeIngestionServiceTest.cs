@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Users;
 using Core.ApplicationServices.Users;
@@ -31,17 +29,17 @@ public class ExternalUserChangeIngestionServiceTest
         _input = new("message-1", _organization.Uuid, Guid.NewGuid(), ExternalUserChangeType.Deleted, DateTime.UtcNow);
         _organizations.Setup(x => x.GetByUuid(_organization.Uuid)).Returns(_organization);
         _identities.Setup(x => x.GetByExternalUuid(It.IsAny<Guid>())).Returns(Maybe<SsoUserIdentity>.None);
-        _repository.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ExternalUserChange change, CancellationToken _) => change);
+        _repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()))
+            .Returns((ExternalUserChange change) => change);
         _sut = new(_repository.Object, _organizations.Object, _identities.Object);
     }
 
     [Fact]
-    public async Task MatchingBindingCreatesPendingWithoutChangingUser()
+    public void MatchingBindingCreatesPendingWithoutChangingUser()
     {
         _user.OrganizationRights.Add(new OrganizationRight { OrganizationId = _organization.Id, Role = OrganizationRole.User });
         _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(new SsoUserIdentity(_input.ExternalUserUuid, _user));
-        var result = await _sut.Ingest(_input);
+        var result = _sut.Ingest(_input);
         Assert.True(result.Ok);
         Assert.Equal(_user.Id, result.Value.UserId);
         Assert.Equal(ExternalUserChangeStatus.Pending, result.Value.Status);
@@ -52,73 +50,73 @@ public class ExternalUserChangeIngestionServiceTest
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task MissingOrWrongOrganizationBindingIsRetainedUnmatched(bool hasIdentity)
+    public void MissingOrWrongOrganizationBindingIsRetainedUnmatched(bool hasIdentity)
     {
         if (hasIdentity)
         {
             _user.OrganizationRights.Add(new OrganizationRight { OrganizationId = _organization.Id + 1 });
             _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(new SsoUserIdentity(_input.ExternalUserUuid, _user));
         }
-        var result = await _sut.Ingest(_input);
+        var result = _sut.Ingest(_input);
         Assert.True(result.Ok);
         Assert.Null(result.Value.UserId);
         Assert.Equal(ExternalUserChangeStatus.Pending, result.Value.Status);
     }
 
     [Fact]
-    public async Task DuplicateDoesNotInsertOrResetResolvedStatus()
+    public void DuplicateDoesNotInsertOrResetResolvedStatus()
     {
         var existing = Existing();
         existing.Status = ExternalUserChangeStatus.Dismissed;
-        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
-        var result = await _sut.Ingest(_input);
+        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId)).Returns(existing);
+        var result = _sut.Ingest(_input);
         Assert.Same(existing, result.Value);
         Assert.Equal(ExternalUserChangeStatus.Dismissed, result.Value.Status);
-        _repository.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
     }
 
     [Fact]
-    public async Task ConcurrentInsertReturnsThePersistedRecord()
+    public void ConcurrentInsertReturnsThePersistedRecord()
     {
         var existing = Existing();
-        _repository.Setup(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>())).ReturnsAsync(existing);
-        Assert.Same(existing, (await _sut.Ingest(_input)).Value);
+        _repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>())).Returns(existing);
+        Assert.Same(existing, (_sut.Ingest(_input)).Value);
     }
 
     [Fact]
-    public async Task ReusedMessageIdForDifferentUserIsConflict()
+    public void ReusedMessageIdForDifferentUserIsConflict()
     {
-        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(Existing());
-        var result = await _sut.Ingest(_input with { ExternalUserUuid = Guid.NewGuid() });
+        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId)).Returns(Existing());
+        var result = _sut.Ingest(_input with { ExternalUserUuid = Guid.NewGuid() });
         Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
     }
 
     [Fact]
-    public async Task DuplicateSurvivesPostgreSqlTimestampPrecision()
+    public void DuplicateSurvivesPostgreSqlTimestampPrecision()
     {
         var occurredAt = new DateTime(2026, 9, 28, 10, 0, 0, DateTimeKind.Utc).AddTicks(17);
         var existing = Existing();
         existing.OccurredAt = occurredAt.AddTicks(-7);
-        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
-        Assert.True((await _sut.Ingest(_input with { OccurredAt = occurredAt })).Ok);
+        _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId)).Returns(existing);
+        Assert.True((_sut.Ingest(_input with { OccurredAt = occurredAt })).Ok);
     }
 
     [Fact]
-    public async Task OrganizationWithoutUsersConnectionIsRejectedAsConflict()
+    public void OrganizationWithoutUsersConnectionIsRejectedAsConflict()
     {
         _organization.FkOrgUsersConnected = false;
-        var result = await _sut.Ingest(_input);
+        var result = _sut.Ingest(_input);
         Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
-        _repository.Verify(x => x.FindByMessageId(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
-        _repository.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repository.Verify(x => x.FindByMessageId(It.IsAny<string>()), Times.Never);
+        _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
     }
 
     [Fact]
-    public async Task UnsupportedTypeIsRejected()
+    public void UnsupportedTypeIsRejected()
     {
-        var result = await _sut.Ingest(_input with { ChangeType = (ExternalUserChangeType)99 });
+        var result = _sut.Ingest(_input with { ChangeType = (ExternalUserChangeType)99 });
         Assert.Equal(OperationFailure.BadInput, result.Error.FailureType);
-        _repository.Verify(x => x.Insert(It.IsAny<ExternalUserChange>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
     }
 
     private ExternalUserChange Existing() => new()

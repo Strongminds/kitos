@@ -13,12 +13,13 @@ public sealed class KitosUserChangeDelivery(IServiceScopeFactory scopes) : IUser
 {
     public async Task<UserChangeDeliveryResult> Deliver(UserDeletionEvent message, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         await using var scope = scopes.CreateAsyncScope();
         var service = scope.ServiceProvider.GetRequiredService<ExternalUserChangeIngestionService>();
-        var result = await service.Ingest(new ExternalUserChangeInput(message.ExternalMessageId,
+        var result = service.Ingest(new ExternalUserChangeInput(message.ExternalMessageId,
             message.OrganizationUuid, message.ExternalUserUuid, (ExternalUserChangeType)message.ChangeType,
-            message.OccurredAt), cancellationToken);
-        // Ingest returns success only after SaveChangesAsync (including a concurrent duplicate's commit).
+            message.OccurredAt));
+        // Ingest returns success only after SaveChanges (including a concurrent duplicate's commit).
         if (result.Ok) return UserChangeDeliveryResult.Accepted;
         return result.Error.FailureType is OperationFailure.BadInput or OperationFailure.NotFound or OperationFailure.Conflict
             ? UserChangeDeliveryResult.Rejected : UserChangeDeliveryResult.Retry;

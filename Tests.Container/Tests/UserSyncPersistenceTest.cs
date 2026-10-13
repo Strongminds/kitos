@@ -102,12 +102,12 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
     [Fact]
     public async Task ConcurrentDuplicateDeliveryCreatesExactlyOneRecord()
     {
-        async Task<Guid> Insert()
+        Guid Insert()
         {
-            await using var db = Context();
-            return (await new ExternalUserChangeRepository(db).Insert(Change("same-message"), default)).Uuid;
+            using var db = Context();
+            return new ExternalUserChangeRepository(db).InsertAndSave(Change("same-message")).Uuid;
         }
-        var ids = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Insert()));
+        var ids = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(Insert)));
         Assert.Single(ids.Distinct());
         await using var verify = Context();
         Assert.Equal(1, await verify.Set<ExternalUserChange>().CountAsync());
@@ -119,7 +119,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
     {
         Guid uuid;
         await using (var db = Context())
-            uuid = (await new ExternalUserChangeRepository(db).Insert(Change("apply"), default)).Uuid;
+            uuid = new ExternalUserChangeRepository(db).InsertAndSave(Change("apply")).Uuid;
         await using (var db = Context())
             Assert.True(Resolver(db).Resolve(_organization.Uuid, uuid, true).Ok);
         await using (var db = Context())
@@ -143,7 +143,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
         await using var db = Context();
         db.OrganizationRights.RemoveRange(await db.OrganizationRights.Where(x => x.OrganizationId == _otherOrganization.Id).ToListAsync());
         await db.SaveChangesAsync();
-        var change = await new ExternalUserChangeRepository(db).Insert(Change("last-org"), default);
+        var change = new ExternalUserChangeRepository(db).InsertAndSave(Change("last-org"));
         Assert.True(Resolver(db).Resolve(_organization.Uuid, change.Uuid, true).Ok);
         await using var verify = Context();
         Assert.True((await verify.Users.SingleAsync(x => x.Id == _user.Id)).Deleted);
@@ -156,7 +156,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
     {
         Guid uuid;
         await using (var db = Context())
-            uuid = (await new ExternalUserChangeRepository(db).Insert(Change("race"), default)).Uuid;
+            uuid = new ExternalUserChangeRepository(db).InsertAndSave(Change("race")).Uuid;
         bool Resolve(bool apply)
         {
             using var db = Context();
@@ -179,7 +179,7 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
             var change = Change("unmatched");
             change.ExternalUserUuid = Guid.NewGuid();
             change.UserId = null;
-            uuid = (await new ExternalUserChangeRepository(db).Insert(change, default)).Uuid;
+            uuid = new ExternalUserChangeRepository(db).InsertAndSave(change).Uuid;
         }
         await using (var db = Context())
             Assert.True(Resolver(db).Resolve(_organization.Uuid, uuid, true).Failed);
