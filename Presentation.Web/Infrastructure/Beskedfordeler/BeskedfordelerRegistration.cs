@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Presentation.Web.Infrastructure.Authentication;
 
 namespace Presentation.Web.Infrastructure.Beskedfordeler;
 
@@ -31,6 +32,14 @@ public static class BeskedfordelerRegistration
             builder.Services.AddSingleton(_ => new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(directory)));
         builder.Services.AddScoped<BeskedfordelerService>();
         builder.Services.AddSingleton<IBeskedfordelerClientCertificateValidator, BeskedfordelerClientCertificateValidator>();
+        builder.Services.AddAuthentication().AddScheme<IntegrationCertificateAuthenticationOptions, IntegrationCertificateAuthenticationHandler>(
+            IntegrationCertificateAuthenticationHandler.SchemeName, _ => { });
+        builder.Services.AddOptions<IntegrationCertificateAuthenticationOptions>(IntegrationCertificateAuthenticationHandler.SchemeName)
+            .Configure<IBeskedfordelerClientCertificateValidator>((options, validator) =>
+            {
+                options.Enabled = enabled;
+                options.ValidateCertificate = validator.IsValid;
+            });
         if (!enabled) return;
         var organizations = builder.Configuration.GetSection("Beskedfordeler:Organizations").Get<Dictionary<string, Guid>>() ?? [];
         builder.Services.AddSingleton<IBeskedfordelerDeletionMapper>(new OrgBrugerDeletionMapper(organizations));

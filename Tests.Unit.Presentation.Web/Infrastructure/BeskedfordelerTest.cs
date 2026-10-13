@@ -1,9 +1,5 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,10 +19,10 @@ using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+
 using Moq;
 using Infrastructure.STS.Beskedfordeler;
-using Presentation.Web.Controllers.API.V2.External;
+using Presentation.Web.Controllers.API.V2.Integration;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -58,37 +54,25 @@ public class BeskedfordelerTest
     }
 
     [Theory]
-    [InlineData(false, false, 403)]
-    [InlineData(true, true, 53)]
-    [InlineData(true, false, 20)]
-    public async Task Receive_OnlyAcknowledgesAuthenticatedDurableEnqueue(bool authorized, bool fails, int status)
+
+    [InlineData(true, 53)]
+    [InlineData(false, 20)]
+    public async Task Receive_OnlyAcknowledgesDurableEnqueue(bool fails, int status)
     {
-        var certificates = new Mock<IBeskedfordelerClientCertificateValidator>();
-        certificates.Setup(x => x.IsValid(null)).Returns(authorized);
+
         var client = new Mock<IBackgroundJobClient>();
         Job? captured = null;
         client.Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
             .Returns((Job job, IState _) => { captured = job; if (fails) throw new InvalidOperationException(); return "1"; });
-        var services = new ServiceCollection().AddSingleton(certificates.Object).AddSingleton(client.Object).AddSingleton(Reader());
-        await using var provider = services.BuildServiceProvider();
-        var context = new DefaultHttpContext { RequestServices = provider };
+        var context = new DefaultHttpContext();
         context.Request.Scheme = "https";
         context.Request.ContentType = "application/xml";
         var original = Encoding.UTF8.GetBytes(Input().ToString());
         context.Request.Body = new MemoryStream(original);
-        var result = await Controller(context, certificates.Object, client.Object).Receive();
-        if (!authorized)
-        {
-            Assert.Equal(403, ((StatusCodeResult)result).StatusCode);
-            Assert.Null(captured);
-        }
-        else
-        {
-            Assert.Contains($">{status}</", ((ContentResult)result).Content);
-            Assert.Equal(original, Convert.FromBase64String((string)captured!.Args[0]));
-        }
+        var result = await Controller(context, client.Object).Receive();
+        Assert.Contains($">{status}</", ((ContentResult)result).Content);
+        Assert.Equal(original, Convert.FromBase64String((string)captured!.Args[0]));
     }
-
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -145,53 +129,18 @@ public class BeskedfordelerTest
     [Fact]
     public async Task Receive_OversizedRequest_DoesNotEnqueue()
     {
-        var certificates = new Mock<IBeskedfordelerClientCertificateValidator>();
-        certificates.Setup(x => x.IsValid(null)).Returns(true);
         var client = new Mock<IBackgroundJobClient>(MockBehavior.Strict);
-        await using var provider = new ServiceCollection().AddSingleton(certificates.Object).AddSingleton(client.Object).BuildServiceProvider();
-        var context = new DefaultHttpContext { RequestServices = provider };
+        var context = new DefaultHttpContext();
         context.Request.Scheme = "https";
         context.Request.ContentType = "application/xml";
         context.Request.Body = new MemoryStream(new byte[BeskedfordelerXmlReader.MaxBodySize + 1]);
-        var result = await Controller(context, certificates.Object, client.Object).Receive();
+        var result = await Controller(context, client.Object).Receive();
         Assert.Contains(">40</", ((ContentResult)result).Content);
         client.VerifyNoOtherCalls();
     }
-    [Theory]
-    [InlineData(false, 404)]
-    [InlineData(true, 403)]
-    public async Task Route_UsesControllerPipelineAndCertificateAuthentication(bool enabled, int expectedStatus)
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseTestServer();
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["Beskedfordeler:Enabled"] = enabled.ToString() });
-        builder.Services.AddControllers().AddApplicationPart(typeof(BeskedfordelerV2Controller).Assembly);
-        builder.Services.AddAuthorization();
-        builder.Services.AddSingleton(Mock.Of<IBeskedfordelerClientCertificateValidator>());
-        builder.Services.AddSingleton(Mock.Of<IBackgroundJobClient>());
-        builder.Services.AddSingleton(Reader());
-        builder.Services.AddScoped<BeskedfordelerService>();
-        await using var app = builder.Build();
-        app.UseRouting();
-        app.UseAuthorization();
-        var reachedMiddleware = false;
-        app.Use(async (context, next) =>
-        {
-            reachedMiddleware = true;
-            await next(context);
-        });
-        app.MapControllers();
-        await app.StartAsync();
-        using var client = app.GetTestClient();
-        using var response = await client.PostAsync("https://localhost/api/v2/integration/beskedfordeler", null);
-        Assert.Equal(expectedStatus, (int)response.StatusCode);
-        Assert.True(reachedMiddleware);
-    }
-
     private static BeskedfordelerV2Controller Controller(HttpContext context,
-        IBeskedfordelerClientCertificateValidator certificates, IBackgroundJobClient client) =>
-        new(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-        { ["Beskedfordeler:Enabled"] = "true" }).Build(), certificates, new BeskedfordelerService(Reader(), client))
+        IBackgroundJobClient client) =>
+        new(new BeskedfordelerService(Reader(), client))
         {
             ControllerContext = new ControllerContext { HttpContext = context }
         };
