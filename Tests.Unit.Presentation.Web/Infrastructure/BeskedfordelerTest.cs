@@ -1,4 +1,5 @@
 using System;
+using Core.DomainServices;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
@@ -54,6 +55,48 @@ public class BeskedfordelerTest
     }
 
     [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Map_RequiresExactlyOneSignedUpOrganizationForSourceCvr(int matchingSignups)
+    {
+        var organizations = Enumerable.Range(0, matchingSignups)
+            .Select(_ => new Organization { Uuid = Guid.NewGuid(), Cvr = "12345678", FkOrgUsersConnected = true })
+            .Concat(new[]
+            {
+                new Organization { Uuid = Guid.NewGuid(), Cvr = "12345678", FkOrgUsersConnected = false },
+                new Organization { Uuid = Guid.NewGuid(), Cvr = "87654321", FkOrgUsersConnected = true }
+            }).ToArray();
+        var repository = new Mock<IGenericRepository<Organization>>();
+        repository.Setup(x => x.AsQueryable()).Returns(organizations.AsQueryable());
+        var mapper = new OrgBrugerDeletionMapper(repository.Object);
+
+        var result = mapper.Map(Input());
+
+        if (matchingSignups == 1)
+        {
+            Assert.NotNull(result);
+            Assert.Equal(organizations[0].Uuid, result.OrganizationUuid);
+        }
+        else Assert.Null(result);
+    }
+
+    [Fact]
+    public void Map_ObservesSignupAndDisconnectWithoutRestart()
+    {
+        var organization = new Organization { Uuid = OrganizationId, Cvr = "12345678" };
+        var repository = new Mock<IGenericRepository<Organization>>();
+        repository.Setup(x => x.AsQueryable()).Returns(new[] { organization }.AsQueryable());
+        var mapper = new OrgBrugerDeletionMapper(repository.Object);
+
+        Assert.Null(mapper.Map(Input()));
+        organization.FkOrgUsersConnected = true;
+        Assert.Equal(OrganizationId, mapper.Map(Input())!.OrganizationUuid);
+        organization.FkOrgUsersConnected = false;
+        Assert.Null(mapper.Map(Input()));
+    }
+
+    [Theory]
 
     [InlineData(true, 53)]
     [InlineData(false, 20)]
@@ -86,7 +129,12 @@ public class BeskedfordelerTest
         ExternalUserChange? saved = null;
         repository.Setup(x => x.FindByMessageId(MessageId.ToString("D"))).Returns(() => saved);
         repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>())).Returns((ExternalUserChange value) => saved = value);
-        var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(new Dictionary<string, Guid> { ["12345678"] = OrganizationId }),
+        var registeredOrganizations = new Mock<IGenericRepository<Organization>>();
+        registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[]
+        {
+            new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = true }
+        }.AsQueryable());
+        var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
             new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object));
         var xml = Input();
         string Payload() => Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));

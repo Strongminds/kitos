@@ -1,27 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Core.ApplicationServices.Model.Users;
+using Core.DomainModel.Organization;
+using Core.DomainServices;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace Infrastructure.STS.Beskedfordeler;
 
 /// <summary>SF1500 ORG_Bruger 1.0, sections 1-3. Slet and Passiver do not emit events.</summary>
-public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
+public sealed class OrgBrugerDeletionMapper(IGenericRepository<Organization> organizations) : IBeskedfordelerDeletionMapper
 {
     public static readonly Guid MessageType = new("94ef3c82-10e9-4d12-a9d9-7a7242d5ba83");
     public static readonly Guid UserObjectType = new("2b808769-8d09-4aa3-ac28-f8ac3526010f");
     public static readonly Guid UserDeactivated = new("9edb0c34-36e2-4d87-aba8-3ca7ade718ee");
-    private readonly Dictionary<string, Guid> _organizations;
-
-    public OrgBrugerDeletionMapper(IReadOnlyDictionary<string, Guid> organizations)
-    {
-        if (organizations.Count == 0 || organizations.Any(x => !IsCvr(x.Key) || x.Value == Guid.Empty) ||
-            organizations.Values.Distinct().Count() != organizations.Count)
-            throw new ArgumentException("Configure unique eight-digit CVRs and non-empty KITOS organization UUIDs.", nameof(organizations));
-        _organizations = new Dictionary<string, Guid>(organizations, StringComparer.Ordinal);
-    }
 
     public ExternalUserChangeInput? Map(XElement validatedInput)
     {
@@ -39,7 +31,7 @@ public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
 
         var userId = ReadUuid(registration, "ObjektId");
         var cvr = ReadCvr(registration.Element(envelope + "ObjektAnsvarligMyndighed"));
-        if (userId == Guid.Empty || cvr == null || !_organizations.TryGetValue(cvr, out var organizationId)) return null;
+        if (userId == Guid.Empty || cvr == null) return null;
         // SF1461 2.0 delivers an explicit recipient list; it is not an organization identifier.
         if (filter == null || !filter.Elements(envelope + "TilladtModtager").Any(x => ReadCvr(x) == cvr)) return null;
 
@@ -56,9 +48,17 @@ public sealed class OrgBrugerDeletionMapper : IBeskedfordelerDeletionMapper
             return null;
         }
 
+        // Signup in KITOS is the source of truth. Resolve afresh for every delivery/retry.
+        var matches = organizations.AsQueryable()
+            .Where(organization => organization.Cvr == cvr && organization.FkOrgUsersConnected)
+            .Select(organization => organization.Uuid)
+            .Take(2)
+            .ToArray();
+        if (matches.Length != 1 || matches[0] == Guid.Empty) return null;
+
         // KITOS SSO reads FK Bruger using the SAML UUID and stores that UUID as SsoUserIdentity.ExternalUuid.
         // Beskeddata/Bruger identifies the actor making the change, not the affected user.
-        return new ExternalUserChangeInput("assigned-by-receiver", organizationId, userId, Core.DomainModel.Users.ExternalUserChangeType.Deleted, occurredAt);
+        return new ExternalUserChangeInput("assigned-by-receiver", matches[0], userId, Core.DomainModel.Users.ExternalUserChangeType.Deleted, occurredAt);
     }
 
     private static Guid ReadUuid(XElement? parent, string field) =>

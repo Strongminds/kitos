@@ -2,7 +2,6 @@ using Infrastructure.STS.Beskedfordeler;
 using Microsoft.AspNetCore.Hosting;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Authentication;
@@ -41,8 +40,7 @@ public static class BeskedfordelerRegistration
                 options.ValidateCertificate = validator.IsValid;
             });
         if (!enabled) return;
-        var organizations = builder.Configuration.GetSection("Beskedfordeler:Organizations").Get<Dictionary<string, Guid>>() ?? [];
-        builder.Services.AddSingleton<IBeskedfordelerDeletionMapper>(new OrgBrugerDeletionMapper(organizations));
+        builder.Services.AddScoped<IBeskedfordelerDeletionMapper, OrgBrugerDeletionMapper>();
 
         builder.Services.AddScoped<BeskedfordelerJob>();
         builder.Services.AddScoped<global::Infrastructure.STS.Beskedfordeler.BeskedfordelerJob>();

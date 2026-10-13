@@ -62,17 +62,16 @@ Resolution is performed in a serializable transaction, independently for each ba
 | --- | --- |
 | `Beskedfordeler:Enabled` | Defaults false. Enables callback and dedicated workers. |
 | `Beskedfordeler:ClientCertificateSha256` | Nonempty array of 64-character SHA-256 certificate fingerprints. Multiple entries allow rotation overlap. |
-| `Beskedfordeler:Organizations` | Eight-digit CVR keys mapped to unique, nonempty KITOS organization UUIDs. |
 | `Beskedfordeler:SchemaDirectory` | Optional; defaults to `Infrastructure/Beskedfordeler/Schemas` in output. Complete bundled XSDs are owned by Infrastructure.STS.Beskedfordeler and copied transitively on build/publish. |
 | `ConnectionStrings:kitos_HangfireDB` | Existing durable PostgreSQL Hangfire storage. |
 
-Use double underscores in environment variables, e.g. `Beskedfordeler__ClientCertificateSha256__0` and `Beskedfordeler__Organizations__12345678`. Restart after configuration or trust changes. Enabled startup validates fingerprints, municipality configuration and schemas. No live municipality IDs, fingerprints or private keys are bundled.
+Use double underscores in environment variables, e.g. `Beskedfordeler__ClientCertificateSha256__0`. Restart after configuration or trust changes. Enabled startup validates fingerprints and schemas. Organizations sign up through the app; their stored CVR and FK Organisation users connection determine callback routing. No organization UUID mapping belongs in appsettings. No live municipality IDs, fingerprints or private keys are bundled.
 
 The validator checks the sender fingerprint, certificate chain, validity, online revocation (excluding the root) and client-authentication usage. Install the full environment-specific trust chain and permit CRL/OCSP retrieval. Failure to establish trust or revocation status rejects the request. Kestrel requests optional client certificates and uses TLS 1.2/1.3; callback authentication is mandatory even though ordinary routes do not require certificates.
 
 For IIS, configure the callback TLS boundary to negotiate client certificates (`SslNegotiateCert` with HTTPS) and verify that ASP.NET Core receives the authenticated certificate. Prefer supported IIS in-process hosting. Do not substitute an arbitrary forwarded-certificate header or an unreviewed TLS-terminating proxy. Configure certificate negotiation so ordinary browser login still works. The actual IIS handshake, revocation, rotation and upstream callback interoperability require environment acceptance tests; local unit tests do not certify that boundary.
 
-Apply existing KITOS migrations `AddExternalUserChanges` and `AddFkOrgUsersConnection`. No new raw-message table or migration is needed. Local administrators must enable the users connection before delivery. Verify CVR mappings against KITOS records and verify a real event's FK Bruger UUID matches `SsoUserIdentity.ExternalUuid`.
+Apply existing KITOS migrations `AddExternalUserChanges` and `AddFkOrgUsersConnection`. No new raw-message table or migration is needed. Local administrators must enable the users connection before delivery. Verify the signed-up organizations have correct CVRs in KITOS and verify a real event's FK Bruger UUID matches `SsoUserIdentity.ExternalUuid`.
 
 For IIS workers install Application Initialization, set pool `startMode=AlwaysRunning`, enable application `preloadEnabled`, and disable idle shutdown. Test startup without browser traffic and recovery after recycling. Monitor the `beskedfordeler` queue age/count, active worker heartbeat, Scheduled retry jobs and Failed jobs through protected Hangfire administration. The obsolete RabbitMQ `/health/user-sync` endpoint and KITOS `UserSync:*` settings have been removed.
 
@@ -87,19 +86,19 @@ These legacy-backlog steps apply only if an earlier experimental RabbitMQ versio
 1. Inventory deployed publishers, KITOS consumers, historical outbox/receipt state, all main/retry/dead queues and unacknowledged deliveries. Back up KITOS, Hangfire and broker state. This cannot be inferred from repository contents.
 2. Pause the upstream user-change subscription. Keep the old KITOS consumer running until all accepted legacy deliveries are durably ingested. Account for pending receipt reservations, retry queues and dead letters; reconcile each source ID against KITOS. Do not purge queues or alter PubSub configuration/infrastructure as part of this implementation.
 3. Resolve or preserve every outstanding message with a documented replay owner. If reconciliation cannot complete, postpone replacement; the new binary cannot drain legacy queues. Preserve the old executable/configuration for rollback.
-4. Stop the old KITOS instance after reconciliation, deploy this version, configure certificates and mappings, enable the callback and validate worker health. Register the new callback URL with Beskedfordeler and resume the source subscription. Confirm a real event produces exactly one pending item and no access change.
+4. Stop the old KITOS instance after reconciliation, deploy this version, configure certificates and confirm organization signups, enable the callback and validate worker health. Register the new callback URL with Beskedfordeler and resume the source subscription. Confirm a real event produces exactly one pending item and no access change.
 5. For rollback, pause source delivery first. Drain or retain every accepted Hangfire job with its original payload; never discard Hangfire storage. Restore the old KITOS deployment and callback subscription only after reconciling accepted IDs and establishing how retained new jobs will be processed. Existing `ExternalUserChanges` provide idempotency across overlap. Do not claim a rollback complete while accepted jobs are stranded.
 
 ### Supported source interpretation
 
-Only immediate `BrugerNedlagt` is supported. Subscribe to ORG_Bruger version 1.0 and the deactivation action UUID below, restricted to configured municipalities and one object registration. Planned deactivation is not supported; it needs effective-date scheduling and cancellation handling. Producer `Slet` and `Passiver` operations emit no events, so this is not comprehensive deletion reconciliation. Unit removal is not user deactivation.
+Only immediate `BrugerNedlagt` is supported. Subscribe to ORG_Bruger version 1.0 and the deactivation action UUID below, restricted to signed-up municipalities and one object registration. Planned deactivation is not supported; it needs effective-date scheduling and cancellation handling. Producer `Slet` and `Passiver` operations emit no events, so this is not comprehensive deletion reconciliation. Unit removal is not user deactivation.
 | Source field under `Beskedkuvert/Filtreringsdata` | Mapping / validation |
 | --- | --- |
 | `Beskedtype/UUIDIdentifikator` | Must be `94ef3c82-10e9-4d12-a9d9-7a7242d5ba83` (`ORG_Bruger`). |
 | `ObjektRegistrering/ObjektType/UUIDIdentifikator` | Must be `2b808769-8d09-4aa3-ac28-f8ac3526010f` (Bruger). |
 | `ObjektRegistrering/ObjektHandling/UUIDIdentifikator` | Must be `9edb0c34-36e2-4d87-aba8-3ca7ade718ee` (`BrugerNedlagt`). |
 | `ObjektRegistrering/ObjektId/UUIDIdentifikator` | Non-empty FK Bruger UUID becomes `ExternalUserUuid`. |
-| `ObjektRegistrering/ObjektAnsvarligMyndighed/URNIdentifikator` | Responsible municipality CVR resolves through `Beskedfordeler:Organizations` to `OrganizationUuid`. |
+| `ObjektRegistrering/ObjektAnsvarligMyndighed/URNIdentifikator` | Responsible municipality CVR resolves against stored KITOS organizations with `FkOrgUsersConnected` enabled. Exactly one matching signup is required; missing or ambiguous matches fail processing. Each delivery/retry queries current signup state, so connection changes require no restart. |
 | `TilladtModtager/URNIdentifikator` | The responsible municipality must appear in the delivered recipient list. Accept bare CVR, `urn:oio:cvr:` or `urn:oio:cvr-nr:`; never accept `*` as authorization. |
 | `ObjektRegistrering/Registreringstidspunkt/TidsstempelDatoTid` | Required registration timestamp with explicit timezone, converted to UTC `OccurredAt`. This is registration time, not a future effective date. |
 
