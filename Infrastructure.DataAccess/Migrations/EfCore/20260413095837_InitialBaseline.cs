@@ -3036,14 +3036,14 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         ,
                     ExternalUuid = table.Column<Guid>(type: "uuid", nullable: false),
-                    Organization_Id = table.Column<int>(type: "integer", nullable: false)
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SsoOrganizationIdentities", x => x.Id);
                     table.ForeignKey(
                         name: "FK_SsoOrganizationIdentities_Organization_Organization_Id",
-                        column: x => x.Organization_Id,
+                        column: x => x.OrganizationId,
                         principalTable: "Organization",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -8222,7 +8222,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.CreateIndex(
                 name: "IX_SsoOrganizationIdentities_Organization_Id",
                 table: "StsOrganizationIdentities",
-                column: "Organization_Id");
+                column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
                 name: "UX_ExternalUuid",

@@ -12,6 +12,8 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.HasIndex(x => x.ExternalUuid).IsUnique().HasDatabaseName("UX_" + nameof(StsOrganizationIdentity.ExternalUuid));
 
+            builder.Property<int>("Organization_Id").HasColumnName("OrganizationId");
+
             builder.HasOne(x => x.Organization)
                 .WithMany(x => x.StsOrganizationIdentities)
                 .HasForeignKey("Organization_Id")

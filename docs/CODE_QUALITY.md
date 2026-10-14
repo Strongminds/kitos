@@ -2,6 +2,12 @@
 
 KITOS uses one quality gate for developers, AI agents and CI:
 
+The persistence stack is **PostgreSQL with EF Core/Npgsql**, not EF6 or SQL Server.
+New database work must target PostgreSQL only. EF6 migrations and SQL Server tooling
+remaining in the repository are historical artifacts, not compatibility requirements.
+Create migrations under `Infrastructure.DataAccess/Migrations/EfCore/` and verify
+entity mappings against the PostgreSQL schema and current EF Core snapshot.
+
 | Where | How |
 |---|---|
 | Locally / AI agents | `pwsh ./scripts/quality-check.ps1` |
@@ -16,7 +22,7 @@ KITOS uses one quality gate for developers, AI agents and CI:
    - no `Console.Write*` / `Debug.Write*` / `Debugger.Break` in production code (FAIL)
    - warning suppressions need a justification: `#pragma warning disable` with a `// reason` on the same line or the line above; `[SuppressMessage(...)]` (also multi-line) with a non-empty `Justification` (FAIL)
    - added/deleted EF Core migrations come with their `.Designer.cs` and an updated `KitosContextModelSnapshot.cs` (FAIL)
-   - added/changed/deleted SQL scripts → verify SQL Server and PostgreSQL versions (WARN)
+   - added/changed/deleted SQL scripts → verify PostgreSQL syntax, schema compatibility and data preservation; do not add SQL Server variants (WARN)
    - business logic (`Core.*`, `Presentation.Web/Controllers`, `PubSub.Core.*`, `PubSub.Application.*`) changed or deleted without test changes (WARN)
    - analyzer rules relaxed (WARN – needs reviewer approval). The effective severities in every changed, added or deleted `.editorconfig`/`.globalconfig` are compared with the merge base: lowered or removed enforced rules, demoted naming/category-wide severities and changed naming definitions are reported; removing baseline entries or promoting rules is not. Changes to warning/analyzer MSBuild properties (`NoWarn`, `TreatWarningsAsErrors`, `AnalysisLevel`, …), added/deleted `Directory.Build.*` files and changes to the gate itself are reported as well.
 4. **Unit tests** – `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web` and `PubSub.Test`.
