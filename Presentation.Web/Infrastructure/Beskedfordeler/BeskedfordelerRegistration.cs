@@ -2,7 +2,6 @@ using Infrastructure.STS.Beskedfordeler;
 using Microsoft.AspNetCore.Hosting;
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Security.Authentication;
 using Hangfire;
@@ -20,8 +19,7 @@ public static class BeskedfordelerRegistration
         var fingerprints = BeskedfordelerClientCertificateValidator.GetAllowedFingerprints(builder.Configuration);
         if (fingerprints.Length == 0 || fingerprints.Any(value => value.Length != 64 || !value.All(Uri.IsHexDigit)))
             throw new InvalidOperationException("Configure Beskedfordeler client certificate SHA-256 fingerprints.");
-        var directory = builder.Configuration["Beskedfordeler:SchemaDirectory"] ??
-            Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Beskedfordeler", "Schemas");
+        var directory = builder.Configuration["Beskedfordeler:SchemaDirectory"];
         builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(directory)));
         builder.Services.AddScoped<BeskedfordelerService>();
         builder.Services.AddSingleton<IBeskedfordelerClientCertificateValidator, BeskedfordelerClientCertificateValidator>();

@@ -61,7 +61,7 @@ Resolution is performed in a serializable transaction, independently for each ba
 | Setting | Requirement |
 | --- | --- |
 | `AppSettings:BeskedfordelerCertificateSha256` | Comma-separated list of 64-character SHA-256 certificate fingerprints. Multiple entries allow rotation overlap. |
-| `Beskedfordeler:SchemaDirectory` | Optional; defaults to `Infrastructure/Beskedfordeler/Schemas` in output. Complete bundled XSDs are owned by Infrastructure.STS.Beskedfordeler and copied transitively on build/publish. |
+| `Beskedfordeler:SchemaDirectory` | Optional override for a complete external XSD directory. By default all schemas are embedded in Infrastructure.STS.Beskedfordeler.dll; no schema directory or additional deployment artifact is required. |
 | `ConnectionStrings:kitos_HangfireDB` | Existing durable PostgreSQL Hangfire storage. |
 
 Use double underscores in environment variables, e.g. `AppSettings__BeskedfordelerCertificateSha256`. The deployment pipeline reads the SSM parameter `BeskedfordelerCertificateSha256` into `BeskedfordelerCertificateSha256` and writes it to AppSettings during package preparation. Restart after configuration or trust changes. Startup validates fingerprints and schemas. Organizations sign up through the app; their stored CVR and FK Organisation users connection determine callback routing. No organization UUID mapping belongs in appsettings. No live municipality IDs, fingerprints or private keys are bundled.

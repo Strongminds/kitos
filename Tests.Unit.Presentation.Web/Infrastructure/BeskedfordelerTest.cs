@@ -36,8 +36,19 @@ public class BeskedfordelerTest
     private static readonly Guid OrganizationId = Guid.NewGuid();
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Guid MessageId = Guid.NewGuid();
-    private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas(
-        Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Beskedfordeler", "Schemas")));
+    private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas());
+
+    [Fact]
+    public void LoadSchemas_WithoutDirectory_CompilesCompleteEmbeddedSchemaSet()
+    {
+        var schemas = BeskedfordelerXmlReader.LoadSchemas();
+
+        Assert.True(schemas.IsCompiled);
+        Assert.True(schemas.GlobalElements.Contains(new System.Xml.XmlQualifiedName(
+            "ModtagBeskedInput", BeskedfordelerResponse.Sts.NamespaceName)));
+        Assert.Equal(7, typeof(BeskedfordelerXmlReader).Assembly.GetManifestResourceNames()
+            .Count(name => name.EndsWith(".xsd", StringComparison.Ordinal)));
+    }
 
     [Fact]
     public void LegacyJob_CanDeserializeAndRetainsRetryAndQueuePolicies()

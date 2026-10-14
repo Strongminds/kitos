@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -60,8 +59,7 @@ public class IntegrationCertificateAuthenticationTest
         builder.Services.AddAuthorization();
         builder.Services.AddControllers().AddApplicationPart(typeof(BeskedfordelerV2Controller).Assembly);
         builder.Services.AddSingleton(Mock.Of<IBackgroundJobClient>(MockBehavior.Strict));
-        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(
-            Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Beskedfordeler", "Schemas"))));
+        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas()));
         builder.Services.AddScoped<BeskedfordelerService>();
         await using var app = builder.Build();
         app.UseAuthentication();
@@ -118,8 +116,7 @@ public class IntegrationCertificateAuthenticationTest
         builder.Services.AddScoped<CorrelationIdMiddleware>();
         // No user context or user middleware services: resolving them for an integration request must fail this test.
         builder.Services.AddSingleton(Mock.Of<IBackgroundJobClient>(MockBehavior.Strict));
-        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(
-            Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Beskedfordeler", "Schemas"))));
+        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas()));
         builder.Services.AddScoped<BeskedfordelerService>();
         await using var app = builder.Build();
         app.UseRouting();

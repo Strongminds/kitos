@@ -11,6 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Schemas\**\*.xsd" />
-    <Content Include="Schemas\**\*.xsd" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="Infrastructure\Beskedfordeler\Schemas\%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Schemas\**\*.xsd" />
   </ItemGroup>
 </Project>

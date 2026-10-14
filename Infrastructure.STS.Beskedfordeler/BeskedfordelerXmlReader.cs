@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -12,13 +14,23 @@ public sealed class BeskedfordelerXmlReader(XmlSchemaSet schemas)
     public const int MaxBodySize = 1024 * 1024;
 
     // Load all schemas explicitly. Neither imports nor incoming XML may resolve files or URLs.
-    public static XmlSchemaSet LoadSchemas(string directory)
+    public static XmlSchemaSet LoadSchemas(string? directory = null)
     {
         var schemas = new XmlSchemaSet { XmlResolver = null };
         schemas.ValidationEventHandler += (_, args) => throw new XmlSchemaException(args.Message);
-        foreach (var file in Directory.EnumerateFiles(directory, "*.xsd", SearchOption.AllDirectories))
+        var assembly = typeof(BeskedfordelerXmlReader).Assembly;
+        var sources = directory == null
+            ? assembly.GetManifestResourceNames().Where(name =>
+                name.StartsWith("Infrastructure.STS.Beskedfordeler.Schemas.", StringComparison.Ordinal) &&
+                name.EndsWith(".xsd", StringComparison.Ordinal))
+            : Directory.EnumerateFiles(directory, "*.xsd", SearchOption.AllDirectories);
+        foreach (var source in sources)
         {
-            using var reader = XmlReader.Create(file, new XmlReaderSettings
+            using var stream = directory == null
+                ? assembly.GetManifestResourceStream(source) ??
+                  throw new InvalidOperationException($"Missing embedded Beskedfordeler schema: {source}")
+                : File.OpenRead(source);
+            using var reader = XmlReader.Create(stream, new XmlReaderSettings
             {
                 DtdProcessing = DtdProcessing.Prohibit,
                 XmlResolver = null
