@@ -12,7 +12,6 @@ namespace Presentation.Web.Infrastructure.Authentication;
 
 public sealed class IntegrationCertificateAuthenticationOptions : AuthenticationSchemeOptions
 {
-    public bool Enabled { get; set; }
     public Func<X509Certificate2, bool> ValidateCertificate { get; set; } = _ => false;
 }
 
@@ -25,7 +24,7 @@ public sealed class IntegrationCertificateAuthenticationHandler(
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Options.Enabled || !Request.IsHttps) return AuthenticateResult.NoResult();
+        if (!Request.IsHttps) return AuthenticateResult.NoResult();
         // The TLS handshake proves possession of the private key. Never accept certificate headers.
         var certificate = await Context.Connection.GetClientCertificateAsync(Context.RequestAborted);
         if (certificate == null) return AuthenticateResult.NoResult();
@@ -37,7 +36,7 @@ public sealed class IntegrationCertificateAuthenticationHandler(
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        Response.StatusCode = Options.Enabled ? StatusCodes.Status403Forbidden : StatusCodes.Status404NotFound;
+        Response.StatusCode = StatusCodes.Status403Forbidden;
         return Task.CompletedTask;
     }
 }

@@ -25,6 +25,8 @@ using Moq;
 using Infrastructure.STS.Beskedfordeler;
 using Presentation.Web.Controllers.API.V2.Integration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Tests.Unit.Presentation.Web.Infrastructure;
@@ -117,6 +119,51 @@ public class BeskedfordelerTest
         Assert.Equal(original, Convert.FromBase64String((string)captured!.Args[0]));
     }
     [Theory]
+    [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", true)]
+    [InlineData("7654895C-A3F3-4C77-8AFD-4C77330F963C", true)]
+    [InlineData("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", false)]
+    public async Task Receive_TestMessage_LogsWarningWithoutUserChanges(string messageType, bool supported)
+    {
+        var xml = Input();
+        xml.Descendants(BeskedfordelerResponse.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
+        var client = new Mock<IBackgroundJobClient>();
+        Job? captured = null;
+        client.Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
+            .Returns((Job job, IState _) => { captured = job; return "1"; });
+        var context = new DefaultHttpContext();
+        context.Request.ContentType = "application/xml";
+        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(xml.ToString()));
+        var response = Assert.IsType<ContentResult>(await Controller(context, client.Object).Receive());
+        Assert.Contains(">20</", response.Content);
+
+        var mapper = new Mock<IBeskedfordelerDeletionMapper>();
+        var repository = new Mock<IExternalUserChangeRepository>(MockBehavior.Strict);
+        var organizations = new Mock<IOrganizationRepository>(MockBehavior.Strict);
+        var identities = new Mock<ISsoUserIdentityRepository>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<BeskedfordelerJob>>();
+        var job = new BeskedfordelerJob(Reader(), mapper.Object,
+            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object), logger.Object);
+        var payload = (string)captured!.Args[0];
+        if (supported)
+        {
+            await job.Process(payload, default);
+            mapper.VerifyNoOtherCalls();
+            logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Test/TestbeskedType1") &&
+                    state.ToString()!.Contains(MessageId.ToString()) && !state.ToString()!.Contains("<")),
+                null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+        }
+        else
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(() => job.Process(payload, default));
+            logger.VerifyNoOtherCalls();
+        }
+        repository.VerifyNoOtherCalls();
+        organizations.VerifyNoOtherCalls();
+        identities.VerifyNoOtherCalls();
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task Process_ReplayPreservesOneEvent_ConflictsFailVisibly(bool conflict)
@@ -135,7 +182,8 @@ public class BeskedfordelerTest
             new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = true }
         }.AsQueryable());
         var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
-            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object));
+            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object),
+            NullLogger<BeskedfordelerJob>.Instance);
         var xml = Input();
         string Payload() => Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
         await job.Process(Payload(), default);

@@ -55,7 +55,6 @@ public class IntegrationCertificateAuthenticationTest
             .AddScheme<IntegrationCertificateAuthenticationOptions, IntegrationCertificateAuthenticationHandler>(
                 IntegrationCertificateAuthenticationHandler.SchemeName, options =>
                 {
-                    options.Enabled = true;
                     options.ValidateCertificate = certificate => certificate.Thumbprint == clientCertificate.Thumbprint;
                 });
         builder.Services.AddAuthorization();
@@ -85,15 +84,14 @@ public class IntegrationCertificateAuthenticationTest
     }
 
     [Theory]
-    [InlineData(false, true, false, false, false, 404)]
-    [InlineData(true, true, false, false, false, 403)]
-    [InlineData(true, true, false, false, true, 403)]
-    [InlineData(true, true, true, false, false, 403)]
-    [InlineData(true, true, true, false, true, 403)]
-    [InlineData(true, false, true, true, false, 403)]
-    [InlineData(true, true, true, true, false, 200)]
-    [InlineData(true, true, true, true, true, 200)]
-    public async Task Integration_RequiresHttpsAndCertificate_IgnoresBearer(bool enabled, bool https,
+    [InlineData(true, false, false, false, 403)]
+    [InlineData(true, false, false, true, 403)]
+    [InlineData(true, true, false, false, 403)]
+    [InlineData(true, true, false, true, 403)]
+    [InlineData(false, true, true, false, 403)]
+    [InlineData(true, true, true, false, 200)]
+    [InlineData(true, true, true, true, 200)]
+    public async Task Integration_RequiresHttpsAndCertificate_IgnoresBearer(bool https,
         bool present, bool trusted, bool bearer, int status)
     {
         using var key = RSA.Create(2048);
@@ -110,7 +108,6 @@ public class IntegrationCertificateAuthenticationTest
         builder.Services.AddAuthentication().AddScheme<IntegrationCertificateAuthenticationOptions, IntegrationCertificateAuthenticationHandler>(
             IntegrationCertificateAuthenticationHandler.SchemeName, options =>
             {
-                options.Enabled = enabled;
                 options.ValidateCertificate = received => trusted && received.Thumbprint == certificate.Thumbprint;
             });
         var bearerCalled = false;

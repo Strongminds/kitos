@@ -16,7 +16,7 @@ BeskedfordelerV2Controller inherits the dedicated IntegrationBaseController unde
 
 The original XML bytes are Base64 encoded in Hangfire job arguments, preserving encoding declarations. There is no separate raw-message inbox or archive. Schema validation prohibits DTDs and external resolution, loads bundled local XSDs only, and limits requests to 1 MiB of bytes and XML characters, including chunked requests. The callback checks message UUID and envelope version 1.0; business interpretation occurs exclusively in the worker.
 
-Protocol replies use HTTP 200 and `application/xml`: 20 after durable enqueue, 40 for invalid XML/envelope, 53 for failed handoff and 55 for unsupported envelope version. Missing/unauthorized certificates receive 403; the integration authentication scheme returns 404 when disabled. The supplied SF1461 `AnvenderSystem.wadl` specifies HTTP 200 with XML status 20. Acceptance means durable handoff, not successful interpretation. Confirm that interpretation with Beskedfordeler in the target integration environment before activation. A lost HTTP reply may enqueue the same message again; processing is idempotent.
+Protocol replies use HTTP 200 and `application/xml`: 20 after durable enqueue, 40 for invalid XML/envelope, 53 for failed handoff and 55 for unsupported envelope version. Missing/unauthorized certificates receive 403. The callback and dedicated Hangfire worker are always registered. The supplied SF1461 `AnvenderSystem.wadl` specifies HTTP 200 with XML status 20. Acceptance means durable handoff, not successful interpretation. Confirm that interpretation with Beskedfordeler in the target integration environment before activation. A lost HTTP reply may enqueue the same message again; processing is idempotent.
 
 ## Worker and preserved events
 
@@ -60,12 +60,11 @@ Resolution is performed in a serializable transaction, independently for each ba
 
 | Setting | Requirement |
 | --- | --- |
-| `Beskedfordeler:Enabled` | Defaults false. Enables callback and dedicated workers. |
 | `AppSettings:BeskedfordelerCertificateSha256` | Comma-separated list of 64-character SHA-256 certificate fingerprints. Multiple entries allow rotation overlap. |
 | `Beskedfordeler:SchemaDirectory` | Optional; defaults to `Infrastructure/Beskedfordeler/Schemas` in output. Complete bundled XSDs are owned by Infrastructure.STS.Beskedfordeler and copied transitively on build/publish. |
 | `ConnectionStrings:kitos_HangfireDB` | Existing durable PostgreSQL Hangfire storage. |
 
-Use double underscores in environment variables, e.g. `AppSettings__BeskedfordelerCertificateSha256`. The deployment pipeline reads the SSM parameter `BeskedfordelerCertificateSha256` into `BeskedfordelerCertificateSha256` and writes it to AppSettings during package preparation. Restart after configuration or trust changes. Enabled startup validates fingerprints and schemas. Organizations sign up through the app; their stored CVR and FK Organisation users connection determine callback routing. No organization UUID mapping belongs in appsettings. No live municipality IDs, fingerprints or private keys are bundled.
+Use double underscores in environment variables, e.g. `AppSettings__BeskedfordelerCertificateSha256`. The deployment pipeline reads the SSM parameter `BeskedfordelerCertificateSha256` into `BeskedfordelerCertificateSha256` and writes it to AppSettings during package preparation. Restart after configuration or trust changes. Startup validates fingerprints and schemas. Organizations sign up through the app; their stored CVR and FK Organisation users connection determine callback routing. No organization UUID mapping belongs in appsettings. No live municipality IDs, fingerprints or private keys are bundled.
 
 The validator checks the sender fingerprint, certificate chain, validity, online revocation (excluding the root) and client-authentication usage. Install the full environment-specific trust chain and permit CRL/OCSP retrieval. Failure to establish trust or revocation status rejects the request. Kestrel requests optional client certificates and uses TLS 1.2/1.3; callback authentication is mandatory even though ordinary routes do not require certificates.
 
@@ -91,6 +90,8 @@ These legacy-backlog steps apply only if an earlier experimental RabbitMQ versio
 
 ### Supported source interpretation
 
+KOMBIT `Test/TestbeskedType1` (`7654895c-a3f3-4c77-8afd-4c77330f963c`) is also supported through the same callback and durable queue. After schema and envelope validation, the worker logs the message UUID and type at Warning level and completes without municipality lookup or user-change ingestion. Raw XML and decoded payload content are not logged. Test messages require no organization signup; certificate authentication still applies. Repeated deliveries may produce repeated warning entries. Protocol status 20 confirms enqueue; the warning confirms worker processing.
+
 Only immediate `BrugerNedlagt` is supported. Subscribe to ORG_Bruger version 1.0 and the deactivation action UUID below, restricted to signed-up municipalities and one object registration. Planned deactivation is not supported; it needs effective-date scheduling and cancellation handling. Producer `Slet` and `Passiver` operations emit no events, so this is not comprehensive deletion reconciliation. Unit removal is not user deactivation.
 | Source field under `Beskedkuvert/Filtreringsdata` | Mapping / validation |
 | --- | --- |
@@ -114,7 +115,7 @@ The agreed behavior is to translate immediate deactivation into a pending `Delet
 
 Unit tests cover certificate gating, durable enqueue failure/success, exact original payload retention, safe XML validation, replay and conflict behavior. Existing ingestion/review suites cover organization opt-in, identity matching, canonical timestamps and administrator resolution. `BeskedfordelerHangfireRecoveryTest` exercises PostgreSQL-backed Hangfire enqueue, database restart, retained failure and operator requeue; it requires Docker/Podman. `UserSyncPersistenceTest` exercises competing ingestion scopes and preserved apply/dismiss state against PostgreSQL. The target deployment boundary still requires integration acceptance.
 
-Before production activation, demonstrate unauthorized, expired, revoked and rotated certificates through IIS; supported callback responses; duplicates and lost acknowledgements; concurrent workers; database outage and worker recycle; retry exhaustion and operator replay; retention cleanup leaving interpreted events intact; and lossless backlog reconciliation/rollback. Keep the callback disabled until these environment checks pass. Local quality-gate results are reported separately from deployment acceptance.
+Before production activation, demonstrate unauthorized, expired, revoked and rotated certificates through IIS; supported callback responses; duplicates and lost acknowledgements; concurrent workers; database outage and worker recycle; retry exhaustion and operator replay; retention cleanup leaving interpreted events intact; and lossless backlog reconciliation/rollback. Complete these environment checks before configuring production deliveries. Local quality-gate results are reported separately from deployment acceptance.
 
 ## References
 
