@@ -176,6 +176,8 @@ For complex queries (e.g., grid/list views), denormalized read models (e.g., `It
 All skill paths are relative to the repository root. Read the relevant skill before performing its workflow:
 
 - `.agents/skills/kitos-repositories/SKILL.md`: creating or refactoring repositories; prefer the generic KITOS repository.
+- `.agents/skills/kitos-services/SKILL.md`: creating or refactoring services, including write parameter models.
+- `.agents/skills/kitos-controllers/SKILL.md`: creating or refactoring V2 API controllers and their request/response mappers.
 - `.agents/skills/code-quality/SKILL.md`: code quality checks and review.
 - `.agents/skills/kombit-services/SKILL.md`: KOMBIT/STS services, schemas, authentication, and KITOS endpoint conventions.
 
