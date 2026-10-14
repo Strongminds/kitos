@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices.Rights;
 using Core.ApplicationServices.Users;
 using Core.DomainModel;
 using Core.DomainModel.Events;
@@ -31,6 +32,7 @@ public class ExternalUserChangeResolutionServiceTest
     private readonly Mock<ISsoUserIdentityRepository> _identities = new();
     private readonly Mock<IDomainEvents> _events = new();
     private readonly Mock<IExternalUserChangeResolutionTransaction> _transaction = new();
+    private readonly Mock<IUserRightsService> _userRightsService = new(MockBehavior.Strict);
     private readonly ExternalUserChangeResolutionService _sut;
 
     public ExternalUserChangeResolutionServiceTest()
@@ -47,8 +49,9 @@ public class ExternalUserChangeResolutionServiceTest
         organizations.Setup(x => x.AsQueryable()).Returns(new[] { _organization }.AsQueryable());
         _changes.Setup(x => x.AsQueryable()).Returns(new[] { _change }.AsQueryable());
         _rightRepository.Setup(x => x.AsQueryable()).Returns(() => _rights.AsQueryable());
-        _rightRepository.Setup(x => x.RemoveRange(It.IsAny<IEnumerable<OrganizationRight>>()))
-            .Callback<IEnumerable<OrganizationRight>>(removed => _rights.RemoveAll(removed.ToList().Contains));
+        _userRightsService.Setup(x => x.RemoveAllRights(_user.Id, _organization.Id))
+            .Callback(() => _rights.RemoveAll(x => x.UserId == _user.Id && x.OrganizationId == _organization.Id))
+            .Returns(Maybe<OperationError>.None);
         _actor.Setup(x => x.UserId).Returns(30);
         _actor.Setup(x => x.HasRole(_organization.Id, OrganizationRole.LocalAdmin)).Returns(true);
         _identities.Setup(x => x.GetByExternalUuid(_change.ExternalUserUuid))
@@ -56,7 +59,7 @@ public class ExternalUserChangeResolutionServiceTest
         _transaction.Setup(x => x.Execute(It.IsAny<Func<Result<ExternalUserChange, OperationError>>>()))
             .Returns((Func<Result<ExternalUserChange, OperationError>> action) => action());
         _sut = new(_transaction.Object, organizations.Object, _changes.Object, _rightRepository.Object,
-            _actor.Object, _identities.Object, _events.Object);
+            _actor.Object, _identities.Object, _events.Object, _userRightsService.Object);
     }
 
     [Fact]
@@ -84,7 +87,49 @@ public class ExternalUserChangeResolutionServiceTest
         Assert.Equal(ExternalUserChangeStatus.Applied, _change.Status);
         Assert.Equal(30, _change.ResolvedByUserId);
         _changes.Verify(x => x.Save(), Times.Once);
+        _userRightsService.Verify(x => x.RemoveAllRights(_user.Id, _organization.Id), Times.Once);
+        _rightRepository.Verify(x => x.RemoveRange(It.IsAny<IEnumerable<OrganizationRight>>()), Times.Never);
         _events.Verify(x => x.Raise(It.Is<AdministrativeAccessRightsChanged>(e => e.UserId == _user.Id)), Times.Once);
+    }
+
+    [Fact]
+    public void Resolve_Apply_RemovesAllRightsWithinResolutionTransaction()
+    {
+        var withinTransaction = false;
+        _transaction.Setup(x => x.Execute(It.IsAny<Func<Result<ExternalUserChange, OperationError>>>()))
+            .Returns((Func<Result<ExternalUserChange, OperationError>> action) =>
+            {
+                withinTransaction = true;
+                var result = action();
+                withinTransaction = false;
+                return result;
+            });
+        _userRightsService.Setup(x => x.RemoveAllRights(_user.Id, _organization.Id))
+            .Callback(() => Assert.True(withinTransaction))
+            .Returns(Maybe<OperationError>.None);
+
+        var result = _sut.Resolve(_organization.Uuid, _change.Uuid, true);
+
+        Assert.True(result.Ok);
+        _userRightsService.Verify(x => x.RemoveAllRights(_user.Id, _organization.Id), Times.Once);
+    }
+
+    [Fact]
+    public void Resolve_AllRightsRemovalFails_PreservesPendingChangeAndUser()
+    {
+        var error = new OperationError("Failed to remove a business right.", OperationFailure.Forbidden);
+        _userRightsService.Setup(x => x.RemoveAllRights(_user.Id, _organization.Id)).Returns(error);
+
+        var result = _sut.Resolve(_organization.Uuid, _change.Uuid, true);
+
+        Assert.Same(error, result.Error);
+        Assert.Single(_rights);
+        Assert.False(_user.Deleted);
+        Assert.Null(_user.DeletedDate);
+        Assert.Equal(ExternalUserChangeStatus.Pending, _change.Status);
+        Assert.Null(_change.ResolvedAt);
+        _changes.Verify(x => x.Save(), Times.Never);
+        _events.Verify(x => x.Raise(It.IsAny<AdministrativeAccessRightsChanged>()), Times.Never);
     }
 
     [Fact]
@@ -95,6 +140,7 @@ public class ExternalUserChangeResolutionServiceTest
         Assert.True(result.Ok);
         Assert.Single(_rights);
         Assert.Equal(ExternalUserChangeStatus.Dismissed, _change.Status);
+        _userRightsService.Verify(x => x.RemoveAllRights(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         _events.Verify(x => x.Raise(It.IsAny<AdministrativeAccessRightsChanged>()), Times.Never);
     }
 

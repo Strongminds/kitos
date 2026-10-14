@@ -6,6 +6,7 @@ using Core.Abstractions.Extensions;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model.Users;
+using Core.ApplicationServices.Rights;
 using Core.DomainModel;
 using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
@@ -24,7 +25,8 @@ public class ExternalUserChangeResolutionService(
     IGenericRepository<OrganizationRight> rights,
     IOrganizationalUserContext actor,
     ISsoUserIdentityRepository identities,
-    IDomainEvents events)
+    IDomainEvents events,
+    IUserRightsService userRightsService)
 {
     public IReadOnlyList<ExternalUserChangeBatchResult> ResolveBatch(
         Guid organizationUuid, IEnumerable<Guid> changeUuids, bool apply, CancellationToken cancellationToken)
@@ -98,9 +100,12 @@ public class ExternalUserChangeResolutionService(
 
     private Result<ExternalUserChange, OperationError> RemoveOrganizationAccess(Organization organization, ExternalUserChange change, User user)
     {
+        var removalError = userRightsService.RemoveAllRights(user.Id, organization.Id);
+        if (removalError.HasValue)
+            return removalError.Value;
+
         change.User = user;
         change.UserId = user.Id;
-        rights.RemoveRange(rights.AsQueryable().Where(x => x.UserId == user.Id && x.OrganizationId == organization.Id).ToList());
         if (!rights.AsQueryable().Any(x => x.UserId == user.Id &&
             x.OrganizationId != organization.Id && x.Role == OrganizationRole.User))
         {

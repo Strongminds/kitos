@@ -1,23 +1,40 @@
 using Core.DomainServices.Repositories.Organization;
 using Core.ApplicationServices.Authorization;
+using Core.ApplicationServices;
+using Core.ApplicationServices.Organizations;
+using Core.ApplicationServices.Rights;
 using Core.ApplicationServices.Users;
+using Core.Abstractions.Types;
 using Core.DomainModel;
 using Core.DomainModel.Events;
+using Core.DomainModel.GDPR;
+using Core.DomainModel.ItContract;
+using Core.DomainModel.ItSystem;
+using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.Organization;
 using Core.DomainModel.SSO;
 using Core.DomainModel.Users;
 using Core.DomainServices.Repositories.SSO;
+using Core.DomainServices;
+using Core.DomainServices.Authorization;
+using Core.DomainServices.Generic;
+using Core.DomainServices.Options;
+using Core.DomainServices.Queries;
+using Core.DomainServices.Role;
 using Core.DomainServices.Users;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using Infrastructure.DataAccess;
 using Infrastructure.DataAccess.Repositories;
+using Infrastructure.DataAccess.Services;
 using Infrastructure.DataAccess.Migrations.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Moq;
+using Serilog;
 
 namespace Tests.Container.Tests;
 
@@ -144,6 +161,51 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Resolve_Apply_RemovesAllGrantTypesOnlyInTargetOrganization()
+    {
+        await using (var db = Context())
+        {
+            await AddBusinessRights(db);
+            var change = new ExternalUserChangeRepository(db).InsertAndSave(Change("all-rights"));
+            Assert.True(Resolver(db).Resolve(_organization.Uuid, change.Uuid, true).Ok);
+        }
+
+        await using var verify = Context();
+        Assert.Equal(_otherOrganization.Id, (await verify.OrganizationRights.SingleAsync(x => x.UserId == _user.Id)).OrganizationId);
+        Assert.Equal(_otherOrganization.Id, (await verify.Set<DataProcessingRegistrationRight>().SingleAsync()).Object.OrganizationId);
+        Assert.Equal(_otherOrganization.Id, (await verify.Set<ItContractRight>().SingleAsync()).Object.OrganizationId);
+        Assert.Equal(_otherOrganization.Id, (await verify.Set<ItSystemRight>().SingleAsync()).Object.OrganizationId);
+        Assert.Equal(_otherOrganization.Id, (await verify.Set<OrganizationUnitRight>().SingleAsync()).Object.OrganizationId);
+        Assert.False((await verify.Users.SingleAsync(x => x.Id == _user.Id)).Deleted);
+        Assert.Equal(ExternalUserChangeStatus.Applied, (await verify.Set<ExternalUserChange>().SingleAsync()).Status);
+    }
+
+    [Fact]
+    public async Task Resolve_RemovalFailsAfterBusinessRightsSaved_RollsBackAllGrantsAndResolution()
+    {
+        await using (var db = Context())
+        {
+            await AddBusinessRights(db);
+            var change = new ExternalUserChangeRepository(db).InsertAndSave(Change("rollback-rights"));
+            var result = Resolver(db, allowMembershipRemoval: false).Resolve(_organization.Uuid, change.Uuid, true);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        await using var verify = Context();
+        Assert.Equal(2, await verify.OrganizationRights.CountAsync(x => x.UserId == _user.Id));
+        Assert.Equal(2, await verify.Set<DataProcessingRegistrationRight>().CountAsync());
+        Assert.Equal(2, await verify.Set<ItContractRight>().CountAsync());
+        Assert.Equal(2, await verify.Set<ItSystemRight>().CountAsync());
+        Assert.Equal(2, await verify.Set<OrganizationUnitRight>().CountAsync());
+        var user = await verify.Users.SingleAsync(x => x.Id == _user.Id);
+        Assert.False(user.Deleted);
+        Assert.Null(user.DeletedDate);
+        var pending = await verify.Set<ExternalUserChange>().SingleAsync();
+        Assert.Equal(ExternalUserChangeStatus.Pending, pending.Status);
+        Assert.Null(pending.ResolvedAt);
+    }
+
+    [Fact]
     public async Task ConcurrentApplyAndDismissHaveOnlyOneWinner()
     {
         Guid uuid;
@@ -219,15 +281,107 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
         Assert.Equal(apply ? ExternalUserChangeStatus.Applied : ExternalUserChangeStatus.Dismissed, resolved.Status);
         Assert.Equal(apply ? 1 : 2, await verify.OrganizationRights.CountAsync(x => x.UserId == _user.Id));
     }
-    private ExternalUserChangeResolutionService Resolver(KitosContext db) => new(
-        new ExternalUserChangeResolutionTransaction(db),
-        new GenericRepository<Organization>(db),
-        new GenericRepository<ExternalUserChange>(db),
-        new GenericRepository<OrganizationRight>(db),
-        new OrganizationalUserContext(_actor.Id,
+    private ExternalUserChangeResolutionService Resolver(KitosContext db, bool allowMembershipRemoval = true)
+    {
+        var actor = new OrganizationalUserContext(_actor.Id,
             new Dictionary<int, IEnumerable<OrganizationRole>> { [_organization.Id] = [OrganizationRole.LocalAdmin] },
-            new Dictionary<int, OrganizationCategory> { [_organization.Id] = OrganizationCategory.Municipality }, false, false, false),
-        new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)), new NoEvents());
+            new Dictionary<int, OrganizationCategory> { [_organization.Id] = OrganizationCategory.Municipality }, false, false, false);
+        var authorization = new Mock<IAuthorizationContext>();
+        authorization.Setup(x => x.AllowModify(It.IsAny<IEntity>())).Returns(true);
+        authorization.Setup(x => x.AllowDelete(It.IsAny<IEntity>())).Returns(allowMembershipRemoval);
+        var organizations = new Mock<IOrganizationService>();
+        organizations.Setup(x => x.GetOrganization(_organization.Uuid, OrganizationDataReadAccessLevel.All))
+            .Returns(() => db.Organizations.Single(x => x.Id == _organization.Id));
+        var users = new Mock<IUserService>();
+        users.Setup(x => x.GetUsersInOrganization(_organization.Uuid, It.IsAny<IDomainQuery<User>[]>()))
+            .Returns(() => Result<IQueryable<User>, OperationError>.Success(db.Users.Where(x => x.Id == _user.Id)));
+        var identities = new Mock<IEntityIdentityResolver>();
+        identities.Setup(x => x.ResolveUuid<Organization>(_organization.Id)).Returns(_organization.Uuid);
+        var transactionManager = new TransactionManager(db);
+        var events = new NoEvents();
+        var organizationRights = new OrganizationRightsService(authorization.Object,
+            new GenericRepository<OrganizationRight>(db), actor, events, Mock.Of<ILogger>(),
+            new GenericRepository<OrganizationUnitRight>(db), transactionManager, new GenericRepository<Organization>(db));
+        var userRights = new UserRightsService(users.Object, organizations.Object, authorization.Object,
+            identities.Object, organizationRights,
+            RoleAssignments<ItContractRight, ItContractRole, ItContract>(db),
+            RoleAssignments<ItSystemRight, ItSystemRole, ItSystemUsage>(db),
+            RoleAssignments<OrganizationUnitRight, OrganizationUnitRole, OrganizationUnit>(db),
+            RoleAssignments<DataProcessingRegistrationRight, DataProcessingRegistrationRole, DataProcessingRegistration>(db),
+            transactionManager, new EntityFrameworkContextDatabaseControl(db), Mock.Of<ILogger>());
+        return new ExternalUserChangeResolutionService(new ExternalUserChangeResolutionTransaction(db),
+            new GenericRepository<Organization>(db), new GenericRepository<ExternalUserChange>(db),
+            new GenericRepository<OrganizationRight>(db), actor,
+            new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)), events, userRights);
+    }
+
+    private RoleAssignmentService<TRight, TRole, TModel> RoleAssignments<TRight, TRole, TModel>(KitosContext db)
+        where TRight : Entity, IRight<TModel, TRight, TRole>
+        where TRole : OptionEntity<TRight>, IRoleEntity, IOptionReference<TRight>
+        where TModel : HasRightsEntity<TModel, TRight, TRole>, IOwnedByOrganization
+    {
+        var users = new Mock<IUserRepository>();
+        users.Setup(x => x.GetById(_user.Id)).Returns(() => db.Users.Single(x => x.Id == _user.Id));
+        var options = new Mock<IOptionsService<TRight, TRole>>();
+        options.Setup(x => x.GetOption(It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((int _, int roleId) => Maybe<(TRole option, bool available)>.Some((db.Set<TRole>().Single(x => x.Id == roleId), true)));
+        return new RoleAssignmentService<TRight, TRole, TModel>(options.Object, users.Object,
+            new GenericRepository<TRight>(db), new TransactionManager(db), new NoEvents());
+    }
+
+    private async Task AddBusinessRights(KitosContext db)
+    {
+        var user = await db.Users.SingleAsync(x => x.Id == _user.Id);
+        var organizations = await db.Organizations.ToListAsync();
+        foreach (var organization in organizations)
+        {
+            var dpr = new DataProcessingRegistration
+            {
+                Name = "DPR",
+                Organization = organization,
+                ObjectOwnerId = _actor.Id,
+                LastChangedByUserId = _actor.Id
+            };
+            var contract = new ItContract
+            {
+                Name = "Contract",
+                Organization = organization,
+                ObjectOwnerId = _actor.Id,
+                LastChangedByUserId = _actor.Id
+            };
+            var system = new ItSystem
+            {
+                Name = "System",
+                Organization = organization,
+                ObjectOwnerId = _actor.Id,
+                LastChangedByUserId = _actor.Id
+            };
+            var usage = new ItSystemUsage
+            {
+                ItSystem = system,
+                Organization = organization,
+                ObjectOwnerId = _actor.Id,
+                LastChangedByUserId = _actor.Id
+            };
+            var unit = new OrganizationUnit
+            {
+                Name = "Unit",
+                Organization = organization,
+                ObjectOwnerId = _actor.Id,
+                LastChangedByUserId = _actor.Id
+            };
+            db.Add(dpr.CreateNewRight(new DataProcessingRegistrationRole { Name = "DPR role" }, user));
+            db.Add(contract.CreateNewRight(new ItContractRole { Name = "Contract role" }, user));
+            db.Add(usage.CreateNewRight(new ItSystemRole { Name = "System role" }, user));
+            db.Add(unit.CreateNewRight(new OrganizationUnitRole { Name = "Unit role" }, user));
+        }
+        foreach (var entry in db.ChangeTracker.Entries<Entity>().Where(x => x.State == EntityState.Added))
+        {
+            entry.Entity.ObjectOwnerId = _actor.Id;
+            entry.Entity.LastChangedByUserId = _actor.Id;
+        }
+        await db.SaveChangesAsync();
+    }
 
     private ExternalUserChange Change(string id) => new()
     {
