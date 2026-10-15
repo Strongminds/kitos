@@ -164,7 +164,7 @@ namespace Core.ApplicationServices.SystemUsage
                 return new OperationError($"Not allowed to delete it system usage with Id: {id}", OperationFailure.Forbidden);
             }
 
-            var deletedEvent = new SystemUsageDeletedEvent(itSystemUsage.ItSystem.Uuid, itSystemUsage.Organization.Uuid);
+            var takenOutOfUsageEvent = new SystemTakenOutOfUsageEvent(itSystemUsage.ItSystem.Uuid, itSystemUsage.Organization.Uuid);
             DeleteAssociationsToOrganizationUnits(itSystemUsage);
 
             // delete it system usage
@@ -180,7 +180,7 @@ namespace Core.ApplicationServices.SystemUsage
             _domainEvents.Raise(new EntityBeingDeletedEvent<ItSystemUsage>(itSystemUsage));
             _usageRepository.DeleteByKeyWithReferencePreload(id);
             _usageRepository.Save();
-            transaction.AfterCommit(() => _domainEvents.Raise(deletedEvent));
+            transaction.AfterCommit(() => _domainEvents.Raise(takenOutOfUsageEvent));
             transaction.Commit();
             return itSystemUsage;
         }

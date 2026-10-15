@@ -4,9 +4,9 @@ using Core.DomainModel.Events;
 namespace Core.ApplicationServices.KitosEvents;
 
 public class PublishSystemUsageDeletedEventHandler(IKitosEventPublisherService eventPublisher)
-    : IDomainEventHandler<SystemUsageDeletedEvent>
+    : IDomainEventHandler<SystemTakenOutOfUsageEvent>
 {
-    public void Handle(SystemUsageDeletedEvent domainEvent)
+    public void Handle(SystemTakenOutOfUsageEvent domainEvent)
     {
         var body = new SystemUsageDeletedEventBodyModel
         {

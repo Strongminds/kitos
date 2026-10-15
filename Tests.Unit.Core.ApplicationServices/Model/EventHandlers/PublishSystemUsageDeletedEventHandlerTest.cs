@@ -21,7 +21,7 @@ public class PublishSystemUsageDeletedEventHandlerTest : WithAutoFixture
     [Fact]
     public void Handle_DeletedUsage_PublishesDedicatedTopicAndExactPayload()
     {
-        var domainEvent = new SystemUsageDeletedEvent(A<Guid>(), A<Guid>());
+        var domainEvent = new SystemTakenOutOfUsageEvent(A<Guid>(), A<Guid>());
         KitosEvent? published = null;
         _publisher.Setup(x => x.PublishEvent(It.IsAny<KitosEvent>()))
             .Callback<KitosEvent>(value => published = value);

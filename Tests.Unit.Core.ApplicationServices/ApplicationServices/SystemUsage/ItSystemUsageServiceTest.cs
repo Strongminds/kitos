@@ -341,7 +341,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.False(result.Ok);
             Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
         }
 
         [Fact]
@@ -359,7 +359,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.False(result.Ok);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
         }
 
         [Fact]
@@ -399,12 +399,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var result = _sut.Delete(id);
 
             Assert.True(result.Ok);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
             Assert.NotNull(afterCommit);
             usage.ItSystem.Uuid = A<Guid>();
             usage.Organization.Uuid = A<Guid>();
             afterCommit();
-            _domainEvents.Verify(x => x.Raise(It.Is<SystemUsageDeletedEvent>(e =>
+            _domainEvents.Verify(x => x.Raise(It.Is<SystemTakenOutOfUsageEvent>(e =>
                 e.SystemUuid == systemUuid && e.OrganizationUuid == organizationUuid)), Times.Once);
         }
 
@@ -418,7 +418,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             Assert.True(result.Failed);
             transaction.Verify(x => x.AfterCommit(It.IsAny<Action>()), Times.Never);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
         }
 
         [Fact]
@@ -429,7 +429,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
 
             Assert.Throws<InvalidOperationException>(() => _sut.Delete(id));
 
-            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
         }
 
         [Fact]
