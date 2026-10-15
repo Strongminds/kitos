@@ -387,29 +387,31 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         }
 
         [Fact]
-        public void Delete_Success_DefersEventAndSnapshotsIdentities()
+        public void Delete_Success_RaisesEventAfterCommitAndSnapshotsIdentities()
         {
             var (usage, id, transaction) = SetupDeleteSuccess();
             var systemUuid = usage.ItSystem.Uuid;
             var organizationUuid = usage.Organization.Uuid;
-            Action? afterCommit = null;
-            transaction.Setup(x => x.AfterCommit(It.IsAny<Action>()))
-                .Callback<Action>(callback => afterCommit = callback);
+            var sequence = new MockSequence();
+            transaction.InSequence(sequence).Setup(x => x.Commit()).Callback(() =>
+            {
+                _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
+                usage.ItSystem.Uuid = A<Guid>();
+                usage.Organization.Uuid = A<Guid>();
+            });
+            _domainEvents.InSequence(sequence).Setup(x => x.Raise(It.Is<SystemTakenOutOfUsageEvent>(e =>
+                e.SystemUuid == systemUuid && e.OrganizationUuid == organizationUuid)));
 
             var result = _sut.Delete(id);
 
             Assert.True(result.Ok);
-            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
-            Assert.NotNull(afterCommit);
-            usage.ItSystem.Uuid = A<Guid>();
-            usage.Organization.Uuid = A<Guid>();
-            afterCommit();
+            transaction.Verify(x => x.Commit(), Times.Once);
             _domainEvents.Verify(x => x.Raise(It.Is<SystemTakenOutOfUsageEvent>(e =>
                 e.SystemUuid == systemUuid && e.OrganizationUuid == organizationUuid)), Times.Once);
         }
 
         [Fact]
-        public void Delete_ReferenceDeletionFails_DoesNotScheduleEvent()
+        public void Delete_ReferenceDeletionFails_DoesNotRaiseEvent()
         {
             var (_, id, transaction) = SetupDeleteSuccess();
             _referenceService.Setup(x => x.DeleteBySystemUsageId(id)).Returns(OperationFailure.BadState);
@@ -417,7 +419,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var result = _sut.Delete(id);
 
             Assert.True(result.Failed);
-            transaction.Verify(x => x.AfterCommit(It.IsAny<Action>()), Times.Never);
+            transaction.Verify(x => x.Commit(), Times.Never);
             _domainEvents.Verify(x => x.Raise(It.IsAny<SystemTakenOutOfUsageEvent>()), Times.Never);
         }
 

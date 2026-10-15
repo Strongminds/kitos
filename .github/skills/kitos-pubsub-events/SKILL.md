@@ -1,6 +1,6 @@
 ---
 name: kitos-pubsub-events
-description: "Add, modify, or review KITOS domain events that publish to PubSub. Use for event topics, payload contracts, publishing handlers, and transaction-safe notification delivery."
+description: "Add, modify, or review KITOS domain events that publish to PubSub. Use for event topics, payload contracts, publishing handlers, and notification timing."
 ---
 
 # KITOS PubSub events
@@ -41,16 +41,14 @@ data-processor fields; inspect its mapper for omitted/null semantics.
 - Put shared behavior at the common mutation path so APIs, archiving, and
   cascading operations behave consistently.
 - Capture immutable UUID values before deletion or cleanup changes navigation
-  properties. Do not retain a deleted entity for deferred payload mapping.
-- If notification means the change is committed, use
-  `transaction.AfterCommit(() => domainEvents.Raise(domainEvent))` before
-  committing. A nested `Commit()` is not an actual database commit.
-- Committed nested scopes transfer callbacks to their parent; rollback or
-  uncommitted disposal discards them. This requires `ITransactionManager`-owned
-  transactions.
+  properties.
+- Follow the usage-event pattern: call `transaction.Commit()` and then
+  `domainEvents.Raise(domainEvent)` in the application service. Keep event-specific
+  behavior out of the shared transaction infrastructure.
+- A nested `Commit()` is a no-op; publication can precede a later enclosing
+  rollback. Do not promise outermost-commit or durable-delivery guarantees.
+  See the `kitos-transactions` skill before changing transaction boundaries.
 - Preserve generic pre-deletion events used by cleanup, tracking, and read models.
-- Only usage deletion currently uses outermost-commit callbacks; inspect the
-  existing timing before changing creation or system-change publication.
 - Current delivery is best-effort: log returned failures, non-success HTTP
   responses, and exceptions without undoing committed changes. Durable retries
   require an explicitly agreed outbox design.
@@ -60,10 +58,8 @@ data-processor fields; inspect its mapper for omitted/null semantics.
 - Add handler tests for the literal topic string, exact serialized field set,
   values, omitted/null behavior, and one publication attempt per event.
 - Add service tests for success, authorization/not-found/error paths, identity
-  snapshots, and deferred dispatch.
-- Cover nested commit, multiple callbacks, rollback, uncommitted disposal, and
-  commit failure when changing transaction behavior.
-- Extend `Tests.Container/Tests/PubSubTest.cs` for new topics. Use PostgreSQL
-  transaction coverage in `PostgreSqlTransactionTest`; these require Docker/Podman.
+  snapshots, ordering after `Commit()`, and no publication when commit throws.
+- Extend `Tests.Container/Tests/PubSubTest.cs` for new topics; this requires
+  Docker/Podman.
 - Run focused tests, then `pwsh .\scripts\quality-check.ps1` with tests enabled,
   and self-review using the `code-quality` skill.

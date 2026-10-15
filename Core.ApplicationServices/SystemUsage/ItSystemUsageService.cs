@@ -180,8 +180,8 @@ namespace Core.ApplicationServices.SystemUsage
             _domainEvents.Raise(new EntityBeingDeletedEvent<ItSystemUsage>(itSystemUsage));
             _usageRepository.DeleteByKeyWithReferencePreload(id);
             _usageRepository.Save();
-            transaction.AfterCommit(() => _domainEvents.Raise(takenOutOfUsageEvent));
             transaction.Commit();
+            _domainEvents.Raise(takenOutOfUsageEvent);
             return itSystemUsage;
         }
 
