@@ -128,6 +128,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Container", "Tests.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.STS.Beskedfordeler", "Infrastructure.STS.Beskedfordeler\Infrastructure.STS.Beskedfordeler.csproj", "{76BE2A80-462A-44DA-985B-01AEBFDBDED8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.Beskedfordeler", "Tools.Beskedfordeler\Tools.Beskedfordeler.csproj", "{7880F211-6E6B-4592-8F0A-B40F82C14E6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -250,6 +252,10 @@ Global
 		{76BE2A80-462A-44DA-985B-01AEBFDBDED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76BE2A80-462A-44DA-985B-01AEBFDBDED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76BE2A80-462A-44DA-985B-01AEBFDBDED8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7880F211-6E6B-4592-8F0A-B40F82C14E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7880F211-6E6B-4592-8F0A-B40F82C14E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7880F211-6E6B-4592-8F0A-B40F82C14E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7880F211-6E6B-4592-8F0A-B40F82C14E6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
