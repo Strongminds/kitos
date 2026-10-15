@@ -341,6 +341,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.False(result.Ok);
             Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
         }
 
         [Fact]
@@ -358,6 +359,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Assert
             Assert.False(result.Ok);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
         }
 
         [Fact]
@@ -382,6 +384,52 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var result = _sut.Delete(id);
 
             AssertDeleteSuccess(result, itSystemUsage, transaction, id);
+        }
+
+        [Fact]
+        public void Delete_Success_DefersEventAndSnapshotsIdentities()
+        {
+            var (usage, id, transaction) = SetupDeleteSuccess();
+            var systemUuid = usage.ItSystem.Uuid;
+            var organizationUuid = usage.Organization.Uuid;
+            Action? afterCommit = null;
+            transaction.Setup(x => x.AfterCommit(It.IsAny<Action>()))
+                .Callback<Action>(callback => afterCommit = callback);
+
+            var result = _sut.Delete(id);
+
+            Assert.True(result.Ok);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+            Assert.NotNull(afterCommit);
+            usage.ItSystem.Uuid = A<Guid>();
+            usage.Organization.Uuid = A<Guid>();
+            afterCommit();
+            _domainEvents.Verify(x => x.Raise(It.Is<SystemUsageDeletedEvent>(e =>
+                e.SystemUuid == systemUuid && e.OrganizationUuid == organizationUuid)), Times.Once);
+        }
+
+        [Fact]
+        public void Delete_ReferenceDeletionFails_DoesNotScheduleEvent()
+        {
+            var (_, id, transaction) = SetupDeleteSuccess();
+            _referenceService.Setup(x => x.DeleteBySystemUsageId(id)).Returns(OperationFailure.BadState);
+
+            var result = _sut.Delete(id);
+
+            Assert.True(result.Failed);
+            transaction.Verify(x => x.AfterCommit(It.IsAny<Action>()), Times.Never);
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
+        }
+
+        [Fact]
+        public void Delete_CommitFails_DoesNotRaiseEvent()
+        {
+            var (_, id, transaction) = SetupDeleteSuccess();
+            transaction.Setup(x => x.Commit()).Throws<InvalidOperationException>();
+
+            Assert.Throws<InvalidOperationException>(() => _sut.Delete(id));
+
+            _domainEvents.Verify(x => x.Raise(It.IsAny<SystemUsageDeletedEvent>()), Times.Never);
         }
 
         [Fact]
@@ -1212,10 +1260,10 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             //Arrange
             var uuid = A<Guid>();
             var orgUuid = A<Guid>();
-            var itSystemUsage = new ItSystemUsage 
-            { 
+            var itSystemUsage = new ItSystemUsage
+            {
                 Uuid = uuid,
-                Organization = new Organization { Id = A<int>(), Uuid = orgUuid } 
+                Organization = new Organization { Id = A<int>(), Uuid = orgUuid }
             };
             var aiFieldKey =
                 ObjectHelper.GetPropertyPath<ItSystemUsage>(x =>
@@ -1501,7 +1549,11 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private (ItSystemUsage itSystemUsage, int id, Mock<IDatabaseTransaction> transaction) SetupDeleteSuccess()
         {
             var id = A<int>();
-            var itSystemUsage = new ItSystemUsage();
+            var itSystemUsage = new ItSystemUsage
+            {
+                ItSystem = new ItSystem { Uuid = A<Guid>() },
+                Organization = new Organization { Uuid = A<Guid>() }
+            };
             var transaction = new Mock<IDatabaseTransaction>();
             ExpectGetUsageByKeyReturns(id, itSystemUsage);
             _authorizationContext.Setup(x => x.AllowDelete(itSystemUsage)).Returns(true);

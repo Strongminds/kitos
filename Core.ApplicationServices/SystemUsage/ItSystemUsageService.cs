@@ -50,7 +50,7 @@ namespace Core.ApplicationServices.SystemUsage
             IOrganizationalUserContext userContext,
             IItSystemUsageAttachedOptionRepository itSystemUsageAttachedOptionRepository,
             IGenericRepository<ArchivePeriod> archivePeriodRepository,
-            IGenericRepository<ItSystemUsagePersonalData> personalDataRepository, 
+            IGenericRepository<ItSystemUsagePersonalData> personalDataRepository,
             IOrganizationService organizationService, IFieldAuthorizationModel fieldAuthorizationModel)
         {
             _usageRepository = usageRepository;
@@ -164,6 +164,7 @@ namespace Core.ApplicationServices.SystemUsage
                 return new OperationError($"Not allowed to delete it system usage with Id: {id}", OperationFailure.Forbidden);
             }
 
+            var deletedEvent = new SystemUsageDeletedEvent(itSystemUsage.ItSystem.Uuid, itSystemUsage.Organization.Uuid);
             DeleteAssociationsToOrganizationUnits(itSystemUsage);
 
             // delete it system usage
@@ -179,6 +180,7 @@ namespace Core.ApplicationServices.SystemUsage
             _domainEvents.Raise(new EntityBeingDeletedEvent<ItSystemUsage>(itSystemUsage));
             _usageRepository.DeleteByKeyWithReferencePreload(id);
             _usageRepository.Save();
+            transaction.AfterCommit(() => _domainEvents.Raise(deletedEvent));
             transaction.Commit();
             return itSystemUsage;
         }
