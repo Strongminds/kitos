@@ -118,6 +118,118 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             Assert.True(error.IsNone);
         }
 
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly)]
+        [InlineData(InvoiceFrequency.HalfYearly)]
+        [InlineData(InvoiceFrequency.Quarterly)]
+        public void Create_InvoiceSchedule_Persists_And_Commits(InvoiceFrequency frequency)
+        {
+            var paymentModel = new ItContractPaymentModelModificationParameters
+            {
+                InvoiceFrequency = ((InvoiceFrequency?)frequency).AsChangedValue(),
+                InvoiceDates = new[] { new ItContractInvoiceDate { Period = 1, Date = new DateTime(2028, 2, 29) } }
+                    .AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
+            };
+            var (orgUuid, parameters, _, transaction) = SetupCreateScenarioPrerequisites(paymentModel: paymentModel);
+
+            var result = _sut.Create(orgUuid, parameters);
+
+            Assert.True(result.Ok);
+            Assert.Equal(frequency, result.Value.InvoiceFrequency);
+            Assert.Equal(new DateTime(2028, 2, 29), Assert.Single(result.Value.InvoiceDates).Date);
+            AssertTransactionCommitted(transaction);
+        }
+
+        [Theory]
+        [InlineData(false, false, InvoiceFrequency.Quarterly, true)]
+        [InlineData(true, false, InvoiceFrequency.Quarterly, true)]
+        [InlineData(true, false, InvoiceFrequency.HalfYearly, false)]
+        [InlineData(true, false, null, false)]
+        [InlineData(false, true, InvoiceFrequency.Quarterly, false)]
+        public void Update_InvoiceSchedule_Respects_Omitted_And_Empty_Lists(bool supplyFrequency, bool supplyEmptyDates,
+            InvoiceFrequency? frequency, bool preservesDates)
+        {
+            var (_, _, contract, transaction) = SetupCreateScenarioPrerequisites();
+            var originalDate = new DateTime(2026, 9, 30);
+            Assert.True(contract.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+                new[] { new ItContractInvoiceDate { Period = 3, Date = originalDate } }).IsNone);
+            ExpectGetReturns(contract.Uuid, contract);
+            ExpectAllowModifySuccess(contract);
+            var paymentModel = new ItContractPaymentModelModificationParameters();
+            if (supplyFrequency)
+                paymentModel.InvoiceFrequency = frequency.AsChangedValue();
+            if (supplyEmptyDates)
+                paymentModel.InvoiceDates = Array.Empty<ItContractInvoiceDate>().AsChangedValue<IEnumerable<ItContractInvoiceDate>>();
+
+            var result = _sut.Update(contract.Uuid, new ItContractModificationParameters { PaymentModel = paymentModel });
+
+            Assert.True(result.Ok);
+            Assert.Equal(supplyFrequency ? frequency : InvoiceFrequency.Quarterly, contract.InvoiceFrequency);
+            if (preservesDates)
+                Assert.Equal(originalDate, Assert.Single(contract.InvoiceDates).Date);
+            else
+                Assert.Empty(contract.InvoiceDates);
+            AssertTransactionCommitted(transaction);
+            _domainEventsMock.Verify(x => x.Raise(It.Is<EntityUpdatedEvent<ItContract>>(e => e.Entity == contract)), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly, 1, 2)]
+        [InlineData(InvoiceFrequency.HalfYearly, 2, 8)]
+        [InlineData(InvoiceFrequency.Quarterly, 4, 12)]
+        public void Update_InvoiceSchedule_Frequency_Change_Replaces_Old_Dates(InvoiceFrequency frequency, int period, int month)
+        {
+            var (_, _, contract, transaction) = SetupCreateScenarioPrerequisites();
+            Assert.True(contract.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+                new[] { new ItContractInvoiceDate { Period = 3, Date = new DateTime(2026, 9, 30) } }).IsNone);
+            ExpectGetReturns(contract.Uuid, contract);
+            ExpectAllowModifySuccess(contract);
+            var date = new DateTime(2027, month, 1);
+            var paymentModel = new ItContractPaymentModelModificationParameters
+            {
+                InvoiceFrequency = ((InvoiceFrequency?)frequency).AsChangedValue(),
+                InvoiceDates = new[] { new ItContractInvoiceDate { Period = period, Date = date } }
+                    .AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
+            };
+
+            var result = _sut.Update(contract.Uuid, new ItContractModificationParameters { PaymentModel = paymentModel });
+
+            Assert.True(result.Ok);
+            Assert.Equal(frequency, contract.InvoiceFrequency);
+            Assert.Equal(date, Assert.Single(contract.InvoiceDates).Date);
+            AssertTransactionCommitted(transaction);
+        }
+
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        [InlineData(true, true)]
+        public void Update_Invalid_Or_Forbidden_InvoiceSchedule_Does_Not_Save_Or_Publish(bool authorized, bool notFound)
+        {
+            var (_, _, contract, transaction) = SetupCreateScenarioPrerequisites();
+            var originalDate = new DateTime(2026, 9, 30);
+            Assert.True(contract.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+                new[] { new ItContractInvoiceDate { Period = 3, Date = originalDate } }).IsNone);
+            ExpectGetReturns(contract.Uuid, notFound ? new OperationError(OperationFailure.NotFound) : contract);
+            _authContext.Setup(x => x.AllowModify(contract)).Returns(authorized);
+            var paymentModel = new ItContractPaymentModelModificationParameters
+            {
+                InvoiceFrequency = ((InvoiceFrequency?)InvoiceFrequency.HalfYearly).AsChangedValue(),
+                InvoiceDates = new[] { new ItContractInvoiceDate { Period = 2, Date = new DateTime(2026, 1, 1) } }
+                    .AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
+            };
+
+            var result = _sut.Update(contract.Uuid, new ItContractModificationParameters { PaymentModel = paymentModel });
+
+            Assert.True(result.Failed);
+            Assert.Equal(notFound ? OperationFailure.NotFound : authorized ? OperationFailure.BadInput : OperationFailure.Forbidden, result.Error.FailureType);
+            Assert.Equal(InvoiceFrequency.Quarterly, contract.InvoiceFrequency);
+            Assert.Equal(originalDate, Assert.Single(contract.InvoiceDates).Date);
+            AssertTransactionNotCommitted(transaction);
+            _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
+            _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<ItContract>>()), Times.Never);
+        }
+
         [Fact]
         public void Cannot_Delete_If_Delete_Fails_In_Service()
         {
@@ -164,8 +276,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             var parentId = A<int>();
             var childId = A<int>();
 
-            var child = new ItContract { Id = childId, Uuid = childUuid, ParentId = parentId};
-            var parent = new ItContract { Id = parentId, Uuid = parentUuid, Children = new List<ItContract>{child}};
+            var child = new ItContract { Id = childId, Uuid = childUuid, ParentId = parentId };
+            var parent = new ItContract { Id = parentId, Uuid = parentUuid, Children = new List<ItContract> { child } };
             child.Parent = parent;
 
             ExpectGetReturns(parentUuid, parent);
@@ -191,8 +303,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             var request = new List<Guid> { contractUuid, contractUuid2 };
             var (_, _, createdContract, transaction) = SetupCreateScenarioPrerequisites();
-            var contract1 = new ItContract{Organization = createdContract.Organization, OrganizationId = createdContract.OrganizationId};
-            var contract2 = new ItContract{ Organization = createdContract.Organization, OrganizationId = createdContract.OrganizationId };
+            var contract1 = new ItContract { Organization = createdContract.Organization, OrganizationId = createdContract.OrganizationId };
+            var contract2 = new ItContract { Organization = createdContract.Organization, OrganizationId = createdContract.OrganizationId };
 
             ExpectGetReturns(createdContract.Uuid, createdContract);
             ExpectGetReturns(contractUuid, contract1);

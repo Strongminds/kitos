@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 using Core.Abstractions.Extensions;
 using Core.DomainModel;
 using Core.DomainModel.GDPR;
@@ -124,6 +125,9 @@ namespace Core.DomainServices.Contract
             destination.PaymentFrequencyId = source.PaymentFreqency?.Id;
             destination.PaymentFrequencyUuid = source.PaymentFreqency?.Uuid;
             destination.PaymentFrequencyName = source.PaymentFreqency?.Name;
+            destination.InvoiceFrequency = source.InvoiceFrequency;
+            destination.InvoiceDates = string.Join("; ", source.InvoiceDates.OrderBy(x => x.Period).Select(x =>
+                $"{GetInvoicePeriodLabel(source.InvoiceFrequency, x.Period)}: {x.Date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)}"));
 
             //Payment organization units
             destination.ExternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.ExternEconomyStreams);
@@ -141,6 +145,17 @@ namespace Core.DomainServices.Contract
             destination.TerminationDeadlineId = source.TerminationDeadline?.Id;
             destination.TerminationDeadlineUuid = source.TerminationDeadline?.Uuid;
             destination.TerminationDeadlineName = source.TerminationDeadline?.Name;
+        }
+
+        private static string GetInvoicePeriodLabel(InvoiceFrequency? frequency, int period)
+        {
+            return frequency switch
+            {
+                InvoiceFrequency.Yearly => "Årligt",
+                InvoiceFrequency.HalfYearly => $"{period}. halvår",
+                InvoiceFrequency.Quarterly => $"{period}. kvartal",
+                _ => throw new ArgumentOutOfRangeException(nameof(frequency), frequency, "Invoice dates require a valid frequency")
+            };
         }
 
         private void MapSystemRelations(ItContract source, ItContractOverviewReadModel destination)

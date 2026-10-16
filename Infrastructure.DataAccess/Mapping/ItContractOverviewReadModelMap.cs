@@ -86,6 +86,8 @@ namespace Infrastructure.DataAccess.Mapping
             builder.HasIndex(x => x.AccumulatedOtherCost).HasDatabaseName("IX_AccumulatedOtherCost");
 
             builder.Property(x => x.ExternalPaymentOrganizationUnitsCsv);
+            builder.Property(x => x.InvoiceFrequency);
+            builder.Property(x => x.InvoiceDates).IsRequired().HasDefaultValue("");
             builder.Property(x => x.InternalPaymentOrganizationUnitsCsv);
             builder.Property(x => x.ItSystemUsagesSystemUuidCsv);
 

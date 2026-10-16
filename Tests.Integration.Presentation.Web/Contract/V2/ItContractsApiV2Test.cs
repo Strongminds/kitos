@@ -33,6 +33,103 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
     public class ItContractsApiV2Test : BaseTest
     {
         [Fact]
+        public async Task InvoiceSchedule_Can_Save_Replace_Clear_And_Reload()
+        {
+            var (token, _, organization) = await CreatePrerequisitesAsync();
+            var contract = await ItContractV2Helper.PostContractAsync(token, new CreateNewContractRequestDTO
+            {
+                OrganizationUuid = organization.Uuid,
+                Name = A<string>(),
+                PaymentModel = new ContractPaymentModelDataWriteRequestDTO
+                {
+                    InvoiceFrequency = InvoiceFrequencyChoice.Quarterly,
+                    InvoiceDates = new[]
+                    {
+                        new ContractInvoiceDateDTO { Period = 3, Date = new DateTime(2027, 9, 30) },
+                        new ContractInvoiceDateDTO { Period = 1, Date = new DateTime(2026, 3, 31) }
+                    }
+                }
+            });
+            var url = TestEnvironment.CreateUrl($"api/v2/it-contracts/{contract.Uuid}");
+            var reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
+            Assert.Equal(InvoiceFrequencyChoice.Quarterly, reloaded.PaymentModel.InvoiceFrequency);
+            Assert.Equal(new[] { 1, 3 }, reloaded.PaymentModel.InvoiceDates.Select(x => x.Period));
+            Assert.Equal(new[] { new DateTime(2026, 3, 31), new DateTime(2027, 9, 30) },
+                reloaded.PaymentModel.InvoiceDates.Select(x => x.Date));
+
+            using (var omitted = await HttpApi.PatchWithTokenAsync(url, token, new { PaymentModel = new { } }))
+                Assert.Equal(HttpStatusCode.OK, omitted.StatusCode);
+            Assert.Equal(2, (await ItContractV2Helper.GetItContractAsync(token, contract.Uuid)).PaymentModel.InvoiceDates.Count());
+
+            using (var replaced = await HttpApi.PatchWithTokenAsync(url, token, new
+            {
+                PaymentModel = new { InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Date = new DateTime(2028, 2, 29) } } }
+            }))
+                Assert.Equal(HttpStatusCode.OK, replaced.StatusCode);
+            reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
+            Assert.Equal(new DateTime(2028, 2, 29), Assert.Single(reloaded.PaymentModel.InvoiceDates).Date);
+            Assert.Equal(InvoiceFrequencyChoice.Quarterly, reloaded.PaymentModel.InvoiceFrequency);
+
+            using (var changed = await HttpApi.PatchWithTokenAsync(url, token,
+                new { PaymentModel = new { InvoiceFrequency = InvoiceFrequencyChoice.HalfYearly } }))
+                Assert.Equal(HttpStatusCode.OK, changed.StatusCode);
+            reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
+            Assert.Empty(reloaded.PaymentModel.InvoiceDates);
+            Assert.Equal(InvoiceFrequencyChoice.HalfYearly, reloaded.PaymentModel.InvoiceFrequency);
+
+            using (var populated = await HttpApi.PatchWithTokenAsync(url, token, new
+            {
+                PaymentModel = new { InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 2, Date = new DateTime(2029, 7, 1) } } }
+            }))
+                Assert.Equal(HttpStatusCode.OK, populated.StatusCode);
+            using (var cleared = await HttpApi.PatchWithTokenAsync(url, token,
+                new { PaymentModel = new { InvoiceDates = Array.Empty<ContractInvoiceDateDTO>() } }))
+                Assert.Equal(HttpStatusCode.OK, cleared.StatusCode);
+            reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
+            Assert.Empty(reloaded.PaymentModel.InvoiceDates);
+            Assert.Equal(InvoiceFrequencyChoice.HalfYearly, reloaded.PaymentModel.InvoiceFrequency);
+
+            using (var clearedFrequency = await HttpApi.PatchWithTokenAsync(url, token,
+                new { PaymentModel = new { InvoiceFrequency = (InvoiceFrequencyChoice?)null } }))
+                Assert.Equal(HttpStatusCode.OK, clearedFrequency.StatusCode);
+            reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
+            Assert.Null(reloaded.PaymentModel.InvoiceFrequency);
+            Assert.Empty(reloaded.PaymentModel.InvoiceDates);
+        }
+
+        [Theory]
+        [InlineData(InvoiceFrequencyChoice.HalfYearly, 2, 1)]
+        [InlineData(InvoiceFrequencyChoice.Quarterly, 5, 12)]
+        [InlineData((InvoiceFrequencyChoice)99, 1, 1)]
+        [InlineData(null, 1, 1)]
+        public async Task InvoiceSchedule_Rejected_Update_Preserves_Persisted_Data(InvoiceFrequencyChoice? frequency, int period, int month)
+        {
+            var (token, _, organization) = await CreatePrerequisitesAsync();
+            var originalDate = new DateTime(2026, 9, 30);
+            var contract = await ItContractV2Helper.PostContractAsync(token, new CreateNewContractRequestDTO
+            {
+                OrganizationUuid = organization.Uuid,
+                Name = A<string>(),
+                PaymentModel = new ContractPaymentModelDataWriteRequestDTO
+                {
+                    InvoiceFrequency = InvoiceFrequencyChoice.Quarterly,
+                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 3, Date = originalDate } }
+                }
+            });
+
+            using var response = await ItContractV2Helper.SendPatchPaymentModelAsync(token, contract.Uuid, new ContractPaymentModelDataWriteRequestDTO
+            {
+                InvoiceFrequency = frequency,
+                InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = period, Date = new DateTime(2027, month, 1) } }
+            });
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
+            Assert.Equal(InvoiceFrequencyChoice.Quarterly, reloaded.PaymentModel.InvoiceFrequency);
+            Assert.Equal(originalDate, Assert.Single(reloaded.PaymentModel.InvoiceDates).Date);
+        }
+
+        [Fact]
         public async Task Can_GET_Specific_Contract()
         {
             //Arrange
