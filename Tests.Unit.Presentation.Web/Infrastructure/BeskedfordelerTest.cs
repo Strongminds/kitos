@@ -245,8 +245,10 @@ public class BeskedfordelerTest
             DateTimeOffset.UtcNow.AddDays(expired ? -1 : 1));
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().AddInMemoryCollection(
             new Dictionary<string, string?> { ["AppSettings:BeskedfordelerCertificateSha256"] = certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256) }).Build();
-        Assert.False(new BeskedfordelerClientCertificateValidator(configuration).IsValid(certificate));
-        Assert.False(new BeskedfordelerClientCertificateValidator(configuration).IsValid(null));
+        var validator = new BeskedfordelerClientCertificateValidator(configuration,
+            NullLogger<BeskedfordelerClientCertificateValidator>.Instance);
+        Assert.False(validator.IsValid(certificate));
+        Assert.False(validator.IsValid(null));
     }
 
     [Fact]
