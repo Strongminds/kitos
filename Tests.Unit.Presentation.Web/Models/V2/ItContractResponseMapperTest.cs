@@ -50,6 +50,23 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertOrganization(contract.Organization, dto.OrganizationContext);
         }
 
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly)]
+        [InlineData(InvoiceFrequency.HalfYearly)]
+        [InlineData(InvoiceFrequency.Quarterly)]
+        public void MapContractDTO_InvoiceSchedule_Maps_Frequency_And_Populated_Dates(InvoiceFrequency frequency)
+        {
+            var contract = new ItContract();
+            Assert.True(contract.UpdateInvoiceSchedule(frequency,
+                new[] { new ItContractInvoiceDate { Period = 1, Date = new DateTime(2028, 2, 29) } }).IsNone);
+
+            var dto = _sut.MapContractDTO(contract).PaymentModel;
+
+            Assert.Equal((InvoiceFrequencyChoice)frequency, dto.InvoiceFrequency);
+            Assert.Equal(1, Assert.Single(dto.InvoiceDates).Period);
+            Assert.Equal(new DateTime(2028, 2, 29), Assert.Single(dto.InvoiceDates).Date);
+        }
+
         [Fact]
         public void MapContractDTO_Maps_No_Properties()
         {
@@ -119,6 +136,8 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Null(paymentModel.PaymentModel);
             Assert.Null(paymentModel.PaymentFrequency);
             Assert.Null(paymentModel.PriceRegulation);
+            Assert.Null(paymentModel.InvoiceFrequency);
+            Assert.Empty(paymentModel.InvoiceDates);
 
             var agreementPeriod = dto.AgreementPeriod;
             Assert.Null(agreementPeriod.DurationMonths);
@@ -471,7 +490,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equivalent(mappedReferences, dto.ExternalReferences);
             _externalReferenceResponseMapperMock.Verify(x => x.MapExternalReferences(contract.ExternalReferences), Times.Once);
         }
-        
+
         #region Creaters
 
         private DataProcessingRegistration CreateDpr()

@@ -15,6 +15,126 @@ namespace Tests.Unit.Core.Model
     public class ItContractTest : WithAutoFixture
     {
         [Theory]
+        [InlineData(InvoiceFrequency.Yearly, 1, 1, 1)]
+        [InlineData(InvoiceFrequency.Yearly, 1, 12, 31)]
+        [InlineData(InvoiceFrequency.HalfYearly, 1, 1, 1)]
+        [InlineData(InvoiceFrequency.HalfYearly, 1, 6, 30)]
+        [InlineData(InvoiceFrequency.HalfYearly, 2, 7, 1)]
+        [InlineData(InvoiceFrequency.HalfYearly, 2, 12, 31)]
+        [InlineData(InvoiceFrequency.Quarterly, 1, 1, 1)]
+        [InlineData(InvoiceFrequency.Quarterly, 1, 3, 31)]
+        [InlineData(InvoiceFrequency.Quarterly, 2, 4, 1)]
+        [InlineData(InvoiceFrequency.Quarterly, 2, 6, 30)]
+        [InlineData(InvoiceFrequency.Quarterly, 3, 7, 1)]
+        [InlineData(InvoiceFrequency.Quarterly, 3, 9, 30)]
+        [InlineData(InvoiceFrequency.Quarterly, 4, 10, 1)]
+        [InlineData(InvoiceFrequency.Quarterly, 4, 12, 31)]
+        [InlineData(InvoiceFrequency.Quarterly, 1, 2, 29)]
+        public void UpdateInvoiceSchedule_Valid_Period_Boundaries_Accepted(InvoiceFrequency frequency, int period, int month, int day)
+        {
+            var sut = new ItContract();
+            var date = new DateTime(2028, month, day, 12, 30, 0);
+
+            var error = sut.UpdateInvoiceSchedule(frequency, new[] { new ItContractInvoiceDate { Period = period, Date = date } });
+
+            Assert.True(error.IsNone);
+            Assert.Equal(frequency, sut.InvoiceFrequency);
+            Assert.Equal(date.Date, Assert.Single(sut.InvoiceDates).Date);
+        }
+
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly, 0, 1)]
+        [InlineData(InvoiceFrequency.Yearly, 2, 12)]
+        [InlineData(InvoiceFrequency.HalfYearly, 3, 12)]
+        [InlineData(InvoiceFrequency.HalfYearly, 1, 7)]
+        [InlineData(InvoiceFrequency.HalfYearly, 2, 6)]
+        [InlineData(InvoiceFrequency.Quarterly, 5, 12)]
+        [InlineData(InvoiceFrequency.Quarterly, 1, 4)]
+        [InlineData(InvoiceFrequency.Quarterly, 2, 3)]
+        [InlineData(InvoiceFrequency.Quarterly, 2, 7)]
+        [InlineData(InvoiceFrequency.Quarterly, 3, 6)]
+        [InlineData(InvoiceFrequency.Quarterly, 3, 10)]
+        [InlineData(InvoiceFrequency.Quarterly, 4, 9)]
+        [InlineData((InvoiceFrequency)99, 1, 1)]
+        [InlineData(null, 1, 1)]
+        public void UpdateInvoiceSchedule_Invalid_Schedule_Leaves_Existing_Data_Unchanged(InvoiceFrequency? frequency, int period, int month)
+        {
+            var sut = new ItContract();
+            var oldDate = new DateTime(2026, 1, 31);
+            Assert.True(sut.UpdateInvoiceSchedule(InvoiceFrequency.Yearly,
+                new[] { new ItContractInvoiceDate { Period = 1, Date = oldDate } }).IsNone);
+            var existing = Assert.Single(sut.InvoiceDates);
+
+            var error = sut.UpdateInvoiceSchedule(frequency,
+                new[] { new ItContractInvoiceDate { Period = period, Date = new DateTime(2027, month, 1) } });
+
+            Assert.Equal(OperationFailure.BadInput, error.Value.FailureType);
+            Assert.Equal(InvoiceFrequency.Yearly, sut.InvoiceFrequency);
+            Assert.Same(existing, Assert.Single(sut.InvoiceDates));
+            Assert.Equal(oldDate, existing.Date);
+        }
+
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly)]
+        [InlineData(InvoiceFrequency.HalfYearly)]
+        [InlineData(InvoiceFrequency.Quarterly)]
+        [InlineData(null)]
+        public void UpdateInvoiceSchedule_Empty_Dates_Accepted(InvoiceFrequency? frequency)
+        {
+            var sut = new ItContract();
+
+            Assert.True(sut.UpdateInvoiceSchedule(frequency, Array.Empty<ItContractInvoiceDate>()).IsNone);
+
+            Assert.Equal(frequency, sut.InvoiceFrequency);
+            Assert.Empty(sut.InvoiceDates);
+        }
+
+        [Fact]
+        public void UpdateInvoiceSchedule_Duplicate_Periods_Rejected()
+        {
+            var sut = new ItContract();
+            var dates = new[]
+            {
+                new ItContractInvoiceDate { Period = 1, Date = new DateTime(2026, 1, 1) },
+                new ItContractInvoiceDate { Period = 1, Date = new DateTime(2027, 2, 1) }
+            };
+
+            Assert.Equal(OperationFailure.BadInput, sut.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, dates).Value.FailureType);
+            Assert.Null(sut.InvoiceFrequency);
+            Assert.Empty(sut.InvoiceDates);
+        }
+
+        [Fact]
+        public void UpdateInvoiceSchedule_Missing_Date_Rejected()
+        {
+            var sut = new ItContract();
+
+            Assert.Equal(OperationFailure.BadInput, sut.UpdateInvoiceSchedule(InvoiceFrequency.Yearly,
+                new[] { new ItContractInvoiceDate { Period = 1 } }).Value.FailureType);
+        }
+
+        [Fact]
+        public void UpdateInvoiceSchedule_Replaces_And_Clears_Dates_From_Different_Years()
+        {
+            var sut = new ItContract();
+            Assert.True(sut.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, new[]
+            {
+                new ItContractInvoiceDate { Period = 1, Date = new DateTime(2026, 3, 31) },
+                new ItContractInvoiceDate { Period = 3, Date = new DateTime(2027, 9, 30) }
+            }).IsNone);
+            var retained = sut.InvoiceDates.Single(x => x.Period == 1);
+            var newDate = new DateTime(2028, 2, 29);
+
+            Assert.True(sut.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+                new[] { new ItContractInvoiceDate { Period = 1, Date = newDate } }).IsNone);
+            Assert.Same(retained, Assert.Single(sut.InvoiceDates));
+            Assert.Equal(newDate, retained.Date);
+            Assert.True(sut.UpdateInvoiceSchedule(null, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            Assert.Null(sut.InvoiceFrequency);
+            Assert.Empty(sut.InvoiceDates);
+        }
+
+        [Theory]
         [InlineData(true)]
         [InlineData(false)]
         public void SetSupplierOrganization_Sets_Internal_If_Same_As_Organization(bool isSame)
@@ -28,7 +148,7 @@ namespace Tests.Unit.Core.Model
             var sut = new ItContract()
             {
                 Organization = organization,
-                Supplier =  supplierOrganization
+                Supplier = supplierOrganization
             };
 
             sut.SetSupplierOrganization(supplierOrganization);
@@ -897,7 +1017,7 @@ namespace Tests.Unit.Core.Model
         {
             var now = DateTime.Now;
             var validParent = new ItContract();
-            var sut = new ItContract { ExpirationDate = now.AddDays(-1), RequireValidParent = true, Parent = validParent};
+            var sut = new ItContract { ExpirationDate = now.AddDays(-1), RequireValidParent = true, Parent = validParent };
 
             var result = sut.Validate(now);
 

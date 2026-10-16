@@ -71,6 +71,46 @@ namespace Tests.Unit.Core.DomainServices.Contract
             Assert.Equal(itContract.Name, itContractOverviewReadModel.Name);
         }
 
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly, 1, 12, "Årligt: 31-12-2026")]
+        [InlineData(InvoiceFrequency.HalfYearly, 2, 12, "2. halvår: 31-12-2026")]
+        [InlineData(InvoiceFrequency.Quarterly, 4, 12, "4. kvartal: 31-12-2026")]
+        public void Apply_InvoiceSchedule_Maps_Frequency_And_Danish_Label(InvoiceFrequency frequency, int period, int month, string expected)
+        {
+            var source = new ItContract();
+            Assert.True(source.UpdateInvoiceSchedule(frequency,
+                new[] { new ItContractInvoiceDate { Period = period, Date = new DateTime(2026, month, 31) } }).IsNone);
+            var destination = new ItContractOverviewReadModel();
+
+            _sut.Apply(source, destination);
+
+            Assert.Equal(frequency, destination.InvoiceFrequency);
+            Assert.Equal(expected, destination.InvoiceDates);
+        }
+
+        [Fact]
+        public void Apply_InvoiceDates_Orders_Partial_Dates_And_Clears_Stale_Text()
+        {
+            var source = new ItContract();
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, new[]
+            {
+                new ItContractInvoiceDate { Period = 3, Date = new DateTime(2027, 9, 30) },
+                new ItContractInvoiceDate { Period = 1, Date = new DateTime(2026, 3, 31) }
+            }).IsNone);
+            var destination = new ItContractOverviewReadModel();
+
+            _sut.Apply(source, destination);
+
+            Assert.Equal("1. kvartal: 31-03-2026; 3. kvartal: 30-09-2027", destination.InvoiceDates);
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            _sut.Apply(source, destination);
+            Assert.Equal("", destination.InvoiceDates);
+            Assert.Equal(InvoiceFrequency.Quarterly, destination.InvoiceFrequency);
+            Assert.True(source.UpdateInvoiceSchedule(null, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            _sut.Apply(source, destination);
+            Assert.Null(destination.InvoiceFrequency);
+        }
+
         [Fact]
         public void Apply_Can_Map_IsActive_To_False_When_Invalid_Due_To_Date_Period()
         {
@@ -731,7 +771,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
         public void Apply_Can_Map_DataProcessingRegistrations()
         {
             //Arrange
-            var dataProcessingRegistrations = Many<string>().Select(name => new DataProcessingRegistration { Id = A<int>(), Name = name, Uuid = A<Guid>()}).ToList();
+            var dataProcessingRegistrations = Many<string>().Select(name => new DataProcessingRegistration { Id = A<int>(), Name = name, Uuid = A<Guid>() }).ToList();
 
             //Set all but the first to concluded
             var expectedAgreements = dataProcessingRegistrations.Skip(1).ToList();

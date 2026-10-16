@@ -71,6 +71,9 @@ namespace Core.DomainModel.ItContract.Read
         public int? PaymentModelId { get; set; }     // For filtering
         public Guid? PaymentModelUuid { get; set; }     // For filtering
         public string PaymentModelName { get; set; } // For sorting
+        public InvoiceFrequency? InvoiceFrequency { get; set; }
+        public string InvoiceDates { get; set; } = "";
+
         public int? PaymentFrequencyId { get; set; }     // For filtering
         public Guid? PaymentFrequencyUuid { get; set; }     // For filtering
         public string PaymentFrequencyName { get; set; } // For sorting
