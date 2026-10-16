@@ -47,6 +47,7 @@ Function Load-Environment-Secrets-From-Aws([String] $envName, [bool] $loadTcHang
     $Env:StsOrganisationPort = $parameters["StsOrganisationPort"]
     $Env:StsOrganisationSystemPort = $parameters["StsOrganisationSystemPort"]
     $Env:StsOrganisationCertificateThumbprint = $parameters["StsOrganisationCertificateThumbprint"]
+    $Env:BeskedfordelerCertificateSha256 = $parameters["BeskedfordelerCertificateSha256"]
     $Env:PubSubBaseUrl = $parameters["PubSubBaseUrl"]
     $Env:SmtpDeliveryMethod = $parameters["SmtpDeliveryMethod"]
 

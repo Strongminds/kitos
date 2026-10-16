@@ -15,6 +15,7 @@ namespace Presentation.Web.Infrastructure.Attributes
     {
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
+            if (actionContext.ActionDescriptor.EndpointMetadata.OfType<IntegrationApiAttribute>().Any()) return;
             var authContext = actionContext.HttpContext.RequestServices
                 .GetRequiredService<IOrganizationalUserContext>();
 

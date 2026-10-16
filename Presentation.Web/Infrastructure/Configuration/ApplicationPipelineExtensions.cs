@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Presentation.Web.Infrastructure.Middleware;
+using Presentation.Web.Infrastructure.Attributes;
 using Serilog;
 using System;
 using System.Threading;
@@ -74,15 +75,25 @@ namespace Presentation.Web.Infrastructure.Configuration
             app.UseStaticFiles();
             app.UseMiddleware<NormalizeODataQueryStringMiddleware>();
             app.UseRouting();
+            app.UseKitosApiSecurity();
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseKitosApiSecurity(this IApplicationBuilder app)
+        {
             app.UseAuthentication();
             app.UseAuthorization();
 
             // Custom middleware (after auth so IAuthenticationContext is resolved with populated HttpContext.User)
             app.UseMiddleware<CorrelationIdMiddleware>();
-            app.UseMiddleware<ApiRequestsLoggingMiddleware>();
-            app.UseMiddleware<DenyUsersWithoutApiAccessMiddleware>();
-            app.UseMiddleware<DenyModificationsThroughApiMiddleware>();
-            app.UseMiddleware<DenyTooLargeQueriesMiddleware>();
+            app.UseWhen(context => context.GetEndpoint()?.Metadata.GetMetadata<IntegrationApiAttribute>() == null, userApi =>
+            {
+                userApi.UseMiddleware<ApiRequestsLoggingMiddleware>();
+                userApi.UseMiddleware<DenyUsersWithoutApiAccessMiddleware>();
+                userApi.UseMiddleware<DenyModificationsThroughApiMiddleware>();
+                userApi.UseMiddleware<DenyTooLargeQueriesMiddleware>();
+            });
 
             return app;
         }
