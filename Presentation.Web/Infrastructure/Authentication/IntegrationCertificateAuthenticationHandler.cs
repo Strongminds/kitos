@@ -1,6 +1,5 @@
 using System;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -48,22 +47,22 @@ public sealed class IntegrationCertificateAuthenticationHandler(
             return AuthenticateResult.NoResult();
         }
 
-        var fingerprint = certificate.GetCertHashString(HashAlgorithmName.SHA256);
+        var thumbprint = certificate.Thumbprint;
         Logger.LogDebug(
-            "Integration client certificate received. CertificateSha256={CertificateSha256}, NotBeforeUtc={NotBeforeUtc}, NotAfterUtc={NotAfterUtc}, ConnectionId={ConnectionId}, TraceId={TraceId}.",
-            fingerprint, certificate.NotBefore.ToUniversalTime(), certificate.NotAfter.ToUniversalTime(), Context.Connection.Id, Context.TraceIdentifier);
+            "Integration client certificate received. CertificateThumbprint={CertificateThumbprint}, NotBeforeUtc={NotBeforeUtc}, NotAfterUtc={NotAfterUtc}, ConnectionId={ConnectionId}, TraceId={TraceId}.",
+            thumbprint, certificate.NotBefore.ToUniversalTime(), certificate.NotAfter.ToUniversalTime(), Context.Connection.Id, Context.TraceIdentifier);
         if (!Options.ValidateCertificate(certificate))
         {
             Logger.LogWarning(
-                "Integration client certificate authentication failed. CertificateSha256={CertificateSha256}, ConnectionId={ConnectionId}, TraceId={TraceId}.",
-                fingerprint, Context.Connection.Id, Context.TraceIdentifier);
+                "Integration client certificate authentication failed. CertificateThumbprint={CertificateThumbprint}, ConnectionId={ConnectionId}, TraceId={TraceId}.",
+                thumbprint, Context.Connection.Id, Context.TraceIdentifier);
             return AuthenticateResult.Fail("Invalid integration certificate.");
         }
 
         var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, certificate.Thumbprint)], SchemeName);
         Logger.LogInformation(
-            "Integration client certificate authentication succeeded. CertificateSha256={CertificateSha256}, ConnectionId={ConnectionId}, TraceId={TraceId}.",
-            fingerprint, Context.Connection.Id, Context.TraceIdentifier);
+            "Integration client certificate authentication succeeded. CertificateThumbprint={CertificateThumbprint}, ConnectionId={ConnectionId}, TraceId={TraceId}.",
+            thumbprint, Context.Connection.Id, Context.TraceIdentifier);
         return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName));
     }
 

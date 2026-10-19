@@ -223,20 +223,20 @@ public class BeskedfordelerTest
     [InlineData("  ,  ", 0)]
     [InlineData("ABC", 1)]
     [InlineData(" ABC , DEF ", 2)]
-    public void Certificate_AppSetting_ParsesFingerprintList(string? value, int expectedCount)
+    public void Certificate_AppSetting_ParsesThumbprintList(string? value, int expectedCount)
     {
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().AddInMemoryCollection(
-            new Dictionary<string, string?> { ["AppSettings:BeskedfordelerCertificateSha256"] = value }).Build();
-        var fingerprints = BeskedfordelerClientCertificateValidator.GetAllowedFingerprints(configuration);
-        Assert.Equal(expectedCount, fingerprints.Length);
-        if (expectedCount > 0) Assert.Equal("ABC", fingerprints[0]);
-        if (expectedCount > 1) Assert.Equal("DEF", fingerprints[1]);
+            new Dictionary<string, string?> { ["AppSettings:BeskedfordelerCertificateThumbprint"] = value }).Build();
+        var thumbprints = BeskedfordelerClientCertificateValidator.GetAllowedThumbprints(configuration);
+        Assert.Equal(expectedCount, thumbprints.Length);
+        if (expectedCount > 0) Assert.Equal("ABC", thumbprints[0]);
+        if (expectedCount > 1) Assert.Equal("DEF", thumbprints[1]);
     }
 
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Certificate_UntrustedOrExpired_RejectsEvenAllowlistedFingerprint(bool expired)
+    public void Certificate_UntrustedOrExpired_RejectsEvenAllowlistedThumbprint(bool expired)
     {
         using var key = System.Security.Cryptography.RSA.Create(2048);
         var request = new System.Security.Cryptography.X509Certificates.CertificateRequest("CN=callback-test", key,
@@ -244,11 +244,45 @@ public class BeskedfordelerTest
         using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-2),
             DateTimeOffset.UtcNow.AddDays(expired ? -1 : 1));
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().AddInMemoryCollection(
-            new Dictionary<string, string?> { ["AppSettings:BeskedfordelerCertificateSha256"] = certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256) }).Build();
-        var validator = new BeskedfordelerClientCertificateValidator(configuration,
-            NullLogger<BeskedfordelerClientCertificateValidator>.Instance);
+            new Dictionary<string, string?>
+            {
+                ["AppSettings:BeskedfordelerCertificateThumbprint"] =
+                    $" {new string('0', 40)}, {certificate.Thumbprint.ToLowerInvariant()} "
+            }).Build();
+        var logger = new Mock<ILogger<BeskedfordelerClientCertificateValidator>>();
+        var validator = new BeskedfordelerClientCertificateValidator(configuration, logger.Object);
         Assert.False(validator.IsValid(certificate));
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("certificate chain rejected")),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         Assert.False(validator.IsValid(null));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Certificate_NotAllowlisted_RejectsBeforeChainValidation(bool sha256)
+    {
+        using var key = System.Security.Cryptography.RSA.Create(2048);
+        var request = new System.Security.Cryptography.X509Certificates.CertificateRequest("CN=callback-test", key,
+            System.Security.Cryptography.HashAlgorithmName.SHA256, System.Security.Cryptography.RSASignaturePadding.Pkcs1);
+        using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddDays(1));
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                ["AppSettings:BeskedfordelerCertificateThumbprint"] = sha256
+                    ? certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256)
+                    : new string('0', 40)
+            }).Build();
+        var logger = new Mock<ILogger<BeskedfordelerClientCertificateValidator>>();
+        var validator = new BeskedfordelerClientCertificateValidator(configuration, logger.Object);
+
+        Assert.False(validator.IsValid(certificate));
+
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("thumbprint is not allowlisted")),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+        logger.VerifyNoOtherCalls();
     }
 
     [Fact]

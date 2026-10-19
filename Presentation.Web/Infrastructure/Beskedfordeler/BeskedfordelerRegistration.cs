@@ -16,9 +16,9 @@ public static class BeskedfordelerRegistration
 {
     public static void AddBeskedfordeler(this WebApplicationBuilder builder)
     {
-        var fingerprints = BeskedfordelerClientCertificateValidator.GetAllowedFingerprints(builder.Configuration);
-        if (fingerprints.Length == 0 || fingerprints.Any(value => value.Length != 64 || !value.All(Uri.IsHexDigit)))
-            throw new InvalidOperationException("Configure Beskedfordeler client certificate SHA-256 fingerprints.");
+        var thumbprints = BeskedfordelerClientCertificateValidator.GetAllowedThumbprints(builder.Configuration);
+        if (thumbprints.Length == 0 || thumbprints.Any(value => value.Length != 40 || !value.All(Uri.IsHexDigit)))
+            throw new InvalidOperationException("Configure Beskedfordeler client certificate thumbprints (40 hexadecimal characters each).");
         var directory = builder.Configuration["Beskedfordeler:SchemaDirectory"];
         builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas(directory)));
         builder.Services.AddScoped<BeskedfordelerService>();
