@@ -23,9 +23,9 @@ entity mappings against the PostgreSQL schema and current EF Core snapshot.
    - warning suppressions need a justification: `#pragma warning disable` with a `// reason` on the same line or the line above; `[SuppressMessage(...)]` (also multi-line) with a non-empty `Justification` (FAIL)
    - added/deleted EF Core migrations come with their `.Designer.cs` and an updated `KitosContextModelSnapshot.cs` (FAIL)
    - added/changed/deleted SQL scripts → verify PostgreSQL syntax, schema compatibility and data preservation; do not add SQL Server variants (WARN)
-   - business logic (`Core.*`, `Mcp.Core`, `Presentation.Web/Controllers`, `PubSub.Core.*`, `PubSub.Application.*`) changed or deleted without test changes (WARN)
+   - business logic (`Core.*`, `Mcp.Core`, `Mcp.ReadBoundary.Core`, `Mcp.Worker`, `Mcp.Broker`, `Presentation.Web/Controllers`, `PubSub.Core.*`, `PubSub.Application.*`) changed or deleted without test changes (WARN)
    - analyzer rules relaxed (WARN – needs reviewer approval). The effective severities in every changed, added or deleted `.editorconfig`/`.globalconfig` are compared with the merge base: lowered or removed enforced rules, demoted naming/category-wide severities and changed naming definitions are reported; removing baseline entries or promoting rules is not. Changes to warning/analyzer MSBuild properties (`NoWarn`, `TreatWarningsAsErrors`, `AnalysisLevel`, …), added/deleted `Directory.Build.*` files and changes to the gate itself are reported as well.
-4. **Unit tests** – `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web`, `Tests.Unit.Mcp` and `PubSub.Test`.
+4. **Unit tests** – `Tests.Unit.Core.ApplicationServices`, `Tests.Unit.Presentation.Web`, `Tests.Unit.Mcp`, `Tests.Unit.Mcp.ReadBoundary`, `Tests.Unit.Mcp.Worker`, `Tests.Unit.Mcp.Broker`, `Tests.Unit.Mcp.LocalClient` and `PubSub.Test`. The MCP suites include local HTTPS protocol integration checks with synthetic dependencies.
 
 The gate stops with an error if the merge base cannot be resolved (e.g. failed fetch), instead of silently checking only local changes.
 

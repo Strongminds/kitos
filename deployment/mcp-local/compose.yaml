@@ -1,0 +1,81 @@
+name: kitos-mcp-local
+services:
+  broker:
+    build:
+      context: ../..
+      dockerfile: deployment/mcp-local/Dockerfile
+      target: broker
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m,mode=1777
+    ports:
+      - "127.0.0.1:7443:7443"
+    networks: [private, upstream]
+    environment:
+      DOTNET_EnableDiagnostics: "0"
+      MCP_BROKER_PublicOrigin: https://localhost:7443
+      MCP_BROKER_ResourceIdentifier: ${MCP_RESOURCE_IDENTIFIER:-}
+      MCP_BROKER_ReadPort: "7446"
+      MCP_BROKER_WorkerOrigin: https://worker:7444
+      MCP_BROKER_KitosOrigin: ${KITOS_ORIGIN:?Set the authorized KITOS staging HTTPS origin}
+      MCP_BROKER_ClientId: ${MCP_CLIENT_ID:?Set the registered local OAuth client ID}
+      MCP_BROKER_RedirectUri: ${MCP_REDIRECT_URI:?Set the exact local HTTPS callback URI}
+      MCP_BROKER_EnableDynamicClientRegistration: ${MCP_ENABLE_DYNAMIC_CLIENT_REGISTRATION:-false}
+      MCP_BROKER_ServerCertificatePath: /run/secrets/broker-server.pfx
+      MCP_BROKER_WorkloadCertificatePath: /run/secrets/broker-workload.pfx
+      MCP_BROKER_SigningCertificatePath: /run/secrets/broker-signing.pfx
+      MCP_BROKER_EncryptionCertificatePath: /run/secrets/broker-encryption.pfx
+      MCP_BROKER_WorkerClientCertificateSha256: ${WORKER_CLIENT_SHA256:?Initialize the local certificates}
+      MCP_BROKER_WorkerServerCertificateSha256: ${WORKER_SERVER_SHA256:?Initialize the local certificates}
+    secrets:
+      - source: broker_server
+        target: broker-server.pfx
+      - source: broker_workload
+        target: broker-workload.pfx
+      - source: broker_signing
+        target: broker-signing.pfx
+      - source: broker_encryption
+        target: broker-encryption.pfx
+  worker:
+    build:
+      context: ../..
+      dockerfile: deployment/mcp-local/Dockerfile
+      target: worker
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m,mode=1777
+    networks: [private]
+    environment:
+      DOTNET_EnableDiagnostics: "0"
+      ASPNETCORE_URLS: https://+:7444
+      Kestrel__Certificates__Default__Path: /run/secrets/worker-server.pfx
+      Worker__BrokerOrigin: https://broker:7446
+      Worker__BrokerClientCertificateSha256: ${BROKER_WORKLOAD_SHA256:?Initialize the local certificates}
+      Worker__BrokerServerCertificateSha256: ${BROKER_SERVER_SHA256:?Initialize the local certificates}
+      Worker__ClientCertificatePath: /run/secrets/worker-client.pfx
+    secrets:
+      - source: worker_server
+        target: worker-server.pfx
+      - source: worker_client
+        target: worker-client.pfx
+networks:
+  private:
+    internal: true
+  upstream: {}
+secrets:
+  broker_server:
+    file: ${MCP_SECRET_ROOT:?Initialize the local certificates}/broker/server.pfx
+  broker_workload:
+    file: ${MCP_SECRET_ROOT}/broker/workload.pfx
+  broker_signing:
+    file: ${MCP_SECRET_ROOT}/broker/signing.pfx
+  broker_encryption:
+    file: ${MCP_SECRET_ROOT}/broker/encryption.pfx
+  worker_server:
+    file: ${MCP_SECRET_ROOT}/worker/server.pfx
+  worker_client:
+    file: ${MCP_SECRET_ROOT}/worker/client.pfx

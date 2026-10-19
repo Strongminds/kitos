@@ -43,6 +43,10 @@ Run unit tests:
 dotnet test Tests.Unit.Core.ApplicationServices
 dotnet test Tests.Unit.Presentation.Web
 dotnet test Tests.Unit.Mcp
+dotnet test Tests.Unit.Mcp.ReadBoundary
+dotnet test Tests.Unit.Mcp.Worker
+dotnet test Tests.Unit.Mcp.Broker
+dotnet test Tests.Unit.Mcp.LocalClient
 ```
 
 Run integration tests:

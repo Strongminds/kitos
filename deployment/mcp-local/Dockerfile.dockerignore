@@ -1,0 +1,20 @@
+# This Dockerfile's build context contains only the required source projects.
+**
+!Directory.Build.props
+!.editorconfig
+!Core.Abstractions/
+!Core.Abstractions/**
+!Mcp.Core/
+!Mcp.Core/**
+!Mcp.ReadBoundary.Core/
+!Mcp.ReadBoundary.Core/**
+!Mcp.Broker/
+!Mcp.Broker/**
+!Mcp.Worker/
+!Mcp.Worker/**
+**/bin
+**/obj
+**/*.pfx
+**/*.pem
+**/*.key
+**/.env
