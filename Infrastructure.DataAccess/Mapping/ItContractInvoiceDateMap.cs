@@ -10,7 +10,6 @@ namespace Infrastructure.DataAccess.Mapping
         {
             builder.ToTable("ItContractInvoiceDates");
             builder.HasKey(x => new { x.ItContractId, x.Period });
-            builder.Property(x => x.Date).HasColumnType("date");
             builder.HasOne(x => x.ItContract)
                 .WithMany(x => x.InvoiceDates)
                 .HasForeignKey(x => x.ItContractId)

@@ -1759,8 +1759,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("Period")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
+                    b.Property<int>("Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
 
                     b.HasKey("ItContractId", "Period");
 

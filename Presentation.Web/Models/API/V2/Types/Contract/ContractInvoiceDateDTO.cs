@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Web.Models.API.V2.Types.Contract
@@ -12,9 +11,15 @@ namespace Presentation.Web.Models.API.V2.Types.Contract
         public int Period { get; set; }
 
         /// <summary>
-        /// Populated invoice date within the selected calendar year, half or quarter.
-        /// Different periods may use different years. Only the date component is stored.
+        /// Invoice month (1-12). Must fall within the selected calendar year, half or quarter.
         /// </summary>
-        public DateTime Date { get; set; }
+        [Range(1, 12)]
+        public int Month { get; set; }
+
+        /// <summary>
+        /// Invoice day of month (1-31). Must be valid for the month (29 February is allowed).
+        /// </summary>
+        [Range(1, 31)]
+        public int Day { get; set; }
     }
 }

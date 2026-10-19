@@ -1,4 +1,3 @@
-﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -40,7 +39,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     ItContractId = table.Column<int>(type: "integer", nullable: false),
                     Period = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateTime>(type: "date", nullable: false)
+                    Month = table.Column<int>(type: "integer", nullable: false),
+                    Day = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

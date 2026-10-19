@@ -127,7 +127,7 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             var paymentModel = new ItContractPaymentModelModificationParameters
             {
                 InvoiceFrequency = ((InvoiceFrequency?)frequency).AsChangedValue(),
-                InvoiceDates = new[] { new ItContractInvoiceDate { Period = 1, Date = new DateTime(2028, 2, 29) } }
+                InvoiceDates = new[] { new ItContractInvoiceDate { Period = 1, Month = 2, Day = 29 } }
                     .AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
             };
             var (orgUuid, parameters, _, transaction) = SetupCreateScenarioPrerequisites(paymentModel: paymentModel);
@@ -136,7 +136,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             Assert.True(result.Ok);
             Assert.Equal(frequency, result.Value.InvoiceFrequency);
-            Assert.Equal(new DateTime(2028, 2, 29), Assert.Single(result.Value.InvoiceDates).Date);
+            var stored = Assert.Single(result.Value.InvoiceDates);
+            Assert.Equal((2, 29), (stored.Month, stored.Day));
             AssertTransactionCommitted(transaction);
         }
 
@@ -150,9 +151,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             InvoiceFrequency? frequency, bool preservesDates)
         {
             var (_, _, contract, transaction) = SetupCreateScenarioPrerequisites();
-            var originalDate = new DateTime(2026, 9, 30);
             Assert.True(contract.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
-                new[] { new ItContractInvoiceDate { Period = 3, Date = originalDate } }).IsNone);
+                new[] { new ItContractInvoiceDate { Period = 3, Month = 9, Day = 30 } }).IsNone);
             ExpectGetReturns(contract.Uuid, contract);
             ExpectAllowModifySuccess(contract);
             var paymentModel = new ItContractPaymentModelModificationParameters();
@@ -166,7 +166,10 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             Assert.True(result.Ok);
             Assert.Equal(supplyFrequency ? frequency : InvoiceFrequency.Quarterly, contract.InvoiceFrequency);
             if (preservesDates)
-                Assert.Equal(originalDate, Assert.Single(contract.InvoiceDates).Date);
+            {
+                var stored = Assert.Single(contract.InvoiceDates);
+                Assert.Equal((9, 30), (stored.Month, stored.Day));
+            }
             else
                 Assert.Empty(contract.InvoiceDates);
             AssertTransactionCommitted(transaction);
@@ -181,14 +184,13 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
         {
             var (_, _, contract, transaction) = SetupCreateScenarioPrerequisites();
             Assert.True(contract.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
-                new[] { new ItContractInvoiceDate { Period = 3, Date = new DateTime(2026, 9, 30) } }).IsNone);
+                new[] { new ItContractInvoiceDate { Period = 3, Month = 9, Day = 30 } }).IsNone);
             ExpectGetReturns(contract.Uuid, contract);
             ExpectAllowModifySuccess(contract);
-            var date = new DateTime(2027, month, 1);
             var paymentModel = new ItContractPaymentModelModificationParameters
             {
                 InvoiceFrequency = ((InvoiceFrequency?)frequency).AsChangedValue(),
-                InvoiceDates = new[] { new ItContractInvoiceDate { Period = period, Date = date } }
+                InvoiceDates = new[] { new ItContractInvoiceDate { Period = period, Month = month, Day = 1 } }
                     .AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
             };
 
@@ -196,7 +198,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
 
             Assert.True(result.Ok);
             Assert.Equal(frequency, contract.InvoiceFrequency);
-            Assert.Equal(date, Assert.Single(contract.InvoiceDates).Date);
+            var stored = Assert.Single(contract.InvoiceDates);
+            Assert.Equal((month, 1), (stored.Month, stored.Day));
             AssertTransactionCommitted(transaction);
         }
 
@@ -207,15 +210,14 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
         public void Update_Invalid_Or_Forbidden_InvoiceSchedule_Does_Not_Save_Or_Publish(bool authorized, bool notFound)
         {
             var (_, _, contract, transaction) = SetupCreateScenarioPrerequisites();
-            var originalDate = new DateTime(2026, 9, 30);
             Assert.True(contract.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
-                new[] { new ItContractInvoiceDate { Period = 3, Date = originalDate } }).IsNone);
+                new[] { new ItContractInvoiceDate { Period = 3, Month = 9, Day = 30 } }).IsNone);
             ExpectGetReturns(contract.Uuid, notFound ? new OperationError(OperationFailure.NotFound) : contract);
             _authContext.Setup(x => x.AllowModify(contract)).Returns(authorized);
             var paymentModel = new ItContractPaymentModelModificationParameters
             {
                 InvoiceFrequency = ((InvoiceFrequency?)InvoiceFrequency.HalfYearly).AsChangedValue(),
-                InvoiceDates = new[] { new ItContractInvoiceDate { Period = 2, Date = new DateTime(2026, 1, 1) } }
+                InvoiceDates = new[] { new ItContractInvoiceDate { Period = 2, Month = 1, Day = 1 } }
                     .AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
             };
 
@@ -224,7 +226,8 @@ namespace Tests.Unit.Core.ApplicationServices.Contract
             Assert.True(result.Failed);
             Assert.Equal(notFound ? OperationFailure.NotFound : authorized ? OperationFailure.BadInput : OperationFailure.Forbidden, result.Error.FailureType);
             Assert.Equal(InvoiceFrequency.Quarterly, contract.InvoiceFrequency);
-            Assert.Equal(originalDate, Assert.Single(contract.InvoiceDates).Date);
+            var stored = Assert.Single(contract.InvoiceDates);
+            Assert.Equal((9, 30), (stored.Month, stored.Day));
             AssertTransactionNotCommitted(transaction);
             _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
             _domainEventsMock.Verify(x => x.Raise(It.IsAny<EntityUpdatedEvent<ItContract>>()), Times.Never);

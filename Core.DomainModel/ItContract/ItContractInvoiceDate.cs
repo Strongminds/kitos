@@ -1,5 +1,3 @@
-using System;
-
 namespace Core.DomainModel.ItContract
 {
     public class ItContractInvoiceDate
@@ -7,6 +5,7 @@ namespace Core.DomainModel.ItContract
         public int ItContractId { get; set; }
         public virtual ItContract ItContract { get; set; }
         public int Period { get; set; }
-        public DateTime Date { get; set; }
+        public int Month { get; set; }
+        public int Day { get; set; }
     }
 }

@@ -127,7 +127,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             {
                 InvoiceFrequency = (InvoiceFrequencyChoice?)contract.InvoiceFrequency,
                 InvoiceDates = contract.InvoiceDates.OrderBy(x => x.Period)
-                    .Select(x => new ContractInvoiceDateDTO { Period = x.Period, Date = x.Date }).ToList(),
+                    .Select(x => new ContractInvoiceDateDTO { Period = x.Period, Month = x.Month, Day = x.Day }).ToList(),
                 OperationsRemunerationStartedAt = contract.OperationRemunerationBegun,
                 PaymentModel = contract.PaymentModel?.MapIdentityNamePairDTO(),
                 PaymentFrequency = contract.PaymentFreqency?.MapIdentityNamePairDTO(),

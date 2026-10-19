@@ -58,13 +58,14 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             var contract = new ItContract();
             Assert.True(contract.UpdateInvoiceSchedule(frequency,
-                new[] { new ItContractInvoiceDate { Period = 1, Date = new DateTime(2028, 2, 29) } }).IsNone);
+                new[] { new ItContractInvoiceDate { Period = 1, Month = 2, Day = 29 } }).IsNone);
 
             var dto = _sut.MapContractDTO(contract).PaymentModel;
 
             Assert.Equal((InvoiceFrequencyChoice)frequency, dto.InvoiceFrequency);
             Assert.Equal(1, Assert.Single(dto.InvoiceDates).Period);
-            Assert.Equal(new DateTime(2028, 2, 29), Assert.Single(dto.InvoiceDates).Date);
+            var mapped = Assert.Single(dto.InvoiceDates);
+            Assert.Equal((2, 29), (mapped.Month, mapped.Day));
         }
 
         [Fact]

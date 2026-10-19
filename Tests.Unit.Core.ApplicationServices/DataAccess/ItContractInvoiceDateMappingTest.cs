@@ -16,14 +16,15 @@ namespace Tests.Unit.Core.DataAccess
     public class ItContractInvoiceDateMappingTest : WithAutoFixture
     {
         [Fact]
-        public void InvoiceDates_PostgreSql_Model_Uses_Date_And_Owned_Unique_Periods()
+        public void InvoiceDates_PostgreSql_Model_Uses_Day_Month_And_Owned_Unique_Periods()
         {
             using var context = CreateContext();
             var entity = context.Model.FindEntityType(typeof(ItContractInvoiceDate));
             Assert.NotNull(entity);
             Assert.Equal(new[] { nameof(ItContractInvoiceDate.ItContractId), nameof(ItContractInvoiceDate.Period) },
                 entity.FindPrimaryKey()!.Properties.Select(x => x.Name));
-            Assert.Equal("date", entity.FindProperty(nameof(ItContractInvoiceDate.Date))!.GetColumnType());
+            Assert.Equal("integer", entity.FindProperty(nameof(ItContractInvoiceDate.Month))!.GetColumnType());
+            Assert.Equal("integer", entity.FindProperty(nameof(ItContractInvoiceDate.Day))!.GetColumnType());
             var foreignKey = Assert.Single(entity.GetForeignKeys());
             Assert.Equal(typeof(ItContract), foreignKey.PrincipalEntityType.ClrType);
             Assert.Equal(DeleteBehavior.Cascade, foreignKey.DeleteBehavior);
@@ -46,14 +47,16 @@ namespace Tests.Unit.Core.DataAccess
             var table = Assert.Single(migration.UpOperations.OfType<CreateTableOperation>());
             Assert.Equal("ItContractInvoiceDates", table.Name);
             Assert.Equal(new[] { "ItContractId", "Period" }, table.PrimaryKey!.Columns);
-            Assert.Equal("date", Assert.Single(table.Columns, x => x.Name == "Date").ColumnType);
+            Assert.Equal("integer", Assert.Single(table.Columns, x => x.Name == "Month").ColumnType);
+            Assert.Equal("integer", Assert.Single(table.Columns, x => x.Name == "Day").ColumnType);
             Assert.Equal(ReferentialAction.Cascade, Assert.Single(table.ForeignKeys).OnDelete);
             Assert.Equal(4, migration.UpOperations.Count);
             using var context = CreateContext();
             var commands = context.GetService<IMigrationsSqlGenerator>().Generate(migration.UpOperations);
             var sql = string.Join(Environment.NewLine, commands.Select(x => x.CommandText));
             Assert.Contains("CREATE TABLE dbo.\"ItContractInvoiceDates\"", sql);
-            Assert.Contains("\"Date\" date NOT NULL", sql);
+            Assert.Contains("\"Month\" integer NOT NULL", sql);
+            Assert.Contains("\"Day\" integer NOT NULL", sql);
             Assert.Contains("ON DELETE CASCADE", sql);
             Assert.DoesNotContain("ALTER COLUMN", sql);
         }

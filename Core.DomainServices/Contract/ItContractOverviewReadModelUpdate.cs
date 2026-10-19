@@ -127,7 +127,7 @@ namespace Core.DomainServices.Contract
             destination.PaymentFrequencyName = source.PaymentFreqency?.Name;
             destination.InvoiceFrequency = source.InvoiceFrequency;
             destination.InvoiceDates = string.Join("; ", source.InvoiceDates.OrderBy(x => x.Period).Select(x =>
-                $"{GetInvoicePeriodLabel(source.InvoiceFrequency, x.Period)}: {x.Date.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)}"));
+                $"{GetInvoicePeriodLabel(source.InvoiceFrequency, x.Period)}: {x.Day:00}-{x.Month:00}"));
 
             //Payment organization units
             destination.ExternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.ExternEconomyStreams);

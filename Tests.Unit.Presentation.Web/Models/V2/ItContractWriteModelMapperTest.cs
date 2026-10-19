@@ -67,11 +67,10 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             foreach (var frequency in Enum.GetValues<InvoiceFrequencyChoice>())
             {
-                var date = new DateTime(2028, 2, 29);
                 var input = new ContractPaymentModelDataWriteRequestDTO
                 {
                     InvoiceFrequency = frequency,
-                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Date = date } }
+                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Month = 2, Day = 29 } }
                 };
 
                 var output = MapInvoicePaymentModel(method, input);
@@ -79,7 +78,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal((InvoiceFrequency)frequency, output.InvoiceFrequency.NewValue);
                 var invoiceDate = Assert.Single(output.InvoiceDates.NewValue);
                 Assert.Equal(1, invoiceDate.Period);
-                Assert.Equal(date, invoiceDate.Date);
+                Assert.Equal((2, 29), (invoiceDate.Month, invoiceDate.Day));
             }
         }
 
