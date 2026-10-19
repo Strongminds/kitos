@@ -249,12 +249,8 @@ public class BeskedfordelerTest
                 ["AppSettings:BeskedfordelerCertificateThumbprint"] =
                     $" {new string('0', 40)}, {certificate.Thumbprint.ToLowerInvariant()} "
             }).Build();
-        var logger = new Mock<ILogger<BeskedfordelerClientCertificateValidator>>();
-        var validator = new BeskedfordelerClientCertificateValidator(configuration, logger.Object);
+        var validator = new BeskedfordelerClientCertificateValidator(configuration);
         Assert.False(validator.IsValid(certificate));
-        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("certificate chain rejected")),
-            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         Assert.False(validator.IsValid(null));
     }
 
@@ -274,15 +270,9 @@ public class BeskedfordelerTest
                     ? certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256)
                     : new string('0', 40)
             }).Build();
-        var logger = new Mock<ILogger<BeskedfordelerClientCertificateValidator>>();
-        var validator = new BeskedfordelerClientCertificateValidator(configuration, logger.Object);
+        var validator = new BeskedfordelerClientCertificateValidator(configuration);
 
         Assert.False(validator.IsValid(certificate));
-
-        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("thumbprint is not allowlisted")),
-            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
-        logger.VerifyNoOtherCalls();
     }
 
     [Fact]
