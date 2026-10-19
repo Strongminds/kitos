@@ -55,8 +55,11 @@ public static class Program
                 new CreateChannelOptions(publisherConfirmationsEnabled: true,
                     publisherConfirmationTrackingEnabled: true), timeout.Token);
             Console.WriteLine($"Publishing message {messageId:D} to {host}...");
-            var status = await BeskedfordelerSender.Publish(channel, token,
+            var response = await BeskedfordelerSender.Publish(channel, token,
                 message.ToString(SaveOptions.DisableFormatting), timeout.Token);
+            Console.WriteLine("KOMBIT response:");
+            Console.WriteLine(response);
+            var status = TestMessage.ReadStatus(response);
             Console.WriteLine($"KOMBIT status: {status}. Message UUID: {messageId:D}.");
             if (status != 20)
             {

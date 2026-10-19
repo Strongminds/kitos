@@ -27,7 +27,7 @@ public static class BeskedfordelerSender
             }
         };
 
-    public static async Task<int> Publish(IChannel channel, string token, string message,
+    public static async Task<string> Publish(IChannel channel, string token, string message,
         CancellationToken cancellationToken)
     {
         var correlationId = Guid.NewGuid().ToString("D");
@@ -55,7 +55,7 @@ public static class BeskedfordelerSender
             };
             await channel.BasicPublishAsync(Exchange, "", mandatory: true, properties,
                 Encoding.UTF8.GetBytes(message), cancellationToken);
-            return TestMessage.ReadStatus(await response.Task.WaitAsync(cancellationToken));
+            return await response.Task.WaitAsync(cancellationToken);
         }
         finally
         {
