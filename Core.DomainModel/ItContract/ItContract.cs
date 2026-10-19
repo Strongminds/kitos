@@ -504,7 +504,19 @@ namespace Core.DomainModel.ItContract
         public InvoiceFrequency? InvoiceFrequency { get; private set; }
         public virtual ICollection<ItContractInvoiceDate> InvoiceDates { get; set; }
 
-        private const int LeapYear = 2024; // allows 29 February
+        private static bool IsValidInvoiceDate(ItContractInvoiceDate date)
+        {
+            if (date == null || date.Month < 1 || date.Month > 12 || date.Day < 1)
+                return false;
+
+            var maxDay = date.Month switch
+            {
+                2 => 29,
+                4 or 6 or 9 or 11 => 30,
+                _ => 31
+            };
+            return date.Day <= maxDay;
+        }
 
         public Maybe<OperationError> UpdateInvoiceSchedule(InvoiceFrequency? frequency, IEnumerable<ItContractInvoiceDate> dates)
         {
@@ -522,8 +534,7 @@ namespace Core.DomainModel.ItContract
                 global::Core.DomainModel.ItContract.InvoiceFrequency.Quarterly => 4,
                 _ => 0
             };
-            if (newDates.Any(x => x == null || x.Period < 1 || x.Period > periods || x.Month < 1 || x.Month > 12 ||
-                                              x.Day < 1 || x.Day > DateTime.DaysInMonth(LeapYear, x.Month) ||
+            if (newDates.Any(x => !IsValidInvoiceDate(x) || x.Period < 1 || x.Period > periods ||
                                               (x.Month - 1) / (12 / periods) + 1 != x.Period))
                 return new OperationError("Invoice dates must be valid day-month values within their calendar period", OperationFailure.BadInput);
 
