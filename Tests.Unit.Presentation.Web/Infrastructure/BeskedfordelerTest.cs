@@ -192,6 +192,71 @@ public class BeskedfordelerTest
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
+    public async Task Receive_EnqueueOutcome_LogsTraceAndStatusWithoutPayloadOrExceptionDetails(bool fails)
+    {
+        const string sensitiveDetail = "private-payload-or-credential";
+        const string traceId = "callback-test-trace";
+        var client = new Mock<IBackgroundJobClient>();
+        client.Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
+            .Returns(() => fails ? throw new InvalidOperationException(sensitiveDetail) : "job-123");
+        var logger = new Mock<ILogger<BeskedfordelerService>>();
+        var service = new BeskedfordelerService(Reader(), client.Object, logger.Object);
+        var xml = Input();
+        xml.Descendants(BeskedfordelerResponse.Envelope + "Base64").Single().Value =
+            Convert.ToBase64String(Encoding.UTF8.GetBytes(sensitiveDetail));
+        using var body = new MemoryStream(Encoding.UTF8.GetBytes(xml.ToString()));
+
+        var status = await service.Receive(body, CancellationToken.None, traceId);
+
+        Assert.Equal(fails ? BeskedfordelerStatus.Unavailable : BeskedfordelerStatus.Accepted, status);
+        var logs = logger.Invocations.Where(x => x.Method.Name == nameof(ILogger.Log)).ToArray();
+        Assert.NotEmpty(logs);
+        Assert.All(logs, entry =>
+        {
+            Assert.Equal(LogLevel.Warning, entry.Arguments[0]);
+            Assert.Null(entry.Arguments[3]);
+            var text = entry.Arguments[2].ToString()!;
+            Assert.Contains(traceId, text);
+            Assert.DoesNotContain(sensitiveDetail, text);
+            Assert.DoesNotContain(Convert.ToBase64String(Encoding.UTF8.GetBytes(sensitiveDetail)), text);
+            Assert.DoesNotContain("<", text);
+        });
+        var output = string.Join("\n", logs.Select(x => x.Arguments[2].ToString()));
+        Assert.Contains(fails ? "InvalidOperationException" : "job-123", output);
+        Assert.Contains(fails ? "StatusKode 53" : "StatusKode 20", output);
+    }
+
+    [Fact]
+    public async Task Receive_UnsupportedContentType_LogsRejectionWithoutReadingBody()
+    {
+        var client = new Mock<IBackgroundJobClient>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<BeskedfordelerV2Controller>>();
+        var context = new DefaultHttpContext { TraceIdentifier = "rejected-callback" };
+        context.Request.ContentType = "private-content-type";
+        var controller = new BeskedfordelerV2Controller(
+            new BeskedfordelerService(Reader(), client.Object, NullLogger<BeskedfordelerService>.Instance),
+            logger.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = context }
+        };
+
+        var response = Assert.IsType<ContentResult>(await controller.Receive());
+
+        Assert.Contains(">40</", response.Content);
+        client.VerifyNoOtherCalls();
+        var logs = logger.Invocations.Where(x => x.Method.Name == nameof(ILogger.Log)).ToArray();
+        Assert.All(logs, entry =>
+        {
+            Assert.Equal(LogLevel.Warning, entry.Arguments[0]);
+            Assert.Contains(context.TraceIdentifier, entry.Arguments[2].ToString());
+            Assert.DoesNotContain("private-content-type", entry.Arguments[2].ToString());
+        });
+        Assert.Contains(logs, entry => entry.Arguments[2].ToString()!.Contains("callback rejected"));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
     public async Task Process_ReplayPreservesOneEvent_ConflictsFailVisibly(bool conflict)
     {
         var organizations = new Mock<IOrganizationRepository>();
@@ -304,7 +369,8 @@ public class BeskedfordelerTest
     }
     private static BeskedfordelerV2Controller Controller(HttpContext context,
         IBackgroundJobClient client) =>
-        new(new BeskedfordelerService(Reader(), client, NullLogger<BeskedfordelerService>.Instance))
+        new(new BeskedfordelerService(Reader(), client, NullLogger<BeskedfordelerService>.Instance),
+            NullLogger<BeskedfordelerV2Controller>.Instance)
         {
             ControllerContext = new ControllerContext { HttpContext = context }
         };

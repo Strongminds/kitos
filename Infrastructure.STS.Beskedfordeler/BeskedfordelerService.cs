@@ -17,19 +17,50 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
     private const string SupportedVersion = "1.0";
 
     // Async is required: ASP.NET Core disallows synchronous reads of the request body.
-    public async Task<BeskedfordelerStatus> Receive(Stream requestBody, CancellationToken cancellation)
+    public async Task<BeskedfordelerStatus> Receive(Stream requestBody, CancellationToken cancellation, string? traceId = null)
     {
+        traceId ??= Guid.NewGuid().ToString("D");
+        var stage = "read request body";
+        logger.LogWarning("Beskedfordeler receive service invoked. TraceId {TraceId}.", traceId);
         try
         {
+            logger.LogWarning("Beskedfordeler reading request body. TraceId {TraceId}, MaxBytes {MaxBytes}.",
+                traceId, BeskedfordelerXmlReader.MaxBodySize);
             var body = await ReadBoundedBody(requestBody, cancellation);
-            if (body == null) return BeskedfordelerStatus.CannotReceive;
+            if (body == null)
+            {
+                logger.LogWarning("Beskedfordeler request exceeds body limit. TraceId {TraceId}, StatusKode {StatusKode}.",
+                    traceId, (int)BeskedfordelerStatus.CannotReceive);
+                return BeskedfordelerStatus.CannotReceive;
+            }
+            logger.LogWarning("Beskedfordeler request body read. TraceId {TraceId}, BytesRead {BytesRead}.", traceId, body.Length);
 
-            var message = (await reader.Read(new MemoryStream(body), cancellation))
+            stage = "validate XML";
+            logger.LogWarning("Beskedfordeler validating XML against schemas. TraceId {TraceId}.", traceId);
+            using var stream = new MemoryStream(body);
+            var message = (await reader.Read(stream, cancellation))
                 .Element(BeskedfordelerResponse.Envelope + "Haendelsesbesked");
+            logger.LogWarning("Beskedfordeler XML schema validation completed. TraceId {TraceId}.", traceId);
 
-            if (!HasValidMessageId(message)) return BeskedfordelerStatus.CannotReceive;
-            if (!IsSupportedVersion(message)) return BeskedfordelerStatus.UnsupportedVersion;
+            stage = "validate envelope";
+            if (!HasValidMessageId(message))
+            {
+                logger.LogWarning("Beskedfordeler message ID is missing or invalid. TraceId {TraceId}, StatusKode {StatusKode}.",
+                    traceId, (int)BeskedfordelerStatus.CannotReceive);
+                return BeskedfordelerStatus.CannotReceive;
+            }
+            var messageId = Guid.Parse(message!.Element(BeskedfordelerResponse.Envelope + "BeskedId")!
+                .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")!.Value);
+            logger.LogWarning("Beskedfordeler message ID validated. TraceId {TraceId}, MessageId {MessageId}.", traceId, messageId);
+            if (!IsSupportedVersion(message))
+            {
+                logger.LogWarning("Beskedfordeler envelope version unsupported. TraceId {TraceId}, StatusKode {StatusKode}.",
+                    traceId, (int)BeskedfordelerStatus.UnsupportedVersion);
+                return BeskedfordelerStatus.UnsupportedVersion;
+            }
+            logger.LogWarning("Beskedfordeler envelope version validated. TraceId {TraceId}.", traceId);
 
+            stage = "classify message";
             var messageType = message!.Element(BeskedfordelerResponse.Envelope + "Beskedkuvert")?
                 .Element(BeskedfordelerResponse.Envelope + "Filtreringsdata")?
                 .Element(BeskedfordelerResponse.Envelope + "Beskedtype")?
@@ -37,23 +68,37 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
             if (Guid.TryParse(messageType, out var type) && type == BeskedfordelerJob.TestMessageType)
             {
                 cancellation.ThrowIfCancellationRequested();
-                var messageId = Guid.Parse(message.Element(BeskedfordelerResponse.Envelope + "BeskedId")!
-                    .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")!.Value);
                 // Connectivity probes are logged immediately; only business events require durable processing.
                 logger.LogWarning("Received KOMBIT Test/TestbeskedType1 message {MessageId} of type {MessageType} (version 1.0).", messageId, type);
+                logger.LogWarning("Beskedfordeler test message accepted without enqueue. TraceId {TraceId}, MessageId {MessageId}, StatusKode {StatusKode}.",
+                    traceId, messageId, (int)BeskedfordelerStatus.Accepted);
                 return BeskedfordelerStatus.Accepted;
             }
 
-            return EnqueueForProcessing(body) ? BeskedfordelerStatus.Accepted : BeskedfordelerStatus.Unavailable;
+            stage = "enqueue message";
+            logger.LogWarning("Beskedfordeler enqueueing non-test message. TraceId {TraceId}, MessageId {MessageId}, Queue {Queue}.",
+                traceId, messageId, BeskedfordelerJob.QueueName);
+            var status = EnqueueForProcessing(body, traceId) ? BeskedfordelerStatus.Accepted : BeskedfordelerStatus.Unavailable;
+            logger.LogWarning("Beskedfordeler receive service completed. TraceId {TraceId}, MessageId {MessageId}, StatusKode {StatusKode}.",
+                traceId, messageId, (int)status);
+            return status;
         }
         catch (Exception ex) when (ex is XmlException or XmlSchemaException or FormatException)
         {
+            logger.LogWarning("Beskedfordeler request rejected. TraceId {TraceId}, Stage {Stage}, ExceptionType {ExceptionType}, StatusKode {StatusKode}.",
+                traceId, stage, ex.GetType().Name, (int)BeskedfordelerStatus.CannotReceive);
             return BeskedfordelerStatus.CannotReceive;
         }
-        catch (OperationCanceledException) { throw; }
-        catch (Exception)
+        catch (OperationCanceledException)
+        {
+            logger.LogWarning("Beskedfordeler receive service cancelled. TraceId {TraceId}, Stage {Stage}.", traceId, stage);
+            throw;
+        }
+        catch (Exception ex)
         {
             // Never log XML or parser diagnostics. A failed enqueue must not acknowledge acceptance.
+            logger.LogWarning("Beskedfordeler receive service failed. TraceId {TraceId}, Stage {Stage}, ExceptionType {ExceptionType}, StatusKode {StatusKode}.",
+                traceId, stage, ex.GetType().Name, (int)BeskedfordelerStatus.Unavailable);
             return BeskedfordelerStatus.Unavailable;
         }
     }
@@ -83,10 +128,14 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
         message?.Element(BeskedfordelerResponse.Envelope + "BeskedVersion")?.Value == SupportedVersion;
 
     // Preserve the exact bytes, including the XML encoding declaration, in Hangfire only.
-    private bool EnqueueForProcessing(byte[] body)
+    private bool EnqueueForProcessing(byte[] body, string traceId)
     {
         var original = Convert.ToBase64String(body);
         var jobId = client.Enqueue<BeskedfordelerJob>(job => job.Process(original, CancellationToken.None));
+        if (string.IsNullOrWhiteSpace(jobId))
+            logger.LogWarning("Beskedfordeler enqueue failed: no job ID returned. TraceId {TraceId}.", traceId);
+        else
+            logger.LogWarning("Beskedfordeler durable enqueue completed. TraceId {TraceId}, JobId {JobId}.", traceId, jobId);
         return !string.IsNullOrWhiteSpace(jobId);
     }
 }
