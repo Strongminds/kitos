@@ -10,12 +10,16 @@ public static class TestMessage
     public static readonly XNamespace Envelope = "urn:oio:besked:kuvert:1.0";
     public static readonly XNamespace Sagdok = "urn:oio:sagdok:3.0.0";
 
-    public static XElement Create(Guid messageId, Guid senderId, string cvr, DateTimeOffset timestamp)
+    public static XElement Create(Guid senderId, string cvr)
     {
-        if (messageId == Guid.Empty || senderId == Guid.Empty)
-            throw new ArgumentException("Message and sender UUIDs must not be empty.");
+        if (senderId == Guid.Empty)
+            throw new ArgumentException("Sender UUID must not be empty.", nameof(senderId));
         if (cvr.Length != 8 || cvr.Any(c => c is < '0' or > '9'))
             throw new ArgumentException("CVR must contain exactly eight digits.", nameof(cvr));
+
+        var messageId = Guid.NewGuid();
+        var registrationId = Guid.NewGuid();
+        var timestamp = DateTimeOffset.UtcNow;
 
         XElement Id(string name, Guid value) =>
             new(Envelope + name, new XElement(Sagdok + "UUIDIdentifikator", value.ToString("D")));
@@ -36,7 +40,7 @@ public static class TestMessage
                     Id("BeskedAnsvarligAktoer", senderId),
                     Municipality("TilladtModtager"),
                     new XElement(Envelope + "ObjektRegistrering",
-                        Id("ObjektRegistreringId", messageId),
+                        Id("ObjektRegistreringId", registrationId),
                         Id("RegistreringsAktoer", senderId),
                         Time("Registreringstidspunkt"),
                         Municipality("ObjektAnsvarligMyndighed"))),
@@ -44,7 +48,8 @@ public static class TestMessage
                     Time("Dannelsestidspunkt")),
                 Time("GyldighedFra")),
             new XElement(Envelope + "Beskeddata",
-                new XElement(XName.Get("Beskeddata", "urn:kombit:test"), "KITOS Test/TestbeskedType1")));
+                new XElement(XName.Get("Beskeddata", "urn:kombit:test"),
+                    $"KITOS Test/TestbeskedType1 {messageId:D}")));
     }
 
     public static int ReadStatus(string response)

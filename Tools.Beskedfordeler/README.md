@@ -38,7 +38,8 @@ The optional fourth argument overrides the AMQP hostname. By default it targets
 `beskedfordeler.eksterntest-stoettesystemerne.dk:5671`, virtual host `BF`.
 There is no TLS certificate-validation bypass.
 
-Each invocation generates a fresh message UUID and UTC timestamps, restricts
+Each message creation generates fresh message and registration UUIDs, a unique test
+payload containing the message UUID, and current UTC timestamps. It restricts
 `TilladtModtager` and `ObjektAnsvarligMyndighed` to the supplied eight-digit CVR, and
 uses a synthetic text payload without personal data. The STS audience is
 `http://entityid.kombit.dk/service/bfo_afsend/2`. Its SAML assertion is supplied

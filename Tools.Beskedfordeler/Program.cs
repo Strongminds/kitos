@@ -25,8 +25,9 @@ public static class Program
         try
         {
             var senderId = Guid.Parse(args[1]);
-            var messageId = Guid.NewGuid();
-            var message = TestMessage.Create(messageId, senderId, args[2], DateTimeOffset.UtcNow);
+            var message = TestMessage.Create(senderId, args[2]);
+            var messageId = Guid.Parse(message.Element(TestMessage.Envelope + "BeskedId")!
+                .Element(TestMessage.Sagdok + "UUIDIdentifikator")!.Value);
             var config = JsonSerializer.Deserialize<SenderStsConfiguration>(await File.ReadAllTextAsync(args[0]),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
                 ?? throw new InvalidOperationException("STS configuration is required.");
