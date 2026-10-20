@@ -2,8 +2,8 @@
 {
     public enum SystemRelationDirection
     {
-        IncomingData = 1,
-        OutgoingData = 2,
-        BidirectionalData = 3
+        IncomingData = 0,
+        OutgoingData = 1,
+        BidirectionalData = 2
     }
 }
