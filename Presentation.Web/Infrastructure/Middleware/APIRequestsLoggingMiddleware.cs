@@ -49,10 +49,6 @@ namespace Presentation.Web.Infrastructure.Middleware
                 {
                     _logger.Warning("Anonymous route: {route}", sanitizedRoute);
                 }
-                else
-                {
-                    _logger.Warning("Not integration route: {route}", sanitizedRoute);
-                }
 
                 await next(context);
             }
