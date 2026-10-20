@@ -662,11 +662,13 @@ namespace Core.ApplicationServices.SystemUsage.Write
                 .Bind(usage => usage.WithOptionalUpdate(generalProperties.LicensingAndCodeModels, (systemUsage, newModels) => systemUsage.SetLicensingAndCodeModels(newModels)));
         }
 
-        private void RaiseValidityUpdatedEvent(ItSystemUsage usage) {
+        private void RaiseValidityUpdatedEvent(ItSystemUsage usage)
+        {
             domainEvents.Raise(new ItSystemUsageValidityUpdated(usage));
         }
 
-        private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus) {
+        private ItSystemUsage UpdateLifecycleStatus(ItSystemUsage usage, LifeCycleStatusType? lifeCycleStatus)
+        {
             usage.LifeCycleStatus = lifeCycleStatus;
             RaiseValidityUpdatedEvent(usage);
             return usage;
@@ -816,11 +818,12 @@ namespace Core.ApplicationServices.SystemUsage.Write
                             parameters.Description,
                             parameters.UrlReference,
                             usageAndIds.ids.frequencyId.Match<int?>(id => id, () => null),
-                            usageAndIds.ids.contractId.Match<int?>(id => id, () => null)
+                            usageAndIds.ids.contractId.Match<int?>(id => id, () => null),
+                            parameters.SystemRelationDirection
                         )
                 );
         }
-        
+
         public Result<IEnumerable<SystemRelation>, OperationError> CreateSystemRelations(Guid fromSystemUsageUuid, IEnumerable<SystemRelationParameters> parametersCollection)
         {
             using var transaction = transactionManager.Begin();
@@ -861,7 +864,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
                         parameters.UrlReference,
                         usageAndIds.ids.interfaceId.Match<int?>(id => id, () => null),
                         usageAndIds.ids.contractId.Match<int?>(id => id, () => null),
-                        usageAndIds.ids.frequencyId.Match<int?>(id => id, () => null)
+                        usageAndIds.ids.frequencyId.Match<int?>(id => id, () => null),
+                        parameters.SystemRelationDirection
                     )
                 );
         }

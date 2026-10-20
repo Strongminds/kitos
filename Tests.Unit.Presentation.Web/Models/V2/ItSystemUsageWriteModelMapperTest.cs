@@ -592,6 +592,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         {
             //Arrange
             var input = A<SystemRelationWriteRequestDTO>();
+            input.SystemRelationDirection = SystemRelationDirectionChoice.OutgoingData;
 
             //Act
             var output = _sut.MapRelation(input);
@@ -603,6 +604,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             Assert.Equal(input.RelationInterfaceUuid, output.UsingInterfaceUuid);
             Assert.Equal(input.Description, output.Description);
             Assert.Equal(input.UrlReference, output.UrlReference);
+            Assert.Equal(Core.DomainModel.ItSystemUsage.SystemRelationDirection.OutgoingData, output.SystemRelationDirection);
         }
 
         [Theory]

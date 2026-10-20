@@ -18,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -5417,6 +5417,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("text");
 
                     b.Property<int?>("RelationInterfaceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SystemRelationDirection")
                         .HasColumnType("integer");
 
                     b.Property<int>("ToSystemUsageId")

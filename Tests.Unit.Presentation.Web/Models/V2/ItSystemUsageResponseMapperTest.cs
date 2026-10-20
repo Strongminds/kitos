@@ -467,7 +467,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             itSystemUsage.UpdateNextDataRetentionEvaluationDate(A<DateTime>());
             itSystemUsage.UpdateDataRetentionEvaluationFrequencyInMonths(A<int>());
             itSystemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
-            itSystemUsage.UpdateRiskAssessmentDate(A<DateTime>()); 
+            itSystemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             itSystemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             itSystemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
             itSystemUsage.noteRisks = A<string>();
@@ -545,6 +545,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         private static void AssertBaseRelation(SystemRelation expected, BaseSystemRelationResponseDTO actual)
         {
             Assert.Equal(expected.Uuid, actual.Uuid);
+            Assert.Equal(expected.SystemRelationDirection?.ToSystemRelationDirectionChoice(), actual.SystemRelationDirection);
             Assert.Equal(expected.Description, actual.Description);
             Assert.Equal(expected.Reference, actual.UrlReference);
             AssertOptionalIdentity(expected.AssociatedContract, actual.AssociatedContract);
@@ -576,6 +577,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             return new SystemRelation(itSystemUsage)
             {
                 Uuid = A<Guid>(),
+                SystemRelationDirection = SystemRelationDirection.BidirectionalData,
                 Reference = A<string>(),
                 AssociatedContract = withContract ? new ItContract() { Uuid = A<Guid>(), Name = A<string>() } : null,
                 RelationInterface = withInterface ? new ItInterface { Uuid = A<Guid>(), Name = A<string>() } : null,
@@ -590,6 +592,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             return new SystemRelation(new ItSystemUsage() { Uuid = A<Guid>(), ItSystem = new ItSystem() { Name = A<string>() } })
             {
                 Uuid = A<Guid>(),
+                SystemRelationDirection = SystemRelationDirection.IncomingData,
                 Reference = A<string>(),
                 AssociatedContract = withContract ? new ItContract() { Uuid = A<Guid>(), Name = A<string>() } : null,
                 RelationInterface = withInterface ? new ItInterface { Uuid = A<Guid>(), Name = A<string>() } : null,
