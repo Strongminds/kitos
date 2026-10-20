@@ -54,7 +54,8 @@ A timeout can mean that KOMBIT accepted the event but its reply was lost; there 
 no automatic retry. A rerun creates a new message.
 
 Acceptance is not proof of callback delivery. For the KITOS receiver, check its
-Warning log for the printed message UUID after durable queue processing.
+Warning log for the printed message UUID when the callback is received. Test messages
+are logged immediately without being added to Hangfire; business events are durably queued.
 Live KOMBIT access requires your own configured credentials and agreements.
 
 Protocol references:

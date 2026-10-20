@@ -133,20 +133,10 @@ public class BeskedfordelerTest
     [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", true)]
     [InlineData("7654895C-A3F3-4C77-8AFD-4C77330F963C", true)]
     [InlineData("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", false)]
-    public async Task Receive_TestMessage_LogsWarningWithoutUserChanges(string messageType, bool supported)
+    public async Task Process_PreviouslyQueuedTestMessage_LogsWarningWithoutUserChanges(string messageType, bool supported)
     {
         var xml = Input();
         xml.Descendants(BeskedfordelerResponse.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
-        var client = new Mock<IBackgroundJobClient>();
-        Job? captured = null;
-        client.Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
-            .Returns((Job job, IState _) => { captured = job; return "1"; });
-        var context = new DefaultHttpContext();
-        context.Request.ContentType = "application/xml";
-        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(xml.ToString()));
-        var response = Assert.IsType<ContentResult>(await Controller(context, client.Object).Receive());
-        Assert.Contains(">20</", response.Content);
-
         var mapper = new Mock<IBeskedfordelerDeletionMapper>();
         var repository = new Mock<IExternalUserChangeRepository>(MockBehavior.Strict);
         var organizations = new Mock<IOrganizationRepository>(MockBehavior.Strict);
@@ -154,7 +144,7 @@ public class BeskedfordelerTest
         var logger = new Mock<ILogger<BeskedfordelerJob>>();
         var job = new BeskedfordelerJob(Reader(), mapper.Object,
             new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object), logger.Object);
-        var payload = (string)captured!.Args[0];
+        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
         if (supported)
         {
             await job.Process(payload, default);
@@ -172,6 +162,31 @@ public class BeskedfordelerTest
         repository.VerifyNoOtherCalls();
         organizations.VerifyNoOtherCalls();
         identities.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", "1.0", 20)]
+    [InlineData("7654895C-A3F3-4C77-8AFD-4C77330F963C", "1.0", 20)]
+    [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", "2.0", 55)]
+    public async Task Receive_TestMessage_LogsWithoutEnqueue(string messageType, string version, int expectedStatus)
+    {
+        var xml = Input();
+        xml.Descendants(BeskedfordelerResponse.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
+        xml.Descendants(BeskedfordelerResponse.Envelope + "BeskedVersion").Single().Value = version;
+        var client = new Mock<IBackgroundJobClient>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<BeskedfordelerService>>();
+        var service = new BeskedfordelerService(Reader(), client.Object, logger.Object);
+        using var body = new MemoryStream(Encoding.UTF8.GetBytes(xml.ToString()));
+
+        var status = await service.Receive(body, CancellationToken.None);
+
+        Assert.Equal(expectedStatus, (int)status);
+        client.VerifyNoOtherCalls();
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Test/TestbeskedType1") &&
+                state.ToString()!.Contains(MessageId.ToString()) && !state.ToString()!.Contains("<")),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            expectedStatus == 20 ? Times.Once() : Times.Never());
     }
 
     [Theory]
@@ -289,7 +304,7 @@ public class BeskedfordelerTest
     }
     private static BeskedfordelerV2Controller Controller(HttpContext context,
         IBackgroundJobClient client) =>
-        new(new BeskedfordelerService(Reader(), client))
+        new(new BeskedfordelerService(Reader(), client, NullLogger<BeskedfordelerService>.Instance))
         {
             ControllerContext = new ControllerContext { HttpContext = context }
         };

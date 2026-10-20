@@ -6,10 +6,12 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using Hangfire;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.STS.Beskedfordeler;
 
-public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackgroundJobClient client)
+public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackgroundJobClient client,
+    ILogger<BeskedfordelerService> logger)
 {
     private const int ReadBufferSize = 8192;
     private const string SupportedVersion = "1.0";
@@ -27,6 +29,20 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
 
             if (!HasValidMessageId(message)) return BeskedfordelerStatus.CannotReceive;
             if (!IsSupportedVersion(message)) return BeskedfordelerStatus.UnsupportedVersion;
+
+            var messageType = message!.Element(BeskedfordelerResponse.Envelope + "Beskedkuvert")?
+                .Element(BeskedfordelerResponse.Envelope + "Filtreringsdata")?
+                .Element(BeskedfordelerResponse.Envelope + "Beskedtype")?
+                .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")?.Value;
+            if (Guid.TryParse(messageType, out var type) && type == BeskedfordelerJob.TestMessageType)
+            {
+                cancellation.ThrowIfCancellationRequested();
+                var messageId = Guid.Parse(message.Element(BeskedfordelerResponse.Envelope + "BeskedId")!
+                    .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")!.Value);
+                // Connectivity probes are logged immediately; only business events require durable processing.
+                logger.LogWarning("Received KOMBIT Test/TestbeskedType1 message {MessageId} of type {MessageType} (version 1.0).", messageId, type);
+                return BeskedfordelerStatus.Accepted;
+            }
 
             return EnqueueForProcessing(body) ? BeskedfordelerStatus.Accepted : BeskedfordelerStatus.Unavailable;
         }
