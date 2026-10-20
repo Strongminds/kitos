@@ -329,9 +329,17 @@ public class BeskedfordelerTest
                 ["AppSettings:BeskedfordelerCertificateThumbprint"] =
                     $" {new string('0', 40)}, {certificate.Thumbprint.ToLowerInvariant()} "
             }).Build();
-        var validator = new BeskedfordelerClientCertificateValidator(configuration);
+        var logger = new Mock<ILogger<BeskedfordelerClientCertificateValidator>>();
+        var validator = new BeskedfordelerClientCertificateValidator(configuration, logger.Object);
         Assert.False(validator.IsValid(certificate));
         Assert.False(validator.IsValid(null));
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("chain validation completed") &&
+                state.ToString()!.Contains("Valid False") && state.ToString()!.Contains("UntrustedRoot")),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("no client certificate")),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
     }
 
     [Theory]
@@ -350,9 +358,14 @@ public class BeskedfordelerTest
                     ? certificate.GetCertHashString(System.Security.Cryptography.HashAlgorithmName.SHA256)
                     : new string('0', 40)
             }).Build();
-        var validator = new BeskedfordelerClientCertificateValidator(configuration);
+        var logger = new Mock<ILogger<BeskedfordelerClientCertificateValidator>>();
+        var validator = new BeskedfordelerClientCertificateValidator(configuration, logger.Object);
 
         Assert.False(validator.IsValid(certificate));
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("thumbprint not allowlisted") &&
+                state.ToString()!.Contains(certificate.Thumbprint)),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
     }
 
     [Fact]
