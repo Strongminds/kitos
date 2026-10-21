@@ -79,7 +79,7 @@ spec:
             secretKeyRef:
               key: SmtpPassword
               name: user-secret
-        image: ghcr.io/strongminds/kitos-kitos-api:sha-b08d82ac576162de3455e308b4cc7459b94b9328
+        image: ghcr.io/strongminds/kitos-kitos-api:sha-5753495c4bb0c588be64efa210eb172a66a3ac2f
         name: kitos-api
         ports:
         - containerPort: 8080
