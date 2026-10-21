@@ -5450,6 +5450,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("RelationInterfaceId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("SystemRelationDirection")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ToSystemUsageId")
                         .HasColumnType("integer");
 

@@ -107,7 +107,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             };
         }
 
-        private IsDataProcessingAgreementRequiredChoice? MapIsDataProcessingAgreementRequired(IsDataProcessingAgreementRequired? source) {
+        private IsDataProcessingAgreementRequiredChoice? MapIsDataProcessingAgreementRequired(IsDataProcessingAgreementRequired? source)
+        {
             if (source is null) return null;
             return source.Value.ToChoice();
         }
@@ -287,6 +288,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
         private static T MapSharedRelationProperties<T>(SystemRelation systemRelation, T dto) where T : BaseSystemRelationResponseDTO
         {
             dto.Uuid = systemRelation.Uuid;
+            dto.SystemRelationDirection = systemRelation.SystemRelationDirection?.ToSystemRelationDirectionChoice();
             dto.Description = systemRelation.Description;
             dto.UrlReference = systemRelation.Reference;
             dto.AssociatedContract = systemRelation.AssociatedContract?.MapIdentityNamePairDTO();
@@ -313,7 +315,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 UserCount.TENTOFORTYNINE => new ExpectedUsersIntervalDTO { LowerBound = 10, UpperBound = 49 },
                 UserCount.FIFTYTONINETYNINE => new ExpectedUsersIntervalDTO { LowerBound = 50, UpperBound = 99 },
                 UserCount.HUNDREDTOFOURHUNDREDNINETYNINE => new ExpectedUsersIntervalDTO { LowerBound = 100, UpperBound = 499 },
-                UserCount.FIVEHUNDREDPLUS => new ExpectedUsersIntervalDTO { LowerBound = 500},
+                UserCount.FIVEHUNDREDPLUS => new ExpectedUsersIntervalDTO { LowerBound = 500 },
                 _ => throw new ArgumentOutOfRangeException(nameof(systemUsage.UserCount))
             };
         }
