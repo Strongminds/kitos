@@ -43,6 +43,17 @@ dotnet run --project KitosIntegration/KitosIntegration.csproj
 
 Provide the settings and HTTPS binding before running. The receiver uses KITOS's Hangfire serializer settings and does not create the database or migrate its schema. Start KITOS first to initialize storage. Publish the API separately; the existing Presentation.Web deployment package does not deploy it.
 
+Deploy from the repository checkout with PowerShell 7, the .NET 10 SDK, AWS CLI and IIS Web Deploy installed:
+
+```powershell
+./DeploymentScripts/DeployKitosIntegrationToEnvironment.ps1 -targetEnvironment integration -iisApplication 'KitosIntegration' -WhatIf
+./DeploymentScripts/DeployKitosIntegrationToEnvironment.ps1 -targetEnvironment integration -iisApplication 'KitosIntegration'
+```
+
+Set `AwsAccessKeyId` and `AwsSecretAccessKey` as for standard KITOS. The script reuses its AWS helper, region and `/kitos/<environment>/` SSM path, including `MsDeployUrl`, `MsDeployUserName`, `MsDeployPassword` and `HangfireDbConnectionStringForIIsApp`. Supply `BeskedfordelerCertificateThumbprint` in that same path. The receiver requires PostgreSQL. No separate AWS namespace or deployment credentials are needed.
+
+The IIS destination is mandatory: provision a separate site/application and app pool with the .NET 10 Hosting Bundle, HTTPS binding and client certificate negotiation described above. The shared Web Deploy user must have access to that destination. `Default Web Site` alone is rejected to protect the KITOS backend. The script publishes into a fresh temporary directory, stamps the receiver settings, syncs through Web Deploy with AppOffline, and removes the temporary files even on failure. `-WhatIf` builds and loads configuration but only previews the remote sync. It does not provision IIS, certificates or the database.
+
 For cutover, pause upstream delivery and deploy the updated KITOS worker first. Then deploy/configure the new receiver against the existing Hangfire database, verify its certificate handshake, update the Beskedfordeler callback host (the route is unchanged), and resume delivery. Verify a real business message produces a pending item in KITOS. Preserve shared Hangfire storage and accepted jobs during cutover or rollback; never point the new receiver at a separate empty database.
 
 Business messages retain protocol statuses and durable enqueue behavior, including status 53 on handoff failure. Connectivity test messages retain the existing immediate log-and-acknowledge behavior without enqueue. KITOS retains retries, replay idempotency, failed jobs and administrator review. Monitor the shared queue using KITOS's protected Hangfire administration. Perform target-environment certificate rotation/revocation and end-to-end delivery acceptance before production activation.
