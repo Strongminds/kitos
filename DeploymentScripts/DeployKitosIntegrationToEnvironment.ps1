@@ -1,9 +1,9 @@
-#Requires -Version 7.0
+#Requires -Version 5.1
 <#
 .SYNOPSIS
 Publishes KitosIntegration and syncs it to a separate IIS application using KITOS's AWS parameters.
 .EXAMPLE
-./DeploymentScripts/DeployKitosIntegrationToEnvironment.ps1 -targetEnvironment integration -iisApplication 'KitosIntegration'
+./DeploymentScripts/DeployKitosIntegrationToEnvironment.ps1 -targetEnvironment integration
 #>
 [CmdletBinding()]
 param(
@@ -11,23 +11,14 @@ param(
     [ValidateSet('integration', 'dev', 'staging', 'production')]
     [string]$targetEnvironment,
 
-    [Parameter(Mandatory = $true)]
-    [ValidateNotNullOrEmpty()]
-    [string]$iisApplication,
-
     [string]$msDeployPath = 'C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe',
     [switch]$WhatIf
 )
 
 $ErrorActionPreference = 'Stop'
+$iisApplication = 'KitosIntegration'
 . "$PSScriptRoot\AwsApi.ps1"
 
-if ($iisApplication.Trim().TrimEnd('/', '\') -ieq 'Default Web Site') {
-    throw 'Choose a separate IIS site/application; Default Web Site is the KITOS backend.'
-}
-if ($iisApplication -match '[",\r\n]' -or [string]::IsNullOrWhiteSpace($iisApplication)) {
-    throw 'Invalid IIS site/application name.'
-}
 if (-not (Test-Path -LiteralPath $msDeployPath -PathType Leaf)) {
     throw "Web Deploy was not found at $msDeployPath"
 }
