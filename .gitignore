@@ -212,3 +212,6 @@ tmp/
 certs/
 MigrationsBundle/
 /.env
+
+# Local publish output
+/artifacts/

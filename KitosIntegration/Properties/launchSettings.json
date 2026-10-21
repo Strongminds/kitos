@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "KitosIntegration": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:60251;http://localhost:60252"
+    }
+  }
+}

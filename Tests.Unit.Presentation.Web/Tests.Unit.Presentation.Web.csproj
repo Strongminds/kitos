@@ -30,5 +30,6 @@
     <ProjectReference Include="..\Infrastructure.Services\Infrastructure.Services.csproj" />
     <ProjectReference Include="..\Infrastructure.DataAccess\Infrastructure.DataAccess.csproj" />
     <ProjectReference Include="..\Presentation.Web\Presentation.Web.csproj" />
+    <ProjectReference Include="..\Tools.Beskedfordeler\Tools.Beskedfordeler.csproj" />
   </ItemGroup>
 </Project>

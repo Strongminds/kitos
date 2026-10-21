@@ -172,6 +172,10 @@
         <parameterentry kind="TextFile" scope="\\appsettings\.json$" match="(?&lt;=&quot;StsOrganisationCertificateThumbprint&quot;\s*:\s*&quot;)[^&quot;]*"/>
     </parameter>
 
+    <parameter name="BeskedfordelerCertificateSha256" defaultvalue="">
+        <parameterentry kind="TextFile" scope="\\appsettings\.json$" match="(?&lt;=&quot;BeskedfordelerCertificateSha256&quot;\s*:\s*&quot;)[^&quot;]*"/>
+    </parameter>
+
     <!-- SERILOG -->
     <parameter name="serilog:minimum-level" description="" defaultvalue="__SerilogMinimumLogLevel__" tags="">
         <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='serilog:minimum-level']/@value">
