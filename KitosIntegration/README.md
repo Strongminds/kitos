@@ -43,7 +43,7 @@ dotnet run --project KitosIntegration/KitosIntegration.csproj
 
 Provide the settings and HTTPS binding before running. The receiver uses KITOS's Hangfire serializer settings and does not create the database or migrate its schema. Start KITOS first to initialize storage. Publish the API separately; the existing Presentation.Web deployment package does not deploy it.
 
-Deploy from the repository checkout with Windows PowerShell 5.1 or PowerShell 7, the .NET 10 SDK, AWS CLI and IIS Web Deploy installed:
+Deploy with Windows PowerShell 5.1 or PowerShell 7, AWS CLI and IIS Web Deploy installed. Extract the published `KitosIntegration.zip` into a `KitosIntegration` folder beside `DeploymentScripts`. The deployment uses these build artifacts and does not require source code or the .NET SDK:
 
 ```powershell
 ./DeploymentScripts/DeployKitosIntegrationToEnvironment.ps1 -targetEnvironment integration -WhatIf
@@ -52,7 +52,7 @@ Deploy from the repository checkout with Windows PowerShell 5.1 or PowerShell 7,
 
 Set `AwsAccessKeyId` and `AwsSecretAccessKey` as for standard KITOS. The script reuses its AWS helper, region and `/kitos/<environment>/` SSM path, including `MsDeployUrl`, `MsDeployUserName`, `MsDeployPassword` and `HangfireDbConnectionStringForIIsApp`. Supply `BeskedfordelerCertificateThumbprint` in that same path. The receiver requires PostgreSQL. No separate AWS namespace or deployment credentials are needed.
 
-The IIS destination is fixed to `KitosIntegration`: provision that separate site/application and an app pool with the .NET 10 Hosting Bundle, HTTPS binding and client certificate negotiation described above. The shared Web Deploy user must have access to that destination. The script publishes into a fresh temporary directory, stamps the receiver settings, syncs through Web Deploy with AppOffline, and removes the temporary files even on failure. `-WhatIf` builds and loads configuration but only previews the remote sync. It does not provision IIS, certificates or the database.
+The IIS destination is fixed to `KitosIntegration`: provision that separate site/application and an app pool with the .NET 10 Hosting Bundle, HTTPS binding and client certificate negotiation described above. The shared Web Deploy user must have access to that destination. The script copies the published artifact into a fresh temporary directory, stamps the receiver settings, syncs through Web Deploy with AppOffline, and removes the temporary files even on failure. `-WhatIf` copies the artifact and loads configuration but only previews the remote sync. It does not provision IIS, certificates or the database.
 
 For cutover, pause upstream delivery and deploy the updated KITOS worker first. Then deploy/configure the new receiver against the existing Hangfire database, verify its certificate handshake, update the Beskedfordeler callback host (the route is unchanged), and resume delivery. Verify a real business message produces a pending item in KITOS. Preserve shared Hangfire storage and accepted jobs during cutover or rollback; never point the new receiver at a separate empty database.
 

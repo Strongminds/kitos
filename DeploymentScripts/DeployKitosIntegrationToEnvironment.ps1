@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-Publishes KitosIntegration and syncs it to a separate IIS application using KITOS's AWS parameters.
+Deploys the published KitosIntegration artifact to IIS using KITOS's AWS parameters.
 .EXAMPLE
 ./DeploymentScripts/DeployKitosIntegrationToEnvironment.ps1 -targetEnvironment integration
 #>
@@ -18,6 +18,13 @@ param(
 $ErrorActionPreference = 'Stop'
 $iisApplication = 'KitosIntegration'
 . "$PSScriptRoot\AwsApi.ps1"
+
+$artifactDirectory = Join-Path $PSScriptRoot '..\KitosIntegration'
+foreach ($file in @('KitosIntegration.dll', 'KitosIntegration.deps.json', 'KitosIntegration.runtimeconfig.json', 'web.config', 'appsettings.json')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $artifactDirectory $file) -PathType Leaf)) {
+        throw "Missing published artifact file '$file'. Extract KitosIntegration.zip into the KitosIntegration folder beside DeploymentScripts."
+    }
+}
 
 if (-not (Test-Path -LiteralPath $msDeployPath -PathType Leaf)) {
     throw "Web Deploy was not found at $msDeployPath"
@@ -42,12 +49,11 @@ foreach ($thumbprint in ($parameters['BeskedfordelerCertificateThumbprint'] -spl
     }
 }
 
-# A fresh directory prevents obsolete assemblies from earlier publishes being deployed.
+# Stamp a temporary copy so downloaded artifacts remain unchanged and contain no deployment secrets.
 $publishDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("KitosIntegration-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $publishDirectory | Out-Null
 try {
-    & dotnet publish "$PSScriptRoot\..\KitosIntegration\KitosIntegration.csproj" -c Release -o $publishDirectory
-    if ($LASTEXITCODE -ne 0) { throw 'KitosIntegration publish failed.' }
+    Get-ChildItem -LiteralPath $artifactDirectory -Force | Copy-Item -Destination $publishDirectory -Recurse -Force
 
     $settingsPath = Join-Path $publishDirectory 'appsettings.json'
     $settings = Get-Content -LiteralPath $settingsPath -Raw | ConvertFrom-Json
