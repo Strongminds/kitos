@@ -1,3 +1,5 @@
+using Kitos.Integration.Contracts;
+using KitosIntegration.Infrastructure.Beskedfordeler;
 using System;
 using System.IO;
 using System.Threading;
@@ -5,13 +7,12 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using Hangfire;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.STS.Beskedfordeler;
+namespace KitosIntegration.Services;
 
-public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackgroundJobClient client,
-    ILogger<BeskedfordelerService> logger)
+public sealed class BeskedfordelerService(IBeskedfordelerXmlReader reader, IBeskedfordelerJobRepository jobs,
+    ILogger<BeskedfordelerService> logger) : IBeskedfordelerService
 {
     private const int ReadBufferSize = 8192;
     private const string SupportedVersion = "1.0";
@@ -39,7 +40,7 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
             logger.LogWarning("Beskedfordeler validating XML against schemas. TraceId {TraceId}.", traceId);
             using var stream = new MemoryStream(body);
             var message = (await reader.Read(stream, cancellation))
-                .Element(BeskedfordelerResponse.Envelope + "Haendelsesbesked");
+                .Element(BeskedfordelerMessage.Envelope + "Haendelsesbesked");
             logger.LogWarning("Beskedfordeler XML schema validation completed. TraceId {TraceId}.", traceId);
 
             stage = "validate envelope";
@@ -49,8 +50,8 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
                     traceId, (int)BeskedfordelerStatus.CannotReceive);
                 return BeskedfordelerStatus.CannotReceive;
             }
-            var messageId = Guid.Parse(message!.Element(BeskedfordelerResponse.Envelope + "BeskedId")!
-                .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")!.Value);
+            var messageId = Guid.Parse(message!.Element(BeskedfordelerMessage.Envelope + "BeskedId")!
+                .Element(BeskedfordelerMessage.Sagdok + "UUIDIdentifikator")!.Value);
             logger.LogWarning("Beskedfordeler message ID validated. TraceId {TraceId}, MessageId {MessageId}.", traceId, messageId);
             if (!IsSupportedVersion(message))
             {
@@ -61,11 +62,11 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
             logger.LogWarning("Beskedfordeler envelope version validated. TraceId {TraceId}.", traceId);
 
             stage = "classify message";
-            var messageType = message!.Element(BeskedfordelerResponse.Envelope + "Beskedkuvert")?
-                .Element(BeskedfordelerResponse.Envelope + "Filtreringsdata")?
-                .Element(BeskedfordelerResponse.Envelope + "Beskedtype")?
-                .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")?.Value;
-            if (Guid.TryParse(messageType, out var type) && type == BeskedfordelerJob.TestMessageType)
+            var messageType = message!.Element(BeskedfordelerMessage.Envelope + "Beskedkuvert")?
+                .Element(BeskedfordelerMessage.Envelope + "Filtreringsdata")?
+                .Element(BeskedfordelerMessage.Envelope + "Beskedtype")?
+                .Element(BeskedfordelerMessage.Sagdok + "UUIDIdentifikator")?.Value;
+            if (Guid.TryParse(messageType, out var type) && type == IBeskedfordelerJob.TestMessageType)
             {
                 cancellation.ThrowIfCancellationRequested();
                 // Connectivity probes are logged immediately; only business events require durable processing.
@@ -77,7 +78,7 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
 
             stage = "enqueue message";
             logger.LogWarning("Beskedfordeler enqueueing non-test message. TraceId {TraceId}, MessageId {MessageId}, Queue {Queue}.",
-                traceId, messageId, BeskedfordelerJob.QueueName);
+                traceId, messageId, IBeskedfordelerJob.QueueName);
             var status = EnqueueForProcessing(body, traceId) ? BeskedfordelerStatus.Accepted : BeskedfordelerStatus.Unavailable;
             logger.LogWarning("Beskedfordeler receive service completed. TraceId {TraceId}, MessageId {MessageId}, StatusKode {StatusKode}.",
                 traceId, messageId, (int)status);
@@ -119,19 +120,17 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
 
     private static bool HasValidMessageId(XElement? message)
     {
-        var id = message?.Element(BeskedfordelerResponse.Envelope + "BeskedId")?
-            .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")?.Value;
+        var id = message?.Element(BeskedfordelerMessage.Envelope + "BeskedId")?
+            .Element(BeskedfordelerMessage.Sagdok + "UUIDIdentifikator")?.Value;
         return Guid.TryParse(id, out var uuid) && uuid != Guid.Empty;
     }
 
     private static bool IsSupportedVersion(XElement? message) =>
-        message?.Element(BeskedfordelerResponse.Envelope + "BeskedVersion")?.Value == SupportedVersion;
+        message?.Element(BeskedfordelerMessage.Envelope + "BeskedVersion")?.Value == SupportedVersion;
 
-    // Preserve the exact bytes, including the XML encoding declaration, in Hangfire only.
     private bool EnqueueForProcessing(byte[] body, string traceId)
     {
-        var original = Convert.ToBase64String(body);
-        var jobId = client.Enqueue<BeskedfordelerJob>(job => job.Process(original, CancellationToken.None));
+        var jobId = jobs.Enqueue(body);
         if (string.IsNullOrWhiteSpace(jobId))
             logger.LogWarning("Beskedfordeler enqueue failed: no job ID returned. TraceId {TraceId}.", traceId);
         else
@@ -139,3 +138,4 @@ public sealed class BeskedfordelerService(BeskedfordelerXmlReader reader, IBackg
         return !string.IsNullOrWhiteSpace(jobId);
     }
 }
+

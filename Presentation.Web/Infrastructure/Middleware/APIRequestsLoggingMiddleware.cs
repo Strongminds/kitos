@@ -45,7 +45,7 @@ namespace Presentation.Web.Infrastructure.Middleware
             {
                 var route = context.Request.Path;
                 var sanitizedRoute = SanitizeForLogging(route);
-                if(route.HasValue && route.Value.Contains("/integration"))
+                if (route.HasValue && route.Value.Contains("/integration"))
                 {
                     _logger.Warning("Anonymous route: {route}", sanitizedRoute);
                 }

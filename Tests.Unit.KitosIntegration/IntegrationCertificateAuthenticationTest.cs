@@ -1,31 +1,29 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Infrastructure.STS.Beskedfordeler;
+using KitosIntegration.Infrastructure.Beskedfordeler;
+using KitosIntegration.Services;
+using Kitos.Integration.Contracts;
 using Hangfire;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Presentation.Web.Controllers.API.V2.Integration;
-using Presentation.Web.Infrastructure.Authentication;
-using Presentation.Web.Infrastructure.Configuration;
-using Presentation.Web.Infrastructure.Middleware;
+using KitosIntegration.Controllers;
+using KitosIntegration.Authentication;
+using KitosIntegration.Configuration;
 using Xunit;
 
-namespace Tests.Unit.Presentation.Web.Infrastructure;
+namespace Tests.Unit.KitosIntegration;
 
 public class IntegrationCertificateAuthenticationTest
 {
@@ -41,26 +39,22 @@ public class IntegrationCertificateAuthenticationTest
         // Schannel needs imported private keys for TLS; no trust-store installation is required.
         using var serverCertificate = X509CertificateLoader.LoadPkcs12(generatedServerCertificate.Export(X509ContentType.Pfx), null);
         using var clientCertificate = X509CertificateLoader.LoadPkcs12(generatedClientCertificate.Export(X509ContentType.Pfx), null);
-        var builder = WebApplication.CreateBuilder();
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            ApplicationName = typeof(BeskedfordelerV2Controller).Assembly.FullName
+        });
         builder.Logging.ClearProviders();
+        ConfigureReceiver(builder);
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0, endpoint => endpoint.UseHttps(https =>
         {
             https.ServerCertificate = serverCertificate;
-            https.ClientCertificateMode = ClientCertificateMode.AllowCertificate;
             // Pin the generated test certificate instead of changing the machine's trust store.
             https.ClientCertificateValidation = (certificate, _, _) => certificate.Thumbprint == clientCertificate.Thumbprint;
         })));
-        builder.Services.AddAuthentication(IntegrationCertificateAuthenticationHandler.SchemeName)
-            .AddScheme<IntegrationCertificateAuthenticationOptions, IntegrationCertificateAuthenticationHandler>(
-                IntegrationCertificateAuthenticationHandler.SchemeName, options =>
-                {
-                    options.ValidateCertificate = certificate => certificate.Thumbprint == clientCertificate.Thumbprint;
-                });
-        builder.Services.AddAuthorization();
+        builder.Services.PostConfigure<IntegrationCertificateAuthenticationOptions>(IntegrationCertificateAuthenticationHandler.SchemeName,
+            options => options.ValidateCertificate = certificate => certificate.Thumbprint == clientCertificate.Thumbprint);
         builder.Services.AddControllers().AddApplicationPart(typeof(BeskedfordelerV2Controller).Assembly);
         builder.Services.AddSingleton(Mock.Of<IBackgroundJobClient>(MockBehavior.Strict));
-        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas()));
-        builder.Services.AddScoped<BeskedfordelerService>();
         await using var app = builder.Build();
         app.UseAuthentication();
         app.UseAuthorization();
@@ -95,35 +89,27 @@ public class IntegrationCertificateAuthenticationTest
         using var key = RSA.Create(2048);
         var request = new CertificateRequest("CN=integration-test", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddDays(1));
-        var builder = WebApplication.CreateBuilder();
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            ApplicationName = typeof(BeskedfordelerV2Controller).Assembly.FullName
+        });
         builder.Logging.ClearProviders();
         builder.WebHost.UseTestServer();
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["AppSettings:SecurityKeyString"] = new string('a', 64)
-        });
-        builder.Services.AddKitosAuthentication(builder.Configuration);
-        builder.Services.AddAuthentication().AddScheme<IntegrationCertificateAuthenticationOptions, IntegrationCertificateAuthenticationHandler>(
-            IntegrationCertificateAuthenticationHandler.SchemeName, options =>
-            {
-                options.ValidateCertificate = received => trusted && received.Thumbprint == certificate.Thumbprint;
-            });
-        var bearerCalled = false;
-        builder.Services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-            options.Events.OnMessageReceived = _ => { bearerCalled = true; return Task.CompletedTask; });
-        builder.Services.AddKitosMvc();
+        ConfigureReceiver(builder);
+        builder.Services.PostConfigure<IntegrationCertificateAuthenticationOptions>(IntegrationCertificateAuthenticationHandler.SchemeName,
+            options => options.ValidateCertificate = received => trusted && received.Thumbprint == certificate.Thumbprint);
         builder.Services.AddControllers().AddApplicationPart(typeof(BeskedfordelerV2Controller).Assembly);
-        builder.Services.AddScoped<CorrelationIdMiddleware>();
-        // No user context or user middleware services: resolving them for an integration request must fail this test.
         builder.Services.AddSingleton(Mock.Of<IBackgroundJobClient>(MockBehavior.Strict));
-        builder.Services.AddSingleton(new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas()));
-        builder.Services.AddScoped<BeskedfordelerService>();
         await using var app = builder.Build();
         app.UseRouting();
-        app.UseKitosApiSecurity();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.MapControllers();
-        app.MapGet("/ordinary", () => "requires a user").RequireAuthorization();
         await app.StartAsync();
+
+        var endpoint = Assert.Single(app.Services.GetRequiredService<EndpointDataSource>().Endpoints);
+        Assert.Equal("api/v2/integration/beskedfordeler", Assert.IsType<RouteEndpoint>(endpoint).RoutePattern.RawText);
+        Assert.Equal("POST", Assert.Single(endpoint.Metadata.GetMetadata<HttpMethodMetadata>()!.HttpMethods));
 
         var response = await app.GetTestServer().SendAsync(context =>
         {
@@ -131,22 +117,27 @@ public class IntegrationCertificateAuthenticationTest
             context.Request.Path = "/api/v2/integration/beskedfordeler";
             context.Request.Scheme = https ? "https" : "http";
             if (present) context.Connection.ClientCertificate = certificate;
-            if (bearer) context.Request.Headers.Authorization = "Bearer ignored-token";
+            if (bearer)
+            {
+                context.Request.Headers.Authorization = "Bearer ignored-token";
+                context.Request.Headers.Cookie = ".AspNetCore.Cookies=ignored-cookie";
+            }
             // A forwarded certificate header is never proof of a TLS handshake.
             context.Request.Headers["X-ARR-ClientCert"] = Convert.ToBase64String(certificate.RawData);
         });
         Assert.Equal(status, response.Response.StatusCode);
-        Assert.False(bearerCalled);
         if (status == 200)
         {
             Assert.Equal(IntegrationCertificateAuthenticationHandler.SchemeName, response.User.Identity!.AuthenticationType);
             Assert.StartsWith("application/xml", response.Response.ContentType);
         }
 
-        using var ordinaryRequest = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, "/ordinary");
-        ordinaryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "invalid-token");
-        using var ordinaryResponse = await app.GetTestClient().SendAsync(ordinaryRequest);
-        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, ordinaryResponse.StatusCode);
-        Assert.True(bearerCalled);
+    }
+    private static void ConfigureReceiver(WebApplicationBuilder builder)
+    {
+        builder.Configuration["AppSettings:BeskedfordelerCertificateThumbprint"] = new string('a', 40);
+        builder.Configuration["ConnectionStrings:kitos_HangfireDB"] = "Host=localhost;Database=hangfire";
+        builder.AddBeskedfordelerReceiver();
     }
 }
+

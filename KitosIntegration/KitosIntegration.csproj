@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <SatelliteResourceLanguages>da;da-DK</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KitosIntegration.Services\KitosIntegration.Services.csproj" />
+    <ProjectReference Include="..\KitosIntegration.Infrastructure\KitosIntegration.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

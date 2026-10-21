@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Presentation.Web.Infrastructure.Authentication;
+namespace KitosIntegration.Authentication;
 
 public sealed class IntegrationCertificateAuthenticationOptions : AuthenticationSchemeOptions
 {
@@ -75,3 +75,4 @@ public sealed class IntegrationCertificateAuthenticationHandler(
         return Task.CompletedTask;
     }
 }
+

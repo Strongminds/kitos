@@ -24,6 +24,7 @@ namespace Presentation.Web.Infrastructure.Configuration
                     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                     .UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings()
+                    .UseFilter(new global::Infrastructure.STS.Beskedfordeler.BeskedfordelerRetentionAttribute())
                     .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(hangfireConnectionString), new PostgreSqlStorageOptions
                     {
                         PrepareSchemaIfNecessary = true,

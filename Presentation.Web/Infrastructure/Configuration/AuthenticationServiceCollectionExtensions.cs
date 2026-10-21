@@ -7,9 +7,6 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Presentation.Web.Infrastructure.Attributes;
-using Presentation.Web.Infrastructure.Authentication;
 
 namespace Presentation.Web.Infrastructure.Configuration
 {
@@ -44,8 +41,6 @@ namespace Presentation.Web.Infrastructure.Configuration
                 {
                     options.ForwardDefaultSelector = context =>
                     {
-                        if (context.GetEndpoint()?.Metadata.GetMetadata<IntegrationApiAttribute>() != null)
-                            return IntegrationCertificateAuthenticationHandler.SchemeName;
                         var auth = context.Request.Headers[Microsoft.Net.Http.Headers.HeaderNames.Authorization].FirstOrDefault();
                         if (!string.IsNullOrEmpty(auth) && auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                             return JwtBearerDefaults.AuthenticationScheme;

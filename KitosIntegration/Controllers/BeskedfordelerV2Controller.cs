@@ -1,17 +1,21 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using Infrastructure.STS.Beskedfordeler;
+using KitosIntegration.Services;
+using Kitos.Integration.Contracts;
+using KitosIntegration.Mapping;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Presentation.Web.Controllers.API.V2.Integration
+namespace KitosIntegration.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     [Route("api/v2/integration/beskedfordeler")]
     public sealed class BeskedfordelerV2Controller(
-        BeskedfordelerService service, ILogger<BeskedfordelerV2Controller> logger) : IntegrationBaseController
+        IBeskedfordelerService service, ILogger<BeskedfordelerV2Controller> logger) : ControllerBase
     {
+        /// <summary>Validates a Beskedfordeler envelope and durably queues it for KITOS processing.</summary>
         [HttpPost]
         [Produces("application/xml")]
         public async Task<IActionResult> Receive()
@@ -36,7 +40,7 @@ namespace Presentation.Web.Controllers.API.V2.Integration
                 {
                     logger.LogWarning("Beskedfordeler callback rejected: unsupported or missing content type. TraceId {TraceId}.", traceId);
                 }
-                var response = Content(BeskedfordelerResponse.Serialize(status), "application/xml", Encoding.UTF8);
+                var response = Content(BeskedfordelerResponseMapper.Serialize(status), "application/xml", Encoding.UTF8);
                 logger.LogWarning("Beskedfordeler callback response prepared. TraceId {TraceId}, StatusKode {StatusKode}.",
                     traceId, (int)status);
                 return response;

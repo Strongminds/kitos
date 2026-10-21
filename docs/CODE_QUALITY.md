@@ -17,7 +17,7 @@ entity mappings against the PostgreSQL schema and current EF Core snapshot.
 ## What is checked
 
 1. **Formatting** – `dotnet format whitespace` on changed `*.cs` files only (legacy files are fixed when touched).
-2. **Build with 0 warnings** – `KITOS.sln` and `Kitos_PubSub.sln` are built with `-p:KitosQualityGate=true`, which turns every compiler and analyzer warning into an error. The rules live in `.editorconfig`; `Directory.Build.props` enables the .NET analyzers and code style in build for all projects.
+2. **Build with 0 warnings** – `KITOS.sln`, `Kitos_PubSub.sln` and `Kitos_IntegrationApi.sln` are built with `-p:KitosQualityGate=true`, which turns every compiler and analyzer warning into an error. The rules live in `.editorconfig`; `Directory.Build.props` enables the .NET analyzers and code style in build for all projects.
 3. **KITOS conventions** on the diff against the merge base with `origin/master` (committed, uncommitted, untracked **and deleted** files):
    - no `Console.Write*` / `Debug.Write*` / `Debugger.Break` in production code (FAIL)
    - warning suppressions need a justification: `#pragma warning disable` with a `// reason` on the same line or the line above; `[SuppressMessage(...)]` (also multi-line) with a non-empty `Justification` (FAIL)

@@ -151,7 +151,6 @@
 	$appSettings.AppSettings.StsOrganisationPort                  = $Env:StsOrganisationPort
 	$appSettings.AppSettings.StsOrganisationSystemPort            = $Env:StsOrganisationSystemPort
 	$appSettings.AppSettings.StsOrganisationCertificateThumbprint = $Env:StsOrganisationCertificateThumbprint
-	$appSettings.AppSettings."BeskedfordelerCertificateThumbprint" = $Env:BeskedfordelerCertificateThumbprint
 	$appSettings.AppSettings.PubSubBaseUrl                        = $Env:PubSubBaseUrl
 
 	$appSettings | ConvertTo-Json -Depth 10 | Set-Content $appSettingsPath -Encoding UTF8

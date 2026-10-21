@@ -51,7 +51,7 @@ services.AddHttpContextAccessor();
 // KITOS services (DI registrations)
 KitosServiceRegistration.Register(services, configuration, signingKey);
 
-builder.AddBeskedfordeler();
+builder.AddBeskedfordelerWorker();
 
 var app = builder.Build();
 

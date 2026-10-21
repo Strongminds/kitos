@@ -1,5 +1,4 @@
 using System;
-using Core.DomainServices;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
@@ -8,32 +7,44 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Core.Abstractions.Types;
-using Core.ApplicationServices.Users;
-using Core.DomainModel.Organization;
-using Core.DomainModel.SSO;
-using Core.DomainModel.Users;
-using Core.DomainServices.Repositories.Organization;
-using Core.DomainServices.Repositories.SSO;
-using Core.DomainServices.Users;
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
 using Microsoft.AspNetCore.Http;
 
 using Moq;
-using Infrastructure.STS.Beskedfordeler;
-using Presentation.Web.Controllers.API.V2.Integration;
+using KitosIntegration.Infrastructure.Beskedfordeler;
+using KitosIntegration.Services;
+using Kitos.Integration.Contracts;
+using KitosIntegration.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Tests.Unit.Presentation.Web.Infrastructure;
+namespace Tests.Unit.KitosIntegration;
 
 public class BeskedfordelerTest
 {
-    private static readonly Guid OrganizationId = Guid.NewGuid();
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task Receive_RepositoryReturnsNoJobId_DoesNotAcknowledgeAcceptance(string? jobId)
+    {
+        var original = Encoding.UTF8.GetBytes(Input().ToString());
+        var jobs = new Mock<IBeskedfordelerJobRepository>();
+        jobs.Setup(repository => repository.Enqueue(It.Is<byte[]>(body => body.SequenceEqual(original))))
+            .Returns(jobId);
+        var receiver = new BeskedfordelerService(Reader(), jobs.Object, NullLogger<BeskedfordelerService>.Instance);
+        using var body = new MemoryStream(original);
+
+        var status = await receiver.Receive(body, CancellationToken.None);
+
+        Assert.Equal(BeskedfordelerStatus.Unavailable, status);
+        jobs.Verify(repository => repository.Enqueue(It.Is<byte[]>(bytes => bytes.SequenceEqual(original))), Times.Once);
+    }
+
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Guid MessageId = Guid.NewGuid();
     private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas());
@@ -45,68 +56,9 @@ public class BeskedfordelerTest
 
         Assert.True(schemas.IsCompiled);
         Assert.True(schemas.GlobalElements.Contains(new System.Xml.XmlQualifiedName(
-            "ModtagBeskedInput", BeskedfordelerResponse.Sts.NamespaceName)));
-        Assert.Equal(7, typeof(BeskedfordelerXmlReader).Assembly.GetManifestResourceNames()
+            "ModtagBeskedInput", BeskedfordelerMessage.Sts.NamespaceName)));
+        Assert.Equal(7, typeof(BeskedfordelerMessage).Assembly.GetManifestResourceNames()
             .Count(name => name.EndsWith(".xsd", StringComparison.Ordinal)));
-    }
-
-    [Fact]
-    public void LegacyJob_CanDeserializeAndRetainsRetryAndQueuePolicies()
-    {
-        var legacyType = typeof(global::Presentation.Web.Infrastructure.Beskedfordeler.BeskedfordelerJob);
-        var method = legacyType.GetMethod(nameof(BeskedfordelerJob.Process))!;
-        var original = new Job(legacyType, method, "cGF5bG9hZA==", CancellationToken.None);
-        var restored = Hangfire.Storage.InvocationData.SerializeJob(original).DeserializeJob();
-
-        Assert.Equal(legacyType, restored.Type);
-        Assert.Equal(typeof(BeskedfordelerJob), restored.Method.DeclaringType);
-        Assert.Equal("cGF5bG9hZA==", restored.Args[0]);
-        Assert.Equal(BeskedfordelerJob.QueueName,
-            Assert.Single(restored.Method.GetCustomAttributes(typeof(QueueAttribute), true).Cast<QueueAttribute>()).Queue);
-        Assert.Equal(8,
-            Assert.Single(restored.Method.GetCustomAttributes(typeof(AutomaticRetryAttribute), true).Cast<AutomaticRetryAttribute>()).Attempts);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    public void Map_RequiresExactlyOneSignedUpOrganizationForSourceCvr(int matchingSignups)
-    {
-        var organizations = Enumerable.Range(0, matchingSignups)
-            .Select(_ => new Organization { Uuid = Guid.NewGuid(), Cvr = "12345678", FkOrgUsersConnected = true })
-            .Concat(new[]
-            {
-                new Organization { Uuid = Guid.NewGuid(), Cvr = "12345678", FkOrgUsersConnected = false },
-                new Organization { Uuid = Guid.NewGuid(), Cvr = "87654321", FkOrgUsersConnected = true }
-            }).ToArray();
-        var repository = new Mock<IGenericRepository<Organization>>();
-        repository.Setup(x => x.AsQueryable()).Returns(organizations.AsQueryable());
-        var mapper = new OrgBrugerDeletionMapper(repository.Object);
-
-        var result = mapper.Map(Input());
-
-        if (matchingSignups == 1)
-        {
-            Assert.NotNull(result);
-            Assert.Equal(organizations[0].Uuid, result.OrganizationUuid);
-        }
-        else Assert.Null(result);
-    }
-
-    [Fact]
-    public void Map_ObservesSignupAndDisconnectWithoutRestart()
-    {
-        var organization = new Organization { Uuid = OrganizationId, Cvr = "12345678" };
-        var repository = new Mock<IGenericRepository<Organization>>();
-        repository.Setup(x => x.AsQueryable()).Returns(new[] { organization }.AsQueryable());
-        var mapper = new OrgBrugerDeletionMapper(repository.Object);
-
-        Assert.Null(mapper.Map(Input()));
-        organization.FkOrgUsersConnected = true;
-        Assert.Equal(OrganizationId, mapper.Map(Input())!.OrganizationUuid);
-        organization.FkOrgUsersConnected = false;
-        Assert.Null(mapper.Map(Input()));
     }
 
     [Theory]
@@ -128,42 +80,15 @@ public class BeskedfordelerTest
         var result = await Controller(context, client.Object).Receive();
         Assert.Contains($">{status}</", ((ContentResult)result).Content);
         Assert.Equal(original, Convert.FromBase64String((string)captured!.Args[0]));
+        var restored = Hangfire.Storage.InvocationData.SerializeJob(captured).DeserializeJob();
+        Assert.Equal(typeof(IBeskedfordelerJob), restored.Type);
+        var filters = new JobFilterAttributeFilterProvider().GetFilters(restored).Select(filter => filter.Instance).ToArray();
+        Assert.Equal("beskedfordeler", Assert.Single(filters.OfType<QueueAttribute>()).Queue);
+        var retry = Assert.Single(filters.OfType<AutomaticRetryAttribute>());
+        Assert.Equal(8, retry.Attempts);
+        Assert.Equal(new[] { 2, 4, 8, 16, 32, 64, 128, 256 }, retry.DelaysInSeconds);
+        Assert.Equal(AttemptsExceededAction.Fail, retry.OnAttemptsExceeded);
     }
-    [Theory]
-    [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", true)]
-    [InlineData("7654895C-A3F3-4C77-8AFD-4C77330F963C", true)]
-    [InlineData("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", false)]
-    public async Task Process_PreviouslyQueuedTestMessage_LogsWarningWithoutUserChanges(string messageType, bool supported)
-    {
-        var xml = Input();
-        xml.Descendants(BeskedfordelerResponse.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
-        var mapper = new Mock<IBeskedfordelerDeletionMapper>();
-        var repository = new Mock<IExternalUserChangeRepository>(MockBehavior.Strict);
-        var organizations = new Mock<IOrganizationRepository>(MockBehavior.Strict);
-        var identities = new Mock<ISsoUserIdentityRepository>(MockBehavior.Strict);
-        var logger = new Mock<ILogger<BeskedfordelerJob>>();
-        var job = new BeskedfordelerJob(Reader(), mapper.Object,
-            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object), logger.Object);
-        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
-        if (supported)
-        {
-            await job.Process(payload, default);
-            mapper.VerifyNoOtherCalls();
-            logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Test/TestbeskedType1") &&
-                    state.ToString()!.Contains(MessageId.ToString()) && !state.ToString()!.Contains("<")),
-                null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
-        }
-        else
-        {
-            await Assert.ThrowsAsync<InvalidOperationException>(() => job.Process(payload, default));
-            logger.VerifyNoOtherCalls();
-        }
-        repository.VerifyNoOtherCalls();
-        organizations.VerifyNoOtherCalls();
-        identities.VerifyNoOtherCalls();
-    }
-
     [Theory]
     [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", "1.0", 20)]
     [InlineData("7654895C-A3F3-4C77-8AFD-4C77330F963C", "1.0", 20)]
@@ -171,11 +96,11 @@ public class BeskedfordelerTest
     public async Task Receive_TestMessage_LogsWithoutEnqueue(string messageType, string version, int expectedStatus)
     {
         var xml = Input();
-        xml.Descendants(BeskedfordelerResponse.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
-        xml.Descendants(BeskedfordelerResponse.Envelope + "BeskedVersion").Single().Value = version;
+        xml.Descendants(BeskedfordelerMessage.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
+        xml.Descendants(BeskedfordelerMessage.Envelope + "BeskedVersion").Single().Value = version;
         var client = new Mock<IBackgroundJobClient>(MockBehavior.Strict);
         var logger = new Mock<ILogger<BeskedfordelerService>>();
-        var service = new BeskedfordelerService(Reader(), client.Object, logger.Object);
+        var service = new BeskedfordelerService(Reader(), new HangfireBeskedfordelerJobRepository(client.Object), logger.Object);
         using var body = new MemoryStream(Encoding.UTF8.GetBytes(xml.ToString()));
 
         var status = await service.Receive(body, CancellationToken.None);
@@ -200,9 +125,9 @@ public class BeskedfordelerTest
         client.Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
             .Returns(() => fails ? throw new InvalidOperationException(sensitiveDetail) : "job-123");
         var logger = new Mock<ILogger<BeskedfordelerService>>();
-        var service = new BeskedfordelerService(Reader(), client.Object, logger.Object);
+        var service = new BeskedfordelerService(Reader(), new HangfireBeskedfordelerJobRepository(client.Object), logger.Object);
         var xml = Input();
-        xml.Descendants(BeskedfordelerResponse.Envelope + "Base64").Single().Value =
+        xml.Descendants(BeskedfordelerMessage.Envelope + "Base64").Single().Value =
             Convert.ToBase64String(Encoding.UTF8.GetBytes(sensitiveDetail));
         using var body = new MemoryStream(Encoding.UTF8.GetBytes(xml.ToString()));
 
@@ -234,7 +159,7 @@ public class BeskedfordelerTest
         var context = new DefaultHttpContext { TraceIdentifier = "rejected-callback" };
         context.Request.ContentType = "private-content-type";
         var controller = new BeskedfordelerV2Controller(
-            new BeskedfordelerService(Reader(), client.Object, NullLogger<BeskedfordelerService>.Instance),
+            new BeskedfordelerService(Reader(), new HangfireBeskedfordelerJobRepository(client.Object), NullLogger<BeskedfordelerService>.Instance),
             logger.Object)
         {
             ControllerContext = new ControllerContext { HttpContext = context }
@@ -252,41 +177,6 @@ public class BeskedfordelerTest
             Assert.DoesNotContain("private-content-type", entry.Arguments[2].ToString());
         });
         Assert.Contains(logs, entry => entry.Arguments[2].ToString()!.Contains("callback rejected"));
-    }
-
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task Process_ReplayPreservesOneEvent_ConflictsFailVisibly(bool conflict)
-    {
-        var organizations = new Mock<IOrganizationRepository>();
-        organizations.Setup(x => x.GetByUuid(OrganizationId)).Returns(new Organization { Id = 1, Uuid = OrganizationId, FkOrgUsersConnected = true });
-        var identities = new Mock<ISsoUserIdentityRepository>();
-        identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(Maybe<SsoUserIdentity>.None);
-        var repository = new Mock<IExternalUserChangeRepository>();
-        ExternalUserChange? saved = null;
-        repository.Setup(x => x.FindByMessageId(MessageId.ToString("D"))).Returns(() => saved);
-        repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>())).Returns((ExternalUserChange value) => saved = value);
-        var registeredOrganizations = new Mock<IGenericRepository<Organization>>();
-        registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[]
-        {
-            new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = true }
-        }.AsQueryable());
-        var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
-            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object),
-            NullLogger<BeskedfordelerJob>.Instance);
-        var xml = Input();
-        string Payload() => Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
-        await job.Process(Payload(), default);
-        Assert.Equal(ExternalUserChangeStatus.Pending, saved!.Status);
-        Assert.Null(saved.UserId);
-        if (conflict)
-        {
-            xml.Descendants(BeskedfordelerResponse.Envelope + "ObjektId").Single().Elements().Single().Value = Guid.NewGuid().ToString();
-            await Assert.ThrowsAsync<InvalidOperationException>(() => job.Process(Payload(), default));
-        }
-        else await job.Process(Payload(), default);
-        repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Once);
     }
 
     [Theory]
@@ -382,7 +272,7 @@ public class BeskedfordelerTest
     }
     private static BeskedfordelerV2Controller Controller(HttpContext context,
         IBackgroundJobClient client) =>
-        new(new BeskedfordelerService(Reader(), client, NullLogger<BeskedfordelerService>.Instance),
+        new(new BeskedfordelerService(Reader(), new HangfireBeskedfordelerJobRepository(client), NullLogger<BeskedfordelerService>.Instance),
             NullLogger<BeskedfordelerV2Controller>.Instance)
         {
             ControllerContext = new ControllerContext { HttpContext = context }
@@ -396,15 +286,15 @@ public class BeskedfordelerTest
             <b:BeskedVersion>1.0</b:BeskedVersion>
             <b:Beskedkuvert>
               <b:Filtreringsdata>
-                <b:Beskedtype><s:UUIDIdentifikator>{{OrgBrugerDeletionMapper.MessageType}}</s:UUIDIdentifikator></b:Beskedtype>
+                <b:Beskedtype><s:UUIDIdentifikator>94ef3c82-10e9-4d12-a9d9-7a7242d5ba83</s:UUIDIdentifikator></b:Beskedtype>
                 <b:BeskedAnsvarligAktoer><s:UUIDIdentifikator>dddddddd-dddd-dddd-dddd-dddddddddddd</s:UUIDIdentifikator></b:BeskedAnsvarligAktoer>
                 <b:TilladtModtager><s:URNIdentifikator>urn:oio:cvr-nr:12345678</s:URNIdentifikator></b:TilladtModtager>
                 <b:ObjektRegistrering>
                   <b:Registreringstidspunkt><s:TidsstempelDatoTid>2023-06-15T16:41:34.000+02:00</s:TidsstempelDatoTid></b:Registreringstidspunkt>
                   <b:ObjektAnsvarligMyndighed><s:URNIdentifikator>urn:oio:cvr-nr:12345678</s:URNIdentifikator></b:ObjektAnsvarligMyndighed>
                   <b:ObjektId><s:UUIDIdentifikator>{{UserId}}</s:UUIDIdentifikator></b:ObjektId>
-                  <b:ObjektType><s:UUIDIdentifikator>{{OrgBrugerDeletionMapper.UserObjectType}}</s:UUIDIdentifikator></b:ObjektType>
-                  <b:ObjektHandling><s:UUIDIdentifikator>{{OrgBrugerDeletionMapper.UserDeactivated}}</s:UUIDIdentifikator></b:ObjektHandling>
+                  <b:ObjektType><s:UUIDIdentifikator>2b808769-8d09-4aa3-ac28-f8ac3526010f</s:UUIDIdentifikator></b:ObjektType>
+                  <b:ObjektHandling><s:UUIDIdentifikator>9edb0c34-36e2-4d87-aba8-3ca7ade718ee</s:UUIDIdentifikator></b:ObjektHandling>
                 </b:ObjektRegistrering>
               </b:Filtreringsdata>
               <b:Leveranceinformation />
@@ -414,3 +304,4 @@ public class BeskedfordelerTest
         </ModtagBeskedInput>
         """);
 }
+

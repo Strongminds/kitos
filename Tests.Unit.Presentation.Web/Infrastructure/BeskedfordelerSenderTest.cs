@@ -1,3 +1,4 @@
+using Kitos.Integration.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,7 +46,7 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
                 Assert.Contains(messageId.ToString("D"), payload);
                 foreach (var time in message.Descendants(TestMessage.Sagdok + "TidsstempelDatoTid"))
                     Assert.InRange(DateTimeOffset.Parse(time.Value), before, after);
-                var input = new XElement(BeskedfordelerResponse.Sts + "ModtagBeskedInput", message);
+                var input = new XElement(BeskedfordelerMessage.Sts + "ModtagBeskedInput", message);
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(input.ToString()));
                 await reader.Read(stream, CancellationToken.None);
             }

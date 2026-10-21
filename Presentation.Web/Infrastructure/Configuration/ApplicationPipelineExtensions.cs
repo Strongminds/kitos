@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Presentation.Web.Infrastructure.Middleware;
-using Presentation.Web.Infrastructure.Attributes;
 using Serilog;
 using System;
 using System.Threading;
@@ -87,13 +86,10 @@ namespace Presentation.Web.Infrastructure.Configuration
 
             // Custom middleware (after auth so IAuthenticationContext is resolved with populated HttpContext.User)
             app.UseMiddleware<CorrelationIdMiddleware>();
-            app.UseWhen(context => context.GetEndpoint()?.Metadata.GetMetadata<IntegrationApiAttribute>() == null, userApi =>
-            {
-                userApi.UseMiddleware<ApiRequestsLoggingMiddleware>();
-                userApi.UseMiddleware<DenyUsersWithoutApiAccessMiddleware>();
-                userApi.UseMiddleware<DenyModificationsThroughApiMiddleware>();
-                userApi.UseMiddleware<DenyTooLargeQueriesMiddleware>();
-            });
+            app.UseMiddleware<ApiRequestsLoggingMiddleware>();
+            app.UseMiddleware<DenyUsersWithoutApiAccessMiddleware>();
+            app.UseMiddleware<DenyModificationsThroughApiMiddleware>();
+            app.UseMiddleware<DenyTooLargeQueriesMiddleware>();
 
             return app;
         }
@@ -297,5 +293,3 @@ namespace Presentation.Web.Infrastructure.Configuration
         }
     }
 }
-
-

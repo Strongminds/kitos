@@ -1,3 +1,4 @@
+using Kitos.Integration.Contracts;
 using System;
 using System.Linq;
 using Core.ApplicationServices.Model.Users;
@@ -17,8 +18,8 @@ public sealed class OrgBrugerDeletionMapper(IGenericRepository<Organization> org
 
     public ExternalUserChangeInput? Map(XElement validatedInput)
     {
-        var envelope = BeskedfordelerResponse.Envelope;
-        var sagdok = BeskedfordelerResponse.Sagdok;
+        var envelope = BeskedfordelerMessage.Envelope;
+        var sagdok = BeskedfordelerMessage.Sagdok;
         var message = validatedInput.Element(envelope + "Haendelsesbesked");
         var filter = message?.Element(envelope + "Beskedkuvert")?.Element(envelope + "Filtreringsdata");
         if (ReadUuid(filter, "Beskedtype") != MessageType) return null;
@@ -62,12 +63,12 @@ public sealed class OrgBrugerDeletionMapper(IGenericRepository<Organization> org
     }
 
     private static Guid ReadUuid(XElement? parent, string field) =>
-        Guid.TryParse(parent?.Element(BeskedfordelerResponse.Envelope + field)?
-            .Element(BeskedfordelerResponse.Sagdok + "UUIDIdentifikator")?.Value, out var value) ? value : Guid.Empty;
+        Guid.TryParse(parent?.Element(BeskedfordelerMessage.Envelope + field)?
+            .Element(BeskedfordelerMessage.Sagdok + "UUIDIdentifikator")?.Value, out var value) ? value : Guid.Empty;
 
     private static string? ReadCvr(XElement? identifier)
     {
-        var value = identifier?.Element(BeskedfordelerResponse.Sagdok + "URNIdentifikator")?.Value;
+        var value = identifier?.Element(BeskedfordelerMessage.Sagdok + "URNIdentifikator")?.Value;
         if (value == null) return null;
         foreach (var prefix in new[] { "urn:oio:cvr-nr:", "urn:oio:cvr:" })
             if (value.StartsWith(prefix, StringComparison.Ordinal))

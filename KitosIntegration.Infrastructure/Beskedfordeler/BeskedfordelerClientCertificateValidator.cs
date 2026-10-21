@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.STS.Beskedfordeler;
+namespace KitosIntegration.Infrastructure.Beskedfordeler;
 
 public interface IBeskedfordelerClientCertificateValidator
 {
@@ -60,7 +60,7 @@ public sealed class BeskedfordelerClientCertificateValidator(
                 throw;
             }
         }
-        catch(Exception ex1)
+        catch (Exception ex1)
         {
             logger.LogWarning("Beskedfordeler certificate validation failed. ExceptionType {ExceptionType}.", ex1.GetType().Name);
             throw;

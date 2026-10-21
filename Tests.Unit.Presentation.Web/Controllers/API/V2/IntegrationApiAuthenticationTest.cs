@@ -15,8 +15,10 @@ namespace Tests.Unit.Presentation.Web.Controllers.API.V2;
 
 public class IntegrationApiAuthenticationTest
 {
-    [Fact]
-    public async Task RemovedIngestionRoute_ReturnsNotFound()
+    [Theory]
+    [InlineData("/api/v2/integrations/fk-organisation/user-changes")]
+    [InlineData("/api/v2/integration/beskedfordeler")]
+    public async Task RemovedIngestionRoute_ReturnsNotFound(string route)
     {
         using var host = await new HostBuilder().ConfigureWebHost(web => web.UseTestServer()
             .ConfigureServices(services => services.AddControllers()
@@ -27,7 +29,7 @@ public class IntegrationApiAuthenticationTest
                 app.UseEndpoints(endpoints => endpoints.MapControllers());
             })).StartAsync();
         using var client = host.GetTestClient();
-        using var response = await client.PostAsync("/api/v2/integrations/fk-organisation/user-changes", new StringContent("{}"));
+        using var response = await client.PostAsync(route, new StringContent("{}"));
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.DoesNotContain(typeof(GlobalUserInternalV2Controller).GetMethods(), x => x.Name.Contains("PubSub", StringComparison.Ordinal));
         Assert.Null(typeof(Core.DomainModel.User).GetProperty("IsPubSubUser"));

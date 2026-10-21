@@ -1,3 +1,4 @@
+using Kitos.Integration.Contracts;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,10 +19,10 @@ public sealed class BeskedfordelerXmlReader(XmlSchemaSet schemas)
     {
         var schemas = new XmlSchemaSet { XmlResolver = null };
         schemas.ValidationEventHandler += (_, args) => throw new XmlSchemaException(args.Message);
-        var assembly = typeof(BeskedfordelerXmlReader).Assembly;
+        var assembly = typeof(BeskedfordelerMessage).Assembly;
         var sources = directory == null
             ? assembly.GetManifestResourceNames().Where(name =>
-                name.StartsWith("Infrastructure.STS.Beskedfordeler.Schemas.", StringComparison.Ordinal) &&
+                name.StartsWith("Kitos.Integration.Contracts.Schemas.", StringComparison.Ordinal) &&
                 name.EndsWith(".xsd", StringComparison.Ordinal))
             : Directory.EnumerateFiles(directory, "*.xsd", SearchOption.AllDirectories);
         foreach (var source in sources)
@@ -38,7 +39,7 @@ public sealed class BeskedfordelerXmlReader(XmlSchemaSet schemas)
             schemas.Add(null, reader);
         }
         schemas.Compile();
-        if (!schemas.GlobalElements.Contains(new XmlQualifiedName("ModtagBeskedInput", BeskedfordelerResponse.Sts.NamespaceName)))
+        if (!schemas.GlobalElements.Contains(new XmlQualifiedName("ModtagBeskedInput", BeskedfordelerMessage.Sts.NamespaceName)))
             throw new XmlSchemaException("The complete Beskedfordeler callback schema set is required.");
         return schemas;
     }
@@ -59,7 +60,7 @@ public sealed class BeskedfordelerXmlReader(XmlSchemaSet schemas)
         settings.ValidationEventHandler += (_, args) => throw new XmlSchemaValidationException(args.Message);
         using var reader = XmlReader.Create(body, settings);
         var document = await XDocument.LoadAsync(reader, LoadOptions.None, cancellationToken);
-        if (document.Root?.Name != BeskedfordelerResponse.Sts + "ModtagBeskedInput")
+        if (document.Root?.Name != BeskedfordelerMessage.Sts + "ModtagBeskedInput")
             throw new XmlSchemaValidationException("Expected ModtagBeskedInput.");
         return document.Root;
     }

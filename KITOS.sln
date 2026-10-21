@@ -130,12 +130,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.STS.Beskedfo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.Beskedfordeler", "Tools.Beskedfordeler\Tools.Beskedfordeler.csproj", "{7880F211-6E6B-4592-8F0A-B40F82C14E6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitos.Integration.Contracts", "Kitos.Integration.Contracts\Kitos.Integration.Contracts.csproj", "{C77128C6-1911-44C8-B1D9-C9E0E5F59972}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A76A8E41-74F7-4443-A5F3-059B5414D83B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A76A8E41-74F7-4443-A5F3-059B5414D83B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A76A8E41-74F7-4443-A5F3-059B5414D83B}.Release|Any CPU.ActiveCfg = Release|Any CPU

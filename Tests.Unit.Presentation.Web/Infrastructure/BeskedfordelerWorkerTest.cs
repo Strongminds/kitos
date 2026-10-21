@@ -1,0 +1,207 @@
+using Kitos.Integration.Contracts;
+using System;
+using Core.DomainServices;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using Core.Abstractions.Types;
+using Core.ApplicationServices.Users;
+using Core.DomainModel.Organization;
+using Core.DomainModel.SSO;
+using Core.DomainModel.Users;
+using Core.DomainServices.Repositories.Organization;
+using Core.DomainServices.Repositories.SSO;
+using Core.DomainServices.Users;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
+using Microsoft.AspNetCore.Http;
+
+using Moq;
+using Infrastructure.STS.Beskedfordeler;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Xunit;
+
+namespace Tests.Unit.Presentation.Web.Infrastructure;
+
+public class BeskedfordelerWorkerTest
+{
+    private static readonly Guid OrganizationId = Guid.NewGuid();
+    private static readonly Guid UserId = Guid.NewGuid();
+    private static readonly Guid MessageId = Guid.NewGuid();
+    private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas());
+
+    [Fact]
+    public void LoadSchemas_WithoutDirectory_CompilesCompleteEmbeddedSchemaSet()
+    {
+        var schemas = BeskedfordelerXmlReader.LoadSchemas();
+
+        Assert.True(schemas.IsCompiled);
+        Assert.True(schemas.GlobalElements.Contains(new System.Xml.XmlQualifiedName(
+            "ModtagBeskedInput", BeskedfordelerMessage.Sts.NamespaceName)));
+        Assert.Equal(7, typeof(BeskedfordelerMessage).Assembly.GetManifestResourceNames()
+            .Count(name => name.EndsWith(".xsd", StringComparison.Ordinal)));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Map_RequiresExactlyOneSignedUpOrganizationForSourceCvr(int matchingSignups)
+    {
+        var organizations = Enumerable.Range(0, matchingSignups)
+            .Select(_ => new Organization { Uuid = Guid.NewGuid(), Cvr = "12345678", FkOrgUsersConnected = true })
+            .Concat(new[]
+            {
+                new Organization { Uuid = Guid.NewGuid(), Cvr = "12345678", FkOrgUsersConnected = false },
+                new Organization { Uuid = Guid.NewGuid(), Cvr = "87654321", FkOrgUsersConnected = true }
+            }).ToArray();
+        var repository = new Mock<IGenericRepository<Organization>>();
+        repository.Setup(x => x.AsQueryable()).Returns(organizations.AsQueryable());
+        var mapper = new OrgBrugerDeletionMapper(repository.Object);
+
+        var result = mapper.Map(Input());
+
+        if (matchingSignups == 1)
+        {
+            Assert.NotNull(result);
+            Assert.Equal(organizations[0].Uuid, result.OrganizationUuid);
+        }
+        else Assert.Null(result);
+    }
+
+    [Fact]
+    public void Map_ObservesSignupAndDisconnectWithoutRestart()
+    {
+        var organization = new Organization { Uuid = OrganizationId, Cvr = "12345678" };
+        var repository = new Mock<IGenericRepository<Organization>>();
+        repository.Setup(x => x.AsQueryable()).Returns(new[] { organization }.AsQueryable());
+        var mapper = new OrgBrugerDeletionMapper(repository.Object);
+
+        Assert.Null(mapper.Map(Input()));
+        organization.FkOrgUsersConnected = true;
+        Assert.Equal(OrganizationId, mapper.Map(Input())!.OrganizationUuid);
+        organization.FkOrgUsersConnected = false;
+        Assert.Null(mapper.Map(Input()));
+    }
+
+    [Theory]
+    [InlineData("7654895c-a3f3-4c77-8afd-4c77330f963c", true)]
+    [InlineData("7654895C-A3F3-4C77-8AFD-4C77330F963C", true)]
+    [InlineData("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", false)]
+    public async Task Process_PreviouslyQueuedTestMessage_LogsWarningWithoutUserChanges(string messageType, bool supported)
+    {
+        var xml = Input();
+        xml.Descendants(BeskedfordelerMessage.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
+        var mapper = new Mock<IBeskedfordelerDeletionMapper>();
+        var repository = new Mock<IExternalUserChangeRepository>(MockBehavior.Strict);
+        var organizations = new Mock<IOrganizationRepository>(MockBehavior.Strict);
+        var identities = new Mock<ISsoUserIdentityRepository>(MockBehavior.Strict);
+        var logger = new Mock<ILogger<BeskedfordelerJob>>();
+        var job = new BeskedfordelerJob(Reader(), mapper.Object,
+            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object), logger.Object);
+        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
+        if (supported)
+        {
+            await job.Process(payload, default);
+            mapper.VerifyNoOtherCalls();
+            logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Test/TestbeskedType1") &&
+                    state.ToString()!.Contains(MessageId.ToString()) && !state.ToString()!.Contains("<")),
+                null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+        }
+        else
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(() => job.Process(payload, default));
+            logger.VerifyNoOtherCalls();
+        }
+        repository.VerifyNoOtherCalls();
+        organizations.VerifyNoOtherCalls();
+        identities.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Process_ReplayPreservesOneEvent_ConflictsFailVisibly(bool conflict)
+    {
+        var organizations = new Mock<IOrganizationRepository>();
+        organizations.Setup(x => x.GetByUuid(OrganizationId)).Returns(new Organization { Id = 1, Uuid = OrganizationId, FkOrgUsersConnected = true });
+        var identities = new Mock<ISsoUserIdentityRepository>();
+        identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(Maybe<SsoUserIdentity>.None);
+        var repository = new Mock<IExternalUserChangeRepository>();
+        ExternalUserChange? saved = null;
+        repository.Setup(x => x.FindByMessageId(MessageId.ToString("D"))).Returns(() => saved);
+        repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>())).Returns((ExternalUserChange value) => saved = value);
+        var registeredOrganizations = new Mock<IGenericRepository<Organization>>();
+        registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[]
+        {
+            new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = true }
+        }.AsQueryable());
+        var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
+            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object),
+            NullLogger<BeskedfordelerJob>.Instance);
+        var xml = Input();
+        string Payload() => Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
+        Task ExecuteSerializedJob()
+        {
+            var payload = Payload();
+            var queued = Job.FromExpression<IBeskedfordelerJob>(worker => worker.Process(payload, CancellationToken.None));
+            var restored = Hangfire.Storage.InvocationData.SerializeJob(queued).DeserializeJob();
+            return Assert.IsAssignableFrom<Task>(restored.Method.Invoke(job, restored.Args.ToArray()));
+        }
+        await ExecuteSerializedJob();
+        Assert.Equal(ExternalUserChangeStatus.Pending, saved!.Status);
+        Assert.Null(saved.UserId);
+        if (conflict)
+        {
+            xml.Descendants(BeskedfordelerMessage.Envelope + "ObjektId").Single().Elements().Single().Value = Guid.NewGuid().ToString();
+            await Assert.ThrowsAsync<InvalidOperationException>(ExecuteSerializedJob);
+        }
+        else await ExecuteSerializedJob();
+        repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData("<!DOCTYPE a [<!ENTITY x SYSTEM 'file:///secret'>]><a>&x;</a>")]
+    [InlineData("<invalid />")]
+    public async Task Read_UnsafeOrUnknownXml_Rejects(string xml)
+    {
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml));
+        await Assert.ThrowsAnyAsync<Exception>(() => Reader().Read(stream, default));
+    }
+    // Synthetic, schema-valid fixture based on SF1500 ORG_Bruger 1.0 pp. 5-9; not captured production data.
+    // The arbitrary audit payload and actor are deliberately unrelated to the affected user/municipality.
+    private static XElement Input() => XElement.Parse($$"""
+        <ModtagBeskedInput xmlns="urn:oio:sts:1.0.0" xmlns:b="urn:oio:besked:kuvert:1.0" xmlns:s="urn:oio:sagdok:3.0.0">
+          <b:Haendelsesbesked>
+            <b:BeskedId><s:UUIDIdentifikator>{{MessageId}}</s:UUIDIdentifikator></b:BeskedId>
+            <b:BeskedVersion>1.0</b:BeskedVersion>
+            <b:Beskedkuvert>
+              <b:Filtreringsdata>
+                <b:Beskedtype><s:UUIDIdentifikator>{{OrgBrugerDeletionMapper.MessageType}}</s:UUIDIdentifikator></b:Beskedtype>
+                <b:BeskedAnsvarligAktoer><s:UUIDIdentifikator>dddddddd-dddd-dddd-dddd-dddddddddddd</s:UUIDIdentifikator></b:BeskedAnsvarligAktoer>
+                <b:TilladtModtager><s:URNIdentifikator>urn:oio:cvr-nr:12345678</s:URNIdentifikator></b:TilladtModtager>
+                <b:ObjektRegistrering>
+                  <b:Registreringstidspunkt><s:TidsstempelDatoTid>2023-06-15T16:41:34.000+02:00</s:TidsstempelDatoTid></b:Registreringstidspunkt>
+                  <b:ObjektAnsvarligMyndighed><s:URNIdentifikator>urn:oio:cvr-nr:12345678</s:URNIdentifikator></b:ObjektAnsvarligMyndighed>
+                  <b:ObjektId><s:UUIDIdentifikator>{{UserId}}</s:UUIDIdentifikator></b:ObjektId>
+                  <b:ObjektType><s:UUIDIdentifikator>{{OrgBrugerDeletionMapper.UserObjectType}}</s:UUIDIdentifikator></b:ObjektType>
+                  <b:ObjektHandling><s:UUIDIdentifikator>{{OrgBrugerDeletionMapper.UserDeactivated}}</s:UUIDIdentifikator></b:ObjektHandling>
+                </b:ObjektRegistrering>
+              </b:Filtreringsdata>
+              <b:Leveranceinformation />
+            </b:Beskedkuvert>
+            <b:Beskeddata><b:Base64 encoding="UTF-8">PGF1ZGl0IC8+</b:Base64></b:Beskeddata>
+          </b:Haendelsesbesked>
+        </ModtagBeskedInput>
+        """);
+}
