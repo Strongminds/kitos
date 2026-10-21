@@ -459,8 +459,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     ? MapEnumChoice(source.HostedAt, HostedAtMappingExtensions.ToHostedAt)
                     : OptionalValueChange<HostedAt?>.None,
 
-                LicensingAndCodeModels = rule.MustUpdate(x => x.General!.LicensingAndCodeModels) 
-                    ? (MapLicensingAndCodeModels(source?.LicensingAndCodeModels) ?? []).AsChangedValue() 
+                LicensingAndCodeModels = rule.MustUpdate(x => x.General!.LicensingAndCodeModels)
+                    ? (MapLicensingAndCodeModels(source?.LicensingAndCodeModels) ?? []).AsChangedValue()
                     : OptionalValueChange<IEnumerable<LicensingAndCodeModel>>.None
             };
         }
@@ -476,7 +476,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 relationData.AssociatedContractUuid,
                 relationData.RelationFrequencyUuid,
                 relationData.Description!,
-                relationData.UrlReference!
+                relationData.UrlReference!,
+                relationData.SystemRelationDirection?.ToSystemRelationDirection()
                 );
         }
 

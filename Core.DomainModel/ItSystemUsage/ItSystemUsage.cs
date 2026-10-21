@@ -300,7 +300,8 @@ namespace Core.DomainModel.ItSystemUsage
             CriticalityFieldsLastChanged = DateTime.UtcNow;
         }
 
-        public void UpdateCriticalityLevelDocumentationUrl(string value) {
+        public void UpdateCriticalityLevelDocumentationUrl(string value)
+        {
             if (value == CriticalityLevelDocumentationUrl) return;
             CriticalityLevelDocumentationUrl = value;
             SetCriticalityFieldsLastChanged();
@@ -415,12 +416,16 @@ namespace Core.DomainModel.ItSystemUsage
             string description,
             string reference,
             Maybe<RelationFrequencyType> targetFrequency,
-            Maybe<ItContract.ItContract> targetContract)
+            Maybe<ItContract.ItContract> targetContract,
+            SystemRelationDirection? systemRelationDirection = null)
         {
             if (toSystemUsage == null)
                 throw new ArgumentNullException(nameof(toSystemUsage));
 
-            var newRelation = new SystemRelation(this);
+            var newRelation = new SystemRelation(this)
+            {
+                SystemRelationDirection = systemRelationDirection
+            };
 
             var updateRelationResult = UpdateRelation(newRelation, toSystemUsage, description, reference, relationInterface, targetContract, targetFrequency);
 
@@ -1329,7 +1334,7 @@ namespace Core.DomainModel.ItSystemUsage
                 : Maybe<ItSystemUsageValidationError>.None;
         }
 
-            private Maybe<ItSystemUsageValidationError> CheckContractValidity()
+        private Maybe<ItSystemUsageValidationError> CheckContractValidity()
         {
             return MainContract?.ItContract?.IsActive == false
                 ? ItSystemUsageValidationError.MainContractNotActive

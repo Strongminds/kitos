@@ -122,11 +122,17 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 {
                     ToSystemUsageUuid = systemUsage1.Uuid,
                     RelationInterfaceUuid = interface1.Uuid,
+                    SystemRelationDirection = SystemRelationDirectionChoice.IncomingData
                 },
                 new ()
                 {
                     ToSystemUsageUuid = systemUsage1.Uuid,
                     RelationInterfaceUuid = interface2.Uuid,
+                    SystemRelationDirection = SystemRelationDirectionChoice.BidirectionalData
+                },
+                new ()
+                {
+                    ToSystemUsageUuid = systemUsage1.Uuid
                 }
             };
 
@@ -134,9 +140,12 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var result = (await response.ReadResponseBodyAsAsync<IEnumerable<OutgoingSystemRelationResponseDTO>>()).ToList();
 
-            Assert.Equal(2, result.Count);
+            Assert.Equal(3, result.Count);
             Assert.Contains(result, x => x.RelationInterface?.Uuid == interface1.Uuid);
             Assert.Contains(result, x => x.RelationInterface?.Uuid == interface2.Uuid);
+            Assert.Contains(result, x => x.SystemRelationDirection == SystemRelationDirectionChoice.IncomingData);
+            Assert.Contains(result, x => x.SystemRelationDirection == SystemRelationDirectionChoice.BidirectionalData);
+            Assert.Contains(result, x => x.SystemRelationDirection == null);
         }
 
         [Fact]
@@ -2694,7 +2703,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
         {
             var expectedList = expected.ToList();
             var actualList = actual.ToList();
-            
+
             Assert.Equal(expectedList.Count, actualList.Count);
             foreach (var expectedRight in expectedList)
             {
