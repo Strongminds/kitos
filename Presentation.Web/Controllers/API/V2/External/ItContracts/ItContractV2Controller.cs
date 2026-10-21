@@ -155,6 +155,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts
                     .ThenInclude(stream => stream.OrganizationUnit)
                         .ThenInclude(unit => unit.Parent)
                 .Include(contract => contract.ExternalReferences)
+                .Include(contract => contract.InvoiceDates)
                 .AsSplitQuery()
                 .OrderApiResultsByDefaultConventions(changedSinceGtEq.HasValue, orderByProperty)
                 .Page(paginationQuery)
