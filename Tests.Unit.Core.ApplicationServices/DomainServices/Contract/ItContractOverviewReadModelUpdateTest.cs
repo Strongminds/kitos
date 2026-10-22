@@ -129,7 +129,9 @@ namespace Tests.Unit.Core.DomainServices.Contract
             Assert.True(source.UpdateInvoiceSchedule(frequency,
                 Enumerable.Range(1, periodCount).Reverse().Select(period => new ItContractInvoiceDate
                 {
-                    Period = period, Month = period * (12 / periodCount), Day = 20 + period
+                    Period = period,
+                    Month = period * (12 / periodCount),
+                    Day = 20 + period
                 })).IsNone);
             _sut.Apply(source, destination);
 

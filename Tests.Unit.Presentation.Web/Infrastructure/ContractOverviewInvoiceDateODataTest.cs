@@ -79,5 +79,6 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
             var response = Assert.IsType<OkObjectResult>(controller.GetByOrganizationId(1, filterByUnit ? 2 : null));
 
             Assert.Same(query, response.Value);
-        }    }
+        }
+    }
 }
