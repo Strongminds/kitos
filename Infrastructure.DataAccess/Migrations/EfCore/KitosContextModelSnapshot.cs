@@ -2408,11 +2408,29 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("InternalPaymentOrganizationUnitsCsv")
                         .HasColumnType("text");
 
-                    b.Property<string>("InvoiceDates")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("");
+                    b.Property<int?>("InvoiceDate1Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate1Month")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate2Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate2Month")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate3Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate3Month")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate4Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("InvoiceDate4Month")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("InvoiceFrequency")
                         .HasColumnType("integer");
@@ -9352,6 +9370,31 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasForeignKey("SourceEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsMany("Core.DomainModel.ItContract.Read.ItContractOverviewInvoiceDateReadModel", "InvoiceDates", b1 =>
+                        {
+                            b1.Property<int>("ItContractOverviewReadModelId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<int>("Day");
+
+                            b1.Property<int>("Month");
+
+                            b1.HasKey("ItContractOverviewReadModelId", "__synthesizedOrdinal");
+
+                            b1.ToTable("ItContractOverviewReadModels", "dbo");
+
+                            b1
+                                .ToJson("InvoiceDates")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ItContractOverviewReadModelId");
+                        });
+
+                    b.Navigation("InvoiceDates");
 
                     b.Navigation("Organization");
 

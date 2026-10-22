@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
@@ -126,8 +126,7 @@ namespace Core.DomainServices.Contract
             destination.PaymentFrequencyUuid = source.PaymentFreqency?.Uuid;
             destination.PaymentFrequencyName = source.PaymentFreqency?.Name;
             destination.InvoiceFrequency = source.InvoiceFrequency;
-            destination.InvoiceDates = string.Join("; ", source.InvoiceDates.OrderBy(x => x.Period).Select(x =>
-                $"{GetInvoicePeriodLabel(source.InvoiceFrequency, x.Period)}: {x.Day:00}-{x.Month:00}"));
+            MapInvoiceDates(source, destination);
 
             //Payment organization units
             destination.ExternalPaymentOrganizationUnitsCsv = ToCommaSeparatedOrganizationUnitNames(source.ExternEconomyStreams);
@@ -147,15 +146,23 @@ namespace Core.DomainServices.Contract
             destination.TerminationDeadlineName = source.TerminationDeadline?.Name;
         }
 
-        private static string GetInvoicePeriodLabel(InvoiceFrequency? frequency, int period)
+        private static void MapInvoiceDates(ItContract source, ItContractOverviewReadModel destination)
         {
-            return frequency switch
-            {
-                InvoiceFrequency.Yearly => "Årligt",
-                InvoiceFrequency.HalfYearly => $"{period}. halvår",
-                InvoiceFrequency.Quarterly => $"{period}. kvartal",
-                _ => throw new ArgumentOutOfRangeException(nameof(frequency), frequency, "Invoice dates require a valid frequency")
-            };
+            destination.InvoiceDates = source.InvoiceDates.OrderBy(x => x.Period)
+                .Select(x => new ItContractOverviewInvoiceDateReadModel { Month = x.Month, Day = x.Day })
+                .ToList();
+            var invoiceDate1 = source.InvoiceDates.SingleOrDefault(x => x.Period == 1);
+            var invoiceDate2 = source.InvoiceDates.SingleOrDefault(x => x.Period == 2);
+            var invoiceDate3 = source.InvoiceDates.SingleOrDefault(x => x.Period == 3);
+            var invoiceDate4 = source.InvoiceDates.SingleOrDefault(x => x.Period == 4);
+            destination.InvoiceDate1Month = invoiceDate1?.Month;
+            destination.InvoiceDate1Day = invoiceDate1?.Day;
+            destination.InvoiceDate2Month = invoiceDate2?.Month;
+            destination.InvoiceDate2Day = invoiceDate2?.Day;
+            destination.InvoiceDate3Month = invoiceDate3?.Month;
+            destination.InvoiceDate3Day = invoiceDate3?.Day;
+            destination.InvoiceDate4Month = invoiceDate4?.Month;
+            destination.InvoiceDate4Day = invoiceDate4?.Day;
         }
 
         private void MapSystemRelations(ItContract source, ItContractOverviewReadModel destination)

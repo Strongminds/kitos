@@ -87,7 +87,7 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.Property(x => x.ExternalPaymentOrganizationUnitsCsv);
             builder.Property(x => x.InvoiceFrequency);
-            builder.Property(x => x.InvoiceDates).IsRequired().HasDefaultValue("");
+            builder.OwnsMany(x => x.InvoiceDates, dates => dates.ToJson());
             builder.Property(x => x.InternalPaymentOrganizationUnitsCsv);
             builder.Property(x => x.ItSystemUsagesSystemUuidCsv);
 

@@ -31,7 +31,7 @@ namespace Tests.Unit.Core.DataAccess
             Assert.True(foreignKey.IsRequired);
             var overview = context.Model.FindEntityType(typeof(ItContractOverviewReadModel));
             Assert.NotNull(overview);
-            Assert.Equal("", overview.FindProperty(nameof(ItContractOverviewReadModel.InvoiceDates))!.GetDefaultValue());
+            Assert.Equal("InvoiceDates", overview.FindNavigation(nameof(ItContractOverviewReadModel.InvoiceDates))!.TargetEntityType.GetContainerColumnName());
         }
 
         [Fact]
@@ -59,6 +59,61 @@ namespace Tests.Unit.Core.DataAccess
             Assert.Contains("\"Day\" integer NOT NULL", sql);
             Assert.Contains("ON DELETE CASCADE", sql);
             Assert.DoesNotContain("ALTER COLUMN", sql);
+        }
+
+        [Fact]
+        public void Overview_InvoiceDates_Can_Filter_And_Order_By_Numeric_Date_Parts()
+        {
+            using var context = CreateContext();
+            var sql = context.ItContractOverviewReadModels
+                .Where(x => x.InvoiceDates.Any(date => date.Month == 2 && date.Day == 29))
+                .OrderBy(x => x.InvoiceDates.Min(date => date.Month))
+                .ThenBy(x => x.InvoiceDates.Min(date => date.Day))
+                .ToQueryString();
+
+            Assert.Contains("InvoiceDates", sql);
+            Assert.Contains("Month", sql);
+            Assert.Contains("Day", sql);
+            Assert.Contains("ORDER BY", sql);
+        }
+
+        [Fact]
+        public void Overview_Invoice_Periods_Are_Nullable_Integer_Columns_And_Migration_Backfills_All_Periods()
+        {
+            using var context = CreateContext();
+            var overview = context.Model.FindEntityType(typeof(ItContractOverviewReadModel))!;
+            var migration = new StructureContractOverviewInvoiceDates();
+            var columns = migration.UpOperations.OfType<AddColumnOperation>().ToList();
+            Assert.Equal(8, columns.Count);
+            foreach (var period in Enumerable.Range(1, 4))
+            {
+                foreach (var part in new[] { "Month", "Day" })
+                {
+                    var name = $"InvoiceDate{period}{part}";
+                    var property = overview.FindProperty(name)!;
+                    Assert.True(property.IsNullable);
+                    Assert.Equal("integer", property.GetColumnType());
+                    var column = Assert.Single(columns, x => x.Name == name);
+                    Assert.True(column.IsNullable);
+                    Assert.Equal("integer", column.ColumnType);
+                }
+                Assert.Contains(migration.UpOperations.OfType<SqlOperation>(), operation =>
+                    operation.Sql.Contains($"date.\"Period\" = {period}") &&
+                    operation.Sql.Contains($"\"InvoiceDate{period}Month\"") &&
+                    operation.Sql.Contains($"\"InvoiceDate{period}Day\""));
+            }
+            Assert.Equal(8, migration.DownOperations.OfType<DropColumnOperation>().Count());
+            Assert.DoesNotContain(migration.UpOperations, x => x is AlterColumnOperation || x is DropColumnOperation);
+            var conversion = Assert.IsType<SqlOperation>(migration.UpOperations.First());
+            Assert.Contains("jsonb_agg", conversion.Sql);
+            Assert.Contains("TYPE jsonb", conversion.Sql);
+            var rollback = Assert.IsType<SqlOperation>(migration.DownOperations.Last());
+            Assert.Contains("TYPE text", rollback.Sql);
+            Assert.Contains("string_agg", rollback.Sql);
+
+            var generator = context.GetService<IMigrationsSqlGenerator>();
+            Assert.NotEmpty(generator.Generate(migration.UpOperations));
+            Assert.NotEmpty(generator.Generate(migration.DownOperations));
         }
 
         private static KitosContext CreateContext()

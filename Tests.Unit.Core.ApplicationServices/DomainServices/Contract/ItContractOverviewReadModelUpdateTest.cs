@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel;
@@ -72,10 +72,10 @@ namespace Tests.Unit.Core.DomainServices.Contract
         }
 
         [Theory]
-        [InlineData(InvoiceFrequency.Yearly, 1, 12, "Årligt: 31-12")]
-        [InlineData(InvoiceFrequency.HalfYearly, 2, 12, "2. halvår: 31-12")]
-        [InlineData(InvoiceFrequency.Quarterly, 4, 12, "4. kvartal: 31-12")]
-        public void Apply_InvoiceSchedule_Maps_Frequency_And_Danish_Label(InvoiceFrequency frequency, int period, int month, string expected)
+        [InlineData(InvoiceFrequency.Yearly, 1, 12)]
+        [InlineData(InvoiceFrequency.HalfYearly, 2, 12)]
+        [InlineData(InvoiceFrequency.Quarterly, 4, 12)]
+        public void Apply_InvoiceSchedule_Maps_Frequency_And_Date(InvoiceFrequency frequency, int period, int month)
         {
             var source = new ItContract();
             Assert.True(source.UpdateInvoiceSchedule(frequency,
@@ -85,11 +85,13 @@ namespace Tests.Unit.Core.DomainServices.Contract
             _sut.Apply(source, destination);
 
             Assert.Equal(frequency, destination.InvoiceFrequency);
-            Assert.Equal(expected, destination.InvoiceDates);
+            var date = Assert.Single(destination.InvoiceDates);
+            Assert.Equal(month, date.Month);
+            Assert.Equal(31, date.Day);
         }
 
         [Fact]
-        public void Apply_InvoiceDates_Orders_Partial_Dates_And_Clears_Stale_Text()
+        public void Apply_InvoiceDates_Orders_Partial_Dates_And_Clears_Stale_Dates()
         {
             var source = new ItContract();
             Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, new[]
@@ -101,16 +103,82 @@ namespace Tests.Unit.Core.DomainServices.Contract
 
             _sut.Apply(source, destination);
 
-            Assert.Equal("1. kvartal: 31-03; 3. kvartal: 30-09", destination.InvoiceDates);
+            Assert.Equal(new[] { (3, 31), (9, 30) }, destination.InvoiceDates.Select(x => (x.Month, x.Day)));
             Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
             _sut.Apply(source, destination);
-            Assert.Equal("", destination.InvoiceDates);
+            Assert.Empty(destination.InvoiceDates);
             Assert.Equal(InvoiceFrequency.Quarterly, destination.InvoiceFrequency);
             Assert.True(source.UpdateInvoiceSchedule(null, Array.Empty<ItContractInvoiceDate>()).IsNone);
             _sut.Apply(source, destination);
             Assert.Null(destination.InvoiceFrequency);
         }
 
+        [Theory]
+        [InlineData(InvoiceFrequency.Yearly, 1)]
+        [InlineData(InvoiceFrequency.HalfYearly, 2)]
+        [InlineData(InvoiceFrequency.Quarterly, 4)]
+        public void Apply_InvoiceDates_Maps_Period_Identifiers_And_Clears_Unused_Periods(InvoiceFrequency frequency, int periodCount)
+        {
+            var source = new ItContract();
+            var destination = new ItContractOverviewReadModel();
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+                Enumerable.Range(1, 4).Select(period => new ItContractInvoiceDate { Period = period, Month = period * 3, Day = 15 })).IsNone);
+            _sut.Apply(source, destination);
+
+            // Use reverse input order to ensure mapping is by period, not collection position.
+            Assert.True(source.UpdateInvoiceSchedule(frequency,
+                Enumerable.Range(1, periodCount).Reverse().Select(period => new ItContractInvoiceDate
+                {
+                    Period = period, Month = period * (12 / periodCount), Day = 20 + period
+                })).IsNone);
+            _sut.Apply(source, destination);
+
+            var actual = GetInvoiceDateParts(destination);
+            for (var period = 1; period <= 4; period++)
+            {
+                Assert.Equal(period <= periodCount ? (int?)(period * (12 / periodCount)) : null, actual[period - 1].Month);
+                Assert.Equal(period <= periodCount ? (int?)(20 + period) : null, actual[period - 1].Day);
+            }
+            Assert.Equal(periodCount, destination.InvoiceDates.Count);
+
+            Assert.True(source.UpdateInvoiceSchedule(null, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            _sut.Apply(source, destination);
+            Assert.All(GetInvoiceDateParts(destination), date => { Assert.Null(date.Month); Assert.Null(date.Day); });
+            Assert.Empty(destination.InvoiceDates);
+        }
+
+        [Fact]
+        public void Apply_InvoiceDates_Preserves_Gaps_And_Clears_Removed_Periods()
+        {
+            var source = new ItContract();
+            var destination = new ItContractOverviewReadModel();
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, new[]
+            {
+                new ItContractInvoiceDate { Period = 3, Month = 9, Day = 30 },
+                new ItContractInvoiceDate { Period = 1, Month = 3, Day = 31 }
+            }).IsNone);
+            _sut.Apply(source, destination);
+            Assert.Equal(new (int?, int?)[] { (3, 31), (null, null), (9, 30), (null, null) }, GetInvoiceDateParts(destination));
+
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+                new[] { new ItContractInvoiceDate { Period = 3, Month = 8, Day = 15 } }).IsNone);
+            _sut.Apply(source, destination);
+            Assert.Equal(new (int?, int?)[] { (null, null), (null, null), (8, 15), (null, null) }, GetInvoiceDateParts(destination));
+            var retained = Assert.Single(destination.InvoiceDates);
+            Assert.Equal((8, 15), (retained.Month, retained.Day));
+
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            _sut.Apply(source, destination);
+            Assert.All(GetInvoiceDateParts(destination), date => { Assert.Null(date.Month); Assert.Null(date.Day); });
+        }
+
+        private static (int? Month, int? Day)[] GetInvoiceDateParts(ItContractOverviewReadModel model) => new[]
+        {
+            (model.InvoiceDate1Month, model.InvoiceDate1Day),
+            (model.InvoiceDate2Month, model.InvoiceDate2Day),
+            (model.InvoiceDate3Month, model.InvoiceDate3Day),
+            (model.InvoiceDate4Month, model.InvoiceDate4Day)
+        };
         [Fact]
         public void Apply_Can_Map_IsActive_To_False_When_Invalid_Due_To_Date_Period()
         {
