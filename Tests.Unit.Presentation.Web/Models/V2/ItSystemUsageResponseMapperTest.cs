@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel;
@@ -263,12 +263,24 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             var itSystemUsage = new ItSystemUsage();
             AssignBasicProperties(itSystemUsage);
             var (expectedSensitivePersonData, expectedRegisterTypes) = AssignGDPR(itSystemUsage, withCrossReferences);
+            var responsibleUser = new User { Id = 42, Name = "Responsible", LastName = "User" };
+            responsibleUser.OrganizationRights.Add(new OrganizationRight { OrganizationId = itSystemUsage.OrganizationId });
+            itSystemUsage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.IndividualRecords,
+                PersonalDataDeletionMethod.BySupplierOnRequest, new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "https://procedure", "Procedure",
+                responsibleUser, new DateTime(2026, 10, 22), "https://check", "Check");
 
             //Act
             var dto = _sut.MapSystemUsageDTO(itSystemUsage);
 
             //Assert
             Assert.Equal(dto.GDPR.ProcessingPurpose, itSystemUsage.ProcessingPurpose);
+            Assert.Equal(PersonalDataDeletionCapabilityChoice.IndividualRecords, dto.GDPR.PersonalDataDeletionCapability);
+            Assert.Equal(PersonalDataDeletionMethodChoice.BySupplierOnRequest, dto.GDPR.PersonalDataDeletionMethod);
+            Assert.Equal("30 days", dto.GDPR.PersonalDataDeletionDeadlineType?.Name);
+            Assert.Equal(responsibleUser.Uuid, dto.GDPR.PersonalDataDeletionResponsibleUser?.Uuid);
+            Assert.Equal(itSystemUsage.PersonalDataDeletionVerifiedDate, dto.GDPR.PersonalDataDeletionVerifiedDate);
+            AssertSimpleLink(dto.GDPR.PersonalDataDeletionProcedureDocumentation, "Procedure", "https://procedure");
+            AssertSimpleLink(dto.GDPR.PersonalDataDeletionVerificationDocumentation, "Check", "https://check");
             AssertYesNoDontKnow(dto.GDPR.DPIAConducted, itSystemUsage.DPIA);
             AssertSimpleLink(dto.GDPR.DPIADocumentation, itSystemUsage.DPIASupervisionDocumentationUrlName, itSystemUsage.DPIASupervisionDocumentationUrl);
             AssertSimpleLink(dto.GDPR.DirectoryDocumentation, itSystemUsage.LinkToDirectoryUrlName, itSystemUsage.LinkToDirectoryUrl);

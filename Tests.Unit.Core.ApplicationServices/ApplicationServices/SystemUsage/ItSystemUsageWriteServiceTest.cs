@@ -71,6 +71,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         private readonly Mock<IGenericRepository<ItSystemUsagePersonalData>> _personalDataOptionsRepository;
         private readonly Mock<IItSystemUsageArchiveService> _itSystemArchiveServiceMock;
         private readonly Mock<IDatabaseControl> _databaseControlMock;
+        private readonly Mock<IGenericRepository<User>> _userRepositoryMock = new();
+        private readonly Mock<IOptionsService<ItSystemUsage, PersonalDataDeletionDeadlineType>> _personalDataDeletionDeadlineOptionsService = new();
 
         public ItSystemUsageWriteServiceTest()
         {
@@ -113,7 +115,162 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 _personalDataOptionsRepository.Object,
                 _systemUsageCriticalityLevelOptionsServiceMock.Object,
                 _technicalSystemTypeOptionsServiceMock.Object,
-                _itSystemArchiveServiceMock.Object);
+                _itSystemArchiveServiceMock.Object, _userRepositoryMock.Object, _personalDataDeletionDeadlineOptionsService.Object);
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void PersonalDataDeletion_Validates_User_Assignment(bool exists, bool member)
+        {
+            var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
+            var user = new User { Id = 42, Uuid = A<Guid>() };
+            if (member) user.OrganizationRights.Add(new OrganizationRight { OrganizationId = usage.OrganizationId });
+            _userRepositoryMock.Setup(x => x.AsQueryable()).Returns((exists ? new[] { user } : Array.Empty<User>()).AsQueryable());
+            var deadline = new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" };
+            _personalDataDeletionDeadlineOptionsService.Setup(x => x.GetOptionByUuid(usage.OrganizationId, deadline.Uuid)).Returns((deadline, true));
+            var parameters = new UpdatedSystemUsageGDPRProperties
+            {
+                PersonalDataDeletionCapability = OptionalValueChange<PersonalDataDeletionCapability?>.With(PersonalDataDeletionCapability.IndividualRecords),
+                PersonalDataDeletionMethod = OptionalValueChange<PersonalDataDeletionMethod?>.With(PersonalDataDeletionMethod.ManuallyByOrganization),
+                PersonalDataDeletionDeadlineTypeUuid = OptionalValueChange<Maybe<Guid>>.With(deadline.Uuid),
+                PersonalDataDeletionResponsibleUserUuid = OptionalValueChange<Guid?>.With(user.Uuid),
+                PersonalDataDeletionVerifiedDate = OptionalValueChange<DateTime?>.With(new DateTime(2026, 10, 22)),
+                PersonalDataDeletionProcedureDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(new NamedLink("Procedure", "https://procedure")),
+                PersonalDataDeletionVerificationDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(new NamedLink("Check", "https://check"))
+            };
+            var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));
+            Assert.Equal(exists && member, result.Ok);
+            if (result.Ok)
+            {
+                Assert.Same(user, usage.PersonalDataDeletionResponsibleUser);
+                Assert.Equal(parameters.PersonalDataDeletionMethod.NewValue, usage.PersonalDataDeletionMethod);
+                Assert.Same(deadline, usage.PersonalDataDeletionDeadlineType);
+                Assert.Equal(deadline.Id, usage.PersonalDataDeletionDeadlineTypeId);
+                Assert.Equal(parameters.PersonalDataDeletionVerifiedDate.NewValue, usage.PersonalDataDeletionVerifiedDate);
+                Assert.Equal("Procedure", usage.PersonalDataDeletionProcedureDocumentationUrlName);
+                Assert.Equal("https://procedure", usage.PersonalDataDeletionProcedureDocumentationUrl);
+                Assert.Equal("Check", usage.PersonalDataDeletionVerificationDocumentationUrlName);
+                Assert.Equal("https://check", usage.PersonalDataDeletionVerificationDocumentationUrl);
+                AssertTransactionCommitted(transaction);
+            }
+            else
+            {
+                Assert.Null(usage.PersonalDataDeletionCapability);
+                _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
+            }
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void PersonalDataDeletion_Disabling_Clears_Only_On_Valid_Request(bool disable, bool conflict)
+        {
+            var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
+            usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, PersonalDataDeletionMethod.BySupplierOnRequest,
+                new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "url", "name", null, DateTime.UtcNow, "check", "check name");
+            var parameters = new UpdatedSystemUsageGDPRProperties();
+            if (disable) parameters.PersonalDataDeletionCapability = OptionalValueChange<PersonalDataDeletionCapability?>.With(PersonalDataDeletionCapability.No);
+            if (conflict) parameters.PersonalDataDeletionMethod = OptionalValueChange<PersonalDataDeletionMethod?>.With(PersonalDataDeletionMethod.AutomaticallyBySystem);
+            var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));
+            Assert.Equal(!conflict, result.Ok);
+            Assert.Equal(disable && !conflict ? null : "30 days", usage.PersonalDataDeletionDeadlineType?.Name);
+            if (disable && !conflict)
+            {
+                Assert.Null(usage.PersonalDataDeletionMethod);
+                Assert.Null(usage.PersonalDataDeletionVerifiedDate);
+                Assert.Null(usage.PersonalDataDeletionProcedureDocumentationUrl);
+                Assert.Null(usage.PersonalDataDeletionVerificationDocumentationUrl);
+            }
+            if (conflict) _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void PersonalDataDeletion_Preserves_Omitted_History_And_Allows_Explicit_Clears(bool clear)
+        {
+            var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
+            var user = new User { Id = 42 };
+            user.OrganizationRights.Add(new OrganizationRight { OrganizationId = usage.OrganizationId });
+            usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, PersonalDataDeletionMethod.BySupplierOnRequest,
+                new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "procedure", "Procedure", user, DateTime.UtcNow, "check", "Check");
+            user.OrganizationRights.Clear();
+            user.Deleted = true;
+            var parameters = new UpdatedSystemUsageGDPRProperties();
+            if (clear)
+            {
+                parameters.PersonalDataDeletionMethod = OptionalValueChange<PersonalDataDeletionMethod?>.With(null);
+                parameters.PersonalDataDeletionDeadlineTypeUuid = OptionalValueChange<Maybe<Guid>>.With(Maybe<Guid>.None);
+                parameters.PersonalDataDeletionProcedureDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(Maybe<NamedLink>.None);
+                parameters.PersonalDataDeletionResponsibleUserUuid = OptionalValueChange<Guid?>.With(null);
+                parameters.PersonalDataDeletionVerifiedDate = OptionalValueChange<DateTime?>.With(null);
+                parameters.PersonalDataDeletionVerificationDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(Maybe<NamedLink>.None);
+            }
+            var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));
+            Assert.True(result.Ok);
+            Assert.Equal(PersonalDataDeletionCapability.BulkDeletion, usage.PersonalDataDeletionCapability);
+            Assert.Equal(clear ? null : user, usage.PersonalDataDeletionResponsibleUser);
+            Assert.Equal(clear ? null : "30 days", usage.PersonalDataDeletionDeadlineType?.Name);
+            Assert.Equal(clear, usage.PersonalDataDeletionMethod == null);
+            Assert.Equal(clear, usage.PersonalDataDeletionVerifiedDate == null);
+            Assert.Equal(clear, usage.PersonalDataDeletionProcedureDocumentationUrl == null);
+            Assert.Equal(clear, usage.PersonalDataDeletionVerificationDocumentationUrl == null);
+        }
+
+        [Theory]
+        [InlineData(false, false, false, false)]
+        [InlineData(true, false, false, false)]
+        [InlineData(true, true, false, true)]
+        [InlineData(true, false, true, true)]
+        public void PersonalDataDeletionDeadline_Requires_Available_Option_Unless_Unchanged(
+            bool exists, bool available, bool alreadyAssigned, bool succeeds)
+        {
+            var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
+            var deadline = new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" };
+            usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, null,
+                alreadyAssigned ? deadline : null, null, null, null, null, null, null);
+            _personalDataDeletionDeadlineOptionsService.Setup(x => x.GetOptionByUuid(usage.OrganizationId, deadline.Uuid))
+                .Returns(exists ? (deadline, available) : Maybe<(PersonalDataDeletionDeadlineType, bool)>.None);
+            var parameters = new UpdatedSystemUsageGDPRProperties
+            {
+                PersonalDataDeletionDeadlineTypeUuid = OptionalValueChange<Maybe<Guid>>.With(deadline.Uuid)
+            };
+            var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));
+            Assert.Equal(succeeds, result.Ok);
+            Assert.Equal(succeeds ? deadline : null, usage.PersonalDataDeletionDeadlineType);
+            Assert.Equal(succeeds ? deadline.Id : (int?)null, usage.PersonalDataDeletionDeadlineTypeId);
+            if (succeeds) AssertTransactionCommitted(transaction);
+            else _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData(PersonalDataDeletionCapability.No)]
+        public void PersonalDataDeletionDeadline_Conflicts_Are_Atomic(PersonalDataDeletionCapability? capability)
+        {
+            var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
+            var original = new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" };
+            var replacement = new PersonalDataDeletionDeadlineType { Id = 13, Name = "60 days" };
+            usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, null, original, null, null, null, null, null, null);
+            _personalDataDeletionDeadlineOptionsService.Setup(x => x.GetOptionByUuid(usage.OrganizationId, replacement.Uuid)).Returns((replacement, true));
+            var parameters = new UpdatedSystemUsageGDPRProperties
+            {
+                PersonalDataDeletionCapability = OptionalValueChange<PersonalDataDeletionCapability?>.With(capability),
+                PersonalDataDeletionDeadlineTypeUuid = OptionalValueChange<Maybe<Guid>>.With(replacement.Uuid)
+            };
+            var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));
+            Assert.True(result.Failed);
+            Assert.Equal(PersonalDataDeletionCapability.BulkDeletion, usage.PersonalDataDeletionCapability);
+            Assert.Same(original, usage.PersonalDataDeletionDeadlineType);
+            _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
         }
 
         protected override void OnFixtureCreated(Fixture fixture)

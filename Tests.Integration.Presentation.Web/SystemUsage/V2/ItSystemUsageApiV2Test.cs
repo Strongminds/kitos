@@ -32,6 +32,7 @@ using Presentation.Web.Models.API.V2.Types.Shared;
 using Presentation.Web.Models.API.V2.Types.SystemUsage;
 using Tests.Integration.Presentation.Web.Tools;
 using Tests.Integration.Presentation.Web.Tools.External;
+using Tests.Integration.Presentation.Web.Tools.Internal;
 using Tests.Toolkit.Extensions;
 using Xunit;
 using OrganizationType = Presentation.Web.Models.API.V2.Types.Organization.OrganizationType;
@@ -1197,6 +1198,58 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             var updatedDto = await removeAssignment.ReadResponseBodyAsAsync<ItSystemUsageResponseDTO>();
             var roleAssignment = Assert.Single(updatedDto.Roles);
             MatchExpectedAssignment(roleAssignment, assignment2);
+        }
+
+        [Fact]
+        public async Task PersonalDataDeletion_Rejects_Conflicts_And_Clears_Dependents()
+        {
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var user = await CreateUser(organization);
+            var deadline = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.PersonalDataDeletionDeadlineTypes, "30 days");
+            var updatedDeadline = await GlobalOptionTypeV2Helper.CreateAndActivateGlobalOption(GlobalOptionTypeV2Helper.PersonalDataDeletionDeadlineTypes, "60 days");
+            var input = new GDPRWriteRequestDTO
+            {
+                PersonalDataDeletionCapability = PersonalDataDeletionCapabilityChoice.IndividualRecords,
+                PersonalDataDeletionMethod = PersonalDataDeletionMethodChoice.ManuallyByOrganization,
+                PersonalDataDeletionDeadlineTypeUuid = deadline.Uuid,
+                PersonalDataDeletionResponsibleUserUuid = user.Uuid,
+                PersonalDataDeletionVerifiedDate = new DateTime(2026, 10, 22),
+                PersonalDataDeletionProcedureDocumentation = new SimpleLinkDTO { Name = "Procedure", Url = "https://example.com/procedure" },
+                PersonalDataDeletionVerificationDocumentation = new SimpleLinkDTO { Name = "Check", Url = "https://example.com/check" }
+            };
+            var created = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid, gdpr: input));
+            AssertGdpr(input, (await ItSystemUsageV2Helper.GetSingleAsync(token, created.Uuid)).GDPR);
+
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, new
+            {
+                PersonalDataDeletionCapability = PersonalDataDeletionCapabilityChoice.No,
+                PersonalDataDeletionMethod = PersonalDataDeletionMethodChoice.BySupplierOnRequest
+            }).WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+            AssertGdpr(input, (await ItSystemUsageV2Helper.GetSingleAsync(token, created.Uuid)).GDPR);
+
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, new { PersonalDataDeletionResponsibleUserUuid = Guid.NewGuid() })
+                .WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+            var (_, _, otherOrganization, _) = await CreatePrerequisitesAsync();
+            var otherUser = await CreateUser(otherOrganization);
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, new { PersonalDataDeletionResponsibleUserUuid = otherUser.Uuid })
+                .WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, new
+            {
+                PersonalDataDeletionProcedureDocumentation = new SimpleLinkDTO { Name = new string('x', 151), Url = "https://example.com" }
+            }).WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+            var otherToken = await CreateUserInNewOrgAndGetToken();
+            await ItSystemUsageV2Helper.SendPatchGDPR(otherToken, created.Uuid, new { PersonalDataDeletionDeadlineTypeUuid = updatedDeadline.Uuid })
+                .WithExpectedResponseCode(HttpStatusCode.Forbidden).DisposeAsync();
+
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, new { PersonalDataDeletionDeadlineTypeUuid = updatedDeadline.Uuid })
+                .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            input.PersonalDataDeletionDeadlineTypeUuid = updatedDeadline.Uuid;
+            AssertGdpr(input, (await ItSystemUsageV2Helper.GetSingleAsync(token, created.Uuid)).GDPR);
+
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, new { PersonalDataDeletionCapability = PersonalDataDeletionCapabilityChoice.No })
+                .WithExpectedResponseCode(HttpStatusCode.OK).DisposeAsync();
+            AssertGdpr(new GDPRWriteRequestDTO { PersonalDataDeletionCapability = PersonalDataDeletionCapabilityChoice.No },
+                (await ItSystemUsageV2Helper.GetSingleAsync(token, created.Uuid)).GDPR);
         }
 
         [Fact]
@@ -2809,6 +2862,13 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
 
         private static void AssertGdpr(GDPRWriteRequestDTO gdprInput, GDPRRegistrationsResponseDTO gdprResponse)
         {
+            Assert.Equal(gdprInput.PersonalDataDeletionCapability, gdprResponse.PersonalDataDeletionCapability);
+            Assert.Equal(gdprInput.PersonalDataDeletionMethod, gdprResponse.PersonalDataDeletionMethod);
+            Assert.Equal(gdprInput.PersonalDataDeletionDeadlineTypeUuid, gdprResponse.PersonalDataDeletionDeadlineType?.Uuid);
+            Assert.Equal(gdprInput.PersonalDataDeletionResponsibleUserUuid, gdprResponse.PersonalDataDeletionResponsibleUser?.Uuid);
+            AssertTimestampEqual(gdprInput.PersonalDataDeletionVerifiedDate, gdprResponse.PersonalDataDeletionVerifiedDate);
+            (gdprInput.PersonalDataDeletionProcedureDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.PersonalDataDeletionProcedureDocumentation);
+            (gdprInput.PersonalDataDeletionVerificationDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.PersonalDataDeletionVerificationDocumentation);
             Assert.NotNull(gdprResponse.DataSensitivityLevels);
             Assert.NotNull(gdprResponse.SensitivePersonData);
             Assert.NotNull(gdprResponse.RegisteredDataCategories);
