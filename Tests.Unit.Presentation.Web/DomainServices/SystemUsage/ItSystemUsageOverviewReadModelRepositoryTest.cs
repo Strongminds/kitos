@@ -25,6 +25,17 @@ namespace Tests.Unit.Presentation.Web.DomainServices.SystemUsage
         }
 
         [Fact]
+        public void GetByUserId_Includes_Personal_Data_Deletion_Responsible_User()
+        {
+            var userId = A<int>();
+            var assigned = new ItSystemUsageOverviewReadModel { PersonalDataDeletionResponsibleUserId = userId };
+            var unassigned = new ItSystemUsageOverviewReadModel();
+            _repositoryMock.Setup(x => x.AsQueryable()).Returns(new[] { assigned, unassigned }.AsQueryable());
+
+            Assert.Equal(assigned, Assert.Single(_sut.GetByUserId(userId)));
+        }
+
+        [Fact]
         public void GetReadModelsMustUpdateToChangeActiveState_Returns_ReadModels_Where_Active_State_Is_Stale()
         {
             var inactiveMainContract = new ItContractItSystemUsage

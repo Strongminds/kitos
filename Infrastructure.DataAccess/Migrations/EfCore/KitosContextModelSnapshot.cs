@@ -4940,6 +4940,42 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<Guid?>("ParentItSystemUuid")
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("PersonalDataDeletionCapability")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionDeadlineTypeName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PersonalDataDeletionDeadlineTypeUuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("PersonalDataDeletionMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionProcedureDocumentationName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PersonalDataDeletionProcedureDocumentationUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PersonalDataDeletionResponsibleUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionResponsibleUserName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PersonalDataDeletionResponsibleUserUuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PersonalDataDeletionVerificationDocumentationName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PersonalDataDeletionVerificationDocumentationUrl")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");
 

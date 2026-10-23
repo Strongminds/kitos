@@ -79,6 +79,22 @@ namespace Infrastructure.DataAccess
             AddOptions<SystemUsageCriticalityLevel, ItSystemUsage>(context, context.SystemUsageCriticalityLevelTypes, globalAdmin,
                 "TestCriticality1", "TestCriticality2", "TestCriticality3");
 
+            AddOptions<PersonalDataDeletionDeadlineType, ItSystemUsage>(context, context.PersonalDataDeletionDeadlineTypes, globalAdmin,
+                "Der er ikke fastlagt slettefrister",
+                "30 dage",
+                "3 måneder",
+                "1 år",
+                "5 år",
+                "6 år",
+                "9 år",
+                "10 år",
+                "11 år",
+                "15 år",
+                "35 år",
+                "45 år",
+                "Flere forskellige slettefrister i samme system",
+                "Slettes aldrig (se sletteprocedure for argumentation)");
+
             AddOptions<TechnicalSystemType, ItSystemUsage>(context, context.TechnicalSystemTypes, globalAdmin,
                 "Teknisk systemtype 1", "Teknisk systemtype 2", "Teknisk systemtype 3");
 
