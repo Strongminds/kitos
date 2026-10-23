@@ -57,7 +57,7 @@ namespace Core.DomainServices.SystemUsage
         public void Handle(EntityBeingDeletedEvent<ItSystemUsage> domainEvent)
         {
             _readModelRepository.DeleteBySourceId(domainEvent.Entity.Id);
-         
+
             //Related overview models are also affected
             foreach (var entityUsageRelation in domainEvent.Entity.UsageRelations)
             {

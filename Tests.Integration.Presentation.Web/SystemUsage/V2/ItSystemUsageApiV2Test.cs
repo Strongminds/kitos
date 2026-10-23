@@ -1252,6 +1252,42 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 (await ItSystemUsageV2Helper.GetSingleAsync(token, created.Uuid)).GDPR);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task Cannot_Write_GDPR_With_Undefined_PersonalDataDeletion_Enum(bool invalidCapability)
+        {
+            var (token, _, organization, system) = await CreatePrerequisitesAsync();
+            var gdpr = CreateGdprWithUndefinedDeletionEnum(invalidCapability);
+
+            await ItSystemUsageV2Helper.SendPostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid, gdpr: gdpr))
+                .WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+
+            var created = await ItSystemUsageV2Helper.PostAsync(token, CreatePostRequest(organization.Uuid, system.Uuid));
+            await ItSystemUsageV2Helper.SendPutAsync(token, created.Uuid, CreatePutRequest(gdpr: gdpr))
+                .WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+            await ItSystemUsageV2Helper.SendPatchGDPR(token, created.Uuid, gdpr)
+                .WithExpectedResponseCode(HttpStatusCode.BadRequest).DisposeAsync();
+
+            var persisted = await ItSystemUsageV2Helper.GetSingleAsync(token, created.Uuid);
+            Assert.Null(persisted.GDPR.PersonalDataDeletionCapability);
+            Assert.Null(persisted.GDPR.PersonalDataDeletionMethod);
+        }
+
+        private static GDPRWriteRequestDTO CreateGdprWithUndefinedDeletionEnum(bool invalidCapability)
+        {
+            const int undefinedEnumValue = 99;
+            return new GDPRWriteRequestDTO
+            {
+                PersonalDataDeletionCapability = invalidCapability
+                    ? (PersonalDataDeletionCapabilityChoice)undefinedEnumValue
+                    : PersonalDataDeletionCapabilityChoice.IndividualRecords,
+                PersonalDataDeletionMethod = invalidCapability
+                    ? PersonalDataDeletionMethodChoice.ManuallyByOrganization
+                    : (PersonalDataDeletionMethodChoice)undefinedEnumValue
+            };
+        }
+
         [Fact]
         public async Task Can_POST_With_GDPR()
         {

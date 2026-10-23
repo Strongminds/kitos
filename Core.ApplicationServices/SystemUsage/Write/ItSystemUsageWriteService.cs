@@ -281,6 +281,8 @@ namespace Core.ApplicationServices.SystemUsage.Write
             var uuid = parameters.PersonalDataDeletionResponsibleUserUuid.NewValue;
             if (!uuid.HasValue)
                 return Maybe<User>.None;
+            if (usage.PersonalDataDeletionResponsibleUser?.Uuid == uuid.Value)
+                return usage.PersonalDataDeletionResponsibleUser.FromNullable();
             var user = userRepository.AsQueryable().SingleOrDefault(x => x.Uuid == uuid.Value);
             if (user == null)
                 return new OperationError("Responsible user was not found", OperationFailure.BadInput);

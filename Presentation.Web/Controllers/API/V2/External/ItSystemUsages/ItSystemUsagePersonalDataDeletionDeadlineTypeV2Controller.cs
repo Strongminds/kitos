@@ -45,7 +45,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages
         /// <returns>A uuid and name pair with boolean to mark if the personal data deletion deadline type is available in the organization</returns>
         [HttpGet]
         [Route("{personalDataDeletionDeadlineTypeUuid}")]
-        [ApiResponse(typeof(RegularOptionResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(typeof(RegularOptionExtendedResponseDTO), HttpStatusCode.OK)]
         [ApiResponse(HttpStatusCode.BadRequest)]
         [ApiResponse(HttpStatusCode.Unauthorized)]
         [ApiResponse(HttpStatusCode.Forbidden)]

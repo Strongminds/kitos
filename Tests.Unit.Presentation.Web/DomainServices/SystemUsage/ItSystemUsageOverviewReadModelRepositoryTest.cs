@@ -57,7 +57,7 @@ namespace Tests.Unit.Presentation.Web.DomainServices.SystemUsage
             var includedSinceConcludedHasPassedAndNotExpired = CreateReadModel(false, _now.Date, _now.Date.AddDays(1), null);
             var excludedSinceConcludedSinceExpired = CreateReadModel(false, _now.Date.AddDays(-2), _now.Date.AddDays(-1), inactiveMainContract);
             var excludedBecauseExpirationDateHasNotPassed = CreateReadModel(true, _now.AddDays(-2), _now, null);
-            var includedSinceMainContractIsActive= CreateReadModel(false, null, null, activeMainContract);
+            var includedSinceMainContractIsActive = CreateReadModel(false, null, null, activeMainContract);
 
             _repositoryMock.Setup(x => x.AsQueryable()).Returns(new[]
             {

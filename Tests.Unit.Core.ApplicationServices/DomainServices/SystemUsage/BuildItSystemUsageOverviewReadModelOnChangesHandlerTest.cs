@@ -1,5 +1,5 @@
 using Core.DomainModel.ItSystem;
-﻿using Core.DomainModel.BackgroundJobs;
+using Core.DomainModel.BackgroundJobs;
 using Core.DomainModel.Events;
 using Core.DomainModel.ItSystemUsage;
 using Core.DomainModel.ItSystemUsage.Read;

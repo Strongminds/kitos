@@ -122,11 +122,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         [InlineData(false, false)]
         [InlineData(true, false)]
         [InlineData(true, true)]
-        public void PersonalDataDeletion_Validates_User_Assignment(bool exists, bool member)
+        [InlineData(true, true, true)]
+        public void PersonalDataDeletion_Validates_User_Assignment(bool exists, bool member, bool deleted = false)
         {
             var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
             SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
-            var user = new User { Id = 42, Uuid = A<Guid>() };
+            var user = new User { Id = 42, Uuid = A<Guid>(), Deleted = deleted };
             if (member) user.OrganizationRights.Add(new OrganizationRight { OrganizationId = usage.OrganizationId });
             _userRepositoryMock.Setup(x => x.AsQueryable()).Returns((exists ? new[] { user } : Array.Empty<User>()).AsQueryable());
             var deadline = new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" };
@@ -142,7 +143,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 PersonalDataDeletionVerificationDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(new NamedLink("Check", "https://check"))
             };
             var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));
-            Assert.Equal(exists && member, result.Ok);
+            Assert.Equal(exists && member && !deleted, result.Ok);
             if (result.Ok)
             {
                 Assert.Same(user, usage.PersonalDataDeletionResponsibleUser);
@@ -161,6 +162,35 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 Assert.Null(usage.PersonalDataDeletionCapability);
                 _databaseControlMock.Verify(x => x.SaveChanges(), Times.Never);
             }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void PersonalDataDeletion_Can_Resubmit_Historical_Responsible_User(bool deleted)
+        {
+            var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
+            SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
+            var user = new User { Id = A<int>(), Uuid = A<Guid>() };
+            user.OrganizationRights.Add(new OrganizationRight { OrganizationId = usage.OrganizationId });
+            Assert.True(usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, null,
+                null, null, null, user, null, null, null).IsNone);
+            if (deleted)
+                user.Deleted = true;
+            else
+                user.OrganizationRights.Clear();
+            _userRepositoryMock.Setup(x => x.AsQueryable()).Returns(new[] { user }.AsQueryable());
+            var parameters = new UpdatedSystemUsageGDPRProperties
+            {
+                PersonalDataDeletionResponsibleUserUuid = OptionalValueChange<Guid?>.With(user.Uuid)
+            };
+
+            var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid,
+                new SystemUsageUpdateParameters { GDPR = parameters }));
+
+            Assert.True(result.Ok);
+            Assert.Same(user, usage.PersonalDataDeletionResponsibleUser);
+            AssertTransactionCommitted(transaction);
         }
 
         [Theory]
