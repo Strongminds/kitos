@@ -507,6 +507,18 @@ namespace Core.DomainModel.ItContract
         public Maybe<OperationError> UpdateInvoiceSchedule(InvoiceFrequencyOptions? frequency, IEnumerable<ItContractInvoiceDate> dates)
         {
             var newDates = dates.ToList();
+            var validationError = ValidateInvoiceSchedule(frequency, newDates);
+            if (validationError.HasValue)
+                return validationError;
+
+            UpdateInvoiceDates(newDates);
+            InvoiceFrequency = frequency;
+
+            return Maybe<OperationError>.None;
+        }
+
+        private static Maybe<OperationError> ValidateInvoiceSchedule(InvoiceFrequencyOptions? frequency, IReadOnlyCollection<ItContractInvoiceDate> newDates)
+        {
             if (frequency.HasValue && !Enum.IsDefined(frequency.Value))
                 return new OperationError("Invalid invoice frequency", OperationFailure.BadInput);
 
@@ -526,6 +538,11 @@ namespace Core.DomainModel.ItContract
             if (newDates.Select(x => x.Period).Distinct().Count() != newDates.Count)
                 return new OperationError("Invoice date periods must be unique", OperationFailure.BadInput);
 
+            return Maybe<OperationError>.None;
+        }
+
+        private void UpdateInvoiceDates(IReadOnlyCollection<ItContractInvoiceDate> newDates)
+        {
             // Reuse tracked rows for retained periods to avoid duplicate EF keys during replacement.
             foreach (var existing in InvoiceDates.ToList())
             {
@@ -538,10 +555,9 @@ namespace Core.DomainModel.ItContract
                 }
             }
             foreach (var date in newDates.Where(x => InvoiceDates.All(existing => existing.Period != x.Period)))
+            {
                 InvoiceDates.Add(new ItContractInvoiceDate { ItContract = this, Period = date.Period, Date = date.Date });
-
-            InvoiceFrequency = frequency;
-            return Maybe<OperationError>.None;
+            }
         }
 
         #endregion

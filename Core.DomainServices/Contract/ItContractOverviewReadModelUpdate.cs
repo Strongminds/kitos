@@ -18,6 +18,11 @@ namespace Core.DomainServices.Contract
 {
     public class ItContractOverviewReadModelUpdate : IReadModelUpdate<ItContract, ItContractOverviewReadModel>
     {
+        private const int FirstInvoicePeriod = 1;
+        private const int SecondInvoicePeriod = 2;
+        private const int ThirdInvoicePeriod = 3;
+        private const int FourthInvoicePeriod = 4;
+
         private readonly IGenericRepository<ItContractOverviewRoleAssignmentReadModel> _contractRoleAssignmentRepository;
         private readonly IGenericRepository<ItContractOverviewReadModelDataProcessingAgreement> _contractDataProcessingAgreementRepository;
         private readonly IGenericRepository<ItContractOverviewReadModelItSystemUsage> _contractSystemUsageReadModelRepository;
@@ -148,10 +153,10 @@ namespace Core.DomainServices.Contract
 
         private static void MapInvoiceDates(ItContract source, ItContractOverviewReadModel destination)
         {
-            destination.InvoiceDate1 = GetInvoiceDate(source, 1);
-            destination.InvoiceDate2 = GetInvoiceDate(source, 2);
-            destination.InvoiceDate3 = GetInvoiceDate(source, 3);
-            destination.InvoiceDate4 = GetInvoiceDate(source, 4);
+            destination.InvoiceDate1 = GetInvoiceDate(source, FirstInvoicePeriod);
+            destination.InvoiceDate2 = GetInvoiceDate(source, SecondInvoicePeriod);
+            destination.InvoiceDate3 = GetInvoiceDate(source, ThirdInvoicePeriod);
+            destination.InvoiceDate4 = GetInvoiceDate(source, FourthInvoicePeriod);
         }
 
         private static DateTime? GetInvoiceDate(ItContract source, int period) =>
