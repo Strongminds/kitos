@@ -5,7 +5,7 @@ using Core.ApplicationServices.Model.Shared.Write;
 
 namespace Core.ApplicationServices.Model.SystemUsage.Write
 {
-    public class SystemUsageUpdateParameters: ISupplierAssociatedEntityUpdateParameters
+    public class SystemUsageUpdateParameters : ISupplierAssociatedEntityUpdateParameters
     {
         public Maybe<UpdatedSystemUsageGeneralProperties> GeneralProperties { get; set; } = Maybe<UpdatedSystemUsageGeneralProperties>.None;
         public Maybe<UpdatedSystemUsageOrganizationalUseParameters> OrganizationalUsage { get; set; } = Maybe<UpdatedSystemUsageOrganizationalUseParameters>.None;
@@ -127,6 +127,20 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         {
             var changed = new List<string>();
             var gdpr = GDPR.Value;
+            if (gdpr.PersonalDataDeletionCapability.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionCapability));
+            if (gdpr.PersonalDataDeletionMethod.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionMethod));
+            if (gdpr.PersonalDataDeletionDeadlineTypeUuid.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionDeadlineTypeUuid));
+            if (gdpr.PersonalDataDeletionProcedureDocumentation.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionProcedureDocumentation));
+            if (gdpr.PersonalDataDeletionResponsibleUserUuid.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionResponsibleUserUuid));
+            if (gdpr.PersonalDataDeletionVerifiedDate.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionVerifiedDate));
+            if (gdpr.PersonalDataDeletionVerificationDocumentation.HasChange)
+                changed.Add(nameof(gdpr.PersonalDataDeletionVerificationDocumentation));
             if (gdpr.ProcessingPurpose.HasChange)
                 changed.Add(nameof(gdpr.ProcessingPurpose));
             if (gdpr.DirectoryDocumentation.HasChange)

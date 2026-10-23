@@ -76,6 +76,58 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
 
         private readonly Mock<IGenericRepository<ItSystemUsageOverviewItContractReadModel>> _itContractReadModelRepoMock;
 
+        [Theory]
+        [InlineData(PersonalDataDeletionCapability.IndividualRecords)]
+        [InlineData(PersonalDataDeletionCapability.BulkDeletion)]
+        public void Apply_Maps_And_Clears_Personal_Data_Deletion(PersonalDataDeletionCapability capability)
+        {
+            var source = new ItSystemUsage
+            {
+                ItSystem = new ItSystem { Name = A<string>() },
+                ObjectOwner = DefaultTestUser,
+                LastChangedByUser = DefaultTestUser
+            };
+            var deadline = new PersonalDataDeletionDeadlineType { Uuid = A<Guid>(), Name = A<string>() };
+            var responsibleUser = new User { Id = A<int>(), Uuid = A<Guid>(), Name = "Deletion", LastName = "Owner" };
+            responsibleUser.OrganizationRights.Add(new OrganizationRight { OrganizationId = source.OrganizationId });
+            var verified = DateTime.UtcNow.Date;
+            Assert.True(source.UpdatePersonalDataDeletion(capability, PersonalDataDeletionMethod.AutomaticallyBySystem,
+                deadline, "https://example.com/procedure", "Procedure", responsibleUser, verified,
+                "https://example.com/verification", "Verification").IsNone);
+            var destination = new ItSystemUsageOverviewReadModel();
+
+            _sut.Apply(source, destination);
+
+            Assert.Equal(capability, destination.PersonalDataDeletionCapability);
+            Assert.Equal(PersonalDataDeletionMethod.AutomaticallyBySystem, destination.PersonalDataDeletionMethod);
+            Assert.Equal(deadline.Uuid, destination.PersonalDataDeletionDeadlineTypeUuid);
+            Assert.Equal(deadline.Name, destination.PersonalDataDeletionDeadlineTypeName);
+            Assert.Equal(responsibleUser.Id, destination.PersonalDataDeletionResponsibleUserId);
+            Assert.Equal(responsibleUser.Uuid, destination.PersonalDataDeletionResponsibleUserUuid);
+            Assert.Equal(responsibleUser.GetFullName(), destination.PersonalDataDeletionResponsibleUserName);
+            Assert.Equal(verified, destination.PersonalDataDeletionVerifiedDate);
+            Assert.Equal("Procedure", destination.PersonalDataDeletionProcedureDocumentationName);
+            Assert.Equal("https://example.com/procedure", destination.PersonalDataDeletionProcedureDocumentationUrl);
+            Assert.Equal("Verification", destination.PersonalDataDeletionVerificationDocumentationName);
+            Assert.Equal("https://example.com/verification", destination.PersonalDataDeletionVerificationDocumentationUrl);
+
+            Assert.True(source.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.No, null, null,
+                null, null, null, null, null, null).IsNone);
+            _sut.Apply(source, destination);
+
+            Assert.Equal(PersonalDataDeletionCapability.No, destination.PersonalDataDeletionCapability);
+            Assert.Null(destination.PersonalDataDeletionMethod);
+            Assert.Null(destination.PersonalDataDeletionDeadlineTypeUuid);
+            Assert.Null(destination.PersonalDataDeletionDeadlineTypeName);
+            Assert.Null(destination.PersonalDataDeletionResponsibleUserUuid);
+            Assert.Null(destination.PersonalDataDeletionResponsibleUserName);
+            Assert.Null(destination.PersonalDataDeletionVerifiedDate);
+            Assert.Null(destination.PersonalDataDeletionProcedureDocumentationUrl);
+            Assert.Null(destination.PersonalDataDeletionProcedureDocumentationName);
+            Assert.Null(destination.PersonalDataDeletionVerificationDocumentationUrl);
+            Assert.Null(destination.PersonalDataDeletionVerificationDocumentationName);
+        }
+
         [Fact]
         public void Apply_Generates_Correct_Read_Model()
         {
