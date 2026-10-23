@@ -72,20 +72,20 @@ namespace Tests.Unit.Core.DomainServices.Contract
         }
 
         [Theory]
-        [InlineData(InvoiceFrequency.Yearly, 1)]
-        [InlineData(InvoiceFrequency.HalfYearly, 2)]
-        [InlineData(InvoiceFrequency.Quarterly, 4)]
-        public void Apply_InvoiceSchedule_Maps_Frequency_And_Date(InvoiceFrequency frequency, int period)
+        [InlineData(InvoiceFrequencyOptions.Yearly, 1)]
+        [InlineData(InvoiceFrequencyOptions.HalfYearly, 2)]
+        [InlineData(InvoiceFrequencyOptions.Quarterly, 4)]
+        public void Apply_InvoiceSchedule_Maps_Frequency_And_Date(InvoiceFrequencyOptions frequencyOptions, int period)
         {
             var source = new ItContract();
             var expectedDate = new DateTime(2026, 12, 31);
-            Assert.True(source.UpdateInvoiceSchedule(frequency,
+            Assert.True(source.UpdateInvoiceSchedule(frequencyOptions,
                 new[] { new ItContractInvoiceDate { Period = period, Date = expectedDate } }).IsNone);
             var destination = new ItContractOverviewReadModel();
 
             _sut.Apply(source, destination);
 
-            Assert.Equal(frequency, destination.InvoiceFrequency);
+            Assert.Equal(frequencyOptions, destination.InvoiceFrequency);
             Assert.Equal(expectedDate, GetInvoiceDateParts(destination)[period - 1]);
         }
 
@@ -93,7 +93,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
         public void Apply_InvoiceDates_Orders_Partial_Dates_And_Clears_Stale_Dates()
         {
             var source = new ItContract();
-            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, new[]
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly, new[]
             {
                 new ItContractInvoiceDate { Period = 3, Date = new DateTime(2026, 9, 30) },
                 new ItContractInvoiceDate { Period = 1, Date = new DateTime(2026, 3, 31) }
@@ -104,29 +104,29 @@ namespace Tests.Unit.Core.DomainServices.Contract
 
             Assert.Equal(new DateTime(2026, 3, 31), destination.InvoiceDate1);
             Assert.Equal(new DateTime(2026, 9, 30), destination.InvoiceDate3);
-            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
             _sut.Apply(source, destination);
             Assert.All(GetInvoiceDateParts(destination), Assert.Null);
-            Assert.Equal(InvoiceFrequency.Quarterly, destination.InvoiceFrequency);
+            Assert.Equal(InvoiceFrequencyOptions.Quarterly, destination.InvoiceFrequency);
             Assert.True(source.UpdateInvoiceSchedule(null, Array.Empty<ItContractInvoiceDate>()).IsNone);
             _sut.Apply(source, destination);
             Assert.Null(destination.InvoiceFrequency);
         }
 
         [Theory]
-        [InlineData(InvoiceFrequency.Yearly, 1)]
-        [InlineData(InvoiceFrequency.HalfYearly, 2)]
-        [InlineData(InvoiceFrequency.Quarterly, 4)]
-        public void Apply_InvoiceDates_Maps_Period_Identifiers_And_Clears_Unused_Periods(InvoiceFrequency frequency, int periodCount)
+        [InlineData(InvoiceFrequencyOptions.Yearly, 1)]
+        [InlineData(InvoiceFrequencyOptions.HalfYearly, 2)]
+        [InlineData(InvoiceFrequencyOptions.Quarterly, 4)]
+        public void Apply_InvoiceDates_Maps_Period_Identifiers_And_Clears_Unused_Periods(InvoiceFrequencyOptions frequencyOptions, int periodCount)
         {
             var source = new ItContract();
             var destination = new ItContractOverviewReadModel();
-            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly,
                 Enumerable.Range(1, 4).Select(period => new ItContractInvoiceDate { Period = period, Date = new DateTime(2026, period * 3, 15) })).IsNone);
             _sut.Apply(source, destination);
 
             // Use reverse input order to ensure mapping is by period, not collection position.
-            Assert.True(source.UpdateInvoiceSchedule(frequency,
+            Assert.True(source.UpdateInvoiceSchedule(frequencyOptions,
                 Enumerable.Range(1, periodCount).Reverse().Select(period => new ItContractInvoiceDate
                 {
                     Period = period,
@@ -149,7 +149,7 @@ namespace Tests.Unit.Core.DomainServices.Contract
         {
             var source = new ItContract();
             var destination = new ItContractOverviewReadModel();
-            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, new[]
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly, new[]
             {
                 new ItContractInvoiceDate { Period = 3, Date = new DateTime(2026, 9, 30) },
                 new ItContractInvoiceDate { Period = 1, Date = new DateTime(2026, 3, 31) }
@@ -157,12 +157,12 @@ namespace Tests.Unit.Core.DomainServices.Contract
             _sut.Apply(source, destination);
             Assert.Equal(new DateTime?[] { new(2026, 3, 31), null, new(2026, 9, 30), null }, GetInvoiceDateParts(destination));
 
-            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly,
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly,
                 new[] { new ItContractInvoiceDate { Period = 3, Date = new DateTime(2026, 8, 15) } }).IsNone);
             _sut.Apply(source, destination);
             Assert.Equal(new DateTime?[] { null, null, new(2026, 8, 15), null }, GetInvoiceDateParts(destination));
 
-            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequency.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
+            Assert.True(source.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly, Array.Empty<ItContractInvoiceDate>()).IsNone);
             _sut.Apply(source, destination);
             Assert.All(GetInvoiceDateParts(destination), Assert.Null);
         }

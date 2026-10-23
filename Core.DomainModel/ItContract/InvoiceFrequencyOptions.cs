@@ -1,6 +1,6 @@
 namespace Core.DomainModel.ItContract
 {
-    public enum InvoiceFrequency
+    public enum InvoiceFrequencyOptions
     {
         Yearly = 0,
         HalfYearly = 1,

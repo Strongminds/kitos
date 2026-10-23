@@ -8,7 +8,7 @@ namespace Core.ApplicationServices.Model.Contracts.Write
 {
     public class ItContractPaymentModelModificationParameters
     {
-        public OptionalValueChange<InvoiceFrequency?> InvoiceFrequency { get; set; } = OptionalValueChange<InvoiceFrequency?>.None;
+        public OptionalValueChange<InvoiceFrequencyOptions?> InvoiceFrequency { get; set; } = OptionalValueChange<InvoiceFrequencyOptions?>.None;
         public OptionalValueChange<IEnumerable<ItContractInvoiceDate>> InvoiceDates { get; set; } = OptionalValueChange<IEnumerable<ItContractInvoiceDate>>.None;
         public OptionalValueChange<Maybe<DateTime>> OperationsRemunerationStartedAt { get; set; } = OptionalValueChange<Maybe<DateTime>>.None;
         public OptionalValueChange<Guid?> PaymentFrequencyUuid { get; set; } = OptionalValueChange<Guid?>.None;

@@ -51,19 +51,19 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         }
 
         [Theory]
-        [InlineData(InvoiceFrequency.Yearly)]
-        [InlineData(InvoiceFrequency.HalfYearly)]
-        [InlineData(InvoiceFrequency.Quarterly)]
-        public void MapContractDTO_InvoiceSchedule_Maps_Frequency_And_Populated_Dates(InvoiceFrequency frequency)
+        [InlineData(InvoiceFrequencyOptions.Yearly)]
+        [InlineData(InvoiceFrequencyOptions.HalfYearly)]
+        [InlineData(InvoiceFrequencyOptions.Quarterly)]
+        public void MapContractDTO_InvoiceSchedule_Maps_Frequency_And_Populated_Dates(InvoiceFrequencyOptions frequencyOptions)
         {
             var contract = new ItContract();
             var expectedDate = new DateTime(2026, 2, 28, 13, 45, 0);
-            Assert.True(contract.UpdateInvoiceSchedule(frequency,
+            Assert.True(contract.UpdateInvoiceSchedule(frequencyOptions,
                 new[] { new ItContractInvoiceDate { Period = 1, Date = expectedDate } }).IsNone);
 
             var dto = _sut.MapContractDTO(contract).PaymentModel;
 
-            Assert.Equal((InvoiceFrequencyChoice)frequency, dto.InvoiceFrequency);
+            Assert.Equal((InvoiceFrequencyChoice)frequencyOptions, dto.InvoiceFrequency);
             Assert.Equal(1, Assert.Single(dto.InvoiceDates).Period);
             var mapped = Assert.Single(dto.InvoiceDates);
             Assert.Equal(expectedDate, mapped.Date);

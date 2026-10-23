@@ -195,8 +195,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
             return new ItContractPaymentModelModificationParameters
             {
                 InvoiceFrequency = rule.MustUpdate(x => x.PaymentModel!.InvoiceFrequency)
-                    ? ((InvoiceFrequency?)dto.InvoiceFrequency).AsChangedValue()
-                    : OptionalValueChange<InvoiceFrequency?>.None,
+                    ? ((InvoiceFrequencyOptions?)dto.InvoiceFrequency).AsChangedValue()
+                    : OptionalValueChange<InvoiceFrequencyOptions?>.None,
 
                 InvoiceDates = ClientRequestsChangeTo<TRootDto>(x => x.PaymentModel!.InvoiceDates!)
                     ? (dto.InvoiceDates ?? []).Select(x => new ItContractInvoiceDate { Period = x?.Period ?? 0, Date = x?.Date ?? default })

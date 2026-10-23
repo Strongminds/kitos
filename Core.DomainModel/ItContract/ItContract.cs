@@ -501,10 +501,10 @@ namespace Core.DomainModel.ItContract
         public int? PriceRegulationId { get; set; }
         public virtual PriceRegulationType PriceRegulation { get; set; }
 
-        public InvoiceFrequency? InvoiceFrequency { get; private set; }
+        public InvoiceFrequencyOptions? InvoiceFrequency { get; private set; }
         public virtual ICollection<ItContractInvoiceDate> InvoiceDates { get; set; }
 
-        public Maybe<OperationError> UpdateInvoiceSchedule(InvoiceFrequency? frequency, IEnumerable<ItContractInvoiceDate> dates)
+        public Maybe<OperationError> UpdateInvoiceSchedule(InvoiceFrequencyOptions? frequency, IEnumerable<ItContractInvoiceDate> dates)
         {
             var newDates = dates.ToList();
             if (frequency.HasValue && !Enum.IsDefined(frequency.Value))
@@ -515,9 +515,9 @@ namespace Core.DomainModel.ItContract
 
             var periods = frequency switch
             {
-                global::Core.DomainModel.ItContract.InvoiceFrequency.Yearly => 1,
-                global::Core.DomainModel.ItContract.InvoiceFrequency.HalfYearly => 2,
-                global::Core.DomainModel.ItContract.InvoiceFrequency.Quarterly => 4,
+                InvoiceFrequencyOptions.Yearly => 1,
+                InvoiceFrequencyOptions.HalfYearly => 2,
+                InvoiceFrequencyOptions.Quarterly => 4,
                 _ => 0
             };
             if (newDates.Any(x => x == null || x.Date == default || x.Period < 1 || x.Period > periods))
