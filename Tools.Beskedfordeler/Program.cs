@@ -13,10 +13,10 @@ public static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        if (args is ["--help"] or ["-h"] || args.Length is < 3 or > 4)
+        if (args is ["--help"] or ["-h"] || args.Length is < 4 or > 5)
         {
-            Console.WriteLine("Publish one KOMBIT Test/TestbeskedType1 message.");
-            Console.WriteLine("Usage: dotnet run --project Tools.Beskedfordeler -- <sts-config.json> <sender-uuid> <municipality-cvr> [amqp-host]");
+            Console.WriteLine("Publish one KOMBIT ORG_Bruger / BrugerNedlagt message.");
+            Console.WriteLine("Usage: dotnet run --project Tools.Beskedfordeler -- <sts-config.json> <sender-uuid> <municipality-cvr> <fk-bruger-uuid> [amqp-host]");
             Console.WriteLine("Default host: beskedfordeler.eksterntest-stoettesystemerne.dk");
             return args is ["--help"] or ["-h"] ? 0 : 1;
         }
@@ -25,13 +25,13 @@ public static class Program
         try
         {
             var senderId = Guid.Parse(args[1]);
-            var message = TestMessage.Create(senderId, args[2]);
+            var message = TestMessage.Create(senderId, args[2], Guid.Parse(args[3]));
             var messageId = Guid.Parse(message.Element(TestMessage.Envelope + "BeskedId")!
                 .Element(TestMessage.Sagdok + "UUIDIdentifikator")!.Value);
             var config = JsonSerializer.Deserialize<SenderStsConfiguration>(await File.ReadAllTextAsync(args[0]),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
                 ?? throw new InvalidOperationException("STS configuration is required.");
-            var host = args.Length == 4 ? args[3] : "beskedfordeler.eksterntest-stoettesystemerne.dk";
+            var host = args.Length == 5 ? args[4] : "beskedfordeler.eksterntest-stoettesystemerne.dk";
             if (Uri.CheckHostName(host) == UriHostNameType.Unknown)
                 throw new ArgumentException("Expected an AMQP hostname without scheme or port.");
 

@@ -1,13 +1,14 @@
 # Beskedfordeler test sender
 
-Publishes one `Test/TestbeskedType1` (sometimes called Test/Testbesked1) event
-(`7654895c-a3f3-4c77-8afd-4c77330f963c`, version `1.0`) to KOMBIT's actual
-Beskedfordeler using AMQP over TLS. It does not call KITOS directly or deactivate users.
+Publishes one `ORG_Bruger` event (`94ef3c82-10e9-4d12-a9d9-7a7242d5ba83`,
+version `1.0`) with the immediate `BrugerNedlagt` action to KOMBIT's actual
+Beskedfordeler using AMQP over TLS. A matching KITOS subscription queues this
+business event and creates a pending deletion for administrator review.
 
 Requires .NET 10, access to port 5671, a registered client certificate with its
 private key, and an approved **SF1462 / BeskedAfsend** service agreement for the
 municipality CVR and sender system. Receiving-only SF1461 access is insufficient.
-Configure the receiving subscription to match the test message type and CVR.
+Configure the receiving subscription to match ORG_Bruger 1.0, BrugerNedlagt and the CVR.
 
 Copy `sts-config.example.json` to `sts-config.local.json` and supply the certificate
 thumbprints for your environment. The tool reuses KITOS's `TokenFetcher` and
@@ -31,17 +32,20 @@ server identity is validated independently through TLS. Legacy `WspCertificateTh
 From the repository root:
 
 ```powershell
-dotnet run --project .\Tools.Beskedfordeler -- .\Tools.Beskedfordeler\sts-config.local.json <sender-system-uuid> <municipality-cvr>
+dotnet run --project .\Tools.Beskedfordeler -- .\Tools.Beskedfordeler\sts-config.local.json <sender-system-uuid> <municipality-cvr> <fk-bruger-uuid>
 ```
 
-The optional fourth argument overrides the AMQP hostname. By default it targets
+The required fourth argument is the affected FK Bruger UUID (not a Person UUID or
+the sender UUID). The optional fifth argument overrides the AMQP hostname. By default it targets
 `beskedfordeler.eksterntest-stoettesystemerne.dk:5671`, virtual host `BF`.
 There is no TLS certificate-validation bypass.
 
-Each message creation generates fresh message and registration UUIDs, a unique test
-payload containing the message UUID, and current UTC timestamps. It restricts
+Each message creation generates fresh message and registration UUIDs, synthetic
+Base64-encoded UTF-8 XML audit metadata containing the message UUID, and current UTC timestamps. It restricts
 `TilladtModtager` and `ObjektAnsvarligMyndighed` to the supplied eight-digit CVR, and
-uses a synthetic text payload without personal data. The STS audience is
+sets `ObjektId` to the supplied FK Bruger UUID. The audit `Bruger` identifies the
+sender, not the affected user. The synthetic audit metadata is for testing; it is
+not a captured FK Organisation payload. The STS audience is
 `http://entityid.kombit.dk/service/bfo_afsend/2`. Its SAML assertion is supplied
 through SASL EXTERNAL and the AMQP `token` header.
 
@@ -54,9 +58,9 @@ network, TLS, and AMQP authentication errors without exposing exception messages
 A timeout can mean that KOMBIT accepted the event but its reply was lost; there is
 no automatic retry. A rerun creates a new message.
 
-Acceptance is not proof of callback delivery. For the KITOS receiver, check its
-Warning log for the printed message UUID when the callback is received. Test messages
-are logged immediately without being added to Hangfire; business events are durably queued.
+Acceptance is not proof of callback delivery. For the KITOS receiver, verify durable
+queue processing and the pending user change for the affected UUID. The municipality
+must have FK-org user synchronization enabled. Receipt does not itself remove access.
 Live KOMBIT access requires your own configured credentials and agreements.
 
 Protocol references:

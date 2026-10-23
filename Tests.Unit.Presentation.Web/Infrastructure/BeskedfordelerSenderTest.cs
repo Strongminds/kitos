@@ -21,12 +21,13 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
         public async Task Create_RepeatedCalls_ProduceDistinctSchemaValidMessagesWithStableRouting()
         {
             var sender = Guid.NewGuid();
+            var user = Guid.NewGuid();
             const string cvr = "12345678";
             var reader = new BeskedfordelerXmlReader(BeskedfordelerXmlReader.LoadSchemas());
             var ids = new HashSet<Guid>();
             var payloads = new HashSet<string>();
             var before = DateTimeOffset.UtcNow;
-            var messages = Enumerable.Range(0, 10).Select(_ => TestMessage.Create(sender, cvr)).ToArray();
+            var messages = Enumerable.Range(0, 10).Select(_ => TestMessage.Create(sender, cvr, user)).ToArray();
             var after = DateTimeOffset.UtcNow;
 
             foreach (var message in messages)
@@ -38,18 +39,39 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
                 Assert.True(ids.Add(Guid.Parse(Value("ObjektRegistreringId"))));
                 Assert.Equal(sender.ToString("D"), Value("BeskedAnsvarligAktoer"));
                 Assert.Equal(sender.ToString("D"), Value("RegistreringsAktoer"));
-                Assert.Equal(TestMessage.MessageType.ToString("D"), Value("Beskedtype"));
+                Assert.Equal("94ef3c82-10e9-4d12-a9d9-7a7242d5ba83", Value("Beskedtype"));
+                Assert.Equal(user.ToString("D"), Value("ObjektId"));
+                Assert.Equal("2b808769-8d09-4aa3-ac28-f8ac3526010f", Value("ObjektType"));
+                Assert.Equal("9edb0c34-36e2-4d87-aba8-3ca7ade718ee", Value("ObjektHandling"));
                 Assert.Equal($"urn:oio:cvr-nr:{cvr}", Value("TilladtModtager"));
                 Assert.Equal($"urn:oio:cvr-nr:{cvr}", Value("ObjektAnsvarligMyndighed"));
                 var payload = message.Element(TestMessage.Envelope + "Beskeddata")!.Value;
                 Assert.True(payloads.Add(payload));
-                Assert.Contains(messageId.ToString("D"), payload);
+                var audit = XElement.Parse(Encoding.UTF8.GetString(Convert.FromBase64String(payload)));
+                Assert.Equal(messageId.ToString("D"), audit.Element("TransactionID")!.Value);
+                Assert.Equal(sender.ToString("D"), audit.Element("Bruger")!.Value);
+                Assert.Equal("BrugerNedlagt", audit.Element("Operation")!.Value);
                 foreach (var time in message.Descendants(TestMessage.Sagdok + "TidsstempelDatoTid"))
                     Assert.InRange(DateTimeOffset.Parse(time.Value), before, after);
                 var input = new XElement(BeskedfordelerMessage.Sts + "ModtagBeskedInput", message);
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(input.ToString()));
                 await reader.Read(stream, CancellationToken.None);
             }
+        }
+
+        [Fact]
+        public void Create_EmptyAffectedUser_RejectsMessage()
+        {
+            Assert.Throws<ArgumentException>(() => TestMessage.Create(Guid.NewGuid(), "12345678", Guid.Empty));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("1234567")]
+        [InlineData("1234567a")]
+        public void Create_InvalidMunicipality_RejectsMessage(string cvr)
+        {
+            Assert.Throws<ArgumentException>(() => TestMessage.Create(Guid.NewGuid(), cvr, Guid.NewGuid()));
         }
 
         [Theory]
