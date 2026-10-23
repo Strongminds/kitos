@@ -72,15 +72,10 @@ namespace Core.DomainModel.ItContract.Read
         public Guid? PaymentModelUuid { get; set; }     // For filtering
         public string PaymentModelName { get; set; } // For sorting
         public InvoiceFrequency? InvoiceFrequency { get; set; }
-        public virtual ICollection<ItContractOverviewInvoiceDateReadModel> InvoiceDates { get; set; } = new List<ItContractOverviewInvoiceDateReadModel>();
-        public int? InvoiceDate1Month { get; set; }
-        public int? InvoiceDate1Day { get; set; }
-        public int? InvoiceDate2Month { get; set; }
-        public int? InvoiceDate2Day { get; set; }
-        public int? InvoiceDate3Month { get; set; }
-        public int? InvoiceDate3Day { get; set; }
-        public int? InvoiceDate4Month { get; set; }
-        public int? InvoiceDate4Day { get; set; }
+        public DateOnly? InvoiceDate1 { get; set; }
+        public DateOnly? InvoiceDate2 { get; set; }
+        public DateOnly? InvoiceDate3 { get; set; }
+        public DateOnly? InvoiceDate4 { get; set; }
 
         public int? PaymentFrequencyId { get; set; }     // For filtering
         public Guid? PaymentFrequencyUuid { get; set; }     // For filtering

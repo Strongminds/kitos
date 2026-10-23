@@ -19,35 +19,28 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
     public class ContractOverviewInvoiceDateODataTest
     {
         [Fact]
-        public void InvoiceDates_Is_A_Collection_Of_Complex_Month_And_Day_Objects()
+        public void InvoiceDates_Collection_Is_Not_Exposed_On_Overview_Read_Model()
         {
             var model = ODataModelConfig.GetEdmModel();
             var overview = (IEdmEntityType)model.FindDeclaredType(typeof(ItContractOverviewReadModel).FullName);
-            var property = overview.FindProperty(nameof(ItContractOverviewReadModel.InvoiceDates));
-            Assert.Equal(EdmPropertyKind.Structural, property.PropertyKind);
-            var date = Assert.IsAssignableFrom<IEdmComplexType>(property.Type.AsCollection().ElementType().Definition);
-            Assert.Equal(new[] { "Day", "Month" }, date.Properties().Select(x => x.Name).OrderBy(x => x));
-            Assert.All(date.Properties(), x => Assert.Equal(EdmPrimitiveTypeKind.Int32, x.Type.PrimitiveKind()));
+            Assert.Null(overview.FindProperty("InvoiceDates"));
         }
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
         [InlineData(4)]
-        public void Period_Fields_Are_Nullable_Int32_And_OData_Queries_Execute_In_Database_Before_Paging(int period)
+        public void Period_Fields_Are_Nullable_Dates_And_OData_Queries_Execute_In_Database_Before_Paging(int period)
         {
             var model = ODataModelConfig.GetEdmModel();
             var overview = (IEdmEntityType)model.FindDeclaredType(typeof(ItContractOverviewReadModel).FullName);
-            foreach (var part in new[] { "Month", "Day" })
-            {
-                var property = overview.FindProperty($"InvoiceDate{period}{part}");
-                Assert.Equal(EdmPropertyKind.Structural, property.PropertyKind);
-                Assert.True(property.Type.IsNullable);
-                Assert.Equal(EdmPrimitiveTypeKind.Int32, property.Type.PrimitiveKind());
-            }
+            var property = overview.FindProperty($"InvoiceDate{period}");
+            Assert.Equal(EdmPropertyKind.Structural, property.PropertyKind);
+            Assert.True(property.Type.IsNullable);
+            Assert.Equal(EdmPrimitiveTypeKind.Date, property.Type.PrimitiveKind());
 
             var request = new DefaultHttpContext().Request;
-            request.QueryString = new QueryString($"?$filter=InvoiceDate{period}Month eq 3 and InvoiceDate{period}Day eq 31&$orderby=InvoiceDate{period}Month asc,InvoiceDate{period}Day asc&$skip=10&$top=5");
+            request.QueryString = new QueryString($"?$filter=InvoiceDate{period} eq 2026-03-31&$orderby=InvoiceDate{period} asc&$skip=10&$top=5");
             var options = new ODataQueryOptions<ItContractOverviewReadModel>(
                 new ODataQueryContext(model, typeof(ItContractOverviewReadModel), null), request);
             using var context = new KitosContext(new DbContextOptionsBuilder<KitosContext>()
@@ -56,9 +49,9 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
                 new ODataQuerySettings { HandleNullPropagation = HandleNullPropagationOption.False, EnableConstantParameterization = false });
             var sql = query.ToQueryString();
 
-            Assert.Contains($"\"InvoiceDate{period}Month\" = 3", sql);
-            Assert.Contains($"\"InvoiceDate{period}Day\" = 31", sql);
-            Assert.Matches($"ORDER BY [^\\r\\n]*\\\"InvoiceDate{period}Month\\\", [^\\r\\n]*\\\"InvoiceDate{period}Day\\\"", sql);
+            Assert.Contains($"\"InvoiceDate{period}\"", sql);
+            Assert.Contains("20260331", sql);
+            Assert.Matches($"ORDER BY [^\\r\\n]*\\\"InvoiceDate{period}\\\"", sql);
             Assert.True(sql.IndexOf("WHERE", System.StringComparison.Ordinal) < sql.IndexOf("ORDER BY", System.StringComparison.Ordinal));
             Assert.True(sql.IndexOf("ORDER BY", System.StringComparison.Ordinal) < sql.IndexOf("LIMIT", System.StringComparison.Ordinal));
             Assert.Contains("OFFSET", sql);

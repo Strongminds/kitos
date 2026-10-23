@@ -17,9 +17,9 @@ namespace Presentation.Web.Models.API.V2.Request.Contract
         public InvoiceFrequencyChoice? InvoiceFrequency { get; set; }
 
         /// <summary>
-        /// Optional replacement list of populated period/date pairs. Requires an invoice frequency.
+        /// Optional replacement list of full-date/period pairs. Requires an invoice frequency.
         /// Empty or null clears all dates. Omission preserves dates unless frequency changes (including PUT frequency reset).
-        /// Periods must be unique and dates must be within their calendar period.
+        /// Periods must be unique and within the selected frequency.
         /// </summary>
         public IEnumerable<ContractInvoiceDateDTO>? InvoiceDates { get; set; }
 

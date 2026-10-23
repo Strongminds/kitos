@@ -70,7 +70,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 var input = new ContractPaymentModelDataWriteRequestDTO
                 {
                     InvoiceFrequency = frequency,
-                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Month = 2, Day = 29 } }
+                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Date = new DateOnly(2026, 2, 28) } }
                 };
 
                 var output = MapInvoicePaymentModel(method, input);
@@ -78,7 +78,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 Assert.Equal((InvoiceFrequency)frequency, output.InvoiceFrequency.NewValue);
                 var invoiceDate = Assert.Single(output.InvoiceDates.NewValue);
                 Assert.Equal(1, invoiceDate.Period);
-                Assert.Equal((2, 29), (invoiceDate.Month, invoiceDate.Day));
+                Assert.Equal(new DateOnly(2026, 2, 28), invoiceDate.Date);
             }
         }
 

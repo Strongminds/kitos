@@ -199,7 +199,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItContracts.Mapping
                     : OptionalValueChange<InvoiceFrequency?>.None,
 
                 InvoiceDates = ClientRequestsChangeTo<TRootDto>(x => x.PaymentModel!.InvoiceDates!)
-                    ? (dto.InvoiceDates ?? []).Select(x => new ItContractInvoiceDate { Period = x?.Period ?? 0, Month = x?.Month ?? 0, Day = x?.Day ?? 0 })
+                    ? (dto.InvoiceDates ?? []).Select(x => new ItContractInvoiceDate { Period = x?.Period ?? 0, Date = x?.Date ?? default })
                         .ToList().AsChangedValue<IEnumerable<ItContractInvoiceDate>>()
                     : OptionalValueChange<IEnumerable<ItContractInvoiceDate>>.None,
 

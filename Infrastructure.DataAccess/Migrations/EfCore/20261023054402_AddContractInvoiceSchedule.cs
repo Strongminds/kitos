@@ -1,3 +1,4 @@
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -10,13 +11,33 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "InvoiceDates",
+            migrationBuilder.AddColumn<DateOnly>(
+                name: "InvoiceDate1",
                 schema: "dbo",
                 table: "ItContractOverviewReadModels",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+                type: "date",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateOnly>(
+                name: "InvoiceDate2",
+                schema: "dbo",
+                table: "ItContractOverviewReadModels",
+                type: "date",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateOnly>(
+                name: "InvoiceDate3",
+                schema: "dbo",
+                table: "ItContractOverviewReadModels",
+                type: "date",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateOnly>(
+                name: "InvoiceDate4",
+                schema: "dbo",
+                table: "ItContractOverviewReadModels",
+                type: "date",
+                nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "InvoiceFrequency",
@@ -39,8 +60,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     ItContractId = table.Column<int>(type: "integer", nullable: false),
                     Period = table.Column<int>(type: "integer", nullable: false),
-                    Month = table.Column<int>(type: "integer", nullable: false),
-                    Day = table.Column<int>(type: "integer", nullable: false)
+                    Date = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,7 +83,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 schema: "dbo");
 
             migrationBuilder.DropColumn(
-                name: "InvoiceDates",
+                name: "InvoiceDate1",
+                schema: "dbo",
+                table: "ItContractOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "InvoiceDate2",
+                schema: "dbo",
+                table: "ItContractOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "InvoiceDate3",
+                schema: "dbo",
+                table: "ItContractOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "InvoiceDate4",
                 schema: "dbo",
                 table: "ItContractOverviewReadModels");
 
@@ -76,7 +111,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "InvoiceFrequency",
                 schema: "dbo",
                 table: "ItContract");
-
         }
     }
 }

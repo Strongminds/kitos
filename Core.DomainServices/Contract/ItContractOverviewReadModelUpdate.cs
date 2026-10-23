@@ -148,22 +148,14 @@ namespace Core.DomainServices.Contract
 
         private static void MapInvoiceDates(ItContract source, ItContractOverviewReadModel destination)
         {
-            destination.InvoiceDates = source.InvoiceDates.OrderBy(x => x.Period)
-                .Select(x => new ItContractOverviewInvoiceDateReadModel { Month = x.Month, Day = x.Day })
-                .ToList();
-            var invoiceDate1 = source.InvoiceDates.SingleOrDefault(x => x.Period == 1);
-            var invoiceDate2 = source.InvoiceDates.SingleOrDefault(x => x.Period == 2);
-            var invoiceDate3 = source.InvoiceDates.SingleOrDefault(x => x.Period == 3);
-            var invoiceDate4 = source.InvoiceDates.SingleOrDefault(x => x.Period == 4);
-            destination.InvoiceDate1Month = invoiceDate1?.Month;
-            destination.InvoiceDate1Day = invoiceDate1?.Day;
-            destination.InvoiceDate2Month = invoiceDate2?.Month;
-            destination.InvoiceDate2Day = invoiceDate2?.Day;
-            destination.InvoiceDate3Month = invoiceDate3?.Month;
-            destination.InvoiceDate3Day = invoiceDate3?.Day;
-            destination.InvoiceDate4Month = invoiceDate4?.Month;
-            destination.InvoiceDate4Day = invoiceDate4?.Day;
+            destination.InvoiceDate1 = GetInvoiceDate(source, 1);
+            destination.InvoiceDate2 = GetInvoiceDate(source, 2);
+            destination.InvoiceDate3 = GetInvoiceDate(source, 3);
+            destination.InvoiceDate4 = GetInvoiceDate(source, 4);
         }
+
+        private static DateOnly? GetInvoiceDate(ItContract source, int period) =>
+            source.InvoiceDates.SingleOrDefault(x => x.Period == period)?.Date;
 
         private void MapSystemRelations(ItContract source, ItContractOverviewReadModel destination)
         {

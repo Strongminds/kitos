@@ -87,7 +87,10 @@ namespace Infrastructure.DataAccess.Mapping
 
             builder.Property(x => x.ExternalPaymentOrganizationUnitsCsv);
             builder.Property(x => x.InvoiceFrequency);
-            builder.OwnsMany(x => x.InvoiceDates, dates => dates.ToJson());
+            builder.Property(x => x.InvoiceDate1).HasColumnType("date");
+            builder.Property(x => x.InvoiceDate2).HasColumnType("date");
+            builder.Property(x => x.InvoiceDate3).HasColumnType("date");
+            builder.Property(x => x.InvoiceDate4).HasColumnType("date");
             builder.Property(x => x.InternalPaymentOrganizationUnitsCsv);
             builder.Property(x => x.ItSystemUsagesSystemUuidCsv);
 

@@ -13,7 +13,7 @@ namespace Presentation.Web.Models.API.V2.Response.Contract
         public InvoiceFrequencyChoice? InvoiceFrequency { get; set; }
 
         /// <summary>
-        /// Populated invoice dates ordered by calendar period; empty when no dates are assigned.
+        /// Full invoice dates ordered by period; empty when no dates are assigned.
         /// </summary>
         public IEnumerable<ContractInvoiceDateDTO> InvoiceDates { get; set; } = [];
 

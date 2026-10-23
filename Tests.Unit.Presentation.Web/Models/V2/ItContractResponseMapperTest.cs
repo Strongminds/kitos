@@ -57,15 +57,16 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         public void MapContractDTO_InvoiceSchedule_Maps_Frequency_And_Populated_Dates(InvoiceFrequency frequency)
         {
             var contract = new ItContract();
+            var expectedDate = new DateOnly(2026, 2, 28);
             Assert.True(contract.UpdateInvoiceSchedule(frequency,
-                new[] { new ItContractInvoiceDate { Period = 1, Month = 2, Day = 29 } }).IsNone);
+                new[] { new ItContractInvoiceDate { Period = 1, Date = expectedDate } }).IsNone);
 
             var dto = _sut.MapContractDTO(contract).PaymentModel;
 
             Assert.Equal((InvoiceFrequencyChoice)frequency, dto.InvoiceFrequency);
             Assert.Equal(1, Assert.Single(dto.InvoiceDates).Period);
             var mapped = Assert.Single(dto.InvoiceDates);
-            Assert.Equal((2, 29), (mapped.Month, mapped.Day));
+            Assert.Equal(expectedDate, mapped.Date);
         }
 
         [Fact]

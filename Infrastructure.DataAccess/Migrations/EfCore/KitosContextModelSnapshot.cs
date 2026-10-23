@@ -1756,11 +1756,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("Period")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Day")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
                     b.HasKey("ItContractId", "Period");
 
@@ -2408,29 +2405,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("InternalPaymentOrganizationUnitsCsv")
                         .HasColumnType("text");
 
-                    b.Property<int?>("InvoiceDate1Day")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly?>("InvoiceDate1")
+                        .HasColumnType("date");
 
-                    b.Property<int?>("InvoiceDate1Month")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly?>("InvoiceDate2")
+                        .HasColumnType("date");
 
-                    b.Property<int?>("InvoiceDate2Day")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly?>("InvoiceDate3")
+                        .HasColumnType("date");
 
-                    b.Property<int?>("InvoiceDate2Month")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("InvoiceDate3Day")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("InvoiceDate3Month")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("InvoiceDate4Day")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("InvoiceDate4Month")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly?>("InvoiceDate4")
+                        .HasColumnType("date");
 
                     b.Property<int?>("InvoiceFrequency")
                         .HasColumnType("integer");
@@ -7876,6 +7861,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("integer");
 
                     b.Property<string>("FieldKey")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastChanged")
@@ -9370,31 +9356,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasForeignKey("SourceEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.OwnsMany("Core.DomainModel.ItContract.Read.ItContractOverviewInvoiceDateReadModel", "InvoiceDates", b1 =>
-                        {
-                            b1.Property<int>("ItContractOverviewReadModelId");
-
-                            b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAdd();
-
-                            b1.Property<int>("Day");
-
-                            b1.Property<int>("Month");
-
-                            b1.HasKey("ItContractOverviewReadModelId", "__synthesizedOrdinal");
-
-                            b1.ToTable("ItContractOverviewReadModels", "dbo");
-
-                            b1
-                                .ToJson("InvoiceDates")
-                                .HasColumnType("jsonb");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ItContractOverviewReadModelId");
-                        });
-
-                    b.Navigation("InvoiceDates");
 
                     b.Navigation("Organization");
 

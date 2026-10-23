@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20261016060731_AddContractInvoiceSchedule")]
+    [Migration("20261023054402_AddContractInvoiceSchedule")]
     partial class AddContractInvoiceSchedule
     {
         /// <inheritdoc />
@@ -1759,11 +1759,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("Period")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Day")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
                     b.HasKey("ItContractId", "Period");
 
@@ -2411,11 +2408,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("InternalPaymentOrganizationUnitsCsv")
                         .HasColumnType("text");
 
-                    b.Property<string>("InvoiceDates")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("");
+                    b.Property<DateOnly?>("InvoiceDate1")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("InvoiceDate2")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("InvoiceDate3")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("InvoiceDate4")
+                        .HasColumnType("date");
 
                     b.Property<int?>("InvoiceFrequency")
                         .HasColumnType("integer");
@@ -5453,6 +5456,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("RelationInterfaceId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("SystemRelationDirection")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ToSystemUsageId")
                         .HasColumnType("integer");
 
@@ -7858,6 +7864,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("integer");
 
                     b.Property<string>("FieldKey")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastChanged")
