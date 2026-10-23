@@ -23,7 +23,7 @@ namespace Tests.Unit.Core.DataAccess
             Assert.NotNull(entity);
             Assert.Equal(new[] { nameof(ItContractInvoiceDate.ItContractId), nameof(ItContractInvoiceDate.Period) },
                 entity.FindPrimaryKey()!.Properties.Select(x => x.Name));
-            Assert.Equal("date", entity.FindProperty(nameof(ItContractInvoiceDate.Date))!.GetColumnType());
+            Assert.Equal("timestamp without time zone", entity.FindProperty(nameof(ItContractInvoiceDate.Date))!.GetColumnType());
             var foreignKey = Assert.Single(entity.GetForeignKeys());
             Assert.Equal(typeof(ItContract), foreignKey.PrincipalEntityType.ClrType);
             Assert.Equal(DeleteBehavior.Cascade, foreignKey.DeleteBehavior);
@@ -45,20 +45,20 @@ namespace Tests.Unit.Core.DataAccess
             var table = Assert.Single(migration.UpOperations.OfType<CreateTableOperation>());
             Assert.Equal("ItContractInvoiceDates", table.Name);
             Assert.Equal(new[] { "ItContractId", "Period" }, table.PrimaryKey!.Columns);
-            Assert.Equal("date", Assert.Single(table.Columns, x => x.Name == "Date").ColumnType);
+            Assert.Equal("timestamp without time zone", Assert.Single(table.Columns, x => x.Name == "Date").ColumnType);
             Assert.Equal(ReferentialAction.Cascade, Assert.Single(table.ForeignKeys).OnDelete);
             Assert.Equal(7, migration.UpOperations.Count);
             using var context = CreateContext();
             var commands = context.GetService<IMigrationsSqlGenerator>().Generate(migration.UpOperations);
             var sql = string.Join(Environment.NewLine, commands.Select(x => x.CommandText));
             Assert.Contains("CREATE TABLE dbo.\"ItContractInvoiceDates\"", sql);
-            Assert.Contains("\"Date\" date NOT NULL", sql);
+            Assert.Contains("\"Date\" timestamp without time zone NOT NULL", sql);
             Assert.Contains("ON DELETE CASCADE", sql);
             Assert.DoesNotContain("ALTER COLUMN", sql);
         }
 
         [Fact]
-        public void Overview_Invoice_Periods_Are_Nullable_Date_Columns_In_Invoice_Schedule_Migration()
+        public void Overview_Invoice_Periods_Are_Nullable_Timestamp_Columns_In_Invoice_Schedule_Migration()
         {
             using var context = CreateContext();
             var overview = context.Model.FindEntityType(typeof(ItContractOverviewReadModel))!;
@@ -70,10 +70,10 @@ namespace Tests.Unit.Core.DataAccess
                 var name = $"InvoiceDate{period}";
                 var property = overview.FindProperty(name)!;
                 Assert.True(property.IsNullable);
-                Assert.Equal("date", property.GetColumnType());
+                Assert.Equal("timestamp without time zone", property.GetColumnType());
                 var column = Assert.Single(columns, x => x.Name == name);
                 Assert.True(column.IsNullable);
-                Assert.Equal("date", column.ColumnType);
+                Assert.Equal("timestamp without time zone", column.ColumnType);
             }
             Assert.Equal(6, migration.DownOperations.OfType<DropColumnOperation>().Count());
             Assert.Single(migration.DownOperations.OfType<DropTableOperation>());

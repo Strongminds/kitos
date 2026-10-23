@@ -14,6 +14,6 @@ namespace Presentation.Web.Models.API.V2.Types.Contract
         /// <summary>
         /// Full invoice date. The year does not need to match the selected invoice period.
         /// </summary>
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
     }
 }

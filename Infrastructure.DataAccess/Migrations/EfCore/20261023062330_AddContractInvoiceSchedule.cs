@@ -11,32 +11,32 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateOnly>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "InvoiceDate1",
                 schema: "dbo",
                 table: "ItContractOverviewReadModels",
-                type: "date",
+                type: "timestamp without time zone",
                 nullable: true);
 
-            migrationBuilder.AddColumn<DateOnly>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "InvoiceDate2",
                 schema: "dbo",
                 table: "ItContractOverviewReadModels",
-                type: "date",
+                type: "timestamp without time zone",
                 nullable: true);
 
-            migrationBuilder.AddColumn<DateOnly>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "InvoiceDate3",
                 schema: "dbo",
                 table: "ItContractOverviewReadModels",
-                type: "date",
+                type: "timestamp without time zone",
                 nullable: true);
 
-            migrationBuilder.AddColumn<DateOnly>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "InvoiceDate4",
                 schema: "dbo",
                 table: "ItContractOverviewReadModels",
-                type: "date",
+                type: "timestamp without time zone",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
@@ -60,7 +60,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     ItContractId = table.Column<int>(type: "integer", nullable: false),
                     Period = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false)
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {

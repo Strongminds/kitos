@@ -154,7 +154,7 @@ namespace Core.DomainServices.Contract
             destination.InvoiceDate4 = GetInvoiceDate(source, 4);
         }
 
-        private static DateOnly? GetInvoiceDate(ItContract source, int period) =>
+        private static DateTime? GetInvoiceDate(ItContract source, int period) =>
             source.InvoiceDates.SingleOrDefault(x => x.Period == period)?.Date;
 
         private void MapSystemRelations(ItContract source, ItContractOverviewReadModel destination)

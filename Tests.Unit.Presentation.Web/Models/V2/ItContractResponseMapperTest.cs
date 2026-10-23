@@ -57,7 +57,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
         public void MapContractDTO_InvoiceSchedule_Maps_Frequency_And_Populated_Dates(InvoiceFrequency frequency)
         {
             var contract = new ItContract();
-            var expectedDate = new DateOnly(2026, 2, 28);
+            var expectedDate = new DateTime(2026, 2, 28, 13, 45, 0);
             Assert.True(contract.UpdateInvoiceSchedule(frequency,
                 new[] { new ItContractInvoiceDate { Period = 1, Date = expectedDate } }).IsNone);
 

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20261023054402_AddContractInvoiceSchedule")]
+    [Migration("20261023062330_AddContractInvoiceSchedule")]
     partial class AddContractInvoiceSchedule
     {
         /// <inheritdoc />
@@ -1759,8 +1759,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("Period")
                         .HasColumnType("integer");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("ItContractId", "Period");
 
@@ -2408,17 +2408,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("InternalPaymentOrganizationUnitsCsv")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly?>("InvoiceDate1")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("InvoiceDate1")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateOnly?>("InvoiceDate2")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("InvoiceDate2")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateOnly?>("InvoiceDate3")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("InvoiceDate3")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateOnly?>("InvoiceDate4")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("InvoiceDate4")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("InvoiceFrequency")
                         .HasColumnType("integer");

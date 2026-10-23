@@ -30,17 +30,17 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
         [InlineData(2)]
         [InlineData(3)]
         [InlineData(4)]
-        public void Period_Fields_Are_Nullable_Dates_And_OData_Queries_Execute_In_Database_Before_Paging(int period)
+        public void Period_Fields_Are_Nullable_DateTimes_And_OData_Queries_Execute_In_Database_Before_Paging(int period)
         {
             var model = ODataModelConfig.GetEdmModel();
             var overview = (IEdmEntityType)model.FindDeclaredType(typeof(ItContractOverviewReadModel).FullName);
             var property = overview.FindProperty($"InvoiceDate{period}");
             Assert.Equal(EdmPropertyKind.Structural, property.PropertyKind);
             Assert.True(property.Type.IsNullable);
-            Assert.Equal(EdmPrimitiveTypeKind.Date, property.Type.PrimitiveKind());
+            Assert.Equal(EdmPrimitiveTypeKind.DateTimeOffset, property.Type.PrimitiveKind());
 
             var request = new DefaultHttpContext().Request;
-            request.QueryString = new QueryString($"?$filter=InvoiceDate{period} eq 2026-03-31&$orderby=InvoiceDate{period} asc&$skip=10&$top=5");
+            request.QueryString = new QueryString($"?$filter=InvoiceDate{period} ne null&$orderby=InvoiceDate{period} asc&$skip=10&$top=5");
             var options = new ODataQueryOptions<ItContractOverviewReadModel>(
                 new ODataQueryContext(model, typeof(ItContractOverviewReadModel), null), request);
             using var context = new KitosContext(new DbContextOptionsBuilder<KitosContext>()
@@ -50,7 +50,7 @@ namespace Tests.Unit.Presentation.Web.Infrastructure
             var sql = query.ToQueryString();
 
             Assert.Contains($"\"InvoiceDate{period}\"", sql);
-            Assert.Contains("20260331", sql);
+            Assert.Contains($"\"InvoiceDate{period}\" IS NOT NULL", sql);
             Assert.Matches($"ORDER BY [^\\r\\n]*\\\"InvoiceDate{period}\\\"", sql);
             Assert.True(sql.IndexOf("WHERE", System.StringComparison.Ordinal) < sql.IndexOf("ORDER BY", System.StringComparison.Ordinal));
             Assert.True(sql.IndexOf("ORDER BY", System.StringComparison.Ordinal) < sql.IndexOf("LIMIT", System.StringComparison.Ordinal));

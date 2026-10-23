@@ -14,7 +14,7 @@ namespace Infrastructure.DataAccess.Mapping
                 .WithMany(x => x.InvoiceDates)
                 .HasForeignKey(x => x.ItContractId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.Property(x => x.Date).HasColumnType("date");
+            builder.Property(x => x.Date).HasColumnType("timestamp without time zone");
         }
     }
 }

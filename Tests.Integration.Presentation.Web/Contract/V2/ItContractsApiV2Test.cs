@@ -45,8 +45,8 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
                     InvoiceFrequency = InvoiceFrequencyChoice.Quarterly,
                     InvoiceDates = new[]
                     {
-                        new ContractInvoiceDateDTO { Period = 3, Date = new DateOnly(2026, 2, 28) },
-                        new ContractInvoiceDateDTO { Period = 1, Date = new DateOnly(2026, 11, 30) }
+                        new ContractInvoiceDateDTO { Period = 3, Date = new DateTime(2026, 2, 28, 13, 45, 0) },
+                        new ContractInvoiceDateDTO { Period = 1, Date = new DateTime(2026, 11, 30, 13, 45, 0) }
                     }
                 }
             });
@@ -54,7 +54,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
             var reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
             Assert.Equal(InvoiceFrequencyChoice.Quarterly, reloaded.PaymentModel.InvoiceFrequency);
             Assert.Equal(new[] { 1, 3 }, reloaded.PaymentModel.InvoiceDates.Select(x => x.Period));
-            Assert.Equal(new[] { new DateOnly(2026, 11, 30), new DateOnly(2026, 2, 28) },
+            Assert.Equal(new[] { new DateTime(2026, 11, 30, 13, 45, 0), new DateTime(2026, 2, 28, 13, 45, 0) },
                 reloaded.PaymentModel.InvoiceDates.OrderBy(x => x.Period).Select(x => x.Date));
 
             using (var omitted = await HttpApi.PatchWithTokenAsync(url, token, new { PaymentModel = new { } }))
@@ -63,12 +63,12 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
             using (var replaced = await HttpApi.PatchWithTokenAsync(url, token, new
             {
-                PaymentModel = new { InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Date = new DateOnly(2024, 2, 29) } } }
+                PaymentModel = new { InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 1, Date = new DateTime(2024, 2, 29, 13, 45, 0) } } }
             }))
                 Assert.Equal(HttpStatusCode.OK, replaced.StatusCode);
             reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
             var replacedDate = Assert.Single(reloaded.PaymentModel.InvoiceDates);
-            Assert.Equal(new DateOnly(2024, 2, 29), replacedDate.Date);
+            Assert.Equal(new DateTime(2024, 2, 29, 13, 45, 0), replacedDate.Date);
             Assert.Equal(InvoiceFrequencyChoice.Quarterly, reloaded.PaymentModel.InvoiceFrequency);
 
             using (var changed = await HttpApi.PatchWithTokenAsync(url, token,
@@ -80,7 +80,7 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
 
             using (var populated = await HttpApi.PatchWithTokenAsync(url, token, new
             {
-                PaymentModel = new { InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 2, Date = new DateOnly(2026, 1, 1) } } }
+                PaymentModel = new { InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 2, Date = new DateTime(2026, 1, 1, 13, 45, 0) } } }
             }))
                 Assert.Equal(HttpStatusCode.OK, populated.StatusCode);
             using (var cleared = await HttpApi.PatchWithTokenAsync(url, token,
@@ -113,21 +113,21 @@ namespace Tests.Integration.Presentation.Web.Contract.V2
                 PaymentModel = new ContractPaymentModelDataWriteRequestDTO
                 {
                     InvoiceFrequency = InvoiceFrequencyChoice.Quarterly,
-                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 3, Date = new DateOnly(2026, 9, 30) } }
+                    InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = 3, Date = new DateTime(2026, 9, 30, 13, 45, 0) } }
                 }
             });
 
             using var response = await ItContractV2Helper.SendPatchPaymentModelAsync(token, contract.Uuid, new ContractPaymentModelDataWriteRequestDTO
             {
                 InvoiceFrequency = frequency,
-                InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = period, Date = new DateOnly(2026, 1, 1) } }
+                InvoiceDates = new[] { new ContractInvoiceDateDTO { Period = period, Date = new DateTime(2026, 1, 1, 13, 45, 0) } }
             });
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var reloaded = await ItContractV2Helper.GetItContractAsync(token, contract.Uuid);
             Assert.Equal(InvoiceFrequencyChoice.Quarterly, reloaded.PaymentModel.InvoiceFrequency);
             var stored = Assert.Single(reloaded.PaymentModel.InvoiceDates);
-            Assert.Equal(new DateOnly(2026, 9, 30), stored.Date);
+            Assert.Equal(new DateTime(2026, 9, 30, 13, 45, 0), stored.Date);
         }
 
         [Fact]
