@@ -215,3 +215,4 @@ MigrationsBundle/
 
 # Local publish output
 /artifacts/
+/Tools.Beskedfordeler/sts-config.local.json

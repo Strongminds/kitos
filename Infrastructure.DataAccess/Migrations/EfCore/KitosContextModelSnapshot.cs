@@ -18,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -1562,6 +1562,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<bool>("HasSupplierSigned")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("InvoiceFrequency")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("IrrevocableTo")
                         .HasColumnType("timestamp without time zone");
 
@@ -1743,6 +1746,22 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ItContract_Id");
 
                     b.ToTable("ItContractAgreementElementTypes", "dbo");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.ItContractInvoiceDate", b =>
+                {
+                    b.Property<int>("ItContractId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("ItContractId", "Period");
+
+                    b.ToTable("ItContractInvoiceDates", "dbo");
                 });
 
             modelBuilder.Entity("Core.DomainModel.ItContract.ItContractItSystemUsage", b =>
@@ -2385,6 +2404,21 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<string>("InternalPaymentOrganizationUnitsCsv")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("InvoiceDate1")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("InvoiceDate2")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("InvoiceDate3")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("InvoiceDate4")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("InvoiceFrequency")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("IrrevocableTo")
                         .HasColumnType("timestamp without time zone");
@@ -5419,6 +5453,9 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int?>("RelationInterfaceId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("SystemRelationDirection")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ToSystemUsageId")
                         .HasColumnType("integer");
 
@@ -7835,6 +7872,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("integer");
 
                     b.Property<string>("FieldKey")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastChanged")
@@ -9119,6 +9157,17 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .IsRequired();
 
                     b.Navigation("AgreementElementType");
+
+                    b.Navigation("ItContract");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItContract.ItContractInvoiceDate", b =>
+                {
+                    b.HasOne("Core.DomainModel.ItContract.ItContract", "ItContract")
+                        .WithMany("InvoiceDates")
+                        .HasForeignKey("ItContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ItContract");
                 });
@@ -12008,6 +12057,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ExternalReferences");
 
                     b.Navigation("InternEconomyStreams");
+
+                    b.Navigation("InvoiceDates");
 
                     b.Navigation("OverviewReadModels");
 

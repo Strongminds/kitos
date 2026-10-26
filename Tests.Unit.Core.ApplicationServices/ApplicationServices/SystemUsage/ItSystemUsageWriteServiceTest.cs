@@ -2732,8 +2732,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var fromUsageUuid = A<Guid>();
             var fromSystemUsage = new ItSystemUsage() { Id = A<int>() };
             var toSystemUsageId = A<int>();
-            var interfaceId =  A<int>();
-            var frequencyTypeId =  A<int>();
+            var interfaceId = A<int>();
+            var frequencyTypeId = A<int>();
             var contractId = A<int>();
             var newRelation = new SystemRelation(fromSystemUsage);
             var systemRelationParameters1 = new SystemRelationParameters(A<Guid>(), A<Guid>(), A<Guid>(), A<Guid>(), A<string>(), A<string>());
@@ -3492,12 +3492,12 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             _systemUsageRelationServiceMock.Setup(x => x.AddRelation(itSystemUsage.Id, toSystemUsageId, interfaceId,
                 description, urlReference, frequencyTypeId,
-                contractId)).Returns(result);
+                contractId, It.IsAny<SystemRelationDirection?>())).Returns(result);
         }
 
         private void ExpectModifyRelationReturns(ItSystemUsage itSystemUsage, int relationId, int toSystemUsageId, int? interfaceId, int? frequencyTypeId, int? contractId, string description, string urlReference, Result<SystemRelation, OperationError> result)
         {
-            _systemUsageRelationServiceMock.Setup(x => x.ModifyRelation(itSystemUsage.Id, relationId, toSystemUsageId, description, urlReference, interfaceId, contractId, frequencyTypeId)).Returns(result);
+            _systemUsageRelationServiceMock.Setup(x => x.ModifyRelation(itSystemUsage.Id, relationId, toSystemUsageId, description, urlReference, interfaceId, contractId, frequencyTypeId, It.IsAny<SystemRelationDirection?>())).Returns(result);
         }
 
 

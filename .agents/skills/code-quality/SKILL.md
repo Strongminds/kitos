@@ -56,6 +56,8 @@ Review query materialization, pagination, eager loading, and N+1 risks. Keep aff
 
 Respect layering between domain model, domain services, application services, infrastructure, and presentation. Register dependencies in the affected application's active composition root; KITOS registrations are in `Presentation.Web/Infrastructure/DI/KitosServiceRegistration.cs`. Check lifetimes and shared context ownership. Do not default to legacy `Infrastructure.Ninject` merely because that project remains in the solution.
 
+For domain-field changes, follow `.github/skills/kitos-domain-models/SKILL.md`: creation/update methods own assignments, fields are propagated end to end, and internal callers preserve unrelated metadata.
+
 Follow nearby naming and nullable conventions. Remove defects and obsolete code in the changed area without broad unrelated refactors. Comments should explain non-obvious reasons and constraints.
 
 ## Tests and reporting
