@@ -10,7 +10,9 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
     public class GDPRWriteRequestDTO
     {
         /// <summary>Optional. No or null clears all deletion details. Populated details require IndividualRecords or BulkDeletion.</summary>
+        [EnumDataType(typeof(PersonalDataDeletionCapabilityChoice))]
         public PersonalDataDeletionCapabilityChoice? PersonalDataDeletionCapability { get; set; }
+        [EnumDataType(typeof(PersonalDataDeletionMethodChoice))]
         public PersonalDataDeletionMethodChoice? PersonalDataDeletionMethod { get; set; }
         /// <summary>
         /// Identifies a deadline choice available in the usage organization. An existing selection may be retained after it becomes unavailable.
