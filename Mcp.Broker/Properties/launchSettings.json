@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Mcp.Broker": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:53264;http://localhost:53267"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "ClientCertificateThumbprint": "0d097b7e6214e70d8d5bf2c8341c2774d85ed55b",
+  "StsIssuer": "https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/",
+  "StsEndpoint": "https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/services/kombittrust/14/certificatemixed",
+  "StsCertificateThumbprint": "3854e5c72a4d886b4e3f69ebf4d595103859738f"
+}
