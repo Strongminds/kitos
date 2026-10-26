@@ -53,7 +53,7 @@ public class PersonalDataDeletionDeadlineOptionsApiTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var choice = await response.ReadResponseBodyAsAsync<GlobalRegularOptionResponseDTO>();
         using var enable = await GlobalOptionTypeV2Helper.PatchGlobalOptionType(choice.Uuid, ChoiceType,
-            new GlobalRegularOptionUpdateRequestDTO { IsEnabled = true, IsObligatory = false });
+            new GlobalRegularOptionUpdateRequestDTO { Name = choice.Name, IsEnabled = true, IsObligatory = false });
         Assert.Equal(HttpStatusCode.OK, enable.StatusCode);
         return choice;
     }
