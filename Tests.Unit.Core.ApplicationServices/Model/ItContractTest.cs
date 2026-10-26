@@ -55,6 +55,83 @@ namespace Tests.Unit.Core.Model
             Assert.Equal(new DateTime(2026, 1, 31), existing.Date);
         }
 
+        [Theory]
+        [InlineData(InvoiceFrequencyOptions.HalfYearly, 2)]
+        [InlineData(InvoiceFrequencyOptions.Quarterly, 3)]
+        public void UpdateInvoiceSchedule_Earlier_Date_Rejected_Without_Changing_Existing_Schedule(InvoiceFrequencyOptions frequency, int laterPeriod)
+        {
+            var sut = new ItContract();
+            var originalDate = new DateTime(2026, 6, 1);
+            Assert.True(sut.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Yearly,
+                new[] { new ItContractInvoiceDate { Period = 1, Date = originalDate } }).IsNone);
+            var existing = Assert.Single(sut.InvoiceDates);
+
+            var error = sut.UpdateInvoiceSchedule(frequency, new[]
+            {
+                new ItContractInvoiceDate { Period = laterPeriod, Date = originalDate.AddDays(-1) },
+                new ItContractInvoiceDate { Period = 1, Date = originalDate }
+            });
+
+            Assert.Equal(OperationFailure.BadInput, error.Value.FailureType);
+            Assert.Equal(InvoiceFrequencyOptions.Yearly, sut.InvoiceFrequency);
+            Assert.Same(existing, Assert.Single(sut.InvoiceDates));
+            Assert.Equal(originalDate, existing.Date);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(365)]
+        public void UpdateInvoiceSchedule_Equal_Or_Later_Date_Accepted_In_Period_Order(int daysLater)
+        {
+            var sut = new ItContract();
+            var firstDate = new DateTime(2026, 12, 31);
+
+            var error = sut.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Quarterly, new[]
+            {
+                new ItContractInvoiceDate { Period = 3, Date = firstDate.AddDays(daysLater) },
+                new ItContractInvoiceDate { Period = 1, Date = firstDate.AddHours(12) }
+            });
+
+            Assert.True(error.IsNone);
+            Assert.Equal(2, sut.InvoiceDates.Count);
+        }
+
+        [Fact]
+        public void UpdateInvoiceSchedule_Date_Exactly_100_Years_In_Future_Accepted()
+        {
+            var sut = new ItContract();
+            var boundaryDate = DateTime.Today.AddYears(100).AddHours(23);
+
+            var error = sut.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Yearly,
+                new[] { new ItContractInvoiceDate { Period = 1, Date = boundaryDate } });
+
+            Assert.True(error.IsNone);
+            Assert.Equal(boundaryDate, Assert.Single(sut.InvoiceDates).Date);
+        }
+
+        [Theory]
+        [InlineData(InvoiceFrequencyOptions.Yearly, 1)]
+        [InlineData(InvoiceFrequencyOptions.HalfYearly, 2)]
+        [InlineData(InvoiceFrequencyOptions.Quarterly, 4)]
+        public void UpdateInvoiceSchedule_Date_Beyond_100_Years_Rejected_Without_Changing_Existing_Schedule(
+            InvoiceFrequencyOptions frequency, int period)
+        {
+            var sut = new ItContract();
+            var originalDate = DateTime.Today;
+            Assert.True(sut.UpdateInvoiceSchedule(InvoiceFrequencyOptions.Yearly,
+                new[] { new ItContractInvoiceDate { Period = 1, Date = originalDate } }).IsNone);
+            var existing = Assert.Single(sut.InvoiceDates);
+
+            var error = sut.UpdateInvoiceSchedule(frequency,
+                new[] { new ItContractInvoiceDate { Period = period, Date = originalDate.AddYears(100).AddDays(1) } });
+
+            Assert.Equal(OperationFailure.BadInput, error.Value.FailureType);
+            Assert.Equal(InvoiceFrequencyOptions.Yearly, sut.InvoiceFrequency);
+            Assert.Same(existing, Assert.Single(sut.InvoiceDates));
+            Assert.Equal(originalDate, existing.Date);
+        }
+
         [Fact]
         public void UpdateInvoiceSchedule_Missing_Date_Rejected()
         {

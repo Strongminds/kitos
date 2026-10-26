@@ -130,14 +130,14 @@ namespace Tests.Unit.Core.DomainServices.Contract
                 Enumerable.Range(1, periodCount).Reverse().Select(period => new ItContractInvoiceDate
                 {
                     Period = period,
-                    Date = new DateTime(2027, 12 - period, 20 + period)
+                    Date = new DateTime(2027, period, 20 + period)
                 })).IsNone);
             _sut.Apply(source, destination);
 
             var actual = GetInvoiceDateParts(destination);
             for (var period = 1; period <= 4; period++)
             {
-                Assert.Equal(period <= periodCount ? new DateTime?(new DateTime(2027, 12 - period, 20 + period)) : null, actual[period - 1]);
+                Assert.Equal(period <= periodCount ? new DateTime?(new DateTime(2027, period, 20 + period)) : null, actual[period - 1]);
             }
             Assert.True(source.UpdateInvoiceSchedule(null, Array.Empty<ItContractInvoiceDate>()).IsNone);
             _sut.Apply(source, destination);

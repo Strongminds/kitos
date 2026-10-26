@@ -538,6 +538,25 @@ namespace Core.DomainModel.ItContract
             if (newDates.Select(x => x.Period).Distinct().Count() != newDates.Count)
                 return new OperationError("Invoice date periods must be unique", OperationFailure.BadInput);
 
+            return ValidateInvoiceDateRangeAndOrder(newDates);
+        }
+
+        private static Maybe<OperationError> ValidateInvoiceDateRangeAndOrder(IEnumerable<ItContractInvoiceDate> dates)
+        {
+            const int maximumInvoiceYearsInFuture = 100;
+            var latestInvoiceDate = DateTime.Today.AddYears(maximumInvoiceYearsInFuture);
+            DateTime? previousDate = null;
+            foreach (var invoiceDate in dates.OrderBy(x => x.Period))
+            {
+                if (invoiceDate.Date.Date > latestInvoiceDate)
+                    return new OperationError("Invoice dates must not be more than 100 years in the future", OperationFailure.BadInput);
+
+                if (previousDate.HasValue && invoiceDate.Date.Date < previousDate.Value)
+                    return new OperationError("Invoice dates must not precede dates in earlier periods", OperationFailure.BadInput);
+
+                previousDate = invoiceDate.Date.Date;
+            }
+
             return Maybe<OperationError>.None;
         }
 
