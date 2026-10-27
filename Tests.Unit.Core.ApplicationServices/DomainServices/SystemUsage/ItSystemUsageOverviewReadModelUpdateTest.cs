@@ -797,6 +797,26 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             Assert.Equal(UserCount.UNDECIDED, readModel.UserCount);
         }
 
+        [Theory]
+        [InlineData(ItSystemUsage.LongProperyMaxLength + 1, ItSystemUsage.LongProperyMaxLength + 1)]
+        [InlineData(ItSystemUsage.PurposeMaxLength, ItSystemUsage.PurposeMaxLength)]
+        [InlineData(ItSystemUsage.PurposeMaxLength + 1, ItSystemUsage.PurposeMaxLength)]
+        public void Apply_Preserves_GeneralPurpose_Up_To_PurposeMaxLength(int sourceLength, int expectedLength)
+        {
+            var systemUsage = new ItSystemUsage
+            {
+                ItSystem = new ItSystem { Name = A<string>() },
+                ObjectOwner = DefaultTestUser,
+                LastChangedByUser = DefaultTestUser,
+                GeneralPurpose = new string('a', sourceLength)
+            };
+            var readModel = new ItSystemUsageOverviewReadModel();
+
+            _sut.Apply(systemUsage, readModel);
+
+            Assert.Equal(systemUsage.GeneralPurpose.Substring(0, expectedLength), readModel.GeneralPurpose);
+        }
+
         private ItSystemUsageOverviewReadModel Test_ActiveAccordingToValidityPeriod_Based_On_ExpirationDate(DateTime expirationDate)
         {
             var system = new ItSystem

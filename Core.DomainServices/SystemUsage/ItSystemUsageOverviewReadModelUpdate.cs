@@ -291,7 +291,7 @@ namespace Core.DomainServices.SystemUsage
         private static void PatchGeneralPurposeRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
             var generalPurpose = source.GeneralPurpose?.TrimEnd();
-            destination.GeneralPurpose = generalPurpose?.Substring(0, Math.Min(generalPurpose.Length, ItSystemUsage.LongProperyMaxLength));
+            destination.GeneralPurpose = generalPurpose?.Substring(0, Math.Min(generalPurpose.Length, ItSystemUsage.PurposeMaxLength));
         }
 
         private static void PatchProcessingPurposeRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
@@ -459,7 +459,7 @@ namespace Core.DomainServices.SystemUsage
             destination.MainContractId = source.MainContract?.ItContractId;
             destination.MainContractSupplierId = source.MainContract?.ItContract?.Supplier?.Id;
             destination.MainContractSupplierName = source.MainContract?.ItContract?.Supplier?.Name;
-            
+
             // Map the contract state to the new enum
             if (source.MainContract == null)
             {
@@ -467,8 +467,8 @@ namespace Core.DomainServices.SystemUsage
             }
             else
             {
-                destination.MainContractIsActive = source.IsActiveAccordingToMainContract 
-                    ? MainContractState.Active 
+                destination.MainContractIsActive = source.IsActiveAccordingToMainContract
+                    ? MainContractState.Active
                     : MainContractState.Inactive;
             }
         }

@@ -56,7 +56,7 @@ namespace Tests.Unit.Core.Model
         [Fact]
         public void ResetSystemUsageCriticalityLevel_SetsLastChanged_AndSetsValueToNull()
         {
-            _sut.UpdateSystemUsageCriticalityLevel(new SystemUsageCriticalityLevel() { Uuid = A<Guid>(), Name = A<string>()});
+            _sut.UpdateSystemUsageCriticalityLevel(new SystemUsageCriticalityLevel() { Uuid = A<Guid>(), Name = A<string>() });
             var beforeChange = _sut.CriticalityFieldsLastChanged;
             Assert.NotNull(_sut.SystemUsageCriticalityLevel);
 
@@ -100,7 +100,7 @@ namespace Tests.Unit.Core.Model
         {
             var existingValue = A<string?>();
             _sut.UpdateCriticalityLevelDocumentationUrl(existingValue);
-            
+
             var beforeChange = _sut.CriticalityFieldsLastChanged;
 
             _sut.UpdateCriticalityLevelDocumentationUrl(existingValue);
