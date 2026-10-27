@@ -261,11 +261,16 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertPropertyContainsResetDataChange(mappedGeneralSection.MainContractUuid);
         }
 
-        [Fact]
-        public void Can_Map_GDPR_Data_Properties()
+        [Theory]
+        [InlineData(RiskAssessmentConductedChoice.Yes, DpiaConductedChoice.Yes)]
+        [InlineData(RiskAssessmentConductedChoice.NoMustBePrepared, DpiaConductedChoice.NoMustBePrepared)]
+        [InlineData(RiskAssessmentConductedChoice.NoMustNotBePrepared, DpiaConductedChoice.NoMustNotBePrepared)]
+        public void Can_Map_GDPR_Data_Properties(RiskAssessmentConductedChoice riskAssessment, DpiaConductedChoice dpia)
         {
             //Arrange
             var input = A<GDPRWriteRequestDTO>();
+            input.RiskAssessmentConducted = riskAssessment;
+            input.DPIAConducted = dpia;
 
             //Act
             var output = _sut.FromPATCH(new UpdateItSystemUsageRequestDTO() { GDPR = input });
@@ -301,7 +306,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             AssertLinkMapping(input.RiskAssessmentDocumentation, mappedGdpr.RiskAssessmentDocumentation);
             Assert.Equal(input.RiskAssessmentResult, AssertPropertyContainsDataChange(mappedGdpr.RiskAssessmentResult)?.ToRiskLevelChoice());
             Assert.Equal(input.PlannedRiskAssessmentDate, AssertPropertyContainsDataChange(mappedGdpr.PlannedRiskAssessmentDate));
-            Assert.Equal(input.DPIAConducted, AssertPropertyContainsDataChange(mappedGdpr.DPIAConducted)?.ToYesNoDontKnowChoice());
+            Assert.Equal(input.DPIAConducted, AssertPropertyContainsDataChange(mappedGdpr.DPIAConducted)?.ToChoice());
             Assert.Equal(input.DPIADate, AssertPropertyContainsDataChange(mappedGdpr.DPIADate));
             Assert.Equal(input.NextDataRetentionEvaluationDate, AssertPropertyContainsDataChange(mappedGdpr.NextDataRetentionEvaluationDate));
             Assert.Equal(input.DataRetentionEvaluationFrequencyInMonths, AssertPropertyContainsDataChange(mappedGdpr.DataRetentionEvaluationFrequencyInMonths));

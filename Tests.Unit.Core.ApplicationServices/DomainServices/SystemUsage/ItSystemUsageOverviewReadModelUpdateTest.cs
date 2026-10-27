@@ -265,7 +265,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 },
             };
 
-            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
+            systemUsage.UpdateRiskAssessment(RiskAssessmentConducted.Yes);
             systemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
@@ -650,7 +650,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 AssociatedDataProcessingRegistrations = new List<DataProcessingRegistration>()
             };
 
-            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.DontKnow);
+            systemUsage.UpdateRiskAssessment(RiskAssessmentConducted.DontKnow);
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
 
@@ -720,7 +720,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                     dpr5
                 }
             };
-            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.DontKnow);
+            systemUsage.UpdateRiskAssessment(RiskAssessmentConducted.DontKnow);
             systemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());

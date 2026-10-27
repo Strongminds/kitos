@@ -34,7 +34,7 @@ public class BaseItSystemUsageApiV2Test : BaseTest
         gdprInput.PlannedRiskAssessmentDate = A<DateTime>();
         gdprInput.IsDataProcessingAgreementRequired = A<IsDataProcessingAgreementRequiredChoice?>();
 
-        if (gdprInput.RiskAssessmentConducted != YesNoDontKnowIrrelevantChoice.Yes)
+        if (gdprInput.RiskAssessmentConducted != RiskAssessmentConductedChoice.Yes)
         {
             gdprInput.RiskAssessmentConductedDate = null;
             gdprInput.RiskAssessmentDocumentation = null;
@@ -48,7 +48,7 @@ public class BaseItSystemUsageApiV2Test : BaseTest
             gdprInput.TechnicalPrecautionsDocumentation = null;
         }
 
-        if (gdprInput.DPIAConducted != YesNoDontKnowChoice.Yes)
+        if (gdprInput.DPIAConducted != DpiaConductedChoice.Yes)
         {
             gdprInput.DPIADate = null;
             gdprInput.DPIADocumentation = null;

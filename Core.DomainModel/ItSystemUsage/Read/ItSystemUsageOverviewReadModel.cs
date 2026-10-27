@@ -96,7 +96,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public DateTime? RiskAssessmentDate { get; set; }
         public DateTime? PlannedRiskAssessmentDate { get; set; }
         public RiskLevel? RiskAssessmentResult { get; set; }
-        public YesNoDontKnowIrrelevant? RiskAssessmentConducted { get; set; }
+        public RiskAssessmentConducted? RiskAssessmentConducted { get; set; }
         public virtual ICollection<ItSystemUsageOverviewSensitiveDataLevelReadModel> SensitiveDataLevels { get; set; } = [];
         public ArchiveDutyTypes? ArchiveDuty { get; set; }
         public bool IsHoldingDocument { get; set; }
@@ -130,7 +130,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string AssociatedContractsNamesCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewItContractReadModel> AssociatedContracts { get; set; } = [];
 
-        public DataOptions? DPIAConducted { get; set; }
+        public DpiaConducted? DPIAConducted { get; set; }
 
         public DataOptions? IsBusinessCritical { get; set; }
 

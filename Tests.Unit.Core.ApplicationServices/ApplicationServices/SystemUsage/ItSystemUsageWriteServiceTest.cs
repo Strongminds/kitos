@@ -1918,13 +1918,13 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             DataOptions? userSupervision = DataOptions.YES;
             var supervisionDate = A<DateTime?>();
             var supervisionDoc = A<NamedLink>();
-            YesNoDontKnowIrrelevant? riskAssessmentConducted = YesNoDontKnowIrrelevant.Yes;
+            RiskAssessmentConducted? riskAssessmentConducted = RiskAssessmentConducted.Yes;
             var riskAssessmentDate = A<DateTime?>();
             var riskAssessmentDoc = A<NamedLink>();
             var riskAssessmentNotes = A<string>();
             var plannedRiskAssessmentDate = A<DateTime?>();
             var riskAssessmentResult = A<RiskLevel?>();
-            DataOptions? dpiaConducted = DataOptions.YES;
+            DpiaConducted? dpiaConducted = DpiaConducted.Yes;
             var dpiaDate = A<DateTime?>();
             var dpiaDoc = A<NamedLink>();
             var nextEvaluationDate = A<DateTime?>();
@@ -3594,8 +3594,8 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
         {
             DataOptions? userSupervision = DataOptions.YES;
             DataOptions? technicalPrecautionsInPlace = DataOptions.YES;
-            YesNoDontKnowIrrelevant? riskAssessment = YesNoDontKnowIrrelevant.Yes;
-            DataOptions? dpiaConcluded = DataOptions.YES;
+            RiskAssessmentConducted? riskAssessment = RiskAssessmentConducted.Yes;
+            DpiaConducted? dpiaConcluded = DpiaConducted.Yes;
             DataOptions? retentionPeriodDefined = DataOptions.YES;
             return new SystemUsageUpdateParameters
             {
@@ -3680,13 +3680,13 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                     UserSupervision = new ChangedValue<DataOptions?>(null),
                     UserSupervisionDate = new ChangedValue<DateTime?>(null),
                     UserSupervisionDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
-                    RiskAssessmentConducted = new ChangedValue<YesNoDontKnowIrrelevant?>(null),
+                    RiskAssessmentConducted = new ChangedValue<RiskAssessmentConducted?>(null),
                     RiskAssessmentConductedDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentDocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     RiskAssessmentNotes = new ChangedValue<string>(null!),
                     PlannedRiskAssessmentDate = new ChangedValue<DateTime?>(null),
                     RiskAssessmentResult = new ChangedValue<RiskLevel?>(null),
-                    DPIAConducted = new ChangedValue<DataOptions?>(null),
+                    DPIAConducted = new ChangedValue<DpiaConducted?>(null),
                     DPIADate = new ChangedValue<DateTime?>(null),
                     DPIADocumentation = new ChangedValue<Maybe<NamedLink>>(Maybe<NamedLink>.None),
                     RetentionPeriodDefined = new ChangedValue<DataOptions?>(null),

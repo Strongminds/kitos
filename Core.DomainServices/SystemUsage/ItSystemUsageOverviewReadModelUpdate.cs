@@ -349,7 +349,7 @@ namespace Core.DomainServices.SystemUsage
 
         private static void PatchRiskSupervisionDocumentation(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            if (source.riskAssessment == YesNoDontKnowIrrelevant.Yes)
+            if (source.riskAssessment == RiskAssessmentConducted.Yes)
             {
                 destination.RiskSupervisionDocumentationName = source.RiskSupervisionDocumentationUrlName;
                 destination.RiskSupervisionDocumentationUrl = source.RiskSupervisionDocumentationUrl;

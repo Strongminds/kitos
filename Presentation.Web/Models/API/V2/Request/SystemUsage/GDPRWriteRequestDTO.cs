@@ -34,7 +34,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public YesNoDontKnowChoice? UserSupervision { get; set; }
         public DateTime? UserSupervisionDate { get; set; }
         public SimpleLinkDTO? UserSupervisionDocumentation { get; set; }
-        public YesNoDontKnowIrrelevantChoice? RiskAssessmentConducted { get; set; }
+        public RiskAssessmentConductedChoice? RiskAssessmentConducted { get; set; }
         public DateTime? RiskAssessmentConductedDate { get; set; }
         [SupplierField]
         public RiskLevelChoice? RiskAssessmentResult { get; set; }
@@ -46,7 +46,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         [SimpleLinkNameMaxLength(150)]
         public SimpleLinkDTO? RiskAssessmentDocumentation { get; set; }
         public string? RiskAssessmentNotes { get; set; }
-        public YesNoDontKnowChoice? DPIAConducted { get; set; }
+        public DpiaConductedChoice? DPIAConducted { get; set; }
         public DateTime? DPIADate { get; set; }
         public SimpleLinkDTO? DPIADocumentation { get; set; }
         public YesNoDontKnowChoice? RetentionPeriodDefined { get; set; }
