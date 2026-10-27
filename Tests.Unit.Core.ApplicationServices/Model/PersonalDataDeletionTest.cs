@@ -17,7 +17,7 @@ public class PersonalDataDeletionTest
     {
         var usage = new ItSystemUsage { OrganizationId = 1 };
         var user = Member();
-        var date = new DateTime(2026, 10, 22, 0, 0, 0, DateTimeKind.Utc);
+        var date = new DateOnly(2026, 10, 22);
         Assert.True(usage.UpdatePersonalDataDeletion(capability, PersonalDataDeletionMethod.BySupplierOnRequest,
             new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "https://procedure", "Procedure", user, date, "https://check", "Check").IsNone);
         Assert.Equal(capability, usage.PersonalDataDeletionCapability);
@@ -56,7 +56,7 @@ public class PersonalDataDeletionTest
         Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, "url", null, null, null, null, null).HasValue);
         Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, null, "name", null, null, null, null).HasValue);
         Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, null, null, Member(), null, null, null).HasValue);
-        Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, null, null, null, DateTime.UtcNow, null, null).HasValue);
+        Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, null, null, null, DateOnly.FromDateTime(DateTime.UtcNow), null, null).HasValue);
         Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, null, null, null, null, "url", null).HasValue);
         Assert.True(usage.UpdatePersonalDataDeletion(capability, null, null, null, null, null, null, null, "name").HasValue);
         Assert.Null(usage.PersonalDataDeletionCapability);

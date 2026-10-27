@@ -22,7 +22,7 @@ namespace Presentation.Web.Models.API.V2.Request.SystemUsage
         public SimpleLinkDTO? PersonalDataDeletionProcedureDocumentation { get; set; }
         /// <summary>Must identify an active member of the usage organization. Historical assignments are retained after departure or deletion.</summary>
         public Guid? PersonalDataDeletionResponsibleUserUuid { get; set; }
-        public DateTime? PersonalDataDeletionVerifiedDate { get; set; }
+        public DateOnly? PersonalDataDeletionVerifiedDate { get; set; }
         [SimpleLinkNameMaxLength(150)]
         public SimpleLinkDTO? PersonalDataDeletionVerificationDocumentation { get; set; }
         public string? ProcessingPurpose { get; set; }

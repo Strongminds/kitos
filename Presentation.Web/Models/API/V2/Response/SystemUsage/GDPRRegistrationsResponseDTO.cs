@@ -16,7 +16,7 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
         public IdentityNamePairResponseDTO? PersonalDataDeletionDeadlineType { get; set; }
         public SimpleLinkDTO? PersonalDataDeletionProcedureDocumentation { get; set; }
         public IdentityNamePairResponseDTO? PersonalDataDeletionResponsibleUser { get; set; }
-        public DateTime? PersonalDataDeletionVerifiedDate { get; set; }
+        public DateOnly? PersonalDataDeletionVerifiedDate { get; set; }
         public SimpleLinkDTO? PersonalDataDeletionVerificationDocumentation { get; set; }
         public string? ProcessingPurpose { get; set; }
         public SimpleLinkDTO? DirectoryDocumentation { get; set; }

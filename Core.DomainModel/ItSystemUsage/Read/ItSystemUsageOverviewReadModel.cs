@@ -137,7 +137,7 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public int? PersonalDataDeletionResponsibleUserId { get; set; }
         public Guid? PersonalDataDeletionResponsibleUserUuid { get; set; }
         public string PersonalDataDeletionResponsibleUserName { get; set; }
-        public DateTime? PersonalDataDeletionVerifiedDate { get; set; }
+        public DateOnly? PersonalDataDeletionVerifiedDate { get; set; }
         public string PersonalDataDeletionProcedureDocumentationName { get; set; }
         public string PersonalDataDeletionProcedureDocumentationUrl { get; set; }
         public string PersonalDataDeletionVerificationDocumentationName { get; set; }

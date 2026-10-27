@@ -109,7 +109,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<Guid?>.None,
                 PersonalDataDeletionVerifiedDate = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionVerifiedDate)
                     ? source.PersonalDataDeletionVerifiedDate!.AsChangedValue()
-                    : OptionalValueChange<DateTime?>.None,
+                    : OptionalValueChange<DateOnly?>.None,
                 PersonalDataDeletionVerificationDocumentation = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionVerificationDocumentation)
                     ? MapLink(source.PersonalDataDeletionVerificationDocumentation)
                     : OptionalValueChange<Maybe<NamedLink>>.None,

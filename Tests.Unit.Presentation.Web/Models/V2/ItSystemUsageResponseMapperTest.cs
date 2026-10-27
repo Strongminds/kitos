@@ -267,7 +267,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
             responsibleUser.OrganizationRights.Add(new OrganizationRight { OrganizationId = itSystemUsage.OrganizationId });
             itSystemUsage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.IndividualRecords,
                 PersonalDataDeletionMethod.BySupplierOnRequest, new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "https://procedure", "Procedure",
-                responsibleUser, new DateTime(2026, 10, 22), "https://check", "Check");
+                responsibleUser, new DateOnly(2026, 10, 22), "https://check", "Check");
 
             //Act
             var dto = _sut.MapSystemUsageDTO(itSystemUsage);

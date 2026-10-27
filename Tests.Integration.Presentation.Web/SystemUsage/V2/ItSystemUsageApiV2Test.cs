@@ -1213,7 +1213,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
                 PersonalDataDeletionMethod = PersonalDataDeletionMethodChoice.ManuallyByOrganization,
                 PersonalDataDeletionDeadlineTypeUuid = deadline.Uuid,
                 PersonalDataDeletionResponsibleUserUuid = user.Uuid,
-                PersonalDataDeletionVerifiedDate = new DateTime(2026, 10, 22),
+                PersonalDataDeletionVerifiedDate = new DateOnly(2026, 10, 22),
                 PersonalDataDeletionProcedureDocumentation = new SimpleLinkDTO { Name = "Procedure", Url = "https://example.com/procedure" },
                 PersonalDataDeletionVerificationDocumentation = new SimpleLinkDTO { Name = "Check", Url = "https://example.com/check" }
             };
@@ -2902,7 +2902,7 @@ namespace Tests.Integration.Presentation.Web.SystemUsage.V2
             Assert.Equal(gdprInput.PersonalDataDeletionMethod, gdprResponse.PersonalDataDeletionMethod);
             Assert.Equal(gdprInput.PersonalDataDeletionDeadlineTypeUuid, gdprResponse.PersonalDataDeletionDeadlineType?.Uuid);
             Assert.Equal(gdprInput.PersonalDataDeletionResponsibleUserUuid, gdprResponse.PersonalDataDeletionResponsibleUser?.Uuid);
-            AssertTimestampEqual(gdprInput.PersonalDataDeletionVerifiedDate, gdprResponse.PersonalDataDeletionVerifiedDate);
+            Assert.Equal(gdprInput.PersonalDataDeletionVerifiedDate, gdprResponse.PersonalDataDeletionVerifiedDate);
             (gdprInput.PersonalDataDeletionProcedureDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.PersonalDataDeletionProcedureDocumentation);
             (gdprInput.PersonalDataDeletionVerificationDocumentation ?? new SimpleLinkDTO()).ToExpectedObject().ShouldMatch(gdprResponse.PersonalDataDeletionVerificationDocumentation);
             Assert.NotNull(gdprResponse.DataSensitivityLevels);

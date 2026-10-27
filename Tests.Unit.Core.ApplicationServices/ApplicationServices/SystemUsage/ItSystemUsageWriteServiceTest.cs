@@ -138,7 +138,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 PersonalDataDeletionMethod = OptionalValueChange<PersonalDataDeletionMethod?>.With(PersonalDataDeletionMethod.ManuallyByOrganization),
                 PersonalDataDeletionDeadlineTypeUuid = OptionalValueChange<Maybe<Guid>>.With(deadline.Uuid),
                 PersonalDataDeletionResponsibleUserUuid = OptionalValueChange<Guid?>.With(user.Uuid),
-                PersonalDataDeletionVerifiedDate = OptionalValueChange<DateTime?>.With(new DateTime(2026, 10, 22)),
+                PersonalDataDeletionVerifiedDate = OptionalValueChange<DateOnly?>.With(new DateOnly(2026, 10, 22)),
                 PersonalDataDeletionProcedureDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(new NamedLink("Procedure", "https://procedure")),
                 PersonalDataDeletionVerificationDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(new NamedLink("Check", "https://check"))
             };
@@ -202,7 +202,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var (systemUuid, organizationUuid, transaction, organization, system, usage) = CreateBasicTestVariables();
             SetupBasicCreateThenUpdatePrerequisites(organizationUuid, organization, systemUuid, system, usage);
             usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, PersonalDataDeletionMethod.BySupplierOnRequest,
-                new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "url", "name", null, DateTime.UtcNow, "check", "check name");
+                new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "url", "name", null, DateOnly.FromDateTime(DateTime.UtcNow), "check", "check name");
             var parameters = new UpdatedSystemUsageGDPRProperties();
             if (disable) parameters.PersonalDataDeletionCapability = OptionalValueChange<PersonalDataDeletionCapability?>.With(PersonalDataDeletionCapability.No);
             if (conflict) parameters.PersonalDataDeletionMethod = OptionalValueChange<PersonalDataDeletionMethod?>.With(PersonalDataDeletionMethod.AutomaticallyBySystem);
@@ -229,7 +229,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
             var user = new User { Id = 42 };
             user.OrganizationRights.Add(new OrganizationRight { OrganizationId = usage.OrganizationId });
             usage.UpdatePersonalDataDeletion(PersonalDataDeletionCapability.BulkDeletion, PersonalDataDeletionMethod.BySupplierOnRequest,
-                new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "procedure", "Procedure", user, DateTime.UtcNow, "check", "Check");
+                new PersonalDataDeletionDeadlineType { Id = 12, Name = "30 days" }, "procedure", "Procedure", user, DateOnly.FromDateTime(DateTime.UtcNow), "check", "Check");
             user.OrganizationRights.Clear();
             user.Deleted = true;
             var parameters = new UpdatedSystemUsageGDPRProperties();
@@ -239,7 +239,7 @@ namespace Tests.Unit.Core.ApplicationServices.SystemUsage
                 parameters.PersonalDataDeletionDeadlineTypeUuid = OptionalValueChange<Maybe<Guid>>.With(Maybe<Guid>.None);
                 parameters.PersonalDataDeletionProcedureDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(Maybe<NamedLink>.None);
                 parameters.PersonalDataDeletionResponsibleUserUuid = OptionalValueChange<Guid?>.With(null);
-                parameters.PersonalDataDeletionVerifiedDate = OptionalValueChange<DateTime?>.With(null);
+                parameters.PersonalDataDeletionVerifiedDate = OptionalValueChange<DateOnly?>.With(null);
                 parameters.PersonalDataDeletionVerificationDocumentation = OptionalValueChange<Maybe<NamedLink>>.With(Maybe<NamedLink>.None);
             }
             var result = _sut.Create(new SystemUsageCreationParameters(systemUuid, organizationUuid, new SystemUsageUpdateParameters { GDPR = parameters }));

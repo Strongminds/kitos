@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,6 +12,90 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "PersonalDataDeletionCapability",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "integer",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PersonalDataDeletionDeadlineTypeName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "PersonalDataDeletionDeadlineTypeUuid",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "uuid",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "PersonalDataDeletionMethod",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "integer",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PersonalDataDeletionProcedureDocumentationName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PersonalDataDeletionProcedureDocumentationUrl",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "PersonalDataDeletionResponsibleUserId",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "integer",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PersonalDataDeletionResponsibleUserName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "PersonalDataDeletionResponsibleUserUuid",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "uuid",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PersonalDataDeletionVerificationDocumentationName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "PersonalDataDeletionVerificationDocumentationUrl",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "text",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateOnly>(
+                name: "PersonalDataDeletionVerifiedDate",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels",
+                type: "date",
+                nullable: true);
+
             migrationBuilder.AddColumn<int>(
                 name: "PersonalDataDeletionCapability",
                 schema: "dbo",
@@ -70,11 +154,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 maxLength: 150,
                 nullable: true);
 
-            migrationBuilder.AddColumn<DateTime>(
+            migrationBuilder.AddColumn<DateOnly>(
                 name: "PersonalDataDeletionVerifiedDate",
                 schema: "dbo",
                 table: "ItSystemUsage",
-                type: "timestamp without time zone",
+                type: "date",
                 nullable: true);
 
             migrationBuilder.CreateTable(
@@ -256,6 +340,66 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
             migrationBuilder.DropColumn(
                 name: "PersonalDataDeletionCapability",
                 schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionDeadlineTypeName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionDeadlineTypeUuid",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionMethod",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionProcedureDocumentationName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionProcedureDocumentationUrl",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionResponsibleUserId",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionResponsibleUserName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionResponsibleUserUuid",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionVerificationDocumentationName",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionVerificationDocumentationUrl",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionVerifiedDate",
+                schema: "dbo",
+                table: "ItSystemUsageOverviewReadModels");
+
+            migrationBuilder.DropColumn(
+                name: "PersonalDataDeletionCapability",
+                schema: "dbo",
                 table: "ItSystemUsage");
 
             migrationBuilder.DropColumn(
@@ -297,7 +441,6 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 name: "PersonalDataDeletionVerifiedDate",
                 schema: "dbo",
                 table: "ItSystemUsage");
-
         }
     }
 }

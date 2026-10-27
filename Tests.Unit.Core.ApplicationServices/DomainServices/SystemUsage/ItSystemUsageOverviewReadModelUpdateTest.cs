@@ -90,7 +90,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
             var deadline = new PersonalDataDeletionDeadlineType { Uuid = A<Guid>(), Name = A<string>() };
             var responsibleUser = new User { Id = A<int>(), Uuid = A<Guid>(), Name = "Deletion", LastName = "Owner" };
             responsibleUser.OrganizationRights.Add(new OrganizationRight { OrganizationId = source.OrganizationId });
-            var verified = DateTime.UtcNow.Date;
+            var verified = DateOnly.FromDateTime(DateTime.UtcNow);
             Assert.True(source.UpdatePersonalDataDeletion(capability, PersonalDataDeletionMethod.AutomaticallyBySystem,
                 deadline, "https://example.com/procedure", "Procedure", responsibleUser, verified,
                 "https://example.com/verification", "Verification").IsNone);

@@ -18,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "10.0.13")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -4402,8 +4402,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateOnly?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");
@@ -5007,8 +5007,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("PersonalDataDeletionVerificationDocumentationUrl")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateOnly?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");
