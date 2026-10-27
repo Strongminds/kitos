@@ -49,6 +49,21 @@ Retry **Connect/Forbind igen** in ChatGPT. Paste [your KITOS API token](README.m
 only on **https://localhost:7443**, consent and select **Connect**.
 Do not share the authorization address, tokens or network logs.
 
+**Connection expired?** Select **Genopret forbindelsen / Forbind igen**, paste a valid
+KITOS token on the broker, check consent, **Connect**, then retry the question.
+Pilot access lasts five minutes; if services are stopped, repeat step 2 first.
+
+**“We couldn't connect your account”?** Run
+`./deployment/mcp-local/Invoke-Local.ps1 Status -Client ChatGPT`.
+If the tunnel is `stopped`, run:
+
+```powershell
+./deployment/mcp-local/Start-ChatGptTunnel.ps1
+```
+
+Enter the OpenAI runtime API key locally, then reconnect in ChatGPT with a valid
+KITOS token. Containers and tunnel must both be running.
+
 ## 4. Try it and stop
 
 Select the plugin with `@` in a new conversation and ask:

@@ -32,7 +32,8 @@ The UI is developed and maintained here: https://github.com/os2kitos/kitos_front
 ## Build and test
 
 For the local MCP pilot, see [setup instructions](deployment/mcp-local/README.md),
-with separate guides for trying ChatGPT and running developer checks.
+with separate guides for trying ChatGPT, [reconnecting](deployment/mcp-local/README.md#connection-expired)
+and running developer checks.
 
 Build the solution:
 

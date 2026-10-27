@@ -30,6 +30,22 @@ The launcher creates/starts a Podman machine when needed. It installs no softwar
 Both workflows share ports 7443 and 7444 inside one Compose project. Run one
 configuration at a time; switching requires fresh authorization.
 
+## Connection expired
+
+Select **Genopret forbindelsen / Forbind igen** in ChatGPT. On the localhost broker,
+paste a valid KITOS token, check **Allow read-only access**, select **Connect**, then
+retry your question. Pilot access expires after five minutes or a broker restart.
+
+**“We couldn't connect your account”?** Check the tunnel:
+
+```powershell
+./deployment/mcp-local/Invoke-Local.ps1 Status -Client ChatGPT
+```
+
+If it says `stopped`, run `./deployment/mcp-local/Start-ChatGptTunnel.ps1`, enter
+the OpenAI runtime API key locally, then reconnect in ChatGPT with a valid KITOS
+token. Running containers alone are insufficient; the tunnel must also be running.
+
 ## Obtain a KITOS token
 
 ```powershell
