@@ -34,6 +34,7 @@ namespace Core.DomainModel.ItSystemUsage
         IEntityOwnedByOrganization
     {
         public const int LongProperyMaxLength = 200;
+        public const int PurposeMaxLength = 1000;
         public const int DefaultMaxLength = 100;
         public const int LinkNameMaxLength = 150;
 

@@ -18,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "10.0.13")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -4726,8 +4726,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("uuid");
 
                     b.Property<string>("GeneralPurpose")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int>("HostedAt")
                         .HasColumnType("integer");
