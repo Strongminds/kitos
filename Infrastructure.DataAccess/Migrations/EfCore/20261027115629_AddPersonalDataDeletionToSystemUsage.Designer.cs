@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.DataAccess.Migrations.EfCore
 {
     [DbContext(typeof(KitosContext))]
-    [Migration("20261027112157_AddPersonalDataDeletionToSystemUsage")]
+    [Migration("20261027115629_AddPersonalDataDeletionToSystemUsage")]
     partial class AddPersonalDataDeletionToSystemUsage
     {
         /// <inheritdoc />
@@ -4405,8 +4405,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<DateOnly?>("PersonalDataDeletionVerifiedDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");
@@ -5010,8 +5010,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<string>("PersonalDataDeletionVerificationDocumentationUrl")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly?>("PersonalDataDeletionVerifiedDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");

@@ -12,7 +12,6 @@ namespace Tests.Toolkit.Patterns
         protected WithAutoFixture()
         {
             _fixture = new Fixture();
-            _fixture.Register(() => DateOnly.FromDateTime(_fixture.Create<DateTime>()));
             OnFixtureCreated(_fixture);
         }
 

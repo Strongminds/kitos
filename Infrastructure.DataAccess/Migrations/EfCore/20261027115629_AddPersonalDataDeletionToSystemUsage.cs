@@ -89,11 +89,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 type: "text",
                 nullable: true);
 
-            migrationBuilder.AddColumn<DateOnly>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "PersonalDataDeletionVerifiedDate",
                 schema: "dbo",
                 table: "ItSystemUsageOverviewReadModels",
-                type: "date",
+                type: "timestamp without time zone",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
@@ -154,11 +154,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 maxLength: 150,
                 nullable: true);
 
-            migrationBuilder.AddColumn<DateOnly>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "PersonalDataDeletionVerifiedDate",
                 schema: "dbo",
                 table: "ItSystemUsage",
-                type: "date",
+                type: "timestamp without time zone",
                 nullable: true);
 
             migrationBuilder.CreateTable(

@@ -331,7 +331,7 @@ namespace Core.DomainModel.ItSystemUsage
         public string PersonalDataDeletionProcedureDocumentationUrlName { get; private set; }
         public int? PersonalDataDeletionResponsibleUserId { get; private set; }
         public virtual User PersonalDataDeletionResponsibleUser { get; private set; }
-        public DateOnly? PersonalDataDeletionVerifiedDate { get; private set; }
+        public DateTime? PersonalDataDeletionVerifiedDate { get; private set; }
         public string PersonalDataDeletionVerificationDocumentationUrl { get; private set; }
         public string PersonalDataDeletionVerificationDocumentationUrlName { get; private set; }
 
@@ -1459,7 +1459,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         public Maybe<OperationError> UpdatePersonalDataDeletion(
             PersonalDataDeletionCapability? capability, PersonalDataDeletionMethod? method, PersonalDataDeletionDeadlineType deadline,
-            string procedureUrl, string procedureName, User responsibleUser, DateOnly? verifiedDate,
+            string procedureUrl, string procedureName, User responsibleUser, DateTime? verifiedDate,
             string verificationUrl, string verificationName)
         {
             if (capability.HasValue && !Enum.IsDefined(capability.Value) ||
@@ -1485,7 +1485,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         private void SetPersonalDataDeletion(
             PersonalDataDeletionCapability? capability, PersonalDataDeletionMethod? method, PersonalDataDeletionDeadlineType deadline,
-            string procedureUrl, string procedureName, User responsibleUser, DateOnly? verifiedDate,
+            string procedureUrl, string procedureName, User responsibleUser, DateTime? verifiedDate,
             string verificationUrl, string verificationName)
         {
             PersonalDataDeletionCapability = capability;

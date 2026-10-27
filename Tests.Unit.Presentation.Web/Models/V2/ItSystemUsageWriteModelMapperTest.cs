@@ -81,7 +81,7 @@ namespace Tests.Unit.Presentation.Web.Models.V2
                 PersonalDataDeletionMethod = PersonalDataDeletionMethodChoice.BySupplierOnRequest,
                 PersonalDataDeletionDeadlineTypeUuid = A<Guid>(),
                 PersonalDataDeletionResponsibleUserUuid = A<Guid>(),
-                PersonalDataDeletionVerifiedDate = DateOnly.FromDateTime(A<DateTime>()),
+                PersonalDataDeletionVerifiedDate = A<DateTime>(),
                 PersonalDataDeletionProcedureDocumentation = new SimpleLinkDTO { Name = "Procedure", Url = "https://procedure" },
                 PersonalDataDeletionVerificationDocumentation = new SimpleLinkDTO { Name = "Check", Url = "https://check" }
             };

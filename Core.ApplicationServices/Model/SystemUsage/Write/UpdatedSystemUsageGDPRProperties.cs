@@ -16,7 +16,7 @@ namespace Core.ApplicationServices.Model.SystemUsage.Write
         public OptionalValueChange<Maybe<Guid>> PersonalDataDeletionDeadlineTypeUuid { get; set; } = OptionalValueChange<Maybe<Guid>>.None;
         public OptionalValueChange<Maybe<NamedLink>> PersonalDataDeletionProcedureDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
         public OptionalValueChange<Guid?> PersonalDataDeletionResponsibleUserUuid { get; set; } = OptionalValueChange<Guid?>.None;
-        public OptionalValueChange<DateOnly?> PersonalDataDeletionVerifiedDate { get; set; } = OptionalValueChange<DateOnly?>.None;
+        public OptionalValueChange<DateTime?> PersonalDataDeletionVerifiedDate { get; set; } = OptionalValueChange<DateTime?>.None;
         public OptionalValueChange<Maybe<NamedLink>> PersonalDataDeletionVerificationDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
         public OptionalValueChange<string> ProcessingPurpose { get; set; } = OptionalValueChange<string>.None;
         public OptionalValueChange<Maybe<NamedLink>> DirectoryDocumentation { get; set; } = OptionalValueChange<Maybe<NamedLink>>.None;
