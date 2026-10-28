@@ -46,6 +46,8 @@ spec:
             secretKeyRef:
               key: PubSubConnectionString
               name: user-secret
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
         image: ghcr.io/strongminds/kitos-kitos-pubsub@sha256:faf26acf89849bbce35d36e7751ef0544fbb602fc7b0f992ec6e55005445dad2
         name: kitos-pubsub
         ports:
