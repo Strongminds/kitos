@@ -130,6 +130,18 @@ namespace Core.DomainModel.ItSystemUsage.Read
         public string AssociatedContractsNamesCsv { get; set; }
         public virtual ICollection<ItSystemUsageOverviewItContractReadModel> AssociatedContracts { get; set; } = [];
 
+        public PersonalDataDeletionCapability? PersonalDataDeletionCapability { get; set; }
+        public PersonalDataDeletionMethod? PersonalDataDeletionMethod { get; set; }
+        public Guid? PersonalDataDeletionDeadlineTypeUuid { get; set; }
+        public string PersonalDataDeletionDeadlineTypeName { get; set; }
+        public int? PersonalDataDeletionResponsibleUserId { get; set; }
+        public Guid? PersonalDataDeletionResponsibleUserUuid { get; set; }
+        public string PersonalDataDeletionResponsibleUserName { get; set; }
+        public DateTime? PersonalDataDeletionVerifiedDate { get; set; }
+        public string PersonalDataDeletionProcedureDocumentationName { get; set; }
+        public string PersonalDataDeletionProcedureDocumentationUrl { get; set; }
+        public string PersonalDataDeletionVerificationDocumentationName { get; set; }
+        public string PersonalDataDeletionVerificationDocumentationUrl { get; set; }
         public DataOptions? DPIAConducted { get; set; }
 
         public DataOptions? IsBusinessCritical { get; set; }
