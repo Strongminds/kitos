@@ -11,8 +11,10 @@ metadata:
   annotations:
     easyhosting.io/database-catalog: "[{\"DatabaseId\":\"aad756d5-5a8b-4d98-88fe-3af6a53b7664\",\"Name\":\"kitos\",\"DatabaseName\":\"kitos\",\"OwnerRoleName\":\"admin\",\"Type\":0}]"
 spec:
-  suspend: true
   schedule: "0 0 0 * * *"
   backupOwnerReference: cluster
   cluster:
     name: kitos
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
