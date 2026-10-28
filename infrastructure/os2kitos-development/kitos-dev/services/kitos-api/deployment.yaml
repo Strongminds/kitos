@@ -55,7 +55,7 @@ spec:
               key: HangfireDbConnectionString
               name: user-secret
         - name: AppSettings__BaseUrl
-          value: https://eh-kitos-dev.strongminds.dk
+          value: https://kitos-dev.strongminds.tech/
         - name: AppSettings__PubSubBaseUrl
           valueFrom:
             configMapKeyRef:
