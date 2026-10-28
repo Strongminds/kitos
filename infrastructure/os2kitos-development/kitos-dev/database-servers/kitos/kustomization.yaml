@@ -7,5 +7,4 @@ resources:
   - network-policy.yaml
   - databases/dev-db
   - databases/hangfire-dev-db
-  - databases/kitos
   - databases/pubsub-dev-db
