@@ -28,15 +28,21 @@ spec:
         barmanObjectName: kitos-backup-store
   managed:
     roles:
-      - name: admin
-        ensure: present
-        login: true
-        createdb: true
-        passwordSecret:
-          name: db-role-secret-admin
       - name: kitos
         ensure: present
         login: true
         createdb: true
         passwordSecret:
           name: db-role-secret-kitos
+      - name: admin
+        ensure: present
+        login: true
+        createdb: true
+        passwordSecret:
+          name: db-role-secret-admin
+      - name: hangfire
+        ensure: present
+        login: true
+        createdb: true
+        passwordSecret:
+          name: db-role-secret-hangfire
