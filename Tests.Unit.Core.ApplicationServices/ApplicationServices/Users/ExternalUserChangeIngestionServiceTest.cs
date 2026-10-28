@@ -28,7 +28,8 @@ public class ExternalUserChangeIngestionServiceTest
     {
         _input = new("message-1", _organization.Uuid, Guid.NewGuid(), ExternalUserChangeType.Deleted, DateTime.UtcNow);
         _organizations.Setup(x => x.GetByUuid(_organization.Uuid)).Returns(_organization);
-        _identities.Setup(x => x.GetByExternalUuid(It.IsAny<Guid>())).Returns(Maybe<SsoUserIdentity>.None);
+        _user.OrganizationRights.Add(new OrganizationRight { OrganizationId = _organization.Id, Role = OrganizationRole.User });
+        _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(new SsoUserIdentity(_input.ExternalUserUuid, _user));
         _repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()))
             .Returns((ExternalUserChange change) => change);
         _sut = new(_repository.Object, _organizations.Object, _identities.Object);
@@ -37,8 +38,6 @@ public class ExternalUserChangeIngestionServiceTest
     [Fact]
     public void MatchingBindingCreatesPendingWithoutChangingUser()
     {
-        _user.OrganizationRights.Add(new OrganizationRight { OrganizationId = _organization.Id, Role = OrganizationRole.User });
-        _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(new SsoUserIdentity(_input.ExternalUserUuid, _user));
         var result = _sut.Ingest(_input);
         Assert.True(result.Ok);
         Assert.Equal(_user.Id, result.Value.UserId);
@@ -50,17 +49,18 @@ public class ExternalUserChangeIngestionServiceTest
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void MissingOrWrongOrganizationBindingIsRetainedUnmatched(bool hasIdentity)
+    public void Ingest_MissingOrWrongOrganizationBinding_DoesNotSaveChange(bool hasIdentity)
     {
+        _user.OrganizationRights.Clear();
+        _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(Maybe<SsoUserIdentity>.None);
         if (hasIdentity)
         {
             _user.OrganizationRights.Add(new OrganizationRight { OrganizationId = _organization.Id + 1 });
             _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(new SsoUserIdentity(_input.ExternalUserUuid, _user));
         }
         var result = _sut.Ingest(_input);
-        Assert.True(result.Ok);
-        Assert.Null(result.Value.UserId);
-        Assert.Equal(ExternalUserChangeStatus.Pending, result.Value.Status);
+        Assert.Equal(OperationFailure.NotFound, result.Error.FailureType);
+        _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
     }
 
     [Fact]
@@ -69,6 +69,7 @@ public class ExternalUserChangeIngestionServiceTest
         var existing = Existing();
         existing.Status = ExternalUserChangeStatus.Dismissed;
         _repository.Setup(x => x.FindByMessageId(_input.ExternalMessageId)).Returns(existing);
+        _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(Maybe<SsoUserIdentity>.None);
         var result = _sut.Ingest(_input);
         Assert.Same(existing, result.Value);
         Assert.Equal(ExternalUserChangeStatus.Dismissed, result.Value.Status);

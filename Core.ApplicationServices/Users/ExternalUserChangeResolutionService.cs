@@ -8,6 +8,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Model.Users;
 using Core.ApplicationServices.Rights;
 using Core.DomainModel;
+using Core.DomainModel.Commands;
 using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Organization.DomainEvents;
@@ -26,7 +27,8 @@ public class ExternalUserChangeResolutionService(
     IOrganizationalUserContext actor,
     ISsoUserIdentityRepository identities,
     IDomainEvents events,
-    IUserRightsService userRightsService)
+    IUserRightsService userRightsService,
+    ICommandBus commandBus)
 {
     public IReadOnlyList<ExternalUserChangeBatchResult> ResolveBatch(
         Guid organizationUuid, IEnumerable<Guid> changeUuids, bool apply, CancellationToken cancellationToken)
@@ -109,8 +111,9 @@ public class ExternalUserChangeResolutionService(
         if (!rights.AsQueryable().Any(x => x.UserId == user.Id &&
             x.OrganizationId != organization.Id && x.Role == OrganizationRole.User))
         {
-            user.Deleted = true;
-            user.DeletedDate = DateTime.UtcNow;
+            var deletionError = commandBus.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(new RemoveUserFromKitosCommand(user));
+            if (deletionError.HasValue)
+                return deletionError.Value;
         }
         return SaveResolution(change, true);
     }

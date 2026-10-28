@@ -7,6 +7,7 @@ using Core.ApplicationServices.Authorization;
 using Core.ApplicationServices.Rights;
 using Core.ApplicationServices.Users;
 using Core.DomainModel;
+using Core.DomainModel.Commands;
 using Core.DomainModel.Events;
 using Core.DomainModel.Organization;
 using Core.DomainModel.Organization.DomainEvents;
@@ -33,6 +34,7 @@ public class ExternalUserChangeResolutionServiceTest
     private readonly Mock<IDomainEvents> _events = new();
     private readonly Mock<IExternalUserChangeResolutionTransaction> _transaction = new();
     private readonly Mock<IUserRightsService> _userRightsService = new(MockBehavior.Strict);
+    private readonly Mock<ICommandBus> _commandBus = new(MockBehavior.Strict);
     private readonly ExternalUserChangeResolutionService _sut;
 
     public ExternalUserChangeResolutionServiceTest()
@@ -58,8 +60,11 @@ public class ExternalUserChangeResolutionServiceTest
             .Returns(new SsoUserIdentity(_change.ExternalUserUuid, _user));
         _transaction.Setup(x => x.Execute(It.IsAny<Func<Result<ExternalUserChange, OperationError>>>()))
             .Returns((Func<Result<ExternalUserChange, OperationError>> action) => action());
+        _commandBus.Setup(x => x.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(
+                It.Is<RemoveUserFromKitosCommand>(command => command.User == _user)))
+            .Returns(Maybe<OperationError>.None);
         _sut = new(_transaction.Object, organizations.Object, _changes.Object, _rightRepository.Object,
-            _actor.Object, _identities.Object, _events.Object, _userRightsService.Object);
+            _actor.Object, _identities.Object, _events.Object, _userRightsService.Object, _commandBus.Object);
     }
 
     [Fact]
@@ -83,7 +88,8 @@ public class ExternalUserChangeResolutionServiceTest
 
         Assert.True(result.Ok);
         Assert.Empty(_rights);
-        Assert.True(_user.Deleted);
+        _commandBus.Verify(x => x.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(
+            It.Is<RemoveUserFromKitosCommand>(command => command.User == _user)), Times.Once);
         Assert.Equal(ExternalUserChangeStatus.Applied, _change.Status);
         Assert.Equal(30, _change.ResolvedByUserId);
         _changes.Verify(x => x.Save(), Times.Once);
@@ -107,11 +113,34 @@ public class ExternalUserChangeResolutionServiceTest
         _userRightsService.Setup(x => x.RemoveAllRights(_user.Id, _organization.Id))
             .Callback(() => Assert.True(withinTransaction))
             .Returns(Maybe<OperationError>.None);
+        _commandBus.Setup(x => x.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(
+                It.Is<RemoveUserFromKitosCommand>(command => command.User == _user)))
+            .Callback(() => Assert.True(withinTransaction))
+            .Returns(Maybe<OperationError>.None);
 
         var result = _sut.Resolve(_organization.Uuid, _change.Uuid, true);
 
         Assert.True(result.Ok);
         _userRightsService.Verify(x => x.RemoveAllRights(_user.Id, _organization.Id), Times.Once);
+        _commandBus.Verify(x => x.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(
+            It.Is<RemoveUserFromKitosCommand>(command => command.User == _user)), Times.Once);
+    }
+
+    [Fact]
+    public void Resolve_FullUserDeletionFails_PreservesPendingChange()
+    {
+        var error = new OperationError("Failed to delete user.", OperationFailure.Conflict);
+        _commandBus.Setup(x => x.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(
+                It.Is<RemoveUserFromKitosCommand>(command => command.User == _user)))
+            .Returns(error);
+
+        var result = _sut.Resolve(_organization.Uuid, _change.Uuid, true);
+
+        Assert.Same(error, result.Error);
+        Assert.Equal(ExternalUserChangeStatus.Pending, _change.Status);
+        Assert.Null(_change.ResolvedAt);
+        _changes.Verify(x => x.Save(), Times.Never);
+        _events.Verify(x => x.Raise(It.IsAny<AdministrativeAccessRightsChanged>()), Times.Never);
     }
 
     [Fact]
@@ -155,6 +184,7 @@ public class ExternalUserChangeResolutionServiceTest
         Assert.Single(_rights);
         Assert.Equal(11, _rights.Single().OrganizationId);
         Assert.False(_user.Deleted);
+        _commandBus.VerifyNoOtherCalls();
     }
 
     [Fact]

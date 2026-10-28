@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Core.Abstractions.Types;
 using Core.ApplicationServices.Users;
 using Core.DomainModel.Organization;
 using Core.DomainModel.SSO;
@@ -136,7 +135,9 @@ public class BeskedfordelerWorkerTest
         var organizations = new Mock<IOrganizationRepository>();
         organizations.Setup(x => x.GetByUuid(OrganizationId)).Returns(new Organization { Id = 1, Uuid = OrganizationId, FkOrgUsersConnected = true });
         var identities = new Mock<ISsoUserIdentityRepository>();
-        identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(Maybe<SsoUserIdentity>.None);
+        var user = new Core.DomainModel.User { Id = 42 };
+        user.OrganizationRights.Add(new OrganizationRight { OrganizationId = 1, Role = OrganizationRole.User });
+        identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(new SsoUserIdentity(UserId, user));
         var repository = new Mock<IExternalUserChangeRepository>();
         ExternalUserChange? saved = null;
         repository.Setup(x => x.FindByMessageId(MessageId.ToString("D"))).Returns(() => saved);
@@ -160,7 +161,7 @@ public class BeskedfordelerWorkerTest
         }
         await ExecuteSerializedJob();
         Assert.Equal(ExternalUserChangeStatus.Pending, saved!.Status);
-        Assert.Null(saved.UserId);
+        Assert.Equal(user.Id, saved.UserId);
         if (conflict)
         {
             xml.Descendants(BeskedfordelerMessage.Envelope + "ObjektId").Single().Elements().Single().Value = Guid.NewGuid().ToString();

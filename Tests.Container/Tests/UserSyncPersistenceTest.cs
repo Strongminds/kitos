@@ -4,8 +4,10 @@ using Core.ApplicationServices;
 using Core.ApplicationServices.Organizations;
 using Core.ApplicationServices.Rights;
 using Core.ApplicationServices.Users;
+using Core.ApplicationServices.Users.Handlers;
 using Core.Abstractions.Types;
 using Core.DomainModel;
+using Core.DomainModel.Commands;
 using Core.DomainModel.Events;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
@@ -155,7 +157,12 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
         var change = new ExternalUserChangeRepository(db).InsertAndSave(Change("last-org"));
         Assert.True(Resolver(db).Resolve(_organization.Uuid, change.Uuid, true).Ok);
         await using var verify = Context();
-        Assert.True((await verify.Users.SingleAsync(x => x.Id == _user.Id)).Deleted);
+        var deletedUser = await verify.Users.SingleAsync(x => x.Id == _user.Id);
+        Assert.True(deletedUser.Deleted);
+        Assert.Equal("Slettet bruger", deletedUser.Name);
+        Assert.NotEqual(_user.Email, deletedUser.Email);
+        Assert.Null(deletedUser.PhoneNumber);
+        Assert.Empty(await verify.SsoUserIdentities.Where(x => x.User.Id == _user.Id).ToListAsync());
         Assert.Empty(await verify.OrganizationRights.Where(x => x.UserId == _user.Id).ToListAsync());
         Assert.Equal(ExternalUserChangeStatus.Applied, (await verify.Set<ExternalUserChange>().SingleAsync()).Status);
     }
@@ -309,10 +316,15 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
             RoleAssignments<OrganizationUnitRight, OrganizationUnitRole, OrganizationUnit>(db),
             RoleAssignments<DataProcessingRegistrationRight, DataProcessingRegistrationRole, DataProcessingRegistration>(db),
             transactionManager, new EntityFrameworkContextDatabaseControl(db), Mock.Of<ILogger>());
+        var ssoIdentities = new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db));
+        var commandBus = new Mock<ICommandBus>(MockBehavior.Strict);
+        var deletionHandler = new RemoveUserFromKitosCommandHandler(ssoIdentities, commandBus.Object, events);
+        commandBus.Setup(x => x.Execute<RemoveUserFromKitosCommand, Maybe<OperationError>>(It.IsAny<RemoveUserFromKitosCommand>()))
+            .Returns((RemoveUserFromKitosCommand command) => deletionHandler.Execute(command));
         return new ExternalUserChangeResolutionService(new ExternalUserChangeResolutionTransaction(db),
             new GenericRepository<Organization>(db), new GenericRepository<ExternalUserChange>(db),
             new GenericRepository<OrganizationRight>(db), actor,
-            new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)), events, userRights);
+            ssoIdentities, events, userRights, commandBus.Object);
     }
 
     private RoleAssignmentService<TRight, TRole, TModel> RoleAssignments<TRight, TRole, TModel>(KitosContext db)

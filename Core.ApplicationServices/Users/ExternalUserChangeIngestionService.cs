@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Users;
+using Core.DomainModel;
 using Core.DomainModel.Users;
 using Core.DomainModel.Organization;
 using Core.DomainServices.Repositories.Organization;
@@ -32,22 +33,35 @@ public class ExternalUserChangeIngestionService(
         var existing = repository.FindByMessageId(input.ExternalMessageId);
         if (existing != null) return CheckDuplicate(existing, input, organization.Value.Id);
 
+        return FindUser(input, organization.Value.Id)
+            .Bind(user => SaveChange(input, organization.Value.Id, user));
+    }
+
+    private Result<User, OperationError> FindUser(ExternalUserChangeInput input, int organizationId)
+    {
         var identity = identities.GetByExternalUuid(input.ExternalUserUuid);
         var user = identity.HasValue ? identity.Value.User : null;
-        var matched = user != null && user.OrganizationRights.Any(x => x.OrganizationId == organization.Value.Id && x.Role == OrganizationRole.User);
+        if (user == null || !user.OrganizationRights.Any(x => x.OrganizationId == organizationId && x.Role == OrganizationRole.User))
+            return new OperationError("User not found in the organization.", OperationFailure.NotFound);
+
+        return user;
+    }
+
+    private Result<ExternalUserChange, OperationError> SaveChange(ExternalUserChangeInput input, int organizationId, User user)
+    {
         var change = new ExternalUserChange
         {
             ExternalMessageId = input.ExternalMessageId,
-            OrganizationId = organization.Value.Id,
+            OrganizationId = organizationId,
             ExternalUserUuid = input.ExternalUserUuid,
-            UserId = matched ? user!.Id : null,
+            UserId = user.Id,
             ChangeType = input.ChangeType,
             Status = ExternalUserChangeStatus.Pending,
             OccurredAt = NormalizeTimestamp(input.OccurredAt),
             ReceivedAt = DateTime.UtcNow
         };
         var saved = repository.InsertAndSave(change);
-        return CheckDuplicate(saved, input, organization.Value.Id);
+        return CheckDuplicate(saved, input, organizationId);
     }
 
     private static Result<ExternalUserChange, OperationError> CheckDuplicate(
