@@ -92,6 +92,27 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return new UpdatedSystemUsageGDPRProperties
             {
+                PersonalDataDeletionCapability = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionCapability)
+                    ? MapEnumChoice(source.PersonalDataDeletionCapability, PersonalDataDeletionCapabilityMappingExtensions.ToDomain)
+                    : OptionalValueChange<PersonalDataDeletionCapability?>.None,
+                PersonalDataDeletionMethod = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionMethod)
+                    ? MapEnumChoice(source.PersonalDataDeletionMethod, PersonalDataDeletionMethodMappingExtensions.ToDomain)
+                    : OptionalValueChange<PersonalDataDeletionMethod?>.None,
+                PersonalDataDeletionDeadlineTypeUuid = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionDeadlineTypeUuid)
+                    ? (source.PersonalDataDeletionDeadlineTypeUuid?.FromNullable() ?? Maybe<Guid>.None).AsChangedValue()
+                    : OptionalValueChange<Maybe<Guid>>.None,
+                PersonalDataDeletionProcedureDocumentation = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionProcedureDocumentation)
+                    ? MapLink(source.PersonalDataDeletionProcedureDocumentation)
+                    : OptionalValueChange<Maybe<NamedLink>>.None,
+                PersonalDataDeletionResponsibleUserUuid = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionResponsibleUserUuid)
+                    ? source.PersonalDataDeletionResponsibleUserUuid!.AsChangedValue()
+                    : OptionalValueChange<Guid?>.None,
+                PersonalDataDeletionVerifiedDate = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionVerifiedDate)
+                    ? source.PersonalDataDeletionVerifiedDate!.AsChangedValue()
+                    : OptionalValueChange<DateTime?>.None,
+                PersonalDataDeletionVerificationDocumentation = rule.MustUpdate(x => x.GDPR!.PersonalDataDeletionVerificationDocumentation)
+                    ? MapLink(source.PersonalDataDeletionVerificationDocumentation)
+                    : OptionalValueChange<Maybe<NamedLink>>.None,
                 ProcessingPurpose = rule.MustUpdate(x => x.GDPR!.ProcessingPurpose)
                     ? source.ProcessingPurpose!.AsChangedValue()
                     : OptionalValueChange<string>.None,

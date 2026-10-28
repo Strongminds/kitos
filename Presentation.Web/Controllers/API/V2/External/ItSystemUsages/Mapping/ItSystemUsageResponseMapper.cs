@@ -66,6 +66,13 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
 
             return new GDPRRegistrationsResponseDTO
             {
+                PersonalDataDeletionCapability = systemUsage.PersonalDataDeletionCapability?.ToChoice(),
+                PersonalDataDeletionMethod = systemUsage.PersonalDataDeletionMethod?.ToChoice(),
+                PersonalDataDeletionDeadlineType = systemUsage.PersonalDataDeletionDeadlineType?.MapIdentityNamePairDTO(),
+                PersonalDataDeletionProcedureDocumentation = MapSimpleLink(systemUsage.PersonalDataDeletionProcedureDocumentationUrlName, systemUsage.PersonalDataDeletionProcedureDocumentationUrl),
+                PersonalDataDeletionResponsibleUser = systemUsage.PersonalDataDeletionResponsibleUser?.MapIdentityNamePairDTO(),
+                PersonalDataDeletionVerifiedDate = systemUsage.PersonalDataDeletionVerifiedDate,
+                PersonalDataDeletionVerificationDocumentation = MapSimpleLink(systemUsage.PersonalDataDeletionVerificationDocumentationUrlName, systemUsage.PersonalDataDeletionVerificationDocumentationUrl),
                 ProcessingPurpose = systemUsage.ProcessingPurpose,
                 DPIAConducted = systemUsage.DPIA?.ToChoice(),
                 DPIADate = systemUsage.DPIADateFor,

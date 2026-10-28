@@ -117,6 +117,7 @@ namespace Core.DomainServices.SystemUsage
             destination.ItInterfaceVersionsAsCsv = interfaces.Select(x => x.Version).Where(x => !x.IsWhiteSpace()).ToStringWithDelimiter();
             destination.LicensingAndCodeModels = source.LicensingAndCodeModels;
 
+            PatchPersonalDataDeletion(source, destination);
             PatchParentSystemInformation(source, destination);
             PatchRoleAssignments(source, destination);
             PatchOrganizationUnits(source, destination);
@@ -345,6 +346,22 @@ namespace Core.DomainServices.SystemUsage
                 dataProcessingRegistration.DataProcessingRegistrationName = incomingDataProcessingRegistration.Name;
                 dataProcessingRegistration.IsAgreementConcluded = incomingDataProcessingRegistration.IsAgreementConcluded;
             }
+        }
+
+        private static void PatchPersonalDataDeletion(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
+        {
+            destination.PersonalDataDeletionCapability = source.PersonalDataDeletionCapability;
+            destination.PersonalDataDeletionMethod = source.PersonalDataDeletionMethod;
+            destination.PersonalDataDeletionDeadlineTypeUuid = source.PersonalDataDeletionDeadlineType?.Uuid;
+            destination.PersonalDataDeletionDeadlineTypeName = source.PersonalDataDeletionDeadlineType?.Name;
+            destination.PersonalDataDeletionResponsibleUserId = source.PersonalDataDeletionResponsibleUserId;
+            destination.PersonalDataDeletionResponsibleUserUuid = source.PersonalDataDeletionResponsibleUser?.Uuid;
+            destination.PersonalDataDeletionResponsibleUserName = source.PersonalDataDeletionResponsibleUser?.GetFullName();
+            destination.PersonalDataDeletionVerifiedDate = source.PersonalDataDeletionVerifiedDate;
+            destination.PersonalDataDeletionProcedureDocumentationName = source.PersonalDataDeletionProcedureDocumentationUrlName;
+            destination.PersonalDataDeletionProcedureDocumentationUrl = source.PersonalDataDeletionProcedureDocumentationUrl;
+            destination.PersonalDataDeletionVerificationDocumentationName = source.PersonalDataDeletionVerificationDocumentationUrlName;
+            destination.PersonalDataDeletionVerificationDocumentationUrl = source.PersonalDataDeletionVerificationDocumentationUrl;
         }
 
         private static void PatchRiskSupervisionDocumentation(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Presentation.Web.Infrastructure.Attributes;
@@ -10,6 +10,14 @@ namespace Presentation.Web.Models.API.V2.Response.SystemUsage
 {
     public class GDPRRegistrationsResponseDTO
     {
+        /// <summary>Optional. No or null clears all deletion details. Populated details require IndividualRecords or BulkDeletion.</summary>
+        public PersonalDataDeletionCapabilityChoice? PersonalDataDeletionCapability { get; set; }
+        public PersonalDataDeletionMethodChoice? PersonalDataDeletionMethod { get; set; }
+        public IdentityNamePairResponseDTO? PersonalDataDeletionDeadlineType { get; set; }
+        public SimpleLinkDTO? PersonalDataDeletionProcedureDocumentation { get; set; }
+        public IdentityNamePairResponseDTO? PersonalDataDeletionResponsibleUser { get; set; }
+        public DateTime? PersonalDataDeletionVerifiedDate { get; set; }
+        public SimpleLinkDTO? PersonalDataDeletionVerificationDocumentation { get; set; }
         public string? ProcessingPurpose { get; set; }
         public SimpleLinkDTO? DirectoryDocumentation { get; set; }
         [Required]

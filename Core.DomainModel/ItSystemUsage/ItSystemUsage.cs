@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Core.DomainModel.GDPR;
 using Core.DomainModel.ItContract;
@@ -323,6 +323,19 @@ namespace Core.DomainModel.ItSystemUsage
         }
 
         #region GDPR
+
+        public PersonalDataDeletionCapability? PersonalDataDeletionCapability { get; private set; }
+        public PersonalDataDeletionMethod? PersonalDataDeletionMethod { get; private set; }
+        public int? PersonalDataDeletionDeadlineTypeId { get; private set; }
+        public virtual PersonalDataDeletionDeadlineType PersonalDataDeletionDeadlineType { get; private set; }
+        public string PersonalDataDeletionProcedureDocumentationUrl { get; private set; }
+        public string PersonalDataDeletionProcedureDocumentationUrlName { get; private set; }
+        public int? PersonalDataDeletionResponsibleUserId { get; private set; }
+        public virtual User PersonalDataDeletionResponsibleUser { get; private set; }
+        public DateTime? PersonalDataDeletionVerifiedDate { get; private set; }
+        public string PersonalDataDeletionVerificationDocumentationUrl { get; private set; }
+        public string PersonalDataDeletionVerificationDocumentationUrlName { get; private set; }
+
         public string GeneralPurpose { get; set; }
         public string ProcessingPurpose { get; set; }
 
@@ -1445,6 +1458,53 @@ namespace Core.DomainModel.ItSystemUsage
             PlannedRiskAssessmentDate = date;
         }
 
+        public Maybe<OperationError> UpdatePersonalDataDeletion(
+            PersonalDataDeletionCapability? capability, PersonalDataDeletionMethod? method, PersonalDataDeletionDeadlineType deadline,
+            string procedureUrl, string procedureName, User responsibleUser, DateTime? verifiedDate,
+            string verificationUrl, string verificationName)
+        {
+            if (capability.HasValue && !Enum.IsDefined(capability.Value) ||
+                method.HasValue && !Enum.IsDefined(method.Value))
+                return new OperationError("Invalid personal data deletion enum value", OperationFailure.BadInput);
+
+            var enabled = capability is GDPR.PersonalDataDeletionCapability.IndividualRecords or GDPR.PersonalDataDeletionCapability.BulkDeletion;
+            if (!enabled && (method != null || deadline != null || procedureUrl != null || procedureName != null ||
+                responsibleUser != null || verifiedDate != null || verificationUrl != null || verificationName != null))
+                return new OperationError("Personal data deletion details require an affirmative capability", OperationFailure.BadInput);
+
+            if (responsibleUser != null && responsibleUser != PersonalDataDeletionResponsibleUser &&
+                (responsibleUser.Deleted || !responsibleUser.OrganizationRights.Any(x => x.OrganizationId == OrganizationId)))
+                return new OperationError("Responsible user must be an active member of the usage organization", OperationFailure.BadInput);
+
+            if (procedureName?.Length > LinkNameMaxLength || verificationName?.Length > LinkNameMaxLength)
+                return new OperationError("Documentation name exceeds the maximum length", OperationFailure.BadInput);
+
+            SetPersonalDataDeletion(capability, method, deadline, procedureUrl, procedureName,
+                responsibleUser, verifiedDate, verificationUrl, verificationName);
+            return Maybe<OperationError>.None;
+        }
+
+        private void SetPersonalDataDeletion(
+            PersonalDataDeletionCapability? capability, PersonalDataDeletionMethod? method, PersonalDataDeletionDeadlineType deadline,
+            string procedureUrl, string procedureName, User responsibleUser, DateTime? verifiedDate,
+            string verificationUrl, string verificationName)
+        {
+            PersonalDataDeletionCapability = capability;
+            PersonalDataDeletionMethod = method;
+            if (PersonalDataDeletionDeadlineType != deadline)
+                PersonalDataDeletionDeadlineType?.Track();
+            PersonalDataDeletionDeadlineType = deadline;
+            PersonalDataDeletionDeadlineTypeId = deadline?.Id;
+            PersonalDataDeletionProcedureDocumentationUrl = procedureUrl;
+            PersonalDataDeletionProcedureDocumentationUrlName = procedureName;
+            if (PersonalDataDeletionResponsibleUser != responsibleUser)
+                PersonalDataDeletionResponsibleUser?.Track();
+            PersonalDataDeletionResponsibleUser = responsibleUser;
+            PersonalDataDeletionResponsibleUserId = responsibleUser?.Id;
+            PersonalDataDeletionVerifiedDate = verifiedDate;
+            PersonalDataDeletionVerificationDocumentationUrl = verificationUrl;
+            PersonalDataDeletionVerificationDocumentationUrlName = verificationName;
+        }
         public void UpdateDPIAConducted(DpiaConducted? dpia)
         {
             DPIA = dpia;
