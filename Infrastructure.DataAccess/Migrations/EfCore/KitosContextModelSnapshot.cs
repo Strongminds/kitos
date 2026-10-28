@@ -18,7 +18,7 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "10.0.13")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -3903,6 +3903,59 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.ToTable("LocalSensitivePersonalDataTypes", "dbo");
                 });
 
+            modelBuilder.Entity("Core.DomainModel.ItSystem.PersonalDataDeletionDeadlineType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsLocallyAvailable")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsObligatory")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastChanged")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("LastChangedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("citext");
+
+                    b.Property<int>("ObjectOwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastChangedByUserId");
+
+                    b.HasIndex("ObjectOwnerId");
+
+                    b.HasIndex("Uuid")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Option_Uuid");
+
+                    b.ToTable("PersonalDataDeletionDeadlineTypes", "dbo");
+                });
+
             modelBuilder.Entity("Core.DomainModel.ItSystem.RelationFrequencyType", b =>
                 {
                     b.Property<int>("Id")
@@ -4323,6 +4376,35 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("PersonalDataDeletionCapability")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PersonalDataDeletionDeadlineTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PersonalDataDeletionMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionProcedureDocumentationUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PersonalDataDeletionProcedureDocumentationUrlName")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<int?>("PersonalDataDeletionResponsibleUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionVerificationDocumentationUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PersonalDataDeletionVerificationDocumentationUrlName")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -4453,6 +4535,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("ObjectOwnerId");
 
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("PersonalDataDeletionDeadlineTypeId");
+
+                    b.HasIndex("PersonalDataDeletionResponsibleUserId");
 
                     b.HasIndex("ReferenceId");
 
@@ -4726,8 +4812,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("uuid");
 
                     b.Property<string>("GeneralPurpose")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int>("HostedAt")
                         .HasColumnType("integer");
@@ -4887,6 +4973,42 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
 
                     b.Property<Guid?>("ParentItSystemUuid")
                         .HasColumnType("uuid");
+
+                    b.Property<int?>("PersonalDataDeletionCapability")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionDeadlineTypeName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PersonalDataDeletionDeadlineTypeUuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("PersonalDataDeletionMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionProcedureDocumentationName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PersonalDataDeletionProcedureDocumentationUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PersonalDataDeletionResponsibleUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonalDataDeletionResponsibleUserName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PersonalDataDeletionResponsibleUserUuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PersonalDataDeletionVerificationDocumentationName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PersonalDataDeletionVerificationDocumentationUrl")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PersonalDataDeletionVerifiedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("PlannedRiskAssessmentDate")
                         .HasColumnType("timestamp without time zone");
@@ -6480,6 +6602,46 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("LocalPaymentModelTypes", "dbo");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.LocalOptions.LocalPersonalDataDeletionDeadlineType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastChanged")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("LastChangedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ObjectOwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OptionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastChangedByUserId");
+
+                    b.HasIndex("ObjectOwnerId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("LocalPersonalDataDeletionDeadlineTypes", "dbo");
                 });
 
             modelBuilder.Entity("Core.DomainModel.LocalOptions.LocalPriceRegulationType", b =>
@@ -9912,6 +10074,25 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("Core.DomainModel.ItSystem.PersonalDataDeletionDeadlineType", b =>
+                {
+                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastChangedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
+                        .WithMany()
+                        .HasForeignKey("ObjectOwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LastChangedByUser");
+
+                    b.Navigation("ObjectOwner");
+                });
+
             modelBuilder.Entity("Core.DomainModel.ItSystem.RelationFrequencyType", b =>
                 {
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
@@ -10071,6 +10252,15 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Core.DomainModel.ItSystem.PersonalDataDeletionDeadlineType", "PersonalDataDeletionDeadlineType")
+                        .WithMany("References")
+                        .HasForeignKey("PersonalDataDeletionDeadlineTypeId");
+
+                    b.HasOne("Core.DomainModel.User", "PersonalDataDeletionResponsibleUser")
+                        .WithMany()
+                        .HasForeignKey("PersonalDataDeletionResponsibleUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Core.DomainModel.ExternalReference", "Reference")
                         .WithMany()
                         .HasForeignKey("ReferenceId");
@@ -10104,6 +10294,10 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                     b.Navigation("ObjectOwner");
 
                     b.Navigation("Organization");
+
+                    b.Navigation("PersonalDataDeletionDeadlineType");
+
+                    b.Navigation("PersonalDataDeletionResponsibleUser");
 
                     b.Navigation("Reference");
 
@@ -10893,6 +11087,29 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 });
 
             modelBuilder.Entity("Core.DomainModel.LocalOptions.LocalPaymentModelType", b =>
+                {
+                    b.HasOne("Core.DomainModel.User", "LastChangedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastChangedByUserId");
+
+                    b.HasOne("Core.DomainModel.User", "ObjectOwner")
+                        .WithMany()
+                        .HasForeignKey("ObjectOwnerId");
+
+                    b.HasOne("Core.DomainModel.Organization.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LastChangedByUser");
+
+                    b.Navigation("ObjectOwner");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.LocalOptions.LocalPersonalDataDeletionDeadlineType", b =>
                 {
                     b.HasOne("Core.DomainModel.User", "LastChangedByUser")
                         .WithMany()
@@ -12196,6 +12413,11 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                 {
                     b.Navigation("AdviceUserRelations");
 
+                    b.Navigation("References");
+                });
+
+            modelBuilder.Entity("Core.DomainModel.ItSystem.PersonalDataDeletionDeadlineType", b =>
+                {
                     b.Navigation("References");
                 });
 
