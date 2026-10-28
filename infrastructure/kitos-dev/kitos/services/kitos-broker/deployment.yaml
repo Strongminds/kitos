@@ -34,7 +34,7 @@ spec:
             secretKeyRef:
               key: RabbitMqPassword
               name: user-secret
-        image: ghcr.io/strongminds/kitos-kitos-broker:sha-010cc461010c0c3cb8fe515ef3e4d4ec1ebc6767
+        image: ghcr.io/strongminds/kitos-kitos-broker:sha-a8ea420aa57d1c59c6b57db0111bcf05355c0d75
         name: kitos-broker
         ports:
         - containerPort: 5672
