@@ -7,7 +7,7 @@ metadata:
   namespace: kitos-dev
 spec:
   rules:
-  - host: eh-kitos-dev.strongminds.dk
+  - host: api.kitos-dev.strongminds.tech
     http:
       paths:
       - backend:
@@ -29,8 +29,8 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - eh-kitos-dev.strongminds.dk
-    secretName: eh-kitos-dev-strongminds-dk-tls
+    - api.kitos-dev.strongminds.tech
+    secretName: api-kitos-dev-strongminds-tech-tls
   - hosts:
     - 1c6c6fde-9c36-4905-bbc0-449acd081477.os2kitos-development.strongminds.easyhosting.strongminds.dev
     secretName: 1c6c6fde-9c36-4905-bbc0-449acd081477-os2kitos-development-strongminds-easyhosting-strongminds-dev-tls
