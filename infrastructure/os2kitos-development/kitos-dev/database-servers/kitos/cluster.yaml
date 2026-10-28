@@ -34,15 +34,21 @@ spec:
         createdb: true
         passwordSecret:
           name: db-role-secret-kitos
-      - name: admin
-        ensure: present
-        login: true
-        createdb: true
-        passwordSecret:
-          name: db-role-secret-admin
       - name: hangfire
         ensure: present
         login: true
         createdb: true
         passwordSecret:
           name: db-role-secret-hangfire
+      - name: admin
+        ensure: present
+        login: true
+        createdb: true
+        passwordSecret:
+          name: db-role-secret-admin
+      - name: pubsub
+        ensure: present
+        login: true
+        createdb: true
+        passwordSecret:
+          name: db-role-secret-pubsub
