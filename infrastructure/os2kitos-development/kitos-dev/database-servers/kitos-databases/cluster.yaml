@@ -20,11 +20,3 @@ spec:
       owner: postgres
   storage:
     size: 10Gi
-  managed:
-    roles:
-      - name: kitos
-        ensure: present
-        login: true
-        createdb: true
-        passwordSecret:
-          name: db-role-secret-kitos

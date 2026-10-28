@@ -4,4 +4,3 @@ resources:
   - cluster.yaml
   - scheduled-backup.yaml
   - network-policy.yaml
-  - databases/dev-db
