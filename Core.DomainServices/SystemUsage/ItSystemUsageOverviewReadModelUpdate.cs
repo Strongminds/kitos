@@ -292,7 +292,7 @@ namespace Core.DomainServices.SystemUsage
         private static void PatchGeneralPurposeRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
             var generalPurpose = source.GeneralPurpose?.TrimEnd();
-            destination.GeneralPurpose = generalPurpose?.Substring(0, Math.Min(generalPurpose.Length, ItSystemUsage.LongProperyMaxLength));
+            destination.GeneralPurpose = generalPurpose?.Substring(0, Math.Min(generalPurpose.Length, ItSystemUsage.PurposeMaxLength));
         }
 
         private static void PatchProcessingPurposeRegistrations(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
@@ -366,7 +366,7 @@ namespace Core.DomainServices.SystemUsage
 
         private static void PatchRiskSupervisionDocumentation(ItSystemUsage source, ItSystemUsageOverviewReadModel destination)
         {
-            if (source.riskAssessment == YesNoDontKnowIrrelevant.Yes)
+            if (source.riskAssessment == RiskAssessmentConducted.Yes)
             {
                 destination.RiskSupervisionDocumentationName = source.RiskSupervisionDocumentationUrlName;
                 destination.RiskSupervisionDocumentationUrl = source.RiskSupervisionDocumentationUrl;

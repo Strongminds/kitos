@@ -4812,8 +4812,8 @@ namespace Infrastructure.DataAccess.Migrations.EfCore
                         .HasColumnType("uuid");
 
                     b.Property<string>("GeneralPurpose")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int>("HostedAt")
                         .HasColumnType("integer");

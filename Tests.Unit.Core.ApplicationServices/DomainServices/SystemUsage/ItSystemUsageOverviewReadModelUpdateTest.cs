@@ -317,7 +317,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 },
             };
 
-            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.Yes);
+            systemUsage.UpdateRiskAssessment(RiskAssessmentConducted.Yes);
             systemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
@@ -702,7 +702,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                 AssociatedDataProcessingRegistrations = new List<DataProcessingRegistration>()
             };
 
-            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.DontKnow);
+            systemUsage.UpdateRiskAssessment(RiskAssessmentConducted.DontKnow);
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
 
@@ -772,7 +772,7 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
                     dpr5
                 }
             };
-            systemUsage.UpdateRiskAssessment(YesNoDontKnowIrrelevant.DontKnow);
+            systemUsage.UpdateRiskAssessment(RiskAssessmentConducted.DontKnow);
             systemUsage.UpdateRiskAssessmentDate(A<DateTime>());
             systemUsage.UpdateRiskAssessmentDocumentation(A<string>(), A<string>());
             systemUsage.UpdatePlannedRiskAssessmentDate(A<DateTime>());
@@ -847,6 +847,26 @@ namespace Tests.Unit.Core.DomainServices.SystemUsage
 
             //Assert
             Assert.Equal(UserCount.UNDECIDED, readModel.UserCount);
+        }
+
+        [Theory]
+        [InlineData(ItSystemUsage.LongProperyMaxLength + 1, ItSystemUsage.LongProperyMaxLength + 1)]
+        [InlineData(ItSystemUsage.PurposeMaxLength, ItSystemUsage.PurposeMaxLength)]
+        [InlineData(ItSystemUsage.PurposeMaxLength + 1, ItSystemUsage.PurposeMaxLength)]
+        public void Apply_Preserves_GeneralPurpose_Up_To_PurposeMaxLength(int sourceLength, int expectedLength)
+        {
+            var systemUsage = new ItSystemUsage
+            {
+                ItSystem = new ItSystem { Name = A<string>() },
+                ObjectOwner = DefaultTestUser,
+                LastChangedByUser = DefaultTestUser,
+                GeneralPurpose = new string('a', sourceLength)
+            };
+            var readModel = new ItSystemUsageOverviewReadModel();
+
+            _sut.Apply(systemUsage, readModel);
+
+            Assert.Equal(systemUsage.GeneralPurpose.Substring(0, expectedLength), readModel.GeneralPurpose);
         }
 
         private ItSystemUsageOverviewReadModel Test_ActiveAccordingToValidityPeriod_Based_On_ExpirationDate(DateTime expirationDate)

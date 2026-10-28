@@ -74,7 +74,7 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                 PersonalDataDeletionVerifiedDate = systemUsage.PersonalDataDeletionVerifiedDate,
                 PersonalDataDeletionVerificationDocumentation = MapSimpleLink(systemUsage.PersonalDataDeletionVerificationDocumentationUrlName, systemUsage.PersonalDataDeletionVerificationDocumentationUrl),
                 ProcessingPurpose = systemUsage.ProcessingPurpose,
-                DPIAConducted = MapYesNoDontKnow(systemUsage.DPIA),
+                DPIAConducted = systemUsage.DPIA?.ToChoice(),
                 DPIADate = systemUsage.DPIADateFor,
                 DPIADocumentation = MapSimpleLink(systemUsage.DPIASupervisionDocumentationUrlName, systemUsage.DPIASupervisionDocumentationUrl),
                 DirectoryDocumentation = MapSimpleLink(systemUsage.LinkToDirectoryUrlName, systemUsage.LinkToDirectoryUrl),

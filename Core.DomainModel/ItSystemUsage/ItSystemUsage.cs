@@ -34,6 +34,7 @@ namespace Core.DomainModel.ItSystemUsage
         IEntityOwnedByOrganization
     {
         public const int LongProperyMaxLength = 200;
+        public const int PurposeMaxLength = 1000;
         public const int DefaultMaxLength = 100;
         public const int LinkNameMaxLength = 150;
 
@@ -370,7 +371,7 @@ namespace Core.DomainModel.ItSystemUsage
         public string UserSupervisionDocumentationUrlName { get; private set; }
         public string UserSupervisionDocumentationUrl { get; private set; }
 
-        public YesNoDontKnowIrrelevant? riskAssessment { get; private set; }
+        public RiskAssessmentConducted? riskAssessment { get; private set; }
         public DateTime? riskAssesmentDate { get; private set; }
         public RiskLevel? preriskAssessment { get; private set; }
         public DateTime? PlannedRiskAssessmentDate { get; private set; }
@@ -378,7 +379,7 @@ namespace Core.DomainModel.ItSystemUsage
         public string RiskSupervisionDocumentationUrl { get; private set; }
         public string noteRisks { get; set; }
 
-        public DataOptions? DPIA { get; private set; }
+        public DpiaConducted? DPIA { get; private set; }
         public DateTime? DPIADateFor { get; private set; }
         public string DPIASupervisionDocumentationUrlName { get; private set; }
         public string DPIASupervisionDocumentationUrl { get; private set; }
@@ -1406,7 +1407,7 @@ namespace Core.DomainModel.ItSystemUsage
             });
         }
 
-        public void UpdateRiskAssessment(YesNoDontKnowIrrelevant? riskAssessment)
+        public void UpdateRiskAssessment(RiskAssessmentConducted? riskAssessment)
         {
             this.riskAssessment = riskAssessment;
             if (HasRiskAssessment()) return;
@@ -1424,7 +1425,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         private bool HasRiskAssessment()
         {
-            return riskAssessment == YesNoDontKnowIrrelevant.Yes;
+            return riskAssessment == RiskAssessmentConducted.Yes;
         }
 
         public Maybe<OperationError> UpdateRiskAssessmentDate(DateTime? date)
@@ -1504,7 +1505,7 @@ namespace Core.DomainModel.ItSystemUsage
             PersonalDataDeletionVerificationDocumentationUrl = verificationUrl;
             PersonalDataDeletionVerificationDocumentationUrlName = verificationName;
         }
-        public void UpdateDPIAConducted(DataOptions? dpia)
+        public void UpdateDPIAConducted(DpiaConducted? dpia)
         {
             DPIA = dpia;
             if (HasDPIA()) return;
@@ -1520,7 +1521,7 @@ namespace Core.DomainModel.ItSystemUsage
 
         private bool HasDPIA()
         {
-            return DPIA == DataOptions.YES;
+            return DPIA == DpiaConducted.Yes;
         }
 
         public Maybe<OperationError> UpdateDPIADate(DateTime? date)

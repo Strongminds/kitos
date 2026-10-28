@@ -162,8 +162,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<Maybe<NamedLink>>.None,
 
                 RiskAssessmentConducted = rule.MustUpdate(x => x.GDPR!.RiskAssessmentConducted)
-                    ? MapYesNoDontKnowIrrelevant(source.RiskAssessmentConducted)
-                    : OptionalValueChange<YesNoDontKnowIrrelevant?>.None,
+                    ? MapRiskAssessmentConducted(source.RiskAssessmentConducted)
+                    : OptionalValueChange<RiskAssessmentConducted?>.None,
 
                 RiskAssessmentConductedDate = rule.MustUpdate(x => x.GDPR!.RiskAssessmentConductedDate)
                     ? source.RiskAssessmentConductedDate.AsChangedValue()
@@ -186,8 +186,8 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
                     : OptionalValueChange<DateTime?>.None,
 
                 DPIAConducted = rule.MustUpdate(x => x.GDPR!.DPIAConducted)
-                    ? MapYesNoDontKnow(source.DPIAConducted)
-                    : OptionalValueChange<DataOptions?>.None,
+                    ? MapEnumChoice(source.DPIAConducted, DpiaConductedMappingExtensions.FromChoice)
+                    : OptionalValueChange<DpiaConducted?>.None,
 
                 DPIADate = rule.MustUpdate(x => x.GDPR!.DPIADate)
                     ? source.DPIADate.AsChangedValue()
@@ -540,9 +540,9 @@ namespace Presentation.Web.Controllers.API.V2.External.ItSystemUsages.Mapping
             return MapEnumChoice(choice, DataOptionsMappingExtensions.ToDataOptions);
         }
 
-        private static ChangedValue<YesNoDontKnowIrrelevant?> MapYesNoDontKnowIrrelevant(YesNoDontKnowIrrelevantChoice? choice)
+        private static ChangedValue<RiskAssessmentConducted?> MapRiskAssessmentConducted(RiskAssessmentConductedChoice? choice)
         {
-            return MapEnumChoice(choice, YesNoDontKnowIrrelevantMappingExtensions.FromChoice);
+            return MapEnumChoice(choice, RiskAssessmentConductedMappingExtensions.FromChoice);
         }
 
         private static ChangedValue<Maybe<NamedLink>> MapLink(SimpleLinkDTO? simpleLinkDto)
