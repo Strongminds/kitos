@@ -38,6 +38,120 @@ public class BeskedfordelerWorkerTest
     private static readonly Guid MessageId = Guid.NewGuid();
     private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas());
 
+    [Theory]
+    [InlineData(typeof(IBeskedfordelerJob))]
+    [InlineData(typeof(BeskedfordelerJob))]
+    [InlineData(typeof(global::Presentation.Web.Infrastructure.Beskedfordeler.BeskedfordelerJob))]
+    public void Retry_QuarantineRemainsFailed_TransientFailureRetriesAndExhausts(Type jobType)
+    {
+        var method = jobType.GetMethod(nameof(IBeskedfordelerJob.Process))!;
+        var job = new Job(jobType, method, "original-payload", CancellationToken.None);
+        var filters = new JobFilterAttributeFilterProvider().GetFilters(job).Select(x => x.Instance).ToArray();
+        var retry = Assert.Single(filters.OfType<AutomaticRetryAttribute>());
+        var quarantine = new FailedState(new BeskedfordelerQuarantineException("Mapping/MunicipalityNotConnected"));
+        var quarantined = Election(job, quarantine, 0);
+        retry.OnStateElection(quarantined);
+        Assert.Same(quarantine, quarantined.CandidateState);
+
+        var transient = Election(job, new FailedState(new TimeoutException()), 0);
+        retry.OnStateElection(transient);
+        Assert.IsType<ScheduledState>(transient.CandidateState);
+
+        var exhausted = new FailedState(new TimeoutException());
+        var finalAttempt = Election(job, exhausted, retry.Attempts);
+        retry.OnStateElection(finalAttempt);
+        Assert.Same(exhausted, finalAttempt.CandidateState);
+    }
+
+    private static ElectStateContext Election(Job job, FailedState failed, int retryCount)
+    {
+        var connection = new Mock<Hangfire.Storage.IStorageConnection>();
+        connection.Setup(x => x.GetJobParameter("job", "RetryCount")).Returns(retryCount.ToString());
+        var applied = new ApplyStateContext(Mock.Of<JobStorage>(), connection.Object,
+            Mock.Of<Hangfire.Storage.IWriteOnlyTransaction>(),
+            new BackgroundJob("job", job, DateTime.UtcNow), failed, ProcessingState.StateName);
+        return new ElectStateContext(applied);
+    }
+
+    [Theory]
+    [InlineData("Beskedtype", BeskedfordelerMappingFailure.UnsupportedMessageType)]
+    [InlineData("ObjektType", BeskedfordelerMappingFailure.UnsupportedObjectType)]
+    [InlineData("ObjektHandling", BeskedfordelerMappingFailure.UnsupportedAction)]
+    [InlineData("ObjektId", BeskedfordelerMappingFailure.InvalidUserIdentifier)]
+    [InlineData("ObjektAnsvarligMyndighed", BeskedfordelerMappingFailure.InvalidMunicipalityCvr)]
+    [InlineData("TilladtModtager", BeskedfordelerMappingFailure.RecipientMismatch)]
+    [InlineData("Registreringstidspunkt", BeskedfordelerMappingFailure.InvalidTimestamp)]
+    public void Map_InvalidField_ReturnsSpecificReason(string field, BeskedfordelerMappingFailure reason)
+    {
+        var xml = Input();
+        xml.Descendants(BeskedfordelerMessage.Envelope + field).Single().Elements().Single().Value = "invalid";
+        var repository = new Mock<IGenericRepository<Organization>>(MockBehavior.Strict);
+        Assert.Equal(reason, new OrgBrugerDeletionMapper(repository.Object).Map(xml).Error);
+        repository.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    public void Map_UnsupportedRegistrationCount_ReturnsSpecificReason(int count)
+    {
+        var xml = Input();
+        var registration = xml.Descendants(BeskedfordelerMessage.Envelope + "ObjektRegistrering").Single();
+        if (count == 0) registration.Remove();
+        else registration.AddAfterSelf(new XElement(registration));
+        var repository = new Mock<IGenericRepository<Organization>>(MockBehavior.Strict);
+        Assert.Equal(BeskedfordelerMappingFailure.UnsupportedRegistrationCount,
+            new OrgBrugerDeletionMapper(repository.Object).Map(xml).Error);
+    }
+
+    [Theory]
+    [InlineData("not base64")]
+    [InlineData("PGludmFsaWQgLz4=")]
+    public async Task Process_InvalidStoredPayload_QuarantinesWithoutDisclosingPayload(string payload)
+    {
+        var job = new BeskedfordelerJob(Reader(), Mock.Of<IBeskedfordelerDeletionMapper>(),
+            new ExternalUserChangeIngestionService(Mock.Of<IExternalUserChangeRepository>(),
+                Mock.Of<IOrganizationRepository>(), Mock.Of<ISsoUserIdentityRepository>()),
+            NullLogger<BeskedfordelerJob>.Instance);
+        var failure = await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(() => job.Process(payload, default));
+        Assert.Equal("Beskedfordeler quarantined: InvalidStoredPayload.", failure.Message);
+        Assert.Null(failure.InnerException);
+    }
+
+    [Fact]
+    public async Task Process_MunicipalityLookupTimesOut_PreservesTransientException()
+    {
+        var repository = new Mock<IGenericRepository<Organization>>();
+        var timeout = new TimeoutException("Database unavailable");
+        repository.Setup(x => x.AsQueryable()).Throws(timeout);
+        var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(repository.Object),
+            new ExternalUserChangeIngestionService(Mock.Of<IExternalUserChangeRepository>(),
+                Mock.Of<IOrganizationRepository>(), Mock.Of<ISsoUserIdentityRepository>()),
+            NullLogger<BeskedfordelerJob>.Instance);
+        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Input().ToString()));
+        Assert.Same(timeout, await Assert.ThrowsAsync<TimeoutException>(() => job.Process(payload, default)));
+    }
+
+    [Fact]
+    public async Task Process_UserNotFound_QuarantinesWithoutCreatingPendingChange()
+    {
+        var registeredOrganizations = new Mock<IGenericRepository<Organization>>();
+        var organization = new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = true };
+        registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[] { organization }.AsQueryable());
+        var organizations = new Mock<IOrganizationRepository>();
+        organizations.Setup(x => x.GetByUuid(OrganizationId)).Returns(organization);
+        var changes = new Mock<IExternalUserChangeRepository>();
+        var identities = new Mock<ISsoUserIdentityRepository>();
+        identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(Core.Abstractions.Types.Maybe<SsoUserIdentity>.None);
+        var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
+            new ExternalUserChangeIngestionService(changes.Object, organizations.Object, identities.Object),
+            NullLogger<BeskedfordelerJob>.Instance);
+        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Input().ToString()));
+        var failure = await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(() => job.Process(payload, default));
+        Assert.Contains("Ingestion/NotFound", failure.Message);
+        changes.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
+    }
+
     [Fact]
     public void LoadSchemas_WithoutDirectory_CompilesCompleteEmbeddedSchemaSet()
     {
@@ -71,10 +185,10 @@ public class BeskedfordelerWorkerTest
 
         if (matchingSignups == 1)
         {
-            Assert.NotNull(result);
-            Assert.Equal(organizations[0].Uuid, result.OrganizationUuid);
+            Assert.True(result.Ok);
+            Assert.Equal(organizations[0].Uuid, result.Value.OrganizationUuid);
         }
-        else Assert.Null(result);
+        else Assert.Equal(matchingSignups == 0 ? BeskedfordelerMappingFailure.MunicipalityNotConnected : BeskedfordelerMappingFailure.AmbiguousMunicipality, result.Error);
     }
 
     [Fact]
@@ -85,11 +199,11 @@ public class BeskedfordelerWorkerTest
         repository.Setup(x => x.AsQueryable()).Returns(new[] { organization }.AsQueryable());
         var mapper = new OrgBrugerDeletionMapper(repository.Object);
 
-        Assert.Null(mapper.Map(Input()));
+        Assert.Equal(BeskedfordelerMappingFailure.MunicipalityNotConnected, mapper.Map(Input()).Error);
         organization.FkOrgUsersConnected = true;
-        Assert.Equal(OrganizationId, mapper.Map(Input())!.OrganizationUuid);
+        Assert.Equal(OrganizationId, mapper.Map(Input()).Value.OrganizationUuid);
         organization.FkOrgUsersConnected = false;
-        Assert.Null(mapper.Map(Input()));
+        Assert.Equal(BeskedfordelerMappingFailure.MunicipalityNotConnected, mapper.Map(Input()).Error);
     }
 
     [Theory]
@@ -101,6 +215,7 @@ public class BeskedfordelerWorkerTest
         var xml = Input();
         xml.Descendants(BeskedfordelerMessage.Envelope + "Beskedtype").Single().Elements().Single().Value = messageType;
         var mapper = new Mock<IBeskedfordelerDeletionMapper>();
+        mapper.Setup(x => x.Map(It.IsAny<XElement>())).Returns(BeskedfordelerMappingFailure.UnsupportedMessageType);
         var repository = new Mock<IExternalUserChangeRepository>(MockBehavior.Strict);
         var organizations = new Mock<IOrganizationRepository>(MockBehavior.Strict);
         var identities = new Mock<ISsoUserIdentityRepository>(MockBehavior.Strict);
@@ -119,7 +234,7 @@ public class BeskedfordelerWorkerTest
         }
         else
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(() => job.Process(payload, default));
+            await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(() => job.Process(payload, default));
             logger.VerifyNoOtherCalls();
         }
         repository.VerifyNoOtherCalls();
@@ -143,10 +258,8 @@ public class BeskedfordelerWorkerTest
         repository.Setup(x => x.FindByMessageId(MessageId.ToString("D"))).Returns(() => saved);
         repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>())).Returns((ExternalUserChange value) => saved = value);
         var registeredOrganizations = new Mock<IGenericRepository<Organization>>();
-        registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[]
-        {
-            new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = true }
-        }.AsQueryable());
+        var signup = new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = false };
+        registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[] { signup }.AsQueryable());
         var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
             new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object),
             NullLogger<BeskedfordelerJob>.Instance);
@@ -159,13 +272,17 @@ public class BeskedfordelerWorkerTest
             var restored = Hangfire.Storage.InvocationData.SerializeJob(queued).DeserializeJob();
             return Assert.IsAssignableFrom<Task>(restored.Method.Invoke(job, restored.Args.ToArray()));
         }
+        var quarantined = await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(ExecuteSerializedJob);
+        Assert.Contains(nameof(BeskedfordelerMappingFailure.MunicipalityNotConnected), quarantined.Message);
+        repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
+        signup.FkOrgUsersConnected = true;
         await ExecuteSerializedJob();
         Assert.Equal(ExternalUserChangeStatus.Pending, saved!.Status);
         Assert.Equal(user.Id, saved.UserId);
         if (conflict)
         {
             xml.Descendants(BeskedfordelerMessage.Envelope + "ObjektId").Single().Elements().Single().Value = Guid.NewGuid().ToString();
-            await Assert.ThrowsAsync<InvalidOperationException>(ExecuteSerializedJob);
+            await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(ExecuteSerializedJob);
         }
         else await ExecuteSerializedJob();
         repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Once);

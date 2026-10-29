@@ -37,7 +37,7 @@ The current interface and implementation declare eight retries at 2, 4, 8, 16, 3
 
 The receiver enqueues each accepted non-test delivery; ingestion deduplication happens later. Multiple jobs for one message can therefore be repeated delivery, including a lost acknowledgement. A failure before ingestion never reaches ingestion deduplication. Check worker recovery/restarts and operator or external requeues when supported by state history; do not assume a code loop.
 
-`Unsupported Beskedfordeler event or municipality mapping` means the mapper returned null. Trace individual rejection reasons: unsupported type/action, registration count, invalid identifiers/recipient/timestamp, or missing/ambiguous opted-in municipality. Ingestion failures are a separate stage and can also be deterministic.
+The mapper returns `Result<ExternalUserChangeInput, BeskedfordelerMappingFailure>` with a specific reason. Trace individual rejection reasons: unsupported type/action, registration count, invalid identifiers/recipient/timestamp, or missing/ambiguous opted-in municipality. Ingestion failures are a separate stage and can also be deterministic.
 
 When asked to improve handling, prefer explicit mapping outcomes over undifferentiated null:
 
@@ -45,7 +45,7 @@ When asked to improve handling, prefer explicit mapping outcomes over undifferen
 - Unsupported/malformed events and unresolved municipality mappings should stay visible and replayable without automatic retries that cannot resolve the cause.
 - Temporary infrastructure failures should retain bounded retries.
 
-These are design recommendations, not an existing quarantine implementation. Choose a terminal Failed state or durable quarantine appropriate to the requested scope. Preserve payload and reason before completing terminal handling, and define retention/replay semantics. Do not swallow unknown events or disable retries for every failure. Replay operational jobs only within the user's authorized scope; stop when the same unresolved cause recurs.
+Quarantine is implemented as retained Hangfire Failed jobs carrying `BeskedfordelerQuarantineException`. The interface and concrete job retry attributes exclude that exception through `ExceptOn`; other failures retain bounded retries. Operators correct the cause and use Retry in the protected Hangfire dashboard to replay the original payload. Keep all serialized job identities covered by retry-policy tests. Preserve payload and reason before completing terminal handling, and define retention/replay semantics. Do not swallow unknown events or disable retries for every failure. Replay operational jobs only within the user's authorized scope; stop when the same unresolved cause recurs.
 
 ## Validate affected behavior
 

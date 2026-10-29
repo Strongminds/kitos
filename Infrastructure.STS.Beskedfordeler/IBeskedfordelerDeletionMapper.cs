@@ -1,4 +1,5 @@
 using Core.ApplicationServices.Model.Users;
+using Core.Abstractions.Types;
 using System.Xml.Linq;
 
 namespace Infrastructure.STS.Beskedfordeler;
@@ -10,5 +11,5 @@ namespace Infrastructure.STS.Beskedfordeler;
 /// </summary>
 public interface IBeskedfordelerDeletionMapper
 {
-    ExternalUserChangeInput? Map(XElement validatedInput);
+    Result<ExternalUserChangeInput, BeskedfordelerMappingFailure> Map(XElement validatedInput);
 }
