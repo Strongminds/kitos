@@ -19,31 +19,13 @@ spec:
     metadata:
       annotations:
         sidecar.opentelemetry.io/inject: "false"
+        easyhosting.io/otlp-logs: "false"
       labels:
         app: kitos-pubsub
+        app.kubernetes.io/name: kitos-pubsub
     spec:
       containers:
       - env:
-        - name: PUBSUB_API_KEY
-          valueFrom:
-            secretKeyRef:
-              key: PubSubApiKey
-              name: user-secret
-        - name: RABBIT_MQ_USER
-          valueFrom:
-            secretKeyRef:
-              key: RabbitMqUsername
-              name: user-secret
-        - name: RABBIT_MQ_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: RabbitMqPassword
-              name: user-secret
-        - name: ConnectionStrings__DefaultConnection
-          valueFrom:
-            secretKeyRef:
-              key: PubSubConnectionString
-              name: user-secret
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
         image: ghcr.io/strongminds/kitos-kitos-pubsub:sha-4c7e312602e8cc053c56fd739e384aae68ad4763
@@ -60,4 +42,4 @@ spec:
             memory: 128Mi
             cpu: 100m
       imagePullSecrets:
-        - name: 90d73529-a238-405b-a079-3eea2e8e36e6
+      - name: 90d73529-a238-405b-a079-3eea2e8e36e6
