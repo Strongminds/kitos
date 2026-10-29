@@ -93,7 +93,17 @@ public class BeskedfordelerJob(BeskedfordelerXmlReader reader,
         cancellationToken.ThrowIfCancellationRequested();
         return ingestion.Ingest(input).Match<Result<Guid, OperationError>>(
             _ => uuid,
-            error => new OperationError($"Ingestion/{error.FailureType}; MessageId={uuid:D}", error.FailureType));
+            error => MapIngestionFailure(input, uuid, error));
+    }
+
+    private OperationError MapIngestionFailure(ExternalUserChangeInput input, Guid uuid, OperationError error)
+    {
+        if (error.FailureType == OperationFailure.NotFound)
+            logger.LogWarning(
+                "Beskedfordeler event could not be ingested: {Reason} MessageId {MessageId}, ExternalUserUuid {ExternalUserUuid}, OrganizationUuid {OrganizationUuid}.",
+                error.Message.Match(reason => reason, () => "The requested entity was not found."),
+                uuid, input.ExternalUserUuid, input.OrganizationUuid);
+        return new OperationError($"Ingestion/{error.FailureType}; MessageId={uuid:D}", error.FailureType);
     }
 
     private static Exception ToHangfireException(OperationError error) => error.FailureType switch

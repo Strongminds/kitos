@@ -150,12 +150,18 @@ public class BeskedfordelerWorkerTest
         var changes = new Mock<IExternalUserChangeRepository>();
         var identities = new Mock<ISsoUserIdentityRepository>();
         identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(Core.Abstractions.Types.Maybe<SsoUserIdentity>.None);
+        var logger = new Mock<ILogger<BeskedfordelerJob>>();
         var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
             new ExternalUserChangeIngestionService(changes.Object, organizations.Object, identities.Object, IngestionTransaction()),
-            NullLogger<BeskedfordelerJob>.Instance);
+            logger.Object);
         var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Input().ToString()));
         var failure = await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(() => job.Process(payload, default));
         Assert.Contains("Ingestion/NotFound", failure.Message);
+        logger.Verify(x => x.Log(LogLevel.Warning, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("User not found in the organization.") &&
+                state.ToString()!.Contains(MessageId.ToString()) && state.ToString()!.Contains(UserId.ToString()) &&
+                state.ToString()!.Contains(OrganizationId.ToString()) && !state.ToString()!.Contains("<")),
+            null, It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
         changes.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
     }
 
