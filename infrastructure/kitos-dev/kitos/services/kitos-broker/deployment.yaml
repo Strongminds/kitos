@@ -19,21 +19,17 @@ spec:
     metadata:
       annotations:
         sidecar.opentelemetry.io/inject: "false"
+        easyhosting.io/otlp-logs: "false"
       labels:
         app: kitos-broker
+        app.kubernetes.io/name: kitos-broker
     spec:
       containers:
       - env:
         - name: RABBITMQ_DEFAULT_USER
-          valueFrom:
-            secretKeyRef:
-              key: RabbitMqUsername
-              name: user-secret
+          value: "0"
         - name: RABBITMQ_DEFAULT_PASS
-          valueFrom:
-            secretKeyRef:
-              key: RabbitMqPassword
-              name: user-secret
+          value: "0"
         image: ghcr.io/strongminds/kitos-kitos-broker:sha-4c7e312602e8cc053c56fd739e384aae68ad4763
         name: kitos-broker
         ports:
@@ -47,14 +43,5 @@ spec:
           requests:
             memory: 128Mi
             cpu: 100m
-        volumeMounts:
-        - mountPath: /var/lib/rabbitmq
-          name: kitos-broker-volume
-          readOnly: false
       imagePullSecrets:
       - name: 90d73529-a238-405b-a079-3eea2e8e36e6
-      volumes:
-      - name: kitos-broker-volume
-        persistentVolumeClaim:
-          claimName: kitos-broker-volume
-          readOnly: false
