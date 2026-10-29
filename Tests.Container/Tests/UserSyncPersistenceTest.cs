@@ -149,6 +149,46 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Ingestion_ConcurrentDifferentMessages_OnlyOnePendingChangeCommits()
+    {
+        await using (var db = Context())
+        {
+            var organization = await db.Organizations.SingleAsync(x => x.Id == _organization.Id);
+            organization.FkOrgUsersConnected = true;
+            await db.SaveChangesAsync();
+        }
+        using var readers = new Barrier(2);
+        Result<ExternalUserChange, OperationError> Deliver(string messageId)
+        {
+            using var db = Context();
+            var repository = new ExternalUserChangeRepository(db);
+            var synchronized = new Mock<IExternalUserChangeRepository>();
+            synchronized.Setup(x => x.FindByMessageId(messageId)).Returns(() =>
+            {
+                var existing = repository.FindByMessageId(messageId);
+                Assert.True(readers.SignalAndWait(TimeSpan.FromSeconds(30)));
+                return existing;
+            });
+            synchronized.Setup(x => x.AsQueryable()).Returns(() => repository.AsQueryable());
+            synchronized.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()))
+                .Returns((ExternalUserChange change) => repository.InsertAndSave(change));
+            var ingestion = new ExternalUserChangeIngestionService(synchronized.Object,
+                new OrganizationRepository(new GenericRepository<Organization>(db)),
+                new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)),
+                new ExternalUserChangeIngestionTransaction(db));
+            return ingestion.Ingest(new Core.ApplicationServices.Model.Users.ExternalUserChangeInput(
+                messageId, _organization.Uuid, _externalUuid, ExternalUserChangeType.Deleted, DateTime.UtcNow));
+        }
+
+        var results = await Task.WhenAll(Task.Run(() => Deliver("first")), Task.Run(() => Deliver("second")));
+
+        Assert.Single(results, x => x.Ok);
+        Assert.Equal(OperationFailure.UnknownError, Assert.Single(results, x => x.Failed).Error.FailureType);
+        await using var verify = Context();
+        Assert.Single(await verify.Set<ExternalUserChange>().ToListAsync());
+    }
+
+    [Fact]
     public async Task ApplyingLastOrganizationDeletionMarksUserDeleted()
     {
         await using var db = Context();
@@ -270,8 +310,14 @@ public sealed class UserSyncPersistenceTest : IAsyncLifetime
             using var db = Context();
             var ingestion = new ExternalUserChangeIngestionService(new ExternalUserChangeRepository(db),
                 new OrganizationRepository(new GenericRepository<Organization>(db)),
-                new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)));
-            Assert.True(ingestion.Ingest(input).Ok);
+                new SsoUserIdentityRepository(new GenericRepository<SsoUserIdentity>(db)), new ExternalUserChangeIngestionTransaction(db));
+            var result = ingestion.Ingest(input);
+            if (result.Failed)
+            {
+                Assert.Equal(OperationFailure.UnknownError, result.Error.FailureType);
+                result = ingestion.Ingest(input);
+            }
+            Assert.True(result.Ok);
         }
         await Task.WhenAll(Task.Run(Deliver), Task.Run(Deliver));
         await using (var check = Context())

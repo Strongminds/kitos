@@ -25,7 +25,7 @@ public class ExternalUserChangeRepository : GenericRepository<ExternalUserChange
             Save();
             return change;
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException) when (_context.Database.CurrentTransaction == null)
         {
             _context.Entry(change).State = EntityState.Detached;
             // Only suppress a failure when the competing transaction actually persisted this ID.

@@ -14,9 +14,13 @@ namespace Core.ApplicationServices.Users;
 public class ExternalUserChangeIngestionService(
     IExternalUserChangeRepository repository,
     IOrganizationRepository organizations,
-    ISsoUserIdentityRepository identities)
+    ISsoUserIdentityRepository identities,
+    IExternalUserChangeIngestionTransaction transaction)
 {
-    public Result<ExternalUserChange, OperationError> Ingest(ExternalUserChangeInput input)
+    public Result<ExternalUserChange, OperationError> Ingest(ExternalUserChangeInput input) =>
+        transaction.Execute(() => IngestWithinTransaction(input));
+
+    private Result<ExternalUserChange, OperationError> IngestWithinTransaction(ExternalUserChangeInput input)
     {
         if (string.IsNullOrWhiteSpace(input.ExternalMessageId) || input.ExternalMessageId.Length > 200 ||
             input.OrganizationUuid == Guid.Empty || input.ExternalUserUuid == Guid.Empty ||
@@ -34,14 +38,22 @@ public class ExternalUserChangeIngestionService(
         if (existing != null) return CheckDuplicate(existing, input, organization.Value.Id);
 
         return FindUser(input, organization.Value.Id)
+            .Bind(user => EnsureNoPendingChange(input, organization.Value.Id, user))
             .Bind(user => SaveChange(input, organization.Value.Id, user));
     }
+
+    private Result<User, OperationError> EnsureNoPendingChange(ExternalUserChangeInput input, int organizationId, User user) =>
+        repository.AsQueryable().Any(change => change.OrganizationId == organizationId &&
+            change.Status == ExternalUserChangeStatus.Pending &&
+            (change.ExternalUserUuid == input.ExternalUserUuid || change.UserId == user.Id))
+            ? new OperationError("A pending change already exists for this user in the organization.", OperationFailure.Conflict)
+            : user;
 
     private Result<User, OperationError> FindUser(ExternalUserChangeInput input, int organizationId)
     {
         var identity = identities.GetByExternalUuid(input.ExternalUserUuid);
         var user = identity.HasValue ? identity.Value.User : null;
-        if (user == null || !user.OrganizationRights.Any(x => x.OrganizationId == organizationId && x.Role == OrganizationRole.User))
+        if (user == null || user.Deleted || !user.OrganizationRights.Any(x => x.OrganizationId == organizationId && x.Role == OrganizationRole.User))
             return new OperationError("User not found in the organization.", OperationFailure.NotFound);
 
         return user;

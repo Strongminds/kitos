@@ -36,6 +36,13 @@ public class BeskedfordelerWorkerTest
     private static readonly Guid OrganizationId = Guid.NewGuid();
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Guid MessageId = Guid.NewGuid();
+    private static IExternalUserChangeIngestionTransaction IngestionTransaction()
+    {
+        var transaction = new Mock<IExternalUserChangeIngestionTransaction>();
+        transaction.Setup(x => x.Execute(It.IsAny<Func<Core.Abstractions.Types.Result<ExternalUserChange, Core.Abstractions.Types.OperationError>>>()))
+            .Returns((Func<Core.Abstractions.Types.Result<ExternalUserChange, Core.Abstractions.Types.OperationError>> action) => action());
+        return transaction.Object;
+    }
     private static BeskedfordelerXmlReader Reader() => new(BeskedfordelerXmlReader.LoadSchemas());
 
     [Theory]
@@ -111,7 +118,7 @@ public class BeskedfordelerWorkerTest
     {
         var job = new BeskedfordelerJob(Reader(), Mock.Of<IBeskedfordelerDeletionMapper>(),
             new ExternalUserChangeIngestionService(Mock.Of<IExternalUserChangeRepository>(),
-                Mock.Of<IOrganizationRepository>(), Mock.Of<ISsoUserIdentityRepository>()),
+                Mock.Of<IOrganizationRepository>(), Mock.Of<ISsoUserIdentityRepository>(), IngestionTransaction()),
             NullLogger<BeskedfordelerJob>.Instance);
         var failure = await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(() => job.Process(payload, default));
         Assert.Equal("Beskedfordeler quarantined: InvalidStoredPayload.", failure.Message);
@@ -126,7 +133,7 @@ public class BeskedfordelerWorkerTest
         repository.Setup(x => x.AsQueryable()).Throws(timeout);
         var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(repository.Object),
             new ExternalUserChangeIngestionService(Mock.Of<IExternalUserChangeRepository>(),
-                Mock.Of<IOrganizationRepository>(), Mock.Of<ISsoUserIdentityRepository>()),
+                Mock.Of<IOrganizationRepository>(), Mock.Of<ISsoUserIdentityRepository>(), IngestionTransaction()),
             NullLogger<BeskedfordelerJob>.Instance);
         var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Input().ToString()));
         Assert.Same(timeout, await Assert.ThrowsAsync<TimeoutException>(() => job.Process(payload, default)));
@@ -144,7 +151,7 @@ public class BeskedfordelerWorkerTest
         var identities = new Mock<ISsoUserIdentityRepository>();
         identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(Core.Abstractions.Types.Maybe<SsoUserIdentity>.None);
         var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
-            new ExternalUserChangeIngestionService(changes.Object, organizations.Object, identities.Object),
+            new ExternalUserChangeIngestionService(changes.Object, organizations.Object, identities.Object, IngestionTransaction()),
             NullLogger<BeskedfordelerJob>.Instance);
         var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Input().ToString()));
         var failure = await Assert.ThrowsAsync<BeskedfordelerQuarantineException>(() => job.Process(payload, default));
@@ -221,7 +228,7 @@ public class BeskedfordelerWorkerTest
         var identities = new Mock<ISsoUserIdentityRepository>(MockBehavior.Strict);
         var logger = new Mock<ILogger<BeskedfordelerJob>>();
         var job = new BeskedfordelerJob(Reader(), mapper.Object,
-            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object), logger.Object);
+            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object, IngestionTransaction()), logger.Object);
         var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
         if (supported)
         {
@@ -254,6 +261,7 @@ public class BeskedfordelerWorkerTest
         user.OrganizationRights.Add(new OrganizationRight { OrganizationId = 1, Role = OrganizationRole.User });
         identities.Setup(x => x.GetByExternalUuid(UserId)).Returns(new SsoUserIdentity(UserId, user));
         var repository = new Mock<IExternalUserChangeRepository>();
+        repository.Setup(x => x.AsQueryable()).Returns(Array.Empty<ExternalUserChange>().AsQueryable());
         ExternalUserChange? saved = null;
         repository.Setup(x => x.FindByMessageId(MessageId.ToString("D"))).Returns(() => saved);
         repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>())).Returns((ExternalUserChange value) => saved = value);
@@ -261,7 +269,7 @@ public class BeskedfordelerWorkerTest
         var signup = new Organization { Uuid = OrganizationId, Cvr = "12345678", FkOrgUsersConnected = false };
         registeredOrganizations.Setup(x => x.AsQueryable()).Returns(new[] { signup }.AsQueryable());
         var job = new BeskedfordelerJob(Reader(), new OrgBrugerDeletionMapper(registeredOrganizations.Object),
-            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object),
+            new ExternalUserChangeIngestionService(repository.Object, organizations.Object, identities.Object, IngestionTransaction()),
             NullLogger<BeskedfordelerJob>.Instance);
         var xml = Input();
         string Payload() => Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));

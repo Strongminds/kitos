@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Core.Abstractions.Types;
 using Core.ApplicationServices.Model.Users;
 using Core.ApplicationServices.Users;
@@ -32,7 +33,11 @@ public class ExternalUserChangeIngestionServiceTest
         _identities.Setup(x => x.GetByExternalUuid(_input.ExternalUserUuid)).Returns(new SsoUserIdentity(_input.ExternalUserUuid, _user));
         _repository.Setup(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()))
             .Returns((ExternalUserChange change) => change);
-        _sut = new(_repository.Object, _organizations.Object, _identities.Object);
+        _repository.Setup(x => x.AsQueryable()).Returns(Array.Empty<ExternalUserChange>().AsQueryable());
+        var transaction = new Mock<IExternalUserChangeIngestionTransaction>();
+        transaction.Setup(x => x.Execute(It.IsAny<Func<Result<ExternalUserChange, OperationError>>>()))
+            .Returns((Func<Result<ExternalUserChange, OperationError>> action) => action());
+        _sut = new(_repository.Object, _organizations.Object, _identities.Object, transaction.Object);
     }
 
     [Fact]
@@ -44,6 +49,72 @@ public class ExternalUserChangeIngestionServiceTest
         Assert.Equal(ExternalUserChangeStatus.Pending, result.Value.Status);
         Assert.False(_user.Deleted);
         Assert.Single(_user.OrganizationRights);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Ingest_DifferentMessageForPendingUser_ReturnsConflict(bool differentExternalIdentity)
+    {
+        var pending = Existing();
+        pending.ExternalMessageId = "earlier-message";
+        pending.UserId = _user.Id;
+        if (differentExternalIdentity) pending.ExternalUserUuid = Guid.NewGuid();
+        _repository.Setup(x => x.AsQueryable()).Returns(new[] { pending }.AsQueryable());
+
+        var result = _sut.Ingest(_input);
+
+        Assert.Equal(OperationFailure.Conflict, result.Error.FailureType);
+        Assert.Equal(ExternalUserChangeStatus.Pending, pending.Status);
+        _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Ingest_PendingChangeForOtherUserOrOrganization_AllowsNewChange(bool otherOrganization)
+    {
+        var pending = Existing();
+        pending.UserId = _user.Id;
+        if (otherOrganization) pending.OrganizationId++;
+        else
+        {
+            pending.UserId++;
+            pending.ExternalUserUuid = Guid.NewGuid();
+        }
+        _repository.Setup(x => x.AsQueryable()).Returns(new[] { pending }.AsQueryable());
+
+        Assert.True(_sut.Ingest(_input).Ok);
+        _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(ExternalUserChangeStatus.Dismissed)]
+    [InlineData(ExternalUserChangeStatus.Applied)]
+    public void Ingest_NewMessageAfterResolution_RequiresActiveMember(ExternalUserChangeStatus status)
+    {
+        var previous = Existing();
+        previous.Status = status;
+        _repository.Setup(x => x.AsQueryable()).Returns(new[] { previous }.AsQueryable());
+        _repository.Setup(x => x.FindByMessageId(previous.ExternalMessageId)).Returns(previous);
+        var newEvent = _input with { ExternalMessageId = "new-message" };
+        if (status == ExternalUserChangeStatus.Applied)
+        {
+            _user.Deleted = true;
+            Assert.Equal(OperationFailure.NotFound, _sut.Ingest(newEvent).Error.FailureType);
+            _repository.Verify(x => x.InsertAndSave(It.IsAny<ExternalUserChange>()), Times.Never);
+            _user.Deleted = false;
+            _user.OrganizationRights.Clear();
+            Assert.Equal(OperationFailure.NotFound, _sut.Ingest(newEvent).Error.FailureType);
+            _user.OrganizationRights.Add(new OrganizationRight { OrganizationId = _organization.Id, Role = OrganizationRole.User });
+        }
+
+        var result = _sut.Ingest(newEvent);
+
+        Assert.True(result.Ok);
+        Assert.Equal(ExternalUserChangeStatus.Pending, result.Value.Status);
+        Assert.Equal(status, previous.Status);
+        Assert.NotEqual(previous.Uuid, result.Value.Uuid);
     }
 
     [Theory]

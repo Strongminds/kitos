@@ -29,6 +29,8 @@ Ingestion creates a Pending administrator-reviewed change; receipt does not remo
 
 Replay uses `BeskedId` as `ExternalMessageId`. Equivalent events are idempotent; reuse for different content conflicts. Preserve microsecond timestamp normalization and previously resolved status. Inspect signup checks before assuming replay bypasses them. Keep PubSub outside this flow unless explicitly in scope.
 
+Only one Pending change may exist per organization and external identity or KITOS user ID. Enforce this business rule in ingestion with Result/Conflict before saving, not with new migration indexes. Keep the check and insert in one serializable transaction; serialization collisions are transient and retried with a fresh snapshot. Applied/Dismissed history permits a new message only when a non-deleted user, SSO binding, and organization User role exist. Preserve exact-message replay behavior.
+
 ## Investigate repeating failures
 
 Distinguish source redelivery from execution retries. Correlate message ID, receive trace ID, Hangfire job ID, retry count, and state history using authorized operational evidence. Repository inspection alone cannot establish a deployed loop's cause.
