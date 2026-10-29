@@ -9,7 +9,7 @@ metadata:
     easyhosting.io/resource-id: "3d41c24a0af84c85a86d77591cf3a563"
     easyhosting.io/application-id: "kitos"
   annotations:
-    easyhosting.io/database-catalog: "[{\"DatabaseId\":\"65b16ad1-7e9c-4905-bddb-571f7e6fe53d\",\"Name\":\"dev-db\",\"DatabaseName\":\"dev-db\",\"OwnerRoleName\":\"kitos\",\"Type\":0},{\"DatabaseId\":\"eb6c2b4a-443c-4cb0-8a85-4876f18e1c29\",\"Name\":\"pubsub-dev-db\",\"DatabaseName\":\"pubsub-dev-db\",\"OwnerRoleName\":\"kitos\",\"Type\":0}]"
+    easyhosting.io/database-catalog: "[{\"DatabaseId\":\"65b16ad1-7e9c-4905-bddb-571f7e6fe53d\",\"Name\":\"dev-db\",\"DatabaseName\":\"dev-db\",\"OwnerRoleName\":\"kitos\",\"Type\":0}]"
 spec:
   schedule: "0 0 0 * * *"
   backupOwnerReference: cluster

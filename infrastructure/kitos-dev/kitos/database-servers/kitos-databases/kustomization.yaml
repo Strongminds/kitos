@@ -6,4 +6,3 @@ resources:
   - object-store.yaml
   - network-policy.yaml
   - databases/dev-db
-  - databases/pubsub-dev-db
