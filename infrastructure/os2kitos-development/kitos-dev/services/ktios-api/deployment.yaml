@@ -81,7 +81,7 @@ spec:
             secretKeyRef:
               key: SmtpPassword
               name: user-secret
-        image: '{will be replaced by build pipeline}'
+        image: ghcr.io/strongminds/kitos-ktios-api@sha256:779feaa1a9add65524b7835cd754ddc3298ba38c8c81930e66ff469c00079dca
         name: ktios-api
         ports:
         - containerPort: 8080
