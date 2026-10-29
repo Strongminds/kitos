@@ -28,8 +28,6 @@ spec:
       - env:
         - name: RABBITMQ_DEFAULT_USER
           value: "0"
-        - name: RABBITMQ_DEFAULT_PASS
-          value: "0"
         image: ghcr.io/strongminds/kitos-kitos-broker:sha-4c7e312602e8cc053c56fd739e384aae68ad4763
         name: kitos-broker
         ports:
