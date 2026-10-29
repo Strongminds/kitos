@@ -182,3 +182,5 @@ All skill paths are relative to the repository root. Read the relevant skill bef
 - `.agents/skills/kombit-services/SKILL.md`: KOMBIT/STS services, schemas, authentication, and KITOS endpoint conventions.
 
 Keep shared instructions and skills in `.agents`. Tool-specific entry points should reference this content rather than duplicate it.
+
+- `.agents/skills/fk-user-event/SKILL.md`: FK Organisation user events through Beskedfordeler, including mapping, retries, replay, and administrator review.
