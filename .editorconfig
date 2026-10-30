@@ -71,7 +71,7 @@ dotnet_style_object_initializer = true:suggestion
 dotnet_style_collection_initializer = true:suggestion
 dotnet_sort_system_directives_first = false
 
-#### Naming conventions (KITOS: I-prefixed interfaces, PascalCase types/members, private fields use _camelCase - not enforced, see .github/copilot-instructions.md) ####
+#### Naming conventions (KITOS: I-prefixed interfaces, PascalCase types/members, private fields use _camelCase - not enforced, see .agents/instructions.md) ####
 dotnet_naming_symbols.interfaces.applicable_kinds = interface
 dotnet_naming_style.prefix_i.required_prefix = I
 dotnet_naming_style.prefix_i.capitalization = pascal_case

@@ -5,10 +5,10 @@
 
 .DESCRIPTION
     1. Format      - dotnet format (whitespace) on changed *.cs files (boy-scout rule; legacy files are not reformatted wholesale)
-    2. Build       - KITOS.sln and Kitos_PubSub.sln with -p:KitosQualityGate=true: every compiler/analyzer warning is an error
+    2. Build       - KITOS.sln, Kitos_PubSub.sln and Kitos_IntegrationApi.sln with -p:KitosQualityGate=true: every compiler/analyzer warning is an error
     3. Conventions - KITOS-specific checks on the diff (debug output, suppressions, relaxed analyzer rules,
                      migrations, database scripts, tests accompanying changes). Deleted files are included.
-    4. Tests       - unit test projects of both solutions
+    4. Tests       - unit test projects of all solutions
 
     See docs/CODE_QUALITY.md.
 
@@ -54,11 +54,12 @@ function Invoke-Git {
 $repoRoot = Invoke-Git rev-parse --show-toplevel
 Set-Location $repoRoot.Trim()
 
-$solutions = @("KITOS.sln", "Kitos_PubSub.sln")
+$solutions = @("KITOS.sln", "Kitos_PubSub.sln", "Kitos_IntegrationApi.sln")
 $unitTestProjects = @(
     "Tests.Unit.Core.ApplicationServices/Tests.Unit.Core.csproj",
     "Tests.Unit.Presentation.Web/Tests.Unit.Presentation.Web.csproj",
-    "PubSub.Test/PubSub.Test.csproj"
+    "PubSub.Test/PubSub.Test.csproj",
+    "Tests.Unit.KitosIntegration/Tests.Unit.KitosIntegration.csproj"
 )
 # Presentation.Web pins a Windows RID unless ContainerBuild=true (same switch the Dockerfile uses)
 $platformArgs = if ($IsWindows) { @() } else { @("-p:ContainerBuild=true") }

@@ -41,6 +41,17 @@ namespace Presentation.Web.Infrastructure.Middleware
                     _logger.Information("Route: {route} Method: {method} QueryParameters: {queryParameters} UserID: {userID} RequestEndUTC: {requestEnd}", sanitizedRoute, method, sanitizedQueryParameters, userId, requestEnd);
                 }
             }
+            else if (_authenticationContext.Method == AuthenticationMethod.Anonymous)
+            {
+                var route = context.Request.Path;
+                var sanitizedRoute = SanitizeForLogging(route);
+                if (route.HasValue && route.Value.Contains("/integration"))
+                {
+                    _logger.Warning("Anonymous route: {route}", sanitizedRoute);
+                }
+
+                await next(context);
+            }
             else
             {
                 await next(context);

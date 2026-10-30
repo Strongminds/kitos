@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        targetNamespace="urn:oio:sts:1.0.0"
+        xmlns:oio="urn:oio:definitions:1.0.0"
+        xmlns:sd="urn:oio:sagdok:3.0.0"
+        xmlns:sts="urn:oio:sts:1.0.0"
+        xmlns:common="urn:oio:sts-common:2.0.0"
+        xmlns:besked="urn:oio:besked:kuvert:1.0"
+        oio:mapping="urn:oio:sagdok:MPD:3.0.0">
+
+    <import namespace="urn:oio:sagdok:3.0.0" schemaLocation="1.1/SagDokObjekt.xsd"/>
+    <import namespace="urn:oio:besked:kuvert:1.0" schemaLocation="Beskedkuvert.xsd"/>
+
+    <element name="ModtagBeskedInput" type="sts:ModtagBeskedInputType" oio:definition="urn:oio:sts:modtagbeskedinput:ADD:2.0.0"/>
+    <complexType name="ModtagBeskedInputType" oio:definition="urn:oio:sts:modtagbeskedinputtype:ADD:2.0.0">
+        <sequence>
+            <element ref="besked:Haendelsesbesked" />
+        </sequence>
+    </complexType>
+    
+    <element name="ModtagBeskedOutput" type="sts:ModtagBeskedOutputType" oio:definition="urn:oio:sts:modtagbeskedoutput:ADD:2.0.0"/>
+    <complexType name="ModtagBeskedOutputType" oio:definition="urn:oio:sts:modtagbeskedoutputtype:ADD:2.0.0">
+        <complexContent>
+            <extension base="sd:BasicOutputType">
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

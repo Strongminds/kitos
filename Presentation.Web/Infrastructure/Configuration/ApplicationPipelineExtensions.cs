@@ -57,6 +57,13 @@ namespace Presentation.Web.Infrastructure.Configuration
             app.UseStaticFiles();
             app.UseMiddleware<NormalizeODataQueryStringMiddleware>();
             app.UseRouting();
+            app.UseKitosApiSecurity();
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseKitosApiSecurity(this IApplicationBuilder app)
+        {
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -293,5 +300,3 @@ namespace Presentation.Web.Infrastructure.Configuration
         }
     }
 }
-
-
