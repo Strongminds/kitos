@@ -9,7 +9,6 @@ namespace Infrastructure.DataAccess.Mapping
         public override void Configure(EntityTypeBuilder<StsOrganizationConnection> builder)
         {
             base.Configure(builder);
-            base.Configure(builder);
 
             builder.HasOne(x => x.Organization)
                 .WithOne(x => x.StsOrganizationConnection)
