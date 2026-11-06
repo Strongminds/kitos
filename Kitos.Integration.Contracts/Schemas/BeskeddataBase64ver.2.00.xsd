@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 13-10-2017: Version 1.0 FINAL created. Unsafe content and filetypes removed. PDF and RTF types are considered only semi-safe. Precautions should be taken if using these (JAND)-->
+<!-- 12-07-2018: Version 2.0. Tilføjet targetNamespace samt udvidet contentType efter aftale med PTA (FDC)-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:besked="urn:oio:besked:kuvert:1.0" targetNamespace="urn:oio:besked:kuvert:1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:element name="Base64">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:base64Binary">
+					<xs:attribute name="file-type" type="besked:fileTypes" use="optional"/>
+					<xs:attribute name="content-type" type="besked:contentTypes" use="optional"/>
+					<xs:attribute name="encoding" type="besked:encodingTypes" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="fileTypes">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value=".pdf"/>
+			<xs:enumeration value=".rtf"/>
+			<xs:enumeration value=".bmp"/>
+			<xs:enumeration value=".gif"/>
+			<xs:enumeration value=".jpg"/>
+			<xs:enumeration value=".jpeg"/>
+			<xs:enumeration value=".png"/>
+			<xs:enumeration value=".csv"/>
+			<xs:enumeration value=".txt"/>
+			<xs:enumeration value=".xml"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="contentTypes">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="application/pdf"/>
+			<xs:enumeration value="application/rtf"/>
+			<xs:enumeration value="application/xml"/>
+			<xs:enumeration value="image/bmp"/>
+			<xs:enumeration value="image/gif"/>
+			<xs:enumeration value="image/jpeg"/>
+			<xs:enumeration value="image/png"/>
+			<xs:enumeration value="text/csv"/>
+			<xs:enumeration value="text/plain"/>
+			<xs:enumeration value="text/xml"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="encodingTypes">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Binary"/>
+			<xs:enumeration value="UTF-8"/>
+			<xs:enumeration value="UTF-16"/>
+			<xs:enumeration value="UTF-32"/>
+			<xs:enumeration value="ASCII"/>
+			<xs:enumeration value="ISO-8859-1"/>
+			<xs:enumeration value="Windows-1252"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

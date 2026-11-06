@@ -1,0 +1,6 @@
+{
+  "ClientCertificateThumbprint": "REPLACE_WITH_CLIENT_CERTIFICATE_THUMBPRINT",
+  "StsIssuer": "https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/",
+  "StsEndpoint": "https://n2adgangsstyring.eksterntest-stoettesystemerne.dk/runtime/services/kombittrust/14/certificatemixed",
+  "StsCertificateThumbprint": "REPLACE_WITH_STS_SIGNING_CERTIFICATE_THUMBPRINT"
+}

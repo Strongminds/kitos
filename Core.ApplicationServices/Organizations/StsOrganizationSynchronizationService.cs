@@ -186,6 +186,50 @@ namespace Core.ApplicationServices.Organizations
                 .Bind(organization => organization.GetExternalConnectionEntryLogs(OrganizationUnitOrigin.STS_Organisation, numberOfChangeLogs));
         }
 
+        public Result<StsOrganizationUserSynchronizationDetails, OperationError> GetUserSynchronizationDetails(Guid organizationId)
+        {
+            return GetOrganizationWithImportPermission(organizationId)
+                .Select(organization =>
+                {
+                    var currentConnectionStatus = ValidateConnection(organization);
+                    var isConnected = organization.FkOrgUsersConnected;
+                    return new StsOrganizationUserSynchronizationDetails
+                    (
+                        isConnected,
+                        currentConnectionStatus.IsNone && !isConnected,
+                        isConnected,
+                        currentConnectionStatus.Match(error => error.Detail, () => default(CheckConnectionError?)),
+                        isConnected ? organization.FkOrgUsersConnectedAt : null
+                    );
+                });
+        }
+
+        public Maybe<OperationError> ConnectUsers(Guid organizationId)
+        {
+            return Modify(organizationId, organization =>
+            {
+                if (organization.FkOrgUsersConnected)
+                {
+                    return new OperationError("Users are already connected to FK Organisation", OperationFailure.Conflict);
+                }
+
+                var validationError = ValidateConnection(organization);
+                if (validationError.HasValue)
+                {
+                    return new OperationError($"Unable to connect users to FK Organisation:{validationError.Value.Detail:G}", OperationFailure.BadState);
+                }
+
+                return organization.ConnectUsersToFkOrganisation(
+                    _operationClock.Now,
+                    _activeUserIdContext.Select(x => (int?)x.ActiveUserId).GetValueOrDefault());
+            });
+        }
+
+        public Maybe<OperationError> DisconnectUsers(Guid organizationId)
+        {
+            return Modify(organizationId, organization => organization.DisconnectUsersFromFkOrganisation());
+        }
+
         private Result<ExternalOrganizationUnit, OperationError> LoadOrganizationUnits(Organization organization)
         {
             return _stsOrganizationSystemService.ResolveOrganizationTree(organization).Match<Result<ExternalOrganizationUnit, OperationError>>(root => root, detailedOperationError => new OperationError($"Failed to load organization tree:{detailedOperationError.Detail:G}:{detailedOperationError.FailureType:G}:{detailedOperationError.Message}", detailedOperationError.FailureType));

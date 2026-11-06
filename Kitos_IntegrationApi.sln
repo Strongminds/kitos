@@ -1,0 +1,45 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.10.12217.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitosIntegration", "KitosIntegration\KitosIntegration.csproj", "{7AE23EC5-62AD-477F-8938-7AA78AA12B4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitosIntegration.Infrastructure", "KitosIntegration.Infrastructure\KitosIntegration.Infrastructure.csproj", "{128B5E84-E40A-4CC5-B7CD-190B0EF4F933}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Unit.KitosIntegration", "Tests.Unit.KitosIntegration\Tests.Unit.KitosIntegration.csproj", "{BF09F83A-6218-4E4B-B47E-36BFFF4019A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitos.Integration.Contracts", "Kitos.Integration.Contracts\Kitos.Integration.Contracts.csproj", "{C77128C6-1911-44C8-B1D9-C9E0E5F59972}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitosIntegration.Services", "KitosIntegration.Services\KitosIntegration.Services.csproj", "{437ED948-03A7-457C-9E91-816332A0CAEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7AE23EC5-62AD-477F-8938-7AA78AA12B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE23EC5-62AD-477F-8938-7AA78AA12B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE23EC5-62AD-477F-8938-7AA78AA12B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE23EC5-62AD-477F-8938-7AA78AA12B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{128B5E84-E40A-4CC5-B7CD-190B0EF4F933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{128B5E84-E40A-4CC5-B7CD-190B0EF4F933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{128B5E84-E40A-4CC5-B7CD-190B0EF4F933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{128B5E84-E40A-4CC5-B7CD-190B0EF4F933}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF09F83A-6218-4E4B-B47E-36BFFF4019A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF09F83A-6218-4E4B-B47E-36BFFF4019A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF09F83A-6218-4E4B-B47E-36BFFF4019A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF09F83A-6218-4E4B-B47E-36BFFF4019A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C77128C6-1911-44C8-B1D9-C9E0E5F59972}.Release|Any CPU.Build.0 = Release|Any CPU
+		{437ED948-03A7-457C-9E91-816332A0CAEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{437ED948-03A7-457C-9E91-816332A0CAEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{437ED948-03A7-457C-9E91-816332A0CAEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{437ED948-03A7-457C-9E91-816332A0CAEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

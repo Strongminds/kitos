@@ -120,4 +120,7 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure.STS.Beskedfordeler\Infrastructure.STS.Beskedfordeler.csproj" />
+  </ItemGroup>
 </Project>
