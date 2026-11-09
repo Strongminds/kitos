@@ -95,7 +95,7 @@ spec:
             configMapKeyRef:
               key: AwsSmtpFromEmail
               name: user-variables
-        image: ghcr.io/strongminds/kitos-kitos-api@sha256:1f37f2dcb170810986d9b54f38b50978194e9763e0311b0b836e3b9ded87e1e1
+        image: ghcr.io/strongminds/kitos-kitos-api@sha256:66c8dfaf99359dadcd45ecaf5922098a9f9ded947ad43247e95ab3fb65ddc6f1
         name: kitos-api
         ports:
         - containerPort: 8080
