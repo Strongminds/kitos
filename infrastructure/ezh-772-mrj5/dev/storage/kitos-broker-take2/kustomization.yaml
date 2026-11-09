@@ -1,4 +1,0 @@
-# [storage:5a2b1275-900a-495c-b495-03646432d3de]
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources: []
