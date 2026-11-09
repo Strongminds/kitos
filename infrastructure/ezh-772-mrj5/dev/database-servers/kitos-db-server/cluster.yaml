@@ -26,11 +26,3 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: kitos-db-server-backup-store
-  managed:
-    roles:
-      - name: hangfire_user
-        ensure: present
-        login: true
-        createdb: true
-        passwordSecret:
-          name: db-role-secret-hangfire-user-dbe1308c735d
