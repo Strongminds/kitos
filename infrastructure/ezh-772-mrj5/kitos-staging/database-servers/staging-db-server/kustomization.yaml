@@ -6,4 +6,3 @@ resources:
   - network-policy.yaml
   - databases/hangfiredb
   - databases/kitos
-  - databases/pubsubdb
