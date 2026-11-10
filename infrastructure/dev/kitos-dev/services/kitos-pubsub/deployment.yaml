@@ -63,6 +63,11 @@ spec:
             configMapKeyRef:
               key: RabbitMQ__HostName
               name: user-variables
+        - name: JwtValidation__ApiUrl
+          valueFrom:
+            configMapKeyRef:
+              key: KitosApiBaseUrlInternal
+              name: user-variables
         image: ghcr.io/strongminds/kitos-kitos-pubsub@sha256:aace2e391ef7bb5429f3a80c25f7240cfdb35fb45c67d85c8e8e182ec5ffe688
         name: kitos-pubsub
         ports:
