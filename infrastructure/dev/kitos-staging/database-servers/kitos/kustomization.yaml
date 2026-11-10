@@ -5,3 +5,4 @@ resources:
 - scheduled-backup.yaml
 - network-policy.yaml
 - databases/kitos-staging-db
+- databases/pubsub-staging-db
