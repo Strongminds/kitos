@@ -16,10 +16,7 @@ spec:
     matchLabels:
       app: kitos-api
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       annotations:
@@ -114,5 +111,14 @@ spec:
           requests:
             memory: 1Gi
             cpu: 1
+        volumeMounts:
+        - mountPath: /temp
+          name: kitos-api-volume
+          readOnly: false
       imagePullSecrets:
       - name: ab5abbe3-d515-459a-83e8-c47a88a0fa1c
+      volumes:
+      - name: kitos-api-volume
+        persistentVolumeClaim:
+          claimName: kitos-api-volume
+          readOnly: false
