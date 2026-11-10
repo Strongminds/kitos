@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    easyhosting.io/service-reference: Presentation.Web/Dockerfile
+    easyhosting.io/service-unique-id: 07dea19d-1fff-419d-b806-5d671c003053
+    easyhosting.io/easy-hosting-domain-name: 07dea19d-1fff-419d-b806-5d671c003053.dev.os2-kitos.easyhosting.strongminds.dev
+  labels:
+    app: kitos-api
+  name: kitos-api
+  namespace: kitos-staging
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: kitos-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        sidecar.opentelemetry.io/inject: monitoring/sidecar-otel-collector
+        easyhosting.io/otlp-logs: "true"
+      labels:
+        app: kitos-api
+        app.kubernetes.io/name: kitos-api
+    spec:
+      containers:
+      - env: []
+        image: '{will be replaced by build pipeline}'
+        name: kitos-api
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            memory: 6Gi
+            cpu: 4
+          requests:
+            memory: 1Gi
+            cpu: 2
+      imagePullSecrets:
+      - name: ab5abbe3-d515-459a-83e8-c47a88a0fa1c
