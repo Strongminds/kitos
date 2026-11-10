@@ -101,7 +101,7 @@ spec:
             configMapKeyRef:
               key: SmtpFromEmail
               name: user-variables
-        image: '{will be replaced by build pipeline}'
+        image: ghcr.io/strongminds/kitos-kitos-api@sha256:2069c36af84ee29651407f8b9a157caf9e8eafee4aacca2ea47872c06cef9f86
         name: kitos-api
         ports:
         - containerPort: 8080
