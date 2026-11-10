@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  annotations:
+    easyhosting.io/database-catalog: '[{"DatabaseId":"3755564f-f099-4d17-a29a-cdc839605eed","Name":"dev-db","DatabaseName":"dev-db","OwnerRoleName":"kitos","Type":0}]'
+  labels:
+    app.kubernetes.io/managed-by: easyhosting
+    easyhosting.io/resource-kind: database-server
+    easyhosting.io/resource-id: b8616e59539544e298120292ca442d46
+    easyhosting.io/application-id: kitos-dev
+  name: kitos-daily
+  namespace: kitos-dev
+spec:
+  schedule: 0 0 0 * * *
+  cluster:
+    name: kitos
+  backupOwnerReference: cluster
+  suspend: true
