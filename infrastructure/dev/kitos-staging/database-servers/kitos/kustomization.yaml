@@ -4,5 +4,6 @@ resources:
 - cluster.yaml
 - scheduled-backup.yaml
 - network-policy.yaml
+- databases/hangfire-stanging-db
 - databases/kitos-staging-db
 - databases/pubsub-staging-db
