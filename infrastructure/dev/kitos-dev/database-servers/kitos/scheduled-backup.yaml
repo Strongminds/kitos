@@ -2,7 +2,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
   annotations:
-    easyhosting.io/database-catalog: '[{"DatabaseId":"3755564f-f099-4d17-a29a-cdc839605eed","Name":"dev-db","DatabaseName":"dev-db","OwnerRoleName":"kitos","Type":0},{"DatabaseId":"a6f89a14-89cd-42b8-b951-d3ce1b307276","Name":"hangfire-dev-db","DatabaseName":"hangfire-dev-db","OwnerRoleName":"hangfire","Type":0}]'
+    easyhosting.io/database-catalog: '[{"DatabaseId":"3755564f-f099-4d17-a29a-cdc839605eed","Name":"dev-db","DatabaseName":"dev-db","OwnerRoleName":"kitos","Type":0},{"DatabaseId":"a6f89a14-89cd-42b8-b951-d3ce1b307276","Name":"hangfire-dev-db","DatabaseName":"hangfire-dev-db","OwnerRoleName":"hangfire","Type":0},{"DatabaseId":"0fb3bc2f-b479-4bc2-a54d-0fbb546f90cd","Name":"pubsub-dev-db","DatabaseName":"pubsub-dev-db","OwnerRoleName":"pubsub","Type":0}]'
   labels:
     app.kubernetes.io/managed-by: easyhosting
     easyhosting.io/resource-kind: database-server
