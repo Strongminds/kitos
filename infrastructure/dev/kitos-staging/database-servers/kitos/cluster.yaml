@@ -1,0 +1,37 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  annotations:
+    easyhosting.io/display-name: kitos
+    easyhosting.io/manifest-path: infrastructure/dev/kitos-staging/database-servers/kitos/cluster.yaml
+  labels:
+    app.kubernetes.io/managed-by: easyhosting
+    easyhosting.io/resource-kind: database-server
+    easyhosting.io/resource-id: 17b446f264e84a03b0fd2ef1647d76a7
+    easyhosting.io/application-id: kitos-staging
+  name: kitos
+  namespace: kitos-staging
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 100m
+      memory: 1Gi
+  storage:
+    size: 20Gi
+  bootstrap:
+    initdb:
+      database: postgres
+      owner: postgres
+  managed:
+    roles:
+    - name: kitos
+      ensure: present
+      login: true
+      createdb: true
+      passwordSecret:
+        name: db-role-secret-kitos
