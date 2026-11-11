@@ -27,6 +27,12 @@ spec:
     initdb:
       database: postgres
       owner: postgres
+  plugins:
+  - name: barman-cloud.cloudnative-pg.io
+    enabled: true
+    isWALArchiver: true
+    parameters:
+      barmanObjectName: kitos-backup-store
   managed:
     roles:
     - name: kitos

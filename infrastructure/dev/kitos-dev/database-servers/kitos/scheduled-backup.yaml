@@ -15,4 +15,6 @@ spec:
   cluster:
     name: kitos
   backupOwnerReference: cluster
-  suspend: true
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
