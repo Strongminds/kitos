@@ -44,7 +44,7 @@ spec:
               key: PickupDirectoryLocation
               name: user-variables
         - name: Smtp__DeliveryMethod
-          value: SpecifiedPickupDirectory
+          value: Network
         - name: ASPNETCORE_ENVIRONMENT
           valueFrom:
             configMapKeyRef:
