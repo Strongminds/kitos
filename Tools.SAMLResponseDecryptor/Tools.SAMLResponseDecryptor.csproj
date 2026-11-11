@@ -7,4 +7,7 @@
     <AssemblyName>Tools.SAMLResponseDecryptor</AssemblyName>
     <RootNamespace>Tools.SAMLResponseDecryptor</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.55.2" />
+  </ItemGroup>
 </Project>
