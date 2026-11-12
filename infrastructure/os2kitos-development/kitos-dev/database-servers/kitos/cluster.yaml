@@ -34,9 +34,3 @@ spec:
         createdb: true
         passwordSecret:
           name: db-role-secret-kitos
-      - name: hangfire
-        ensure: present
-        login: true
-        createdb: true
-        passwordSecret:
-          name: db-role-secret-hangfire
