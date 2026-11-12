@@ -98,7 +98,7 @@ spec:
             configMapKeyRef:
               key: SmtpFromEmail
               name: user-variables
-        image: ghcr.io/strongminds/kitos-kitos-api@sha256:2069c36af84ee29651407f8b9a157caf9e8eafee4aacca2ea47872c06cef9f86
+        image: ghcr.io/strongminds/kitos-kitos-api@sha256:c87757b901f168213212b6ec749e7fe320ba1bc781dcb9f83598bad6025d81e3
         name: kitos-api
         ports:
         - containerPort: 8080
