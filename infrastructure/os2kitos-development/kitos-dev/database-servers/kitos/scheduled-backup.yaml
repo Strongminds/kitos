@@ -11,10 +11,8 @@ metadata:
   annotations:
     easyhosting.io/database-catalog: "[]"
 spec:
+  suspend: true
   schedule: "0 0 0 * * *"
   backupOwnerReference: cluster
   cluster:
     name: kitos
-  method: plugin
-  pluginConfiguration:
-    name: barman-cloud.cloudnative-pg.io
