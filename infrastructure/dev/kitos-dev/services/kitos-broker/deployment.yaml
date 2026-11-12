@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    easyhosting.io/service-reference: PubSub.Broker/Dockerfile
+    easyhosting.io/service-unique-id: e8e58fed-940f-4e77-9648-c0419eafb7be
+    easyhosting.io/easy-hosting-domain-name: e8e58fed-940f-4e77-9648-c0419eafb7be.dev.os2-kitos.easyhosting.strongminds.dev
+  labels:
+    app: kitos-broker
+  name: kitos-broker
+  namespace: kitos-dev
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: kitos-broker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        sidecar.opentelemetry.io/inject: monitoring/sidecar-otel-collector
+        easyhosting.io/otlp-logs: "true"
+      labels:
+        app: kitos-broker
+        app.kubernetes.io/name: kitos-broker
+    spec:
+      containers:
+      - env:
+        - name: RABBITMQ_DEFAULT_USER
+          valueFrom:
+            secretKeyRef:
+              key: RabbitMqUsername
+              name: user-secret
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              key: RabbitMqPassword
+              name: user-secret
+        image: ghcr.io/strongminds/kitos-kitos-broker@sha256:8894f90004c1c779453d674f3f28f6b045ad6c35914dee80fff660ed93b214e1
+        name: kitos-broker
+        ports: []
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: 2
+          requests:
+            memory: 1Gi
+            cpu: 1
+        volumeMounts:
+        - mountPath: /var/lib/rabbitmq
+          name: kitos-broker-volume
+          readOnly: false
+      imagePullSecrets:
+      - name: ab5abbe3-d515-459a-83e8-c47a88a0fa1c
+      volumes:
+      - name: kitos-broker-volume
+        persistentVolumeClaim:
+          claimName: kitos-broker-volume
+          readOnly: false

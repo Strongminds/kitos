@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    easyhosting.io/display-name: hangfire-stanging-db
+    easyhosting.io/manifest-path: infrastructure/dev/kitos-staging/database-servers/kitos/databases/hangfire-stanging-db/provisioning-job.yaml
+    argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app.kubernetes.io/managed-by: easyhosting
+    easyhosting.io/resource-kind: database-provisioning
+    easyhosting.io/resource-id: 5714781b088f43ffbf97eb6ae9abdbc5
+    easyhosting.io/database-server-id: 17b446f264e84a03b0fd2ef1647d76a7
+    easyhosting.io/application-id: kitos-staging
+  name: provision-database-5714781b088f43ffbf97eb6ae9abdbc5
+  namespace: kitos-staging
+spec:
+  activeDeadlineSeconds: 900
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/managed-by: easyhosting
+        easyhosting.io/resource-kind: database-provisioning
+        easyhosting.io/resource-id: 5714781b088f43ffbf97eb6ae9abdbc5
+    spec:
+      containers:
+      - args:
+        - |-
+          attempt=0
+          until psql --set=ON_ERROR_STOP=1 -c 'SELECT 1' >/dev/null 2>&1; do
+            attempt=$((attempt + 1))
+            if [ "$attempt" -ge 150 ]; then
+              echo "Timed out waiting for the PostgreSQL cluster and application role" >&2
+              exit 1
+            fi
+            sleep 2
+          done
+
+          psql --set=ON_ERROR_STOP=1 \
+            --set=target_database="$TARGET_DATABASE" \
+            --set=target_owner="$PGUSER" <<'SQL'
+          SELECT format('CREATE DATABASE %I OWNER %I', :'target_database', :'target_owner')
+          WHERE NOT EXISTS (
+            SELECT 1 FROM pg_database WHERE datname = :'target_database'
+          )
+          \gexec
+          SQL
+        command:
+        - /bin/sh
+        - -ec
+        env:
+        - name: PGHOST
+          value: kitos-rw
+        - name: PGDATABASE
+          value: postgres
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: db-role-secret-hangfire
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: db-role-secret-hangfire
+        - name: TARGET_DATABASE
+          value: hangfire-stanging-db
+        image: ghcr.io/cloudnative-pg/postgresql:17
+        name: provision-database
+      restartPolicy: Never
