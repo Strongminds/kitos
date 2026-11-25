@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "sha256:2b3a167d113d96a8632a7089ab917b23d7820c7506d4187c2712ded6681650ed",
+  "applicationId": "kitos-dev",
+  "serviceName": "kitos-pubsub",
+  "repositoryUrl": "https://github.com/Strongminds/kitos",
+  "releaseStream": "kitos-ci/kitos-pubsub",
+  "sourceRevision": {
+    "requestedKind": "DefaultBranch",
+    "requestedValue": "",
+    "resolvedCommitSha": "e26bed6f799a4da3c133e4d1f49d45831143bd36"
+  },
+  "image": {
+    "repository": "ghcr.io/strongminds/kitos-kitos-pubsub",
+    "digest": "sha256:2b3a167d113d96a8632a7089ab917b23d7820c7506d4187c2712ded6681650ed"
+  },
+  "build": {
+    "createdAt": "2026-11-12T15:29:22Z",
+    "runUrl": "https://github.com/Strongminds/kitos/actions/runs/43247587796"
+  }
+}
