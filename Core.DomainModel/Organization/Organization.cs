@@ -67,7 +67,8 @@ namespace Core.DomainModel.Organization
             TypeId = typeId;
         }
 
-        public void UpdateOrganizationType(OrganizationType organizationType){
+        public void UpdateOrganizationType(OrganizationType organizationType)
+        {
             ToggleOffIsSupplierIfNotCompanyType(organizationType.Id);
             Type = organizationType;
         }
@@ -92,7 +93,7 @@ namespace Core.DomainModel.Organization
         public string GetActiveCvr() => Cvr ?? ForeignCvr;
 
         public int? ForeignCountryCodeId { get; set; }
-        
+
         public virtual CountryCode ForeignCountryCode { get; set; }
 
         public AccessModifier AccessModifier { get; set; }
@@ -155,6 +156,43 @@ namespace Core.DomainModel.Organization
         public virtual ICollection<UIModuleCustomization> UIModuleCustomizations { get; set; }
         public virtual ICollection<ItSystemUsage.ItSystemUsage> ArchiveSupplierForItSystems { get; set; }
         public virtual StsOrganizationConnection StsOrganizationConnection { get; set; }
+
+        /// <summary>
+        /// Determines if the organization accepts external user changes from FK Organisation.
+        /// Independent of <see cref="StsOrganizationConnection"/> (the org-unit hierarchy connection).
+        /// </summary>
+        public bool FkOrgUsersConnected { get; set; }
+        /// <summary>
+        /// UTC time of the latest activation of the FK Organisation users connection
+        /// </summary>
+        public DateTime? FkOrgUsersConnectedAt { get; set; }
+        public int? FkOrgUsersConnectedByUserId { get; set; }
+
+        public Maybe<OperationError> ConnectUsersToFkOrganisation(DateTime connectedAtUtc, int? connectedByUserId)
+        {
+            if (FkOrgUsersConnected)
+            {
+                return new OperationError("Users are already connected to FK Organisation", OperationFailure.Conflict);
+            }
+
+            FkOrgUsersConnected = true;
+            FkOrgUsersConnectedAt = connectedAtUtc;
+            FkOrgUsersConnectedByUserId = connectedByUserId;
+            return Maybe<OperationError>.None;
+        }
+
+        public Maybe<OperationError> DisconnectUsersFromFkOrganisation()
+        {
+            if (!FkOrgUsersConnected)
+            {
+                return new OperationError("Users are not connected to FK Organisation", OperationFailure.Conflict);
+            }
+
+            FkOrgUsersConnected = false;
+            FkOrgUsersConnectedAt = null;
+            FkOrgUsersConnectedByUserId = null;
+            return Maybe<OperationError>.None;
+        }
 
         public virtual ICollection<SupplierAssociatedFieldConfiguration> SupplierAssociatedFieldConfigurations { get; set; }
 

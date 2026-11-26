@@ -39,6 +39,7 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
         private readonly Mock<IGenericRepository<StsOrganizationChangeLog>> _stsOrganziationChangeLogRepositoryMock;
         private readonly Mock<IOperationClock> _operationClock;
         private readonly Mock<ICommandBus> _commandBusMock;
+        private readonly Mock<IStsOrganizationService> _stsOrganizationServiceMock;
 
         public StsOrganizationSynchronizationServiceTest(ITestOutputHelper testOutputHelper)
         {
@@ -54,12 +55,14 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
             _operationClock = new Mock<IOperationClock>();
 
             _commandBusMock = new Mock<ICommandBus>();
+            _stsOrganizationServiceMock = new Mock<IStsOrganizationService>();
+            _stsOrganizationServiceMock.Setup(x => x.ValidateConnection(It.IsAny<Organization>())).Returns(Maybe<DetailedOperationError<CheckConnectionError>>.None);
             _sut = new StsOrganizationSynchronizationService(
                 _authorizationContextMock.Object,
                 _stsOrganizationUnitService.Object,
                 _organizationServiceMock.Object,
                 Mock.Of<ILogger>(),
-                Mock.Of<IStsOrganizationService>(),
+                _stsOrganizationServiceMock.Object,
                 _dbControlMock.Object,
                 _transactionManagerMock.Object,
                 _domainEventsMock.Object,
@@ -610,6 +613,155 @@ namespace Tests.Unit.Core.ApplicationServices.Organizations
 
             Assert.True(result.Failed);
             Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        [Theory]
+        [InlineData(false, true)]
+        [InlineData(true, true)]
+        [InlineData(false, false)]
+        public void GetUserSynchronizationDetails_Returns_Status(bool connected, bool accessGranted)
+        {
+            var orgUuid = A<Guid>();
+            var connectedAt = A<DateTime>();
+            var organization = new Organization { FkOrgUsersConnected = connected, FkOrgUsersConnectedAt = connected ? connectedAt : null };
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, true);
+            if (!accessGranted) SetupValidateConnectionReturns(organization, CheckConnectionError.MissingServiceAgreement);
+
+            var result = _sut.GetUserSynchronizationDetails(orgUuid);
+
+            Assert.True(result.Ok);
+            Assert.Equal(connected, result.Value.Connected);
+            Assert.Equal(accessGranted && !connected, result.Value.CanCreateConnection);
+            Assert.Equal(connected, result.Value.CanDeleteConnection);
+            Assert.Equal(accessGranted ? null : CheckConnectionError.MissingServiceAgreement, result.Value.CheckConnectionError);
+            Assert.Equal(connected ? connectedAt : null, result.Value.ConnectedAt);
+        }
+
+        [Fact]
+        public void GetUserSynchronizationDetails_Fails_If_UnAuthorized()
+        {
+            var orgUuid = A<Guid>();
+            var organization = new Organization();
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, false);
+
+            var result = _sut.GetUserSynchronizationDetails(orgUuid);
+
+            Assert.True(result.Failed);
+            Assert.Equal(OperationFailure.Forbidden, result.Error.FailureType);
+        }
+
+        [Fact]
+        public void ConnectUsers_Connects_Without_OrgUnit_Connection()
+        {
+            var orgUuid = A<Guid>();
+            var now = A<DateTime>();
+            var organization = new Organization();
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, true);
+            _operationClock.Setup(x => x.Now).Returns(now);
+            var transaction = ExpectTransaction();
+
+            var result = _sut.ConnectUsers(orgUuid);
+
+            Assert.True(result.IsNone);
+            Assert.True(organization.FkOrgUsersConnected);
+            Assert.Equal(now, organization.FkOrgUsersConnectedAt);
+            Assert.Equal(_activeUserIdContext.ActiveUserId, organization.FkOrgUsersConnectedByUserId);
+            Assert.Null(organization.StsOrganizationConnection);
+            VerifyChangesSaved(transaction, organization);
+        }
+
+        [Fact]
+        public void ConnectUsers_Fails_If_Connection_Validation_Fails()
+        {
+            var orgUuid = A<Guid>();
+            var organization = new Organization();
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, true);
+            SetupValidateConnectionReturns(organization, CheckConnectionError.InvalidCvrOnOrganization);
+            var transaction = ExpectTransaction();
+
+            var result = _sut.ConnectUsers(orgUuid);
+
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.BadState, result.Value.FailureType);
+            Assert.False(organization.FkOrgUsersConnected);
+            VerifyChangesNotSaved(transaction, organization);
+        }
+
+        [Fact]
+        public void ConnectUsers_Fails_If_Already_Connected()
+        {
+            var orgUuid = A<Guid>();
+            var organization = new Organization { FkOrgUsersConnected = true };
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, true);
+            var transaction = ExpectTransaction();
+
+            var result = _sut.ConnectUsers(orgUuid);
+
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Conflict, result.Value.FailureType);
+            VerifyChangesNotSaved(transaction, organization);
+        }
+
+        [Fact]
+        public void ConnectUsers_Fails_If_UnAuthorized()
+        {
+            var orgUuid = A<Guid>();
+            var organization = new Organization();
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, false);
+            var transaction = ExpectTransaction();
+
+            var result = _sut.ConnectUsers(orgUuid);
+
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Forbidden, result.Value.FailureType);
+            Assert.False(organization.FkOrgUsersConnected);
+            VerifyChangesNotSaved(transaction, organization, false);
+        }
+
+        [Fact]
+        public void DisconnectUsers_Disconnects()
+        {
+            var orgUuid = A<Guid>();
+            var organization = new Organization { FkOrgUsersConnected = true, FkOrgUsersConnectedAt = A<DateTime>(), FkOrgUsersConnectedByUserId = A<int>() };
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, true);
+            var transaction = ExpectTransaction();
+
+            var result = _sut.DisconnectUsers(orgUuid);
+
+            Assert.True(result.IsNone);
+            Assert.False(organization.FkOrgUsersConnected);
+            Assert.Null(organization.FkOrgUsersConnectedAt);
+            Assert.Null(organization.FkOrgUsersConnectedByUserId);
+            VerifyChangesSaved(transaction, organization);
+        }
+
+        [Fact]
+        public void DisconnectUsers_Fails_If_Not_Connected()
+        {
+            var orgUuid = A<Guid>();
+            var organization = new Organization();
+            SetupGetOrganizationReturns(orgUuid, organization);
+            SetupHasPermissionReturns(organization, true);
+            var transaction = ExpectTransaction();
+
+            var result = _sut.DisconnectUsers(orgUuid);
+
+            Assert.True(result.HasValue);
+            Assert.Equal(OperationFailure.Conflict, result.Value.FailureType);
+            VerifyChangesNotSaved(transaction, organization);
+        }
+
+        private void SetupValidateConnectionReturns(Organization organization, CheckConnectionError error)
+        {
+            _stsOrganizationServiceMock.Setup(x => x.ValidateConnection(organization))
+                .Returns(new DetailedOperationError<CheckConnectionError>(OperationFailure.BadState, error));
         }
 
         private void VerifyChangesSaved(Mock<IDatabaseTransaction> transaction, Organization organization)

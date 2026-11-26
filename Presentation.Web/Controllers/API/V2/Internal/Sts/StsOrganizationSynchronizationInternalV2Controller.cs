@@ -178,6 +178,71 @@ namespace Presentation.Web.Controllers.API.V2.Internal.Sts
                 .Match(Ok, FromOperationError);
         }
 
+        [HttpGet]
+        [Route("users/connection-status")]
+        [ApiResponse(typeof(StsOrganizationUserSynchronizationDetailsResponseDTO), HttpStatusCode.OK)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult GetUsersSynchronizationStatus(Guid organizationUuid)
+        {
+            return _stsOrganizationSynchronizationService
+                .GetUserSynchronizationDetails(organizationUuid)
+                .Select(details => new StsOrganizationUserSynchronizationDetailsResponseDTO
+                {
+                    Connected = details.Connected,
+                    CanCreateConnection = details.CanCreateConnection,
+                    CanDeleteConnection = details.CanDeleteConnection,
+                    ConnectedAt = details.ConnectedAt.HasValue
+                        ? DateTime.SpecifyKind(details.ConnectedAt.Value, DateTimeKind.Utc)
+                        : null,
+                    AccessStatus = new StsOrganizationAccessStatusResponseDTO
+                    {
+                        AccessGranted = details.CheckConnectionError == null,
+                        Error = details.CheckConnectionError
+                    }
+                })
+                .Match(Ok, FromOperationError);
+        }
+
+        /// <summary>
+        /// Connects the organization's users to FK Organisation, enabling ingestion of external user changes.
+        /// </summary>
+        /// <response code="400">KITOS cannot access FK Organisation for the organization (see users/connection-status)</response>
+        /// <response code="409">Users are already connected</response>
+        [HttpPost]
+        [Route("users/connection")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.BadRequest)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult CreateUsersConnection(Guid organizationUuid)
+        {
+            return _stsOrganizationSynchronizationService
+                .ConnectUsers(organizationUuid)
+                .Match(FromOperationError, NoContent);
+        }
+
+        /// <summary>
+        /// Disconnects the organization's users from FK Organisation. Already received external user changes are retained.
+        /// </summary>
+        /// <response code="409">Users are not connected</response>
+        [HttpDelete]
+        [Route("users/connection")]
+        [ApiResponse(HttpStatusCode.NoContent)]
+        [ApiResponse(HttpStatusCode.Conflict)]
+        [ApiResponse(HttpStatusCode.NotFound)]
+        [ApiResponse(HttpStatusCode.Forbidden)]
+        [ApiResponse(HttpStatusCode.Unauthorized)]
+        public IActionResult DeleteUsersConnection(Guid organizationUuid)
+        {
+            return _stsOrganizationSynchronizationService
+                .DisconnectUsers(organizationUuid)
+                .Match(FromOperationError, NoContent);
+        }
+
         #region DTO Mapping
         private ConnectionUpdateConsequencesResponseDTO MapUpdateConsequencesResponseDTO(OrganizationTreeUpdateConsequences consequences)
         {

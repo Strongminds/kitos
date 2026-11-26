@@ -212,4 +212,7 @@ tmp/
 certs/
 MigrationsBundle/
 /.env
+
+# Local publish output
+/artifacts/
 /Tools.Beskedfordeler/sts-config.local.json

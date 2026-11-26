@@ -48,5 +48,17 @@ namespace Core.ApplicationServices.Organizations
         /// </summary>
         /// <returns></returns>
         Result<IEnumerable<IExternalConnectionChangelog>, OperationError> GetChangeLogs(Guid organizationUuid, int numberOfChangeLogs);
+        /// <summary>
+        /// Gets the status of the FK Organisation users connection (independent of the org-unit connection)
+        /// </summary>
+        Result<StsOrganizationUserSynchronizationDetails, OperationError> GetUserSynchronizationDetails(Guid organizationId);
+        /// <summary>
+        /// Connects the organization's users to FK Organisation, allowing external user changes to be received
+        /// </summary>
+        Maybe<OperationError> ConnectUsers(Guid organizationId);
+        /// <summary>
+        /// Disconnects the organization's users from FK Organisation. Existing external user changes are retained.
+        /// </summary>
+        Maybe<OperationError> DisconnectUsers(Guid organizationId);
     }
 }

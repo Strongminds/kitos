@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+using Presentation.Web.Infrastructure.Beskedfordeler;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -49,6 +51,8 @@ services.AddHttpContextAccessor();
 // KITOS services (DI registrations)
 KitosServiceRegistration.Register(services, configuration, signingKey);
 
+builder.AddBeskedfordelerWorker();
+
 var app = builder.Build();
 
 // Initialize the SAML library's static HTTP context accessor so it can access HttpContext.Current
@@ -59,6 +63,7 @@ dk.nita.saml20.Utils.SamlHttpContextAccessor.Configure(
 app.EnsurePostgreSqlExtensions();
 app.UseKitosPipeline();
 app.MapKitosEndpoints();
+
 app.InitializeHangfireJobs();
 
 app.Run();

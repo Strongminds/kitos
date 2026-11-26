@@ -35,9 +35,9 @@ namespace Core.DomainModel
             Uuid = Guid.NewGuid();
             DataProcessingRegistrationRights = new List<DataProcessingRegistrationRight>();
             StsOrganizationChangeLogs = new List<StsOrganizationChangeLog>();
-           CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.UtcNow;
         }
-        public DateTime? CreatedAt { get; init;  }
+        public DateTime? CreatedAt { get; init; }
         public DateTime? LastLogin { get; set; }
 
         public string Name { get; set; }
@@ -232,6 +232,7 @@ namespace Core.DomainModel
 
         public bool IsSystemIntegrator { get; set; }
 
+
         public Guid Uuid { get; set; }
         public virtual ICollection<LifeCycleTrackingEvent> LifeCycleTrackingEvents { get; set; }
 
@@ -245,6 +246,7 @@ namespace Core.DomainModel
         {
             IsSystemIntegrator = systemIntegratorStatus;
         }
+
         public void SetGlobalAdminStatus(bool globalAdminStatus)
         {
             IsGlobalAdmin = globalAdminStatus;

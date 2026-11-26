@@ -1,0 +1,91 @@
+using System;
+using System.Linq;
+using Core.Abstractions.Types;
+using Core.ApplicationServices.Model.Users;
+using Core.DomainModel;
+using Core.DomainModel.Users;
+using Core.DomainModel.Organization;
+using Core.DomainServices.Repositories.Organization;
+using Core.DomainServices.Repositories.SSO;
+using Core.DomainServices.Users;
+
+namespace Core.ApplicationServices.Users;
+
+public class ExternalUserChangeIngestionService(
+    IExternalUserChangeRepository repository,
+    IOrganizationRepository organizations,
+    ISsoUserIdentityRepository identities,
+    IExternalUserChangeIngestionTransaction transaction)
+{
+    public Result<ExternalUserChange, OperationError> Ingest(ExternalUserChangeInput input) =>
+        transaction.Execute(() => IngestWithinTransaction(input));
+
+    private Result<ExternalUserChange, OperationError> IngestWithinTransaction(ExternalUserChangeInput input)
+    {
+        if (string.IsNullOrWhiteSpace(input.ExternalMessageId) || input.ExternalMessageId.Length > 200 ||
+            input.OrganizationUuid == Guid.Empty || input.ExternalUserUuid == Guid.Empty ||
+            input.ChangeType != ExternalUserChangeType.Deleted ||
+            (input.OccurredAt.HasValue && input.OccurredAt.Value.Kind != DateTimeKind.Utc))
+            return new OperationError("Invalid deletion event. Supply identifiers and an optional UTC occurrence time.", OperationFailure.BadInput);
+
+        var organization = organizations.GetByUuid(input.OrganizationUuid);
+        if (organization.IsNone) return new OperationError("Unknown organization.", OperationFailure.NotFound);
+        // Disconnected organizations cannot accept new source events.
+        if (!organization.Value.FkOrgUsersConnected)
+            return new OperationError("The organization's users are not connected to FK Organisation.", OperationFailure.Conflict);
+
+        var existing = repository.FindByMessageId(input.ExternalMessageId);
+        if (existing != null) return CheckDuplicate(existing, input, organization.Value.Id);
+
+        return FindUser(input, organization.Value.Id)
+            .Bind(user => EnsureNoPendingChange(input, organization.Value.Id, user))
+            .Bind(user => SaveChange(input, organization.Value.Id, user));
+    }
+
+    private Result<User, OperationError> EnsureNoPendingChange(ExternalUserChangeInput input, int organizationId, User user) =>
+        repository.AsQueryable().Any(change => change.OrganizationId == organizationId &&
+            change.Status == ExternalUserChangeStatus.Pending &&
+            (change.ExternalUserUuid == input.ExternalUserUuid || change.UserId == user.Id))
+            ? new OperationError("A pending change already exists for this user in the organization.", OperationFailure.Conflict)
+            : user;
+
+    private Result<User, OperationError> FindUser(ExternalUserChangeInput input, int organizationId)
+    {
+        var identity = identities.GetByExternalUuid(input.ExternalUserUuid);
+        var user = identity.HasValue ? identity.Value.User : null;
+        if (user == null || user.Deleted || !user.OrganizationRights.Any(x => x.OrganizationId == organizationId && x.Role == OrganizationRole.User))
+            return new OperationError("User not found in the organization.", OperationFailure.NotFound);
+
+        return user;
+    }
+
+    private Result<ExternalUserChange, OperationError> SaveChange(ExternalUserChangeInput input, int organizationId, User user)
+    {
+        var change = new ExternalUserChange
+        {
+            ExternalMessageId = input.ExternalMessageId,
+            OrganizationId = organizationId,
+            ExternalUserUuid = input.ExternalUserUuid,
+            UserId = user.Id,
+            ChangeType = input.ChangeType,
+            Status = ExternalUserChangeStatus.Pending,
+            OccurredAt = NormalizeTimestamp(input.OccurredAt),
+            ReceivedAt = DateTime.UtcNow
+        };
+        var saved = repository.InsertAndSave(change);
+        return CheckDuplicate(saved, input, organizationId);
+    }
+
+    private static Result<ExternalUserChange, OperationError> CheckDuplicate(
+        ExternalUserChange existing, ExternalUserChangeInput input, int organizationId) =>
+        existing.OrganizationId == organizationId && existing.ExternalUserUuid == input.ExternalUserUuid &&
+        existing.ChangeType == input.ChangeType && NormalizeTimestamp(existing.OccurredAt) == NormalizeTimestamp(input.OccurredAt)
+            ? existing
+            : new OperationError("Message ID already belongs to a different event.", OperationFailure.Conflict);
+
+    // PostgreSQL timestamps retain microseconds, whereas .NET timestamps can include 100ns ticks.
+    // Normalize before persistence and comparison so an identical replay survives a database round trip.
+    private static DateTime? NormalizeTimestamp(DateTime? value) => value.HasValue
+        ? new DateTime(value.Value.Ticks - value.Value.Ticks % 10, DateTimeKind.Utc)
+        : null;
+}
