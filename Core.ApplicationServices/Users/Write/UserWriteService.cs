@@ -356,7 +356,7 @@ namespace Core.ApplicationServices.Users.Write
         private Result<User, OperationError> GetUserForRoleAssignment(Guid userUuid, int organizationId)
         {
             var userResult = _userRepository.GetByUuid(userUuid);
-            if (userResult.IsNone)
+            if (userResult.IsNone || userResult.Value.Deleted)
             {
                 return new OperationError("User is not member of the organization", OperationFailure.NotFound);
             }
