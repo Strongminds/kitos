@@ -97,18 +97,7 @@ namespace Core.ApplicationServices.Users.Write
             }
             var organization = orgResult.Value;
 
-            var getUserResult = _userService.GetUserByUuid(userUuid);
-            Result<User, OperationError> updateUserResult;
-            if (parameters.HasOnlyRoleChanges())
-            {
-                updateUserResult = getUserResult
-                    .Bind(user => PerformRoleModify(organization, user, parameters));
-            }
-            else
-            {
-                updateUserResult = getUserResult.Bind(user => PerformModify(organization, user, parameters));
-            }
-
+            var updateUserResult = ApplyUserUpdate(organization, userUuid, parameters);
             if (updateUserResult.Failed)
             {
                 transactionManager.Rollback();
@@ -348,6 +337,38 @@ namespace Core.ApplicationServices.Users.Write
                     },
                     error => error
                 );
+        }
+
+        private Result<User, OperationError> ApplyUserUpdate(Organization organization, Guid userUuid, UpdateUserParameters parameters)
+        {
+            if (!parameters.HasOnlyRoleChanges())
+            {
+                return _userService.GetUserByUuid(userUuid)
+                    .Bind(user => PerformModify(organization, user, parameters));
+            }
+
+            var userResult = parameters.Roles.HasChange && parameters.Roles.NewValue?.Any() == true
+                ? GetUserForRoleAssignment(userUuid, organization.Id)
+                : _userService.GetUserByUuid(userUuid);
+            return userResult.Bind(user => PerformRoleModify(organization, user, parameters));
+        }
+
+        private Result<User, OperationError> GetUserForRoleAssignment(Guid userUuid, int organizationId)
+        {
+            var userResult = _userRepository.GetByUuid(userUuid);
+            if (userResult.IsNone)
+            {
+                return new OperationError("User is not member of the organization", OperationFailure.NotFound);
+            }
+
+            var user = userResult.Value;
+            var canAccessUser = user.GetOrganizationIds().Contains(organizationId)
+                ? _authorizationContext.AllowReads(user)
+                : _authorizationContext.AllowCreate<User>(organizationId);
+
+            return canAccessUser
+                ? Result<User, OperationError>.Success(user)
+                : new OperationError($"Not allowed to update roles for user with uuid: {userUuid}", OperationFailure.Forbidden);
         }
 
         private Result<User, OperationError> PerformModify(Organization organization, User user,
