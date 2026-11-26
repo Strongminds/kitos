@@ -326,12 +326,6 @@ namespace Tests.Unit.Core.ApplicationServices.Users
             var user = SetupUser();
             user.IsGlobalAdmin = false;
             var organization = new Organization { Id = A<int>(), Uuid = A<Guid>() };
-            user.OrganizationRights.Add(new OrganizationRight
-            {
-                Organization = organization,
-                OrganizationId = organization.Id,
-                Role = OrganizationRole.User
-            });
             var defaultUnit = new OrganizationUnit { Id = A<int>(), Uuid = A<Guid>() };
             var updateParameters = new UpdateUserParameters
             {
@@ -350,8 +344,7 @@ namespace Tests.Unit.Core.ApplicationServices.Users
                 DefaultOrganizationUnitUuid = OptionalValueChange<Guid>.None,
             };
 
-            _userRepositoryMock.Setup(x => x.GetByUuid(user.Uuid)).Returns(user);
-            _authorizationContextMock.Setup(x => x.AllowReads(user)).Returns(true);
+            ExpectGetUserByUuid(user.Uuid, user);
             ExpectModifyPermissionsForUserReturns(user, true);
             ExpectGetOrganizationReturns(organization.Uuid, organization);
             ExpectResolveOrgUuidReturns(organization.Uuid, organization.Id);

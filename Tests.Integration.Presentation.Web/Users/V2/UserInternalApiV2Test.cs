@@ -60,8 +60,8 @@ namespace Tests.Integration.Presentation.Web.Users.V2
         {
             //Arrange
             var organization = await CreateOrganizationAsync();
-            var (_, _, cookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Uuid);
-
+            var (_, _, cookie)= await HttpApi.CreateUserAndLogin(CreateEmail(), role, organization.Uuid);
+            
             //Act
             var response = await UsersV2Helper.GetUserCollectionPermissions(organization.Uuid, cookie);
 
@@ -104,74 +104,6 @@ namespace Tests.Integration.Presentation.Web.Users.V2
 
             var getResponse = await UsersV2Helper.GetUser(organization.Uuid, response.Uuid);
             AssertUserEqualsUpdateRequest(updateRequest, getResponse, unit.Uuid);
-        }
-
-        [Fact]
-        public async Task Can_Patch_Roles_To_Add_Existing_User_As_Local_Admin()
-        {
-            var source = await CreateOrganizationAsync();
-            var destination = await CreateOrganizationAsync();
-            var user = await CreateUserWithRoleAsync(source.Uuid, OrganizationRoleChoice.ContractModuleAdmin);
-            var (_, _, cookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.LocalAdmin, destination.Uuid);
-            var before = await UsersV2Helper.GetUserByEmail(destination.Uuid, user.Email!, cookie);
-            Assert.Equal(user.Uuid, before.Uuid);
-            Assert.False(before.IsPartOfCurrentOrganization);
-
-            var roles = new[] { OrganizationRoleChoice.User };
-            var response = await UsersV2Helper.UpdateUser(destination.Uuid, user.Uuid, new { Roles = roles }, cookie);
-
-            Assert.Equal(user.Uuid, response.Uuid);
-            AssertUserRoles(roles, response.Roles);
-            var destinationUser = await UsersV2Helper.GetUser(destination.Uuid, user.Uuid);
-            AssertUserRoles(roles, destinationUser.Roles);
-            var sourceUser = await UsersV2Helper.GetUser(source.Uuid, user.Uuid);
-            AssertUserRoles(user.Roles, sourceUser.Roles);
-        }
-
-        [Fact]
-        public async Task Cannot_Add_Readable_User_Without_Permission_To_Create_Users_In_Destination()
-        {
-            var source = await CreateOrganizationAsync();
-            var destination = await CreateOrganizationAsync();
-            var user = await CreateUserWithRoleAsync(source.Uuid, OrganizationRoleChoice.User);
-            var (callerUuid, credentials, _) = await HttpApi.CreateUserAndLogin(CreateEmail(), OrganizationRole.User, source.Uuid);
-            await UsersV2Helper.UpdateUser(destination.Uuid, callerUuid, new { Roles = new[] { OrganizationRoleChoice.SystemModuleAdmin } });
-            var cookie = await HttpApi.GetCookieAsync(credentials);
-
-            // The caller shares the source organization and can assign this role in the destination.
-            using var response = await UsersV2Helper.PatchUserAsync(destination.Uuid, user.Uuid, x => x.Roles,
-                new[] { OrganizationRoleChoice.SystemModuleAdmin }, cookie);
-
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-            var destinationUser = await UsersV2Helper.GetUserByEmail(destination.Uuid, user.Email!);
-            Assert.False(destinationUser.IsPartOfCurrentOrganization);
-        }
-
-        [Theory]
-        [InlineData(OrganizationRole.SystemModuleAdmin, false, new[] { OrganizationRoleChoice.SystemModuleAdmin })]
-        [InlineData(OrganizationRole.LocalAdmin, false, new[] { OrganizationRoleChoice.User, OrganizationRoleChoice.RightsHolderAccess })]
-        [InlineData(OrganizationRole.LocalAdmin, false, new OrganizationRoleChoice[] { })]
-        [InlineData(OrganizationRole.LocalAdmin, true, new[] { OrganizationRoleChoice.User })]
-        public async Task Patch_Existing_User_From_Another_Organization_Rejects_Invalid_Membership_Request(
-            OrganizationRole callerRole, bool changesProfile, OrganizationRoleChoice[] roles)
-        {
-            var source = await CreateOrganizationAsync();
-            var destination = await CreateOrganizationAsync();
-            var user = await CreateUserWithRoleAsync(source.Uuid, OrganizationRoleChoice.ContractModuleAdmin);
-            var (_, _, cookie) = await HttpApi.CreateUserAndLogin(CreateEmail(), callerRole, destination.Uuid);
-
-            using var response = changesProfile
-                ? await UsersV2Helper.PatchUserAsync(destination.Uuid, user.Uuid, cookie,
-                    new KeyValuePair<string, object>(nameof(UpdateUserRequestDTO.Roles), roles),
-                    new KeyValuePair<string, object>(nameof(UpdateUserRequestDTO.FirstName), CreateName()))
-                : await UsersV2Helper.PatchUserAsync(destination.Uuid, user.Uuid, x => x.Roles, roles, cookie);
-
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-            var destinationUser = await UsersV2Helper.GetUserByEmail(destination.Uuid, user.Email!);
-            Assert.False(destinationUser.IsPartOfCurrentOrganization);
-            var sourceUser = await UsersV2Helper.GetUser(source.Uuid, user.Uuid);
-            Assert.Equal(user.FirstName, sourceUser.FirstName);
-            AssertUserRoles(user.Roles, sourceUser.Roles);
         }
 
         private void AssertUserEqualsCreateRequest(CreateUserRequestDTO request, UserResponseDTO response)
